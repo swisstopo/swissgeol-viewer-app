@@ -15,3 +15,7 @@ jobs:
       run: |
         echo Add other actions to build,
         echo test, and deploy your project.
+    - name: Use a secret
+      env:
+        SECRET: ${{ secrets.DUMMY_SECRET }}
+      run: echo $SECRET
