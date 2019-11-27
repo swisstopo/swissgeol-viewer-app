@@ -1,9 +1,29 @@
-image: "ubuntu:18.04"
+default:
+  image: node:12
 
-always-run:
-  script: echo 'you should always see me'
+stages:
+  - setup
+  - test
+  - build
 
-on-merge-requests:
-  script: echo 'you should see me on merge request'
-  only:
-    - merge_requests
+
+npm_install:
+  stage: setup
+  script: npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 30m
+
+lint:
+  stage: test
+  script: npm run lint
+
+typecheck:
+  stage: test
+  script: npm run typecheck
+
+
+build:
+  stage: build
+  script: npm run build
