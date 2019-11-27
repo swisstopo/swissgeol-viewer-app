@@ -1,0 +1,9 @@
+image: "ubuntu:18.04"
+
+always-run:
+  script: echo 'you should always see me'
+
+on-merge-requests:
+  script: echo 'you should see me on merge request'
+  only:
+    - merge_requests
