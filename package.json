@@ -1,0 +1,12 @@
+{
+  "name": "ngm",
+  "private": true,
+  "scripts": {
+    "lint": "ls -la node_modules/cesium/",
+    "typecheck": "echo 'checking types ...'",
+    "build": "echo 'building ...'"
+  },
+  "dependencies": {
+    "cesium": "^1.63.1"
+  }
+}
