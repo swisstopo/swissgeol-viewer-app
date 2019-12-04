@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: use bats https://github.com/sstephenson/bats
+
 function tester() {
   tag="$1"
   branch="$2"
