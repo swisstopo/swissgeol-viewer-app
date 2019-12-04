@@ -2,10 +2,14 @@ default:
   image: node:12
 
 stages:
+  - presetup
   - setup
   - test
   - build
 
+pipeline_ok:
+  stage: test
+  script: tests/test_gitlab_deploy.sh
 
 npm_install:
   stage: setup
@@ -23,7 +27,15 @@ typecheck:
   stage: test
   script: npm run typecheck
 
-
 build:
   stage: build
   script: npm run build
+
+deploy_to_s3:
+  stage: .post
+  script: scripts/gitlab_deploy.sh
+
+deploy_to_s3_mr:
+  stage: .post
+  script: scripts/gitlab_deploy.sh
+  only: [merge_requests]
