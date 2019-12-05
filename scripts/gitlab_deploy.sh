@@ -3,6 +3,7 @@
 DEV_BRANCH="master"
 PROD_BRANCH="prod"
 DEPLOY_TO_S3="${DEPLOY_TO_S3:-scripts/deploy_to_s3.sh}"
+export SEND_TO_S3="echo"
 
 echo tag $CI_COMMIT_TAG
 echo ref $CI_COMMIT_REF_NAME

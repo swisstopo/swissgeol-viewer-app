@@ -2,15 +2,10 @@ default:
   image: node:12
 
 stages:
-  - presetup
   - setup
   - test
   - build
   - deploy
-
-pipeline_ok:
-  stage: test
-  script: tests/test_gitlab_deploy.sh
 
 npm_install:
   stage: setup
@@ -19,6 +14,10 @@ npm_install:
     paths:
       - node_modules/
     expire_in: 30m
+
+pipeline_ok:
+  stage: test
+  script: tests/test_gitlab_deploy.sh && tests/test_deploy_to_s3.sh
 
 lint:
   stage: test
@@ -33,7 +32,7 @@ build:
   script: npm run build
 
 deploy_to_s3:
-  stage: .post
+  stage: deploy
   script: scripts/gitlab_deploy.sh
 
 deploy_to_s3_mr:
