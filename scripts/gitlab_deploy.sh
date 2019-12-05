@@ -31,7 +31,7 @@ then
   exit 0
 fi
 
-# merge requests are deploayed to a review directory on the dev environment
+# merge requests are deployed to a review directory on the dev environment
 if [ -n "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" ]
 then
   NAME="$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
