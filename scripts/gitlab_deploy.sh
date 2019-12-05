@@ -36,7 +36,7 @@ if [ -n "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" ]
 then
   NAME="$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
   echo "Deploying merge request $NAME"
-  if [[ $NAME == *_GSNGM-* ]]
+  if [[ $NAME == *GSNGM-* ]]
   then
     $DEPLOY_TO_S3 review $NAME
     exit $?
