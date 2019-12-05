@@ -6,6 +6,7 @@ stages:
   - setup
   - test
   - build
+  - deploy
 
 pipeline_ok:
   stage: test
@@ -36,6 +37,6 @@ deploy_to_s3:
   script: scripts/gitlab_deploy.sh
 
 deploy_to_s3_mr:
-  stage: .post
+  stage: deploy
   script: scripts/gitlab_deploy.sh
   only: [merge_requests]
