@@ -29,7 +29,8 @@ typecheck:
 
 build:
   stage: build
-  script: npm run build
+#  script: npm run build
+  script: rm -rf dist; mkdir -p dist; cp -R index.html src dist/
 
 deploy_to_s3:
   stage: deploy
