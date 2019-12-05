@@ -23,6 +23,7 @@ header {
 }
 
 footer {
+  justify-content: flex-end;
   padding: 4px;
   font-size: 0.85em;
   background-color: rgba(214, 214, 214, 0.9);
@@ -31,4 +32,9 @@ footer {
 main {
   flex: auto;
   display: flex;
+  overflow: hidden;
+}
+
+main > .cesium {
+  flex: auto;
 }
