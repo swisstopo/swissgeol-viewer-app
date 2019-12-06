@@ -7,7 +7,6 @@ export SEND_TO_S3="echo"
 
 echo tag $CI_COMMIT_TAG
 echo ref $CI_COMMIT_REF_NAME
-echo mr $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
 
 if [ -z "$CI_COMMIT_TAG$CI_COMMIT_REF_NAME" ]
 then
@@ -31,23 +30,9 @@ then
   exit 0
 fi
 
-# merge requests are deployed to a review directory on the dev environment
-if [ -n "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" ]
-then
-  NAME="$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
-  echo "Deploying merge request $NAME"
-  if [[ $NAME == *GSNGM-* ]]
-  then
-    $DEPLOY_TO_S3 review $NAME
-    exit $?
-  fi
-
-  echo "Not a recognized PR name, skipping"
-fi
-
 # the DEV_BRANCH branch is deployed to the dev environment
 # the PROD_BRANCH branch is deployed to the production environment
-# all other branches are ignored
+# all branches with GSNGM- in their name are deployed to the prs/branch_name of the dev environment
 if [ -n "$CI_COMMIT_REF_NAME" ]
 then
   NAME="$CI_COMMIT_REF_NAME"
@@ -60,6 +45,12 @@ then
   if [ "$NAME" = "$PROD_BRANCH" ]
   then
     $DEPLOY_TO_S3 prod
+    exit $?
+  fi
+
+  if [[ $NAME == *GSNGM-* ]]
+  then
+    $DEPLOY_TO_S3 review $NAME
     exit $?
   fi
 
