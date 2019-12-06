@@ -10,3 +10,10 @@ secrets.txt.gpg:
 secrets.txt:
 	rm -f $@
 	gpg --output $@ --decrypt secrets.txt.gpg
+
+.PHONY: dist
+dist:
+	npm ci
+	npm run lint
+	npm run build
+	rm -rf dist && mkdir dist && cp -R src index.html dist
