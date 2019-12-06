@@ -8,11 +8,11 @@ MR_API_URL="$API_URL/projects/$P_ID/merge_requests/$MR_IID"
 
 DEMO_NOTE="Demo link: https://ngmpub.dev.bgdi.ch/prs/$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
 
-if curl --header "Private-Token: $MY_API_TOKEN" $MR_API_URL/notes | grep -q "$DEMO_NOTE"
+if curl --fail -s --header "Private-Token: $MY_API_TOKEN" $MR_API_URL/notes | grep -q "$DEMO_NOTE"
 then
   echo "Demo link already present, skipping"
   exit
 else
-  curl --header "Private-Token: $MY_API_TOKEN" -X POST $MR_API_URL/notes -d "$DEMO_NOTE"
+  curl --fail -s --header "Private-Token: $MY_API_TOKEN" -X POST --data-urlencode "body=$DEMO_NOTE" $MR_API_URL/notes
   exit $?
 fi
