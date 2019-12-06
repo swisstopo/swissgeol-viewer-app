@@ -6,32 +6,23 @@ INT_BUCKET="ngmpub_int_bdgi_ch"
 PROD_BUCKET="ngmpub_prod_bdgi_ch"
 SEND_TO_S3="${SEND_TO_S3:-aws s3 sync}"
 
-function send_to_s3() {
-  BUCKET="$1"
-  PATH="$2"
-  $SEND_TO_S3 --delete --exclude prs dist/ s3://$BUCKET/$PATH
-
-}
-
-echo Called $0 $*
-
 ENV="$1"
 
 if [ "$ENV" = "prod" ]
 then
-    send_to_s3 $PROD_BUCKET
+    $SEND_TO_S3 --delete dist/ s3://$PROD_BUCKET
     exit $?
 fi
 
 if [ "$ENV" = "int" ]
 then
-    send_to_s3 $INT_BUCKET
+    $SEND_TO_S3 --delete dist/ s3://$INT_BUCKET
     exit $?
 fi
 
 if [ "$ENV" = "dev" ]
 then
-    send_to_s3 $DEV_BUCKET
+    $SEND_TO_S3 --exclude prs --delete dist/ s3://$DEV_BUCKET
     exit $?
 fi
 
@@ -43,7 +34,8 @@ then
       echo "Missing branch name for review env"
       exit 1
     fi
-    send_to_s3 $DEV_BUCKET /prs/$BRANCH
+    EXPIRES="$(date -d '+3 months' --utc +'%Y-%m-%dT%H:%M:%SZ')"
+    $SEND_TO_S3 --expires $EXPIRES --delete dist/ s3://$DEV_BUCKET/prs/$BRANCH
     exit $?
 fi
 

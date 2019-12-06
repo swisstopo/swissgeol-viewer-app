@@ -19,7 +19,7 @@ function tester() {
 }
 
 echo "Testing sendtos3 is working as expected"
-tester dev "" "dist/ s3://ngmpub_dev_bdgi_ch/"
-tester int "" "dist/ s3://ngmpub_int_bdgi_ch/"
-tester prod "" "dist/ s3://ngmpub_prod_bdgi_ch/"
-tester review mybranch "" "dist/ s3://ngmpub_dev_bdgi_ch/prs/mybranch"
+tester dev "" "dist/ s3://ngmpub_dev_bdgi_ch$"
+tester int "" "dist/ s3://ngmpub_int_bdgi_ch$"
+tester prod "" "dist/ s3://ngmpub_prod_bdgi_ch$"
+tester review mybranch "" "dist/ s3://ngmpub_dev_bdgi_ch/prs/mybranch$"
