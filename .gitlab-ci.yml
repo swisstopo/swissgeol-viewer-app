@@ -31,6 +31,10 @@ build:
   stage: build
 #  script: npm run build
   script: rm -rf dist; mkdir -p dist; cp -R index.html src dist/
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 30d
 
 deploy_to_s3:
   stage: deploy
