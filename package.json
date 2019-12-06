@@ -4,7 +4,7 @@
   "scripts": {
     "lint": "ls -la node_modules/cesium/",
     "typecheck": "echo 'checking types ...'",
-    "build": "echo 'building ...'"
+    "build": "rm -rf dist; mkdir -p dist; cp -R index.html src dist/"
   },
   "dependencies": {
     "cesium": "^1.63.1"

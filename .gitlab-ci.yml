@@ -5,7 +5,7 @@ stages:
   - setup
   - test
   - build
-
+  - deploy
 
 npm_install:
   stage: setup
@@ -15,6 +15,10 @@ npm_install:
       - node_modules/
     expire_in: 30m
 
+pipeline_ok:
+  stage: test
+  script: tests/test_gitlab_deploy.sh && tests/test_deploy_to_s3.sh
+
 lint:
   stage: test
   script: npm run lint
@@ -23,7 +27,19 @@ typecheck:
   stage: test
   script: npm run typecheck
 
-
 build:
   stage: build
   script: npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 30d
+
+deploy_to_s3:
+  stage: deploy
+  script: scripts/gitlab_deploy.sh
+
+#deploy_to_s3_mr:
+#  stage: deploy
+#  script: scripts/gitlab_deploy.sh
+#  only: [merge_requests]
