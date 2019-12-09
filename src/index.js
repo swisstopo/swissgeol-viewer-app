@@ -24,7 +24,6 @@ viewer.camera.flyTo({
   duration: 0
 });
 
-//viewer.scene.globe.depthTestAgainstTerrain = true;
 
 // TIN of a gelogical layer
 Cesium.IonResource.fromAssetId(56810)
@@ -127,3 +126,8 @@ swissnames.style = new Cesium.Cesium3DTileStyle({
   }
 });
 viewer.scene.primitives.add(swissnames);
+
+
+document.querySelector('#depth-test').addEventListener('change', (event) => {
+  viewer.scene.globe.depthTestAgainstTerrain = event.target.checked;
+});
