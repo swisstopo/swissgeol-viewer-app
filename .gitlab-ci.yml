@@ -39,7 +39,7 @@ deploy_to_s3:
   stage: deploy
   script: scripts/gitlab_deploy.sh
 
-#deploy_to_s3_mr:
-#  stage: deploy
-#  script: scripts/gitlab_deploy.sh
-#  only: [merge_requests]
+add_link_for_reviews:
+ stage: .pre
+ script: scripts/gitlab_add_link_for_reviews.sh
+ only: [merge_requests]

@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-DEV_BUCKET="ngmpub_dev_bdgi_ch"
-INT_BUCKET="ngmpub_int_bdgi_ch"
-PROD_BUCKET="ngmpub_prod_bdgi_ch"
+DEV_BUCKET="ngmpub-dev-bdgi-ch"
+INT_BUCKET="ngmpub-int-bdgi-ch"
+PROD_BUCKET="ngmpub-prod-bdgi-ch"
 SEND_TO_S3="${SEND_TO_S3:-aws s3 sync}"
 
 ENV="$1"
