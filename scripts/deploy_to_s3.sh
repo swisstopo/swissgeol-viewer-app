@@ -29,7 +29,7 @@ fi
 
 if [ "$ENV" = "review" ]
 then
-    BRANCH="$1"
+    BRANCH="$2"
     if [ -z "$BRANCH" ]
     then
       echo "Missing branch name for review env"
