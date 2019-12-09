@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 
 DEV_BUCKET="ngmpub-dev-bdgi-ch"
 INT_BUCKET="ngmpub-int-bdgi-ch"
