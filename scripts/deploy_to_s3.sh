@@ -5,7 +5,7 @@ set -x
 DEV_BUCKET="ngmpub-dev-bgdi-ch"
 INT_BUCKET="ngmpub-int-bgdi-ch"
 PROD_BUCKET="ngmpub-prod-bgdi-ch"
-SEND_TO_S3="${SEND_TO_S3:-aws s3 sync}"
+SEND_TO_S3="${SEND_TO_S3:-aws s3 sync --acl public-read}"
 
 ENV="$1"
 
