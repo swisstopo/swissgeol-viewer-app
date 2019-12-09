@@ -2,9 +2,9 @@
 set -e
 set -x
 
-DEV_BUCKET="ngmpub-dev-bdgi-ch"
-INT_BUCKET="ngmpub-int-bdgi-ch"
-PROD_BUCKET="ngmpub-prod-bdgi-ch"
+DEV_BUCKET="ngmpub-dev-bgdi-ch"
+INT_BUCKET="ngmpub-int-bgdi-ch"
+PROD_BUCKET="ngmpub-prod-bgdi-ch"
 SEND_TO_S3="${SEND_TO_S3:-aws s3 sync}"
 
 ENV="$1"
