@@ -6,7 +6,8 @@ MR_IID="$CI_MERGE_REQUEST_IID"
 
 MR_API_URL="$API_URL/projects/$P_ID/merge_requests/$MR_IID"
 
-DEMO_NOTE="Demo link: https://ngmpub.dev.bgdi.ch/prs/$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+BRANCH="$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+DEMO_NOTE="Demo link: https://ngmpub.dev.bgdi.ch/prs/$BRANCH or https://s3-eu-west-1.amazonaws.com/ngmpub-dev-bgdi-ch/prs/$BRANCH/index.html"
 
 if curl --fail -s --header "Private-Token: $MY_API_TOKEN" $MR_API_URL/notes | grep -q "$DEMO_NOTE"
 then
