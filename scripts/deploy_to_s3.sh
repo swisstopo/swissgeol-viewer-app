@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e
+set -x
 
-DEV_BUCKET="ngmpub-dev-bdgi-ch"
-INT_BUCKET="ngmpub-int-bdgi-ch"
-PROD_BUCKET="ngmpub-prod-bdgi-ch"
-SEND_TO_S3="${SEND_TO_S3:-aws s3 sync}"
+DEV_BUCKET="ngmpub-dev-bgdi-ch"
+INT_BUCKET="ngmpub-int-bgdi-ch"
+PROD_BUCKET="ngmpub-prod-bgdi-ch"
+SEND_TO_S3="${SEND_TO_S3:-aws s3 sync --acl public-read}"
 
 ENV="$1"
 
@@ -28,7 +29,7 @@ fi
 
 if [ "$ENV" = "review" ]
 then
-    BRANCH="$1"
+    BRANCH="$2"
     if [ -z "$BRANCH" ]
     then
       echo "Missing branch name for review env"

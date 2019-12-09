@@ -37,9 +37,12 @@ build:
 
 deploy_to_s3:
   stage: deploy
-  script: scripts/gitlab_deploy.sh
+  image: python:latest
+  script:
+  - pip install awscli
+  - scripts/gitlab_deploy.sh
 
 add_link_for_reviews:
- stage: .pre
+ stage: setup
  script: scripts/gitlab_add_link_for_reviews.sh
  only: [merge_requests]
