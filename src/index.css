@@ -29,6 +29,14 @@ footer {
   background-color: rgba(214, 214, 214, 0.9);
 }
 
+.outdated-browser {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  z-index: 1;
+}
+
 main {
   flex: auto;
   display: flex;

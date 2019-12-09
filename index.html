@@ -10,6 +10,9 @@
   <title>NGM</title>
 </head>
 <body>
+  <div class="outdated-browser" style="display: none;">
+    You are using an outdated browser
+  </div>
   <header>
     <img class="logo" src="src/logo-CH.svg">
   </header>
@@ -19,6 +22,9 @@
   <footer>
     <a target="_blank" href="https://www.geologieportal.ch/">Copyright & data protection</a>
   </footer>
-  <script src="src/index.js"></script>
+  <script src="src/index.js" type="module"></script>
+  <script nomodule>
+    document.querySelector('.outdated-browser').style.display = '';
+  </script>
 </body>
 </html>
