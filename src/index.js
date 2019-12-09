@@ -66,22 +66,10 @@ const swissnames = new Cesium.Cesium3DTileset({
 swissnames.style = new Cesium.Cesium3DTileStyle({
   labelStyle: 2,
   labelText: '${DISPLAY_TEXT}',
-  disableDepthTestDistance: 5000,
+  disableDepthTestDistance: Infinity,
   anchorLineEnabled: true,
   anchorLineColor: "color('white')",
-  heightOffset: {
-    conditions: [
-      ['${LOD} === "7"', 20],
-      ['${LOD} === "6"', 40],
-      ['${LOD} === "5"', 60],
-      ['${LOD} === "4"', 80],
-      ['${LOD} === "3"', 100],
-      ['${LOD} === "2"', 120],
-      ['${LOD} === "1"', 150],
-      ['${LOD} === "0"', 200],
-      ['true', '200']
-    ]
-  },
+  heightOffset: 200,
   labelColor: {
     conditions: [
       ['${OBJEKTART} === "See"', 'color("blue")'],
