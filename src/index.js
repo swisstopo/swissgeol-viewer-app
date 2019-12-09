@@ -14,6 +14,11 @@ const viewer = new Cesium.Viewer(document.querySelector('main > .cesium'), {
   timeline: false,
   navigationHelpButton: false,
 
+  imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+    url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{TileMatrix}/{TileCol}/{TileRow}.jpeg',
+    credit: new Cesium.Credit('Swisstopo')
+  }),
+
   terrainProvider: new Cesium.CesiumTerrainProvider({
     url: Cesium.IonResource.fromAssetId(1)
   })
@@ -24,6 +29,11 @@ viewer.camera.flyTo({
   duration: 0
 });
 
+const layer = viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+  url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geocover/default/current/3857/{TileMatrix}/{TileCol}/{TileRow}.png',
+  credit: new Cesium.Credit('Swisstopo')
+}));
+layer.alpha = 0.5;
 
 // TIN of a gelogical layer
 Cesium.IonResource.fromAssetId(56810)
