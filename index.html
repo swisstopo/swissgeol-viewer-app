@@ -12,14 +12,14 @@
   <title>NGM</title>
 </head>
 <body>
-  <div class="outdated-browser" style="display: none;">
+  <div id="outdated-browser" style="display: none;">
     You are using an outdated browser
   </div>
   <header>
     <img class="logo" src="src/logo-CH.svg">
   </header>
   <main>
-    <div class="cesium"></div>
+    <div id="cesium"></div>
   </main>
   <footer>
     <label><input id="depth-test" type="checkbox">depth test against terrain</label>
@@ -28,7 +28,7 @@
   </footer>
   <script src="src/index.js" type="module"></script>
   <script nomodule>
-    document.querySelector('.outdated-browser').style.display = '';
+    document.querySelector('#outdated-browser').style.display = '';
   </script>
 </body>
 </html>

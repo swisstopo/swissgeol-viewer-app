@@ -4,7 +4,7 @@ Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOi
 const WMTS_4326_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 const WMTS_4326_RECTANGLE = Cesium.Rectangle.fromDegrees.apply(null, WMTS_4326_BOUNDS);
 
-const viewer = new Cesium.Viewer(document.querySelector('main > .cesium'), {
+const viewer = new Cesium.Viewer(document.querySelector('#cesium'), {
   animation: false,
   baseLayerPicker: false,
   fullscreenButton: false,
