@@ -1,3 +1,5 @@
+@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/message.min.css');
+
 body, html {
   height: 100%;
 }
@@ -20,6 +22,7 @@ header {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: right;
+  background-color: #fff;
 }
 
 footer {
@@ -34,7 +37,10 @@ footer {
   position: fixed;
   width: 100%;
   height: 100%;
-  background-color: #fff;
+  background-image: url('outdated-background.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #fafafb;
   z-index: 1;
 }
 
