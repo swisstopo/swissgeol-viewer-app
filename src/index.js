@@ -93,7 +93,7 @@ viewer.terrainProvider.readyPromise.then(ready => {
     font: {
       conditions: [
         ['${OBJEKTART} === "See"', '"bold 32px arial"'],
-        ['true', '" 32px arial"']
+        ['true', '"32px arial"']
       ]
     },
     scaleByDistance: {
@@ -107,19 +107,6 @@ viewer.terrainProvider.readyPromise.then(ready => {
         ['${LOD} === "1"', 'vec4(1000, 1, 50000, 0.4)'],
         ['${LOD} === "0"', 'vec4(1000, 1, 500000, 0.4)'],
         ['true', 'vec4(1000, 1, 10000, 0.4)']
-      ]
-    },
-    translucencyByDistance: {
-      conditions: [
-        ['${LOD} === "7"', 'vec4(5000, 1, 5001, 1)'],
-        ['${LOD} === "6"', 'vec4(5000, 1, 5001, 1)'],
-        ['${LOD} === "5"', 'vec4(5000, 1, 8000, 0.4)'],
-        ['${LOD} === "4"', 'vec4(5000, 1, 10000, 0.4)'],
-        ['${LOD} === "3"', 'vec4(5000, 1, 20000, 0.4)'],
-        ['${LOD} === "2"', 'vec4(5000, 1, 30000, 0.4)'],
-        ['${LOD} === "1"', 'vec4(5000, 1, 50000, 0.4)'],
-        ['${LOD} === "0"', 'vec4(5000, 1, 500000, 1)'],
-        ['true', 'vec4(5000, 1, 10000, 0.5)']
       ]
     },
     distanceDisplayCondition: {
