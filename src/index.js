@@ -47,7 +47,7 @@ viewer.terrainProvider.readyPromise.then(ready => {
   }));
   layer.alpha = 0.5;
 
-  // TIN of a gelogical layer
+  // TIN of a geological layer
   Cesium.IonResource.fromAssetId(56810)
     .then((resource) => Cesium.GeoJsonDataSource.load(resource))
     .then((dataSource) => viewer.dataSources.add(dataSource))
