@@ -1,6 +1,9 @@
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
 
+const WMTS_4326_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
+const WMTS_4326_RECTANGLE = Cesium.Rectangle.fromDegrees.apply(null, WMTS_4326_BOUNDS);
+
 const viewer = new Cesium.Viewer(document.querySelector('main > .cesium'), {
   animation: false,
   baseLayerPicker: false,
@@ -16,6 +19,7 @@ const viewer = new Cesium.Viewer(document.querySelector('main > .cesium'), {
 
   imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
     url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{TileMatrix}/{TileCol}/{TileRow}.jpeg',
+    rectangle: WMTS_4326_RECTANGLE,
     credit: new Cesium.Credit('Swisstopo')
   }),
 
@@ -31,6 +35,7 @@ viewer.camera.flyTo({
 
 const layer = viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
   url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geocover/default/current/3857/{TileMatrix}/{TileCol}/{TileRow}.png',
+  rectangle: WMTS_4326_RECTANGLE,
   credit: new Cesium.Credit('Swisstopo')
 }));
 layer.alpha = 0.5;
