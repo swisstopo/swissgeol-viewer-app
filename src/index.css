@@ -1,3 +1,6 @@
+@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/reset.min.css');
+@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/message.min.css');
+
 body, html {
   height: 100%;
 }
@@ -14,21 +17,40 @@ header, footer {
 
 header {
   padding: 10px 10px 20px 10px;
-  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.175);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
   background-image: url('header-geologieportal.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: right;
+  background-color: #fff;
 }
 
 footer {
+  justify-content: flex-end;
+  align-items: center;
   padding: 4px;
   font-size: 0.85em;
   background-color: rgba(214, 214, 214, 0.9);
 }
 
+#outdated-browser {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-image: url('outdated-background.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #fafafb;
+  z-index: 1;
+}
+
 main {
   flex: auto;
   display: flex;
+  overflow: hidden;
+}
+
+#cesium {
+  flex: auto;
 }

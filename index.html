@@ -2,19 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" type="image/png" href="src/favicon.png">
+
   <link href="src/index.css" rel="stylesheet">
+
+  <script src="https://unpkg.com/cesium@1.64.0/Build/Cesium/Cesium.js"></script>
+  <link href="https://unpkg.com/cesium@1.64.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <title>NGM</title>
 </head>
 <body>
+  <div id="outdated-browser" style="display: none;">
+    <header>
+      <img class="logo" src="src/logo-CH.svg">
+    </header>
+
+    <div class="ui compact negative message">
+      <div class="header">Your browser has difficulties displaying this page</div>
+      <p>Please try with the latest version of Chrome, Firefox, Safari or Edge</p>
+    </div>
+
+  </div>
   <header>
     <img class="logo" src="src/logo-CH.svg">
   </header>
   <main>
-    cesium will be here
+    <div id="cesium"></div>
   </main>
   <footer>
+    <label><input id="depth-test" type="checkbox">See underground data</label>
+    <div style="flex: auto;"></div>
     <a target="_blank" href="https://www.geologieportal.ch/">Copyright & data protection</a>
   </footer>
+  <script src="src/index.js" type="module"></script>
+  <script nomodule>
+    document.querySelector('#outdated-browser').style.display = '';
+  </script>
 </body>
 </html>
