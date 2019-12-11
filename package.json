@@ -4,10 +4,21 @@
   "scripts": {
     "lint": "ls -la node_modules/cesium/",
     "typecheck": "echo 'checking types ...'",
-    "build": "rm -rf dist; mkdir -p dist; cp -R index.html src dist/"
+    "start": "parcel serve index.html",
+    "build": "parcel build index.html --public-url ."
   },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "last 2 Edge versions"
+  ],
   "dependencies": {
+    "@geoblocks/ga-search": "0.0.3",
     "cesium": "1.65.0",
     "i18next": "^19.0.2"
+  },
+  "devDependencies": {
+    "parcel": "^1.12.4"
   }
 }

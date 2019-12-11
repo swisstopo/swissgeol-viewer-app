@@ -5,6 +5,8 @@
 @import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/list.min.css');
 @import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/item.min.css');
 @import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/icon.min.css');
+@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/input.min.css');
+
 
 html, body {
   height: 100%;
@@ -85,4 +87,38 @@ main {
   z-index: 1;
   margin: 6px;
   cursor: pointer;
+}
+
+ga-search {
+  width: 400px;
+  align-self: center;
+}
+
+/* FIXME: use existing fomantic component */
+ga-search > .search-results {
+  background-color: #fff;
+  box-shadow: 0 2px 3px 0 rgba(34,36,38,.15);
+  border: 1px solid rgba(34,36,38,.15);
+  border-top: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+ga-search > .search-results > .autocomplete-result {
+  padding: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+ga-search > .search-results > .autocomplete-result .highlight {
+  background-color: #fddf7e;
+}
+ga-search > .search-results > .autocomplete-result[aria-selected=true],
+ga-search > .search-results > .autocomplete-result:hover {
+  cursor: pointer;
+  background-color: rgba(0,0,0,.05);
 }
