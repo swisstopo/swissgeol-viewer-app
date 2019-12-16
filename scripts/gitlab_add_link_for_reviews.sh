@@ -7,7 +7,8 @@ MR_IID="$CI_MERGE_REQUEST_IID"
 MR_API_URL="$API_URL/projects/$P_ID/merge_requests/$MR_IID"
 
 BRANCH="$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
-DEMO_NOTE="Demo link: https://ngmpub.dev.bgdi.ch/prs/$BRANCH or https://s3-eu-west-1.amazonaws.com/ngmpub-dev-bgdi-ch/prs/$BRANCH/index.html"
+JIRA_ISSUE="`echo $BRANCH | sed 's/.*GSNGM/GSNGM/'`"
+DEMO_NOTE="Links: [demo](https://s3-eu-west-1.amazonaws.com/ngmpub-dev-bgdi-ch/prs/$BRANCH/index.html) and [jira](https://jira.camptocamp.com/browse/$JIRA_ISSUE)"
 
 if curl --fail -s --header "Private-Token: $MY_API_TOKEN" $MR_API_URL/notes | grep -q "$DEMO_NOTE"
 then
