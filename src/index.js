@@ -122,7 +122,8 @@ viewer.terrainProvider.readyPromise.then(ready => {
       ]
     }
   });
-  viewer.scene.primitives.add(swissnames);
+  // FIXME: labels are deactivated for performence reason
+  // viewer.scene.primitives.add(swissnames);
 
 });
 
