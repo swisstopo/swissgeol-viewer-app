@@ -7,7 +7,7 @@ function tester() {
   param="$2"
   expected="$3"
   echo -n "   env='$env' param='$param' expected='$expected'        "
-  OUTPUT=`SEND_TO_S3="echo" scripts/deploy_to_s3.sh $env $param`
+  OUTPUT=`SYNC_TO_S3="echo" CP_TO_S3="echo" scripts/deploy_to_s3.sh $env $param`
 
   if echo $OUTPUT | grep -q "$expected"
   then
