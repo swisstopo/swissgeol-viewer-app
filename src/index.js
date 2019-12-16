@@ -1,5 +1,9 @@
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
+// A central error facility we can improve later
+function appError(msg) {
+  console.error('NGM-error', msg);
+}
 
 const WMTS_4326_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 const WMTS_4326_RECTANGLE = Cesium.Rectangle.fromDegrees.apply(null, WMTS_4326_BOUNDS);
@@ -71,6 +75,9 @@ viewer.terrainProvider.readyPromise.then(ready => {
     })
   );
 
+  // Avoid using 100% of the available resources all the time
+  viewer.scene.requestRenderMode = true;
+
   // labels 3D
   const swissnames = new Cesium.Cesium3DTileset({
     url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json'
@@ -129,4 +136,88 @@ viewer.terrainProvider.readyPromise.then(ready => {
 
 document.querySelector('#depth-test').addEventListener('change', (event) => {
   viewer.scene.globe.depthTestAgainstTerrain = !event.target.checked;
+});
+
+
+const LANGS = ['de', 'fr', 'it', 'en', 'rm'];
+
+function detectLanguage() {
+  // detect language and initialize lang
+  let languages = [];
+  if (navigator.languages) {
+    languages.push(...navigator.languages)
+  }
+  if (navigator.language) {
+    languages.push(navigator.language);
+  }
+
+  for (let lang of languages) {
+    lang = lang.substr(0, 2).toLowerCase(); // limit to first 2 characters
+    if (LANGS.includes(lang)) {
+      return lang;
+    }
+  }
+
+  return 'en'; // fallback to English
+}
+
+i18next.init({
+  whitelist: LANGS,
+  load: 'languageOnly',
+  debug: true,
+  resources: {
+    en: {
+      translation: {
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright'>Copyright & data protection</a>"
+      }
+    },
+    de: {
+      translation: {
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright'>Copyright & Datenschutzerklärung</a>"
+      }
+    },
+    fr: {
+      translation: {
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright'>Conditions d'utilisation</a>"
+      }
+    },
+    it: {
+      translation: {
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/it/about-swiss-geoportal/impressum.html#copyright'>Copyright e dichiarazione della protezione dei diritti d'autore</a>"
+      }
+    },
+    rm: {
+      translation: {
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright'>Copyright & decleraziun da protecziun da datas</a>"
+      }
+    }
+  }
+}, function(err, t) {
+  const localize = locI18next.init(i18next);
+  function setLanguage(lang) {
+    i18next.changeLanguage(lang, (err, t) => {
+      if (!err) {
+        document.documentElement.lang = lang;
+        localize("[data-i18n]");
+      } else {
+        appError('Could not change language');
+      }
+    });
+  }
+  const langsElement = document.getElementById('langs');
+  LANGS.forEach(lang => {
+    const a = document.createElement('a');
+    a.href="";
+    a.className="lang-" + lang;
+    a.innerHTML = lang.toUpperCase();
+    a.onclick = evt => {
+      setLanguage(lang);
+      evt.preventDefault();
+    }
+    langsElement.appendChild(a);
+    langsElement.appendChild(document.createTextNode(' '));
+  });
+
+  const userLang = detectLanguage();
+  setLanguage(userLang);
 });
