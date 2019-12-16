@@ -8,6 +8,8 @@
   <link href="src/index.css" rel="stylesheet">
 
   <script src="https://unpkg.com/cesium@1.64.0/Build/Cesium/Cesium.js"></script>
+  <script src="https://unpkg.com/i18next@19.0.2/dist/umd/i18next.js"></script>
+  <script src="https://unpkg.com/loc-i18next@0.1.4/dist/umd/loc-i18next.min.js"></script>
   <link href="https://unpkg.com/cesium@1.64.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <title>NGM</title>
 </head>
@@ -25,6 +27,7 @@
   </div>
   <header>
     <img class="logo" src="src/logo-CH.svg">
+    <div id="langs"></div>
   </header>
   <main>
     <div id="cesium"></div>
@@ -32,7 +35,8 @@
   <footer>
     <label><input id="depth-test" type="checkbox">See underground data</label>
     <div style="flex: auto;"></div>
-    <a target="_blank" href="https://www.geologieportal.ch/">Copyright & data protection</a>
+    <a target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>&nbsp;
+    <div data-i18n="[html]disclaimer"></div>
   </footer>
   <script src="src/index.js" type="module"></script>
   <script nomodule>

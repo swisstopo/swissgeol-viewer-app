@@ -68,3 +68,30 @@ main {
 #cesium {
   flex: auto;
 }
+
+
+/* Languages */
+#langs {
+  position: absolute;
+  right: 3em;
+}
+
+#langs a {
+  color: black;
+}
+
+#langs a:lang(fr).lang-fr {
+  color: red;
+}
+#langs a:lang(en).lang-en {
+  color: red;
+}
+#langs a:lang(it).lang-it {
+  color: red;
+}
+#langs a:lang(de).lang-de {
+  color: red;
+}
+#langs a:lang(rm).lang-rm {
+  color: red;
+}
