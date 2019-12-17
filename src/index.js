@@ -209,7 +209,7 @@ i18next.init({
   LANGS.forEach(lang => {
     const a = document.createElement('a');
     a.href="";
-    a.className="lang-" + lang;
+    a.className="item lang-" + lang;
     a.innerHTML = lang.toUpperCase();
     a.onclick = evt => {
       setLanguage(lang);

@@ -27,7 +27,8 @@
   </div>
   <header>
     <img class="logo" src="src/logo-CH.svg">
-    <div id="langs"></div>
+    <div style="flex: auto;"></div>
+    <div id="langs" class="ui horizontal mini link list"></div>
   </header>
   <main>
     <div id="cesium"></div>
@@ -35,8 +36,10 @@
   <footer>
     <label><input id="depth-test" type="checkbox">See underground data</label>
     <div style="flex: auto;"></div>
-    <a target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>&nbsp;
-    <div data-i18n="[html]disclaimer"></div>
+    <div class="ui horizontal mini link list">
+      <a class="item" target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
+      <div class="item" data-i18n="[html]disclaimer"></div>
+    </div>
   </footer>
   <script src="src/index.js" type="module"></script>
   <script nomodule>

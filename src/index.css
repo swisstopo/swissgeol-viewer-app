@@ -2,6 +2,8 @@
 
 @import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/reset.min.css');
 @import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/message.min.css');
+@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/list.min.css');
+@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/item.min.css');
 
 body, html {
   height: 100%;
@@ -48,6 +50,14 @@ footer {
   background-color: rgba(214, 214, 214, 0.9);
 }
 
+.ui.horizontal.list {
+  margin-top: 0;
+}
+
+.ui.horizontal.list > .item {
+  margin-right: 0.5em;
+}
+
 #outdated-browser {
   position: fixed;
   width: 100%;
@@ -70,28 +80,7 @@ main {
 }
 
 
-/* Languages */
-#langs {
-  position: absolute;
-  right: 3em;
-}
-
-#langs a {
-  color: black;
-}
-
-#langs a:lang(fr).lang-fr {
-  color: red;
-}
-#langs a:lang(en).lang-en {
-  color: red;
-}
-#langs a:lang(it).lang-it {
-  color: red;
-}
-#langs a:lang(de).lang-de {
-  color: red;
-}
-#langs a:lang(rm).lang-rm {
-  color: red;
+:lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en, :lang(rm) .lang-rm {
+  background-color: #babbbc;
+  font-weight: bold;
 }
