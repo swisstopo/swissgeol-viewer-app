@@ -21,6 +21,9 @@ const viewer = new Cesium.Viewer(document.querySelector('#cesium'), {
   timeline: false,
   navigationHelpButton: false,
 
+  // Avoid using 100% of the available rources all the time
+  requestRenderMode: true,
+
   imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
     url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{TileMatrix}/{TileCol}/{TileRow}.jpeg',
     rectangle: WMTS_4326_RECTANGLE,
@@ -75,8 +78,6 @@ viewer.terrainProvider.readyPromise.then(ready => {
     })
   );
 
-  // Avoid using 100% of the available resources all the time
-  viewer.scene.requestRenderMode = true;
 
   // labels 3D
   const swissnames = new Cesium.Cesium3DTileset({
@@ -137,6 +138,7 @@ viewer.terrainProvider.readyPromise.then(ready => {
 
 document.querySelector('#depth-test').addEventListener('change', (event) => {
   viewer.scene.globe.depthTestAgainstTerrain = !event.target.checked;
+  viewer.scene.requestRender();
 });
 
 
