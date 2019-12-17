@@ -1,3 +1,5 @@
+import NavigableVolumeLimiter from "./NavigableVolumeLimiter.js";
+
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
 // A central error facility we can improve later
@@ -32,13 +34,22 @@ const viewer = new Cesium.Viewer(document.querySelector('#cesium'), {
   })
 });
 
+// Position the sun the that shadows look nice
+viewer.clock.currentTime = Cesium.JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
+
+// Set the fly home rectangle
+Cesium.Camera.DEFAULT_VIEW_RECTANGLE = WMTS_4326_RECTANGLE;
+
+// Limit the volume inside which the user can navigate
+new NavigableVolumeLimiter(viewer.scene, WMTS_4326_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
+
 const globe = viewer.scene.globe;
 globe.depthTestAgainstTerrain = true;
 globe.showGroundAtmosphere = false;
 globe.showWaterEffect = false;
 
 viewer.camera.flyTo({
-  destination: Cesium.Cartesian3.fromDegrees(8.2275, 46.8182, 1000000),
+  destination: WMTS_4326_RECTANGLE,
   duration: 0
 });
 
@@ -135,8 +146,14 @@ viewer.terrainProvider.readyPromise.then(ready => {
 });
 
 
-document.querySelector('#depth-test').addEventListener('change', (event) => {
+document.querySelector('#depth-test').addEventListener('change', event => {
   viewer.scene.globe.depthTestAgainstTerrain = !event.target.checked;
+});
+
+document.querySelector('#zoomToHome').addEventListener('click', event => {
+  viewer.scene.camera.flyTo({
+    destination: WMTS_4326_RECTANGLE
+  });
 });
 
 
@@ -222,3 +239,4 @@ i18next.init({
   const userLang = detectLanguage();
   setLanguage(userLang);
 });
+
