@@ -10,3 +10,7 @@ make secrets.txt
 scripts/deploy_to_prod.sh
 [ $? -eq 0 ] && echo OK || echo failed
 ```
+
+# Gitlab <> Jira integration
+
+See https://docs.gitlab.com/ee/user/project/integrations/jira.html
