@@ -1,3 +1,5 @@
+import NavigableVolumeLimiter from "./NavigableVolumeLimiter.js";
+
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
 // A central error facility we can improve later
@@ -31,6 +33,15 @@ const viewer = new Cesium.Viewer(document.querySelector('#cesium'), {
     url: Cesium.IonResource.fromAssetId(1)
   })
 });
+
+// Position the sun the that shadows look nice
+viewer.clock.currentTime = Cesium.JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
+
+// Set the fly home rectangle
+Cesium.Camera.DEFAULT_VIEW_RECTANGLE = WMTS_4326_RECTANGLE;
+
+// Limit the volume inside which the user can navigate
+new NavigableVolumeLimiter(viewer.scene, WMTS_4326_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
 
 const globe = viewer.scene.globe;
 globe.depthTestAgainstTerrain = true;
