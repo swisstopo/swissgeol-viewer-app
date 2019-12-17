@@ -49,7 +49,7 @@ globe.showGroundAtmosphere = false;
 globe.showWaterEffect = false;
 
 viewer.camera.flyTo({
-  destination: Cesium.Cartesian3.fromDegrees(8.2275, 46.8182, 1000000),
+  destination: WMTS_4326_RECTANGLE,
   duration: 0
 });
 
@@ -146,8 +146,14 @@ viewer.terrainProvider.readyPromise.then(ready => {
 });
 
 
-document.querySelector('#depth-test').addEventListener('change', (event) => {
+document.querySelector('#depth-test').addEventListener('change', event => {
   viewer.scene.globe.depthTestAgainstTerrain = !event.target.checked;
+});
+
+document.querySelector('#zoomToHome').addEventListener('click', event => {
+  viewer.scene.camera.flyTo({
+    destination: WMTS_4326_RECTANGLE
+  });
 });
 
 
@@ -233,3 +239,4 @@ i18next.init({
   const userLang = detectLanguage();
   setLanguage(userLang);
 });
+

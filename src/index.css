@@ -84,3 +84,11 @@ main {
   background-color: #babbbc;
   font-weight: bold;
 }
+
+
+#zoomToHome {
+  position: absolute;
+  z-index: 1;
+  margin: 6px;
+  cursor: pointer;
+}
