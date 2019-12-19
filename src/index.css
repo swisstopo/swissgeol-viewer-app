@@ -5,15 +5,14 @@
 @import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/list.min.css');
 @import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/item.min.css');
 
-body, html {
+html, body {
   height: 100%;
+  font-size: 14px;
 }
 
 body {
   font-family: 'Lato', sans-serif;
-  font-size: 14px;
   line-height: 1.4285em;
-  color: rgba(0, 0, 0, 0.87);
   display: flex;
   flex-direction: column;
 }
@@ -46,7 +45,6 @@ header > .logo {
 footer {
   justify-content: flex-end;
   padding: 4px;
-  font-size: 0.85em;
   background-color: rgba(214, 214, 214, 0.9);
 }
 
