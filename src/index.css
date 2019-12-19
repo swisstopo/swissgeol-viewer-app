@@ -23,7 +23,6 @@ a {
 
 header, footer {
   display: flex;
-  align-items: center;
 }
 
 header {
