@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Lato:400,700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700&display=swap');
 
 @import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/reset.min.css');
 @import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/message.min.css');
@@ -11,7 +11,7 @@ html, body {
 }
 
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif;
   line-height: 1.4285em;
   display: flex;
   flex-direction: column;
@@ -23,7 +23,6 @@ a {
 
 header, footer {
   display: flex;
-  align-items: center;
 }
 
 header {
