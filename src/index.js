@@ -75,7 +75,7 @@ viewer.terrainProvider.readyPromise.then(ready => {
 
 
   // Boreholes
-  Cesium.IonResource.fromAssetId(56806)
+  Cesium.IonResource.fromAssetId(62737)
     .then((resource) => Cesium.GeoJsonDataSource.load(resource))
     .then((dataSource) => viewer.dataSources.add(dataSource))
     .otherwise((error) => {
