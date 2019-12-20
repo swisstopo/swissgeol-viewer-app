@@ -10,7 +10,7 @@ BRANCH="$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
 JIRA_ISSUE="`echo $BRANCH | sed 's/.*GSNGM/GSNGM/'`"
 DEMO_NOTE="Links: [demo](https://ngmpub.review.bgdi.ch/$BRANCH/index.html) and $JIRA_ISSUE"
 
-if curl --fail -s --header "Private-Token: $MY_API_TOKEN" $MR_API_URL/notes | grep -q "$DEMO_NOTE"
+if curl --fail -s --header "Private-Token: $MY_API_TOKEN" $MR_API_URL/notes | grep -Fq "$DEMO_NOTE"
 then
   echo "Demo link already present, skipping"
   exit
