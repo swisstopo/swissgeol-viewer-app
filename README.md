@@ -1,6 +1,15 @@
+# Deploy to integration (from local machine)
+
+```bash
+export VERSION="int_???"
+
+git tag $VERSION
+git push origin $VERSION
+```
+
 # Deploy to production (from local machine)
 
-```
+```bash
 export VERSION="THE_TAG_YOU_WANT_DEPLOYED"
 
 git checkout $VERSION
