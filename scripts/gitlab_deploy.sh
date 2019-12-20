@@ -31,7 +31,7 @@ fi
 
 # the DEV_BRANCH branch is deployed to the dev environment
 # the PROD_BRANCH branch is deployed to the production environment
-# all branches with GSNGM- in their name are deployed to the prs/branch_name of the dev environment
+# all branches with GSNGM- in their name are deployed to the review environment
 if [ -n "$CI_COMMIT_REF_NAME" ]
 then
   NAME="$CI_COMMIT_REF_NAME"
