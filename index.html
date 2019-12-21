@@ -19,16 +19,19 @@
       <img class="logo" src="src/logo-CH.svg">
     </header>
 
-    <div class="ui compact negative message">
-      <div class="header">Your browser has difficulties displaying this page</div>
-      <p>Please try with the latest version of Chrome, Firefox, Safari or Edge</p>
+    <div class="ui large negative icon floating message">
+      <i class="exclamation triangle icon"></i>
+      <div class="content">
+        <div class="header">Your browser has difficulties displaying this page</div>
+        <p>Please try with the latest version of Chrome, Firefox, Safari or Edge</p>
+      </div>
     </div>
 
   </div>
   <header>
     <img class="logo" src="src/logo-CH.svg">
     <div style="flex: auto;"></div>
-    <div id="langs" class="ui horizontal small link list"></div>
+    <div id="langs" class="ui horizontal selection list"></div>
   </header>
   <main>
     <div id="cesium">
@@ -38,7 +41,7 @@
   <footer>
     <label><input id="depth-test" type="checkbox">See underground data</label>
     <div style="flex: auto;"></div>
-    <div class="ui horizontal mini link list">
+    <div class="ui horizontal link list">
       <a class="item" target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
       <div class="item" data-i18n="[html]disclaimer"></div>
     </div>
