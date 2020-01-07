@@ -7,7 +7,7 @@
     "build": "rm -rf dist; mkdir -p dist; cp -R index.html src dist/"
   },
   "dependencies": {
-    "cesium": "^1.63.1",
+    "cesium": "1.65.0",
     "i18next": "^19.0.2"
   }
 }
