@@ -50,6 +50,7 @@ const globe = viewer.scene.globe;
 globe.depthTestAgainstTerrain = true;
 globe.showGroundAtmosphere = false;
 globe.showWaterEffect = false;
+globe.backFaceCulling = false;
 
 viewer.camera.flyTo({
   destination: WMTS_4326_RECTANGLE,
