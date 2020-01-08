@@ -36,8 +36,7 @@ then
       echo "Missing branch name for review env"
       exit 1
     fi
-    EXPIRES="$(date -d '+3 months' --utc +'%Y-%m-%dT%H:%M:%SZ')"
-    $SYNC_TO_S3 --expires $EXPIRES --delete dist/ s3://$REVIEW_BUCKET/$BRANCH/
+    $SYNC_TO_S3 --delete dist/ s3://$REVIEW_BUCKET/$BRANCH/
     exit $?
 fi
 
