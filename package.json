@@ -16,7 +16,8 @@
   "dependencies": {
     "@geoblocks/ga-search": "0.0.4",
     "cesium": "1.65.0",
-    "i18next": "^19.0.2"
+    "i18next": "19.0.3",
+    "loc-i18next": "0.1.4"
   },
   "devDependencies": {
     "parcel": "^1.12.4"
