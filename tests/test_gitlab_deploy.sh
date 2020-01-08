@@ -7,7 +7,7 @@ function tester() {
   branch="$2"
   expected="$4"
   echo -n "   tag='$tag' branch='$branch' expected='$expected'        "
-  OUTPUT=`DEPLOY_SCRIPT="echo" \
+  OUTPUT=`DEPLOY_TO_S3="echo" \
     CI_COMMIT_TAG="$tag" \
     CI_COMMIT_REF_NAME="$branch" \
     scripts/gitlab_deploy.sh`

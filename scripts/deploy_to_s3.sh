@@ -6,26 +6,24 @@ DEV_BUCKET="ngmpub-dev-bgdi-ch"
 INT_BUCKET="ngmpub-int-bgdi-ch"
 PROD_BUCKET="ngmpub-prod-bgdi-ch"
 REVIEW_BUCKET="ngmpub-review-bgdi-ch"
-SYNC_TO_S3="${SYNC_TO_S3:-aws s3 sync --acl public-read}"
+CACHE_CONTROL="${CACHE_CONTROL:-max-age=3600}"
+S3_CMD="${S3_CMD:-aws s3}"
 
 ENV="$1"
 
 if [ "$ENV" = "prod" ]
 then
-    $SYNC_TO_S3 --delete dist/ s3://$PROD_BUCKET
-    exit $?
+    DESTINATION="s3://$PROD_BUCKET"
 fi
 
 if [ "$ENV" = "int" ]
 then
-    $SYNC_TO_S3 --delete dist/ s3://$INT_BUCKET
-    exit $?
+    DESTINATION="s3://$INT_BUCKET"
 fi
 
 if [ "$ENV" = "dev" ]
 then
-    $SYNC_TO_S3 --delete dist/ s3://$DEV_BUCKET
-    exit $?
+    DESTINATION="s3://$DEV_BUCKET"
 fi
 
 if [ "$ENV" = "review" ]
@@ -36,10 +34,15 @@ then
       echo "Missing branch name for review env"
       exit 1
     fi
-    EXPIRES="$(date -d '+3 months' --utc +'%Y-%m-%dT%H:%M:%SZ')"
-    $SYNC_TO_S3 --expires $EXPIRES --delete dist/ s3://$REVIEW_BUCKET/$BRANCH/
-    exit $?
+    DESTINATION="s3://$REVIEW_BUCKET/$BRANCH/"
 fi
 
-echo "Unknown env $ENV"
-exit 1
+if [ -z "$DESTINATION" ]
+then
+    echo "Unknown env $ENV"
+    exit 1
+fi
+
+$S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' dist/ $DESTINATION
+$S3_CMD cp --cache-control no-cache dist/index.html $DESTINATION
+exit $?
