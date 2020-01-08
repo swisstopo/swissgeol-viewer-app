@@ -43,6 +43,6 @@ then
     exit 1
 fi
 
-$S3_CMD sync --acl public-read --cache-control $CACHE_CONTROL --delete --exclude 'index.html' dist/ $DESTINATION
-$S3_CMD cp --acl public-read --cache-control no-cache dist/index.html $DESTINATION
+$S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' dist/ $DESTINATION
+$S3_CMD cp --cache-control no-cache dist/index.html $DESTINATION
 exit $?

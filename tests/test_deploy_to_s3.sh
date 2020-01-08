@@ -19,11 +19,11 @@ function tester() {
 }
 
 echo "Testing sendtos3 is working as expected"
-tester dev "" "sync --acl public-read --cache-control max-age=42 --delete --exclude index.html dist/ s3://ngmpub-dev-bgdi-ch \
-cp --acl public-read --cache-control no-cache dist/index.html s3://ngmpub-dev-bgdi-ch$"
-tester int "" "sync --acl public-read --cache-control max-age=42 --delete --exclude index.html dist/ s3://ngmpub-int-bgdi-ch \
-cp --acl public-read --cache-control no-cache dist/index.html s3://ngmpub-int-bgdi-ch$"
-tester prod "" "sync --acl public-read --cache-control max-age=42 --delete --exclude index.html dist/ s3://ngmpub-prod-bgdi-ch \
-cp --acl public-read --cache-control no-cache dist/index.html s3://ngmpub-prod-bgdi-ch$"
-tester review mybranch "sync --acl public-read --cache-control max-age=42 --delete --exclude index.html dist/ s3://ngmpub-review-bgdi-ch/mybranch/ \
-cp --acl public-read --cache-control no-cache dist/index.html s3://ngmpub-review-bgdi-ch/mybranch/$"
+tester dev "" "sync --cache-control max-age=42 --delete --exclude index.html dist/ s3://ngmpub-dev-bgdi-ch \
+cp --cache-control no-cache dist/index.html s3://ngmpub-dev-bgdi-ch$"
+tester int "" "sync --cache-control max-age=42 --delete --exclude index.html dist/ s3://ngmpub-int-bgdi-ch \
+cp --cache-control no-cache dist/index.html s3://ngmpub-int-bgdi-ch$"
+tester prod "" "sync --cache-control max-age=42 --delete --exclude index.html dist/ s3://ngmpub-prod-bgdi-ch \
+cp --cache-control no-cache dist/index.html s3://ngmpub-prod-bgdi-ch$"
+tester review mybranch "sync --cache-control max-age=42 --delete --exclude index.html dist/ s3://ngmpub-review-bgdi-ch/mybranch/ \
+cp --cache-control no-cache dist/index.html s3://ngmpub-review-bgdi-ch/mybranch/$"
