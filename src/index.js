@@ -9,7 +9,7 @@ function appError(msg) {
 }
 
 const WMTS_4326_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
-const WMTS_4326_RECTANGLE = Cesium.Rectangle.fromDegrees.apply(null, WMTS_4326_BOUNDS);
+const WMTS_4326_RECTANGLE = Cesium.Rectangle.fromDegrees(...WMTS_4326_BOUNDS);
 
 const viewer = new Cesium.Viewer(document.querySelector('#cesium'), {
   animation: false,
@@ -164,7 +164,7 @@ document.querySelector('ga-search').addEventListener('select', event => {
   const box = event.detail.result.bbox;
   if (box) {
     viewer.camera.flyTo({
-      destination: Cesium.Rectangle.fromDegrees.apply(null, box)
+      destination: Cesium.Rectangle.fromDegrees(...box)
     });
   }
 });
