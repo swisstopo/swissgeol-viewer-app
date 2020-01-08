@@ -1,3 +1,4 @@
+import '@geoblocks/ga-search';
 import NavigableVolumeLimiter from "./NavigableVolumeLimiter.js";
 
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
@@ -159,6 +160,14 @@ document.querySelector('#zoomToHome').addEventListener('click', event => {
   });
 });
 
+document.querySelector('ga-search').addEventListener('select', event => {
+  const box = event.detail.result.bbox;
+  if (box) {
+    viewer.camera.flyTo({
+      destination: Cesium.Rectangle.fromDegrees.apply(null, box)
+    });
+  }
+});
 
 const LANGS = ['de', 'fr', 'it', 'en', 'rm'];
 
@@ -189,27 +198,32 @@ i18next.init({
   resources: {
     en: {
       translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright'>Copyright & data protection</a>"
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright'>Copyright & data protection</a>",
+        "search_placeholder": "Search..."
       }
     },
     de: {
       translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright'>Copyright & Datenschutzerklärung</a>"
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright'>Copyright & Datenschutzerklärung</a>",
+        "search_placeholder": "Suchen..."
       }
     },
     fr: {
       translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright'>Conditions d'utilisation</a>"
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright'>Conditions d'utilisation</a>",
+        "search_placeholder": "Rechercher..."
       }
     },
     it: {
       translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/it/about-swiss-geoportal/impressum.html#copyright'>Copyright e dichiarazione della protezione dei diritti d'autore</a>"
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/it/about-swiss-geoportal/impressum.html#copyright'>Copyright e dichiarazione della protezione dei diritti d'autore</a>",
+        "search_placeholder": "Ricercare..."
       }
     },
     rm: {
       translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright'>Copyright & decleraziun da protecziun da datas</a>"
+        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright'>Copyright & decleraziun da protecziun da datas</a>",
+        "search_placeholder": "Tschertgar..."
       }
     }
   }
@@ -242,4 +256,3 @@ i18next.init({
   const userLang = detectLanguage();
   setLanguage(userLang);
 });
-

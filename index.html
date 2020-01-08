@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,8 +12,10 @@
   <script src="https://unpkg.com/i18next@19.0.2/dist/umd/i18next.js"></script>
   <script src="https://unpkg.com/loc-i18next@0.1.4/dist/umd/loc-i18next.min.js"></script>
   <link href="https://unpkg.com/cesium@1.65.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.0/webcomponents-loader.js"></script>
   <title>NGM</title>
 </head>
+
 <body>
   <div id="outdated-browser" style="display: none;">
     <header>
@@ -30,6 +33,11 @@
   </div>
   <header>
     <img class="logo" src="src/logo-CH.svg">
+    <ga-search class="ui small left icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
+      <input type="search" data-i18n="[placeholder]search_placeholder">
+      <i class="search icon"></i>
+      <ul class="search-results"></ul>
+    </ga-search>
     <div style="flex: auto;"></div>
     <div id="langs" class="ui horizontal selection list"></div>
   </header>
@@ -51,4 +59,5 @@
     document.querySelector('#outdated-browser').style.display = '';
   </script>
 </body>
+
 </html>
