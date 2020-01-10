@@ -162,8 +162,18 @@ document.querySelector('#zoomToHome').addEventListener('click', event => {
 document.querySelector('ga-search').addEventListener('submit', event => {
   const box = event.detail.result.bbox;
   if (box) {
-    viewer.camera.flyTo({
-      destination: Cesium.Rectangle.fromDegrees(...box)
-    });
+    const rectangle = Cesium.Rectangle.fromDegrees(...box);
+    if (rectangle.width === 0 && rectangle.height === 0) {
+      // point
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(box[0], box[1], 5000)
+      });
+    } else {
+      // rectangle
+      viewer.camera.flyTo({
+        destination: rectangle
+      });
+    }
   }
+  event.target.autocomplete.input.blur();
 });
