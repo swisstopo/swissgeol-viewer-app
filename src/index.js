@@ -1,12 +1,11 @@
 import '@geoblocks/ga-search';
+
 import NavigableVolumeLimiter from "./NavigableVolumeLimiter.js";
+import {init as i18nInit} from './i18n.js';
+
+i18nInit();
 
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
-
-// A central error facility we can improve later
-function appError(msg) {
-  console.error('NGM-error', msg);
-}
 
 const WMTS_4326_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 const WMTS_4326_RECTANGLE = Cesium.Rectangle.fromDegrees(...WMTS_4326_BOUNDS);
@@ -167,92 +166,4 @@ document.querySelector('ga-search').addEventListener('submit', event => {
       destination: Cesium.Rectangle.fromDegrees(...box)
     });
   }
-});
-
-const LANGS = ['de', 'fr', 'it', 'en', 'rm'];
-
-function detectLanguage() {
-  // detect language and initialize lang
-  let languages = [];
-  if (navigator.languages) {
-    languages.push(...navigator.languages)
-  }
-  if (navigator.language) {
-    languages.push(navigator.language);
-  }
-
-  for (let lang of languages) {
-    lang = lang.substr(0, 2).toLowerCase(); // limit to first 2 characters
-    if (LANGS.includes(lang)) {
-      return lang;
-    }
-  }
-
-  return 'en'; // fallback to English
-}
-
-i18next.init({
-  whitelist: LANGS,
-  load: 'languageOnly',
-  debug: true,
-  resources: {
-    en: {
-      translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright'>Copyright & data protection</a>",
-        "search_placeholder": "Search..."
-      }
-    },
-    de: {
-      translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright'>Copyright & Datenschutzerklärung</a>",
-        "search_placeholder": "Suchen..."
-      }
-    },
-    fr: {
-      translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright'>Conditions d'utilisation</a>",
-        "search_placeholder": "Rechercher..."
-      }
-    },
-    it: {
-      translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/it/about-swiss-geoportal/impressum.html#copyright'>Copyright e dichiarazione della protezione dei diritti d'autore</a>",
-        "search_placeholder": "Ricercare..."
-      }
-    },
-    rm: {
-      translation: {
-        "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright'>Copyright & decleraziun da protecziun da datas</a>",
-        "search_placeholder": "Tschertgar..."
-      }
-    }
-  }
-}, function(err, t) {
-  const localize = locI18next.init(i18next);
-  function setLanguage(lang) {
-    i18next.changeLanguage(lang, (err, t) => {
-      if (!err) {
-        document.documentElement.lang = lang;
-        localize("[data-i18n]");
-      } else {
-        appError('Could not change language');
-      }
-    });
-  }
-  const langsElement = document.getElementById('langs');
-  LANGS.forEach(lang => {
-    const a = document.createElement('a');
-    a.href="";
-    a.className="item lang-" + lang;
-    a.innerHTML = lang.toUpperCase();
-    a.onclick = evt => {
-      setLanguage(lang);
-      evt.preventDefault();
-    }
-    langsElement.appendChild(a);
-    langsElement.appendChild(document.createTextNode(' '));
-  });
-
-  const userLang = detectLanguage();
-  setLanguage(userLang);
 });

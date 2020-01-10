@@ -2,7 +2,7 @@
   "name": "ngm",
   "private": true,
   "scripts": {
-    "lint": "ls -la node_modules/cesium/",
+    "lint": "eslint src/",
     "typecheck": "echo 'checking types ...'",
     "start": "parcel serve index.html",
     "build": "parcel build index.html --public-url ."
@@ -16,9 +16,12 @@
   "dependencies": {
     "@geoblocks/ga-search": "0.0.4",
     "cesium": "1.65.0",
-    "i18next": "^19.0.2"
+    "i18next": "19.0.3",
+    "lit-html": "^1.1.2",
+    "loc-i18next": "0.1.4"
   },
   "devDependencies": {
+    "eslint": "^6.8.0",
     "parcel": "^1.12.4"
   }
 }
