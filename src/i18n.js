@@ -77,8 +77,8 @@ export function init() {
     const langsElement = document.getElementById('langs');
     LANGS.forEach(lang => {
       const a = document.createElement('a');
-      a.href="";
-      a.className="item lang-" + lang;
+      a.href = "";
+      a.className = "item lang-" + lang;
       a.innerHTML = lang.toUpperCase();
       a.onclick = evt => {
         setLanguage(lang);
@@ -91,4 +91,4 @@ export function init() {
     const userLang = detectLanguage();
     setLanguage(userLang);
   });
-};
+}
