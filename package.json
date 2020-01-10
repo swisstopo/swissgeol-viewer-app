@@ -14,7 +14,7 @@
     "last 2 Edge versions"
   ],
   "dependencies": {
-    "@geoblocks/ga-search": "0.0.3",
+    "@geoblocks/ga-search": "0.0.4",
     "cesium": "1.65.0",
     "i18next": "^19.0.2"
   },

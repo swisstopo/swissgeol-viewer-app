@@ -160,7 +160,7 @@ document.querySelector('#zoomToHome').addEventListener('click', event => {
   });
 });
 
-document.querySelector('ga-search').addEventListener('select', event => {
+document.querySelector('ga-search').addEventListener('submit', event => {
   const box = event.detail.result.bbox;
   if (box) {
     viewer.camera.flyTo({
