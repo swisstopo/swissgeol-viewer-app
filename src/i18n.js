@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import locI18next from 'loc-i18next';
+import {html, render} from 'lit-html';
 
 import {appError} from './utils.js';
 
@@ -74,19 +75,17 @@ export function init() {
         }
       });
     }
-    const langsElement = document.getElementById('langs');
-    LANGS.forEach(lang => {
-      const a = document.createElement('a');
-      a.href = "";
-      a.className = "item lang-" + lang;
-      a.innerHTML = lang.toUpperCase();
-      a.onclick = evt => {
+    const templates = LANGS.map(lang => {
+      const onclick = evt => {
         setLanguage(lang);
         evt.preventDefault();
-      }
-      langsElement.appendChild(a);
-      langsElement.appendChild(document.createTextNode(' '));
+      };
+
+      return html`
+        <a class="item lang-${lang}" @click="${onclick}">${lang.toUpperCase()}</a>
+      `;
     });
+    render(templates, document.getElementById('langs'));
 
     const userLang = detectLanguage();
     setLanguage(userLang);

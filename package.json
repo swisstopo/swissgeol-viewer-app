@@ -17,6 +17,7 @@
     "@geoblocks/ga-search": "0.0.4",
     "cesium": "1.65.0",
     "i18next": "19.0.3",
+    "lit-html": "^1.1.2",
     "loc-i18next": "0.1.4"
   },
   "devDependencies": {
