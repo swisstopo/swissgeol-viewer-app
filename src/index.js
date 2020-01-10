@@ -176,6 +176,7 @@ document.querySelector('ga-search').addEventListener('submit', event => {
       });
     }
   }
+  event.target.autocomplete.input.blur();
 });
 
 const LANGS = ['de', 'fr', 'it', 'en', 'rm'];
