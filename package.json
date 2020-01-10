@@ -14,11 +14,11 @@
     "last 2 Edge versions"
   ],
   "dependencies": {
-    "@geoblocks/ga-search": "0.0.4",
-    "cesium": "1.65.0",
-    "i18next": "19.0.3",
+    "@geoblocks/ga-search": "^0.0.4",
+    "cesium": "^1.65.0",
+    "i18next": "^19.0.3",
     "lit-html": "^1.1.2",
-    "loc-i18next": "0.1.4"
+    "loc-i18next": "^0.1.4"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
