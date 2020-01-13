@@ -1,5 +1,9 @@
 GPG_KEYS := 0875810F CF8E9976 3EA11D26
 
+.PHONY: start
+start:
+	npm start
+
 .PHONY: secrets.txt.gpg
 secrets.txt.gpg:
 	gpg --keyserver pgp.mit.edu --keyserver-options timeout=20 --recv-keys $(GPG_KEYS) || true

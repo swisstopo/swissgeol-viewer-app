@@ -52,7 +52,13 @@
       <div class="item" data-i18n="[html]disclaimer"></div>
     </div>
   </footer>
-  <script src="src/index.js" type="module"></script>
+  <script type="module">
+    const debug = location.search.includes('debug');
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.setAttribute('src', debug ? '/bundle.debug.js' : '/bundle.min.js');
+    document.head.appendChild(script);
+  </script>
   <script nomodule>
     document.querySelector('#outdated-browser').style.display = '';
   </script>
