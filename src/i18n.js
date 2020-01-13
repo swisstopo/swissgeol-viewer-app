@@ -34,32 +34,32 @@ export function init() {
     resources: {
       en: {
         translation: {
-          "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright'>Copyright & data protection</a>",
-          "search_placeholder": "Search..."
+          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright'>Copyright & data protection</a>",
+          'search_placeholder': 'Search...'
         }
       },
       de: {
         translation: {
-          "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright'>Copyright & Datenschutzerklärung</a>",
-          "search_placeholder": "Suchen..."
+          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright'>Copyright & Datenschutzerklärung</a>",
+          'search_placeholder': 'Suchen...'
         }
       },
       fr: {
         translation: {
-          "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright'>Conditions d'utilisation</a>",
-          "search_placeholder": "Rechercher..."
+          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright'>Conditions d'utilisation</a>",
+          'search_placeholder': 'Rechercher...'
         }
       },
       it: {
         translation: {
-          "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/it/about-swiss-geoportal/impressum.html#copyright'>Copyright e dichiarazione della protezione dei diritti d'autore</a>",
-          "search_placeholder": "Ricercare..."
+          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/it/about-swiss-geoportal/impressum.html#copyright'>Copyright e dichiarazione della protezione dei diritti d'autore</a>",
+          'search_placeholder': 'Ricercare...'
         }
       },
       rm: {
         translation: {
-          "disclaimer": "<a target='_blank' href='https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright'>Copyright & decleraziun da protecziun da datas</a>",
-          "search_placeholder": "Tschertgar..."
+          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright'>Copyright & decleraziun da protecziun da datas</a>",
+          'search_placeholder': 'Tschertgar...'
         }
       }
     }
@@ -69,7 +69,7 @@ export function init() {
       i18next.changeLanguage(lang, (err, t) => {
         if (!err) {
           document.documentElement.lang = lang;
-          localize("[data-i18n]");
+          localize('[data-i18n]');
         } else {
           appError('Could not change language');
         }

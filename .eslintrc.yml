@@ -9,5 +9,7 @@ parserOptions:
   ecmaVersion: 2018
   sourceType: module
 rules:
-  space-infix-ops: error
+  eqeqeq: error
   no-unused-vars: [error, {vars: all, args: none}]
+  quotes: [error, single, {avoidEscape: true}]
+  space-infix-ops: error

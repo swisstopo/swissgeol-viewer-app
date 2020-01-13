@@ -1,6 +1,6 @@
 import '@geoblocks/ga-search';
 
-import NavigableVolumeLimiter from "./NavigableVolumeLimiter.js";
+import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import {init as i18nInit} from './i18n.js';
 
 i18nInit();
