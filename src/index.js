@@ -145,7 +145,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
         ]
       }
     });
-    // FIXME: labels are deactivated for performence reason
+    // FIXME: labels are deactivated for performance reason
     // viewer.scene.primitives.add(swissnames);
 
   }
