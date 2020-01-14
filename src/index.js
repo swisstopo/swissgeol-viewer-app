@@ -7,6 +7,11 @@ i18nInit();
 
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
+Object.assign(Cesium.RequestScheduler.requestsByServer, {
+  'wmts.geo.admin.ch:443': 18,
+  'vectortiles0.geo.admin.ch:443': 18
+});
+
 const WMTS_4326_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 const WMTS_4326_RECTANGLE = Cesium.Rectangle.fromDegrees(...WMTS_4326_BOUNDS);
 
