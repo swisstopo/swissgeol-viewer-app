@@ -4,6 +4,8 @@ import '@geoblocks/ga-search';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import {init as i18nInit} from './i18n.js';
+import {getLayersConfig, containsSwisstopoImagery, getSwisstopoImagery} from './swisstopoImagery.js';
+
 
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
 import RequestScheduler from 'cesium/Core/RequestScheduler.js';
@@ -220,10 +222,34 @@ document.querySelector('#zoomToHome').addEventListener('click', event => {
   });
 });
 
-document.querySelector('ga-search').addEventListener('submit', event => {
-  const box = event.detail.result.bbox;
-  if (box) {
-    const rectangle = Rectangle.fromDegrees(...box);
+const search = document.querySelector('ga-search');
+
+// search filter configuration
+getLayersConfig().then(layersConfig => {
+  search.filterResults = result => {
+    if (result.properties.origin === 'layer') {
+      return layersConfig[result.properties.layer].type === 'wmts';
+    } else {
+      return true;
+    }
+  };
+});
+
+// location search result
+search.addEventListener('submit', event => {
+  const result = event.detail.result;
+  const origin = result.properties.origin;
+  if (origin === 'layer') {
+    // add layer
+    getSwisstopoImagery(result.properties.layer, Rectangle.fromDegrees(...result.bbox))
+      .then(imageryLayer => {
+        if (!containsSwisstopoImagery(viewer.scene.imageryLayers, imageryLayer)) {
+          viewer.scene.imageryLayers.add(imageryLayer);
+        }
+      });
+  } else {
+    // recenter to location
+    const rectangle = Rectangle.fromDegrees(...result.bbox);
     if (rectangle.width < Math.EPSILON3 || rectangle.height < Math.EPSILON3) {
       // rectangle is too small
       const center = Rectangle.center(rectangle);
