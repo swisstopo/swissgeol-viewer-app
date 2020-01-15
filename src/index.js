@@ -2,10 +2,20 @@ import '@geoblocks/ga-search';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import {init as i18nInit} from './i18n.js';
+import { Ion as CesiumIon, Rectangle, Viewer, UrlTemplateImageryProvider, CesiumTerrainProvider, Credit, RequestScheduler } from 'cesium/Cesium.js';
+import { IonResource, Color, JulianDate, GeoJsonDataSource, Cesium3DTileset, Cesium3DTileStyle, Camera } from 'cesium/Cesium.js';
+
 
 i18nInit();
 
-Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
+window.CESIUM_BASE_URL = '.';
+
+CesiumIon.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
+
+Object.assign(RequestScheduler.requestsByServer, {
+  'wmts.geo.admin.ch:443': 18,
+  'vectortiles0.geo.admin.ch:443': 18
+});
 
 Object.assign(Cesium.RequestScheduler.requestsByServer, {
   'wmts.geo.admin.ch:443': 18,
@@ -13,9 +23,9 @@ Object.assign(Cesium.RequestScheduler.requestsByServer, {
 });
 
 const WMTS_4326_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
-const WMTS_4326_RECTANGLE = Cesium.Rectangle.fromDegrees(...WMTS_4326_BOUNDS);
+const WMTS_4326_RECTANGLE = Rectangle.fromDegrees(...WMTS_4326_BOUNDS);
 
-const viewer = new Cesium.Viewer(document.querySelector('#cesium'), {
+const viewer = new Viewer(document.querySelector('#cesium'), {
   animation: false,
   baseLayerPicker: false,
   fullscreenButton: false,
@@ -31,35 +41,35 @@ const viewer = new Cesium.Viewer(document.querySelector('#cesium'), {
   // Avoid using 100% of the available rources all the time
   requestRenderMode: true,
 
-  imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
-    url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geocover/default/current/3857/{TileMatrix}/{TileCol}/{TileRow}.png',
+  imageryProvider: new UrlTemplateImageryProvider({
+    url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geocover/default/current/3857/{z}/{x}/{y}.png',
     rectangle: WMTS_4326_RECTANGLE,
-    credit: new Cesium.Credit('Swisstopo')
+    credit: new Credit('Swisstopo')
   }),
 
   // almost invisible grey background
-  // imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+  // imageryProvider: new WebMapTileServiceImageryProvider({
   //   url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{TileMatrix}/{TileCol}/{TileRow}.jpeg',
   //   rectangle: WMTS_4326_RECTANGLE,
-  //   credit: new Cesium.Credit('Swisstopo')
+  //   credit: new Credit('Swisstopo')
   // }),
 
-  terrainProvider: new Cesium.CesiumTerrainProvider({
-    url: Cesium.IonResource.fromAssetId(1)
+  terrainProvider: new CesiumTerrainProvider({
+    url: IonResource.fromAssetId(1)
   })
 });
 
 // Position the sun the that shadows look nice
-viewer.clock.currentTime = Cesium.JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
+viewer.clock.currentTime = JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
 
 // Set the fly home rectangle
-Cesium.Camera.DEFAULT_VIEW_RECTANGLE = WMTS_4326_RECTANGLE;
+Camera.DEFAULT_VIEW_RECTANGLE = WMTS_4326_RECTANGLE;
 
 // Limit the volume inside which the user can navigate
 new NavigableVolumeLimiter(viewer.scene, WMTS_4326_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
 
 const globe = viewer.scene.globe;
-globe.baseColor = Cesium.Color.WHITE;
+globe.baseColor = Color.WHITE;
 globe.depthTestAgainstTerrain = true;
 globe.showGroundAtmosphere = false;
 globe.showWaterEffect = false;
@@ -75,8 +85,8 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     unlisten();
 
     // TIN of a geological layer
-    Cesium.IonResource.fromAssetId(56810)
-      .then((resource) => Cesium.GeoJsonDataSource.load(resource))
+    IonResource.fromAssetId(56810)
+      .then((resource) => GeoJsonDataSource.load(resource))
       .then((dataSource) => viewer.dataSources.add(dataSource))
       .otherwise((error) => {
         console.log(error);
@@ -84,8 +94,8 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
 
     // Boreholes
-    Cesium.IonResource.fromAssetId(62737)
-      .then((resource) => Cesium.GeoJsonDataSource.load(resource))
+    IonResource.fromAssetId(62737)
+      .then((resource) => GeoJsonDataSource.load(resource))
       .then((dataSource) => viewer.dataSources.add(dataSource))
       .otherwise((error) => {
         console.log(error);
@@ -93,17 +103,17 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
     // Tunnel
     viewer.scene.primitives.add(
-      new Cesium.Cesium3DTileset({
-        url: Cesium.IonResource.fromAssetId(56812)
+      new Cesium3DTileset({
+        url: IonResource.fromAssetId(56812)
       })
     );
 
 
     // labels 3D
-    const swissnames = new Cesium.Cesium3DTileset({
+    const swissnames = new Cesium3DTileset({
       url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json'
     });
-    swissnames.style = new Cesium.Cesium3DTileStyle({
+    swissnames.style = new Cesium3DTileStyle({
       labelStyle: 2,
       labelText: '${DISPLAY_TEXT}',
       disableDepthTestDistance: Infinity,
@@ -170,11 +180,11 @@ document.querySelector('#zoomToHome').addEventListener('click', event => {
 document.querySelector('ga-search').addEventListener('submit', event => {
   const box = event.detail.result.bbox;
   if (box) {
-    const rectangle = Cesium.Rectangle.fromDegrees(...box);
+    const rectangle = Rectangle.fromDegrees(...box);
     if (rectangle.width === 0 && rectangle.height === 0) {
       // point
       viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(box[0], box[1], 5000)
+        destination: Cartesian3.fromDegrees(box[0], box[1], 5000)
       });
     } else {
       // rectangle

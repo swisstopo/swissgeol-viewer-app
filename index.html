@@ -8,7 +8,6 @@
 
   <link href="src/index.css" rel="stylesheet">
 
-  <script src="https://unpkg.com/cesium@1.65.0/Build/Cesium/Cesium.js"></script>
   <link href="https://unpkg.com/cesium@1.65.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.0/webcomponents-loader.js"></script>
   <title>NGM</title>
@@ -52,7 +51,13 @@
       <div class="item" data-i18n="[html]disclaimer"></div>
     </div>
   </footer>
-  <script src="src/index.js" type="module"></script>
+  <script type="module">
+    const debug = location.search.includes('debug');
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.setAttribute('src', debug ? './bundle.debug.js' : './bundle.min.js');
+    document.head.appendChild(script);
+  </script>
   <script nomodule>
     document.querySelector('#outdated-browser').style.display = '';
   </script>

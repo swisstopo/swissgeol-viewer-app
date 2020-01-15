@@ -4,15 +4,9 @@
   "scripts": {
     "lint": "eslint src/",
     "typecheck": "echo 'checking types ...'",
-    "start": "parcel serve index.html",
-    "build": "parcel build index.html --public-url ."
+    "start": "rm -rf dist/* && SERVE=true rollup --environment SERVE:true -c --watch --no-treeshake",
+    "build": "rm -rf dist/* && rollup --environment mode:production -c"
   },
-  "browserslist": [
-    "last 2 Chrome versions",
-    "last 2 Firefox versions",
-    "last 2 Safari versions",
-    "last 2 Edge versions"
-  ],
   "dependencies": {
     "@geoblocks/ga-search": "^0.0.5",
     "cesium": "^1.65.0",
@@ -21,7 +15,19 @@
     "loc-i18next": "^0.1.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.0",
+    "@babel/preset-env": "^7.8.2",
+    "@rollup/plugin-alias": "^3.0.0",
+    "@rollup/plugin-commonjs": "^11.0.1",
+    "core-js": "^2.6.11",
     "eslint": "^6.8.0",
-    "parcel": "^1.12.4"
+    "rollup": "^1.29.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-copy": "^3.1.0",
+    "rollup-plugin-ejs": "^2.2.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-serve": "^1.0.1",
+    "rollup-plugin-strip-pragma": "^1.0.0",
+    "rollup-plugin-terser": "^5.1.3"
   }
 }
