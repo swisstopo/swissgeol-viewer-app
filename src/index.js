@@ -79,20 +79,6 @@ Camera.DEFAULT_VIEW_RECTANGLE = WMTS_4326_RECTANGLE;
 // Limit the volume inside which the user can navigate
 new NavigableVolumeLimiter(viewer.scene, WMTS_4326_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
 
-// Add Mantel ellipsoid
-const radii = Ellipsoid.WGS84.radii.clone();
-const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
-radii.x -= mantelDepth;
-radii.y -= mantelDepth;
-radii.z -= mantelDepth;
-viewer.entities.add({
-  position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
-  ellipsoid : {
-    radii,
-    material: './src/temp_lava.jpg',
-  }
-});
-
 viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
 
 const globe = viewer.scene.globe;
@@ -110,6 +96,20 @@ viewer.camera.flyTo({
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
+
+    // Add Mantel ellipsoid
+    const radii = Ellipsoid.WGS84.radii.clone();
+    const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
+    radii.x -= mantelDepth;
+    radii.y -= mantelDepth;
+    radii.z -= mantelDepth;
+    viewer.entities.add({
+      position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
+      ellipsoid : {
+        radii,
+        material: './src/temp_lava.jpg',
+      }
+    });
 
     // TIN of a geological layer
     IonResource.fromAssetId(56810)
