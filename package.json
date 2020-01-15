@@ -5,11 +5,12 @@
     "lint": "eslint src/",
     "typecheck": "echo 'checking types ...'",
     "start": "rollup --environment SERVE:true -c --watch --no-treeshake",
-    "build": "rm -rf dist/* && rollup --environment mode:production -c"
+    "build": "rm -rf dist/* && rollup --environment mode:production -c",
+    "postinstall": "scripts/npm_postinstall.sh"
   },
   "dependencies": {
     "@geoblocks/ga-search": "^0.0.5",
-    "cesium": "^1.65.0",
+    "cesium": "https://github.com/AnalyticalGraphicsInc/cesium/archive/36aed1a.tar.gz",
     "i18next": "^19.0.3",
     "lit-html": "^1.1.2",
     "loc-i18next": "^0.1.4"
@@ -19,7 +20,7 @@
     "@babel/preset-env": "^7.8.2",
     "@rollup/plugin-alias": "^3.0.0",
     "@rollup/plugin-commonjs": "^11.0.1",
-    "core-js": "^2.6.11",
+    "core-js": "^3",
     "eslint": "^6.8.0",
     "rollup": "^1.29.0",
     "rollup-plugin-babel": "^4.3.3",

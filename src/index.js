@@ -1,16 +1,31 @@
+// @ts-check
 import '@geoblocks/ga-search';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import {init as i18nInit} from './i18n.js';
-import { Ion as CesiumIon, Rectangle, Cartesian3, Viewer, UrlTemplateImageryProvider, CesiumTerrainProvider, Credit, RequestScheduler } from 'cesium/Cesium.js';
-import { IonResource, Color, JulianDate, GeoJsonDataSource, Cesium3DTileset, Cesium3DTileStyle, Camera, Ellipsoid } from 'cesium/Cesium.js';
 
+import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
+import RequestScheduler from 'cesium/Core/RequestScheduler.js';
+import Rectangle from 'cesium/Core/Rectangle.js';
+import UrlTemplateImageryProvider from 'cesium/Scene/UrlTemplateImageryProvider.js';
+import Credit from 'cesium/Core/Credit.js';
+import CesiumTerrainProvider from 'cesium/Core/CesiumTerrainProvider.js';
+import IonResource from 'cesium/Core/IonResource.js';
+import JulianDate from 'cesium/Core/JulianDate.js';
+import Ellipsoid from 'cesium/Core/Ellipsoid.js';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import Color from 'cesium/Core/Color.js';
+import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
+import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
+import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
+import Ion from 'cesium/Core/Ion.js'
+import Camera from 'cesium/Scene/Camera.js';
 
 i18nInit();
 
-window.CESIUM_BASE_URL = '.';
+window['CESIUM_BASE_URL'] = '.';
 
-CesiumIon.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
+Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
 Object.assign(RequestScheduler.requestsByServer, {
   'wmts.geo.admin.ch:443': 18,
@@ -66,7 +81,7 @@ new NavigableVolumeLimiter(viewer.scene, WMTS_4326_RECTANGLE, 193, height => (he
 
 // Add Mantel ellipsoid
 const radii = Ellipsoid.WGS84.radii.clone();
-const mantelDepth = 40000;
+const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
 radii.x -= mantelDepth;
 radii.y -= mantelDepth;
 radii.z -= mantelDepth;
@@ -77,6 +92,8 @@ viewer.entities.add({
     material: './src/temp_lava.jpg',
   }
 });
+
+viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
 
 const globe = viewer.scene.globe;
 globe.baseColor = Color.WHITE;
@@ -174,11 +191,6 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     // viewer.scene.primitives.add(swissnames);
 
   }
-});
-
-document.querySelector('#depth-test').addEventListener('change', event => {
-  viewer.scene.globe.depthTestAgainstTerrain = !event.target.checked;
-  viewer.scene.requestRender();
 });
 
 document.querySelector('#zoomToHome').addEventListener('click', event => {

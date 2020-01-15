@@ -1,13 +1,13 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import {terser} from "rollup-plugin-terser";
+import {terser} from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy'
 import babel from 'rollup-plugin-babel';
 import serve from 'rollup-plugin-serve'
 import alias from '@rollup/plugin-alias';
 // import rollupStripPragma from 'rollup-plugin-strip-pragma';
 
-const cesiumSource = 'node_modules/cesium/Source';
+const cesiumSource = __dirname + '/node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
 
 const config = {
@@ -25,6 +25,13 @@ const config = {
         }
       ]
     }),
+    // {
+    //   transform ( code, id ) {
+    //     console.log( id );
+    //     //console.log( code );
+    //     // not returning anything, so doesn't affect bundle
+    //   }
+    // },
     // disabled since it breaks sourcemaps
     // rollupStripPragma({
     //   pragmas: ['debug']
@@ -59,17 +66,18 @@ if (process.env.mode === 'production') {
       babelrc: false,
       presets: [
         [
-          "@babel/preset-env",
-          {
+          '@babel/preset-env', {
             //debug: true, // disable to get debug information
             modules: false,
             useBuiltIns: 'usage', // does it make sense?
-            corejs: { version: 2, proposals: false },
+            corejs: { version: 3, proposals: false },
           }
         ]
       ],
       // exclude: 'node_modules/**'
+      exclude: ['node_modules/cesium/**', 'node_modules/core-js/**', 'node_modules/@babel/**'],
     }),
+
   ]);
 
   config.output.push({
