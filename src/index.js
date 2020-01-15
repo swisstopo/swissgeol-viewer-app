@@ -36,6 +36,7 @@ const WMTS_4326_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 const WMTS_4326_RECTANGLE = Rectangle.fromDegrees(...WMTS_4326_BOUNDS);
 
 const viewer = new Viewer(document.querySelector('#cesium'), {
+  scene3DOnly: true,
   animation: false,
   baseLayerPicker: false,
   fullscreenButton: false,
