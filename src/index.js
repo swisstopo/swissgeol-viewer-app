@@ -136,6 +136,12 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       })
     );
 
+    // https://cesium.com/ion/assets/66662
+    viewer.scene.primitives.add(
+      new Cesium3DTileset({
+        url: IonResource.fromAssetId(66662)
+      })
+    );
 
     // labels 3D
     const swissnames = new Cesium3DTileset({
