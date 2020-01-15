@@ -23,3 +23,8 @@ scripts/deploy_to_prod.sh
 # Gitlab <> Jira integration
 
 See https://docs.gitlab.com/ee/user/project/integrations/jira.html
+
+
+# Notes
+
+Lava texture CC0 by https://opengameart.org/content/template-orange-texture-pack
