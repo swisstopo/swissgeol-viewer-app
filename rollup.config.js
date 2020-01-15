@@ -36,9 +36,9 @@ const config = {
         { src: 'index.html', dest: 'dist/' },
         { src: 'src', dest: 'dist/' },
         { src: cesiumSource + '/' + cesiumWorkers, dest: 'dist/' },
-        { src: cesiumSource + '/Assets', dest: 'dist/'},
-        { src: cesiumSource + '/Widgets', dest: 'dist/'},
-        { src: cesiumSource + '/ThirdParty/', dest: 'dist/'},
+        { src: cesiumSource + '/Assets', dest: 'dist/' },
+        { src: cesiumSource + '/Widgets', dest: 'dist/' },
+        { src: cesiumSource + '/ThirdParty/', dest: 'dist/' },
       ]
     }),
 
@@ -55,21 +55,21 @@ if (process.env.SERVE) {
 if (process.env.mode === 'production') {
   config.plugins.push(...[
     babel({
-    externalHelpers: false,
-    babelrc: false,
-    presets: [
-      [
-        "@babel/preset-env",
-        {
-          //debug: true, // disable to get debug information
-          modules: false,
-          useBuiltIns: 'usage', // does it make sense?
-          corejs:  { version: 2, proposals: false },
-        }
-      ]
-    ],
-     // exclude: 'node_modules/**'
-   }),
+      externalHelpers: false,
+      babelrc: false,
+      presets: [
+        [
+          "@babel/preset-env",
+          {
+            //debug: true, // disable to get debug information
+            modules: false,
+            useBuiltIns: 'usage', // does it make sense?
+            corejs: { version: 2, proposals: false },
+          }
+        ]
+      ],
+      // exclude: 'node_modules/**'
+    }),
   ]);
 
   config.output.push({
