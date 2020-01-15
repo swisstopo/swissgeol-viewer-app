@@ -1,4 +1,4 @@
-import { BoundingSphere, Ellipsoid, Cartesian3, Cartographic } from "cesium/Cesium.js";
+import { BoundingSphere, Ellipsoid, Cartesian3, Cartographic } from 'cesium/Cesium.js';
 
 /**
  * Constrain the camera so that it stays close to the bounding sphere of the map extent.
@@ -35,4 +35,3 @@ export default class NavigableVolumeLimiter {
     }
   }
 }
-

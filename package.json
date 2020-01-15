@@ -4,7 +4,7 @@
   "scripts": {
     "lint": "eslint src/",
     "typecheck": "echo 'checking types ...'",
-    "start": "rm -rf dist/* && SERVE=true rollup --environment SERVE:true -c --watch --no-treeshake",
+    "start": "rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "rm -rf dist/* && rollup --environment mode:production -c"
   },
   "dependencies": {

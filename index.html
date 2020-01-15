@@ -52,7 +52,7 @@
     </div>
   </footer>
   <script type="module">
-    const debug = location.search.includes('debug');
+    const debug = !location.search.includes('prod') && (location.search.includes('debug') || location.hostname === 'localhost');
     const script = document.createElement('script');
     script.type = 'module';
     script.setAttribute('src', debug ? './bundle.debug.js' : './bundle.min.js');

@@ -69,7 +69,7 @@ if (process.env.mode === 'production') {
       ]
     ],
      // exclude: 'node_modules/**'
-   }), 
+   }),
   ]);
 
   config.output.push({

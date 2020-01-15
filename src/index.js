@@ -2,7 +2,7 @@ import '@geoblocks/ga-search';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import {init as i18nInit} from './i18n.js';
-import { Ion as CesiumIon, Rectangle, Viewer, UrlTemplateImageryProvider, CesiumTerrainProvider, Credit, RequestScheduler } from 'cesium/Cesium.js';
+import { Ion as CesiumIon, Rectangle, Cartesian3, Viewer, UrlTemplateImageryProvider, CesiumTerrainProvider, Credit, RequestScheduler } from 'cesium/Cesium.js';
 import { IonResource, Color, JulianDate, GeoJsonDataSource, Cesium3DTileset, Cesium3DTileStyle, Camera } from 'cesium/Cesium.js';
 
 
@@ -13,11 +13,6 @@ window.CESIUM_BASE_URL = '.';
 CesiumIon.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
 Object.assign(RequestScheduler.requestsByServer, {
-  'wmts.geo.admin.ch:443': 18,
-  'vectortiles0.geo.admin.ch:443': 18
-});
-
-Object.assign(Cesium.RequestScheduler.requestsByServer, {
   'wmts.geo.admin.ch:443': 18,
   'vectortiles0.geo.admin.ch:443': 18
 });
