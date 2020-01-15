@@ -3,7 +3,7 @@ import '@geoblocks/ga-search';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import {init as i18nInit} from './i18n.js';
 import { Ion as CesiumIon, Rectangle, Cartesian3, Viewer, UrlTemplateImageryProvider, CesiumTerrainProvider, Credit, RequestScheduler } from 'cesium/Cesium.js';
-import { IonResource, Color, JulianDate, GeoJsonDataSource, Cesium3DTileset, Cesium3DTileStyle, Camera } from 'cesium/Cesium.js';
+import { IonResource, Color, JulianDate, GeoJsonDataSource, Cesium3DTileset, Cesium3DTileStyle, Camera, Ellipsoid } from 'cesium/Cesium.js';
 
 
 i18nInit();
@@ -60,8 +60,23 @@ viewer.clock.currentTime = JulianDate.fromDate(new Date('June 21, 2018 12:00:00 
 // Set the fly home rectangle
 Camera.DEFAULT_VIEW_RECTANGLE = WMTS_4326_RECTANGLE;
 
+
 // Limit the volume inside which the user can navigate
 new NavigableVolumeLimiter(viewer.scene, WMTS_4326_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
+
+// Add Mantel ellipsoid
+const radii = Ellipsoid.WGS84.radii.clone();
+const mantelDepth = 40000;
+radii.x -= mantelDepth;
+radii.y -= mantelDepth;
+radii.z -= mantelDepth;
+viewer.entities.add({
+  position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
+  ellipsoid : {
+    radii,
+    material: './src/temp_lava.jpg',
+  }
+});
 
 const globe = viewer.scene.globe;
 globe.baseColor = Color.WHITE;
