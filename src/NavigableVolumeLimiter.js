@@ -1,4 +1,9 @@
-import { BoundingSphere, Ellipsoid, Cartesian3, Cartographic } from 'cesium/Cesium.js';
+//@ts-check
+
+import BoundingSphere from 'cesium/Core/BoundingSphere.js';
+import Ellipsoid from 'cesium/Core/Ellipsoid.js';
+import Cartographic from 'cesium/Core/Cartographic.js';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
 /**
  * Constrain the camera so that it stays close to the bounding sphere of the map extent.
