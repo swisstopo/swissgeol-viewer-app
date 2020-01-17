@@ -37,6 +37,12 @@ const WMTS_4326_RECTANGLE = Rectangle.fromDegrees(...WMTS_4326_BOUNDS);
 
 const viewer = new Viewer(document.querySelector('#cesium'), {
   scene3DOnly: true,
+  useBrowserRecommendedResolution: true,
+  contextOptions: {
+    webgl: {
+      powerPreference: 'high-performance'
+    }
+  },
   animation: false,
   baseLayerPicker: false,
   fullscreenButton: false,
@@ -106,7 +112,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     radii.z -= mantelDepth;
     viewer.entities.add({
       position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
-      ellipsoid : {
+      ellipsoid: {
         radii,
         material: './src/temp_lava.jpg',
       }
