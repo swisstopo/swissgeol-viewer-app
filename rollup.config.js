@@ -63,6 +63,7 @@ const config = {
       targets: [
         { src: 'index.html', dest: 'dist/' },
         { src: 'src', dest: 'dist/' },
+        { src: 'locales', dest: 'dist/' },
         { src: cesiumSource + '/' + cesiumWorkers, dest: 'dist/' },
         { src: cesiumSource + '/Assets', dest: 'dist/' },
         { src: cesiumSource + '/Widgets', dest: 'dist/' },

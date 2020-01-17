@@ -21,10 +21,21 @@ scripts/deploy_to_prod.sh
 [ $? -eq 0 ] && echo OK || echo failed
 ```
 
+# i18n: add new string to translate
+
+The [i18next](https://www.i18next.com/) library is used to localize the application.
+
+To add a new string to translate, use the `data-i18n` attribute in an html file, the value is the translation key.
+
+```html
+<div type="search" data-i18n="text_key"></div>
+```
+
+Then, run the `npm run extract-i18n` command to add this new key (`text_key`) to the files in the `locales` directory.
+
 # Gitlab <> Jira integration
 
 See https://docs.gitlab.com/ee/user/project/integrations/jira.html
-
 
 # Notes
 
