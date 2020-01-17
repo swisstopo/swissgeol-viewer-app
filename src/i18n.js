@@ -34,31 +34,36 @@ export function init() {
     resources: {
       en: {
         translation: {
-          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright'>Copyright & data protection</a>",
+          'disclaimer_href': 'https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright',
+          'disclaimer_text': 'Copyright & data protection',
           'search_placeholder': 'Search...'
         }
       },
       de: {
         translation: {
-          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright'>Copyright & Datenschutzerklärung</a>",
+          'disclaimer_href': 'https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright',
+          'disclaimer_text': 'Copyright & Datenschutzerklärung',
           'search_placeholder': 'Suchen...'
         }
       },
       fr: {
         translation: {
-          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright'>Conditions d'utilisation</a>",
+          'disclaimer_href': 'https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright',
+          'disclaimer_text': "Conditions d'utilisation",
           'search_placeholder': 'Rechercher...'
         }
       },
       it: {
         translation: {
-          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/it/about-swiss-geoportal/impressum.html#copyright'>Copyright e dichiarazione della protezione dei diritti d'autore</a>",
+          'disclaimer_href': 'https://www.geo.admin.ch/it/about-swiss-geoportal/impressum.html#copyright',
+          'disclaimer_text': "Copyright e dichiarazione della protezione dei diritti d'autore",
           'search_placeholder': 'Ricercare...'
         }
       },
       rm: {
         translation: {
-          'disclaimer': "<a target='_blank' href='https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright'>Copyright & decleraziun da protecziun da datas</a>",
+          'disclaimer_href': 'https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright',
+          'disclaimer_text': 'Copyright & decleraziun da protecziun da datas',
           'search_placeholder': 'Tschertgar...'
         }
       }

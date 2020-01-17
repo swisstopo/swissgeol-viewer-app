@@ -45,9 +45,12 @@ header > .logo {
 }
 
 footer {
-  align-items: center;
   padding: 0 4px;
   background-color: rgba(214, 214, 214, 0.9);
+}
+
+footer .link.list .item {
+  vertical-align: middle;
 }
 
 #outdated-browser {
