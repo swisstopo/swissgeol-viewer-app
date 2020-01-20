@@ -20,6 +20,7 @@ import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
 import Ion from 'cesium/Core/Ion.js'
 import Camera from 'cesium/Scene/Camera.js';
+import EarthquakeVisualizer from './erthquakeVisualization/earthquakeVisualizer';
 
 i18nInit();
 
@@ -230,3 +231,13 @@ document.querySelector('ga-search').addEventListener('submit', event => {
   }
   event.target.autocomplete.input.blur();
 });
+
+const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
+
+earthquakeVisualizer.showEarthquakes();
+
+
+// TODO remove / for tests
+// window.viewer = viewer;
+// window.show = earthquakeVisualizer.showEarthquakes;
+// window.hide = earthquakeVisualizer.hideEarthquakes;
