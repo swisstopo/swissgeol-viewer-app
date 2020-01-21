@@ -11,25 +11,26 @@ export default class EarthquakeVisualizer {
   }
 
   async showEarthquakes() {
-    if (this.earthquakes && this.earthquakes.length) {
-      this.earthquakes.forEach(entity => entity.show = true); // TODO rerender
-    } else {
-      const earthquakeText = await readTextFile('http://localhost:8000/src/erthquakeVisualization/testData/earthquake.txt'); // temporary
-      const earthquakeData = parseEarthquakeData(earthquakeText);
+    const earthquakeText = await readTextFile('http://localhost:8000/src/erthquakeVisualization/testData/earthquake.txt'); // temporary
+    const earthquakeData = parseEarthquakeData(earthquakeText);
 
-      this.earthquakes = earthquakeData.map(data => this.viewer.entities.add({
-        position: Cartesian3.fromDegrees(Number(data.Longitude), Number(data.Latitude), 100),
-        point: {
-          pixelSize: 20,
-          color: Color.PURPLE,
-          heightReference: HeightReference.RELATIVE_TO_GROUND,
-        },
-        description: 'Test point'
-      }));
-    }
+    this.earthquakes = earthquakeData.map(data => this.viewer.entities.add({
+      position: Cartesian3.fromDegrees(Number(data.Longitude), Number(data.Latitude), 100),
+      point: {
+        pixelSize: 20,
+        color: Color.PURPLE,
+        heightReference: HeightReference.RELATIVE_TO_GROUND,
+      }
+    }));
+    this.viewer.scene.requestRender();
   }
 
-  hideEarthquakes() {
-    this.earthquakes.forEach(entity => entity.show = false); // TODO rerender
+  async toggleEarthquakes() {
+    if (this.earthquakes && this.earthquakes.length) {
+      this.earthquakes.forEach(entity => entity.show = !entity.isShowing);
+      this.viewer.scene.requestRender();
+    } else {
+      await this.showEarthquakes();
+    }
   }
 }

@@ -234,10 +234,7 @@ document.querySelector('ga-search').addEventListener('submit', event => {
 
 const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
 
-earthquakeVisualizer.showEarthquakes();
-
-
-// TODO remove / for tests
-// window.viewer = viewer;
-// window.show = earthquakeVisualizer.showEarthquakes;
-// window.hide = earthquakeVisualizer.hideEarthquakes;
+document.querySelector('#toggleEarthquakes').addEventListener('click', event => {
+  earthquakeVisualizer.toggleEarthquakes();
+  viewer.scene.requestRender();
+});
