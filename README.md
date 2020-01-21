@@ -1,7 +1,8 @@
 # Deploy to integration (from local machine)
 
 ```bash
-export VERSION="int_???"
+# ex: int_sprint2.1
+export VERSION="int_sprint???"
 
 git tag $VERSION
 git push origin $VERSION
