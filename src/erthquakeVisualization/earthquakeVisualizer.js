@@ -16,10 +16,10 @@ export default class EarthquakeVisualizer {
 
     this.earthquakes = earthquakeData.map(data => this.viewer.entities.add({
       position: Cartesian3.fromDegrees(Number(data.Longitude), Number(data.Latitude), 100),
-      point: {
-        pixelSize: 20,
-        color: Color.PURPLE,
-        heightReference: HeightReference.RELATIVE_TO_GROUND,
+      ellipsoid: {
+        radii: new Cartesian3(100.0, 100.0, 100.0),
+        material: Color.PURPLE,
+        heightReference: HeightReference.CLAMP_TO_GROUND
       }
     }));
     this.viewer.scene.requestRender();
