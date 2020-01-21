@@ -7,6 +7,7 @@ import {init as i18nInit} from './i18n.js';
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
 import RequestScheduler from 'cesium/Core/RequestScheduler.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
+import Cartographic from 'cesium/Core/Cartographic.js'
 import UrlTemplateImageryProvider from 'cesium/Scene/UrlTemplateImageryProvider.js';
 import Credit from 'cesium/Core/Credit.js';
 import CesiumTerrainProvider from 'cesium/Core/CesiumTerrainProvider.js';
@@ -20,6 +21,7 @@ import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
 import Ion from 'cesium/Core/Ion.js'
 import Camera from 'cesium/Scene/Camera.js';
+import Math from 'cesium/Core/Math.js'
 
 i18nInit();
 
@@ -216,10 +218,12 @@ document.querySelector('ga-search').addEventListener('submit', event => {
   const box = event.detail.result.bbox;
   if (box) {
     const rectangle = Rectangle.fromDegrees(...box);
-    if (rectangle.width === 0 && rectangle.height === 0) {
-      // point
+    if (rectangle.width < Math.EPSILON3 || rectangle.height < Math.EPSILON3) {
+      // rectangle is too small
+      const center = Rectangle.center(rectangle);
+      center.height = 5000;
       viewer.camera.flyTo({
-        destination: Cartesian3.fromDegrees(box[0], box[1], 5000)
+        destination: Cartographic.toCartesian(center)
       });
     } else {
       // rectangle
