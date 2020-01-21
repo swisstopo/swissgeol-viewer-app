@@ -22,6 +22,7 @@ import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
 import Ion from 'cesium/Core/Ion.js'
 import Camera from 'cesium/Scene/Camera.js';
 import Math from 'cesium/Core/Math.js'
+import Cartesian2 from 'cesium/Core/Cartesian2.js';
 
 i18nInit();
 
@@ -112,13 +113,15 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     radii.x -= mantelDepth;
     radii.y -= mantelDepth;
     radii.z -= mantelDepth;
-    viewer.entities.add({
+    const entity = viewer.entities.add({
       position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
       ellipsoid: {
         radii,
         material: './src/temp_lava.jpg',
       }
     });
+    entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
+
 
     // TIN of a geological layer
     IonResource.fromAssetId(56810)
