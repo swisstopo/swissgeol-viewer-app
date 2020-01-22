@@ -6,6 +6,7 @@
 @import 'fomantic-ui-css/components/item.css';
 @import 'fomantic-ui-css/components/icon.css';
 @import 'fomantic-ui-css/components/input.css';
+@import 'fomantic-ui-css/components/button.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
@@ -91,6 +92,12 @@ main {
   font-weight: bold;
 }
 
+#cesium > .buttons {
+  position: absolute;
+  z-index: 1;
+  margin: 6px;
+  right: 0;
+}
 
 #zoomToHome {
   position: absolute;
