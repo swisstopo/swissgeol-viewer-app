@@ -13,7 +13,7 @@
   <title>NGM</title>
 </head>
 
-<body>
+<body class="ui dimmable dimmed">
   <div id="outdated-browser" style="display: none;">
     <header>
       <img class="logo" src="src/images/logo-CH.svg">
@@ -28,6 +28,11 @@
     </div>
 
   </div>
+
+  <div class="ui active inverted dimmer">
+    <div class="ui text loader" data-i18n="loading_message"></div>
+  </div>
+
   <header>
     <img class="logo" src="src/images/logo-CH.svg">
     <ga-search class="ui small left icon input" types="location" locationOrigins="zipcode,gg25,gazetteer">
