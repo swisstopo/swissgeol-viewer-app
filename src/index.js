@@ -7,7 +7,7 @@ import {init as i18nInit} from './i18n.js';
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
 import RequestScheduler from 'cesium/Core/RequestScheduler.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
-import Cartographic from 'cesium/Core/Cartographic.js'
+import Cartographic from 'cesium/Core/Cartographic.js';
 import UrlTemplateImageryProvider from 'cesium/Scene/UrlTemplateImageryProvider.js';
 import Credit from 'cesium/Core/Credit.js';
 import CesiumTerrainProvider from 'cesium/Core/CesiumTerrainProvider.js';
@@ -19,9 +19,9 @@ import Color from 'cesium/Core/Color.js';
 import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
 import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
-import Ion from 'cesium/Core/Ion.js'
+import Ion from 'cesium/Core/Ion.js';
 import Camera from 'cesium/Scene/Camera.js';
-import Math from 'cesium/Core/Math.js'
+import Math from 'cesium/Core/Math.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
 
 i18nInit();

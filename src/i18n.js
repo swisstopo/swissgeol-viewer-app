@@ -8,9 +8,9 @@ const LANGS = ['de', 'fr', 'it', 'en', 'rm'];
 
 function detectLanguage() {
   // detect language and initialize lang
-  let languages = [];
+  const languages = [];
   if (navigator.languages) {
-    languages.push(...navigator.languages)
+    languages.push(...navigator.languages);
   }
   if (navigator.language) {
     languages.push(navigator.language);
