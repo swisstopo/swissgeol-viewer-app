@@ -24,6 +24,8 @@ import Camera from 'cesium/Scene/Camera.js';
 import Math from 'cesium/Core/Math.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
 
+import './index.css';
+
 i18nInit();
 
 window['CESIUM_BASE_URL'] = '.';
@@ -117,7 +119,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
       ellipsoid: {
         radii,
-        material: './src/temp_lava.jpg',
+        material: 'images/temp_lava.jpg',
       }
     });
     entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
