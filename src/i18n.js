@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import locI18next from 'loc-i18next';
+import Backend from 'i18next-xhr-backend';
 import {html, render} from 'lit-html';
 
 import {appError} from './utils.js';
@@ -27,46 +28,12 @@ function detectLanguage() {
 }
 
 export function init() {
-  i18next.init({
+  i18next.use(Backend).init({
     whitelist: LANGS,
     load: 'languageOnly',
     debug: true,
-    resources: {
-      en: {
-        translation: {
-          'disclaimer_href': 'https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright',
-          'disclaimer_text': 'Copyright & data protection',
-          'search_placeholder': 'Search...'
-        }
-      },
-      de: {
-        translation: {
-          'disclaimer_href': 'https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright',
-          'disclaimer_text': 'Copyright & Datenschutzerklärung',
-          'search_placeholder': 'Suchen...'
-        }
-      },
-      fr: {
-        translation: {
-          'disclaimer_href': 'https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright',
-          'disclaimer_text': "Conditions d'utilisation",
-          'search_placeholder': 'Rechercher...'
-        }
-      },
-      it: {
-        translation: {
-          'disclaimer_href': 'https://www.geo.admin.ch/it/about-swiss-geoportal/impressum.html#copyright',
-          'disclaimer_text': "Copyright e dichiarazione della protezione dei diritti d'autore",
-          'search_placeholder': 'Ricercare...'
-        }
-      },
-      rm: {
-        translation: {
-          'disclaimer_href': 'https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright',
-          'disclaimer_text': 'Copyright & decleraziun da protecziun da datas',
-          'search_placeholder': 'Tschertgar...'
-        }
-      }
+    backend: {
+      loadPath: 'locales/{{lng}}.json'
     }
   }, function(err, t) {
     const localize = locI18next.init(i18next);
