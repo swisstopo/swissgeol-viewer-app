@@ -1,12 +1,13 @@
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700&display=swap');
+@import 'typeface-source-sans-pro/index.css';
 
-@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/reset.min.css');
-@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/message.min.css');
-@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/list.min.css');
-@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/item.min.css');
-@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/icon.min.css');
-@import url('https://unpkg.com/fomantic-ui@2.8.2/dist/components/input.min.css');
+@import 'fomantic-ui-css/components/reset.css';
+@import 'fomantic-ui-css/components/message.css';
+@import 'fomantic-ui-css/components/list.css';
+@import 'fomantic-ui-css/components/item.css';
+@import 'fomantic-ui-css/components/icon.css';
+@import 'fomantic-ui-css/components/input.css';
 
+@import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 html, body {
   height: 100%;
@@ -32,7 +33,7 @@ header {
   padding: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
-  background-image: url('header-geologieportal.png');
+  background-image: url('images/header-geologieportal.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: right;
@@ -57,7 +58,7 @@ footer .link.list .item {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: url('outdated-background.png');
+  background-image: url('images/outdated-background.png');
   background-repeat: no-repeat;
   background-position: center;
   background-color: #fafafb;
