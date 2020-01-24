@@ -23,13 +23,12 @@ function detectLanguage() {
       return lang;
     }
   }
-
-  return 'en'; // fallback to English
 }
 
 export function init() {
   i18next.use(Backend).init({
     whitelist: LANGS,
+    fallbackLng: 'en',
     load: 'languageOnly',
     debug: true,
     backend: {
