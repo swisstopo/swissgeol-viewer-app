@@ -7,6 +7,7 @@ import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
 import {init as i18nInit} from './i18n.js';
 import {getLayersConfig, containsSwisstopoImagery, getSwisstopoImagery} from './swisstopoImagery.js';
+import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
@@ -98,6 +99,8 @@ globe.showGroundAtmosphere = false;
 globe.showWaterEffect = false;
 globe.backFaceCulling = false;
 
+const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
+
 viewer.camera.flyTo({
   destination: SWITZERLAND_RECTANGLE,
   duration: 0
@@ -109,7 +112,6 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
     // Add Mantel ellipsoid
     const radii = Ellipsoid.WGS84.radii.clone();
-    const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
     radii.x -= mantelDepth;
     radii.y -= mantelDepth;
     radii.z -= mantelDepth;
@@ -120,7 +122,9 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
         material: 'images/temp_lava.jpg',
       }
     });
+    entity.name = 'mantel';
     entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
+
 
 
     // TIN of a geological layer
@@ -225,6 +229,8 @@ document.querySelector('#zoomToHome').addEventListener('click', event => {
 });
 
 const firstPersonCameraMode = new FirstPersonCameraMode(viewer.scene);
+
+const limitCameraToMantel = new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
 
 document.querySelector('#fpsMode').addEventListener('click', event => {
   firstPersonCameraMode.active = true;
