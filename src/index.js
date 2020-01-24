@@ -230,7 +230,7 @@ document.querySelector('#zoomToHome').addEventListener('click', event => {
 
 const firstPersonCameraMode = new FirstPersonCameraMode(viewer.scene);
 
-const limitCameraToMantel = new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
+new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
 
 document.querySelector('#fpsMode').addEventListener('click', event => {
   firstPersonCameraMode.active = true;
