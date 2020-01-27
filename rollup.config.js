@@ -1,10 +1,16 @@
+import path from 'path';
+
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import {terser} from 'rollup-plugin-terser';
-import copy from 'rollup-plugin-copy'
+import copy from 'rollup-plugin-copy';
 import babel from 'rollup-plugin-babel';
-import serve from 'rollup-plugin-serve'
+import serve from 'rollup-plugin-serve';
 import alias from '@rollup/plugin-alias';
+import postcss from 'rollup-plugin-postcss';
+import cssimport from 'postcss-import';
+import postcssurl from 'postcss-url';
+import autoprefixer from 'autoprefixer';
 // import rollupStripPragma from 'rollup-plugin-strip-pragma';
 
 const cesiumSource = __dirname + '/node_modules/cesium/Source';
@@ -25,6 +31,21 @@ const config = {
         }
       ]
     }),
+    postcss({
+      minimize: true,
+      inject: false,
+      extract: 'dist/bundle.css',
+      plugins: [
+        cssimport({
+          plugins: [
+            postcssurl([
+              {filter: '**/*.+(woff|woff2)', url: (asset) => `fonts/${path.basename(asset.url)}`},
+            ])
+          ]
+        }),
+        autoprefixer()
+      ]
+    }),
     // {
     //   transform ( code, id ) {
     //     console.log( id );
@@ -42,10 +63,14 @@ const config = {
       targets: [
         { src: 'index.html', dest: 'dist/' },
         { src: 'src', dest: 'dist/' },
+        { src: 'locales', dest: 'dist/' },
         { src: cesiumSource + '/' + cesiumWorkers, dest: 'dist/' },
         { src: cesiumSource + '/Assets', dest: 'dist/' },
         { src: cesiumSource + '/Widgets', dest: 'dist/' },
         { src: cesiumSource + '/ThirdParty/', dest: 'dist/' },
+        { src: 'src/images', dest: 'dist/' },
+        { src: 'node_modules/typeface-source-sans-pro/files/*', dest: 'dist/fonts/' },
+        { src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', dest: 'dist/fonts/' },
       ]
     }),
 
@@ -87,7 +112,7 @@ if (process.env.mode === 'production') {
     plugins: [
       terser(),
     ]
-  })
+  });
 }
 
 export default config;

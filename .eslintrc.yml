@@ -12,7 +12,10 @@ rules:
   key-spacing: error
   keyword-spacing: error
   no-unused-vars: [error, {vars: all, args: none}]
+  no-var: error
   object-curly-spacing: error
+  prefer-const: error
   quotes: [error, single, {avoidEscape: true}]
+  semi: error
   space-before-blocks: error
   space-infix-ops: error

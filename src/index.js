@@ -1,4 +1,5 @@
 // @ts-check
+import '@webcomponents/webcomponentsjs/webcomponents-loader.js';
 import '@geoblocks/ga-search';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
@@ -7,6 +8,7 @@ import {init as i18nInit} from './i18n.js';
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
 import RequestScheduler from 'cesium/Core/RequestScheduler.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
+import Cartographic from 'cesium/Core/Cartographic.js';
 import UrlTemplateImageryProvider from 'cesium/Scene/UrlTemplateImageryProvider.js';
 import Credit from 'cesium/Core/Credit.js';
 import CesiumTerrainProvider from 'cesium/Core/CesiumTerrainProvider.js';
@@ -18,9 +20,13 @@ import Color from 'cesium/Core/Color.js';
 import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
 import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
-import Ion from 'cesium/Core/Ion.js'
+import Ion from 'cesium/Core/Ion.js';
 import Camera from 'cesium/Scene/Camera.js';
+import Math from 'cesium/Core/Math.js';
+import Cartesian2 from 'cesium/Core/Cartesian2.js';
 import EarthquakeVisualizer from './erthquakeVisualization/earthquakeVisualizer';
+
+import './index.css';
 
 i18nInit();
 
@@ -111,13 +117,15 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     radii.x -= mantelDepth;
     radii.y -= mantelDepth;
     radii.z -= mantelDepth;
-    viewer.entities.add({
+    const entity = viewer.entities.add({
       position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
       ellipsoid: {
         radii,
-        material: './src/temp_lava.jpg',
+        material: 'images/temp_lava.jpg',
       }
     });
+    entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
+
 
     // TIN of a geological layer
     IonResource.fromAssetId(56810)
@@ -217,10 +225,12 @@ document.querySelector('ga-search').addEventListener('submit', event => {
   const box = event.detail.result.bbox;
   if (box) {
     const rectangle = Rectangle.fromDegrees(...box);
-    if (rectangle.width === 0 && rectangle.height === 0) {
-      // point
+    if (rectangle.width < Math.EPSILON3 || rectangle.height < Math.EPSILON3) {
+      // rectangle is too small
+      const center = Rectangle.center(rectangle);
+      center.height = 5000;
       viewer.camera.flyTo({
-        destination: Cartesian3.fromDegrees(box[0], box[1], 5000)
+        destination: Cartographic.toCartesian(center)
       });
     } else {
       // rectangle

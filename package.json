@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint src/",
+    "extract-i18n": "i18next",
     "typecheck": "echo 'checking types ...'",
     "start": "rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "rm -rf dist/* && rollup --environment mode:production -c",
@@ -10,23 +11,32 @@
   },
   "dependencies": {
     "@geoblocks/ga-search": "^0.0.5",
+    "@webcomponents/webcomponentsjs": "^2.4.1",
     "cesium": "https://github.com/AnalyticalGraphicsInc/cesium/archive/36aed1a.tar.gz",
+    "fomantic-ui-css": "^2.8.3",
     "i18next": "^19.0.3",
+    "i18next-xhr-backend": "^3.2.2",
     "lit-html": "^1.1.2",
-    "loc-i18next": "^0.1.4"
+    "loc-i18next": "^0.1.4",
+    "typeface-source-sans-pro": "0.0.75"
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",
     "@babel/preset-env": "^7.8.2",
     "@rollup/plugin-alias": "^3.0.0",
     "@rollup/plugin-commonjs": "^11.0.1",
+    "autoprefixer": "^9.7.4",
     "core-js": "^3",
     "eslint": "^6.8.0",
+    "i18next-parser": "^1.0.0",
+    "postcss-import": "^12.0.1",
+    "postcss-url": "^8.0.0",
     "rollup": "^1.29.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-copy": "^3.1.0",
     "rollup-plugin-ejs": "^2.2.0",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-postcss": "^2.0.4",
     "rollup-plugin-serve": "^1.0.1",
     "rollup-plugin-strip-pragma": "^1.0.0",
     "rollup-plugin-terser": "^5.1.3"

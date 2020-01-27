@@ -4,19 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="shortcut icon" type="image/png" href="src/favicon.png">
+  <link rel="shortcut icon" type="image/png" href="src/images/favicon.png">
 
-  <link href="src/index.css" rel="stylesheet">
+  <link href="bundle.css" rel="stylesheet">
 
-  <link href="https://unpkg.com/cesium@1.65.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.4.0/webcomponents-loader.js"></script>
   <title>NGM</title>
 </head>
 
 <body>
   <div id="outdated-browser" style="display: none;">
     <header>
-      <img class="logo" src="src/logo-CH.svg">
+      <img class="logo" src="src/images/logo-CH.svg">
     </header>
 
     <div class="ui large negative icon floating message">
@@ -29,7 +27,7 @@
 
   </div>
   <header>
-    <img class="logo" src="src/logo-CH.svg">
+    <img class="logo" src="src/images/logo-CH.svg">
     <ga-search class="ui small left icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
       <input type="search" data-i18n="[placeholder]search_placeholder">
       <i class="search icon"></i>
@@ -40,7 +38,7 @@
   </header>
   <main>
     <div id="cesium">
-      <div id="zoomToHome"><img src="src/ch.png"></div>
+      <div id="zoomToHome"><img src="src/images/ch.png"></div>
       <!-- Temporary button-->
       <button id="toggleEarthquakes" style="position: absolute;z-index: 1;margin: 6px 6px 6px 100px;">
         Toggle Earthquakes Visualisation
