@@ -1,3 +1,5 @@
+export const EARTHQUAKE_SPHERE_SIZE_COEF = 100;
+
 export function parseEarthquakeData(data) {
   const earthquakeArr = data.split('\n');
   const propsArr = earthquakeArr[0]
