@@ -5,7 +5,7 @@ import '@geoblocks/ga-search';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import {init as i18nInit} from './i18n.js';
 import {getLayersConfig, containsSwisstopoImagery, getSwisstopoImagery} from './swisstopoImagery.js';
-
+import {SWITZERLAND_RECTANGLE} from './constants.js';
 
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
 import RequestScheduler from 'cesium/Core/RequestScheduler.js';
@@ -40,9 +40,6 @@ Object.assign(RequestScheduler.requestsByServer, {
   'vectortiles0.geo.admin.ch:443': 18
 });
 
-const WMTS_4326_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
-const WMTS_4326_RECTANGLE = Rectangle.fromDegrees(...WMTS_4326_BOUNDS);
-
 const viewer = new Viewer(document.querySelector('#cesium'), {
   scene3DOnly: true,
   useBrowserRecommendedResolution: true,
@@ -68,7 +65,7 @@ const viewer = new Viewer(document.querySelector('#cesium'), {
 
   imageryProvider: new UrlTemplateImageryProvider({
     url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geocover/default/current/3857/{z}/{x}/{y}.png',
-    rectangle: WMTS_4326_RECTANGLE,
+    rectangle: SWITZERLAND_RECTANGLE,
     credit: new Credit('Swisstopo')
   }),
 
@@ -88,11 +85,11 @@ const viewer = new Viewer(document.querySelector('#cesium'), {
 viewer.clock.currentTime = JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
 
 // Set the fly home rectangle
-Camera.DEFAULT_VIEW_RECTANGLE = WMTS_4326_RECTANGLE;
+Camera.DEFAULT_VIEW_RECTANGLE = SWITZERLAND_RECTANGLE;
 
 
 // Limit the volume inside which the user can navigate
-new NavigableVolumeLimiter(viewer.scene, WMTS_4326_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
+new NavigableVolumeLimiter(viewer.scene, SWITZERLAND_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
 
 viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
 
@@ -104,7 +101,7 @@ globe.showWaterEffect = false;
 globe.backFaceCulling = false;
 
 viewer.camera.flyTo({
-  destination: WMTS_4326_RECTANGLE,
+  destination: SWITZERLAND_RECTANGLE,
   duration: 0
 });
 
@@ -218,7 +215,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
 document.querySelector('#zoomToHome').addEventListener('click', event => {
   viewer.scene.camera.flyTo({
-    destination: WMTS_4326_RECTANGLE
+    destination: SWITZERLAND_RECTANGLE
   });
 });
 
