@@ -1,3 +1,5 @@
+import {SWITZERLAND_RECTANGLE} from './constants.js';
+
 import UrlTemplateImageryProvider from 'cesium/Scene/UrlTemplateImageryProvider.js';
 import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
 import Credit from 'cesium/Core/Credit.js';
@@ -6,10 +8,10 @@ const layerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{times
 
 /**
  * @param {sring} layer Layer identifier
- * @param {import('cesium/Core/Rectangle').default} rectangle
+ * @param {import('cesium/Core/Rectangle').default} [rectangle]
  * @return {Promise<ImageryLayer>}
  */
-export function getSwisstopoImagery(layer, rectangle) {
+export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
   return new Promise((resolve, reject) => {
     getLayersConfig().then(layersConfig => {
       const config = layersConfig[layer];
