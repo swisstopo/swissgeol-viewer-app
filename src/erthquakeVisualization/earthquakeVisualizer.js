@@ -10,12 +10,13 @@ export default class EarthquakeVisualizer {
   }
 
   async showEarthquakes() {
-    const earthquakeText = await readTextFile('/src/erthquakeVisualization/testData/earthquake.txt'); // temporary
+    const branchName = window.location.pathname.indexOf('GSNGM') > -1 ? `/${window.location.pathname.split('/')[0]}` : '';
+    const earthquakeText = await readTextFile(`${branchName}/src/erthquakeVisualization/testData/earthquake.txt`); // temporary
     const earthquakeData = parseEarthquakeData(earthquakeText);
     this.earthquakes = earthquakeData.map(data => {
       const size = Number(data.Magnitude) * EARTHQUAKE_SPHERE_SIZE_COEF;
       const height = -(Number(data.Depthkm) * 1000); // convert km to m
-      this.viewer.entities.add({
+      return this.viewer.entities.add({
         position: Cartesian3.fromDegrees(Number(data.Longitude), Number(data.Latitude), height),
         ellipsoid: {
           radii: new Cartesian3(size, size, size),
