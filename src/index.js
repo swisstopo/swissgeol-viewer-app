@@ -1,4 +1,5 @@
 // @ts-check
+import '@webcomponents/webcomponentsjs/webcomponents-loader.js';
 import '@geoblocks/ga-search';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';

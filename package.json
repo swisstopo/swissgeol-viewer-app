@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@geoblocks/ga-search": "^0.0.5",
+    "@webcomponents/webcomponentsjs": "^2.4.1",
     "cesium": "https://github.com/AnalyticalGraphicsInc/cesium/archive/36aed1a.tar.gz",
     "fomantic-ui-css": "^2.8.3",
     "i18next": "^19.0.3",
