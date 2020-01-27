@@ -1,3 +1,5 @@
+import Color from 'cesium/Core/Color.js';
+
 export const EARTHQUAKE_SPHERE_SIZE_COEF = 100;
 
 export function parseEarthquakeData(data) {
@@ -12,4 +14,18 @@ export function parseEarthquakeData(data) {
     propsArr.forEach((prop, key) => earthquakeData[prop] = valuesArr[key]);
     return earthquakeData;
   }).filter(ed => !!ed.Latitude && ed.Latitude.length && !!ed.Longitude && ed.Longitude.length);
+}
+
+
+/**
+ * Returns color for earthquake sphere according to magnitude.
+ * From light blue (magnitude - 0.1 - rgb(0, 149, 251)) to dark blue (magnitude - 10 - rgb(0, 15, 112))
+ * @param magnitude
+ * @returns {Color}
+ */
+export function getColorForMagnitude(magnitude) {
+  const colorR = 0;
+  const colorG = (15 * (10 - Number(magnitude))).toFixed();
+  const colorB = (14 * (18 - Number(magnitude))).toFixed();
+  return Color.fromCssColorString(`rgb(${colorR}, ${Number(colorG)}, ${Number(colorB)})`);
 }

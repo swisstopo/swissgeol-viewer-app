@@ -1,17 +1,16 @@
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Color from 'cesium/Core/Color.js';
 import HeightReference from 'cesium/Scene/HeightReference.js';
-import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF} from './helpers';
+import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorForMagnitude} from './helpers';
 import {readTextFile} from '../utils';
 
 export default class EarthquakeVisualizer {
   constructor(viewer) {
     this.viewer = viewer;
-    this.earthquakes = []
+    this.earthquakes = [];
   }
 
   async showEarthquakes() {
-    const earthquakeText = await readTextFile('http://localhost:8000/src/erthquakeVisualization/testData/earthquake.txt'); // temporary
+    const earthquakeText = await readTextFile('/src/erthquakeVisualization/testData/earthquake.txt'); // temporary
     const earthquakeData = parseEarthquakeData(earthquakeText);
     this.earthquakes = earthquakeData.map(data => {
       const size = Number(data.Magnitude) * EARTHQUAKE_SPHERE_SIZE_COEF;
@@ -20,10 +19,10 @@ export default class EarthquakeVisualizer {
         position: Cartesian3.fromDegrees(Number(data.Longitude), Number(data.Latitude), height),
         ellipsoid: {
           radii: new Cartesian3(size, size, size),
-          material: Color.BLUE.brighten(Number(data.Magnitude), new Color()),
+          material: getColorForMagnitude(data.Magnitude),
           heightReference: HeightReference.RELATIVE_TO_GROUND
         }
-      })
+      });
     });
     this.viewer.scene.requestRender();
   }
