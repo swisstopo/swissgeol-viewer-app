@@ -239,17 +239,16 @@ getLayersConfig().then(layersConfig => {
 search.addEventListener('submit', event => {
   const result = event.detail.result;
   const origin = result.properties.origin;
+  const rectangle = Rectangle.fromDegrees(...result.bbox);
   if (origin === 'layer') {
     // add layer
-    getSwisstopoImagery(result.properties.layer, Rectangle.fromDegrees(...result.bbox))
-      .then(imageryLayer => {
-        if (!containsSwisstopoImagery(viewer.scene.imageryLayers, imageryLayer)) {
-          viewer.scene.imageryLayers.add(imageryLayer);
-        }
-      });
+    getSwisstopoImagery(result.properties.layer, rectangle).then(imageryLayer => {
+      if (!containsSwisstopoImagery(viewer.scene.imageryLayers, imageryLayer)) {
+        viewer.scene.imageryLayers.add(imageryLayer);
+      }
+    });
   } else {
     // recenter to location
-    const rectangle = Rectangle.fromDegrees(...result.bbox);
     if (rectangle.width < Math.EPSILON3 || rectangle.height < Math.EPSILON3) {
       // rectangle is too small
       const center = Rectangle.center(rectangle);

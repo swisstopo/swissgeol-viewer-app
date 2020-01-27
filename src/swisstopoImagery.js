@@ -7,7 +7,7 @@ const layerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{times
 /**
  * @param {sring} layer Layer identifier
  * @param {import('cesium/Core/Rectangle').default} rectangle
- * @return {Promise}
+ * @return {Promise<ImageryLayer>}
  */
 export function getSwisstopoImagery(layer, rectangle) {
   return new Promise((resolve, reject) => {
@@ -60,7 +60,7 @@ export function containsSwisstopoImagery(collection, imageryLayer) {
 let layersConfigPromise;
 
 /**
- * @return {Promise}
+ * @return {Promise<Object>}
  */
 export function getLayersConfig() {
   if (!layersConfigPromise) {
