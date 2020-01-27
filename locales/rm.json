@@ -1,5 +1,10 @@
 {
+  "base_mesozoic_label": "",
+  "boreholes_label": "",
+  "cross_section_label": "",
   "disclaimer_href": "https://www.geo.admin.ch/rm/about-swiss-geoportal/impressum.html#copyright",
   "disclaimer_text": "Copyright & decleraziun da protecziun da datas",
-  "search_placeholder": "Tschertgar..."
+  "earthquakes_label": "",
+  "search_placeholder": "Tschertgar...",
+  "swissnames_label": ""
 }

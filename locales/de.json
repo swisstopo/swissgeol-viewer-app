@@ -1,5 +1,10 @@
 {
+  "base_mesozoic_label": "",
+  "boreholes_label": "Bohrungen",
+  "cross_section_label": "Schnitte",
   "disclaimer_href": "https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright",
   "disclaimer_text": "Copyright & Datenschutzerklärung",
-  "search_placeholder": "Suchen..."
+  "earthquakes_label": "Erdbeben",
+  "search_placeholder": "Suchen...",
+  "swissnames_label": ""
 }

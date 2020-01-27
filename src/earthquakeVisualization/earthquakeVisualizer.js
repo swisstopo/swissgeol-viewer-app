@@ -7,9 +7,9 @@ import {readTextFile} from '../utils.js';
 export default class EarthquakeVisualizer {
   constructor(viewer) {
     this.viewer = viewer;
-    this.earthquakeDataSource = new CustomDataSource();
+    this.earthquakeDataSource = new CustomDataSource('earthquakes');
     this.viewer.dataSources.add(this.earthquakeDataSource);
-    this.earthquakeDataSource.entities.collectionChanged.addEventListener(evt => {
+    this.earthquakeDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer.scene.requestRender();
     });
   }
@@ -31,10 +31,10 @@ export default class EarthquakeVisualizer {
     });
   }
 
-  async toggleEarthquakes() {
+  async setVisible(visible) {
     const entities = this.earthquakeDataSource.entities.values;
     if (entities && entities.length) {
-      entities.forEach(entity => entity.show = !entity.isShowing);
+      this.earthquakeDataSource.show = visible;
     } else {
       await this.showEarthquakes();
     }

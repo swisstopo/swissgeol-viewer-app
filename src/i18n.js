@@ -28,8 +28,10 @@ function detectLanguage() {
 export function init() {
   i18next.use(Backend).init({
     whitelist: LANGS,
+    lng: detectLanguage(),
+    returnEmptyString: false,
     fallbackLng: 'en',
-    load: 'languageOnly',
+    //load: 'languageOnly',
     debug: true,
     backend: {
       loadPath: 'locales/{{lng}}.json'
@@ -57,8 +59,6 @@ export function init() {
       `;
     });
     render(templates, document.getElementById('langs'));
-
-    const userLang = detectLanguage();
-    setLanguage(userLang);
+    setLanguage(i18next.language);
   });
 }

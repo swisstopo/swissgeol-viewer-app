@@ -139,3 +139,24 @@ ga-search > .search-results > .autocomplete-result:hover {
   cursor: pointer;
   background-color: rgba(0,0,0,.05);
 }
+
+
+#layers {
+  float: left;
+  top: 200px;
+  position: absolute;
+  width: 400px;
+  background-color: white;
+  padding: 2em 0;
+}
+
+#layers .layer-item {
+  display: block;
+  height: 3em;
+  margin-left: 0.5em;
+  cursor: pointer !important;
+}
+
+#layers input[type="range"] {
+  display: block;
+}
