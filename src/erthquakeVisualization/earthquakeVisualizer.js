@@ -10,7 +10,7 @@ export default class EarthquakeVisualizer {
   }
 
   async showEarthquakes() {
-    const branchName = window.location.pathname.indexOf('GSNGM') > -1 ? `/${window.location.pathname.split('/')[0]}` : '';
+    const branchName = window.location.pathname.indexOf('GSNGM') > -1 ? `/${window.location.pathname.split('/')[1]}` : '';
     const earthquakeText = await readTextFile(`${branchName}/src/erthquakeVisualization/testData/earthquake.txt`); // temporary
     const earthquakeData = parseEarthquakeData(earthquakeText);
     this.earthquakes = earthquakeData.map(data => {
