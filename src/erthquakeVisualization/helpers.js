@@ -1,6 +1,6 @@
 import Color from 'cesium/Core/Color.js';
 
-export const EARTHQUAKE_SPHERE_SIZE_COEF = 100;
+export const EARTHQUAKE_SPHERE_SIZE_COEF = 200;
 
 export function parseEarthquakeData(data) {
   const earthquakeArr = data.split('\n');
