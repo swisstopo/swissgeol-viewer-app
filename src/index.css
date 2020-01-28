@@ -80,6 +80,12 @@ main {
   flex: auto;
 }
 
+#cesium .cesium-viewer-bottom {
+  pointer-events: none;
+}
+#cesium .cesium-viewer-bottom .cesium-widget-credits {
+  pointer-events: all;
+}
 
 :lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en, :lang(rm) .lang-rm {
   font-weight: bold;
