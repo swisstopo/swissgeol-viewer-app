@@ -9,7 +9,7 @@ const rightCodes = ['KeyD', 'ArrowRight'];
 export default class KeyboardNavigation {
 
   /**
-   * @param {import("cesium/Scene/Scene").default} scene
+   * @param {import('cesium/Scene/Scene').default} scene
    * @param {number} moveAmount
    * @param {number} boostFactor
    */

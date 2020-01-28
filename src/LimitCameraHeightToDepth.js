@@ -2,8 +2,8 @@ import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
 export default class LimitCameraHeightToDepth {
   /**
-   * @param {import("cesium/Widgets/Viewer/Viewer/Scene").default} Scene
-   * @param float depth
+   * @param {import('cesium/Scene/Scene').default} scene
+   * @param {number} depth
    */
   constructor(scene, depth) {
     this.scene_ = scene;
