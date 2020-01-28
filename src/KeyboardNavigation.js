@@ -1,4 +1,6 @@
 
+import {setCameraHeight} from './utils.js';
+
 const upCodes = ['KeyQ', 'Space', 'NumpadAdd'];
 const downCodes = ['KeyE', 'NumpadSubtract'];
 const forwardCodes = ['KeyW', 'ArrowUp'];
@@ -66,10 +68,10 @@ export default class KeyboardNavigation {
     const moveAmount = this.moveAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
 
     if (this.flags_.up) {
-      camera.moveUp(moveAmount);
+      setCameraHeight(camera, camera.positionCartographic.height + moveAmount);
     }
     if (this.flags_.down) {
-      camera.moveDown(moveAmount);
+      setCameraHeight(camera, camera.positionCartographic.height - moveAmount);
     }
     if (this.flags_.forward) {
       camera.moveForward(moveAmount);

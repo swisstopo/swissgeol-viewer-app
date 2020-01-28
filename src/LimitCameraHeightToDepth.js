@@ -1,4 +1,4 @@
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import {setCameraHeight} from './utils.js';
 
 export default class LimitCameraHeightToDepth {
   /**
@@ -15,7 +15,7 @@ export default class LimitCameraHeightToDepth {
   onTick_() {
     const camera = this.scene_.camera;
     if (camera.positionCartographic.height <= -this.depth_) {
-      camera.position = Cartesian3.fromRadians(camera.positionCartographic.longitude, camera.positionCartographic.latitude, -this.depth_);
+      setCameraHeight(camera, -this.depth_);
     }
   }
 }
