@@ -12,7 +12,7 @@
   "dependencies": {
     "@geoblocks/ga-search": "^0.0.5",
     "@webcomponents/webcomponentsjs": "^2.4.1",
-    "cesium": "https://github.com/AnalyticalGraphicsInc/cesium/archive/cd2f3cb.tar.gz",
+    "cesium": "https://github.com/AnalyticalGraphicsInc/cesium/archive/6d76e6a.tar.gz",
     "fomantic-ui-css": "^2.8.3",
     "i18next": "^19.1.0",
     "i18next-xhr-backend": "^3.2.2",
