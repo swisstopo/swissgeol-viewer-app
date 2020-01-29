@@ -25,12 +25,14 @@ export default class KeyboardNavigation {
 
     this.flags_ = {
       booster: false,
-      up: false,
-      down: false,
-      forward: false,
-      backward: false,
-      left: false,
-      right: false
+      moveUp: false,
+      moveDown: false,
+      moveForward: false,
+      moveBackward: false,
+      moveLeft: false,
+      moveRight: false,
+      rotateLeft: false,
+      rotateRight: false
     };
 
     const onKey = this.onKey_.bind(this);
@@ -45,17 +47,29 @@ export default class KeyboardNavigation {
     if (event.target.tagName !== 'INPUT') {
       const pressed = event.type === 'keydown';
       if (upCodes.includes(event.code)) {
-        this.flags_.up = pressed;
+        this.flags_.moveUp = pressed;
       } else if (downCodes.includes(event.code)) {
-        this.flags_.down = pressed;
+        this.flags_.moveDown = pressed;
       } else if (forwardCodes.includes(event.code)) {
-        this.flags_.forward = pressed;
+        this.flags_.moveForward = pressed;
       } else if (backwardCodes.includes(event.code)) {
-        this.flags_.backward = pressed;
+        this.flags_.moveBackward = pressed;
       } else if (leftCodes.includes(event.code)) {
-        this.flags_.left = pressed;
+        if (event.ctrlKey) {
+          this.flags_.rotateLeft = pressed;
+          this.flags_.moveLeft = false;
+        } else {
+          this.flags_.moveLeft = pressed;
+          this.flags_.rotateLeft = false;
+        }
       } else if (rightCodes.includes(event.code)) {
-        this.flags_.right = pressed;
+        if (event.ctrlKey) {
+          this.flags_.rotateRight = pressed;
+          this.flags_.moveRight = false;
+        } else {
+          this.flags_.moveRight = pressed;
+          this.flags_.rotateRight = false;
+        }
       }
       this.flags_.booster = event.shiftKey;
       this.scene_.requestRender();
@@ -67,23 +81,30 @@ export default class KeyboardNavigation {
 
     const moveAmount = this.moveAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
 
-    if (this.flags_.up) {
+    if (this.flags_.moveUp) {
       setCameraHeight(camera, camera.positionCartographic.height + moveAmount);
     }
-    if (this.flags_.down) {
+    if (this.flags_.moveDown) {
       setCameraHeight(camera, camera.positionCartographic.height - moveAmount);
     }
-    if (this.flags_.forward) {
+    if (this.flags_.moveForward) {
       camera.moveForward(moveAmount);
     }
-    if (this.flags_.backward) {
+    if (this.flags_.moveBackward) {
       camera.moveBackward(moveAmount);
     }
-    if (this.flags_.left) {
+    if (this.flags_.moveLeft) {
       camera.moveLeft(moveAmount);
     }
-    if (this.flags_.right) {
+    if (this.flags_.moveRight) {
       camera.moveRight(moveAmount);
     }
+    if (this.flags_.rotateLeft) {
+      camera.lookLeft();
+    }
+    if (this.flags_.rotateRight) {
+      camera.lookRight();
+    }
+
   }
 }
