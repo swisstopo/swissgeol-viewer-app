@@ -26,7 +26,7 @@ import Ion from 'cesium/Core/Ion.js';
 import Camera from 'cesium/Scene/Camera.js';
 import Math from 'cesium/Core/Math.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
-import EarthquakeVisualizer from './erthquakeVisualization/earthquakeVisualizer';
+import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer.js';
 
 import './index.css';
 

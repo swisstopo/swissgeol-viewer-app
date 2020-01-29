@@ -1,22 +1,26 @@
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import HeightReference from 'cesium/Scene/HeightReference.js';
-import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorForMagnitude} from './helpers';
-import {readTextFile} from '../utils';
+import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
+import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorForMagnitude} from './helpers.js';
+import {readTextFile} from '../utils.js';
 
 export default class EarthquakeVisualizer {
   constructor(viewer) {
     this.viewer = viewer;
-    this.earthquakes = [];
+    this.earthquakeDataSource = new CustomDataSource();
+    this.viewer.dataSources.add(this.earthquakeDataSource);
+    this.earthquakeDataSource.entities.collectionChanged.addEventListener(evt => {
+      this.viewer.scene.requestRender();
+    });
   }
 
   async showEarthquakes() {
-    const branchName = window.location.pathname.indexOf('GSNGM') > -1 ? `/${window.location.pathname.split('/')[1]}` : '';
-    const earthquakeText = await readTextFile(`${branchName}/src/erthquakeVisualization/testData/earthquake.txt`); // temporary
+    const earthquakeText = await readTextFile('./src/earthquakeVisualization/testData/earthquake.txt'); // temporary
     const earthquakeData = parseEarthquakeData(earthquakeText);
-    this.earthquakes = earthquakeData.map(data => {
+    earthquakeData.map(data => {
       const size = Number(data.Magnitude) * EARTHQUAKE_SPHERE_SIZE_COEF;
       const height = -(Number(data.Depthkm) * 1000); // convert km to m
-      return this.viewer.entities.add({
+      return this.earthquakeDataSource.entities.add({
         position: Cartesian3.fromDegrees(Number(data.Longitude), Number(data.Latitude), height),
         ellipsoid: {
           radii: new Cartesian3(size, size, size),
@@ -25,13 +29,12 @@ export default class EarthquakeVisualizer {
         }
       });
     });
-    this.viewer.scene.requestRender();
   }
 
   async toggleEarthquakes() {
-    if (this.earthquakes && this.earthquakes.length) {
-      this.earthquakes.forEach(entity => entity.show = !entity.isShowing);
-      this.viewer.scene.requestRender();
+    const entities = this.earthquakeDataSource.entities.values;
+    if (entities && entities.length) {
+      entities.forEach(entity => entity.show = !entity.isShowing);
     } else {
       await this.showEarthquakes();
     }

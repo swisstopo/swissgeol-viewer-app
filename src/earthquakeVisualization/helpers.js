@@ -25,7 +25,7 @@ export function parseEarthquakeData(data) {
  */
 export function getColorForMagnitude(magnitude) {
   const colorR = 0;
-  const colorG = (15 * (10 - Number(magnitude))).toFixed();
-  const colorB = (14 * (18 - Number(magnitude))).toFixed();
-  return Color.fromCssColorString(`rgb(${colorR}, ${Number(colorG)}, ${Number(colorB)})`);
+  const colorG = (15 * (10 - Number(magnitude)));
+  const colorB = (14 * (18 - Number(magnitude)));
+  return Color.fromBytes(colorR, colorG, colorB);
 }
