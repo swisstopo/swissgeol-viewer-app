@@ -3,8 +3,11 @@ import '@webcomponents/webcomponentsjs/webcomponents-loader.js';
 import '@geoblocks/ga-search';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
+import FirstPersonCameraMode from './FirstPersonCameraMode.js';
+import KeyboardNavigation from './KeyboardNavigation.js';
 import {init as i18nInit} from './i18n.js';
 import {getLayersConfig, containsSwisstopoImagery, getSwisstopoImagery} from './swisstopoImagery.js';
+import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
@@ -65,17 +68,10 @@ const viewer = new Viewer(document.querySelector('#cesium'), {
   requestRenderMode: true,
 
   imageryProvider: new UrlTemplateImageryProvider({
-    url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geocover/default/current/3857/{z}/{x}/{y}.png',
+    url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{z}/{x}/{y}.jpeg',
     rectangle: SWITZERLAND_RECTANGLE,
     credit: new Credit('Swisstopo')
   }),
-
-  // almost invisible grey background
-  // imageryProvider: new WebMapTileServiceImageryProvider({
-  //   url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{TileMatrix}/{TileCol}/{TileRow}.jpeg',
-  //   rectangle: WMTS_4326_RECTANGLE,
-  //   credit: new Credit('Swisstopo')
-  // }),
 
   terrainProvider: new CesiumTerrainProvider({
     url: IonResource.fromAssetId(1)
@@ -92,6 +88,8 @@ Camera.DEFAULT_VIEW_RECTANGLE = SWITZERLAND_RECTANGLE;
 // Limit the volume inside which the user can navigate
 new NavigableVolumeLimiter(viewer.scene, SWITZERLAND_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
 
+new KeyboardNavigation(viewer.scene);
+
 viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
 
 const globe = viewer.scene.globe;
@@ -100,6 +98,8 @@ globe.depthTestAgainstTerrain = true;
 globe.showGroundAtmosphere = false;
 globe.showWaterEffect = false;
 globe.backFaceCulling = false;
+
+const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
 
 viewer.camera.flyTo({
   destination: SWITZERLAND_RECTANGLE,
@@ -112,7 +112,6 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
     // Add Mantel ellipsoid
     const radii = Ellipsoid.WGS84.radii.clone();
-    const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
     radii.x -= mantelDepth;
     radii.y -= mantelDepth;
     radii.z -= mantelDepth;
@@ -123,7 +122,9 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
         material: 'images/temp_lava.jpg',
       }
     });
+    entity.name = 'mantel';
     entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
+
 
 
     // TIN of a geological layer
@@ -154,6 +155,13 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     viewer.scene.primitives.add(
       new Cesium3DTileset({
         url: IonResource.fromAssetId(66662)
+      })
+    );
+
+
+    viewer.scene.primitives.add(
+      new Cesium3DTileset({
+        url: IonResource.fromAssetId(68881)
       })
     );
 
@@ -218,6 +226,14 @@ document.querySelector('#zoomToHome').addEventListener('click', event => {
   viewer.scene.camera.flyTo({
     destination: SWITZERLAND_RECTANGLE
   });
+});
+
+const firstPersonCameraMode = new FirstPersonCameraMode(viewer.scene);
+
+new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
+
+document.querySelector('#fpsMode').addEventListener('click', event => {
+  firstPersonCameraMode.active = true;
 });
 
 const search = document.querySelector('ga-search');

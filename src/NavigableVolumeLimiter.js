@@ -10,6 +10,13 @@ import Cartesian3 from 'cesium/Core/Cartesian3.js';
  * Near the ground the allowed distance is shorter.
  */
 export default class NavigableVolumeLimiter {
+
+  /**
+   * @param {import('cesium/Scene/Scene').default} scene
+   * @param {import('cesium/Core/Rectangle').default} [rectangle]
+   * @param {number} height
+   * @param {function(number): number} ratioFunction
+   */
   constructor(scene, rectangle, height, ratioFunction) {
     this.blockLimiter_ = false;
     this.boundingSphere_ = BoundingSphere.fromRectangle3D(rectangle, Ellipsoid.WGS84, height);
