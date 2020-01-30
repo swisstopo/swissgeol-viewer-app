@@ -26,6 +26,7 @@ import Ion from 'cesium/Core/Ion.js';
 import Camera from 'cesium/Scene/Camera.js';
 import Math from 'cesium/Core/Math.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
+import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer.js';
 
 import './index.css';
 
@@ -261,4 +262,11 @@ search.addEventListener('submit', event => {
     }
   }
   event.target.autocomplete.input.blur();
+});
+
+const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
+
+document.querySelector('#toggleEarthquakes').addEventListener('click', event => {
+  earthquakeVisualizer.toggleEarthquakes();
+  viewer.scene.requestRender();
 });
