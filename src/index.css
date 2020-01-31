@@ -115,6 +115,7 @@ ga-search {
 
 /* FIXME: use existing fomantic component */
 ga-search > .search-results {
+  z-index: 2 !important;
   background-color: #fff;
   box-shadow: 0 2px 3px 0 rgba(34,36,38,.15);
   border: 1px solid rgba(34,36,38,.15);
@@ -152,6 +153,9 @@ ga-search > .search-results > .autocomplete-result:hover {
   cursor: pointer;
 }
 
+#layers {
+  margin: 2px;
+}
 #layers input[type="range"] {
   display: block;
 }
