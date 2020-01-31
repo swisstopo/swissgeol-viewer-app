@@ -148,6 +148,7 @@ ga-search > .search-results > .autocomplete-result:hover {
   width: 400px;
   background-color: white;
   padding: 2em 0;
+  z-index: 1;
 }
 
 #layers .layer-item {

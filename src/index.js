@@ -4,7 +4,6 @@ import '@geoblocks/ga-search';
 
 import {init as i18nInit} from './i18n.js';
 import {getLayersConfig, containsSwisstopoImagery, getSwisstopoImagery} from './swisstopoImagery.js';
-import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
 import Rectangle from 'cesium/Core/Rectangle.js';
@@ -14,6 +13,7 @@ import Math from 'cesium/Core/Math.js';
 import './index.css';
 import {setupLayers} from './layers.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
+import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
 i18nInit();
 
@@ -23,7 +23,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
     addMantelEllipsoid(viewer);
-    setupLayers(viewer, 'layers');
+    setupLayers(viewer, document.getElementById('layers'));
   }
 });
 
@@ -39,8 +39,6 @@ document.querySelector('#zoomToHome').addEventListener('click', event => {
 });
 
 const firstPersonCameraMode = new FirstPersonCameraMode(viewer.scene);
-
-new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
 
 document.querySelector('#fpsMode').addEventListener('click', event => {
   firstPersonCameraMode.active = true;

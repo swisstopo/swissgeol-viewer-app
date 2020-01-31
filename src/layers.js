@@ -5,7 +5,7 @@ import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
 import IonResource from 'cesium/Core/IonResource.js';
 import {html, render} from 'lit-html';
-import { getSwisstopoImagery } from './swisstopoImagery.js';
+import {getSwisstopoImagery} from './swisstopoImagery.js';
 import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer.js';
 
 import i18next from 'i18next';
@@ -175,9 +175,6 @@ export function doRender(viewer, target) {
     if (!config.promise) {
       config.promise = factories[config.type](viewer, config);
     }
-    const onclick = () => {
-      console.log('Coucou', config.label); // fixme
-    };
     const changeVisibility = evt => {
       config.setVisibility(evt.target.checked);
       viewer.scene.requestRender();
@@ -189,7 +186,7 @@ export function doRender(viewer, target) {
 
     return html`
     <div class="layer-item">
-      <label @click="${onclick}" data-i18n=>${i18next.t(config.label)}
+      <label data-i18n=>${i18next.t(config.label)}
         <input type="checkbox" ?checked=${config.visible} @change=${changeVisibility}>
       </label>
       ${config.setOpacity ?
@@ -203,9 +200,9 @@ export function doRender(viewer, target) {
   render(templates, target);
 }
 
-export function setupLayers(viewer) {
-  doRender(viewer, document.getElementById('layers'));
+export function setupLayers(viewer, target) {
+  doRender(viewer, target);
   i18next.on('languageChanged', options => {
-    doRender(viewer, document.getElementById('layers'));
+    doRender(viewer, target);
   });
 }

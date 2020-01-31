@@ -16,6 +16,8 @@ import Camera from 'cesium/Scene/Camera.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
+import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
+import KeyboardNavigation from './KeyboardNavigation.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -70,6 +72,8 @@ export function setupViewer(container) {
   // Limit the volume inside which the user can navigate
   new NavigableVolumeLimiter(scene, SWITZERLAND_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
 
+  new KeyboardNavigation(viewer.scene);
+
   scene.screenSpaceCameraController.enableCollisionDetection = false;
 
   const globe = scene.globe;
@@ -115,4 +119,6 @@ export function addMantelEllipsoid(viewer) {
     }
   });
   entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
+
+  new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
 }
