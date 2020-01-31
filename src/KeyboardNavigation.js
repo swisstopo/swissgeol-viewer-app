@@ -44,7 +44,7 @@ export default class KeyboardNavigation {
   }
 
   onKey_(event) {
-    if (event.target.tagName !== 'INPUT') {
+    if (targetNotEditable(event.target)) {
       const pressed = event.type === 'keydown';
       if (upCodes.includes(event.code)) {
         this.flags_.moveUp = pressed;
@@ -107,4 +107,9 @@ export default class KeyboardNavigation {
     }
 
   }
+}
+
+
+function targetNotEditable(target) {
+  return target.tagName !== 'INPUT' || target.type === 'checkbox';
 }
