@@ -7,6 +7,8 @@
 @import 'fomantic-ui-css/components/icon.css';
 @import 'fomantic-ui-css/components/input.css';
 @import 'fomantic-ui-css/components/button.css';
+@import 'fomantic-ui-css/components/segment.css';
+@import 'fomantic-ui-css/components/checkbox.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
@@ -140,22 +142,14 @@ ga-search > .search-results > .autocomplete-result:hover {
   background-color: rgba(0,0,0,.05);
 }
 
-
-#layers {
-  float: left;
-  top: 200px;
-  position: absolute;
-  width: 400px;
-  background-color: white;
-  padding: 2em 0;
-  z-index: 1;
+.sidebar {
+  min-width: 280px;
 }
-
-#layers .layer-item {
-  display: block;
-  height: 3em;
-  margin-left: 0.5em;
-  cursor: pointer !important;
+.sidebar.left {
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+.ui.checkbox label {
+  cursor: pointer;
 }
 
 #layers input[type="range"] {

@@ -171,7 +171,7 @@ const factories = {
 };
 
 export function doRender(viewer, target) {
-  const templates = layers.map(config => {
+  const templates = layers.map((config, index) => {
     if (!config.promise) {
       config.promise = factories[config.type](viewer, config);
     }
@@ -185,10 +185,11 @@ export function doRender(viewer, target) {
     };
 
     return html`
-    <div class="layer-item">
-      <label data-i18n=>${i18next.t(config.label)}
-        <input type="checkbox" ?checked=${config.visible} @change=${changeVisibility}>
-      </label>
+    <div class="ui segment">
+      <div class="ui checkbox">
+        <input id="layer-item-${index}" type="checkbox" ?checked=${config.visible} @change=${changeVisibility}>
+        <label for="layer-item-${index}" data-i18n>${i18next.t(config.label)}</label>
+      </div>
       ${config.setOpacity ?
         html`<input type="range" min="0" max="1" value=${config.opacity || 1} @input=${changeOpacity} step="0.05">`
         : ''
