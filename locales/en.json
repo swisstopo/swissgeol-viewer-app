@@ -1,5 +1,10 @@
 {
+  "base_mesozoic_label": "Base Mesozoic",
+  "boreholes_label": "Boreholes",
+  "cross_section_label": "Cross sections",
   "disclaimer_href": "https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright",
   "disclaimer_text": "Copyright & data protection",
-  "search_placeholder": "Search..."
+  "earthquakes_label": "Earthquakes",
+  "search_placeholder": "Search...",
+  "swissnames_label": "Swiss names"
 }
