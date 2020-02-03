@@ -87,7 +87,7 @@ export function setupViewer(container) {
     new UrlTemplateImageryProvider({
       url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{z}/{x}/{y}.jpeg',
       rectangle: SWITZERLAND_RECTANGLE,
-      credit: new Credit('Swisstopo')
+      credit: new Credit('swisstopo')
     }))
   );
 
