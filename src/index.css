@@ -12,6 +12,10 @@
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
+[hidden] {
+  display: none !important;
+}
+
 html, body {
   height: 100%;
   font-size: 14px;
@@ -156,6 +160,7 @@ ga-search > .search-results > .autocomplete-result:hover {
 #layers {
   margin: 2px;
 }
-#layers input[type="range"] {
-  display: block;
+
+.layer-slider {
+  display: flex;
 }

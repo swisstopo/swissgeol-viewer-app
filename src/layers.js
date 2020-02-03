@@ -61,6 +61,12 @@ const swisstopoLabelStyle = {
 
 const t = a => a;
 const layers = [{
+  type: 'swisstopoWMTS',
+  label: t('ch_swisstopo_geologie_geocover'),
+  layer: 'ch.swisstopo.geologie-geocover',
+  visible: true,
+  opacity: 0.7,
+},{
   type: '3dtiles',
   url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
   label: t('swissnames_label'),
@@ -81,8 +87,7 @@ const layers = [{
 }, {
   type: 'earthquakes',
   label: t('earthquakes_label'),
-}
-];
+}];
 
 //   type: 'ionGeoJSON',
 //   assetId: 56810,
@@ -190,11 +195,10 @@ export function doRender(viewer, target) {
         <input id="layer-item-${index}" type="checkbox" ?checked=${config.visible} @change=${changeVisibility}>
         <label for="layer-item-${index}" data-i18n>${i18next.t(config.label)}</label>
       </div>
-      ${config.setOpacity ?
-        html`<input type="range" min="0" max="1" value=${config.opacity || 1} @input=${changeOpacity} step="0.05">`
-        : ''
-      }
-
+      <div class="layer-slider" ?hidden=${!config.setOpacity}>
+        <label>opacity: </label>
+        <input type="range" min="0" max="1" value=${config.opacity || 1} @input=${changeOpacity} step="0.05">
+      </div>
     </div>
       `;
   });
