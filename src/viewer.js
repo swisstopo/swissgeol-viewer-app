@@ -91,16 +91,6 @@ export function setupViewer(container) {
     }))
   );
 
-  scene.imageryLayers.add(new ImageryLayer(
-    new UrlTemplateImageryProvider({
-      url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geocover/default/current/3857/{z}/{x}/{y}.png',
-      rectangle: SWITZERLAND_RECTANGLE,
-      credit: new Credit('Swisstopo')
-    }), {
-    alpha: 0.3
-    })
-  );
-
   return viewer;
 }
 
