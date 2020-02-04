@@ -109,7 +109,10 @@ export default class KeyboardNavigation {
   }
 }
 
-
+/**
+ * @param {HTMLElement} target
+ * @return {boolean}
+ */
 function targetNotEditable(target) {
   return target.tagName !== 'INPUT' || target.type === 'checkbox';
 }

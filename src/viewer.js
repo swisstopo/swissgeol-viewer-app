@@ -29,7 +29,9 @@ Object.assign(RequestScheduler.requestsByServer, {
   'vectortiles0.geo.admin.ch:443': 18
 });
 
-
+/**
+ * @param {HTMLElement} container
+ */
 export function setupViewer(container) {
 
   const viewer = new Viewer(container, {
@@ -94,6 +96,9 @@ export function setupViewer(container) {
   return viewer;
 }
 
+/**
+ * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ */
 export function addMantelEllipsoid(viewer) {
   // Add Mantel ellipsoid
   const radii = Ellipsoid.WGS84.radii.clone();
