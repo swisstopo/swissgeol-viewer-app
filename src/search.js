@@ -1,4 +1,3 @@
-import '@webcomponents/webcomponentsjs/webcomponents-loader.js';
 import '@geoblocks/ga-search';
 
 import {getLayersConfig, containsSwisstopoImagery, getSwisstopoImagery} from './swisstopoImagery.js';
