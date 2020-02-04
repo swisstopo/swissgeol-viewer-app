@@ -2,7 +2,7 @@
 import {init as i18nInit} from './i18n.js';
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
-import './index.css';
+import './style/index.css';
 import {setupLayers} from './layers.js';
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
