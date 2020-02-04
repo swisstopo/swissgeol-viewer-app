@@ -1,0 +1,35 @@
+
+ga-search {
+  width: 400px;
+  align-self: center;
+}
+
+/* FIXME: use existing fomantic component */
+ga-search > .search-results {
+  z-index: 2 !important;
+  background-color: #fff;
+  box-shadow: 0 2px 3px 0 rgba(34,36,38,.15);
+  border: 1px solid rgba(34,36,38,.15);
+  border-top: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+ga-search > .search-results > .autocomplete-result {
+  padding: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+ga-search > .search-results > .autocomplete-result .highlight {
+  background-color: #fddf7e;
+}
+ga-search > .search-results > .autocomplete-result[aria-selected=true],
+ga-search > .search-results > .autocomplete-result:hover {
+  cursor: pointer;
+  background-color: rgba(0,0,0,.05);
+}

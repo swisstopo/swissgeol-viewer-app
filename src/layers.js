@@ -175,7 +175,11 @@ const factories = {
   earthquakes: createEarthquakeFromConfig,
 };
 
-export function doRender(viewer, target) {
+/**
+ * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {HTMLElement} target
+ */
+function doRender(viewer, target) {
   const templates = layers.map((config, index) => {
     if (!config.promise) {
       config.promise = factories[config.type](viewer, config);
@@ -205,6 +209,10 @@ export function doRender(viewer, target) {
   render(templates, target);
 }
 
+/**
+ * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {HTMLElement} target
+ */
 export function setupLayers(viewer, target) {
   doRender(viewer, target);
   i18next.on('languageChanged', options => {
