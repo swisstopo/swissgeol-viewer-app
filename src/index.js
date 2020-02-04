@@ -1,17 +1,10 @@
 // @ts-check
-import '@webcomponents/webcomponentsjs/webcomponents-loader.js';
-import '@geoblocks/ga-search';
-
 import {init as i18nInit} from './i18n.js';
-import {getLayersConfig, containsSwisstopoImagery, getSwisstopoImagery} from './swisstopoImagery.js';
 import {SWITZERLAND_RECTANGLE} from './constants.js';
-
-import Rectangle from 'cesium/Core/Rectangle.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
-import Math from 'cesium/Core/Math.js';
 
 import './index.css';
 import {setupLayers} from './layers.js';
+import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
@@ -44,46 +37,4 @@ document.querySelector('#fpsMode').addEventListener('click', event => {
   firstPersonCameraMode.active = true;
 });
 
-const search = document.querySelector('ga-search');
-
-// search filter configuration
-getLayersConfig().then(layersConfig => {
-  search.filterResults = result => {
-    if (result.properties.origin === 'layer') {
-      return layersConfig[result.properties.layer].type === 'wmts';
-    } else {
-      return true;
-    }
-  };
-});
-
-// location search result
-search.addEventListener('submit', event => {
-  const result = event.detail.result;
-  const origin = result.properties.origin;
-  const rectangle = Rectangle.fromDegrees(...result.bbox);
-  if (origin === 'layer') {
-    // add layer
-    getSwisstopoImagery(result.properties.layer, rectangle).then(imageryLayer => {
-      if (!containsSwisstopoImagery(viewer.scene.imageryLayers, imageryLayer)) {
-        viewer.scene.imageryLayers.add(imageryLayer);
-      }
-    });
-  } else {
-    // recenter to location
-    if (rectangle.width < Math.EPSILON3 || rectangle.height < Math.EPSILON3) {
-      // rectangle is too small
-      const center = Rectangle.center(rectangle);
-      center.height = 5000;
-      viewer.camera.flyTo({
-        destination: Cartographic.toCartesian(center)
-      });
-    } else {
-      // rectangle
-      viewer.camera.flyTo({
-        destination: rectangle
-      });
-    }
-  }
-  event.target.autocomplete.input.blur();
-});
+setupSearch(viewer, document.querySelector('ga-search'));
