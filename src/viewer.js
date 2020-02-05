@@ -18,6 +18,7 @@ import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
+import SurfaceColorUpdater from './SurfaceColorUpdater';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -85,13 +86,16 @@ export function setupViewer(container) {
   globe.showWaterEffect = false;
   globe.backFaceCulling = false;
 
-  scene.imageryLayers.add(new ImageryLayer(
+  const imageryLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
       url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{z}/{x}/{y}.jpeg',
       rectangle: SWITZERLAND_RECTANGLE,
       credit: new Credit('swisstopo')
-    }))
-  );
+    }));
+
+  scene.imageryLayers.add(imageryLayer);
+
+  new SurfaceColorUpdater(scene, scene.imageryLayers.indexOf(imageryLayer));
 
   return viewer;
 }
