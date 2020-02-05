@@ -25,7 +25,7 @@ function detectLanguage() {
   }
 }
 
-export function init() {
+export function setupI18n() {
   i18next.use(Backend).init({
     whitelist: LANGS,
     lng: detectLanguage(),

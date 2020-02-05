@@ -1,5 +1,5 @@
 // @ts-check
-import {init as i18nInit} from './i18n.js';
+import {setupI18n} from './i18n.js';
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
 import './style/index.css';
@@ -8,7 +8,7 @@ import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
-i18nInit();
+setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
 
