@@ -8,6 +8,8 @@ import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
+import {getCameraView, syncCamera} from './permalink.js';
+
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
@@ -20,10 +22,15 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
   }
 });
 
+const {destination, orientation} = getCameraView();
+
 viewer.camera.flyTo({
-  destination: SWITZERLAND_RECTANGLE,
+  destination: destination || SWITZERLAND_RECTANGLE,
+  orientation: orientation,
   duration: 0
 });
+
+syncCamera(viewer.camera);
 
 document.querySelector('#zoomToHome').addEventListener('click', event => {
   viewer.scene.camera.flyTo({
