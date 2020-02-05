@@ -12,15 +12,17 @@ class LanguageDetector {
   }
 
   init(services, detectorOptions, i18nextOptions) {
-    this.whitelist = i18nextOptions.whitelist;
+    this.languageUtils = services.languageUtils;
     this.fallbackLng = i18nextOptions.fallbackLng;
   }
 
   detect() {
+    let language = this.fallbackLng;
+
     const lang = getURLSearchParams().get('lang');
-    if (this.isValidLanguage(lang)) {
-      // get language from url
-      return lang;
+    // get language from url
+    if (this.languageUtils.isWhitelisted(lang)) {
+      language = lang;
     } else {
       // fallback to browser's language
       const languages = [];
@@ -30,16 +32,13 @@ class LanguageDetector {
         languages.push(navigator.language);
       }
       for (const lang of languages) {
-        if (this.isValidLanguage(lang)) {
-          return lang;
+        if (this.languageUtils.isWhitelisted(lang)) {
+          language = lang;
+          break;
         }
       }
     }
-    return this.fallbackLng;
-  }
-
-  isValidLanguage(lang) {
-    return lang && this.whitelist.includes(lang.substr(0, 2).toLowerCase());
+    return this.languageUtils.getLanguagePartFromCode(language);
   }
 
   cacheUserLanguage(lang) {
@@ -53,6 +52,7 @@ LanguageDetector.type = 'languageDetector';
 export function setupI18n() {
   i18next.use(Backend).use(LanguageDetector).init({
     whitelist: SUPPORTED_LANGUAGES,
+    nonExplicitWhitelist: true,
     returnEmptyString: false,
     fallbackLng: 'en',
     //load: 'languageOnly',
