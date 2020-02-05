@@ -3,6 +3,7 @@ import locI18next from 'loc-i18next';
 import Backend from 'i18next-xhr-backend';
 import {html, render} from 'lit-html';
 import {SUPPORTED_LANGUAGES} from './constants.js';
+import {getURLSearchParams, setURLSearchParams} from './utils.js';
 
 
 class LanguageDetector {
@@ -16,8 +17,7 @@ class LanguageDetector {
   }
 
   detect() {
-    const searchParams = new URLSearchParams(location.search);
-    const lang = searchParams.get('lang');
+    const lang = getURLSearchParams().get('lang');
     if (this.isValidLanguage(lang)) {
       // get language from url
       return lang;
@@ -43,7 +43,9 @@ class LanguageDetector {
   }
 
   cacheUserLanguage(lang) {
-    // FIXME: save to url here ?
+    const params = getURLSearchParams();
+    params.set('lang', lang);
+    setURLSearchParams(params);
   }
 }
 LanguageDetector.type = 'languageDetector';

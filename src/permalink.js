@@ -1,12 +1,13 @@
 import Math from 'cesium/Core/Math.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
+import {getURLSearchParams, setURLSearchParams} from './utils.js';
 
 export function getCameraView() {
   let destination;
   let orientation;
 
-  const params = new URLSearchParams(location.search);
+  const params = getURLSearchParams();
 
   const lon = params.get('lon');
   const lat = params.get('lat');
@@ -29,7 +30,7 @@ export function getCameraView() {
 
 export function syncCamera(camera) {
   camera.moveEnd.addEventListener(() => {
-    const params = new URLSearchParams(location.search);
+    const params = getURLSearchParams();
     const position = camera.positionCartographic;
 
     params.set('lon', Math.toDegrees(position.longitude).toFixed(5));
@@ -38,6 +39,6 @@ export function syncCamera(camera) {
     params.set('heading', Math.toDegrees(camera.heading).toFixed(0));
     params.set('pitch', Math.toDegrees(camera.pitch).toFixed(0));
 
-    window.history.replaceState({}, '', `${location.pathname}?${params}`);
+    setURLSearchParams(params);
   });
 }

@@ -17,3 +17,18 @@ export function setCameraHeight(camera, height) {
   const pc = camera.positionCartographic;
   camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, height);
 }
+
+
+/**
+ * @return {URLSearchParams}
+ */
+export function getURLSearchParams() {
+  return new URLSearchParams(location.search);
+}
+
+/**
+ * @param {URLSearchParams} params
+ */
+export function setURLSearchParams(params) {
+  window.history.replaceState({}, '', `${location.pathname}?${params}`);
+}
