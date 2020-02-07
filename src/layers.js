@@ -73,6 +73,10 @@ const layers = [{
   assetId: 68881,
   label: t('cross_section_label'),
 }, {
+  type: 'ion3dtiles',
+  assetId: 69310,
+  label: t('SG_test7_cesiumZip_noFanout'),
+}, {
   type: 'earthquakes',
   label: t('earthquakes_label'),
 }];

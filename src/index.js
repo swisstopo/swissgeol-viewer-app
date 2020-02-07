@@ -1,6 +1,6 @@
 // @ts-check
 import {setupI18n} from './i18n.js';
-import {SWITZERLAND_RECTANGLE} from './constants.js';
+import {SWITZERLAND_RECTANGLE, DRILL_PICK_LIMIT} from './constants.js';
 
 import './style/index.css';
 import {setupLayers} from './layers.js';
@@ -9,6 +9,9 @@ import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
 import './elements/ngm-object-information.js';
+import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
+import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
+import {extractPrimitiveAttributes} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
 
@@ -24,8 +27,23 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
   }
 });
 
-const {destination, orientation} = getCameraView();
+const objectInfo = document.querySelector('ngm-object-information');
 
+const handler = new ScreenSpaceEventHandler();
+handler.setInputAction(function(click) {
+  const objects = viewer.scene.drillPick(click.position, DRILL_PICK_LIMIT);
+  if (objects.length > 0) {
+    let object = objects[0];
+    if (!object.getProperty) {
+      object = object.primitive;
+    }
+    const data = extractPrimitiveAttributes(object.getProperty ? object : null);
+    objectInfo.info = data;
+  }
+}, ScreenSpaceEventType.LEFT_CLICK);
+
+
+const {destination, orientation} = getCameraView();
 viewer.camera.flyTo({
   destination: destination || SWITZERLAND_RECTANGLE,
   orientation: orientation,
@@ -47,16 +65,3 @@ document.querySelector('#fpsMode').addEventListener('click', event => {
 });
 
 setupSearch(viewer, document.querySelector('ga-search'));
-
-
-const objectInfo = document.querySelector('ngm-object-information');
-
-objectInfo.info = {
-  id: 3554,
-  name: 'Le Foulet',
-  domain: 'Bereich A (dient der Fortpflanzung der Amphibien – alle Gewässer welche sicher oder potentiell der Fortpflanzung dienen)',
-  area: 12.3,
-  zoom: () => {
-    alert('zoom zoom');
-  }
-};
