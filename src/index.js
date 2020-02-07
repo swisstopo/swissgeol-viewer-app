@@ -38,6 +38,9 @@ handler.setInputAction(function(click) {
       object = object.primitive;
     }
     const data = extractPrimitiveAttributes(object.getProperty ? object : null);
+    if (data) {
+      data.zoom = () => console('should zoom to', objects[0]);
+    }
     objectInfo.info = data;
   }
 }, ScreenSpaceEventType.LEFT_CLICK);
