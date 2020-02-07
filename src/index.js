@@ -1,5 +1,5 @@
 // @ts-check
-import {init as i18nInit} from './i18n.js';
+import {setupI18n} from './i18n.js';
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
 import './style/index.css';
@@ -8,7 +8,9 @@ import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
-i18nInit();
+import {getCameraView, syncCamera} from './permalink.js';
+
+setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
 
@@ -20,10 +22,15 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
   }
 });
 
+const {destination, orientation} = getCameraView();
+
 viewer.camera.flyTo({
-  destination: SWITZERLAND_RECTANGLE,
+  destination: destination || SWITZERLAND_RECTANGLE,
+  orientation: orientation,
   duration: 0
 });
+
+viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
 document.querySelector('#zoomToHome').addEventListener('click', event => {
   viewer.scene.camera.flyTo({

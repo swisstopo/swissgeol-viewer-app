@@ -1,10 +1,5 @@
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
-// A central error facility we can improve later
-export function appError(msg) {
-  console.error('NGM-error', msg);
-}
-
 export async function readTextFile(url) {
   const response = await fetch(url);
   try {
@@ -21,4 +16,19 @@ export async function readTextFile(url) {
 export function setCameraHeight(camera, height) {
   const pc = camera.positionCartographic;
   camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, height);
+}
+
+
+/**
+ * @return {URLSearchParams}
+ */
+export function getURLSearchParams() {
+  return new URLSearchParams(location.search);
+}
+
+/**
+ * @param {URLSearchParams} params
+ */
+export function setURLSearchParams(params) {
+  window.history.replaceState({}, '', `${location.pathname}?${params}`);
 }
