@@ -30,7 +30,7 @@ viewer.camera.flyTo({
   duration: 0
 });
 
-syncCamera(viewer.camera);
+viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
 document.querySelector('#zoomToHome').addEventListener('click', event => {
   viewer.scene.camera.flyTo({

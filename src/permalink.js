@@ -29,16 +29,12 @@ export function getCameraView() {
 
 
 export function syncCamera(camera) {
-  camera.moveEnd.addEventListener(() => {
-    const params = getURLSearchParams();
-    const position = camera.positionCartographic;
-
-    params.set('lon', Math.toDegrees(position.longitude).toFixed(5));
-    params.set('lat', Math.toDegrees(position.latitude).toFixed(5));
-    params.set('elevation', position.height.toFixed(0));
-    params.set('heading', Math.toDegrees(camera.heading).toFixed(0));
-    params.set('pitch', Math.toDegrees(camera.pitch).toFixed(0));
-
-    setURLSearchParams(params);
-  });
+  const params = getURLSearchParams();
+  const position = camera.positionCartographic;
+  params.set('lon', Math.toDegrees(position.longitude).toFixed(5));
+  params.set('lat', Math.toDegrees(position.latitude).toFixed(5));
+  params.set('elevation', position.height.toFixed(0));
+  params.set('heading', Math.toDegrees(camera.heading).toFixed(0));
+  params.set('pitch', Math.toDegrees(camera.pitch).toFixed(0));
+  setURLSearchParams(params);
 }
