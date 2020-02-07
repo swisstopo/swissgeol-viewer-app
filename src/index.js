@@ -29,19 +29,27 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
 const objectInfo = document.querySelector('ngm-object-information');
 
-const handler = new ScreenSpaceEventHandler();
-handler.setInputAction(function(click) {
+const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
+handler.setInputAction((click) => {
   const objects = viewer.scene.drillPick(click.position, DRILL_PICK_LIMIT);
+  let attributes = null;
+
   if (objects.length > 0) {
     let object = objects[0];
     if (!object.getProperty) {
       object = object.primitive;
     }
-    const data = extractPrimitiveAttributes(object.getProperty ? object : null);
-    if (data) {
-      data.zoom = () => console('should zoom to', objects[0]);
+    attributes = extractPrimitiveAttributes(object.getProperty ? object : null);
+    if (attributes) {
+      attributes.zoom = () => console.log('should zoom to', objects[0]);
     }
-    objectInfo.info = data;
+  }
+
+  objectInfo.info = attributes;
+  if (attributes) {
+    objectInfo.open();
+  } else {
+    objectInfo.close();
   }
 }, ScreenSpaceEventType.LEFT_CLICK);
 

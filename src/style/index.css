@@ -138,7 +138,6 @@ ngm-object-information {
   z-index: 1;
   margin: 6px;
   right: 0;
-  width: 280px;
 }
 
 ngm-object-information .header {
@@ -151,4 +150,10 @@ ngm-object-information .ui.table {
 
 ngm-object-information .ui.table .key {
   font-weight: 600;
+}
+
+ngm-object-information .ui.table .val {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
