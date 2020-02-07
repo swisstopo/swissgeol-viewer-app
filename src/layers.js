@@ -7,31 +7,19 @@ import IonResource from 'cesium/Core/IonResource.js';
 import {html, render} from 'lit-html';
 import {getSwisstopoImagery} from './swisstopoImagery.js';
 import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer.js';
+import LabelStyle from 'cesium/Scene/LabelStyle.js';
 
 import i18next from 'i18next';
 
 
 const swisstopoLabelStyle = {
-  labelStyle: 2,
+  labelStyle: LabelStyle.FILL,
   labelText: '${DISPLAY_TEXT}',
   disableDepthTestDistance: Infinity,
-  anchorLineEnabled: true,
-  anchorLineColor: "color('white')",
+  anchorLineEnabled: false,
   heightOffset: 200,
-  labelColor: {
-    conditions: [
-      ['${OBJEKTART} === "See"', 'color("blue")'],
-      ['true', 'color("black")']
-    ]
-  },
-  labelOutlineColor: 'color("white", 1)',
-  labelOutlineWidth: 5,
-  font: {
-    conditions: [
-      ['${OBJEKTART} === "See"', '"bold 32px arial"'],
-      ['true', '"32px arial"']
-    ]
-  },
+  labelColor: 'color("black")',
+  font: '"bold 32px arial"',
   scaleByDistance: {
     conditions: [
       ['${LOD} === "7"', 'vec4(1000, 1, 5000, 0.4)'],
@@ -46,7 +34,7 @@ const swisstopoLabelStyle = {
     ]
   },
   distanceDisplayCondition: {
-    'conditions': [
+    conditions: [
       ['${LOD} === "7"', 'vec2(0, 5000)'],
       ['${LOD} === "6"', 'vec2(0, 5000)'],
       ['${LOD} === "5"', 'vec2(0, 8000)'],
