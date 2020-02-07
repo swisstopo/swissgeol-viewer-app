@@ -32,7 +32,11 @@ export default class KeyboardNavigation {
       moveLeft: false,
       moveRight: false,
       rotateLeft: false,
-      rotateRight: false
+      rotateRight: false,
+      moveUpward: false,
+      moveDownward: false,
+      moveClockwise: false,
+      moveCounterClockwise: false
     };
 
     const onKey = this.onKey_.bind(this);
@@ -70,6 +74,14 @@ export default class KeyboardNavigation {
           this.flags_.moveRight = pressed;
           this.flags_.rotateRight = false;
         }
+      } else if (event.code === 'KeyI') {
+        this.flags_.moveUpward = pressed;
+      } else if (event.code === 'KeyK') {
+        this.flags_.moveDownward = pressed;
+      } else if (event.code === 'KeyJ') {
+        this.flags_.moveCounterClockwise = pressed;
+      } else if (event.code === 'KeyL') {
+        this.flags_.moveClockwise = pressed;
       }
       this.flags_.booster = event.shiftKey;
       this.scene_.requestRender();
@@ -105,7 +117,18 @@ export default class KeyboardNavigation {
     if (this.flags_.rotateRight) {
       camera.lookRight();
     }
-
+    if (this.flags_.moveUpward) {
+      // TODO
+    }
+    if (this.flags_.moveDownward) {
+       // TODO
+    }
+    if (this.flags_.moveCounterClockwise) {
+      camera.twistLeft();
+    }
+    if (this.flags_.moveClockwise) {
+      camera.twistRight();
+    }
   }
 }
 
