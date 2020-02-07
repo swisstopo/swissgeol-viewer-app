@@ -25,6 +25,10 @@ class NgmObjectInformation extends LitElement {
     this.opened = false;
   }
 
+  filterInfo([key, value]) {
+    return key !== 'zoom';
+  }
+
   render() {
     return html`
       <div class="ui segment" ?hidden="${!this.opened}">
@@ -36,13 +40,22 @@ class NgmObjectInformation extends LitElement {
         </div>
         <table class="ui compact small very basic table">
           <tbody>
-            ${this.info && Object.entries(this.info).map(([key, value]) => html`
+            ${this.info && Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => html`
               <tr class="top aligned">
                 <td class="key">${key}</td>
                 <td class="val">${value}</td>
               </tr>
             `)}
           </tbody>
+          <tfoot ?hidden="${!this.info.zoom}">
+            <tr>
+              <th colspan="2">
+                <button @click="${this.info.zoom}" class="ui right floated mini basic labeled icon button">
+                  <i class="right arrow icon"></i>Zoom to object
+                </div>
+              </th>
+            </tr>
+          </tfoot>
         </table>
       </div>
     `;

@@ -55,5 +55,8 @@ objectInfo.info = {
   id: 3554,
   name: 'Le Foulet',
   domain: 'Bereich A (dient der Fortpflanzung der Amphibien – alle Gewässer welche sicher oder potentiell der Fortpflanzung dienen)',
-  area: 12.3
+  area: 12.3,
+  zoom: () => {
+    alert('zoom zoom');
+  }
 };
