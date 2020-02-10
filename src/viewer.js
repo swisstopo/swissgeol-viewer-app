@@ -35,8 +35,6 @@ Object.assign(RequestScheduler.requestsByServer, {
 export function setupViewer(container) {
 
   const viewer = new Viewer(container, {
-    scene3DOnly: true,
-    useBrowserRecommendedResolution: true,
     contextOptions: {
       webgl: {
         powerPreference: 'high-performance'
@@ -53,13 +51,19 @@ export function setupViewer(container) {
     selectionIndicator: false,
     timeline: false,
     navigationHelpButton: false,
-
-    // Avoid using 100% of the available rources all the time
-    requestRenderMode: true,
+    navigationInstructionsInitiallyVisible: false,
+    scene3DOnly: true,
+    skyBox: false,
+    skyAtmosphere: false,
     imageryProvider: false,
+    showRenderLoopErrors: false,
+    useBrowserRecommendedResolution: true,
     terrainProvider: new CesiumTerrainProvider({
       url: IonResource.fromAssetId(1)
-    })
+    }),
+    terrainExaggeration: 1,
+    requestRenderMode: true,
+    // maximumRenderTimeChange: 10,
   });
 
   const scene = viewer.scene;
