@@ -35,10 +35,15 @@ silhouette.uniforms.color = Color.LIME;
 silhouette.uniforms.length = 0.01;
 silhouette.selected = [];
 
+objectInfo.addEventListener('closed', () => {
+  silhouette.selected = [];
+  viewer.scene.requestRender();
+});
+
 viewer.scene.postProcessStages.add(PostProcessStageLibrary.createSilhouetteStage([silhouette]));
 
 viewer.screenSpaceEventHandler.setInputAction(click => {
-  silhouette.selected.length = 0;
+  silhouette.selected = [];
 
   const objects = viewer.scene.drillPick(click.position, DRILL_PICK_LIMIT);
   let attributes = null;
