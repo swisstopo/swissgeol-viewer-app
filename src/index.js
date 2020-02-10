@@ -21,8 +21,11 @@ const viewer = setupViewer(document.querySelector('#cesium'));
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
-    addMantelEllipsoid(viewer);
-    setupLayers(viewer, document.getElementById('layers'));
+    window.requestAnimationFrame(() => {
+      addMantelEllipsoid(viewer);
+      setupLayers(viewer, document.getElementById('layers'));
+      document.getElementById('loader').style.display = 'none';
+    });
   }
 });
 
