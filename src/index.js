@@ -44,11 +44,8 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
   }
 
   objectInfo.info = attributes;
-  if (attributes) {
-    objectInfo.open();
-  } else {
-    objectInfo.close();
-  }
+  objectInfo.opened = !!attributes;
+
 }, ScreenSpaceEventType.LEFT_CLICK);
 
 

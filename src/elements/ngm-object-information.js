@@ -12,21 +12,13 @@ class NgmObjectInformation extends LitElement {
 
   constructor() {
     super();
-    this.opened = true;
+    this.opened = false;
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
-        this.close();
+        this.opened = false;
       }
     });
-  }
-
-  open() {
-    this.opened = true;
-  }
-
-  close() {
-    this.opened = false;
   }
 
   filterInfo([key, value]) {
@@ -40,7 +32,7 @@ class NgmObjectInformation extends LitElement {
           <div class="header">
             <div style="flex: auto;"></div>
             <div class="ui horizontal link list">
-              <a class="item" href="#"><i @click="${this.close}" class="times icon"></i></a>
+              <a class="item" href="#"><i @click="${() => this.opened = false}" class="times icon"></i></a>
             </div>
           </div>
           <table class="ui compact small very basic table">
