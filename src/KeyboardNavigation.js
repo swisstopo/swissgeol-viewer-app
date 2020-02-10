@@ -1,5 +1,7 @@
 
 import {setCameraHeight} from './utils.js';
+import Math from 'cesium/Core/Math';
+import Cartesian3 from 'cesium/Core/Cartesian3';
 
 const upCodes = ['KeyQ', 'Space', 'NumpadAdd'];
 const downCodes = ['KeyE', 'NumpadSubtract'];
@@ -117,17 +119,26 @@ export default class KeyboardNavigation {
     if (this.flags_.rotateRight) {
       camera.lookRight();
     }
-    if (this.flags_.moveUpward) {
-      // TODO
-    }
-    if (this.flags_.moveDownward) {
-       // TODO
-    }
     if (this.flags_.moveCounterClockwise) {
       camera.twistLeft();
     }
     if (this.flags_.moveClockwise) {
       camera.twistRight();
+    }
+    if (this.flags_.moveUpward || this.flags_.moveDownward) {
+
+      const lookAmount = Math.PI / 1600.0 * (this.flags_.booster ? this.boostFactor_ : 1);
+
+      const direction = new Cartesian3(camera.up.x * 10 + camera.direction.x, camera.up.y * 10 + camera.direction.y, camera.up.z * 10 + camera.direction.z);
+      
+      if (this.flags_.moveUpward) {
+        camera.move(direction, moveAmount);
+        camera.lookDown(lookAmount);
+      }
+      if (this.flags_.moveDownward) {
+        camera.move(direction, -moveAmount);
+        camera.lookUp(lookAmount);
+      }
     }
   }
 }
