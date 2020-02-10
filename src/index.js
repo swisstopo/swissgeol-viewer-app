@@ -38,9 +38,9 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
       object = object.primitive;
     }
     attributes = extractPrimitiveAttributes(object.getProperty ? object : null);
-    if (attributes) {
-      attributes.zoom = () => console.log('should zoom to', objects[0]);
-    }
+    // if (attributes) {
+    //   attributes.zoom = () => console.log('should zoom to', objects[0]);
+    // }
   }
 
   objectInfo.info = attributes;
