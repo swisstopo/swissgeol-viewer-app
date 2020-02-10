@@ -28,6 +28,7 @@
     </div>
 
   </div>
+
   <header>
     <img class="logo" src="src/images/logo-CH.svg">
     <ga-search class="ui small left icon input" types="location" locationOrigins="zipcode,gg25,gazetteer">
@@ -38,7 +39,10 @@
     <div style="flex: auto;"></div>
     <div id="langs" class="ui horizontal selection list"></div>
   </header>
-  <main>
+  <main class="ui dimmable dimmed">
+    <div id="loader" class="ui active inverted dimmer">
+      <div class="ui text loader" data-i18n="loading_message"></div>
+    </div>
     <div class="left sidebar">
       <div id="layers" class="ui segments"></div>
     </div>

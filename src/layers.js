@@ -18,6 +18,7 @@ const swisstopoLabelStyle = {
   disableDepthTestDistance: Infinity,
   anchorLineEnabled: false,
   heightOffset: 200,
+  pointSize: 0,
   labelColor: 'color("black")',
   font: '"bold 32px arial"',
   scaleByDistance: {
