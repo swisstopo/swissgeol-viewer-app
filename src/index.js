@@ -9,7 +9,6 @@ import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
 import './elements/ngm-object-information.js';
-import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes} from './objectInformation.js';
 
@@ -29,8 +28,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
 const objectInfo = document.querySelector('ngm-object-information');
 
-const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
-handler.setInputAction((click) => {
+viewer.screenSpaceEventHandler.setInputAction(click => {
   const objects = viewer.scene.drillPick(click.position, DRILL_PICK_LIMIT);
   let attributes = null;
 
@@ -52,6 +50,17 @@ handler.setInputAction((click) => {
     objectInfo.close();
   }
 }, ScreenSpaceEventType.LEFT_CLICK);
+
+
+viewer.screenSpaceEventHandler.setInputAction(movement => {
+  const object = viewer.scene.pick(movement.endPosition);
+
+  if (object) {
+    viewer.scene.canvas.style.cursor = 'pointer';
+  } else {
+    viewer.scene.canvas.style.cursor = 'default';
+  }
+}, ScreenSpaceEventType.MOUSE_MOVE);
 
 
 const {destination, orientation} = getCameraView();
