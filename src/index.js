@@ -37,10 +37,10 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
     if (!object.getProperty) {
       object = object.primitive;
     }
-    attributes = extractPrimitiveAttributes(object.getProperty ? object : null);
-    // if (attributes) {
-    //   attributes.zoom = () => console.log('should zoom to', objects[0]);
-    // }
+    if (object.getPropertyNames) {
+      attributes = extractPrimitiveAttributes(object);
+     // attributes.zoom = () => console.log('should zoom to', objects[0]);
+    }
   }
 
   objectInfo.info = attributes;
@@ -50,13 +50,7 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
 
 
 viewer.screenSpaceEventHandler.setInputAction(movement => {
-  const object = viewer.scene.pick(movement.endPosition);
-
-  if (object) {
-    viewer.scene.canvas.style.cursor = 'pointer';
-  } else {
-    viewer.scene.canvas.style.cursor = 'default';
-  }
+  viewer.scene.canvas.style.cursor = viewer.scene.pick(movement.endPosition) ? 'pointer' : 'default';
 }, ScreenSpaceEventType.MOUSE_MOVE);
 
 
