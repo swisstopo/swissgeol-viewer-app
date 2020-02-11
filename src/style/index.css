@@ -9,6 +9,9 @@
 @import 'fomantic-ui-css/components/button.css';
 @import 'fomantic-ui-css/components/segment.css';
 @import 'fomantic-ui-css/components/checkbox.css';
+@import 'fomantic-ui-css/components/table.css';
+@import 'fomantic-ui-css/components/dimmer.css';
+@import 'fomantic-ui-css/components/loader.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
@@ -130,4 +133,29 @@ main {
 
 .layer-slider {
   display: flex;
+}
+
+ngm-object-information {
+  position: absolute;
+  z-index: 1;
+  margin: 6px;
+  right: 0;
+}
+
+ngm-object-information .header {
+  display: flex;
+}
+
+ngm-object-information .ui.table {
+  margin-top: 0;
+}
+
+ngm-object-information .ui.table .key {
+  font-weight: 600;
+}
+
+ngm-object-information .ui.table .val {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

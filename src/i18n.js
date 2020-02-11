@@ -2,33 +2,57 @@ import i18next from 'i18next';
 import locI18next from 'loc-i18next';
 import Backend from 'i18next-xhr-backend';
 import {html, render} from 'lit-html';
+import {SUPPORTED_LANGUAGES} from './constants.js';
+import {getURLSearchParams, setURLSearchParams} from './utils.js';
 
-import {appError} from './utils.js';
 
-const LANGS = ['de', 'fr', 'it', 'en', 'rm'];
-
-function detectLanguage() {
-  // detect language and initialize lang
-  const languages = [];
-  if (navigator.languages) {
-    languages.push(...navigator.languages);
-  }
-  if (navigator.language) {
-    languages.push(navigator.language);
+class LanguageDetector {
+  constructor() {
+    this.async = false;
   }
 
-  for (let lang of languages) {
-    lang = lang.substr(0, 2).toLowerCase(); // limit to first 2 characters
-    if (LANGS.includes(lang)) {
-      return lang;
+  init(services, detectorOptions, i18nextOptions) {
+    this.languageUtils = services.languageUtils;
+    this.fallbackLng = i18nextOptions.fallbackLng;
+  }
+
+  detect() {
+    let language = this.fallbackLng;
+
+    const lang = getURLSearchParams().get('lang');
+    // get language from url
+    if (this.languageUtils.isWhitelisted(lang)) {
+      language = lang;
+    } else {
+      // fallback to browser's language
+      const languages = [];
+      if (navigator.languages) {
+        languages.push(...navigator.languages);
+      } else if (navigator.language) {
+        languages.push(navigator.language);
+      }
+      for (const lang of languages) {
+        if (this.languageUtils.isWhitelisted(lang)) {
+          language = lang;
+          break;
+        }
+      }
     }
+    return this.languageUtils.getLanguagePartFromCode(language);
+  }
+
+  cacheUserLanguage(lang) {
+    const params = getURLSearchParams();
+    params.set('lang', lang);
+    setURLSearchParams(params);
   }
 }
+LanguageDetector.type = 'languageDetector';
 
-export function init() {
-  i18next.use(Backend).init({
-    whitelist: LANGS,
-    lng: detectLanguage(),
+export function setupI18n() {
+  i18next.use(Backend).use(LanguageDetector).init({
+    whitelist: SUPPORTED_LANGUAGES,
+    nonExplicitWhitelist: true,
     returnEmptyString: false,
     fallbackLng: 'en',
     //load: 'languageOnly',
@@ -36,29 +60,24 @@ export function init() {
     backend: {
       loadPath: 'locales/{{lng}}.json'
     }
-  }, function(err, t) {
-    const localize = locI18next.init(i18next);
-    function setLanguage(lang) {
-      i18next.changeLanguage(lang, (err, t) => {
-        if (!err) {
-          document.documentElement.lang = lang;
-          localize('[data-i18n]');
-        } else {
-          appError('Could not change language');
-        }
-      });
-    }
-    const templates = LANGS.map(lang => {
-      const onclick = evt => {
-        setLanguage(lang);
-        evt.preventDefault();
-      };
-
-      return html`
-        <a class="item lang-${lang}" @click="${onclick}">${lang.toUpperCase()}</a>
-      `;
-    });
-    render(templates, document.getElementById('langs'));
-    setLanguage(i18next.language);
   });
+
+  const localize = locI18next.init(i18next);
+
+  i18next.on('languageChanged', (lang) => {
+    document.documentElement.lang = lang;
+    localize('[data-i18n]');
+  });
+
+  const templates = SUPPORTED_LANGUAGES.map(lang => {
+    const onclick = evt => {
+      i18next.changeLanguage(lang);
+      evt.preventDefault();
+    };
+    return html`
+      <a class="item lang-${lang}" @click="${onclick}">${lang.toUpperCase()}</a>
+    `;
+  });
+  render(templates, document.getElementById('langs'));
+
 }
