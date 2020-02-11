@@ -99,7 +99,7 @@ export function setupViewer(container) {
 
   scene.imageryLayers.add(imageryLayer);
 
-  new SurfaceColorUpdater(scene, scene.imageryLayers.indexOf(imageryLayer));
+  new SurfaceColorUpdater(scene);
 
   return viewer;
 }
