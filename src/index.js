@@ -13,6 +13,7 @@ import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
+import AreaOfInterestDrawer from './AreaOfInterestDrawer';
 
 setupI18n();
 
@@ -79,3 +80,5 @@ document.querySelector('#fpsMode').addEventListener('click', event => {
 });
 
 setupSearch(viewer, document.querySelector('ga-search'));
+
+new AreaOfInterestDrawer(viewer);
