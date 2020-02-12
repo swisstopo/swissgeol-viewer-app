@@ -12,6 +12,8 @@
 @import 'fomantic-ui-css/components/table.css';
 @import 'fomantic-ui-css/components/dimmer.css';
 @import 'fomantic-ui-css/components/loader.css';
+@import 'fomantic-ui-css/components/accordion.css';
+@import 'fomantic-ui-css/components/popup.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 

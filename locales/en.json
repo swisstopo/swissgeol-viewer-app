@@ -8,5 +8,10 @@
   "loading_message": "Loading, please wait",
   "earthquakes_label": "Earthquakes",
   "search_placeholder": "Search...",
-  "swissnames_label": "Swiss names"
+  "swissnames_label": "Swiss names",
+  "area_of_interest_add_hint": "Hold down left mouse button and drag the cursor to draw area",
+  "area_of_interest_empty_hint": "Click on 'Add Area' button or hold down 'left mouse button + Shift' to draw area",
+  "cancel_area_btn_label": "Cancel Draw",
+  "remove_all_area_btn_label": "Clean Areas",
+  "add_area_btn_label": "Add Area"
 }

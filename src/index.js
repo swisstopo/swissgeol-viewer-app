@@ -13,7 +13,7 @@ import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
-import AreaOfInterestDrawer from './AreaOfInterestDrawer';
+import AreaOfInterestDrawer from './areaOfInterest/AreaOfInterestDrawer.js';
 
 setupI18n();
 
