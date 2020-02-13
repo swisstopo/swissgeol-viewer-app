@@ -3,12 +3,12 @@ import {setCameraHeight} from './utils.js';
 import Math from 'cesium/Core/Math';
 import Cartesian3 from 'cesium/Core/Cartesian3';
 
-const upCodes = ['KeyQ', 'Space', 'NumpadAdd'];
-const downCodes = ['KeyE', 'NumpadSubtract'];
-const forwardCodes = ['KeyW', 'ArrowUp'];
-const backwardCodes = ['KeyS', 'ArrowDown'];
-const leftCodes = ['KeyA', 'ArrowLeft'];
-const rightCodes = ['KeyD', 'ArrowRight'];
+const moveUpCodes = ['KeyQ', 'Space', 'NumpadAdd'];
+const moveDownCodes = ['KeyE', 'NumpadSubtract'];
+const moveForwardCodes = ['KeyW', 'ArrowUp'];
+const moveBackwardCodes = ['KeyS', 'ArrowDown'];
+const moveLeftCodes = ['KeyA', 'ArrowLeft'];
+const moveRightCodes = ['KeyD', 'ArrowRight'];
 
 export default class KeyboardNavigation {
 
@@ -50,17 +50,17 @@ export default class KeyboardNavigation {
   onKey_(event) {
     if (targetNotEditable(event.target)) {
       const pressed = event.type === 'keydown';
-      if (upCodes.includes(event.code)) {
+      if (moveUpCodes.includes(event.code)) {
         this.flags_.moveUp = pressed;
-      } else if (downCodes.includes(event.code)) {
+      } else if (moveDownCodes.includes(event.code)) {
         this.flags_.moveDown = pressed;
-      } else if (forwardCodes.includes(event.code)) {
+      } else if (moveForwardCodes.includes(event.code)) {
         this.flags_.moveForward = pressed;
-      } else if (backwardCodes.includes(event.code)) {
+      } else if (moveBackwardCodes.includes(event.code)) {
         this.flags_.moveBackward = pressed;
-      } else if (leftCodes.includes(event.code)) {
+      } else if (moveLeftCodes.includes(event.code)) {
         this.flags_.moveLeft = pressed;
-      } else if (rightCodes.includes(event.code)) {
+      } else if (moveRightCodes.includes(event.code)) {
         this.flags_.moveRight = pressed;
       } else if (event.code === 'KeyI') {
         this.flags_.moveUpward = pressed;
