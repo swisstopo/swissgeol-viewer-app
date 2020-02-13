@@ -33,8 +33,6 @@ export default class KeyboardNavigation {
       moveBackward: false,
       moveLeft: false,
       moveRight: false,
-      rotateLeft: false,
-      rotateRight: false,
       moveUpward: false,
       moveDownward: false,
       moveClockwise: false,
@@ -61,21 +59,9 @@ export default class KeyboardNavigation {
       } else if (backwardCodes.includes(event.code)) {
         this.flags_.moveBackward = pressed;
       } else if (leftCodes.includes(event.code)) {
-        if (event.ctrlKey) {
-          this.flags_.rotateLeft = pressed;
-          this.flags_.moveLeft = false;
-        } else {
-          this.flags_.moveLeft = pressed;
-          this.flags_.rotateLeft = false;
-        }
+        this.flags_.moveLeft = pressed;
       } else if (rightCodes.includes(event.code)) {
-        if (event.ctrlKey) {
-          this.flags_.rotateRight = pressed;
-          this.flags_.moveRight = false;
-        } else {
-          this.flags_.moveRight = pressed;
-          this.flags_.rotateRight = false;
-        }
+        this.flags_.moveRight = pressed;
       } else if (event.code === 'KeyI') {
         this.flags_.moveUpward = pressed;
       } else if (event.code === 'KeyK') {
@@ -113,12 +99,6 @@ export default class KeyboardNavigation {
     if (this.flags_.moveRight) {
       camera.moveRight(moveAmount);
     }
-    if (this.flags_.rotateLeft) {
-      camera.lookLeft();
-    }
-    if (this.flags_.rotateRight) {
-      camera.lookRight();
-    }
     if (this.flags_.moveCounterClockwise) {
       camera.twistLeft();
     }
@@ -130,7 +110,7 @@ export default class KeyboardNavigation {
       const lookAmount = Math.PI / 1600.0 * (this.flags_.booster ? this.boostFactor_ : 1);
 
       const direction = new Cartesian3(camera.up.x * 10 + camera.direction.x, camera.up.y * 10 + camera.direction.y, camera.up.z * 10 + camera.direction.z);
-      
+
       if (this.flags_.moveUpward) {
         camera.move(direction, moveAmount);
         camera.lookDown(lookAmount);
