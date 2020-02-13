@@ -28,7 +28,7 @@ class NgmObjectInformation extends LitElement {
   }
 
   filterInfo([key, value]) {
-    return key !== 'zoom';
+    return !(value instanceof Function);
   }
 
   render() {
