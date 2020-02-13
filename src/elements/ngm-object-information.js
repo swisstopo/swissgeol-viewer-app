@@ -21,6 +21,12 @@ class NgmObjectInformation extends LitElement {
     });
   }
 
+  updated() {
+    if (!this.opened) {
+      this.dispatchEvent(new CustomEvent('closed'));
+    }
+  }
+
   filterInfo([key, value]) {
     return key !== 'zoom';
   }
