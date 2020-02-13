@@ -18,6 +18,7 @@
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 @import 'search.css';
+@import 'areaOfInterest.css';
 
 [hidden] {
   display: none !important;
@@ -121,6 +122,8 @@ main {
 
 .sidebar {
   min-width: 280px;
+  overflow-y: auto;
+  overflow-x: inherit;
 }
 .sidebar.left {
   border-right: 1px solid rgba(0, 0, 0, 0.1);

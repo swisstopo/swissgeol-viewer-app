@@ -27,6 +27,7 @@ export default class AreaOfInterestDrawer {
     this.selectedArea_ = null;
     this.mouseDown_ = false;
     this.drawMode_ = false;
+    this.areasCounter_ = 0;
     this.defaultAreaColor = Color.BLACK.withAlpha(0.3);
     this.higlightedAreaColor = Color.YELLOW.withAlpha(0.3);
 
@@ -58,9 +59,12 @@ export default class AreaOfInterestDrawer {
     this.viewer_.scene.screenSpaceCameraController.enableLook = false;
     this.viewer_.scene.screenSpaceCameraController.enableRotate = false;
 
+
+    this.areasCounter_ = this.areasCounter_ + 1;
     this.area_ = this.interestAreasDataSource.entities.add({
       selectable: false,
       show: false,
+      name: `Area ${this.areasCounter_}`,
       rectangle: {
         coordinates: this.getAreaLocation,
         material: this.defaultAreaColor
@@ -160,7 +164,12 @@ export default class AreaOfInterestDrawer {
 
   get entitiesList_() {
     return this.interestAreasDataSource.entities.values.map(val => {
-      return {id: val.id, show: val.isShowing, selected: this.selectedArea_ && this.selectedArea_.id === val.id};
+      return {
+        id: val.id,
+        name: val.name,
+        show: val.isShowing,
+        selected: this.selectedArea_ && this.selectedArea_.id === val.id
+      };
     });
   }
 
@@ -174,6 +183,7 @@ export default class AreaOfInterestDrawer {
       this.interestAreasDataSource.entities.removeById(id);
     } else {
       this.interestAreasDataSource.entities.removeAll();
+      this.areasCounter_ = 0;
     }
   }
 
