@@ -20,7 +20,7 @@ export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
           const url = layerUrlTemplate
             .replace('{layer}', config.serverLayerName)
             .replace('{timestamp}', config.timestamps[0])
-            .replace('{format}',config.format);
+            .replace('{format}', config.format);
 
           const imageryProvider = new UrlTemplateImageryProvider({
             url: url,
