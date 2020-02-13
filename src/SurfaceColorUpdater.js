@@ -7,6 +7,7 @@ export default class SurfaceColorUpdater {
   constructor(scene) {
     this.scene_ = scene;
     this.belowSurface = false;
+    this.layersCount_ = 0;
     const checkPosition = this.checkPosition_.bind(this);
     this.scene_.postRender.addEventListener(checkPosition);
   }
@@ -27,12 +28,17 @@ export default class SurfaceColorUpdater {
 
     const heightDifference = height - terrainHeight;
 
-    if (heightDifference <= 0 && !this.belowSurface) {
+    const currentLayersCount = this.scene_.imageryLayers.length;
+    const layersCountChanged = currentLayersCount !== this.layersCount_;
+
+    if (heightDifference <= 0 && (!this.belowSurface || layersCountChanged)) {
       this.updateLayers_(BELOW_SURFACE_CONFIGURATION);
       this.belowSurface = true;
-    } else if (heightDifference > 0 && this.belowSurface) {
+      this.layersCount_ = currentLayersCount;
+    } else if (heightDifference > 0 && (this.belowSurface || layersCountChanged)) {
       this.updateLayers_(ABOVE_SURFACE_CONFIGURATION);
       this.belowSurface = false;
+      this.layersCount_ = currentLayersCount;
     }
   }
 
