@@ -1,7 +1,6 @@
 
 import {setCameraHeight} from './utils.js';
 import Math from 'cesium/Core/Math';
-import Cartesian3 from 'cesium/Core/Cartesian3';
 
 const moveUpCodes = ['KeyQ', 'Space', 'NumpadAdd'];
 const moveDownCodes = ['KeyE', 'NumpadSubtract'];
@@ -14,14 +13,16 @@ export default class KeyboardNavigation {
 
   /**
    * @param {import('cesium/Scene/Scene').default} scene
-   * @param {number} moveAmount
-   * @param {number} boostFactor
+   * @param {number} [moveAmount]
+   * @param {number} [rotateAmount]
+   * @param {number} [boostFactor]
    */
-  constructor(scene, moveAmount = 50, boostFactor = 4) {
+  constructor(scene, moveAmount = 50, rotateAmount = Math.PI / 200, boostFactor = 4) {
 
     this.scene_ = scene;
 
     this.moveAmount_ = moveAmount;
+    this.rotateAmount_ = rotateAmount;
 
     this.boostFactor_ = boostFactor;
 
@@ -33,10 +34,10 @@ export default class KeyboardNavigation {
       moveBackward: false,
       moveLeft: false,
       moveRight: false,
-      moveUpward: false,
-      moveDownward: false,
-      moveClockwise: false,
-      moveCounterClockwise: false
+      lookUp: false,
+      lookDown: false,
+      lookLeft: false,
+      lookRight: false
     };
 
     const onKey = this.onKey_.bind(this);
@@ -63,13 +64,13 @@ export default class KeyboardNavigation {
       } else if (moveRightCodes.includes(event.code)) {
         this.flags_.moveRight = pressed;
       } else if (event.code === 'KeyI') {
-        this.flags_.moveUpward = pressed;
+        this.flags_.lookUp = pressed;
       } else if (event.code === 'KeyK') {
-        this.flags_.moveDownward = pressed;
+        this.flags_.lookDown = pressed;
       } else if (event.code === 'KeyJ') {
-        this.flags_.moveCounterClockwise = pressed;
+        this.flags_.lookLeft = pressed;
       } else if (event.code === 'KeyL') {
-        this.flags_.moveClockwise = pressed;
+        this.flags_.lookRight = pressed;
       }
       this.flags_.booster = event.shiftKey;
       this.scene_.requestRender();
@@ -80,6 +81,10 @@ export default class KeyboardNavigation {
     const camera = this.scene_.camera;
 
     const moveAmount = this.moveAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
+    const rotateAmount = this.rotateAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
+
+    let heading;
+    let pitch;
 
     if (this.flags_.moveUp) {
       setCameraHeight(camera, camera.positionCartographic.height + moveAmount);
@@ -99,26 +104,29 @@ export default class KeyboardNavigation {
     if (this.flags_.moveRight) {
       camera.moveRight(moveAmount);
     }
-    if (this.flags_.moveCounterClockwise) {
-      camera.twistLeft();
+    if (this.flags_.lookLeft) {
+      heading = camera.heading - rotateAmount;
+      pitch = camera.pitch;
     }
-    if (this.flags_.moveClockwise) {
-      camera.twistRight();
+    if (this.flags_.lookRight) {
+      heading = camera.heading + rotateAmount;
+      pitch = camera.pitch;
     }
-    if (this.flags_.moveUpward || this.flags_.moveDownward) {
-
-      const lookAmount = Math.PI / 1600.0 * (this.flags_.booster ? this.boostFactor_ : 1);
-
-      const direction = new Cartesian3(camera.up.x * 10 + camera.direction.x, camera.up.y * 10 + camera.direction.y, camera.up.z * 10 + camera.direction.z);
-
-      if (this.flags_.moveUpward) {
-        camera.move(direction, moveAmount);
-        camera.lookDown(lookAmount);
-      }
-      if (this.flags_.moveDownward) {
-        camera.move(direction, -moveAmount);
-        camera.lookUp(lookAmount);
-      }
+    if (this.flags_.lookUp) {
+      heading = camera.heading;
+      pitch = camera.pitch + rotateAmount;
+    }
+    if (this.flags_.lookDown) {
+      heading = camera.heading;
+      pitch = camera.pitch - rotateAmount;
+    }
+    if (heading !== undefined && pitch !== undefined) {
+      camera.setView({
+        orientation: {
+          heading: heading,
+          pitch: pitch
+        }
+      });
     }
   }
 }
