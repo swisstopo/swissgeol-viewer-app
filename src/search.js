@@ -16,12 +16,18 @@ export function setupSearch(viewer, element) {
   getLayersConfig().then(layersConfig => {
     element.filterResults = result => {
       if (result.properties.origin === 'layer') {
-        return layersConfig[result.properties.layer].type === 'wmts';
+        const layerConfig = layersConfig[result.properties.layer];
+        return !!layerConfig && layerConfig.type === 'wmts';
       } else {
         return true;
       }
     };
   });
+
+  element.renderResult = (result, label) => {
+    const iconName = result.properties.origin === 'layer' ? 'layer group' : 'map pin';
+    return `<i class="${iconName} grey icon"></i> ${label}`;
+  };
 
   // location search result
   element.addEventListener('submit', event => {
