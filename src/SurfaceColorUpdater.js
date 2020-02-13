@@ -13,11 +13,24 @@ export default class SurfaceColorUpdater {
 
   checkPosition_() {
     const camera = this.scene_.camera;
-    const height = camera.positionCartographic.height; // this.scene_.globe.getHeight(camera.positionCartographic);
-    if (height <= 0 && !this.belowSurface) {
+    const height = camera.positionCartographic.height;
+    let terrainHeight = 0;
+    if (height < 4000 && height > 0) {
+      // only retrieve terrain height when in a range where there exist such terrain in Switzerland
+      // otherwise we can take the ellipsoid
+      terrainHeight = this.scene_.globe.getHeight(camera.positionCartographic);
+    }
+    if (terrainHeight === undefined) {
+      // If there is no terrain data, do not update the state
+      return;
+    }
+
+    const heightDifference = height - terrainHeight;
+
+    if (heightDifference <= 0 && !this.belowSurface) {
       this.updateLayers_(BELOW_SURFACE_CONFIGURATION);
       this.belowSurface = true;
-    } else if (height > 0 && this.belowSurface) {
+    } else if (heightDifference > 0 && this.belowSurface) {
       this.updateLayers_(ABOVE_SURFACE_CONFIGURATION);
       this.belowSurface = false;
     }
