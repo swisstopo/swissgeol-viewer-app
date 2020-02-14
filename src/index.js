@@ -14,6 +14,7 @@ import {extractPrimitiveAttributes} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
 import Color from 'cesium/Core/Color.js';
+import JulianDate from 'cesium/Core/JulianDate.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 
 setupI18n();
@@ -58,8 +59,12 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
     }
     if (object.getPropertyNames) {
       attributes = extractPrimitiveAttributes(object);
-     // attributes.zoom = () => console.log('should zoom to', objects[0]);
-     silhouette.selected = [object];
+      // attributes.zoom = () => console.log('should zoom to', objects[0]);
+      silhouette.selected = [object];
+    } else if (objects[0].id && objects[0].id.properties) {
+      const props = objects[0].id.properties;
+      attributes = props.getValue(JulianDate.fromDate(new Date()));
+      silhouette.selected = [object];
     }
   }
 

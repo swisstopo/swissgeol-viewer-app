@@ -26,6 +26,9 @@ export default class EarthquakeVisualizer {
           radii: new Cartesian3(size, size, size),
           material: getColorForMagnitude(data.Magnitude),
           heightReference: HeightReference.RELATIVE_TO_GROUND
+        },
+        properties: {
+          ...data
         }
       });
     });
