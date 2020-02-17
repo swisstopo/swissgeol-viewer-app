@@ -16,6 +16,9 @@ import {getCameraView, syncCamera} from './permalink.js';
 import Color from 'cesium/Core/Color.js';
 import JulianDate from 'cesium/Core/JulianDate.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
+import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
+import {EARTHQUAKE_SPHERE_SIZE_COEF} from './earthquakeVisualization/helpers';
+import Math from 'cesium/Core/Math.js';
 
 setupI18n();
 
@@ -62,8 +65,13 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
       // attributes.zoom = () => console.log('should zoom to', objects[0]);
       silhouette.selected = [object];
     } else if (objects[0].id && objects[0].id.properties) {
-      const props = objects[0].id.properties;
-      attributes = props.getValue(JulianDate.fromDate(new Date()));
+      const curentDate = JulianDate.fromDate(new Date());
+      const props = objects[0].id.properties.getValue(curentDate);
+      attributes = {...props};
+      attributes.zoom = () => viewer.zoomTo(objects[0].id, props.zoomHeadingPitchRange);
+      if (attributes.zoomHeadingPitchRange) {
+        delete attributes.zoomHeadingPitchRange;
+      }
       silhouette.selected = [object];
     }
   }
