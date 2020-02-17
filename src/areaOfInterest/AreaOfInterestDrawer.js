@@ -7,10 +7,10 @@ import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 import CallbackProperty from 'cesium/DataSources/CallbackProperty.js';
-import CustomDataSource from 'cesium/DataSources/CustomDataSource';
-import defined from 'cesium/Core/defined';
+import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
+import defined from 'cesium/Core/defined.js';
 import {render} from 'lit-html';
-import getTemplate from './areaOfInterestTemplate';
+import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 
 export default class AreaOfInterestDrawer {
@@ -198,10 +198,7 @@ export default class AreaOfInterestDrawer {
 
   flyToArea_(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
-    this.viewer_.scene.camera.flyTo({
-      destination: entity.rectangle.coordinates.getValue()
-
-    });
+    this.viewer_.flyTo(entity);
     this.pickArea_(id);
   }
 }
