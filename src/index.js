@@ -67,6 +67,7 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
       attributes = {...props};
       attributes.zoom = () => viewer.zoomTo(objects[0].id, props.zoomHeadingPitchRange);
       if (attributes.zoomHeadingPitchRange) {
+        // Don't show the value in the object info window
         delete attributes.zoomHeadingPitchRange;
       }
       silhouette.selected = [object];

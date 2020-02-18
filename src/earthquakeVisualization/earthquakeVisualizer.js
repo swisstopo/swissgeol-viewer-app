@@ -28,7 +28,7 @@ export default class EarthquakeVisualizer {
       const cameraDistanse = size * 4;
       const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.toRadians(25), cameraDistanse);
       return this.earthquakeDataSource.entities.add({
-        position,
+        position: position,
         ellipsoid: {
           radii: new Cartesian3(size, size, size),
           material: getColorForMagnitude(data.Magnitude),
