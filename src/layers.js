@@ -10,6 +10,7 @@ import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer
 import LabelStyle from 'cesium/Scene/LabelStyle.js';
 
 import i18next from 'i18next';
+import {getLayerParams, syncLayersParam} from './permalink';
 
 
 const swisstopoLabelStyle = {
@@ -61,25 +62,31 @@ const layers = [{
   label: t('swissnames_label'),
   style: swisstopoLabelStyle,
   visible: true,
+  layer: 'ch.swisstopo.swissnames3d.3d'
 }, {
   type: 'ion3dtiles',
   assetId: 68857,
   label: t('boreholes_label'),
+  layer: 'boreholes' // TODO change to actual
 }, {
   type: 'ion3dtiles',
   assetId: 68722,
   label: t('base_mesozoic_label'),
+  layer: 'base_mesozoic' // TODO change to actual
 }, {
   type: 'ion3dtiles',
   assetId: 68881,
   label: t('cross_section_label'),
+  layer: 'cross_section' // TODO change to actual
 }, {
   type: 'ion3dtiles',
   assetId: 69310,
   label: t('SG_test7_cesiumZip_noFanout'),
+  layer: 'SG_test7_cesiumZip_noFanout' // TODO change to actual
 }, {
   type: 'earthquakes',
   label: t('earthquakes_label'),
+  layer: 'earthquakes' // TODO change to actual
 }];
 
 //   type: 'ionGeoJSON',
@@ -175,14 +182,26 @@ const factories = {
 function doRender(viewer, target) {
   const templates = layers.map((config, index) => {
     if (!config.promise) {
+      const visibleLayers = getLayerParams();
+      if (visibleLayers && visibleLayers.length) {
+        const layerParams = visibleLayers.find(layer => layer.name === config.layer);
+        config.visible = !!layerParams;
+        config.opacity = layerParams ? layerParams.opacity : 1;
+      } else {
+        syncLayersParam(layers);
+      }
       config.promise = factories[config.type](viewer, config);
     }
     const changeVisibility = evt => {
       config.setVisibility(evt.target.checked);
+      config.visible = evt.target.checked;
+      syncLayersParam(layers);
       viewer.scene.requestRender();
     };
     const changeOpacity = evt => {
       config.setOpacity(evt.target.value);
+      config.opacity = evt.target.value;
+      syncLayersParam(layers);
       viewer.scene.requestRender();
     };
 
