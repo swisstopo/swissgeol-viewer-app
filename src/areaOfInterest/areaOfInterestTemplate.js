@@ -11,7 +11,8 @@ const btnTranslation = {
   hide: 'hide_btn_tooltip',
   remove: 'remove_btn_tooltip',
   flyTo: 'fly_to_btn_tooltip',
-  unhide: 'unhide_btn_tooltip'
+  unhide: 'unhide_btn_tooltip',
+  upload: 'upload_btn_label'
 };
 
 export default function getTemplate() {
@@ -25,10 +26,17 @@ export default function getTemplate() {
         <button class="ui blue button" @click=${this.onAddAreaClick_.bind(this)} data-i18n>
             <i class="plus icon"></i>${i18next.t(btnTranslation.add)}
         </button>
-        <button class="ui red button" @click=${this.onRemoveEntityClick_.bind(this, null)} data-i18n>
-            <i class="trash alternate outline icon"></i>${i18next.t(btnTranslation.removeAll)}
+        <button class="ui blue button" @click=${this.uploadAreaClick_.bind(this)} data-i18n>
+            <i class="file upload icon"></i>${i18next.t(btnTranslation.upload)}
         </button>
     </div>
+    <button class="ui tiny red fluid button"
+            @click=${this.onRemoveEntityClick_.bind(this, null)}
+            data-i18n
+            ?hidden=${this.drawMode_}>
+            <i class="trash alternate outline icon"></i>${i18next.t(btnTranslation.removeAll)}
+    </button>
+    <input id='areaUpload' type='file' hidden @change=${this.uploadArea_.bind(this)} />
     <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.drawMode_}>
         <button class="ui button" @click=${this.cancelDraw_.bind(this)} data-i18n>${i18next.t(btnTranslation.cancel)}</button>
         <button class="ui button ngm-help-btn"

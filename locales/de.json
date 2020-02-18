@@ -16,5 +16,6 @@
   "fly_to_btn_tooltip": "",
   "remove_btn_tooltip": "",
   "hide_btn_tooltip": "",
-  "unhide_btn_tooltip": ""
+  "unhide_btn_tooltip": "",
+  "upload_btn_label": ""
 }

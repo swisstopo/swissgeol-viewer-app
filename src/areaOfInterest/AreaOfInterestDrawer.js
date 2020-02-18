@@ -8,6 +8,7 @@ import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 import CallbackProperty from 'cesium/DataSources/CallbackProperty.js';
 import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
+import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
 import defined from 'cesium/Core/defined.js';
 import {render} from 'lit-html';
 import getTemplate from './areaOfInterestTemplate.js';
@@ -144,12 +145,21 @@ export default class AreaOfInterestDrawer {
 
   pickArea_(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
+    console.log(entity);
     if (this.selectedArea_) {
-      this.selectedArea_.rectangle.material = this.defaultAreaColor;
+      if (this.selectedArea_.rectangle) {
+        this.selectedArea_.rectangle.material = this.defaultAreaColor;
+      } else {
+        this.selectedArea_.polygon.material = this.defaultAreaColor;
+      }
       this.selectedArea_ = null;
     }
     this.selectedArea_ = entity;
-    this.selectedArea_.rectangle.material = this.higlightedAreaColor;
+    if (this.selectedArea_.rectangle) {
+      this.selectedArea_.rectangle.material = this.higlightedAreaColor;
+    } else {
+      this.selectedArea_.polygon.material = this.higlightedAreaColor;
+    }
   }
 
   doRender_() {
@@ -200,5 +210,30 @@ export default class AreaOfInterestDrawer {
     const entity = this.interestAreasDataSource.entities.getById(id);
     this.viewer_.flyTo(entity);
     this.pickArea_(id);
+  }
+
+  uploadAreaClick_() {
+    document.getElementById('areaUpload').click();
+  }
+
+  async uploadArea_(evt) {
+    console.log(evt.target);
+    const reader = new FileReader();
+    reader.onloadend = (() => async function (event) {
+      console.log(event);
+      const kmlDataSource = await KmlDataSource.load(event.target.result,
+        {
+          camera: this.viewer_.scene.camera,
+          canvas: this.viewer_.scene.canvas
+        });
+      console.log(kmlDataSource);
+      kmlDataSource.entities.values.forEach(val => {
+        this.interestAreasDataSource
+          .entities.add(val);
+      });
+      // await this.viewer_.dataSources.add(kmlDataSource);
+      // this.viewer_.flyTo(kmlDataSource.entities.values[2]);
+    }.bind(this))();
+    reader.readAsDataURL(evt.target.files[0]);
   }
 }

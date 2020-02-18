@@ -17,5 +17,6 @@
   "fly_to_btn_tooltip": "Zoom To",
   "remove_btn_tooltip": "Remove",
   "hide_btn_tooltip": "Hide",
-  "unhide_btn_tooltip": "Unhide"
+  "unhide_btn_tooltip": "Unhide",
+  "upload_btn_label": "Upload Area"
 }
