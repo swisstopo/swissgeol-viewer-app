@@ -16,9 +16,6 @@ import {getCameraView, syncCamera} from './permalink.js';
 import Color from 'cesium/Core/Color.js';
 import JulianDate from 'cesium/Core/JulianDate.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
-import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
-import {EARTHQUAKE_SPHERE_SIZE_COEF} from './earthquakeVisualization/helpers';
-import Math from 'cesium/Core/Math.js';
 
 setupI18n();
 
