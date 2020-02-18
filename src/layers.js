@@ -55,7 +55,7 @@ const layers = [{
   layer: 'ch.swisstopo.geologie-geocover',
   visible: true,
   opacity: 0.7,
-},{
+}, {
   type: '3dtiles',
   url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
   label: t('swissnames_label'),

@@ -10,9 +10,9 @@
     "postinstall": "scripts/npm_postinstall.sh"
   },
   "dependencies": {
-    "@geoblocks/ga-search": "^0.0.5",
+    "@geoblocks/ga-search": "^0.0.8",
     "@webcomponents/webcomponentsjs": "^2.4.1",
-    "cesium": "https://github.com/AnalyticalGraphicsInc/cesium/archive/65f33d4.tar.gz",
+    "cesium": "https://github.com/AnalyticalGraphicsInc/cesium/archive/f03a1d1.tar.gz",
     "fomantic-ui-css": "^2.8.3",
     "i18next": "^19.1.0",
     "i18next-xhr-backend": "^3.2.2",

@@ -14,6 +14,9 @@ import {extractPrimitiveAttributes} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
 import AreaOfInterestDrawer from './areaOfInterest/AreaOfInterestDrawer.js';
+import Color from 'cesium/Core/Color.js';
+import JulianDate from 'cesium/Core/JulianDate.js';
+import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 
 setupI18n();
 
@@ -32,7 +35,21 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
 const objectInfo = document.querySelector('ngm-object-information');
 
+const silhouette = PostProcessStageLibrary.createEdgeDetectionStage();
+silhouette.uniforms.color = Color.LIME;
+silhouette.uniforms.length = 0.01;
+silhouette.selected = [];
+
+objectInfo.addEventListener('closed', () => {
+  silhouette.selected = [];
+  viewer.scene.requestRender();
+});
+
+viewer.scene.postProcessStages.add(PostProcessStageLibrary.createSilhouetteStage([silhouette]));
+
 viewer.screenSpaceEventHandler.setInputAction(click => {
+  silhouette.selected = [];
+
   const objects = viewer.scene.drillPick(click.position, DRILL_PICK_LIMIT);
   let attributes = null;
 
@@ -43,12 +60,19 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
     }
     if (object.getPropertyNames) {
       attributes = extractPrimitiveAttributes(object);
-     // attributes.zoom = () => console.log('should zoom to', objects[0]);
+      // attributes.zoom = () => console.log('should zoom to', objects[0]);
+      silhouette.selected = [object];
+    } else if (objects[0].id && objects[0].id.properties) {
+      const props = objects[0].id.properties;
+      attributes = props.getValue(JulianDate.fromDate(new Date()));
+      silhouette.selected = [object];
     }
   }
 
   objectInfo.info = attributes;
   objectInfo.opened = !!attributes;
+
+  viewer.scene.requestRender();
 
 }, ScreenSpaceEventType.LEFT_CLICK);
 

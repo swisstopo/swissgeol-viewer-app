@@ -1,25 +1,28 @@
 
 import {setCameraHeight} from './utils.js';
+import Math from 'cesium/Core/Math';
 
-const upCodes = ['KeyQ', 'Space', 'NumpadAdd'];
-const downCodes = ['KeyE', 'NumpadSubtract'];
-const forwardCodes = ['KeyW', 'ArrowUp'];
-const backwardCodes = ['KeyS', 'ArrowDown'];
-const leftCodes = ['KeyA', 'ArrowLeft'];
-const rightCodes = ['KeyD', 'ArrowRight'];
+const moveUpCodes = ['KeyQ', 'Space', 'NumpadAdd'];
+const moveDownCodes = ['KeyE', 'NumpadSubtract'];
+const moveForwardCodes = ['KeyW', 'ArrowUp'];
+const moveBackwardCodes = ['KeyS', 'ArrowDown'];
+const moveLeftCodes = ['KeyA', 'ArrowLeft'];
+const moveRightCodes = ['KeyD', 'ArrowRight'];
 
 export default class KeyboardNavigation {
 
   /**
    * @param {import('cesium/Scene/Scene').default} scene
-   * @param {number} moveAmount
-   * @param {number} boostFactor
+   * @param {number} [moveAmount]
+   * @param {number} [rotateAmount]
+   * @param {number} [boostFactor]
    */
-  constructor(scene, moveAmount = 50, boostFactor = 4) {
+  constructor(scene, moveAmount = 50, rotateAmount = Math.PI / 200, boostFactor = 4) {
 
     this.scene_ = scene;
 
     this.moveAmount_ = moveAmount;
+    this.rotateAmount_ = rotateAmount;
 
     this.boostFactor_ = boostFactor;
 
@@ -31,8 +34,10 @@ export default class KeyboardNavigation {
       moveBackward: false,
       moveLeft: false,
       moveRight: false,
-      rotateLeft: false,
-      rotateRight: false
+      lookUp: false,
+      lookDown: false,
+      lookLeft: false,
+      lookRight: false
     };
 
     const onKey = this.onKey_.bind(this);
@@ -46,30 +51,26 @@ export default class KeyboardNavigation {
   onKey_(event) {
     if (targetNotEditable(event.target)) {
       const pressed = event.type === 'keydown';
-      if (upCodes.includes(event.code)) {
+      if (moveUpCodes.includes(event.code)) {
         this.flags_.moveUp = pressed;
-      } else if (downCodes.includes(event.code)) {
+      } else if (moveDownCodes.includes(event.code)) {
         this.flags_.moveDown = pressed;
-      } else if (forwardCodes.includes(event.code)) {
+      } else if (moveForwardCodes.includes(event.code)) {
         this.flags_.moveForward = pressed;
-      } else if (backwardCodes.includes(event.code)) {
+      } else if (moveBackwardCodes.includes(event.code)) {
         this.flags_.moveBackward = pressed;
-      } else if (leftCodes.includes(event.code)) {
-        if (event.ctrlKey) {
-          this.flags_.rotateLeft = pressed;
-          this.flags_.moveLeft = false;
-        } else {
-          this.flags_.moveLeft = pressed;
-          this.flags_.rotateLeft = false;
-        }
-      } else if (rightCodes.includes(event.code)) {
-        if (event.ctrlKey) {
-          this.flags_.rotateRight = pressed;
-          this.flags_.moveRight = false;
-        } else {
-          this.flags_.moveRight = pressed;
-          this.flags_.rotateRight = false;
-        }
+      } else if (moveLeftCodes.includes(event.code)) {
+        this.flags_.moveLeft = pressed;
+      } else if (moveRightCodes.includes(event.code)) {
+        this.flags_.moveRight = pressed;
+      } else if (event.code === 'KeyI') {
+        this.flags_.lookUp = pressed;
+      } else if (event.code === 'KeyK') {
+        this.flags_.lookDown = pressed;
+      } else if (event.code === 'KeyJ') {
+        this.flags_.lookLeft = pressed;
+      } else if (event.code === 'KeyL') {
+        this.flags_.lookRight = pressed;
       }
       this.flags_.booster = event.shiftKey;
       this.scene_.requestRender();
@@ -80,6 +81,10 @@ export default class KeyboardNavigation {
     const camera = this.scene_.camera;
 
     const moveAmount = this.moveAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
+    const rotateAmount = this.rotateAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
+
+    let heading;
+    let pitch;
 
     if (this.flags_.moveUp) {
       setCameraHeight(camera, camera.positionCartographic.height + moveAmount);
@@ -99,13 +104,30 @@ export default class KeyboardNavigation {
     if (this.flags_.moveRight) {
       camera.moveRight(moveAmount);
     }
-    if (this.flags_.rotateLeft) {
-      camera.lookLeft();
+    if (this.flags_.lookLeft) {
+      heading = camera.heading - rotateAmount;
+      pitch = camera.pitch;
     }
-    if (this.flags_.rotateRight) {
-      camera.lookRight();
+    if (this.flags_.lookRight) {
+      heading = camera.heading + rotateAmount;
+      pitch = camera.pitch;
     }
-
+    if (this.flags_.lookUp) {
+      heading = camera.heading;
+      pitch = camera.pitch + rotateAmount;
+    }
+    if (this.flags_.lookDown) {
+      heading = camera.heading;
+      pitch = camera.pitch - rotateAmount;
+    }
+    if (heading !== undefined && pitch !== undefined) {
+      camera.setView({
+        orientation: {
+          heading: heading,
+          pitch: pitch
+        }
+      });
+    }
   }
 }
 
