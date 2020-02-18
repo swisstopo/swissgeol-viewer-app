@@ -62,8 +62,14 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
       // attributes.zoom = () => console.log('should zoom to', objects[0]);
       silhouette.selected = [object];
     } else if (objects[0].id && objects[0].id.properties) {
-      const props = objects[0].id.properties;
-      attributes = props.getValue(JulianDate.fromDate(new Date()));
+      const curentDate = JulianDate.fromDate(new Date());
+      const props = objects[0].id.properties.getValue(curentDate);
+      attributes = {...props};
+      attributes.zoom = () => viewer.zoomTo(objects[0].id, props.zoomHeadingPitchRange);
+      if (attributes.zoomHeadingPitchRange) {
+        // Don't show the value in the object info window
+        delete attributes.zoomHeadingPitchRange;
+      }
       silhouette.selected = [object];
     }
   }
