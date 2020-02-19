@@ -1,6 +1,5 @@
 import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
-import Color from 'cesium/Core/Color.js';
 import KeyboardEventModifier from 'cesium/Core/KeyboardEventModifier.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
@@ -11,9 +10,12 @@ import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
 import Entity from 'cesium/DataSources/Entity.js';
 import defined from 'cesium/Core/defined.js';
+import Color from 'cesium/Core/Color.js';
 import {render} from 'lit-html';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
+import {DEFAULT_AOI_COLOR} from '../constants';
+import {updateColor} from './helpers';
 
 export default class AreaOfInterestDrawer {
   constructor(viewer) {
@@ -30,8 +32,6 @@ export default class AreaOfInterestDrawer {
     this.mouseDown_ = false;
     this.drawMode_ = false;
     this.areasCounter_ = 0;
-    this.defaultAreaColor = Color.BLACK.withAlpha(0.3);
-    this.higlightedAreaColor = Color.YELLOW.withAlpha(0.3);
 
     this.screenSpaceEventHandler_.setInputAction(this.drawArea_.bind(this), ScreenSpaceEventType.MOUSE_MOVE, KeyboardEventModifier.SHIFT);
 
@@ -70,7 +70,7 @@ export default class AreaOfInterestDrawer {
       name: `Area ${this.areasCounter_}`,
       rectangle: {
         coordinates: this.getAreaLocation,
-        material: this.defaultAreaColor
+        material: DEFAULT_AOI_COLOR
       }
     });
 
@@ -139,48 +139,28 @@ export default class AreaOfInterestDrawer {
     if (defined(pickedObject) && this.interestAreasDataSource.entities.contains(pickedObject.id)) {
       this.pickArea_(pickedObject.id.id);
     } else if (this.selectedArea_) {
-      this.updateColor(this.selectedArea_, false);
+      updateColor(this.selectedArea_, false);
       this.selectedArea_ = null;
       this.doRender_();
     }
   }
 
   pickArea_(id) {
+    if (this.selectedArea_ && this.selectedArea_.id === id) {
+      return;
+    }
     const entity = this.interestAreasDataSource.entities.getById(id);
     if (this.selectedArea_) {
-      this.updateColor(this.selectedArea_, false);
+      updateColor(this.selectedArea_, false);
       this.selectedArea_ = null;
     }
     this.selectedArea_ = entity;
-    this.updateColor(this.selectedArea_, true);
-  }
-
-  updateColor(entity, selected) {
-    if (selected) {
-      if (entity.rectangle) {
-        entity.rectangle.material = this.higlightedAreaColor;
-      } else if (entity.polygon) {
-        entity.polygon.material = this.higlightedAreaColor;
-        entity.polygon.fill = true;
-      }
-    } else {
-      if (entity.rectangle) {
-        entity.rectangle.material = this.defaultAreaColor;
-      } else if (this.selectedArea_.polygon) {
-        entity.polygon.material = this.defaultAreaColor;
-        entity.polygon.fill = false;
-      }
-    }
+    updateColor(this.selectedArea_, true);
   }
 
   doRender_() {
     const element = document.getElementById('areasOfInterest');
     render(getTemplate.call(this), element);
-  }
-
-  onAccordionTitleClick(evt) {
-    evt.target.classList.toggle('active');
-    evt.target.nextElementSibling.classList.toggle('active');
   }
 
   get entitiesList_() {
@@ -223,22 +203,27 @@ export default class AreaOfInterestDrawer {
     this.pickArea_(id);
   }
 
-  uploadAreaClick_() {
-    document.getElementById('areaUpload').click();
-  }
-
   async uploadArea_(evt) {
-    const kmlDataSource = await KmlDataSource.load(evt.target.files[0],
-      {
-        camera: this.viewer_.scene.camera,
-        canvas: this.viewer_.scene.canvas
-      });
+    if (evt.target && evt.target.files[0]) {
+      if (!evt.target.files[0].type.includes('.kml')) {
 
-    const entity = new Entity();
+        return;
+      }
+      const kmlDataSource = await KmlDataSource.load(evt.target.files[0],
+        {
+          camera: this.viewer_.scene.camera,
+          canvas: this.viewer_.scene.canvas,
+          clampToGround: true
+        });
 
-    kmlDataSource.entities.values.forEach(ent => entity.merge(ent));
+      const entity = new Entity();
+      kmlDataSource.entities.values.forEach(ent => entity.merge(ent));
+      entity.polygon.fill = true;
+      entity.polygon.material = DEFAULT_AOI_COLOR;
 
-    this.interestAreasDataSource.entities.add(entity);
-    this.viewer_.flyTo(entity);
+      this.interestAreasDataSource.entities.add(entity);
+      this.viewer_.flyTo(entity);
+      evt.target.value = null;
+    }
   }
 }

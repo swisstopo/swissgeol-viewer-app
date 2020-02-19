@@ -19,7 +19,7 @@
 
 @import 'search.css';
 @import 'ngm-object-information.css';
-@import 'areaOfInterest.css';
+@import 'area-of-interest.css';
 
 [hidden] {
   display: none !important;

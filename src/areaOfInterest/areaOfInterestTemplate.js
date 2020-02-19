@@ -1,6 +1,8 @@
 import {html} from 'lit-html';
 import {repeat} from 'lit-html/directives/repeat';
 import i18next from 'i18next';
+import {onAccordionTitleClick} from './helpers.js';
+import {clickOnElement} from '../utils.js';
 
 const tooltipTranslationLabel = 'area_of_interest_add_hint';
 const hintTranslationLabel = 'area_of_interest_empty_hint';
@@ -15,18 +17,20 @@ const btnTranslation = {
   upload: 'upload_btn_label'
 };
 
+const areaUploadInputId = 'areaUpload';
+
 export default function getTemplate() {
   return html`
-  <div class="title" @click=${this.onAccordionTitleClick}>
+  <div class="title" @click=${onAccordionTitleClick}>
     <i class="dropdown icon"></i>
     Areas of Interest
   </div>
   <div class="content">
-    <div class="ui tiny fluid buttons" ?hidden=${this.drawMode_}>
+    <div class="ui tiny fluid buttons ngm-new-aoi-container" ?hidden=${this.drawMode_}>
         <button class="ui blue button" @click=${this.onAddAreaClick_.bind(this)} data-i18n>
             <i class="plus icon"></i>${i18next.t(btnTranslation.add)}
         </button>
-        <button class="ui blue button" @click=${this.uploadAreaClick_.bind(this)} data-i18n>
+        <button class="ui blue button" @click=${clickOnElement.bind(null, areaUploadInputId)} data-i18n>
             <i class="file upload icon"></i>${i18next.t(btnTranslation.upload)}
         </button>
     </div>
@@ -36,7 +40,7 @@ export default function getTemplate() {
             ?hidden=${this.drawMode_}>
             <i class="trash alternate outline icon"></i>${i18next.t(btnTranslation.removeAll)}
     </button>
-    <input id='areaUpload' type='file' hidden @change=${this.uploadArea_.bind(this)} />
+    <input id="${areaUploadInputId}" type='file' accept=".kml,.KML" hidden @change=${this.uploadArea_.bind(this)} />
     <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.drawMode_}>
         <button class="ui button" @click=${this.cancelDraw_.bind(this)} data-i18n>${i18next.t(btnTranslation.cancel)}</button>
         <button class="ui button ngm-help-btn"
@@ -51,7 +55,7 @@ export default function getTemplate() {
      ${repeat(this.entitiesList_, (i) => i.id, (i, index) =>
     html`
       <div class="ui segment ${i.selected ? 'secondary' : ''} ngm-aoi-segment">
-        <label>${i.name}</label>
+        <label class="ngm-aoi-title">${i.name}</label>
         <div class="ui small basic icon buttons">
             <button
             class="ui button"

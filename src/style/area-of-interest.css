@@ -27,3 +27,13 @@
   text-align: center;
   white-space: normal;
 }
+
+.ngm-new-aoi-container.ui.buttons {
+  margin-bottom: 1px;
+}
+
+.ngm-aoi-title {
+  max-width: 100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

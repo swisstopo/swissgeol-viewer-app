@@ -32,3 +32,10 @@ export function getURLSearchParams() {
 export function setURLSearchParams(params) {
   window.history.replaceState({}, '', `${location.pathname}?${params}`);
 }
+
+/**
+ * @param {string} id
+ */
+export function clickOnElement(id) {
+  document.getElementById(id).click();
+}
