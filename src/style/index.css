@@ -16,6 +16,7 @@
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 @import 'search.css';
+@import 'ngm-object-information.css';
 
 [hidden] {
   display: none !important;
@@ -134,29 +135,4 @@ main {
 
 .layer-slider {
   display: flex;
-}
-
-ngm-object-information {
-  position: absolute;
-  z-index: 1;
-  margin: 6px;
-  right: 0;
-}
-
-ngm-object-information .header {
-  display: flex;
-}
-
-ngm-object-information .ui.table {
-  margin-top: 0;
-}
-
-ngm-object-information .ui.table .key {
-  font-weight: 600;
-}
-
-ngm-object-information .ui.table .val {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
