@@ -9,6 +9,7 @@ import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 import CallbackProperty from 'cesium/DataSources/CallbackProperty.js';
 import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
+import Entity from 'cesium/DataSources/Entity.js';
 import defined from 'cesium/Core/defined.js';
 import {render} from 'lit-html';
 import getTemplate from './areaOfInterestTemplate.js';
@@ -44,6 +45,7 @@ export default class AreaOfInterestDrawer {
 
     this.interestAreasDataSource = new CustomDataSource('interestAreas');
     this.viewer_.dataSources.add(this.interestAreasDataSource);
+
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer_.scene.requestRender();
       this.doRender_();
@@ -137,7 +139,7 @@ export default class AreaOfInterestDrawer {
     if (defined(pickedObject) && this.interestAreasDataSource.entities.contains(pickedObject.id)) {
       this.pickArea_(pickedObject.id.id);
     } else if (this.selectedArea_) {
-      this.selectedArea_.rectangle.material = this.defaultAreaColor;
+      this.updateColor(this.selectedArea_, false);
       this.selectedArea_ = null;
       this.doRender_();
     }
@@ -145,20 +147,29 @@ export default class AreaOfInterestDrawer {
 
   pickArea_(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
-    console.log(entity);
     if (this.selectedArea_) {
-      if (this.selectedArea_.rectangle) {
-        this.selectedArea_.rectangle.material = this.defaultAreaColor;
-      } else {
-        this.selectedArea_.polygon.material = this.defaultAreaColor;
-      }
+      this.updateColor(this.selectedArea_, false);
       this.selectedArea_ = null;
     }
     this.selectedArea_ = entity;
-    if (this.selectedArea_.rectangle) {
-      this.selectedArea_.rectangle.material = this.higlightedAreaColor;
+    this.updateColor(this.selectedArea_, true);
+  }
+
+  updateColor(entity, selected) {
+    if (selected) {
+      if (entity.rectangle) {
+        entity.rectangle.material = this.higlightedAreaColor;
+      } else if (entity.polygon) {
+        entity.polygon.material = this.higlightedAreaColor;
+        entity.polygon.fill = true;
+      }
     } else {
-      this.selectedArea_.polygon.material = this.higlightedAreaColor;
+      if (entity.rectangle) {
+        entity.rectangle.material = this.defaultAreaColor;
+      } else if (this.selectedArea_.polygon) {
+        entity.polygon.material = this.defaultAreaColor;
+        entity.polygon.fill = false;
+      }
     }
   }
 
@@ -217,23 +228,17 @@ export default class AreaOfInterestDrawer {
   }
 
   async uploadArea_(evt) {
-    console.log(evt.target);
-    const reader = new FileReader();
-    reader.onloadend = (() => async function (event) {
-      console.log(event);
-      const kmlDataSource = await KmlDataSource.load(event.target.result,
-        {
-          camera: this.viewer_.scene.camera,
-          canvas: this.viewer_.scene.canvas
-        });
-      console.log(kmlDataSource);
-      kmlDataSource.entities.values.forEach(val => {
-        this.interestAreasDataSource
-          .entities.add(val);
+    const kmlDataSource = await KmlDataSource.load(evt.target.files[0],
+      {
+        camera: this.viewer_.scene.camera,
+        canvas: this.viewer_.scene.canvas
       });
-      // await this.viewer_.dataSources.add(kmlDataSource);
-      // this.viewer_.flyTo(kmlDataSource.entities.values[2]);
-    }.bind(this))();
-    reader.readAsDataURL(evt.target.files[0]);
+
+    const entity = new Entity();
+
+    kmlDataSource.entities.values.forEach(ent => entity.merge(ent));
+
+    this.interestAreasDataSource.entities.add(entity);
+    this.viewer_.flyTo(entity);
   }
 }
