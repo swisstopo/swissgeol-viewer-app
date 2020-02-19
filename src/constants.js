@@ -22,3 +22,6 @@ export const ABOVE_SURFACE_CONFIGURATION = {
   brightness: 1,
   gamma: 1
 };
+
+export const LAYERS_URL_PARAM = 'layers';
+export const LAYERS_OPACITY_URL_PARAM = 'layers_opacity';

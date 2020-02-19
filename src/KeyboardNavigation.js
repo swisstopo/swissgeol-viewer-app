@@ -8,6 +8,10 @@ const moveForwardCodes = ['KeyW', 'ArrowUp'];
 const moveBackwardCodes = ['KeyS', 'ArrowDown'];
 const moveLeftCodes = ['KeyA', 'ArrowLeft'];
 const moveRightCodes = ['KeyD', 'ArrowRight'];
+const lookUpCodes = ['KeyI'];
+const lookDownCodes = ['KeyK'];
+const lookLeftCodes = ['KeyJ'];
+const lookRightCodes = ['KeyL'];
 
 export default class KeyboardNavigation {
 
@@ -63,13 +67,13 @@ export default class KeyboardNavigation {
         this.flags_.moveLeft = pressed;
       } else if (moveRightCodes.includes(event.code)) {
         this.flags_.moveRight = pressed;
-      } else if (event.code === 'KeyI') {
+      } else if (lookUpCodes.includes(event.code)) {
         this.flags_.lookUp = pressed;
-      } else if (event.code === 'KeyK') {
+      } else if (lookDownCodes.includes(event.code)) {
         this.flags_.lookDown = pressed;
-      } else if (event.code === 'KeyJ') {
+      } else if (lookLeftCodes.includes(event.code)) {
         this.flags_.lookLeft = pressed;
-      } else if (event.code === 'KeyL') {
+      } else if (lookRightCodes.includes(event.code)) {
         this.flags_.lookRight = pressed;
       }
       this.flags_.booster = event.shiftKey;

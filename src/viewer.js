@@ -117,7 +117,7 @@ export function addMantelEllipsoid(viewer) {
   const entity = viewer.entities.add({
     position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
     ellipsoid: {
-      radii,
+      radii: radii,
       material: 'images/temp_lava.jpg',
     }
   });

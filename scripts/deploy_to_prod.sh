@@ -21,5 +21,5 @@ cat > dist/versions.json <<EOF
 EOF
 scripts/deploy_to_s3.sh prod
 git tag $PROD_TAG -m $PROD_TAG
-git push $PROD_TAG
+git push origin $PROD_TAG
 git push origin prod
