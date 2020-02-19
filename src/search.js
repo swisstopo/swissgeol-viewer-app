@@ -24,6 +24,7 @@ export function setupSearch(viewer, element) {
     };
   });
 
+  // add icon before the label in the result list
   element.renderResult = (result, label) => {
     const iconName = result.properties.origin === 'layer' ? 'layer group' : 'map pin';
     return `<i class="${iconName} grey icon"></i> ${label}`;
