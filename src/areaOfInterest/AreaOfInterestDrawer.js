@@ -13,8 +13,9 @@ import defined from 'cesium/Core/defined.js';
 import {render} from 'lit-html';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
-import {DEFAULT_AOI_COLOR} from '../constants.js';
+import {DEFAULT_AOI_COLOR, CESIUM_NOT_GRAPHICS_ENTITY_PROPS} from '../constants.js';
 import {updateColor} from './helpers.js';
+import {showWarning} from '../utils.js';
 
 export default class AreaOfInterestDrawer {
   constructor(viewer) {
@@ -214,15 +215,22 @@ export default class AreaOfInterestDrawer {
           canvas: this.viewer_.scene.canvas,
           clampToGround: true
         });
+      evt.target.value = null;
 
       const entity = new Entity();
       kmlDataSource.entities.values.forEach(ent => entity.merge(ent));
+
+      const notOnlyPolygon = entity.propertyNames.some(prop => !CESIUM_NOT_GRAPHICS_ENTITY_PROPS.includes(prop) && !!entity[prop]);
+
+      if (notOnlyPolygon) {
+        showWarning(i18next.t('unsupported_kml_warning'));
+        return;
+      }
+
       entity.polygon.fill = true;
       entity.polygon.material = DEFAULT_AOI_COLOR;
-
       this.interestAreasDataSource.entities.add(entity);
       this.viewer_.flyTo(entity);
-      evt.target.value = null;
     }
   }
 }

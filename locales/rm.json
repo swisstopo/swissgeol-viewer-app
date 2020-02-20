@@ -17,5 +17,6 @@
   "remove_btn_tooltip": "",
   "hide_btn_tooltip": "",
   "unhide_btn_tooltip": "",
-  "upload_btn_label": ""
+  "upload_btn_label": "",
+  "unsupported_kml_warning": ""
 }
