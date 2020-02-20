@@ -1,5 +1,6 @@
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Color from 'cesium/Core/Color.js';
+import LabelStyle from 'cesium/Scene/LabelStyle.js';
 
 
 export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
@@ -31,3 +32,39 @@ export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);
 
 // list of not graphics entity.propertyNames
 export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'description', 'properties', 'viewForm', 'kml', 'polygon'];
+
+export const SWISSTOPO_LABEL_STYLE = {
+  labelStyle: LabelStyle.FILL,
+  labelText: '${DISPLAY_TEXT}',
+  disableDepthTestDistance: Infinity,
+  anchorLineEnabled: false,
+  heightOffset: 200,
+  pointSize: 0,
+  labelColor: 'color("black")',
+  font: '"bold 32px arial"',
+  scaleByDistance: {
+    conditions: [
+      ['${LOD} === "7"', 'vec4(1000, 1, 5000, 0.4)'],
+      ['${LOD} === "6"', 'vec4(1000, 1, 5000, 0.4)'],
+      ['${LOD} === "5"', 'vec4(1000, 1, 8000, 0.4)'],
+      ['${LOD} === "4"', 'vec4(1000, 1, 10000, 0.4)'],
+      ['${LOD} === "3"', 'vec4(1000, 1, 20000, 0.4)'],
+      ['${LOD} === "2"', 'vec4(1000, 1, 30000, 0.4)'],
+      ['${LOD} === "1"', 'vec4(1000, 1, 50000, 0.4)'],
+      ['${LOD} === "0"', 'vec4(1000, 1, 500000, 0.4)'],
+      ['true', 'vec4(1000, 1, 10000, 0.4)']
+    ]
+  },
+  distanceDisplayCondition: {
+    conditions: [
+      ['${LOD} === "7"', 'vec2(0, 5000)'],
+      ['${LOD} === "6"', 'vec2(0, 5000)'],
+      ['${LOD} === "5"', 'vec2(0, 8000)'],
+      ['${LOD} === "4"', 'vec2(0, 10000)'],
+      ['${LOD} === "3"', 'vec2(0, 20000)'],
+      ['${LOD} === "2"', 'vec2(0, 30000)'],
+      ['${LOD} === "1"', 'vec2(0, 50000)'],
+      ['${LOD} === "0"', 'vec2(0, 500000)'],
+    ]
+  }
+};
