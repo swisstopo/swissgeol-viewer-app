@@ -18,5 +18,6 @@
   "hide_btn_tooltip": "",
   "unhide_btn_tooltip": "",
   "upload_btn_label": "",
-  "unsupported_kml_warning": ""
+  "unsupported_kml_warning": "",
+  "unsupported_file_warning": ""
 }

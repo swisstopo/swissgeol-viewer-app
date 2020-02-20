@@ -19,5 +19,6 @@
   "hide_btn_tooltip": "Hide",
   "unhide_btn_tooltip": "Unhide",
   "upload_btn_label": "Upload Area",
-  "unsupported_kml_warning": "Uploaded unsupported KML"
+  "unsupported_kml_warning": "Uploaded unsupported KML",
+  "unsupported_file_warning": "Unsupported file extension. Please upload KML"
 }
