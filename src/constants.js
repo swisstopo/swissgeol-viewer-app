@@ -1,5 +1,5 @@
 import Rectangle from 'cesium/Core/Rectangle.js';
-import Color from 'cesium/Core/Color';
+import Color from 'cesium/Core/Color.js';
 
 
 export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];

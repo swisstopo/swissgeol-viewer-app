@@ -10,12 +10,11 @@ import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
 import Entity from 'cesium/DataSources/Entity.js';
 import defined from 'cesium/Core/defined.js';
-import Color from 'cesium/Core/Color.js';
 import {render} from 'lit-html';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
-import {DEFAULT_AOI_COLOR} from '../constants';
-import {updateColor} from './helpers';
+import {DEFAULT_AOI_COLOR} from '../constants.js';
+import {updateColor} from './helpers.js';
 
 export default class AreaOfInterestDrawer {
   constructor(viewer) {
