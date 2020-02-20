@@ -5,13 +5,14 @@ import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
 import IonResource from 'cesium/Core/IonResource.js';
 import {html, render} from 'lit-html';
-import {getSwisstopoImagery} from './swisstopoImagery.js';
-import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer.js';
-import {layersConfig, layerCategories} from './layers/layerConfigs.js';
+import {getSwisstopoImagery} from '../swisstopoImagery.js';
+import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
+import {layersConfig, layerCategories} from './layerConfigs.js';
 import {repeat} from 'lit-html/directives/repeat';
 
 import i18next from 'i18next';
-import {getLayerParams, syncLayersParam} from './permalink';
+import {getLayerParams, syncLayersParam} from '../permalink';
+import {onAccordionTitleClick} from '../utils.js';
 
 
 function createEarthquakeFromConfig(viewer, config) {
@@ -91,8 +92,6 @@ function buildLayertree() { // TODO improve
   return layerTree.filter(cat => !cat.parent);
 }
 
-console.log(buildLayertree());
-
 function getLayerRender(viewer, config, index) {
   if (!config.promise) {
     const visibleLayers = getLayerParams();
@@ -144,18 +143,20 @@ function doRender(viewer, target) {
       return html`
       ${isLayer ?
         html`<div class="ui segment">${getLayerRender(viewer, child, idx)}</div>` :
-        html`<div class="accordion transition hidden">${categoryRender(child)}</div>`
+        html`<div class="ui segment accordion">${categoryRender(child)}</div>`
       }
       `;
     };
 
     const categoryRender = (layerCat) => html`
-      <div class="title">
+      <div class="title" @click=${onAccordionTitleClick}>
         <i class="dropdown icon"></i>
         ${layerCat.label}
       </div>
       <div class="content">
-      ${repeat(layerCat.children, (child) => child.id || Number((Math.random() * 100).toFixed()), repeatCallback)}
+         <div class="ui segments">
+        ${repeat(layerCat.children, (child) => child.id || Number((Math.random() * 100).toFixed()), repeatCallback)}
+        </div>
       </div>
     `;
     return categoryRender(layerCategory);

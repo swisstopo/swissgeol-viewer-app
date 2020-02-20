@@ -52,3 +52,12 @@ export function showWarning(text, timeout) {
     document.getElementById('ngm-warning-toast').classList.toggle('visible');
   }, timeout ? timeout : 4000);
 }
+
+/**
+ * Show/hide accordion
+ * @param evt
+ */
+export function onAccordionTitleClick(evt) {
+  evt.target.classList.toggle('active');
+  evt.target.nextElementSibling.classList.toggle('active');
+}

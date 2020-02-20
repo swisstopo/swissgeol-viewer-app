@@ -1,8 +1,7 @@
 import {html} from 'lit-html';
 import {repeat} from 'lit-html/directives/repeat';
 import i18next from 'i18next';
-import {onAccordionTitleClick} from './helpers.js';
-import {clickOnElement} from '../utils.js';
+import {clickOnElement, onAccordionTitleClick} from '../utils.js';
 
 const tooltipTranslationLabel = 'area_of_interest_add_hint';
 const hintTranslationLabel = 'area_of_interest_empty_hint';

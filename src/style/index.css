@@ -154,3 +154,7 @@ main {
   z-index: 9999;
 }
 
+
+.ui.styled.accordion {
+  width: 280px;
+}

@@ -3,7 +3,7 @@ import {setupI18n} from './i18n.js';
 import {SWITZERLAND_RECTANGLE, DRILL_PICK_LIMIT} from './constants.js';
 
 import './style/index.css';
-import {setupLayers} from './layers.js';
+import {setupLayers} from './layers/layers.js';
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import FirstPersonCameraMode from './FirstPersonCameraMode.js';
