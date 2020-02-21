@@ -20,5 +20,18 @@
   "unhide_btn_tooltip": "Unhide",
   "upload_btn_label": "Upload Area",
   "unsupported_kml_warning": "Uploaded unsupported KML",
-  "unsupported_file_warning": "Unsupported file extension. Please upload KML"
+  "unsupported_file_warning": "Unsupported file extension. Please upload KML",
+
+  "geological_map_series_label": "Geological map series",
+  "geological_maps_label": "Geological maps",
+  "geological_bases_label": "Geological bases",
+  "borehole_data_profiles_label": "Borehole data / Profiles",
+  "geo_energy_label": "Geo-energy",
+  "geothermal_energy_label": "Geothermal energy",
+  "natural_hazard_label": "Natural hazards",
+  "subsurface_label": "Subsurface geometry",
+  "bedrock_surface_sediments_label": "Bedrock surface / sediments",
+  "background_label": "Background data",
+  "altitudes_label": "Altitudes",
+  "man_made_objects_label": "Man-made objects"
 }

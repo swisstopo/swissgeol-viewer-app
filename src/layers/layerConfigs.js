@@ -1,64 +1,64 @@
 import {SWISSTOPO_LABEL_STYLE} from '../constants';
 
+const t = a => a;
 export const layerCategories = [
   {
-    label: 'Geological map series',
+    label: t('geological_map_series_label'),
     id: 1786
   },
   {
-    label: 'Geological maps',
+    label: t('geological_maps_label'),
     id: 1787,
     parent: 1786
   },
   {
-    label: 'Geological bases',
+    label: t('geological_bases_label'),
     id: 1802
   },
   {
-    label: 'Borehole data / Profiles',
+    label: t('borehole_data_profiles_label'),
     id: 15031,
     parent: 1802
   },
   {
-    label: 'Geo-energy',
+    label: t('geo_energy_label'),
     id: 15070
   },
   {
-    label: 'Geothermal energy',
+    label: t('geothermal_energy_label'),
     id: 1826,
     parent: 15070
   },
   {
-    label: 'Natural hazards',
+    label: t('natural_hazard_label'),
     id: 1858
   },
   {
-    label: 'Subsurface geometry',
+    label: t('subsurface_label'),
     id: 1855
   },
   {
-    label: 'Bedrock surface / sediments',
+    label: t('bedrock_surface_sediments_label'),
     id: 1856,
     parent: 1855
   },
   {
-    label: 'Background data',
+    label: t('background_label'),
     id: 1890
   },
   {
-    label: 'Altitudes',
+    label: t('altitudes_label'),
     id: 1901,
     parent: 1890
   },
   {
-    label: 'Man-made objects',
+    label: t('man_made_objects_label'),
     id: 1234, // random number
     parent: 1890
   }
 
 ];
 
-const t = a => a;
 export const layersConfig = [{
   type: 'swisstopoWMTS',
   label: t('ch_swisstopo_geologie_geocover'),

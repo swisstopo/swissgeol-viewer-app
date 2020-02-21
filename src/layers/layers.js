@@ -149,9 +149,9 @@ function doRender(viewer, target) {
     };
 
     const categoryRender = (layerCat) => html`
-      <div class="title ngm-layer-title" @click=${onAccordionTitleClick}>
+      <div class="title ngm-layer-title" @click=${onAccordionTitleClick} data-i18n>
         <i class="dropdown icon" @click=${onAccordionIconClick}></i>
-        ${layerCat.label}
+        ${i18next.t(layerCat.label)}
       </div>
       <div class="content ngm-layer-content">
          <div>
