@@ -78,37 +78,37 @@ export const layersConfig = [{
   type: 'ion3dtiles',
   assetId: 68857,
   label: t('boreholes_label'),
-  layer: 'boreholes', // TODO change to actual
+  layer: 'boreholes',
   parent: 15031
 }, {
   parent: 1856,
   type: 'ion3dtiles',
   assetId: 68722,
   label: t('base_mesozoic_label'),
-  layer: 'base_mesozoic' // TODO change to actual
+  layer: 'base_mesozoic'
 }, {
   type: 'ion3dtiles',
   assetId: 68881,
   label: t('cross_section_label'),
-  layer: 'cross_section', // TODO change to actual
+  layer: 'cross_section',
   parent: 15031
 }, {
   parent: 1856,
   type: 'ion3dtiles',
   assetId: 69310,
   label: t('SG_test7_cesiumZip_noFanout'),
-  layer: 'SG_test7_cesiumZip_noFanout' // TODO change to actual
+  layer: 'SG_test7_cesiumZip_noFanout'
 }, {
   parent: 1858,
   type: 'earthquakes',
   label: t('earthquakes_label'),
-  layer: 'earthquakes' // TODO change to actual
+  layer: 'earthquakes'
 }, {
   parent: 1826,
-  type: 'swisstopoWMTS',
-  assetId: 216559645,
+  type: 'ion3dtiles',
+  assetId: 69922,
   label: t('temperature_model_label'),
-  layer: 'ch.swisstopo.geologie-geomol-temperaturmodell_eingangsdaten'
+  layer: 'temperature_model'
 }];
 
 //   type: 'ionGeoJSON',
