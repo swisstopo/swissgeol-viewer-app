@@ -23,6 +23,7 @@
 @import 'ngm-object-information.css';
 @import 'area-of-interest.css';
 @import 'layers.css';
+@import 'slider.css';
 
 [hidden] {
   display: none !important;

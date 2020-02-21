@@ -58,6 +58,12 @@ export function showWarning(text, timeout) {
  * @param evt
  */
 export function onAccordionTitleClick(evt) {
+  if (!evt.target.nextElementSibling) return;
   evt.target.classList.toggle('active');
   evt.target.nextElementSibling.classList.toggle('active');
+}
+
+export function onAccordionIconClick(evt) {
+  const event = {...evt, target: evt.target.parentElement};
+  onAccordionTitleClick(event);
 }

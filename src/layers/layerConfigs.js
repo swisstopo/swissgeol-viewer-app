@@ -65,14 +65,15 @@ export const layersConfig = [{
   layer: 'ch.swisstopo.geologie-geocover',
   visible: true,
   opacity: 0.7,
-  parent: 1799
+  parent: 1787
 }, {
   type: '3dtiles',
   url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
   label: t('swissnames_label'),
   style: SWISSTOPO_LABEL_STYLE,
   visible: false,
-  layer: 'ch.swisstopo.swissnames3d.3d'
+  layer: 'ch.swisstopo.swissnames3d.3d',
+  parent: 1890
 }, {
   type: 'ion3dtiles',
   assetId: 68857,
@@ -91,7 +92,8 @@ export const layersConfig = [{
   label: t('cross_section_label'),
   layer: 'cross_section', // TODO change to actual
   parent: 15031
-}, { // TODO parent?
+}, {
+  parent: 1856,
   type: 'ion3dtiles',
   assetId: 69310,
   label: t('SG_test7_cesiumZip_noFanout'),

@@ -12,8 +12,7 @@ import {repeat} from 'lit-html/directives/repeat';
 
 import i18next from 'i18next';
 import {getLayerParams, syncLayersParam} from '../permalink';
-import {onAccordionTitleClick} from '../utils.js';
-
+import {onAccordionTitleClick, onAccordionIconClick} from '../utils.js';
 
 function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -120,11 +119,11 @@ function getLayerRender(viewer, config, index) {
 
   return html`
     <div class="ui checkbox">
-      <input id="layer-item-${index}" type="checkbox" ?checked=${config.visible} @change=${changeVisibility}>
-      <label for="layer-item-${index}" data-i18n>${i18next.t(config.label)}</label>
+      <input id="layer-item-${config.parent}-${index}" type="checkbox" ?checked=${config.visible} @change=${changeVisibility}>
+      <label for="layer-item-${config.parent}-${index}" data-i18n>${i18next.t(config.label)}</label>
     </div>
     <div class="layer-slider" ?hidden=${!config.setOpacity}>
-      <label>opacity: </label>
+      <label>Opacity: </label>
       <input type="range" min="0" max="1" value=${config.opacity || 1} @input=${changeOpacity} step="0.05">
     </div>
     `;
@@ -151,7 +150,7 @@ function doRender(viewer, target) {
 
     const categoryRender = (layerCat) => html`
       <div class="title ngm-layer-title" @click=${onAccordionTitleClick}>
-        <i class="dropdown icon"></i>
+        <i class="dropdown icon" @click=${onAccordionIconClick}></i>
         ${layerCat.label}
       </div>
       <div class="content ngm-layer-content">

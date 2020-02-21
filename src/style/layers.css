@@ -4,6 +4,15 @@
 
 .layer-slider {
   display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.layer-slider label {
+  margin-right: 10px;
+}
+
+.layer-slider input[type=range] {
+  width: 60%;
 }
 
 .ui.styled.accordion .ngm-layer-title.title,
