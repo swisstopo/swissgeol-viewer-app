@@ -114,12 +114,14 @@ function getLayerRender(viewer, config, index) {
     config.visible = evt.target.checked;
     syncLayersParam(layersConfig);
     viewer.scene.requestRender();
+    doRender(viewer, document.getElementById('layers'));
   };
   const changeOpacity = evt => {
     config.setOpacity(evt.target.value);
     config.opacity = evt.target.value;
     syncLayersParam(layersConfig);
     viewer.scene.requestRender();
+    doRender(viewer, document.getElementById('layers'));
   };
 
 
@@ -167,7 +169,24 @@ function doRender(viewer, target) {
     `;
     return categoryRender(layerCategory);
   });
+  templates.push(getDisplayedLayers(viewer));
   render(templates, target);
+}
+
+function getDisplayedLayers(viewer) {
+  const visibleLayers = layersConfig.filter(layer => layer.visible);
+  return html`
+      <div class="title ngm-layer-title" @click=${onAccordionTitleClick} data-i18n>
+        <i class="dropdown icon" @click=${onAccordionIconClick}></i>
+        Displayed <!--TODO-->
+      </div>
+      <div class="content ngm-layer-content">
+         <div>
+        ${repeat(visibleLayers, (child) => Number((Math.random() * 100).toFixed()),
+    (child, idx) => getLayerRender(viewer, child, idx))}
+        </div>
+      </div>
+    `;
 }
 
 /**
