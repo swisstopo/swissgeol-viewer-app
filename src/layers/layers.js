@@ -141,20 +141,21 @@ function doRender(viewer, target) {
     const repeatCallback = (child, idx) => {
       const isLayer = !!child.layer;
       return html`
+      ${idx !== 0 ? html`<div class="ui divider ngm-layer-divider"></div>` : ''}
       ${isLayer ?
-        html`<div class="ui segment">${getLayerRender(viewer, child, idx)}</div>` :
-        html`<div class="ui segment accordion">${categoryRender(child)}</div>`
+        html`<div>${getLayerRender(viewer, child, idx)}</div>` :
+        html`<div class="ui styled accordion ngm-layers-categories">${categoryRender(child)}</div>`
       }
       `;
     };
 
     const categoryRender = (layerCat) => html`
-      <div class="title" @click=${onAccordionTitleClick}>
+      <div class="title ngm-layer-title" @click=${onAccordionTitleClick}>
         <i class="dropdown icon"></i>
         ${layerCat.label}
       </div>
-      <div class="content">
-         <div class="ui segments">
+      <div class="content ngm-layer-content">
+         <div>
         ${repeat(layerCat.children, (child) => child.id || Number((Math.random() * 100).toFixed()), repeatCallback)}
         </div>
       </div>
