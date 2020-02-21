@@ -9,6 +9,7 @@
   "earthquakes_label": "Earthquakes",
   "search_placeholder": "Search...",
   "swissnames_label": "Swiss names",
+  "temperature_model_label": "Temperature model",
   "area_of_interest_add_hint": "Hold down left mouse button and drag the cursor to draw area",
   "area_of_interest_empty_hint": "Click on 'Add Area' button or hold down 'left mouse button + Shift' to draw area",
   "cancel_area_btn_label": "Cancel Draw",
@@ -21,7 +22,6 @@
   "upload_btn_label": "Upload Area",
   "unsupported_kml_warning": "Uploaded unsupported KML",
   "unsupported_file_warning": "Unsupported file extension. Please upload KML",
-
   "geological_map_series_label": "Geological map series",
   "geological_maps_label": "Geological maps",
   "geological_bases_label": "Geological bases",

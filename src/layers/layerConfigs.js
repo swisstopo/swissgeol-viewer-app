@@ -103,6 +103,12 @@ export const layersConfig = [{
   type: 'earthquakes',
   label: t('earthquakes_label'),
   layer: 'earthquakes' // TODO change to actual
+}, {
+  parent: 1826,
+  type: 'swisstopoWMTS',
+  assetId: 216559645,
+  label: t('temperature_model_label'),
+  layer: 'ch.swisstopo.geologie-geomol-temperaturmodell_eingangsdaten'
 }];
 
 //   type: 'ionGeoJSON',
