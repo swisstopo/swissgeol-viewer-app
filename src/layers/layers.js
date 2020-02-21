@@ -81,14 +81,20 @@ const factories = {
   earthquakes: createEarthquakeFromConfig,
 };
 
-function buildLayertree() { // TODO improve
-  const layerTree = layerCategories.map(cat => {
-    const childCategories = layerCategories.filter(c => c.parent === cat.id);
+function buildLayertree() {
+  const generalConfig = [...layerCategories, ...layersConfig];
+
+  const notEmptyCategories = layerCategories.filter(cat =>
+    generalConfig.some(l => l.parent === cat.id));
+
+  const layerTree = notEmptyCategories.map(cat => {
+    const childCategories = notEmptyCategories.filter(c => c.parent === cat.id);
     const childLayers = layersConfig.filter(l => l.parent === cat.id);
     cat.children = [...childLayers, ...childCategories];
     return cat;
   });
-  return layerTree.filter(cat => !cat.parent);
+
+  return layerTree.filter(cat => !cat.parent && cat.children.length);
 }
 
 function getLayerRender(viewer, config, index) {
