@@ -14,6 +14,8 @@ import i18next from 'i18next';
 import {getLayerParams, syncLayersParam} from '../permalink';
 import {onAccordionTitleClick, onAccordionIconClick} from '../utils.js';
 
+const layersElement = document.getElementById('layers');
+
 function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
   if (config.visible) {
@@ -99,10 +101,11 @@ function buildLayertree() {
 
 function getLayerRender(viewer, config, index) {
   if (!config.promise) {
-    const visibleLayers = getLayerParams();
-    if (visibleLayers && visibleLayers.length) {
-      const layerParams = visibleLayers.find(layer => layer.name === config.layer);
-      config.visible = !!layerParams;
+    const displayedLayers = getLayerParams();
+    if (displayedLayers && displayedLayers.length) {
+      const layerParams = displayedLayers.find(layer => layer.name === config.layer);
+      config.displayed = !!layerParams;
+      config.visible = layerParams ? layerParams.visible : false;
       config.opacity = layerParams ? layerParams.opacity : 1;
     } else {
       syncLayersParam(layersConfig);
@@ -112,16 +115,19 @@ function getLayerRender(viewer, config, index) {
   const changeVisibility = evt => {
     config.setVisibility(evt.target.checked);
     config.visible = evt.target.checked;
+    if (evt.target.checked && !config.displayed) {
+      config.displayed = evt.target.checked;
+    }
     syncLayersParam(layersConfig);
     viewer.scene.requestRender();
-    doRender(viewer, document.getElementById('layers'));
+    doRender(viewer, layersElement);
   };
   const changeOpacity = evt => {
     config.setOpacity(evt.target.value);
     config.opacity = evt.target.value;
     syncLayersParam(layersConfig);
     viewer.scene.requestRender();
-    doRender(viewer, document.getElementById('layers'));
+    doRender(viewer, layersElement);
   };
 
 
@@ -152,8 +158,7 @@ function doRender(viewer, target) {
       ${isLayer ?
         html`<div>${getLayerRender(viewer, child, idx)}</div>` :
         html`<div class="ui styled accordion ngm-layers-categories">${categoryRender(child)}</div>`
-      }
-      `;
+      }`;
     };
 
     const categoryRender = (layerCat) => html`
@@ -169,12 +174,19 @@ function doRender(viewer, target) {
     `;
     return categoryRender(layerCategory);
   });
-  templates.push(getDisplayedLayers(viewer));
-  render(templates, target);
+  const displayedLayersTemplate = getDisplayedLayers(viewer);
+  render([...templates, displayedLayersTemplate], target);
 }
 
 function getDisplayedLayers(viewer) {
-  const visibleLayers = layersConfig.filter(layer => layer.visible);
+  const visibleLayers = layersConfig.filter(layer => layer.displayed);
+
+  const repeatCallback = (child, idx) => {
+    return html`
+     ${idx !== 0 ? html`<div class="ui divider ngm-layer-divider"></div>` : ''}
+     ${getLayerRender(viewer, child, idx)}
+     `;
+  };
   return html`
       <div class="title ngm-layer-title" @click=${onAccordionTitleClick} data-i18n>
         <i class="dropdown icon" @click=${onAccordionIconClick}></i>
@@ -182,8 +194,7 @@ function getDisplayedLayers(viewer) {
       </div>
       <div class="content ngm-layer-content">
          <div>
-        ${repeat(visibleLayers, (child) => Number((Math.random() * 100).toFixed()),
-    (child, idx) => getLayerRender(viewer, child, idx))}
+        ${repeat(visibleLayers, (child) => Number((Math.random() * 100).toFixed()), repeatCallback)}
         </div>
       </div>
     `;

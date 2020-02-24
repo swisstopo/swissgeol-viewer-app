@@ -2,7 +2,7 @@ import Math from 'cesium/Core/Math.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
 import {getURLSearchParams, setURLSearchParams} from './utils.js';
-import {LAYERS_OPACITY_URL_PARAM, LAYERS_URL_PARAM} from './constants';
+import {LAYERS_OPACITY_URL_PARAM, LAYERS_URL_PARAM, LAYERS_VISIBILITY_URL_PARAM} from './constants';
 
 export function getCameraView() {
   let destination;
@@ -49,27 +49,38 @@ export function getLayerParams() {
   }
 
   let layersOpacity = params.get(LAYERS_OPACITY_URL_PARAM);
+  let layersVisibility = params.get(LAYERS_VISIBILITY_URL_PARAM);
   layersOpacity = layersOpacity ? layersOpacity.split(',') : [];
+  layersVisibility = layersVisibility ? layersVisibility.split(',') : [];
   return layers.split(',').map((layer, key) => {
     return {
       name: layer,
-      opacity: layersOpacity[key]
+      opacity: Number(layersOpacity[key]),
+      visible: layersVisibility[key] === 'true'
     };
   });
 }
 
 export function syncLayersParam(layers) {
   const params = getURLSearchParams();
-  const visibleLayers = layers.filter(l => l.visible);
-  const layerNames = visibleLayers.map(l => l.layer);
-  const layersOpacity = visibleLayers.map(l => isNaN(l.opacity) ? 1 : l.opacity);
+  const displayedLayers = layers.filter(l => l.displayed);
+  const layerNames = [];
+  const layersOpacity = [];
+  const layersVisibility = [];
+  displayedLayers.forEach(l => {
+    layerNames.push(l.layer);
+    layersOpacity.push(isNaN(l.opacity) ? 1 : l.opacity);
+    layersVisibility.push(l.visible);
+  });
 
   if (layerNames.length) {
     params.set(LAYERS_URL_PARAM, layerNames.join(','));
+    params.set(LAYERS_VISIBILITY_URL_PARAM, layersVisibility.join(','));
     params.set(LAYERS_OPACITY_URL_PARAM, layersOpacity.join(','));
   } else {
     params.delete(LAYERS_URL_PARAM);
     params.delete(LAYERS_OPACITY_URL_PARAM);
+    params.delete(LAYERS_VISIBILITY_URL_PARAM);
   }
 
   setURLSearchParams(params);
