@@ -10,7 +10,7 @@ import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
 import './elements/ngm-object-information.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
-import {extractPrimitiveAttributes} from './objectInformation.js';
+import {extractPrimitiveAttributes, isPickable} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
 import Color from 'cesium/Core/Color.js';
@@ -57,6 +57,9 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
     if (!object.getProperty) {
       object = object.primitive;
     }
+    if (!isPickable(object)) {
+      return;
+    }
     if (object.getPropertyNames) {
       attributes = extractPrimitiveAttributes(object);
       // attributes.zoom = () => console.log('should zoom to', objects[0]);
@@ -83,7 +86,8 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
 
 
 viewer.screenSpaceEventHandler.setInputAction(movement => {
-  viewer.scene.canvas.style.cursor = viewer.scene.pick(movement.endPosition) ? 'pointer' : 'default';
+  const object = viewer.scene.pick(movement.endPosition);
+  viewer.scene.canvas.style.cursor = object && isPickable(object) ? 'pointer' : 'default';
 }, ScreenSpaceEventType.MOUSE_MOVE);
 
 

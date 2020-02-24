@@ -62,6 +62,7 @@ const layers = [{
   label: t('swissnames_label'),
   style: swisstopoLabelStyle,
   visible: true,
+  pickable: false,
   layer: 'ch.swisstopo.swissnames3d.3d'
 }, {
   type: '3dtiles',
@@ -136,6 +137,7 @@ function create3DTilesetFromConfig(viewer, config) {
   if (config.style) {
     tileset.style = new Cesium3DTileStyle(config.style);
   }
+  tileset.pickable = config.pickable !== undefined ? config.pickable : true;
   viewer.scene.primitives.add(tileset);
 
   config.setVisibility = visible => tileset.show = !!visible;

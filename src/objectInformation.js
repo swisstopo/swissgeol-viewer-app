@@ -9,3 +9,11 @@ export function extractPrimitiveAttributes(primitive) {
   }
   return data;
 }
+
+export function isPickable(object) {
+  if (object.tileset) {
+    return !!object.tileset.pickable;
+  } else {
+    return true;
+  }
+}
