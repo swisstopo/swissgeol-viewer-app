@@ -69,15 +69,9 @@ export function setupI18n() {
     localize('[data-i18n]');
   });
 
-  const templates = SUPPORTED_LANGUAGES.map(lang => {
-    const onclick = evt => {
-      i18next.changeLanguage(lang);
-      evt.preventDefault();
-    };
-    return html`
-      <a class="item lang-${lang}" @click="${onclick}">${lang.toUpperCase()}</a>
-    `;
-  });
+  const templates = SUPPORTED_LANGUAGES.map(lang => html`
+    <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
+  `);
   render(templates, document.getElementById('langs'));
 
 }
