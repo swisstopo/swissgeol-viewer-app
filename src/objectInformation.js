@@ -14,6 +14,6 @@ export function isPickable(object) {
   if (object.tileset) {
     return !!object.tileset.pickable;
   } else {
-    return true;
+    return false;
   }
 }

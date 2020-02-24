@@ -62,26 +62,29 @@ const layers = [{
   label: t('swissnames_label'),
   style: swisstopoLabelStyle,
   visible: true,
-  pickable: false,
   layer: 'ch.swisstopo.swissnames3d.3d'
 }, {
   type: '3dtiles',
   assetId: 68857,
+  pickable: true,
   label: t('boreholes_label'),
   layer: 'boreholes' // TODO change to actual
 }, {
   type: '3dtiles',
   assetId: 68722,
+  pickable: true,
   label: t('base_mesozoic_label'),
   layer: 'base_mesozoic' // TODO change to actual
 }, {
   type: '3dtiles',
   assetId: 68881,
+  pickable: true,
   label: t('cross_section_label'),
   layer: 'cross_section' // TODO change to actual
 }, {
   type: '3dtiles',
   assetId: 69310,
+  pickable: true,
   label: t('SG_test7_cesiumZip_noFanout'),
   layer: 'SG_test7_cesiumZip_noFanout' // TODO change to actual
 }, {
@@ -137,7 +140,7 @@ function create3DTilesetFromConfig(viewer, config) {
   if (config.style) {
     tileset.style = new Cesium3DTileStyle(config.style);
   }
-  tileset.pickable = config.pickable !== undefined ? config.pickable : true;
+  tileset.pickable = config.pickable !== undefined ? config.pickable : false;
   viewer.scene.primitives.add(tileset);
 
   config.setVisibility = visible => tileset.show = !!visible;
