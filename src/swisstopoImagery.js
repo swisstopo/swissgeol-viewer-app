@@ -7,7 +7,7 @@ import Credit from 'cesium/Core/Credit.js';
 const layerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}';
 
 /**
- * @param {sring} layer Layer identifier
+ * @param {string} layer Layer identifier
  * @param {import('cesium/Core/Rectangle').default} [rectangle]
  * @return {Promise<ImageryLayer>}
  */
