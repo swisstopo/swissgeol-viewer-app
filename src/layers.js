@@ -64,22 +64,22 @@ const layers = [{
   visible: true,
   layer: 'ch.swisstopo.swissnames3d.3d'
 }, {
-  type: 'ion3dtiles',
+  type: '3dtiles',
   assetId: 68857,
   label: t('boreholes_label'),
   layer: 'boreholes' // TODO change to actual
 }, {
-  type: 'ion3dtiles',
+  type: '3dtiles',
   assetId: 68722,
   label: t('base_mesozoic_label'),
   layer: 'base_mesozoic' // TODO change to actual
 }, {
-  type: 'ion3dtiles',
+  type: '3dtiles',
   assetId: 68881,
   label: t('cross_section_label'),
   layer: 'cross_section' // TODO change to actual
 }, {
-  type: 'ion3dtiles',
+  type: '3dtiles',
   assetId: 69310,
   label: t('SG_test7_cesiumZip_noFanout'),
   layer: 'SG_test7_cesiumZip_noFanout' // TODO change to actual
@@ -101,7 +101,7 @@ const layers = [{
 //   visible: false,
 //   opacity: 0.7,
 // }, {
-//   type: 'ion3dtiles',
+//   type: '3dtiles',
 //   assetId: 56812,
 //   label: t('tunnel'),
 //   visible: false,
@@ -128,29 +128,18 @@ function createIonGeoJSONFromConfig(viewer, config) {
     });
 }
 
-function createIon3DTilesetFromConfig(viewer, config) {
-  const primitive = viewer.scene.primitives.add(
-    new Cesium3DTileset({
-      show: !!config.visible,
-      url: IonResource.fromAssetId(config.assetId)
-    })
-  );
-  config.setVisibility = visible => primitive.show = !!visible;
-  return primitive;
-}
-
 function create3DTilesetFromConfig(viewer, config) {
-  const primitive = new Cesium3DTileset({
-    url: config.url,
+  const tileset = new Cesium3DTileset({
+    url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
   });
   if (config.style) {
-    primitive.style = new Cesium3DTileStyle(config.style);
+    tileset.style = new Cesium3DTileStyle(config.style);
   }
-  viewer.scene.primitives.add(primitive);
+  viewer.scene.primitives.add(tileset);
 
-  config.setVisibility = visible => primitive.show = !!visible;
-  return primitive;
+  config.setVisibility = visible => tileset.show = !!visible;
+  return tileset;
 }
 
 function createSwisstopoWMTSImageryLayer(viewer, config) {
@@ -169,7 +158,6 @@ function createSwisstopoWMTSImageryLayer(viewer, config) {
 
 const factories = {
   ionGeoJSON: createIonGeoJSONFromConfig,
-  ion3dtiles: createIon3DTilesetFromConfig,
   '3dtiles': create3DTilesetFromConfig,
   swisstopoWMTS: createSwisstopoWMTSImageryLayer,
   earthquakes: createEarthquakeFromConfig,
