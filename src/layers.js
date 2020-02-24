@@ -129,17 +129,17 @@ function createIonGeoJSONFromConfig(viewer, config) {
 }
 
 function create3DTilesetFromConfig(viewer, config) {
-  const primitive = new Cesium3DTileset({
+  const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
   });
   if (config.style) {
-    primitive.style = new Cesium3DTileStyle(config.style);
+    tileset.style = new Cesium3DTileStyle(config.style);
   }
-  viewer.scene.primitives.add(primitive);
+  viewer.scene.primitives.add(tileset);
 
-  config.setVisibility = visible => primitive.show = !!visible;
-  return primitive;
+  config.setVisibility = visible => tileset.show = !!visible;
+  return tileset;
 }
 
 function createSwisstopoWMTSImageryLayer(viewer, config) {
