@@ -130,7 +130,7 @@ export default class LayerTree {
       </div>
       <div class="content ngm-layer-content">
          <div>
-        ${repeat(layerCat.children, (child) => child.id || Number((Math.random() * 100).toFixed()), repeatCallback)}
+        ${repeat(layerCat.children, (child, indx) => indx, repeatCallback)}
         </div>
       </div>
     `;
@@ -148,13 +148,13 @@ export default class LayerTree {
      `;
     };
     return html`
-      <div class="title ngm-layer-title" @click=${onAccordionTitleClick} data-i18n>
+      <div class="title ngm-layer-title ngm-gray-title" @click=${onAccordionTitleClick} data-i18n>
         <i class="dropdown icon" @click=${onAccordionIconClick}></i>
        ${i18next.t('displayed_maps_label')}
       </div>
       <div class="content ngm-layer-content">
          <div>
-        ${repeat(this.displayedLayers, (child) => Number((Math.random() * 100).toFixed()), repeatCallback)}
+        ${repeat(this.displayedLayers, (child, indx) => indx, repeatCallback)}
         </div>
       </div>
     `;

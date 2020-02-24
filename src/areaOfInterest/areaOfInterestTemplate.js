@@ -20,7 +20,7 @@ const areaUploadInputId = 'areaUpload';
 
 export default function getTemplate() {
   return html`
-  <div class="title" @click=${onAccordionTitleClick}>
+  <div class="title ngm-gray-title" @click=${onAccordionTitleClick}>
     <i class="dropdown icon" @click=${onAccordionIconClick}></i>
     Areas of Interest
   </div>
