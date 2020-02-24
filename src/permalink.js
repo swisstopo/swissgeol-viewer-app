@@ -61,9 +61,8 @@ export function getLayerParams() {
   });
 }
 
-export function syncLayersParam(layers) {
+export function syncLayersParam(displayedLayers) {
   const params = getURLSearchParams();
-  const displayedLayers = layers.filter(l => l.displayed);
   const layerNames = [];
   const layersOpacity = [];
   const layersVisibility = [];

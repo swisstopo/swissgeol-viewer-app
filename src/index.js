@@ -3,7 +3,6 @@ import {setupI18n} from './i18n.js';
 import {SWITZERLAND_RECTANGLE, DRILL_PICK_LIMIT} from './constants.js';
 
 import './style/index.css';
-import {setupLayers} from './layers/layers.js';
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import FirstPersonCameraMode from './FirstPersonCameraMode.js';
@@ -17,6 +16,7 @@ import AreaOfInterestDrawer from './areaOfInterest/AreaOfInterestDrawer.js';
 import Color from 'cesium/Core/Color.js';
 import JulianDate from 'cesium/Core/JulianDate.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
+import LayerTree from './layers/layers.js';
 
 setupI18n();
 
@@ -27,7 +27,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     unlisten();
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
-      setupLayers(viewer, document.getElementById('layers'));
+      new LayerTree(viewer, document.getElementById('layers'));
       document.getElementById('loader').style.display = 'none';
     });
   }
