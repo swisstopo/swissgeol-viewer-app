@@ -75,7 +75,7 @@ export default class LayerTree {
     return layerTree.filter(cat => !cat.parent && cat.children.length);
   }
 
-  getLayerRender(config, index) {
+  getLayerRender(config, index, displayedRender = false) {
     if (!config.promise) {
       config.promise = this.factories[config.type](this.viewer, config);
     }
@@ -94,7 +94,6 @@ export default class LayerTree {
       config.opacity = evt.target.value;
       syncLayersParam(this.displayedLayers);
       this.viewer.scene.requestRender();
-      this.doRender();
     };
 
 
@@ -103,7 +102,7 @@ export default class LayerTree {
       <input id="layer-item-${config.parent}-${index}" type="checkbox" ?checked=${config.visible} @change=${changeVisibility}>
       <label for="layer-item-${config.parent}-${index}" data-i18n>${i18next.t(config.label)}</label>
     </div>
-    <div class="layer-slider" ?hidden=${!config.setOpacity}>
+    <div class="layer-slider" ?hidden=${!config.setOpacity || !displayedRender}>
       <label>Opacity: </label>
       <input type="range" min="0" max="1" value=${config.opacity || 1} @input=${changeOpacity} step="0.05">
     </div>
@@ -145,7 +144,7 @@ export default class LayerTree {
     const repeatCallback = (child, idx) => {
       return html`
      ${idx !== 0 ? html`<div class="ui divider ngm-layer-divider"></div>` : ''}
-     ${this.getLayerRender(child, idx)}
+     ${this.getLayerRender(child, idx, true)}
      `;
     };
     return html`
