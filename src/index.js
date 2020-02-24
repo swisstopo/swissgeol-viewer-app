@@ -53,10 +53,7 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
   let attributes = null;
 
   if (objects.length > 0) {
-    let object = objects[0];
-    if (!object.getProperty) {
-      object = object.primitive;
-    }
+    const object = objects[0];
     if (!isPickable(object)) {
       return;
     }
@@ -64,11 +61,11 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
       attributes = extractPrimitiveAttributes(object);
       // attributes.zoom = () => console.log('should zoom to', objects[0]);
       silhouette.selected = [object];
-    } else if (objects[0].id && objects[0].id.properties) {
+    } else if (object.id && object.id.properties) {
       const curentDate = JulianDate.fromDate(new Date());
-      const props = objects[0].id.properties.getValue(curentDate);
+      const props = object.id.properties.getValue(curentDate);
       attributes = {...props};
-      attributes.zoom = () => viewer.zoomTo(objects[0].id, props.zoomHeadingPitchRange);
+      attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
       if (attributes.zoomHeadingPitchRange) {
         // Don't show the value in the object info window
         delete attributes.zoomHeadingPitchRange;

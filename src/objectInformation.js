@@ -12,7 +12,9 @@ export function extractPrimitiveAttributes(primitive) {
 
 export function isPickable(object) {
   if (object.tileset) {
-    return !!object.tileset.pickable;
+    return object.tileset.pickable;
+  } else if (object.primitive) {
+    return object.primitive.allowPicking;
   } else {
     return false;
   }
