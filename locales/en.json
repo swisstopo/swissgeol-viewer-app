@@ -33,5 +33,7 @@
   "bedrock_surface_sediments_label": "Bedrock surface / sediments",
   "background_label": "Background data",
   "altitudes_label": "Altitudes",
-  "man_made_objects_label": "Man-made objects"
+  "man_made_objects_label": "Man-made objects",
+  "displayed_maps_label": "Displayed Maps",
+  "opacity_label": "Opacity"
 }

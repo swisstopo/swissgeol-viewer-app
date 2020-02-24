@@ -32,5 +32,7 @@
   "bedrock_surface_sediments_label": "",
   "background_label": "",
   "altitudes_label": "",
-  "man_made_objects_label": ""
+  "man_made_objects_label": "",
+  "displayed_maps_label": "Cartes affichées",
+  "opacity_label": "Transparence"
 }

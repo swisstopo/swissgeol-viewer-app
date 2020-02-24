@@ -103,7 +103,7 @@ export default class LayerTree {
       <label for="layer-item-${config.parent}-${index}" data-i18n>${i18next.t(config.label)}</label>
     </div>
     <div class="layer-slider" ?hidden=${!config.setOpacity || !displayedRender}>
-      <label>Opacity: </label>
+      <label data-i18n>${i18next.t('opacity_label')}: </label>
       <input type="range" min="0" max="1" value=${config.opacity || 1} @input=${changeOpacity} step="0.05">
     </div>
     `;
@@ -150,7 +150,7 @@ export default class LayerTree {
     return html`
       <div class="title ngm-layer-title" @click=${onAccordionTitleClick} data-i18n>
         <i class="dropdown icon" @click=${onAccordionIconClick}></i>
-        Displayed <!--TODO-->
+       ${i18next.t('displayed_maps_label')}
       </div>
       <div class="content ngm-layer-content">
          <div>
