@@ -11,7 +11,8 @@ import {
   create3DTilesetFromConfig, createEarthquakeFromConfig,
   createIon3DTilesetFromConfig,
   createIonGeoJSONFromConfig,
-  createSwisstopoWMTSImageryLayer
+  createSwisstopoWMTSImageryLayer,
+  syncCheckboxes
 } from './helpers.js';
 
 export default class LayerTree {
@@ -21,8 +22,8 @@ export default class LayerTree {
 
     this.layers = layersConfig;
     this.categories = layerCategories;
-    this.displayedLayers = [];
     this.layersSynced = false;
+    this.layerTree = [];
 
     this.factories = {
       ionGeoJSON: createIonGeoJSONFromConfig,
@@ -46,14 +47,14 @@ export default class LayerTree {
         const layerParams = displayedLayers.find(dl => dl.name === layer.layer);
         layer.visible = layerParams ? layerParams.visible : false;
         layer.opacity = layerParams ? layerParams.opacity : 1;
-        if (layerParams) {
-          this.displayedLayers.push(layer);
-        }
+        layer.displayed = !!layerParams;
         return layer;
       });
     } else {
-      this.displayedLayers = this.layers.filter(layer => layer.visible);
-      syncLayersParam(this.displayedLayers);
+      this.layers = this.layers.map(layer => {
+        return {...layer, displayed: layer.visible};
+      });
+      syncLayersParam(this.layers);
     }
     this.layersSynced = true;
   }
@@ -65,14 +66,14 @@ export default class LayerTree {
     const notEmptyCategories = this.categories.filter(cat =>
       generalConfig.some(l => l.parent === cat.id));
 
-    const layerTree = notEmptyCategories.map(cat => {
+    this.layerTree = notEmptyCategories.map(cat => {
       const childCategories = notEmptyCategories.filter(c => c.parent === cat.id);
       const childLayers = this.layers.filter(l => l.parent === cat.id);
       cat.children = [...childLayers, ...childCategories];
       return cat;
     });
 
-    return layerTree.filter(cat => !cat.parent && cat.children.length);
+    this.layerTree = this.layerTree.filter(cat => !cat.parent && cat.children.length);
   }
 
   getLayerRender(config, index, displayedRender = false) {
@@ -82,25 +83,38 @@ export default class LayerTree {
     const changeVisibility = evt => {
       config.setVisibility(evt.target.checked);
       config.visible = evt.target.checked;
-      if (evt.target.checked && !this.displayedLayers.includes(config)) {
-        this.displayedLayers.push(config);
+      if (evt.target.checked && !config.displayed) {
+        config.displayed = true;
       }
-      syncLayersParam(this.displayedLayers);
+      syncLayersParam(this.layers);
       this.viewer.scene.requestRender();
       this.doRender();
     };
+
     const changeOpacity = evt => {
       config.setOpacity(evt.target.value);
       config.opacity = evt.target.value;
-      syncLayersParam(this.displayedLayers);
+      syncLayersParam(this.layers);
       this.viewer.scene.requestRender();
     };
 
+    const id = `${config.parent}-${(Math.random() * 100).toFixed()}`;
 
     return html`
-    <div class="ui checkbox">
-      <input id="layer-item-${config.parent}-${index}" type="checkbox" ?checked=${config.visible} @change=${changeVisibility}>
-      <label for="layer-item-${config.parent}-${index}" data-i18n>${i18next.t(config.label)}</label>
+    <div class="ngm-displayed-container">
+        <div class="ui checkbox">
+          <input id="layer-item-${id}" class="ngm-layer-checkbox" type="checkbox" name="${config.layer}"
+          .checked=${config.visible}
+          @change=${changeVisibility}>
+          <label for="layer-item-${id}" data-i18n>${i18next.t(config.label)}</label>
+        </div>
+        <button class="circular ui icon button mini" ?hidden=${!displayedRender}
+            data-tooltip=${i18next.t('remove_btn_tooltip')}
+            data-position="top center"
+            data-variation="mini"
+            @click=${this.removeDisplayed.bind(this, config)}>
+          <i class="icon trash alternate outline"></i>
+        </button>
     </div>
     <div class="layer-slider" ?hidden=${!config.setOpacity || !displayedRender}>
       <label data-i18n>${i18next.t('opacity_label')}: </label>
@@ -110,15 +124,15 @@ export default class LayerTree {
   }
 
   doRender() {
-    const layerTree = this.buildLayertree();
-    const templates = layerTree.map((layerCategory, index) => {
+    this.buildLayertree();
+    const templates = this.layerTree.map((layerCategory, index) => {
 
       const repeatCallback = (child, idx) => {
-        const isLayer = !!child.layer;
+        const layer = this.layers.find(l => child.layer && l.layer === child.layer);
         return html`
       ${idx !== 0 ? html`<div class="ui divider ngm-layer-divider"></div>` : ''}
-      ${isLayer ?
-          html`<div>${this.getLayerRender(child, idx)}</div>` :
+      ${layer ?
+          html`<div>${this.getLayerRender(layer, idx)}</div>` :
           html`<div class="ui styled accordion ngm-layers-categories">${categoryRender(child)}</div>`
         }`;
       };
@@ -136,8 +150,9 @@ export default class LayerTree {
     `;
       return categoryRender(layerCategory);
     });
-    const displayedLayersTemplate = this.getDisplayedLayerRender();
-    render([...templates, displayedLayersTemplate], this.target);
+    templates.push(this.getDisplayedLayerRender());
+    render(templates, this.target);
+    syncCheckboxes(this.layers);
   }
 
   getDisplayedLayerRender() {
@@ -147,6 +162,7 @@ export default class LayerTree {
      ${this.getLayerRender(child, idx, true)}
      `;
     };
+    const displayedLayers = this.layers.filter(l => l.displayed);
     return html`
       <div class="title ngm-layer-title ngm-gray-title" @click=${onAccordionTitleClick} data-i18n>
         <i class="dropdown icon" @click=${onAccordionIconClick}></i>
@@ -154,9 +170,18 @@ export default class LayerTree {
       </div>
       <div class="content ngm-layer-content">
          <div>
-        ${repeat(this.displayedLayers, (child, indx) => indx, repeatCallback)}
+        ${repeat(displayedLayers, (child, indx) => indx, repeatCallback)}
         </div>
       </div>
     `;
+  }
+
+  removeDisplayed(layer) {
+    layer.setVisibility(false);
+    layer.visible = false;
+    layer.displayed = false;
+    syncLayersParam(this.layers);
+    this.viewer.scene.requestRender();
+    this.doRender();
   }
 }
