@@ -16,6 +16,7 @@
     "fomantic-ui-css": "^2.8.3",
     "i18next": "^19.1.0",
     "i18next-xhr-backend": "^3.2.2",
+    "interactjs": "^1.8.4",
     "lit-html": "^1.1.2",
     "loc-i18next": "^0.1.4",
     "typeface-source-sans-pro": "0.0.75"
