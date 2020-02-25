@@ -10,11 +10,10 @@ import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
 import './elements/ngm-object-information.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
-import {extractPrimitiveAttributes, isPickable} from './objectInformation.js';
+import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
 import Color from 'cesium/Core/Color.js';
-import JulianDate from 'cesium/Core/JulianDate.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 
 setupI18n();
@@ -62,8 +61,7 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
       // attributes.zoom = () => console.log('should zoom to', objects[0]);
       silhouette.selected = [object];
     } else if (object.id && object.id.properties) {
-      const curentDate = JulianDate.fromDate(new Date());
-      const props = object.id.properties.getValue(curentDate);
+      const props = extractEntitiesAttributes(object.id);
       attributes = {...props};
       attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
       if (attributes.zoomHeadingPitchRange) {
