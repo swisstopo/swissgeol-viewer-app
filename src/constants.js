@@ -36,7 +36,7 @@ export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'des
 
 export const LAS_POINT_CLOUD_STYLE = {
   pointSize: 5
-}
+};
 
 export const SWISSTOPO_LABEL_STYLE = {
   labelStyle: LabelStyle.FILL,
