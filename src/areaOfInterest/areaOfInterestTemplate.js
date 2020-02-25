@@ -86,7 +86,3 @@ export default function getTemplate() {
   </div>
   `;
 }
-
-
-
-
