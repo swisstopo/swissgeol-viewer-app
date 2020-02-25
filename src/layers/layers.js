@@ -150,7 +150,9 @@ export default class LayerTree {
     `;
       return categoryRender(layerCategory);
     });
+
     templates.push(this.getDisplayedLayerRender());
+
     render(templates, this.target);
     syncCheckboxes(this.layers);
   }
