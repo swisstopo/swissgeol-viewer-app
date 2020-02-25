@@ -93,12 +93,6 @@ export const layersConfig = [{
   layer: 'cross_section',
   parent: 15031
 }, {
-  parent: 1856,
-  type: '3dtiles',
-  assetId: 69310,
-  label: t('SG_test7_cesiumZip_noFanout'),
-  layer: 'SG_test7_cesiumZip_noFanout'
-}, {
   parent: 1858,
   type: 'earthquakes',
   label: t('earthquakes_label'),
