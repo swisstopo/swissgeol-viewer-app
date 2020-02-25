@@ -30,6 +30,7 @@
   border: 0;
   box-shadow: none;
   margin: 0;
+  font-size: 0.95em;
 }
 
 .ngm-layer-divider.ui.divider {
@@ -40,4 +41,5 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-left: 18px;
 }
