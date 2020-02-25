@@ -1,4 +1,5 @@
 import {SWISSTOPO_LABEL_STYLE} from '../constants';
+import {LAS_POINT_CLOUD_STYLE} from '../constants';
 
 const t = a => a;
 export const layerCategories = [
@@ -106,6 +107,7 @@ export const layersConfig = [{
 }, {
   parent: 1826,
   type: 'ion3dtiles',
+  style: LAS_POINT_CLOUD_STYLE,
   assetId: 69922,
   label: t('temperature_model_label'),
   layer: 'temperature_model'

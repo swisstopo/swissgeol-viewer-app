@@ -34,6 +34,10 @@ export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);
 // list of not graphics entity.propertyNames
 export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'description', 'properties', 'viewForm', 'kml', 'polygon'];
 
+export const LAS_POINT_CLOUD_STYLE = {
+  pointSize: 5
+}
+
 export const SWISSTOPO_LABEL_STYLE = {
   labelStyle: LabelStyle.FILL,
   labelText: '${DISPLAY_TEXT}',
