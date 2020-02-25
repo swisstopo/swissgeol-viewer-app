@@ -2,16 +2,16 @@
 import {setCameraHeight} from './utils.js';
 import Math from 'cesium/Core/Math';
 
-const moveUpCodes = ['KeyQ', 'Space', 'NumpadAdd'];
-const moveDownCodes = ['KeyE', 'NumpadSubtract'];
-const moveForwardCodes = ['KeyW', 'ArrowUp'];
-const moveBackwardCodes = ['KeyS', 'ArrowDown'];
-const moveLeftCodes = ['KeyA', 'ArrowLeft'];
-const moveRightCodes = ['KeyD', 'ArrowRight'];
-const lookUpCodes = ['KeyI'];
-const lookDownCodes = ['KeyK'];
-const lookLeftCodes = ['KeyJ'];
-const lookRightCodes = ['KeyL'];
+const moveUpCodes = ['q', ' ', '+'];
+const moveDownCodes = ['e', '-'];
+const moveForwardCodes = ['w', 'ArrowUp'];
+const moveBackwardCodes = ['s', 'ArrowDown'];
+const moveLeftCodes = ['a', 'ArrowLeft'];
+const moveRightCodes = ['d', 'ArrowRight'];
+const lookUpCodes = ['i'];
+const lookDownCodes = ['k'];
+const lookLeftCodes = ['j'];
+const lookRightCodes = ['l'];
 
 export default class KeyboardNavigation {
 
@@ -55,25 +55,25 @@ export default class KeyboardNavigation {
   onKey_(event) {
     if (targetNotEditable(event.target)) {
       const pressed = event.type === 'keydown';
-      if (moveUpCodes.includes(event.code)) {
+      if (moveUpCodes.includes(event.key)) {
         this.flags_.moveUp = pressed;
-      } else if (moveDownCodes.includes(event.code)) {
+      } else if (moveDownCodes.includes(event.key)) {
         this.flags_.moveDown = pressed;
-      } else if (moveForwardCodes.includes(event.code)) {
+      } else if (moveForwardCodes.includes(event.key)) {
         this.flags_.moveForward = pressed;
-      } else if (moveBackwardCodes.includes(event.code)) {
+      } else if (moveBackwardCodes.includes(event.key)) {
         this.flags_.moveBackward = pressed;
-      } else if (moveLeftCodes.includes(event.code)) {
+      } else if (moveLeftCodes.includes(event.key)) {
         this.flags_.moveLeft = pressed;
-      } else if (moveRightCodes.includes(event.code)) {
+      } else if (moveRightCodes.includes(event.key)) {
         this.flags_.moveRight = pressed;
-      } else if (lookUpCodes.includes(event.code)) {
+      } else if (lookUpCodes.includes(event.key)) {
         this.flags_.lookUp = pressed;
-      } else if (lookDownCodes.includes(event.code)) {
+      } else if (lookDownCodes.includes(event.key)) {
         this.flags_.lookDown = pressed;
-      } else if (lookLeftCodes.includes(event.code)) {
+      } else if (lookLeftCodes.includes(event.key)) {
         this.flags_.lookLeft = pressed;
-      } else if (lookRightCodes.includes(event.code)) {
+      } else if (lookRightCodes.includes(event.key)) {
         this.flags_.lookRight = pressed;
       }
       this.flags_.booster = event.shiftKey;

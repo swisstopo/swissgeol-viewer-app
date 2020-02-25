@@ -1,3 +1,5 @@
+import JulianDate from 'cesium/Core/JulianDate.js';
+
 export function extractPrimitiveAttributes(primitive) {
   const data = {};
   const propertyNames = primitive.getPropertyNames();
@@ -8,4 +10,18 @@ export function extractPrimitiveAttributes(primitive) {
     data[key] = value;
   }
   return data;
+}
+
+export function isPickable(object) {
+  if (object.tileset) {
+    return object.tileset.pickable;
+  } else if (object.primitive) {
+    return object.primitive.allowPicking;
+  } else {
+    return false;
+  }
+}
+
+export function extractEntitiesAttributes(entity) {
+  return entity.properties.getValue(JulianDate.fromDate(new Date()));
 }

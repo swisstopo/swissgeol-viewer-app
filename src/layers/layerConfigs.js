@@ -76,26 +76,26 @@ export const layersConfig = [{
   layer: 'ch.swisstopo.swissnames3d.3d',
   parent: 1890
 }, {
-  type: 'ion3dtiles',
+  type: '3dtiles',
   assetId: 68857,
   label: t('boreholes_label'),
   layer: 'boreholes',
   parent: 15031
 }, {
   parent: 1856,
-  type: 'ion3dtiles',
+  type: '3dtiles',
   assetId: 68722,
   label: t('base_mesozoic_label'),
   layer: 'base_mesozoic'
 }, {
-  type: 'ion3dtiles',
+  type: '3dtiles',
   assetId: 68881,
   label: t('cross_section_label'),
   layer: 'cross_section',
   parent: 15031
 }, {
   parent: 1856,
-  type: 'ion3dtiles',
+  type: '3dtiles',
   assetId: 69310,
   label: t('SG_test7_cesiumZip_noFanout'),
   layer: 'SG_test7_cesiumZip_noFanout'
@@ -106,7 +106,7 @@ export const layersConfig = [{
   layer: 'earthquakes'
 }, {
   parent: 1826,
-  type: 'ion3dtiles',
+  type: '3dtiles',
   style: LAS_POINT_CLOUD_STYLE,
   assetId: 69922,
   label: t('temperature_model_label'),
@@ -125,7 +125,7 @@ export const layersConfig = [{
 //   visible: false,
 //   opacity: 0.7,
 // }, {
-//   type: 'ion3dtiles',
+//   type: '3dtiles',
 //   assetId: 56812,
 //   label: t('tunnel'),
 //   visible: false,

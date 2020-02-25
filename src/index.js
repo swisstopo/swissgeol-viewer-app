@@ -9,12 +9,11 @@ import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
 import './elements/ngm-object-information.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
-import {extractPrimitiveAttributes} from './objectInformation.js';
+import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
 import AreaOfInterestDrawer from './areaOfInterest/AreaOfInterestDrawer.js';
 import Color from 'cesium/Core/Color.js';
-import JulianDate from 'cesium/Core/JulianDate.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 import LayerTree from './layers/layers.js';
 
@@ -54,19 +53,18 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
   let attributes = null;
 
   if (objects.length > 0) {
-    let object = objects[0];
-    if (!object.getProperty) {
-      object = object.primitive;
+    const object = objects[0];
+    if (!isPickable(object)) {
+      return;
     }
     if (object.getPropertyNames) {
       attributes = extractPrimitiveAttributes(object);
       // attributes.zoom = () => console.log('should zoom to', objects[0]);
       silhouette.selected = [object];
-    } else if (objects[0].id && objects[0].id.properties) {
-      const curentDate = JulianDate.fromDate(new Date());
-      const props = objects[0].id.properties.getValue(curentDate);
+    } else if (object.id && object.id.properties) {
+      const props = extractEntitiesAttributes(object.id);
       attributes = {...props};
-      attributes.zoom = () => viewer.zoomTo(objects[0].id, props.zoomHeadingPitchRange);
+      attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
       if (attributes.zoomHeadingPitchRange) {
         // Don't show the value in the object info window
         delete attributes.zoomHeadingPitchRange;
@@ -84,7 +82,8 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
 
 
 viewer.screenSpaceEventHandler.setInputAction(movement => {
-  viewer.scene.canvas.style.cursor = viewer.scene.pick(movement.endPosition) ? 'pointer' : 'default';
+  const object = viewer.scene.pick(movement.endPosition);
+  viewer.scene.canvas.style.cursor = object && isPickable(object) ? 'pointer' : 'default';
 }, ScreenSpaceEventType.MOUSE_MOVE);
 
 

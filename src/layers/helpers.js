@@ -25,29 +25,19 @@ export function createIonGeoJSONFromConfig(viewer, config) {
     });
 }
 
-export function createIon3DTilesetFromConfig(viewer, config) {
-  const primitive = viewer.scene.primitives.add(
-    new Cesium3DTileset({
-      show: !!config.visible,
-      url: IonResource.fromAssetId(config.assetId)
-    })
-  );
-  config.setVisibility = visible => primitive.show = !!visible;
-  return primitive;
-}
-
 export function create3DTilesetFromConfig(viewer, config) {
-  const primitive = new Cesium3DTileset({
-    url: config.url,
+  const tileset = new Cesium3DTileset({
+    url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
   });
   if (config.style) {
-    primitive.style = new Cesium3DTileStyle(config.style);
+    tileset.style = new Cesium3DTileStyle(config.style);
   }
-  viewer.scene.primitives.add(primitive);
+  tileset.pickable = config.pickable !== undefined ? config.pickable : false;
+  viewer.scene.primitives.add(tileset);
 
-  config.setVisibility = visible => primitive.show = !!visible;
-  return primitive;
+  config.setVisibility = visible => tileset.show = !!visible;
+  return tileset;
 }
 
 export function createSwisstopoWMTSImageryLayer(viewer, config) {

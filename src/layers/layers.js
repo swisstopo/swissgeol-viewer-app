@@ -9,7 +9,6 @@ import {getLayerParams, syncLayersParam} from '../permalink';
 import {onAccordionTitleClick, onAccordionIconClick} from '../utils.js';
 import {
   create3DTilesetFromConfig, createEarthquakeFromConfig,
-  createIon3DTilesetFromConfig,
   createIonGeoJSONFromConfig,
   createSwisstopoWMTSImageryLayer,
   syncCheckboxes
@@ -27,7 +26,6 @@ export default class LayerTree {
 
     this.factories = {
       ionGeoJSON: createIonGeoJSONFromConfig,
-      ion3dtiles: createIon3DTilesetFromConfig,
       '3dtiles': create3DTilesetFromConfig,
       swisstopoWMTS: createSwisstopoWMTSImageryLayer,
       earthquakes: createEarthquakeFromConfig,
