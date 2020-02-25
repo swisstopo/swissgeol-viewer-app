@@ -3,8 +3,13 @@ import {SWISSTOPO_LABEL_STYLE, LAS_POINT_CLOUD_STYLE} from '../constants.js';
 const t = a => a;
 export const layerCategories = [
   {
+    label: t('geocatalog_label'),
+    id: 15010
+  },
+  {
     label: t('geological_map_series_label'),
-    id: 1786
+    id: 1786,
+    parent: 15010
   },
   {
     label: t('geological_maps_label'),
@@ -13,7 +18,8 @@ export const layerCategories = [
   },
   {
     label: t('geological_bases_label'),
-    id: 1802
+    id: 1802,
+    parent: 15010
   },
   {
     label: t('borehole_data_profiles_label'),
@@ -22,7 +28,8 @@ export const layerCategories = [
   },
   {
     label: t('geo_energy_label'),
-    id: 15070
+    id: 15070,
+    parent: 15010
   },
   {
     label: t('geothermal_energy_label'),
@@ -31,11 +38,13 @@ export const layerCategories = [
   },
   {
     label: t('natural_hazard_label'),
-    id: 1858
+    id: 1858,
+    parent: 15010
   },
   {
     label: t('subsurface_label'),
-    id: 1855
+    id: 1855,
+    parent: 15010
   },
   {
     label: t('bedrock_surface_sediments_label'),
@@ -44,7 +53,8 @@ export const layerCategories = [
   },
   {
     label: t('background_label'),
-    id: 1890
+    id: 1890,
+    parent: 15010
   },
   {
     label: t('altitudes_label'),

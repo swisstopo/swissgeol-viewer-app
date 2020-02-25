@@ -34,5 +34,6 @@
   "altitudes_label": "",
   "man_made_objects_label": "",
   "displayed_maps_label": "",
-  "opacity_label": "Trasparenza"
+  "opacity_label": "Trasparenza",
+  "geocatalog_label": ""
 }
