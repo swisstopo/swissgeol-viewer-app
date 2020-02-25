@@ -7,5 +7,17 @@
   "disclaimer_text": "Copyright & Datenschutzerklärung",
   "earthquakes_label": "Erdbeben",
   "search_placeholder": "Suchen...",
-  "swissnames_label": ""
+  "swissnames_label": "",
+  "area_of_interest_add_hint": "",
+  "area_of_interest_empty_hint": "",
+  "cancel_area_btn_label": "",
+  "remove_all_area_btn_label": "",
+  "add_area_btn_label": "",
+  "fly_to_btn_tooltip": "",
+  "remove_btn_tooltip": "",
+  "hide_btn_tooltip": "",
+  "unhide_btn_tooltip": "",
+  "upload_btn_label": "",
+  "unsupported_kml_warning": "",
+  "unsupported_file_warning": ""
 }

@@ -12,11 +12,15 @@
 @import 'fomantic-ui-css/components/table.css';
 @import 'fomantic-ui-css/components/dimmer.css';
 @import 'fomantic-ui-css/components/loader.css';
+@import 'fomantic-ui-css/components/accordion.css';
+@import 'fomantic-ui-css/components/popup.css';
+@import 'fomantic-ui-css/components/toast.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 @import 'search.css';
 @import 'ngm-object-information.css';
+@import 'area-of-interest.css';
 
 [hidden] {
   display: none !important;
@@ -121,6 +125,8 @@ main {
 
 .sidebar {
   min-width: 280px;
+  overflow-y: auto;
+  overflow-x: inherit;
 }
 .sidebar.left {
   border-right: 1px solid rgba(0, 0, 0, 0.1);
@@ -136,3 +142,15 @@ main {
 .layer-slider {
   display: flex;
 }
+
+.ui.toast-container#ngm-warning-toast {
+  transition: all 0.4s linear 0s;
+  opacity: 0;
+  z-index: -1000;
+}
+
+.ui.toast-container#ngm-warning-toast.visible {
+  opacity: 1;
+  z-index: 9999;
+}
+

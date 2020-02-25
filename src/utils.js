@@ -32,3 +32,23 @@ export function getURLSearchParams() {
 export function setURLSearchParams(params) {
   window.history.replaceState({}, '', `${location.pathname}?${params}`);
 }
+
+/**
+ * @param {string} id
+ */
+export function clickOnElement(id) {
+  document.getElementById(id).click();
+}
+
+/**
+ * Shows warning toast
+ * @param {string} text - warning content
+ * @param {number} timeout - timeout to close
+ */
+export function showWarning(text, timeout) {
+  document.getElementById('ngm-warning-toast-content').innerText = text;
+  document.getElementById('ngm-warning-toast').classList.toggle('visible');
+  setTimeout(() => {
+    document.getElementById('ngm-warning-toast').classList.toggle('visible');
+  }, timeout ? timeout : 4000);
+}

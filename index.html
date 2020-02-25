@@ -14,6 +14,15 @@
 </head>
 
 <body>
+  <div class="top right ui toast-container" id="ngm-warning-toast">
+    <div class="floating toast-box compact unclickable transition">
+      <div class="warning ui toast compact">
+        <div class="content">
+          <div id="ngm-warning-toast-content" data-i18n></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="outdated-browser" style="display: none;">
     <header>
       <img class="logo" src="src/images/logo-CH.svg">
@@ -45,6 +54,7 @@
     </div>
     <div class="left sidebar">
       <div id="layers" class="ui segments"></div>
+      <div id="areasOfInterest" class="ui styled accordion"></div>
     </div>
     <div id="cesium">
       <div id="zoomToHome"><img src="src/images/ch.png"></div>
@@ -80,3 +90,4 @@
 </body>
 
 </html>
+

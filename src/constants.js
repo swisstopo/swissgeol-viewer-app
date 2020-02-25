@@ -1,5 +1,5 @@
 import Rectangle from 'cesium/Core/Rectangle.js';
-import Color from 'cesium/Core/Color';
+import Color from 'cesium/Core/Color.js';
 
 
 export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
@@ -25,3 +25,9 @@ export const ABOVE_SURFACE_CONFIGURATION = {
 
 export const LAYERS_URL_PARAM = 'layers';
 export const LAYERS_OPACITY_URL_PARAM = 'layers_opacity';
+
+export const DEFAULT_AOI_COLOR = Color.BLACK.withAlpha(0.3);
+export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);
+
+// list of not graphics entity.propertyNames
+export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'description', 'properties', 'viewForm', 'kml', 'polygon'];

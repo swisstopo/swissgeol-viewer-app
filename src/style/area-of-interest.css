@@ -1,0 +1,39 @@
+#areasOfInterest {
+  width: 273px;
+  margin-left: 3px;
+  margin-top: 3px;
+}
+
+#areasOfInterest .title {
+  font-weight: 400;
+  color: rgba(0,0,0,.87);
+}
+
+.ngm-help-btn.ui.button{
+  width: 0;
+  padding: 0;
+}
+
+.ngm-aoi-segment.ui.segment {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ngm-aoi-tooltip-container [data-tooltip]:after {
+  width: 250px;
+  text-align: center;
+  white-space: normal;
+}
+
+.ngm-new-aoi-container.ui.buttons {
+  margin-bottom: 1px;
+}
+
+.ngm-aoi-title {
+  max-width: 100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
