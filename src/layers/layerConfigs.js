@@ -1,5 +1,4 @@
-import {SWISSTOPO_LABEL_STYLE} from '../constants';
-import {LAS_POINT_CLOUD_STYLE} from '../constants';
+import {SWISSTOPO_LABEL_STYLE, LAS_POINT_CLOUD_STYLE} from '../constants.js';
 
 const t = a => a;
 export const layerCategories = [

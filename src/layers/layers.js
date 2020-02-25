@@ -2,10 +2,10 @@
 
 import {html, render} from 'lit-html';
 import {layersConfig, layerCategories} from './layerConfigs.js';
-import {repeat} from 'lit-html/directives/repeat';
+import {repeat} from 'lit-html/directives/repeat.js';
 
 import i18next from 'i18next';
-import {getLayerParams, syncLayersParam} from '../permalink';
+import {getLayerParams, syncLayersParam} from '../permalink.js';
 import {onAccordionTitleClick, onAccordionIconClick} from '../utils.js';
 import {
   create3DTilesetFromConfig, createEarthquakeFromConfig,
