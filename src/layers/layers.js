@@ -184,4 +184,17 @@ export default class LayerTree {
     this.viewer.scene.requestRender();
     this.doRender();
   }
+
+  addLayerFromSearch(imageryLayer) {
+    this.layers.push({
+      type: 'swisstopoWMTS',
+      label: imageryLayer.label,
+      layer: imageryLayer.layer,
+      visible: true,
+      displayed: true,
+      opacity: 0.7,
+    });
+
+    this.doRender();
+  }
 }

@@ -10,7 +10,7 @@ import {extractEntitiesAttributes} from './objectInformation.js';
  * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
  * @param {HTMLElement} element
  */
-export function setupSearch(viewer, element) {
+export function setupSearch(viewer, element, layerTree) {
 
   // search filter configuration
   getLayersConfig().then(layersConfig => {
@@ -48,7 +48,8 @@ export function setupSearch(viewer, element) {
         // add layer
         getSwisstopoImagery(result.properties.layer, rectangle).then(imageryLayer => {
           if (!containsSwisstopoImagery(viewer.scene.imageryLayers, imageryLayer)) {
-            viewer.scene.imageryLayers.add(imageryLayer);
+            // viewer.scene.imageryLayers.add(imageryLayer);
+            layerTree.addLayerFromSearch(result.properties);
           }
         });
       } else {

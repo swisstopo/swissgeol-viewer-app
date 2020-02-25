@@ -20,13 +20,15 @@ import LayerTree from './layers/layers.js';
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
+let layerTree = null;
 
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
-      new LayerTree(viewer, document.getElementById('layers'));
+      layerTree = new LayerTree(viewer, document.getElementById('layers'));
+      setupSearch(viewer, document.querySelector('ga-search'), layerTree);
       document.getElementById('loader').style.display = 'none';
     });
   }
@@ -107,7 +109,5 @@ const firstPersonCameraMode = new FirstPersonCameraMode(viewer.scene);
 document.querySelector('#fpsMode').addEventListener('click', event => {
   firstPersonCameraMode.active = true;
 });
-
-setupSearch(viewer, document.querySelector('ga-search'));
 
 new AreaOfInterestDrawer(viewer);
