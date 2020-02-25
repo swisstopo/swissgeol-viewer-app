@@ -1,5 +1,5 @@
 import {LitElement, html} from 'lit-element';
-
+import draggable from './draggable.js';
 
 class NgmObjectInformation extends LitElement {
 
@@ -19,6 +19,13 @@ class NgmObjectInformation extends LitElement {
         this.opened = false;
       }
     });
+  }
+
+  connectedCallback() {
+    draggable(this, {
+      allowFrom: '.header'
+    });
+    super.connectedCallback();
   }
 
   updated() {
