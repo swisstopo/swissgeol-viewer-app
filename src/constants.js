@@ -73,3 +73,10 @@ export const SWISSTOPO_LABEL_STYLE = {
     ]
   }
 };
+
+export const LAYER_TYPES = {
+  swisstopoWMTS: 'swisstopoWMTS',
+  tiles3d: '3dtiles',
+  ionGeoJSON: 'ionGeoJSON',
+  earthquakes: 'earthquakes',
+};

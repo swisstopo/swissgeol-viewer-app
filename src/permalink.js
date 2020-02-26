@@ -2,7 +2,8 @@ import Math from 'cesium/Core/Math.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
 import {getURLSearchParams, setURLSearchParams} from './utils.js';
-import {LAYERS_OPACITY_URL_PARAM, LAYERS_URL_PARAM, LAYERS_VISIBILITY_URL_PARAM} from './constants';
+import {LAYERS_OPACITY_URL_PARAM, LAYERS_URL_PARAM, LAYERS_VISIBILITY_URL_PARAM} from './constants.js';
+import {layersConfig} from './layers/layerConfigs.js';
 
 export function getCameraView() {
   let destination;
@@ -62,6 +63,7 @@ export function getLayerParams() {
 }
 
 export function syncLayersParam(layers) {
+  layers = layers.filter(l => layersConfig.find(lc => lc.layer === l.layer));
   const params = getURLSearchParams();
   const displayedLayers = layers.filter(l => l.displayed);
   const layerNames = [];

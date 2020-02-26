@@ -1,4 +1,4 @@
-import {SWISSTOPO_LABEL_STYLE, LAS_POINT_CLOUD_STYLE} from '../constants.js';
+import {SWISSTOPO_LABEL_STYLE, LAS_POINT_CLOUD_STYLE, LAYER_TYPES} from '../constants.js';
 
 const t = a => a;
 export const layerCategories = [
@@ -70,14 +70,14 @@ export const layerCategories = [
 ];
 
 export const layersConfig = [{
-  type: 'swisstopoWMTS',
+  type: LAYER_TYPES.swisstopoWMTS,
   label: t('ch_swisstopo_geologie_geocover'),
   layer: 'ch.swisstopo.geologie-geocover',
   visible: true,
   opacity: 0.7,
   parent: 1787
 }, {
-  type: '3dtiles',
+  type: LAYER_TYPES.tiles3d,
   url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
   label: t('swissnames_label'),
   style: SWISSTOPO_LABEL_STYLE,
@@ -85,50 +85,50 @@ export const layersConfig = [{
   layer: 'ch.swisstopo.swissnames3d.3d',
   parent: 1890
 }, {
-  type: '3dtiles',
+  type: LAYER_TYPES.tiles3d,
   assetId: 68857,
   label: t('boreholes_label'),
   layer: 'boreholes',
   parent: 15031
 }, {
   parent: 1856,
-  type: '3dtiles',
+  type: LAYER_TYPES.tiles3d,
   assetId: 68722,
   label: t('base_mesozoic_label'),
   layer: 'base_mesozoic'
 }, {
-  type: '3dtiles',
+  type: LAYER_TYPES.tiles3d,
   assetId: 68881,
   label: t('cross_section_label'),
   layer: 'cross_section',
   parent: 15031
 }, {
   parent: 1858,
-  type: 'earthquakes',
+  type: LAYER_TYPES.earthquakes,
   label: t('earthquakes_label'),
   layer: 'earthquakes'
 }, {
   parent: 1826,
-  type: '3dtiles',
+  type: LAYER_TYPES.tiles3d,
   style: LAS_POINT_CLOUD_STYLE,
   assetId: 69922,
   label: t('temperature_model_label'),
   layer: 'temperature_model'
 }];
 
-//   type: 'ionGeoJSON',
+//   type: LAYER_TYPES.ionGeoJSON,
 //   assetId: 56810,
 //   label: t('tin_of_geological_layer'),
 //   visible: false,
 //   opacity: 0.8,
 // }, {
-//   type: 'swisstopoWMTS',
+//   type: LAYER_TYPES.swisstopoWMTS,
 //   label: t('ch.swisstopo.swisstlm3d-wanderwege'),
 //   layer: 'ch.swisstopo.swisstlm3d-wanderwege',
 //   visible: false,
 //   opacity: 0.7,
 // }, {
-//   type: '3dtiles',
+//   type: LAYER_TYPES.tiles3d,
 //   assetId: 56812,
 //   label: t('tunnel'),
 //   visible: false,

@@ -13,6 +13,7 @@ import {
   createSwisstopoWMTSImageryLayer,
   syncCheckboxes
 } from './helpers.js';
+import {LAYER_TYPES} from '../constants.js';
 
 export default class LayerTree {
   constructor(viewer, target) {
@@ -25,10 +26,10 @@ export default class LayerTree {
     this.layerTree = [];
 
     this.factories = {
-      ionGeoJSON: createIonGeoJSONFromConfig,
-      '3dtiles': create3DTilesetFromConfig,
-      swisstopoWMTS: createSwisstopoWMTSImageryLayer,
-      earthquakes: createEarthquakeFromConfig,
+      [LAYER_TYPES.ionGeoJSON]: createIonGeoJSONFromConfig,
+      [LAYER_TYPES.tiles3d]: create3DTilesetFromConfig,
+      [LAYER_TYPES.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
+      [LAYER_TYPES.earthquakes]: createEarthquakeFromConfig,
     };
 
     this.doRender();
@@ -185,16 +186,29 @@ export default class LayerTree {
     this.doRender();
   }
 
-  addLayerFromSearch(imageryLayer) {
-    this.layers.push({
-      type: 'swisstopoWMTS',
-      label: imageryLayer.label,
-      layer: imageryLayer.layer,
-      visible: true,
-      displayed: true,
-      opacity: 0.7,
-    });
+  addLayerFromSearch(searchLayer) {
+    let layer;
+    if (searchLayer.dataSourceName) {
+      layer = this.layers.find(l => l.type === searchLayer.dataSourceName);
+    } else {
+      layer = this.layers.find(l => l.layer === searchLayer.layer);
+    }
 
+    if (layer) {
+      layer.setVisibility(true);
+      layer.visible = true;
+      layer.displayed = true;
+      this.viewer.scene.requestRender();
+    } else {
+      this.layers.push({
+        type: LAYER_TYPES.swisstopoWMTS,
+        label: searchLayer.label,
+        layer: searchLayer.layer,
+        visible: true,
+        displayed: true,
+        opacity: 0.7,
+      });
+    }
     this.doRender();
   }
 }

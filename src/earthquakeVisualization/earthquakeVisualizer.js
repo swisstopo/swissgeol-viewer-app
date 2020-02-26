@@ -5,11 +5,12 @@ import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorForMagnitude} 
 import {readTextFile} from '../utils.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
 import Math from 'cesium/Core/Math.js';
+import {LAYER_TYPES} from '../constants.js';
 
 export default class EarthquakeVisualizer {
   constructor(viewer) {
     this.viewer = viewer;
-    this.earthquakeDataSource = new CustomDataSource('earthquakes');
+    this.earthquakeDataSource = new CustomDataSource(LAYER_TYPES.earthquakes);
     this.viewer.dataSources.add(this.earthquakeDataSource);
     this.earthquakeDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer.scene.requestRender();
