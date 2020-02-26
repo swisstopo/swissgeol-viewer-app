@@ -202,7 +202,7 @@ export default class LayerTree {
     } else {
       this.layers.push({
         type: LAYER_TYPES.swisstopoWMTS,
-        label: searchLayer.label,
+        label: searchLayer.title,
         layer: searchLayer.layer,
         visible: true,
         displayed: true,
