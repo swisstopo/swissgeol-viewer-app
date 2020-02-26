@@ -80,3 +80,5 @@ export const LAYER_TYPES = {
   ionGeoJSON: 'ionGeoJSON',
   earthquakes: 'earthquakes',
 };
+
+export const DEFAULT_LAYER_OPACITY = 0.7;

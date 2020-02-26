@@ -51,4 +51,11 @@ export default class EarthquakeVisualizer {
       await this.showEarthquakes();
     }
   }
+
+  setOpacity(opacity) {
+    const entities = this.earthquakeDataSource.entities.values;
+    entities.forEach(entity => {
+      entity.ellipsoid.material = entity.ellipsoid.material.color.getValue().withAlpha(Number(opacity));
+    });
+  }
 }

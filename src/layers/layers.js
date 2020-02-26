@@ -13,7 +13,7 @@ import {
   createSwisstopoWMTSImageryLayer,
   syncCheckboxes
 } from './helpers.js';
-import {LAYER_TYPES} from '../constants.js';
+import {LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
 
 export default class LayerTree {
   constructor(viewer, target) {
@@ -206,7 +206,7 @@ export default class LayerTree {
         layer: searchLayer.layer,
         visible: true,
         displayed: true,
-        opacity: 0.7,
+        opacity: DEFAULT_LAYER_OPACITY,
       });
     }
     this.doRender();

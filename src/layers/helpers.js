@@ -11,6 +11,7 @@ export function createEarthquakeFromConfig(viewer, config) {
     earthquakeVisualizer.setVisible(true);
   }
   config.setVisibility = visible => earthquakeVisualizer.setVisible(visible);
+  config.setOpacity = opacity => earthquakeVisualizer.setOpacity(opacity);
   return earthquakeVisualizer;
 }
 
@@ -28,7 +29,7 @@ export function createIonGeoJSONFromConfig(viewer, config) {
 export function create3DTilesetFromConfig(viewer, config) {
   const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
-    show: !!config.visible,
+    show: !!config.visible
   });
   if (config.style) {
     tileset.style = new Cesium3DTileStyle(config.style);
@@ -37,6 +38,20 @@ export function create3DTilesetFromConfig(viewer, config) {
   viewer.scene.primitives.add(tileset);
 
   config.setVisibility = visible => tileset.show = !!visible;
+  if (!config.opacityDisabled) {
+    config.setOpacity = opacity => {
+      const style = config.style;
+      if (style && (style.color || style.labelColor)) {
+        const {propertyName, colorType, colorValue} = styleColorParser(style);
+        const color = `${colorType}(${colorValue}, ${opacity})`;
+        tileset.style = new Cesium3DTileStyle({...style, [propertyName]: color});
+      } else {
+        const color = `color("", ${opacity})`;
+        tileset.style = new Cesium3DTileStyle({...style, color});
+      }
+    };
+  }
+
   return tileset;
 }
 
@@ -52,6 +67,15 @@ export function createSwisstopoWMTSImageryLayer(viewer, config) {
     layer.show = !!config.visible;
     return layer;
   });
+}
+
+function styleColorParser(style) {
+  const propertyName = style.color ? 'color' : 'labelColor';
+  let colorType = style[propertyName].slice(0, style[propertyName].indexOf('('));
+  const lastIndex = colorType === 'rgba' ? style[propertyName].lastIndexOf(',') : style[propertyName].indexOf(')');
+  const colorValue = style[propertyName].slice(style[propertyName].indexOf('(') + 1, lastIndex);
+  colorType = colorType === 'rgb' ? 'rgba' : colorType;
+  return {propertyName, colorType, colorValue};
 }
 
 /**

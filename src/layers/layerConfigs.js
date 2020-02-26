@@ -1,4 +1,4 @@
-import {SWISSTOPO_LABEL_STYLE, LAS_POINT_CLOUD_STYLE, LAYER_TYPES} from '../constants.js';
+import {SWISSTOPO_LABEL_STYLE, LAS_POINT_CLOUD_STYLE, LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
 
 const t = a => a;
 export const layerCategories = [
@@ -74,7 +74,7 @@ export const layersConfig = [{
   label: t('ch_swisstopo_geologie_geocover'),
   layer: 'ch.swisstopo.geologie-geocover',
   visible: true,
-  opacity: 0.7,
+  opacity: DEFAULT_LAYER_OPACITY,
   parent: 1787
 }, {
   type: LAYER_TYPES.tiles3d,
@@ -83,37 +83,43 @@ export const layersConfig = [{
   style: SWISSTOPO_LABEL_STYLE,
   visible: false,
   layer: 'ch.swisstopo.swissnames3d.3d',
-  parent: 1890
+  parent: 1890,
+  opacity: DEFAULT_LAYER_OPACITY
 }, {
   type: LAYER_TYPES.tiles3d,
   assetId: 68857,
   label: t('boreholes_label'),
   layer: 'boreholes',
-  parent: 15031
+  parent: 15031,
+  opacity: DEFAULT_LAYER_OPACITY
 }, {
   parent: 1856,
   type: LAYER_TYPES.tiles3d,
   assetId: 68722,
   label: t('base_mesozoic_label'),
-  layer: 'base_mesozoic'
+  layer: 'base_mesozoic',
+  opacity: DEFAULT_LAYER_OPACITY
 }, {
   type: LAYER_TYPES.tiles3d,
   assetId: 68881,
   label: t('cross_section_label'),
   layer: 'cross_section',
-  parent: 15031
+  parent: 15031,
+  opacity: DEFAULT_LAYER_OPACITY
 }, {
   parent: 1858,
   type: LAYER_TYPES.earthquakes,
   label: t('earthquakes_label'),
-  layer: 'earthquakes'
+  layer: 'earthquakes',
+  opacity: DEFAULT_LAYER_OPACITY
 }, {
   parent: 1826,
   type: LAYER_TYPES.tiles3d,
   style: LAS_POINT_CLOUD_STYLE,
   assetId: 69922,
   label: t('temperature_model_label'),
-  layer: 'temperature_model'
+  layer: 'temperature_model',
+  opacityDisabled: true
 }];
 
 //   type: LAYER_TYPES.ionGeoJSON,
