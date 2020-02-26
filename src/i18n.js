@@ -75,3 +75,17 @@ export function setupI18n() {
   render(templates, document.getElementById('langs'));
 
 }
+
+export const I18nMixin = Base => class extends Base {
+
+  connectedCallback() {
+    this.i18nLanguageChangedCallback_ = () => this.requestUpdate();
+    i18next.on('languageChanged', this.i18nLanguageChangedCallback_);
+    super.connectedCallback();
+  }
+
+  disconnectedCallback() {
+    i18next.off('languageChanged', this.i18nLanguageChangedCallback_);
+    super.disconnectedCallback();
+  }
+};
