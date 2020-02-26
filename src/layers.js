@@ -11,6 +11,7 @@ import LabelStyle from 'cesium/Scene/LabelStyle.js';
 
 import i18next from 'i18next';
 import {getLayerParams, syncLayersParam} from './permalink';
+import {getURLSearchParams} from './utils.js';
 
 
 const swisstopoLabelStyle = {
@@ -219,6 +220,20 @@ function doRender(viewer, target) {
  * @param {HTMLElement} target
  */
 export function setupLayers(viewer, target) {
+  // add Cesium ion assets
+  const params = getURLSearchParams();
+  const assetIds = params.get('assetIds');
+  if (assetIds) {
+    assetIds.split(',').forEach(assetId => {
+      layers.push({
+        type: '3dtiles',
+        assetId: assetId,
+        label: assetId
+      });
+      console.log(assetId);
+    });
+  }
+
   doRender(viewer, target);
   i18next.on('languageChanged', options => {
     doRender(viewer, target);
