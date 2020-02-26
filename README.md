@@ -1,7 +1,13 @@
+# Instances
+
+- dev https://ngmpub.dev.bgdi.ch/
+- int https://ngmpub.int.bgdi.ch/
+- prod https://ngmpub.prod.bgdi.ch/ (username: agch, password: OhnooTh1)
+
 # Deploy to integration (from local machine)
 
 ```bash
-# ex: int_sprint2.1
+# ex int_sprint2.1
 export VERSION="int_sprint???"
 
 git tag $VERSION
