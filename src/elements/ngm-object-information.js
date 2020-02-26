@@ -1,7 +1,9 @@
 import {LitElement, html} from 'lit-element';
 import draggable from './draggable.js';
+import i18next from 'i18next';
+import {I18nMixin} from '../i18n.js';
 
-class NgmObjectInformation extends LitElement {
+class NgmObjectInformation extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
@@ -61,7 +63,7 @@ class NgmObjectInformation extends LitElement {
               <tr>
                 <th colspan="2">
                   <button @click="${this.info.zoom}" class="ui right floated mini basic labeled icon button">
-                    <i class="right arrow icon"></i>Zoom to object
+                    <i class="right arrow icon"></i>${i18next.t('Zoom to object')}
                   </div>
                 </th>
               </tr>
