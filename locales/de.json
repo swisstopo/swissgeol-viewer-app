@@ -35,5 +35,7 @@
   "man_made_objects_label": "",
   "displayed_maps_label": "",
   "opacity_label": "Transparenz",
-  "geocatalog_label": ""
+  "geocatalog_label": "",
+  "layer_up": "",
+  "layer_down": ""
 }

@@ -67,3 +67,15 @@ export function onAccordionIconClick(evt) {
   const event = {...evt, target: evt.target.parentElement};
   onAccordionTitleClick(event);
 }
+
+/**
+ * Change element position in array
+ * array - target array
+ * fromIdx - from index
+ * toIdx - to index
+ */
+export function insertAndShift(array, fromIdx, toIdx) {
+  const cutOut = array.splice(fromIdx, 1)[0];
+  array.splice(toIdx, 0, cutOut);
+  return array;
+}

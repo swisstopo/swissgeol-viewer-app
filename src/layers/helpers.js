@@ -59,6 +59,16 @@ export function createSwisstopoWMTSImageryLayer(viewer, config) {
   let layer = null;
   config.setVisibility = visible => layer.show = !!visible;
   config.setOpacity = opacity => layer.alpha = opacity;
+  config.remove = () => viewer.scene.imageryLayers.remove(layer, false);
+  config.add = (toIndex) => {
+    const layersLength = viewer.scene.imageryLayers.length;
+    if (toIndex > 0 && toIndex < layersLength) {
+      const imageryIndex = layersLength - toIndex;
+      viewer.scene.imageryLayers.add(layer, imageryIndex);
+      return;
+    }
+    viewer.scene.imageryLayers.add(layer);
+  };
 
   return getSwisstopoImagery(config.layer).then(l => {
     layer = l;

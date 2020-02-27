@@ -36,5 +36,7 @@
   "man_made_objects_label": "Man-made objects",
   "displayed_maps_label": "Maps and data displayed",
   "opacity_label": "Opacity",
-  "geocatalog_label": "Geocatalog"
+  "geocatalog_label": "Geocatalog",
+  "layer_up": "Layer Up",
+  "layer_down": "Layer Down"
 }

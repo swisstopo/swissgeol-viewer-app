@@ -57,15 +57,15 @@ export function getLayerParams() {
     return {
       name: layer,
       opacity: Number(layersOpacity[key]),
-      visible: layersVisibility[key] === 'true'
+      visible: layersVisibility[key] === 'true',
+      position: key
     };
   });
 }
 
 export function syncLayersParam(layers) {
-  layers = layers.filter(l => layersConfig.find(lc => lc.layer === l.layer));
+  const displayedLayers = layers.filter(l => layersConfig.find(lc => lc.layer === l.layer));
   const params = getURLSearchParams();
-  const displayedLayers = layers.filter(l => l.displayed);
   const layerNames = [];
   const layersOpacity = [];
   const layersVisibility = [];

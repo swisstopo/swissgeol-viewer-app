@@ -6,7 +6,7 @@ import {repeat} from 'lit-html/directives/repeat.js';
 
 import i18next from 'i18next';
 import {getLayerParams, syncLayersParam} from '../permalink.js';
-import {onAccordionTitleClick, onAccordionIconClick} from '../utils.js';
+import {onAccordionTitleClick, onAccordionIconClick, insertAndShift} from '../utils.js';
 import {
   create3DTilesetFromConfig, createEarthquakeFromConfig,
   createIonGeoJSONFromConfig,
@@ -44,16 +44,19 @@ export default class LayerTree {
     if (displayedLayers && displayedLayers.length) {
       this.layers = this.layers.map(layer => {
         const layerParams = displayedLayers.find(dl => dl.name === layer.layer);
-        layer.visible = layerParams ? layerParams.visible : false;
-        layer.opacity = layerParams ? layerParams.opacity : 1;
-        layer.displayed = !!layerParams;
-        return layer;
+        return {
+          ...layer,
+          ...layerParams,
+          visible: layerParams ? layerParams.visible : false,
+          opacity: layerParams ? layerParams.opacity : 1,
+          displayed: !!layerParams,
+        };
       });
     } else {
       this.layers = this.layers.map(layer => {
         return {...layer, displayed: layer.visible};
       });
-      syncLayersParam(this.layers);
+      syncLayersParam(this.displayedLayers());
     }
     this.layersSynced = true;
   }
@@ -85,20 +88,21 @@ export default class LayerTree {
       if (evt.target.checked && !config.displayed) {
         config.displayed = true;
       }
-      syncLayersParam(this.layers);
+      syncLayersParam(this.displayedLayers());
       this.viewer.scene.requestRender();
       this.doRender();
     };
 
     const changeOpacity = evt => {
-      config.setOpacity(evt.target.value);
-      config.opacity = evt.target.value;
-      syncLayersParam(this.layers);
+      const opacity = Number(evt.target.value);
+      config.setOpacity(opacity);
+      config.opacity = opacity;
+      syncLayersParam(this.displayedLayers());
       this.viewer.scene.requestRender();
+      this.doRender();
     };
 
     const id = `${config.parent}-${(Math.random() * 100).toFixed()}`;
-
     return html`
     <div class="ngm-displayed-container">
         <div class="ui checkbox">
@@ -107,17 +111,33 @@ export default class LayerTree {
           @change=${changeVisibility}>
           <label for="layer-item-${id}" data-i18n>${i18next.t(config.label)}</label>
         </div>
-        <button class="circular ui icon button mini" ?hidden=${!displayedRender}
+        <div class="ui icon buttons mini" ?hidden=${!displayedRender}>
+            <button class="ui button"
+            data-tooltip=${i18next.t('layer_up')}
+            data-position="top center"
+            data-variation="mini"
+            @click=${this.changeOrder.bind(this, config, true)}>
+              <i class="angle up icon"></i>
+            </button>
+            <button class="ui button"
+            data-tooltip=${i18next.t('layer_down')}
+            data-position="top center"
+            data-variation="mini"
+            @click=${this.changeOrder.bind(this, config, false)}>
+              <i class="angle down icon"></i>
+            </button>
+            <button class="ui icon button"
             data-tooltip=${i18next.t('remove_btn_tooltip')}
             data-position="top center"
             data-variation="mini"
             @click=${this.removeDisplayed.bind(this, config)}>
           <i class="icon trash alternate outline"></i>
         </button>
+        </div>
     </div>
     <div class="layer-slider" ?hidden=${!config.setOpacity || !displayedRender}>
       <label data-i18n>${i18next.t('opacity_label')}: </label>
-      <input type="range" min="0" max="1" value=${config.opacity || 1} @input=${changeOpacity} step="0.05">
+      <input type="range" min="0" max="1" .value=${config.opacity || 1} @input=${changeOpacity} step="0.05">
     </div>
     `;
   }
@@ -163,7 +183,7 @@ export default class LayerTree {
      ${this.getLayerRender(child, idx, true)}
      `;
     };
-    const displayedLayers = this.layers.filter(l => l.displayed);
+    const displayedLayers = this.displayedLayers();
     return html`
       <div class="title ngm-layer-title ngm-gray-title" @click=${onAccordionTitleClick} data-i18n>
         <i class="dropdown icon" @click=${onAccordionIconClick}></i>
@@ -181,7 +201,10 @@ export default class LayerTree {
     layer.setVisibility(false);
     layer.visible = false;
     layer.displayed = false;
-    syncLayersParam(this.layers);
+    if (layer.type === LAYER_TYPES.swisstopoWMTS) {
+      layer.remove();
+    }
+    syncLayersParam(this.displayedLayers());
     this.viewer.scene.requestRender();
     this.doRender();
   }
@@ -194,21 +217,63 @@ export default class LayerTree {
       layer = this.layers.find(l => l.layer === searchLayer.layer);
     }
 
+    const displayedLayers = this.displayedLayers();
     if (layer) {
+      if (layer.type === LAYER_TYPES.swisstopoWMTS) {
+        const index = displayedLayers.indexOf(layer);
+        insertAndShift(displayedLayers, index, 0);
+        displayedLayers.forEach((l, idx) => l.position = idx);
+        layer.add(0);
+      }
       layer.setVisibility(true);
       layer.visible = true;
       layer.displayed = true;
       this.viewer.scene.requestRender();
     } else {
-      this.layers.push({
+      this.layers.unshift({
         type: LAYER_TYPES.swisstopoWMTS,
         label: searchLayer.title,
         layer: searchLayer.layer,
         visible: true,
         displayed: true,
-        opacity: DEFAULT_LAYER_OPACITY,
+        opacity: DEFAULT_LAYER_OPACITY
       });
+      displayedLayers.forEach((layer, idx) => layer.position = idx);
     }
     this.doRender();
+  }
+
+  changeOrder(config, up) {
+    const displayedLayers = this.displayedLayers();
+    const index = displayedLayers.indexOf(config);
+    if ((up && index > 0) || (!up && index < displayedLayers.length - 1)) {
+      const toIndex = up ? index - 1 : index + 1;
+      insertAndShift(displayedLayers, index, toIndex);
+    }
+    displayedLayers.forEach((layer, idx) => layer.position = idx);
+
+    if (config.type === LAYER_TYPES.swisstopoWMTS) {
+      const swisstopoLayers = this.displayedSwisstopoLayers;
+      if (swisstopoLayers.length) {
+        const swisstopoIndex = swisstopoLayers.indexOf(config);
+        if (swisstopoIndex >= 0) {
+          config.remove();
+          config.add(swisstopoIndex);
+        }
+      }
+    }
+
+    syncLayersParam(this.displayedLayers());
+    this.doRender();
+  }
+
+  displayedLayers() {
+    const displayed = this.layers.filter(l => l.displayed);
+    return displayed.sort((currLayer, nextLayer) => currLayer.position - nextLayer.position);
+  }
+
+  get displayedSwisstopoLayers() {
+    return this.displayedLayers().filter(dl => dl.type === LAYER_TYPES.swisstopoWMTS)
+      .sort((currLayer, nextLayer) => currLayer.position - nextLayer.position);
   }
 }

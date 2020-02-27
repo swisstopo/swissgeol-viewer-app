@@ -26,6 +26,10 @@
   padding-bottom: 0.5em;
 }
 
+.ui.styled.accordion .ngm-layer-content.content .ui.icon.buttons .button {
+  padding: .6em;
+}
+
 .ngm-layer-content .ngm-layers-categories.ui.accordion {
   border: 0;
   box-shadow: none;
