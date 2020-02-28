@@ -212,13 +212,14 @@ export default class AreaOfInterestDrawer {
   }
 
   async uploadArea_(evt) {
-    if (evt.target && evt.target.files[0]) {
-      if (!evt.target.files[0].type.includes('.kml')) {
-        console.log(evt.target.files[0].type);
+    const file = evt.target ? evt.target.files[0] : null;
+    if (file) {
+      if (!file.name.toLowerCase().includes('.kml')) {
         showWarning(i18next.t('unsupported_file_warning'));
+        evt.target.value = null;
         return;
       }
-      const kmlDataSource = await KmlDataSource.load(evt.target.files[0],
+      const kmlDataSource = await KmlDataSource.load(file,
         {
           camera: this.viewer_.scene.camera,
           canvas: this.viewer_.scene.canvas,
