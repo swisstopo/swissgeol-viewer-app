@@ -204,6 +204,9 @@ export default class AreaOfInterestDrawer {
 
   flyToArea_(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity.isShowing) {
+      entity.show = !entity.isShowing;
+    }
     this.viewer_.flyTo(entity);
     this.pickArea_(id);
   }
