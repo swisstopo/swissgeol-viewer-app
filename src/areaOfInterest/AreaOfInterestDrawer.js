@@ -214,6 +214,7 @@ export default class AreaOfInterestDrawer {
   async uploadArea_(evt) {
     if (evt.target && evt.target.files[0]) {
       if (!evt.target.files[0].type.includes('.kml')) {
+        console.log(evt.target.files[0].type);
         showWarning(i18next.t('unsupported_file_warning'));
         return;
       }
