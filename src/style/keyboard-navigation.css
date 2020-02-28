@@ -1,0 +1,25 @@
+#navigationInfo {
+  margin-right: 50px;
+}
+
+#navigationInfo .ngm-keyboard-info-content {
+  width: 40vw;
+  max-width: 500px;
+}
+
+#navigationInfo.ui.left.center.popup:before {
+  top: 5%;
+}
+
+.ngm-info-line {
+  display: flex;
+  margin: 10px;
+}
+
+.ngm-info-line-title {
+  flex: 1;
+}
+
+.ngm-info-line-content {
+  flex: 3;
+}

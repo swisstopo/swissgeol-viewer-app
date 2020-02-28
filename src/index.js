@@ -16,6 +16,7 @@ import {getCameraView, syncCamera} from './permalink.js';
 import AreaOfInterestDrawer from './areaOfInterest/AreaOfInterestDrawer.js';
 import Color from 'cesium/Core/Color.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
+import {initInfoPopup} from './elements/keyboard-info-popup.js';
 
 setupI18n();
 
@@ -111,3 +112,5 @@ document.querySelector('#fpsMode').addEventListener('click', event => {
 setupSearch(viewer, document.querySelector('ga-search'));
 
 new AreaOfInterestDrawer(viewer);
+
+initInfoPopup();

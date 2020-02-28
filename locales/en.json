@@ -20,5 +20,32 @@
   "unhide_btn_tooltip": "Unhide",
   "upload_btn_label": "Upload Area",
   "unsupported_kml_warning": "Uploaded unsupported KML",
-  "unsupported_file_warning": "Unsupported file extension. Please upload KML"
+  "unsupported_file_warning": "Unsupported file extension. Please upload KML",
+
+  "info_tilt_pc_1": "Shift or CTRL or ALT + left mouse button + drag up/down",
+  "info_tilt_pc_2": "Shift + up/down arrow",
+  "info_tilt_touch": "Tilts the viewer toward \"horizon\" / \"top-down\" view",
+  "info_look_pc": "CTRL + left mouse button + drag",
+  "info_look_mac": "Command/Open Apple Key + mouse button + drag",
+  "info_look_touch": "Perspective points in another direction, as if you are turning your head up, down, left or right",
+  "info_zoom": "Scroll wheel or right mouse + drag up/down",
+  "info_zoom_touch": "Zooms the viewer in and out",
+  "info_move": "Left/right arrow or \"A\"/\"D\" key",
+  "info_move_touch": "One finger drag left/right",
+  "info_move_forward": "Up/down arrow or \"W\"/\"S\" key",
+  "info_move_forward_touch": "One finger drag forward/backward",
+  "info_elevator": "\"+\" / \"-\" key",
+  "info_clockwise_rotate": "\"J\" / \"L\" key",
+  "info_rotate": "\"I\" / \"K\" key",
+  "info_tip": "Tip: press \"shift\" to increase the speed",
+
+  "info_tilt_label": "Tilt up/down",
+  "info_look_label": "Look",
+  "info_zoom_label": "Zoom in/out",
+  "info_move_label": "Move left/right",
+  "info_move_forward_label": "Move forward/backward",
+  "info_elevator_label": "Move up/down (elevator)",
+  "info_clockwise_rotate_label": "Rotate clockwise/counterclockwise",
+  "info_rotate_label": "Rotate up/down",
+  "touch_label": "Touch"
 }
