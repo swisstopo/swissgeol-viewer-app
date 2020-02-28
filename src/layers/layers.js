@@ -108,6 +108,7 @@ export default class LayerTree {
       config.setVisibility(evt.target.checked);
       config.visible = evt.target.checked;
       if (evt.target.checked && !config.displayed) {
+        if (config.type === LAYER_TYPES.swisstopoWMTS) config.add(0);
         config.displayed = true;
       }
       syncLayersParam(this.displayedLayers());
