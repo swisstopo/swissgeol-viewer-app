@@ -15,7 +15,7 @@ import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {DEFAULT_AOI_COLOR, CESIUM_NOT_GRAPHICS_ENTITY_PROPS} from '../constants.js';
 import {updateColor} from './helpers.js';
-import {showWarning} from '../utils.js';
+import {showWarning} from '../message.js';
 
 export default class AreaOfInterestDrawer {
   constructor(viewer) {
