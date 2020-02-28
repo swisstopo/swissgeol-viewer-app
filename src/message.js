@@ -9,6 +9,13 @@ export function showWarning(message) {
   });
 }
 
+export function showError(message) {
+  showMessage(message, {
+    class: 'error',
+    showIcon: 'exclamation triangle'
+  });
+}
+
 export function showMessage(message, options = {}) {
   $('body').toast(Object.assign({
     message: message
