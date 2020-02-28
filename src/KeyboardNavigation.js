@@ -21,7 +21,7 @@ export default class KeyboardNavigation {
    * @param {number} [rotateAmount]
    * @param {number} [boostFactor]
    */
-  constructor(scene, moveAmount = 50, rotateAmount = Math.PI / 200, boostFactor = 4) {
+  constructor(scene, moveAmount = 50, rotateAmount = Math.PI / 300, boostFactor = 4) {
 
     this.scene_ = scene;
 
