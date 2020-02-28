@@ -1,23 +1,43 @@
 #navigationInfo {
-  margin-right: 50px;
+  margin-right: 55px;
+  margin-top: 6px;
 }
 
 #navigationInfo .ngm-keyboard-info-content {
   width: 40vw;
   max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 #navigationInfo.ui.left.center.popup:before {
-  top: 5%;
+  top: 15px;
+}
+
+#navigationInfo h4 {
+  margin: 5px 0;
+}
+
+#navigationInfo .ngm-keyboard-tip {
+  margin-top: 15px;
+  font-style: italic;
+}
+
+#navigationInfo .column {
+  padding: 5px 10px;
 }
 
 .ngm-info-line {
   display: flex;
-  margin: 10px;
+  margin: 5px;
 }
 
 .ngm-info-line-title {
   flex: 1;
+  display: flex;
+}
+.ngm-info-line-title img {
+  margin-left: 10px;
 }
 
 .ngm-info-line-content {

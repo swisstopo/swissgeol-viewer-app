@@ -47,5 +47,8 @@
   "info_elevator_label": "Move up/down (elevator)",
   "info_clockwise_rotate_label": "Rotate clockwise/counterclockwise",
   "info_rotate_label": "Rotate up/down",
-  "touch_label": "Touch"
+  "touch_label": "Touch",
+  "pc_label": "PC",
+  "mac_label": "Mac",
+  "pc_mac_label": "PC + Mac"
 }

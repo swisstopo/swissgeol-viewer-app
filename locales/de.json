@@ -46,5 +46,8 @@
   "info_elevator_label": "",
   "info_clockwise_rotate_label": "",
   "info_rotate_label": "",
-  "touch_label": ""
+  "touch_label": "",
+  "pc_label": "",
+  "mac_label": "",
+  "pc_mac_label": ""
 }

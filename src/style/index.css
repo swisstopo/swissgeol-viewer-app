@@ -103,6 +103,7 @@ main {
 #cesium .cesium-viewer-bottom {
   pointer-events: none;
 }
+
 #cesium .cesium-viewer-bottom .cesium-widget-credits {
   pointer-events: all;
 }
@@ -118,6 +119,10 @@ main {
   right: 0;
 }
 
+#cesium > .ngm-controls.buttons {
+  top: 40px;
+}
+
 #zoomToHome {
   position: absolute;
   z-index: 1;
@@ -130,9 +135,11 @@ main {
   overflow-y: auto;
   overflow-x: inherit;
 }
+
 .sidebar.left {
   border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
+
 .ui.checkbox label {
   cursor: pointer;
 }
