@@ -87,15 +87,18 @@ export default class AreaOfInterestDrawer {
 
     this.mouseDown_ = false;
     this.firstPointSet_ = false;
-    if (this.areaRectangle_.width === 0 || this.areaRectangle_.height === 0) {
-      this.interestAreasDataSource.entities.removeById(this.area_.id);
-    } else {
-      this.area_.rectangle.coordinates = this.areaRectangle_;
-      this.areaRectangle_ = new Rectangle();
-    }
 
     if (this.drawMode_) {
       this.cancelDraw_();
+    }
+
+    if (this.areaRectangle_.width === 0 || this.areaRectangle_.height === 0) {
+      this.interestAreasDataSource.entities.removeById(this.area_.id);
+      this.areasCounter_ = this.areasCounter_ - 1;
+      this.onAddAreaClick_();
+    } else {
+      this.area_.rectangle.coordinates = this.areaRectangle_;
+      this.areaRectangle_ = new Rectangle();
     }
   }
 
