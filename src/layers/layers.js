@@ -6,7 +6,7 @@ import {repeat} from 'lit-html/directives/repeat.js';
 
 import i18next from 'i18next';
 import {getLayerParams, syncLayersParam} from '../permalink.js';
-import {onAccordionTitleClick, onAccordionIconClick, insertAndShift} from '../utils.js';
+import {onAccordionTitleClick, onAccordionIconClick, insertAndShift, getURLSearchParams} from '../utils.js';
 import {
   create3DTilesetFromConfig, createEarthquakeFromConfig,
   createIonGeoJSONFromConfig,
@@ -31,6 +31,20 @@ export default class LayerTree {
       [LAYER_TYPES.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
       [LAYER_TYPES.earthquakes]: createEarthquakeFromConfig,
     };
+
+    // add Cesium ion assets
+    const params = getURLSearchParams();
+    const assetIds = params.get('assetIds');
+    if (assetIds) {
+      assetIds.split(',').forEach(assetId => {
+        this.layers.push({
+          type: '3dtiles',
+          assetId: assetId,
+          label: assetId
+        });
+        console.log(assetId);
+      });
+    }
 
     this.doRender();
     i18next.on('languageChanged', options => {
