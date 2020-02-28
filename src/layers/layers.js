@@ -5,8 +5,8 @@ import {layersConfig, layerCategories} from './layerConfigs.js';
 import {repeat} from 'lit-html/directives/repeat.js';
 
 import i18next from 'i18next';
-import {getLayerParams, syncLayersParam} from '../permalink.js';
-import {onAccordionTitleClick, onAccordionIconClick, insertAndShift, getURLSearchParams} from '../utils.js';
+import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
+import {onAccordionTitleClick, onAccordionIconClick, insertAndShift} from '../utils.js';
 import {
   create3DTilesetFromConfig, createEarthquakeFromConfig,
   createIonGeoJSONFromConfig,
@@ -32,20 +32,6 @@ export default class LayerTree {
       [LAYER_TYPES.earthquakes]: createEarthquakeFromConfig,
     };
 
-    // add Cesium ion assets
-    const params = getURLSearchParams();
-    const assetIds = params.get('assetIds');
-    if (assetIds) {
-      assetIds.split(',').forEach(assetId => {
-        this.layers.push({
-          type: '3dtiles',
-          assetId: assetId,
-          label: assetId
-        });
-        console.log(assetId);
-      });
-    }
-
     this.doRender();
     i18next.on('languageChanged', options => {
       this.doRender();
@@ -55,18 +41,34 @@ export default class LayerTree {
   syncLayers() {
     if (this.layersSynced) return;
     const displayedLayers = getLayerParams();
-    if (displayedLayers && displayedLayers.length) {
+    const assestIds = getAssetIds();
+    if (displayedLayers.length || assestIds.length) {
       this.layers = this.layers.map(layer => {
         const layerParams = displayedLayers.find(dl => dl.name === layer.layer);
         return {
           ...layer,
           ...layerParams,
           visible: layerParams ? layerParams.visible : false,
-          opacity: layerParams ? layerParams.opacity : 1,
+          opacity: layerParams ? layerParams.opacity : DEFAULT_LAYER_OPACITY,
           displayed: !!layerParams,
         };
       });
-    } else {
+      if (assestIds.length) {
+        // add Cesium ion assets
+        assestIds.forEach(assetId => {
+          this.layers.push({
+            type: LAYER_TYPES.tiles3d,
+            assetId: assetId,
+            label: assetId,
+            layer: assetId,
+            visible: true,
+            displayed: true,
+            opacityDisabled: true
+          });
+        });
+      }
+    }
+    if (!displayedLayers.length || !assestIds.length) {
       this.layers = this.layers.map(layer => {
         return {...layer, displayed: layer.visible};
       });

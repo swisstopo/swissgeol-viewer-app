@@ -27,6 +27,7 @@ export const ABOVE_SURFACE_CONFIGURATION = {
 export const LAYERS_URL_PARAM = 'layers';
 export const LAYERS_VISIBILITY_URL_PARAM = 'layers_visibility';
 export const LAYERS_OPACITY_URL_PARAM = 'layers_opacity';
+export const ASSET_IDS_URL_PARAM = 'assetIds';
 
 export const DEFAULT_AOI_COLOR = Color.BLACK.withAlpha(0.3);
 export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);

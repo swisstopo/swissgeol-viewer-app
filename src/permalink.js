@@ -2,7 +2,12 @@ import Math from 'cesium/Core/Math.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
 import {getURLSearchParams, setURLSearchParams} from './utils.js';
-import {LAYERS_OPACITY_URL_PARAM, LAYERS_URL_PARAM, LAYERS_VISIBILITY_URL_PARAM} from './constants.js';
+import {
+  LAYERS_OPACITY_URL_PARAM,
+  LAYERS_URL_PARAM,
+  LAYERS_VISIBILITY_URL_PARAM,
+  ASSET_IDS_URL_PARAM
+} from './constants.js';
 import {layersConfig} from './layers/layerConfigs.js';
 
 export function getCameraView() {
@@ -63,6 +68,15 @@ export function getLayerParams() {
   });
 }
 
+export function getAssetIds() {
+  const params = getURLSearchParams();
+  const assetIds = params.get(ASSET_IDS_URL_PARAM);
+  if (assetIds) {
+    return assetIds.split(',');
+  }
+  return [];
+}
+
 export function syncLayersParam(layers) {
   const displayedLayers = layers.filter(l => layersConfig.find(lc => lc.layer === l.layer));
   const params = getURLSearchParams();
@@ -83,6 +97,17 @@ export function syncLayersParam(layers) {
     params.delete(LAYERS_URL_PARAM);
     params.delete(LAYERS_OPACITY_URL_PARAM);
     params.delete(LAYERS_VISIBILITY_URL_PARAM);
+  }
+
+  const assetParams = getAssetIds();
+
+  if (assetParams.length) {
+    const assetIds = assetParams.filter(id => layers.find(l => l.assetId === id && l.displayed));
+    if (assetIds.length) {
+      params.set(ASSET_IDS_URL_PARAM, assetIds.join(','));
+    } else {
+      params.delete(ASSET_IDS_URL_PARAM);
+    }
   }
 
   setURLSearchParams(params);
