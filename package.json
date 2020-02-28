@@ -4,7 +4,6 @@
   "scripts": {
     "lint": "eslint src/",
     "extract-i18n": "i18next",
-    "typecheck": "echo 'checking types ...'",
     "start": "rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "rm -rf dist/* && rollup --environment mode:production -c",
     "postinstall": "scripts/npm_postinstall.sh"
