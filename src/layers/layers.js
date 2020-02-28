@@ -38,10 +38,12 @@ export default class LayerTree {
     });
   }
 
+  // adds layers from url params on first run
   syncLayers() {
     if (this.layersSynced) return;
     const displayedLayers = getLayerParams();
     const assestIds = getAssetIds();
+    // adds layers from url params to 'Displayed Layers' (only configured in config)
     if (displayedLayers.length || assestIds.length) {
       this.layers = this.layers.map(layer => {
         const layerParams = displayedLayers.find(dl => dl.name === layer.layer);
@@ -53,6 +55,7 @@ export default class LayerTree {
           displayed: !!layerParams,
         };
       });
+      // adds custom Cesium ion assets from url params to 'Displayed Layers'
       if (assestIds.length) {
         // add Cesium ion assets
         assestIds.forEach(assetId => {
@@ -68,6 +71,7 @@ export default class LayerTree {
         });
       }
     }
+    // if no url params - adds visible layers from config to 'Displayed Layers'
     if (!displayedLayers.length || !assestIds.length) {
       this.layers = this.layers.map(layer => {
         return {...layer, displayed: layer.visible};
@@ -77,6 +81,7 @@ export default class LayerTree {
     this.layersSynced = true;
   }
 
+  // builds structure of layers and categories
   buildLayertree() {
     this.syncLayers();
     const generalConfig = [...this.categories, ...this.layers];
@@ -94,6 +99,7 @@ export default class LayerTree {
     this.layerTree = this.layerTree.filter(cat => !cat.parent && cat.children.length);
   }
 
+  // builds html container for layer
   getLayerRender(config, index, displayedRender = false) {
     if (!config.promise) {
       config.promise = this.factories[config.type](this.viewer, config);
@@ -158,10 +164,12 @@ export default class LayerTree {
     `;
   }
 
+  // builds ui structure of layertree and makes render
   doRender() {
     this.buildLayertree();
     const templates = this.layerTree.map((layerCategory, index) => {
 
+      // returns category content
       const repeatCallback = (child, idx) => {
         const layer = this.layers.find(l => child.layer && l.layer === child.layer);
         return html`
@@ -186,12 +194,14 @@ export default class LayerTree {
       return categoryRender(layerCategory);
     });
 
+    // gets html container for 'Displayed Layers'
     templates.push(this.getDisplayedLayerRender());
 
     render(templates, this.target);
     syncCheckboxes(this.layers);
   }
 
+  // builds html container for 'Displayed Layers'
   getDisplayedLayerRender() {
     const repeatCallback = (child, idx) => {
       return html`
@@ -213,6 +223,7 @@ export default class LayerTree {
     `;
   }
 
+  // removes layer from 'Displayed Layers'
   removeDisplayed(layer) {
     layer.setVisibility(false);
     layer.visible = false;
@@ -225,16 +236,17 @@ export default class LayerTree {
     this.doRender();
   }
 
+  // adds layer from search to 'Displayed Layers'
   addLayerFromSearch(searchLayer) {
     let layer;
     if (searchLayer.dataSourceName) {
-      layer = this.layers.find(l => l.type === searchLayer.dataSourceName);
+      layer = this.layers.find(l => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
     } else {
-      layer = this.layers.find(l => l.layer === searchLayer.layer);
+      layer = this.layers.find(l => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
     }
 
     const displayedLayers = this.displayedLayers();
-    if (layer) {
+    if (layer) { // for layers added before
       if (layer.type === LAYER_TYPES.swisstopoWMTS) {
         const index = displayedLayers.indexOf(layer);
         insertAndShift(displayedLayers, index, 0);
@@ -245,7 +257,7 @@ export default class LayerTree {
       layer.visible = true;
       layer.displayed = true;
       this.viewer.scene.requestRender();
-    } else {
+    } else { // for new layers
       this.layers.unshift({
         type: LAYER_TYPES.swisstopoWMTS,
         label: searchLayer.title,
@@ -254,11 +266,12 @@ export default class LayerTree {
         displayed: true,
         opacity: DEFAULT_LAYER_OPACITY
       });
-      displayedLayers.forEach((layer, idx) => layer.position = idx);
+      displayedLayers.forEach((layer, idx) => layer.position = idx); // updates layers order in 'Displayed Layers'
     }
     this.doRender();
   }
 
+  // changes layer position in 'Displayed Layers'
   changeOrder(config, up) {
     const displayedLayers = this.displayedLayers();
     const index = displayedLayers.indexOf(config);
@@ -266,9 +279,9 @@ export default class LayerTree {
       const toIndex = up ? index - 1 : index + 1;
       insertAndShift(displayedLayers, index, toIndex);
     }
-    displayedLayers.forEach((layer, idx) => layer.position = idx);
+    displayedLayers.forEach((layer, idx) => layer.position = idx); // updates layers order in 'Displayed Layers'
 
-    if (config.type === LAYER_TYPES.swisstopoWMTS) {
+    if (config.type === LAYER_TYPES.swisstopoWMTS) { // also change swisstopoWMTS layers order on the terrain
       const swisstopoLayers = this.displayedSwisstopoLayers;
       if (swisstopoLayers.length) {
         const swisstopoIndex = swisstopoLayers.indexOf(config);
@@ -283,11 +296,13 @@ export default class LayerTree {
     this.doRender();
   }
 
+  // gets list of displayed layers
   displayedLayers() {
     const displayed = this.layers.filter(l => l.displayed);
     return displayed.sort((currLayer, nextLayer) => currLayer.position - nextLayer.position);
   }
 
+  // gets list of swisstopoWMTS layers
   get displayedSwisstopoLayers() {
     return this.displayedLayers().filter(dl => dl.type === LAYER_TYPES.swisstopoWMTS)
       .sort((currLayer, nextLayer) => currLayer.position - nextLayer.position);

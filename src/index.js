@@ -20,14 +20,13 @@ import LayerTree from './layers/layers.js';
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
-let layerTree = null;
 
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
-      layerTree = new LayerTree(viewer, document.getElementById('layers'));
+      const layerTree = new LayerTree(viewer, document.getElementById('layers'));
       setupSearch(viewer, document.querySelector('ga-search'), layerTree);
       document.getElementById('loader').style.display = 'none';
     });
