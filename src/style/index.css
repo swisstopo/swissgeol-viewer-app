@@ -16,12 +16,14 @@
 @import 'fomantic-ui-css/components/popup.css';
 @import 'fomantic-ui-css/components/transition.css';
 @import 'fomantic-ui-css/components/toast.css';
+@import 'fomantic-ui-css/components/grid.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 @import 'search.css';
 @import 'ngm-object-information.css';
 @import 'area-of-interest.css';
+@import 'keyboard-navigation.css';
 
 [hidden] {
   display: none !important;
@@ -102,6 +104,7 @@ main {
 #cesium .cesium-viewer-bottom {
   pointer-events: none;
 }
+
 #cesium .cesium-viewer-bottom .cesium-widget-credits {
   pointer-events: all;
 }
@@ -117,6 +120,10 @@ main {
   right: 0;
 }
 
+#cesium > .ngm-controls.buttons {
+  top: 40px;
+}
+
 #zoomToHome {
   position: absolute;
   z-index: 1;
@@ -129,9 +136,11 @@ main {
   overflow-y: auto;
   overflow-x: inherit;
 }
+
 .sidebar.left {
   border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
+
 .ui.checkbox label {
   cursor: pointer;
 }
