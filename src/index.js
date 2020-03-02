@@ -8,6 +8,7 @@ import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
 import './elements/ngm-object-information.js';
+import './elements/ngm-gst-interaction.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
@@ -82,13 +83,6 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
 
 }, ScreenSpaceEventType.LEFT_CLICK);
 
-
-viewer.screenSpaceEventHandler.setInputAction(movement => {
-  const object = viewer.scene.pick(movement.endPosition);
-  viewer.scene.canvas.style.cursor = object && isPickable(object) ? 'pointer' : 'default';
-}, ScreenSpaceEventType.MOUSE_MOVE);
-
-
 const {destination, orientation} = getCameraView();
 viewer.camera.flyTo({
   destination: destination || SWITZERLAND_RECTANGLE,
@@ -113,3 +107,6 @@ document.querySelector('#fpsMode').addEventListener('click', event => {
 new AreaOfInterestDrawer(viewer);
 
 initInfoPopup();
+
+const gstInteraction = document.querySelector('ngm-gst-interaction');
+gstInteraction.viewer = viewer;
