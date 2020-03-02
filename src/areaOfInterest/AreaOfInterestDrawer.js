@@ -15,7 +15,7 @@ import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {DEFAULT_AOI_COLOR, CESIUM_NOT_GRAPHICS_ENTITY_PROPS} from '../constants.js';
 import {updateColor} from './helpers.js';
-import {showWarning} from '../utils.js';
+import {showWarning} from '../message.js';
 
 export default class AreaOfInterestDrawer {
   constructor(viewer) {
@@ -87,10 +87,18 @@ export default class AreaOfInterestDrawer {
 
     this.mouseDown_ = false;
     this.firstPointSet_ = false;
-    this.area_.rectangle.coordinates = this.areaRectangle_;
 
     if (this.drawMode_) {
       this.cancelDraw_();
+    }
+
+    if (this.areaRectangle_.width === 0 || this.areaRectangle_.height === 0) {
+      this.interestAreasDataSource.entities.removeById(this.area_.id);
+      this.areasCounter_ = this.areasCounter_ - 1;
+      this.onAddAreaClick_();
+    } else {
+      this.area_.rectangle.coordinates = this.areaRectangle_;
+      this.areaRectangle_ = new Rectangle();
     }
   }
 
@@ -199,17 +207,22 @@ export default class AreaOfInterestDrawer {
 
   flyToArea_(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity.isShowing) {
+      entity.show = !entity.isShowing;
+    }
     this.viewer_.flyTo(entity);
     this.pickArea_(id);
   }
 
   async uploadArea_(evt) {
-    if (evt.target && evt.target.files[0]) {
-      if (!evt.target.files[0].type.includes('.kml')) {
+    const file = evt.target ? evt.target.files[0] : null;
+    if (file) {
+      if (!file.name.toLowerCase().includes('.kml')) {
         showWarning(i18next.t('unsupported_file_warning'));
+        evt.target.value = null;
         return;
       }
-      const kmlDataSource = await KmlDataSource.load(evt.target.files[0],
+      const kmlDataSource = await KmlDataSource.load(file,
         {
           camera: this.viewer_.scene.camera,
           canvas: this.viewer_.scene.canvas,

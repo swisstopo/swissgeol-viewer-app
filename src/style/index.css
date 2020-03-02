@@ -14,6 +14,7 @@
 @import 'fomantic-ui-css/components/loader.css';
 @import 'fomantic-ui-css/components/accordion.css';
 @import 'fomantic-ui-css/components/popup.css';
+@import 'fomantic-ui-css/components/transition.css';
 @import 'fomantic-ui-css/components/toast.css';
 @import 'fomantic-ui-css/components/grid.css';
 
@@ -151,15 +152,3 @@ main {
 .layer-slider {
   display: flex;
 }
-
-.ui.toast-container#ngm-warning-toast {
-  transition: all 0.4s linear 0s;
-  opacity: 0;
-  z-index: -1000;
-}
-
-.ui.toast-container#ngm-warning-toast.visible {
-  opacity: 1;
-  z-index: 9999;
-}
-

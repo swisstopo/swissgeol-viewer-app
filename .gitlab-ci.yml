@@ -23,10 +23,6 @@ lint:
   stage: test
   script: npm run lint
 
-typecheck:
-  stage: test
-  script: npm run typecheck
-
 build:
   stage: build
   script: npm run build
