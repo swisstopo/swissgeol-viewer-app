@@ -14,6 +14,8 @@ import Color from 'cesium/Core/Color.js';
 import Ion from 'cesium/Core/Ion.js';
 import Camera from 'cesium/Scene/Camera.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
+import GlobeTranslucencyMode from 'cesium/Scene/GlobeTranslucencyMode.js';
+import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
@@ -88,6 +90,12 @@ export function setupViewer(container) {
   globe.showGroundAtmosphere = false;
   globe.showWaterEffect = false;
   globe.backFaceCulling = false;
+
+  // Set the globe translucency to 0.8 when the
+  // camera is 1500 meters from the surface and 1.0
+  // as the camera distance approaches 50000 meters.
+  globe.translucencyMode = GlobeTranslucencyMode.FRONT_FACES_ONLY;
+  globe.translucencyByDistance = new NearFarScalar(1500, 0.8, 50000, 1.0);
 
   const imageryLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
