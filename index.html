@@ -14,15 +14,6 @@
 </head>
 
 <body>
-  <div class="top right ui toast-container" id="ngm-warning-toast">
-    <div class="floating toast-box compact unclickable transition">
-      <div class="warning ui toast compact">
-        <div class="content">
-          <div id="ngm-warning-toast-content" data-i18n></div>
-        </div>
-      </div>
-    </div>
-  </div>
   <div id="outdated-browser" style="display: none;">
     <header>
       <img class="logo" src="src/images/logo-CH.svg">
@@ -58,8 +49,16 @@
     </div>
     <div id="cesium">
       <div id="zoomToHome"><img src="src/images/ch.png"></div>
-
-      <div class="ui icon vertical buttons">
+      <div class="ui icon buttons ngm-info">
+        <!-- <button class="ui button">
+          <i class="home icon"></i>
+        </button> -->
+        <button id="navigationInfoBtn" class="ui button">
+          <i class="info icon"></i>
+        </button>
+      </div>
+      <div id="navigationInfo" class="ui popup left center"></div>
+      <div class="ui icon vertical buttons ngm-controls">
         <!-- <button class="ui button">
           <i class="home icon"></i>
         </button> -->
