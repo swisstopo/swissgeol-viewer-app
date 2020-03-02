@@ -1,16 +1,18 @@
 import '@geoblocks/ga-search';
 
-import {getLayersConfig, containsSwisstopoImagery, getSwisstopoImagery} from './swisstopoImagery.js';
+import {getLayersConfig} from './swisstopoImagery.js';
 
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import Math from 'cesium/Core/Math.js';
 import {extractEntitiesAttributes} from './objectInformation.js';
+
 /**
  * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
  * @param {HTMLElement} element
+ * @param layerTree
  */
-export function setupSearch(viewer, element) {
+export function setupSearch(viewer, element, layerTree) {
 
   // search filter configuration
   getLayersConfig().then(layersConfig => {
@@ -46,11 +48,7 @@ export function setupSearch(viewer, element) {
       const rectangle = Rectangle.fromDegrees(...result.bbox);
       if (origin === 'layer') {
         // add layer
-        getSwisstopoImagery(result.properties.layer, rectangle).then(imageryLayer => {
-          if (!containsSwisstopoImagery(viewer.scene.imageryLayers, imageryLayer)) {
-            viewer.scene.imageryLayers.add(imageryLayer);
-          }
-        });
+        layerTree.addLayerFromSearch(result.properties);
       } else {
         // recenter to location
         if (rectangle.width < Math.EPSILON3 || rectangle.height < Math.EPSILON3) {
@@ -68,6 +66,7 @@ export function setupSearch(viewer, element) {
         }
       }
     } else {
+      layerTree.addLayerFromSearch(result);
       viewer.zoomTo(result.entity);
     }
     event.target.autocomplete.input.blur();
@@ -86,7 +85,8 @@ export function setupSearch(viewer, element) {
           if (regexp.test(attributes.EventLocationName)) {
             matches.push({
               entity: entity,
-              label: `${attributes.EventLocationName} (${attributes.Magnitude})`
+              label: `${attributes.EventLocationName} (${attributes.Magnitude})`,
+              dataSourceName: dataSource.name
             });
           }
         });

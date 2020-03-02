@@ -1,15 +1,8 @@
 #areasOfInterest {
-  width: 273px;
-  margin-left: 3px;
-  margin-top: 3px;
+  margin: 2px;
 }
 
-#areasOfInterest .title {
-  font-weight: 400;
-  color: rgba(0,0,0,.87);
-}
-
-.ngm-help-btn.ui.button{
+.ngm-help-btn.ui.button {
   width: 0;
   padding: 0;
 }

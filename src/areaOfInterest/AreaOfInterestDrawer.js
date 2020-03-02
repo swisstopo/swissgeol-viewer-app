@@ -144,7 +144,8 @@ export default class AreaOfInterestDrawer {
 
   onClick_(click) {
     const pickedObject = this.viewer_.scene.pick(click.position);
-    if (defined(pickedObject) && this.interestAreasDataSource.entities.contains(pickedObject.id)) {
+    if (!defined(pickedObject) || !pickedObject.id) return;
+    if (this.interestAreasDataSource.entities.contains(pickedObject.id)) {
       this.pickArea_(pickedObject.id.id);
     } else if (this.selectedArea_) {
       updateColor(this.selectedArea_, false);

@@ -16,6 +16,7 @@
 @import 'fomantic-ui-css/components/popup.css';
 @import 'fomantic-ui-css/components/transition.css';
 @import 'fomantic-ui-css/components/toast.css';
+@import 'fomantic-ui-css/components/divider.css';
 @import 'fomantic-ui-css/components/grid.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
@@ -24,6 +25,8 @@
 @import 'ngm-object-information.css';
 @import 'area-of-interest.css';
 @import 'keyboard-navigation.css';
+@import 'layers.css';
+@import 'slider.css';
 
 [hidden] {
   display: none !important;
@@ -145,10 +148,21 @@ main {
   cursor: pointer;
 }
 
-#layers {
-  margin: 2px;
+.ui.toast-container#ngm-warning-toast {
+  transition: all 0.4s linear 0s;
+  opacity: 0;
+  z-index: -1000;
 }
 
-.layer-slider {
-  display: flex;
+.ui.toast-container#ngm-warning-toast.visible {
+  opacity: 1;
+  z-index: 9999;
+}
+
+.ui.styled.accordion {
+  width: 280px;
+}
+
+.ngm-gray-title {
+  background-color: #e9e9e9;
 }

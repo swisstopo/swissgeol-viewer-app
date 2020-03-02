@@ -1,8 +1,7 @@
 import {html} from 'lit-html';
 import {repeat} from 'lit-html/directives/repeat';
 import i18next from 'i18next';
-import {onAccordionTitleClick} from './helpers.js';
-import {clickOnElement} from '../utils.js';
+import {clickOnElement, onAccordionTitleClick, onAccordionIconClick} from '../utils.js';
 
 const areaUploadInputId = 'areaUpload';
 
@@ -21,8 +20,8 @@ export default function getTemplate() {
   };
 
   return html`
-  <div class="title" @click=${onAccordionTitleClick}>
-    <i class="dropdown icon"></i>
+  <div class="title ngm-gray-title" @click=${onAccordionTitleClick}>
+    <i class="dropdown icon" @click=${onAccordionIconClick}></i>
     Areas of Interest
   </div>
   <div class="content">
