@@ -115,17 +115,17 @@ const infoConfig = [
 function renderKeyboardInfo() {
   const infoLineRepeat = value => html`
     <div class="ngm-info-line">
-      <div class="ngm-info-line-title" data-i18n>
+      <div class="ngm-info-line-title">
         ${i18next.t(value.title)}:
         ${value.img ? html`<img src="${value.img}">` : ''}
       </div>
-      <div class="ngm-info-line-content" data-i18n>${i18next.t(value.content)}</div>
+      <div class="ngm-info-line-content">${i18next.t(value.content)}</div>
     </div>`;
 
   const rowRepeat = value => html`
     <div class="row">
       <div class="column">
-        <h4 data-i18n>${i18next.t(value.title)}</h4>
+        <h4>${i18next.t(value.title)}</h4>
         ${repeat(value.content, infoLineRepeat)}
       </div>
     </div>`;
@@ -134,7 +134,7 @@ function renderKeyboardInfo() {
   <div class="ui internally celled grid ngm-keyboard-info-content">
    ${repeat(infoConfig, rowRepeat)}
   </div>
-  <h4 class="ngm-keyboard-tip" data-i18n>${i18next.t('info_tip')}</h4>`;
+  <h4 class="ngm-keyboard-tip">${i18next.t('info_tip')}</h4>`;
 
   render(info, document.getElementById(popupId));
 }
