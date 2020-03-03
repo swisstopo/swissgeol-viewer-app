@@ -134,6 +134,15 @@ main {
   cursor: pointer;
 }
 
+cesium-compass {
+  position: absolute;
+  z-index: 1;
+  margin: 6px;
+  right: 48px;
+  --cesium-compass-stroke-color: rgb(224, 225, 226);
+  --cesium-compass-fill-color: rgba(0, 0, 0, 0.6);
+}
+
 .sidebar {
   min-width: 280px;
   overflow-y: auto;
