@@ -18,17 +18,30 @@ import Color from 'cesium/Core/Color.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import LayerTree from './layers/layers.js';
+import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
 
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
+
+
+async function zoomTo(config) {
+  const p = await config.promise;
+  if (p.boundingSphere) {
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 4, 3 * p.boundingSphere.radius);
+    this.viewer.zoomTo(p, zoomHeadingPitchRange);
+  } else {
+    this.viewer.zoomTo(p);
+  }
+}
 
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
-      const layerTree = new LayerTree(viewer, document.getElementById('layers'));
+
+      const layerTree = new LayerTree(viewer, document.getElementById('layers'), zoomTo);
       setupSearch(viewer, document.querySelector('ga-search'), layerTree);
       document.getElementById('loader').style.display = 'none';
     });
