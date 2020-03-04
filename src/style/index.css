@@ -38,11 +38,15 @@ html, body {
 }
 
 body {
-  font-family: 'Source Sans Pro', sans-serif;
   line-height: 1.4285em;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* FIXME: create a fomantic-ui build with the correct font */
+body, .ui.accordion .title:not(.ui), .ui.input > input {
+  font-family: 'Source Sans Pro', sans-serif;
 }
 
 a {
