@@ -47,3 +47,7 @@
   align-items: center;
   margin-left: 18px;
 }
+
+.ngm-layer-title {
+  color: black;
+}

@@ -14,9 +14,11 @@ import {
   syncCheckboxes
 } from './helpers.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
+import Cartesian3 from 'cesium/Core/Cartesian3';
+import Color from 'cesium/Core/Color.js';
 
 export default class LayerTree {
-  constructor(viewer, target) {
+  constructor(viewer, target, zoomTo) {
     this.viewer = viewer;
     this.target = target;
 
@@ -24,6 +26,7 @@ export default class LayerTree {
     this.categories = layerCategories;
     this.layersSynced = false;
     this.layerTree = [];
+    this.zoomTo = zoomTo;
 
     this.factories = {
       [LAYER_TYPES.ionGeoJSON]: createIonGeoJSONFromConfig,
@@ -31,6 +34,15 @@ export default class LayerTree {
       [LAYER_TYPES.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
       [LAYER_TYPES.earthquakes]: createEarthquakeFromConfig,
     };
+
+    this.boundingSphereEntity = this.viewer.entities.add({
+      position: Cartesian3.ZERO,
+      show: false,
+      ellipsoid: {
+        material: Color.RED.withAlpha(0.5),
+        radii: new Cartesian3(1, 1, 1),
+      }
+    });
 
     this.doRender();
     i18next.on('languageChanged', options => {
@@ -125,9 +137,28 @@ export default class LayerTree {
       this.doRender();
     };
 
+
+    const mouseEnter = async () => {
+      const p = await config.promise;
+      const b = p.boundingSphere;
+      if (b) {
+        this.boundingSphereEntity.position = b.center;
+        this.boundingSphereEntity.ellipsoid.radii = new Cartesian3(b.radius, b.radius, b.radius);
+        this.boundingSphereEntity.show = true;
+        this.viewer.scene.requestRender();
+      }
+    };
+    const mouseLeave = () => {
+      if (this.boundingSphereEntity.show) {
+        this.boundingSphereEntity.show = false;
+        this.viewer.scene.requestRender();
+      }
+    };
     const id = `${config.parent}-${(Math.random() * 100).toFixed()}`;
     return html`
-    <div class="ngm-displayed-container">
+    <div class="ngm-displayed-container"
+        @mouseenter=${mouseEnter}
+        @mouseleave=${mouseLeave}>
         <div class="ui checkbox">
           <input id="layer-item-${id}" class="ngm-layer-checkbox" type="checkbox" name="${config.layer}"
           .checked=${config.visible}
@@ -135,6 +166,13 @@ export default class LayerTree {
           <label for="layer-item-${id}" data-i18n>${i18next.t(config.label)}</label>
         </div>
         <div class="ui icon buttons mini" ?hidden=${!displayedRender}>
+            <button class="ui button"
+            data-tooltip=${i18next.t('zoom_to')}
+            data-position="top center"
+            data-variation="mini"
+            @click=${this.zoomTo.bind(this, config)}>
+              <i class="search plus icon"></i>
+            </button>
             <button class="ui button"
             data-tooltip=${i18next.t('layer_up')}
             data-position="top center"
@@ -212,11 +250,11 @@ export default class LayerTree {
     };
     const displayedLayers = this.displayedLayers();
     return html`
-      <div class="title ngm-layer-title ngm-gray-title" @click=${onAccordionTitleClick} data-i18n>
+      <div class="title ngm-layer-title active" @click=${onAccordionTitleClick} data-i18n>
         <i class="dropdown icon" @click=${onAccordionIconClick}></i>
        ${i18next.t('displayed_maps_label')}
       </div>
-      <div class="content ngm-layer-content">
+      <div class="content ngm-layer-content active">
          <div>
         ${repeat(displayedLayers, (child, indx) => indx, repeatCallback)}
         </div>

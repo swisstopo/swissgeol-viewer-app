@@ -45,9 +45,13 @@ export default class FirstPersonCameraMode {
   }
 
   onMouseMove_(event) {
-    this.movementX_ += event.movementX;
-    this.movementY_ += event.movementY;
-    this.scene_.requestRender();
+    if (event.movementX && event.movementY) {
+      // the condition workarounds https://bugzilla.mozilla.org/show_bug.cgi?id=1417702
+      // in Firefox, event.movementX is -2 even though there is no movement
+      this.movementX_ += event.movementX;
+      this.movementY_ += event.movementY;
+      this.scene_.requestRender();
+    }
   }
 
   onPostRender_() {

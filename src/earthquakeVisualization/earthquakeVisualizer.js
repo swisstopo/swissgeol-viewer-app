@@ -26,8 +26,8 @@ export default class EarthquakeVisualizer {
       const longitude = Number(data.Longitude);
       const latitude = Number(data.Latitude);
       const position = Cartesian3.fromDegrees(longitude, latitude, height);
-      const cameraDistanse = size * 4;
-      const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.toRadians(25), cameraDistanse);
+      const cameraDistance = size * 4;
+      const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.toRadians(25), cameraDistance);
       return this.earthquakeDataSource.entities.add({
         position: position,
         ellipsoid: {

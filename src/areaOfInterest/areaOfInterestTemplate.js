@@ -20,25 +20,25 @@ export default function getTemplate() {
   };
 
   return html`
-  <div class="title ngm-gray-title" @click=${onAccordionTitleClick}>
+  <div class="title" @click=${onAccordionTitleClick}>
     <i class="dropdown icon" @click=${onAccordionIconClick}></i>
     Areas of Interest
   </div>
   <div class="content">
     <div class="ui tiny fluid buttons ngm-new-aoi-container" ?hidden=${this.drawMode_}>
-        <button class="ui blue button" @click=${this.onAddAreaClick_.bind(this)}>
+        <button class="ui button" @click=${this.onAddAreaClick_.bind(this)}>
             <i class="plus icon"></i>${btnTranslation.add}
         </button>
-        <button class="ui blue button" @click=${clickOnElement.bind(null, areaUploadInputId)}>
+        <button class="ui button" @click=${clickOnElement.bind(null, areaUploadInputId)}>
             <i class="file upload icon"></i>${btnTranslation.upload}
         </button>
     </div>
-    <button class="ui tiny red fluid button"
+    <!-- <button class="ui tiny fluid button"
             @click=${this.onRemoveEntityClick_.bind(this, null)}
 
             ?hidden=${this.drawMode_}>
             <i class="trash alternate outline icon"></i>${btnTranslation.removeAll}
-    </button>
+    </button> -->
     <input id="${areaUploadInputId}" type='file' accept=".kml,.KML" hidden @change=${this.uploadArea_.bind(this)} />
     <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.drawMode_}>
         <button class="ui button" @click=${this.cancelDraw_.bind(this)}>${btnTranslation.cancel}</button>
