@@ -55,7 +55,6 @@ export function setupViewer(container) {
     navigationInstructionsInitiallyVisible: false,
     scene3DOnly: true,
     skyBox: false,
-    skyAtmosphere: true,
     imageryProvider: false,
     showRenderLoopErrors: false,
     useBrowserRecommendedResolution: true,
