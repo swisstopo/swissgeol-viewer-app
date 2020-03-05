@@ -1,20 +1,3 @@
-#layers {
-  margin: 2px;
-}
-
-.layer-slider {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-.layer-slider label {
-  margin-right: 10px;
-}
-
-.layer-slider input[type=range] {
-  width: 60%;
-}
-
 .ui.styled.accordion .ngm-layer-title.title,
 .ui.accordion .ngm-layer-title.title {
   padding-bottom: 0.5em;
@@ -46,6 +29,9 @@
   justify-content: space-between;
   align-items: center;
   margin-left: 18px;
+}
+.ngm-displayed-container label {
+  margin-right: 10px;
 }
 
 .ngm-layer-title {

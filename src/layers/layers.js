@@ -196,7 +196,7 @@ export default class LayerTree {
         </button>
         </div>
     </div>
-    <div class="layer-slider" ?hidden=${!config.setOpacity || !displayedRender}>
+    <div class="ngm-displayed-container" ?hidden=${!config.setOpacity || !displayedRender}>
       <label data-i18n>${i18next.t('opacity_label')}: </label>
       <input type="range" min="0" max="1" .value=${config.opacity || 1} @input=${changeOpacity} step="0.05">
     </div>
