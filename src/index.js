@@ -107,12 +107,6 @@ viewer.camera.flyTo({
 
 viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
-document.querySelector('#zoomToHome').addEventListener('click', event => {
-  viewer.scene.camera.flyTo({
-    destination: SWITZERLAND_RECTANGLE
-  });
-});
-
 const firstPersonCameraMode = new FirstPersonCameraMode(viewer.scene);
 
 document.querySelector('#fpsMode').addEventListener('click', event => {

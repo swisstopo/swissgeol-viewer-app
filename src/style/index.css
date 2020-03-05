@@ -120,13 +120,6 @@ main {
   font-weight: bold;
 }
 
-#zoomToHome {
-  position: absolute;
-  z-index: 1;
-  margin: 6px;
-  cursor: pointer;
-}
-
 .navigation-widgets {
   position: absolute;
   display: flex;

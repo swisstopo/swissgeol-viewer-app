@@ -1,5 +1,7 @@
 import {LitElement, html} from 'lit-element';
 
+import Camera from 'cesium/Scene/Camera';
+
 class NgmZoomButtons extends LitElement {
 
   static get properties() {
@@ -59,12 +61,21 @@ class NgmZoomButtons extends LitElement {
     event.target.blur();
   }
 
+  flyToHome(event) {
+    this.scene.camera.flyTo({
+      destination: Camera.DEFAULT_VIEW_RECTANGLE
+    });
+  }
+
   render() {
     if (this.scene) {
       return html`
         <div class="ui vertical compact mini icon buttons">
           <button class="ui button" @pointerdown="${this.startZoomIn}" @pointerup="${this.stopZoomIn}">
             <i class="plus icon"></i>
+          </button>
+          <button class="ui button" @click="${this.flyToHome}">
+            <i class="home icon"></i>
           </button>
           <button class="ui button" @pointerdown="${this.startZoomOut}" @pointerup="${this.stopZoomOut}">
             <i class="minus icon"></i>
