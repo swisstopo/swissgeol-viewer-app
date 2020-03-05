@@ -120,17 +120,6 @@ main {
   font-weight: bold;
 }
 
-#cesium > .buttons {
-  position: absolute;
-  z-index: 1;
-  margin: 6px;
-  right: 0;
-}
-
-#cesium > .ngm-controls.buttons {
-  top: 40px;
-}
-
 #zoomToHome {
   position: absolute;
   z-index: 1;
@@ -138,16 +127,23 @@ main {
   cursor: pointer;
 }
 
-.cesium-navigation {
+.navigation-widgets {
   position: absolute;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   z-index: 1;
   margin: 6px;
-  right: 48px;
+  right: 0;
+}
+
+.navigation-widgets .ui.button {
+  margin: .5em 0 0 0;
 }
 
 cesium-compass {
-  width: 100px;
+  width: 98px;
+  height: 98px;
   --cesium-compass-stroke-color: rgb(224, 225, 226);
   --cesium-compass-fill-color: rgba(0, 0, 0, 0.6);
 }
