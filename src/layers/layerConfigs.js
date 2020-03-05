@@ -91,21 +91,24 @@ export const layersConfig = [{
   label: t('boreholes_label'),
   layer: 'boreholes',
   parent: 15031,
-  opacity: DEFAULT_LAYER_OPACITY
+  opacity: DEFAULT_LAYER_OPACITY,
+  pickable: true
 }, {
   parent: 1856,
   type: LAYER_TYPES.tiles3d,
   assetId: 68722,
   label: t('base_mesozoic_label'),
   layer: 'base_mesozoic',
-  opacity: DEFAULT_LAYER_OPACITY
+  opacity: DEFAULT_LAYER_OPACITY,
+  pickable: true
 }, {
   type: LAYER_TYPES.tiles3d,
   assetId: 68881,
   label: t('cross_section_label'),
   layer: 'cross_section',
   parent: 15031,
-  opacity: DEFAULT_LAYER_OPACITY
+  opacity: DEFAULT_LAYER_OPACITY,
+  pickable: true
 }, {
   parent: 1858,
   type: LAYER_TYPES.earthquakes,
