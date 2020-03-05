@@ -165,7 +165,7 @@ export default class LayerTree {
           @change=${changeVisibility}>
           <label for="layer-item-${id}" data-i18n>${i18next.t(config.label)}</label>
         </div>
-        <div class="ui icon buttons mini" ?hidden=${!displayedRender}>
+        <div class="ui icon buttons compact mini" ?hidden=${!displayedRender}>
             <button class="ui button"
             data-tooltip=${i18next.t('zoom_to')}
             data-position="top center"
@@ -187,7 +187,7 @@ export default class LayerTree {
             @click=${this.changeOrder.bind(this, config, false)}>
               <i class="angle down icon"></i>
             </button>
-            <button class="ui icon button"
+            <button class="ui button"
             data-tooltip=${i18next.t('remove_btn_tooltip')}
             data-position="top center"
             data-variation="mini"
