@@ -12,7 +12,7 @@ class NgmZoomButtons extends LitElement {
   constructor() {
     super();
 
-    this.moveAmount = 75;
+    this.moveAmount = 125;
 
     this.zoomingIn = false;
     this.zoomingOut = false;
