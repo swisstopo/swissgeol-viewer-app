@@ -138,11 +138,16 @@ main {
   cursor: pointer;
 }
 
-cesium-compass {
+.cesium-navigation {
   position: absolute;
+  display: flex;
   z-index: 1;
   margin: 6px;
   right: 48px;
+}
+
+cesium-compass {
+  width: 100px;
   --cesium-compass-stroke-color: rgb(224, 225, 226);
   --cesium-compass-fill-color: rgba(0, 0, 0, 0.6);
 }

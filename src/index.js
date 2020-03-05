@@ -10,6 +10,7 @@ import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 import './elements/ngm-object-information.js';
 import './elements/ngm-gst-interaction.js';
 import './elements/cesium-compass.js';
+import './elements/ngm-zoom-buttons.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
@@ -129,3 +130,6 @@ gstInteraction.viewer = viewer;
 const compass = document.querySelector('cesium-compass');
 compass.scene = viewer.scene;
 compass.clock = viewer.clock;
+
+const zoomButtons = document.querySelector('ngm-zoom-buttons');
+zoomButtons.scene = viewer.scene;
