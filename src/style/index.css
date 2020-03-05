@@ -18,11 +18,13 @@
 @import 'fomantic-ui-css/components/toast.css';
 @import 'fomantic-ui-css/components/divider.css';
 @import 'fomantic-ui-css/components/grid.css';
+@import 'fomantic-ui-css/components/modal.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 @import 'search.css';
 @import 'ngm-object-information.css';
+@import 'ngm-gst-modal.css';
 @import 'area-of-interest.css';
 @import 'keyboard-navigation.css';
 @import 'layers.css';
@@ -45,7 +47,7 @@ body {
 }
 
 /* FIXME: create a fomantic-ui build with the correct font */
-body, .ui.accordion .title:not(.ui), .ui.input > input {
+body, .ui.button, .ui.accordion .title:not(.ui), .ui.input > input {
   font-family: 'Source Sans Pro', sans-serif;
 }
 
