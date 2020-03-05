@@ -148,7 +148,7 @@ cesium-compass {
 }
 
 .sidebar {
-  min-width: 280px;
+  width: 280px;
   overflow-y: auto;
   overflow-x: inherit;
 }
@@ -159,19 +159,4 @@ cesium-compass {
 
 .ui.checkbox label {
   cursor: pointer;
-}
-
-.ui.toast-container#ngm-warning-toast {
-  transition: all 0.4s linear 0s;
-  opacity: 0;
-  z-index: -1000;
-}
-
-.ui.toast-container#ngm-warning-toast.visible {
-  opacity: 1;
-  z-index: 9999;
-}
-
-.ui.styled.accordion {
-  width: 280px;
 }

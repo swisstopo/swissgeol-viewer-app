@@ -1,20 +1,3 @@
-#layers {
-  margin: 2px;
-}
-
-.layer-slider {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-.layer-slider label {
-  margin-right: 10px;
-}
-
-.layer-slider input[type=range] {
-  width: 60%;
-}
-
 .ui.styled.accordion .ngm-layer-title.title,
 .ui.accordion .ngm-layer-title.title {
   padding-bottom: 0.5em;
@@ -24,10 +7,6 @@
 .ui.accordion .ngm-layer-content.content,
 .ui.styled.accordion .ngm-layer-content.content {
   padding-bottom: 0.5em;
-}
-
-.ui.styled.accordion .ngm-layer-content.content .ui.icon.buttons .button {
-  padding: .6em;
 }
 
 .ngm-layer-content .ngm-layers-categories.ui.accordion {
@@ -47,7 +26,6 @@
   align-items: center;
   margin-left: 18px;
 }
-
-.ngm-layer-title {
-  color: black;
+.ngm-displayed-container label {
+  margin-right: 10px;
 }

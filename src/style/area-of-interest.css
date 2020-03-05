@@ -1,7 +1,3 @@
-#areasOfInterest {
-  margin: 2px;
-}
-
 .ngm-help-btn.ui.button {
   width: 0;
   padding: 0;
@@ -19,10 +15,6 @@
   width: 250px;
   text-align: center;
   white-space: normal;
-}
-
-.ngm-new-aoi-container.ui.buttons {
-  margin-bottom: 1px;
 }
 
 .ngm-aoi-title {

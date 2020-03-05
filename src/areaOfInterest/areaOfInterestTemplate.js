@@ -25,7 +25,7 @@ export default function getTemplate() {
     Areas of Interest
   </div>
   <div class="content">
-    <div class="ui tiny fluid buttons ngm-new-aoi-container" ?hidden=${this.drawMode_}>
+    <div class="ui tiny fluid buttons" ?hidden=${this.drawMode_}>
         <button class="ui button" @click=${this.onAddAreaClick_.bind(this)}>
             <i class="plus icon"></i>${btnTranslation.add}
         </button>
