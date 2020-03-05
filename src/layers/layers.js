@@ -84,7 +84,7 @@ export default class LayerTree {
       }
     }
     // if no url params - adds visible layers from config to 'Displayed Layers'
-    if (!displayedLayers.length || !assestIds.length) {
+    if (!displayedLayers.length && !assestIds.length) {
       this.layers = this.layers.map(layer => {
         return {...layer, displayed: layer.visible};
       });
