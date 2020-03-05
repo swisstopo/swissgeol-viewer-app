@@ -43,6 +43,10 @@ Then, run the `npm run extract-i18n` command to add this new key (`text_key`) to
 
 See https://docs.gitlab.com/ee/user/project/integrations/jira.html
 
+# URL Parameters
+- `noLimit` disable the navigation limits (sphere and lava)
+- `assetIds` display some additionnal Cesium ION 3dtilesets (coma separated list of CesiumIon ids)
+
 # Notes
 
 Lava texture CC0 by https://opengameart.org/content/template-orange-texture-pack

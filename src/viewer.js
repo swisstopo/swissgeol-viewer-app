@@ -27,6 +27,8 @@ window['CESIUM_BASE_URL'] = '.';
 
 Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
+const noLimit = document.location.search.includes('noLimit');
+
 Object.assign(RequestScheduler.requestsByServer, {
   'wmts.geo.admin.ch:443': 18,
   'vectortiles0.geo.admin.ch:443': 18
@@ -78,7 +80,9 @@ export function setupViewer(container) {
 
 
   // Limit the volume inside which the user can navigate
-  new NavigableVolumeLimiter(scene, SWITZERLAND_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
+  if (!noLimit) {
+    new NavigableVolumeLimiter(scene, SWITZERLAND_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
+  }
 
   new KeyboardNavigation(viewer.scene);
 
@@ -117,6 +121,7 @@ export function setupViewer(container) {
  */
 export function addMantelEllipsoid(viewer) {
   // Add Mantel ellipsoid
+  if (noLimit) return;
   const radii = Ellipsoid.WGS84.radii.clone();
   const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
   radii.x -= mantelDepth;
