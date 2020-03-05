@@ -1,6 +1,8 @@
 // Original code from TerriaJS
 // https://github.com/TerriaJS/terriajs/blob/master/lib/ReactViews/Map/Navigation/Compass.jsx
 
+// SVG images from https://cesium.com/ion/stories/ (with permission from Cesium)
+
 import {LitElement, css, svg, html} from 'lit-element';
 import {styleMap} from 'lit-html/directives/style-map';
 
@@ -44,6 +46,9 @@ class CesiumCompass extends LitElement {
 
   static get styles() {
     return css`
+      :host * {
+        box-sizing: content-box;
+      }
       .compass {
         position: absolute;
         right: 0;
@@ -58,7 +63,7 @@ class CesiumCompass extends LitElement {
         left: 14px;
         width: 44px;
         height: 44px;
-        border-radius: 44px;
+        border-radius: 100%;
         border: 12px solid var(--cesium-compass-stroke-color);
       }
       .inner-ring-background {
@@ -67,7 +72,7 @@ class CesiumCompass extends LitElement {
         left: 30px;
         width: 33px;
         height: 33px;
-        border-radius: 33px;
+        border-radius: 100%;
         background-color: var(--cesium-compass-stroke-color);
         border: 1px solid var(--cesium-compass-fill-color);
       }
