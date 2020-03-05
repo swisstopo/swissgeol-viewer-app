@@ -41,27 +41,27 @@ class NgmZoomButtons extends LitElement {
     super.disconnectedCallback();
   }
 
-  startZoomIn() {
+  startZoomIn(event) {
     this.zoomingIn = true;
     this.scene.requestRender();
+    event.preventDefault();
   }
 
-  stopZoomIn(event) {
+  stopZoomIn() {
     this.zoomingIn = false;
-    event.target.blur();
   }
 
-  startZoomOut() {
+  startZoomOut(event) {
     this.zoomingOut = true;
     this.scene.requestRender();
+    event.preventDefault();
   }
 
-  stopZoomOut(event) {
+  stopZoomOut() {
     this.zoomingOut = false;
-    event.target.blur();
   }
 
-  flyToHome(event) {
+  flyToHome() {
     this.scene.camera.flyTo({
       destination: Camera.DEFAULT_VIEW_RECTANGLE
     });
