@@ -83,3 +83,5 @@ export const LAYER_TYPES = {
 };
 
 export const DEFAULT_LAYER_OPACITY = 0.7;
+
+export const AOI_DATASOURCE_NAME = 'interestAreas';

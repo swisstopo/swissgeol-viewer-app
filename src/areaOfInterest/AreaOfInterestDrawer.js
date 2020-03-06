@@ -13,7 +13,7 @@ import defined from 'cesium/Core/defined.js';
 import {render} from 'lit-html';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
-import {DEFAULT_AOI_COLOR, CESIUM_NOT_GRAPHICS_ENTITY_PROPS} from '../constants.js';
+import {DEFAULT_AOI_COLOR, CESIUM_NOT_GRAPHICS_ENTITY_PROPS, AOI_DATASOURCE_NAME} from '../constants.js';
 import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
 
@@ -43,7 +43,7 @@ export default class AreaOfInterestDrawer {
 
     this.screenSpaceEventHandler_.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
 
-    this.interestAreasDataSource = new CustomDataSource('interestAreas');
+    this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer_.dataSources.add(this.interestAreasDataSource);
 
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {

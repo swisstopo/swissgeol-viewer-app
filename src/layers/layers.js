@@ -13,7 +13,7 @@ import {
   createSwisstopoWMTSImageryLayer,
   syncCheckboxes
 } from './helpers.js';
-import {LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
+import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, AOI_DATASOURCE_NAME} from '../constants.js';
 import Cartesian3 from 'cesium/Core/Cartesian3';
 import Color from 'cesium/Core/Color.js';
 
@@ -277,6 +277,7 @@ export default class LayerTree {
 
   // adds layer from search to 'Displayed Layers'
   addLayerFromSearch(searchLayer) {
+    if (searchLayer.dataSourceName === AOI_DATASOURCE_NAME) return;
     let layer;
     if (searchLayer.dataSourceName) {
       layer = this.layers.find(l => l.type === searchLayer.dataSourceName); // check for layers like earthquakes

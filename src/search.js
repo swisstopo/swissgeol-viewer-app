@@ -6,6 +6,7 @@ import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import Math from 'cesium/Core/Math.js';
 import {extractEntitiesAttributes} from './objectInformation.js';
+import {AOI_DATASOURCE_NAME} from './constants.js';
 
 /**
  * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
@@ -82,10 +83,16 @@ export function setupSearch(viewer, element, layerTree) {
         const dataSource = dataSources.get(i);
         dataSource.entities.values.forEach(entity => {
           const attributes = extractEntitiesAttributes(entity);
-          if (regexp.test(attributes.EventLocationName)) {
+          if (attributes && regexp.test(attributes.EventLocationName)) {
             matches.push({
               entity: entity,
               label: `${attributes.EventLocationName} (${attributes.Magnitude})`,
+              dataSourceName: dataSource.name
+            });
+          } else if (entity.name && dataSource.name === AOI_DATASOURCE_NAME) {
+            matches.push({
+              entity: entity,
+              label: entity.name,
               dataSourceName: dataSource.name
             });
           }
