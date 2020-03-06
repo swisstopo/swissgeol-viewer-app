@@ -89,12 +89,6 @@ export function setupSearch(viewer, element, layerTree) {
               label: `${attributes.EventLocationName} (${attributes.Magnitude})`,
               dataSourceName: dataSource.name
             });
-          } else if (entity.name && dataSource.name === AOI_DATASOURCE_NAME) {
-            matches.push({
-              entity: entity,
-              label: entity.name,
-              dataSourceName: dataSource.name
-            });
           }
         });
       }

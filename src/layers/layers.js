@@ -277,7 +277,6 @@ export default class LayerTree {
 
   // adds layer from search to 'Displayed Layers'
   addLayerFromSearch(searchLayer) {
-    if (searchLayer.dataSourceName === AOI_DATASOURCE_NAME) return;
     let layer;
     if (searchLayer.dataSourceName) {
       layer = this.layers.find(l => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
