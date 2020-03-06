@@ -1,6 +1,5 @@
 #navigationInfo {
-  margin-right: 55px;
-  margin-top: 6px;
+  margin-right: 70px;
 }
 
 #navigationInfo .ngm-keyboard-info-content {
@@ -8,10 +7,6 @@
   max-width: 500px;
   max-height: 80vh;
   overflow-y: auto;
-}
-
-#navigationInfo.ui.left.center.popup:before {
-  top: 15px;
 }
 
 #navigationInfo h4 {

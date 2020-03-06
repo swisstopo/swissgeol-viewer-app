@@ -49,24 +49,16 @@
       <ngm-gst-interaction></ngm-gst-interaction>
     </div>
     <div id="cesium">
-      <cesium-compass></cesium-compass>
-      <div id="zoomToHome"><img src="src/images/ch.png"></div>
-      <div class="ui icon buttons ngm-info">
-        <!-- <button class="ui button">
-          <i class="home icon"></i>
-        </button> -->
-        <button id="navigationInfoBtn" class="ui button">
-          <i class="info icon"></i>
-        </button>
-      </div>
-      <div id="navigationInfo" class="ui popup left center"></div>
-      <div class="ui icon vertical buttons ngm-controls">
-        <!-- <button class="ui button">
-          <i class="home icon"></i>
-        </button> -->
-        <button id="fpsMode" class="ui button">
+      <div class="navigation-widgets">
+        <cesium-compass></cesium-compass>
+        <ngm-zoom-buttons></ngm-zoom-buttons>
+        <button id="fpsMode" class="ui compact mini icon button">
           <i class="eye icon"></i>
         </button>
+        <button id="navigationInfoBtn" class="ui compact mini icon button">
+          <i class="info icon"></i>
+        </button>
+        <div id="navigationInfo" class="ui basic popup left center"></div>
       </div>
       <ngm-object-information></ngm-object-information>
     </div>

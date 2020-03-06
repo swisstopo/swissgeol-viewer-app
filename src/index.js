@@ -10,6 +10,7 @@ import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 import './elements/ngm-object-information.js';
 import './elements/ngm-gst-interaction.js';
 import './elements/cesium-compass.js';
+import './elements/ngm-zoom-buttons.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
@@ -106,12 +107,6 @@ viewer.camera.flyTo({
 
 viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
-document.querySelector('#zoomToHome').addEventListener('click', event => {
-  viewer.scene.camera.flyTo({
-    destination: SWITZERLAND_RECTANGLE
-  });
-});
-
 const firstPersonCameraMode = new FirstPersonCameraMode(viewer.scene);
 
 document.querySelector('#fpsMode').addEventListener('click', event => {
@@ -129,3 +124,6 @@ gstInteraction.viewer = viewer;
 const compass = document.querySelector('cesium-compass');
 compass.scene = viewer.scene;
 compass.clock = viewer.clock;
+
+const zoomButtons = document.querySelector('ngm-zoom-buttons');
+zoomButtons.scene = viewer.scene;
