@@ -5,8 +5,8 @@ import {html, LitElement} from "lit-element";
 import './ngm-gst-interaction.js';
 
 
-export function accordionElementFactory({title, content, BaseElement}) {
-  return class extends BaseElement {
+export function accordionElementFactory({title, content, fup}) {
+  return class extends I18nMixin(LitElement) {
     render() {
       return html`
       <div class="ui styled accordion">
@@ -20,6 +20,11 @@ export function accordionElementFactory({title, content, BaseElement}) {
       </div></div>`;
     }
 
+    firstUpdated() {
+      fup(this);
+      super.firstUpdated();
+    }
+
     createRenderRoot() {
       // no shadow dom
       return this;
@@ -28,12 +33,12 @@ export function accordionElementFactory({title, content, BaseElement}) {
 }
 
 
-export function setupWebComponents() {
+export function setupWebComponents(viewer) {
   const GSTAccordion = accordionElementFactory({
     title: () => html`${i18next.t('gst_accordion_title')}`,
     content: () => html`<ngm-gst-interaction></ngm-gst-interaction>`,
-    BaseElement: I18nMixin(LitElement)});
+    fup: instance => instance.querySelector('ngm-gst-interaction').viewer = viewer
+  });
 
   customElements.define('ngm-gst-accordion', GSTAccordion);
-
 }
