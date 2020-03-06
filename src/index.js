@@ -21,6 +21,10 @@ import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import LayerTree from './layers/layers.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
+import './elements/ngm-accordion.js';
+import {setupWebComponents} from './elements/appElements.js';
+
+setupWebComponents();
 
 setupI18n();
 

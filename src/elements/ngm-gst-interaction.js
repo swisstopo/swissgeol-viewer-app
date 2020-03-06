@@ -3,9 +3,11 @@ import {CesiumDraw} from '../draw/CesiumDraw.js';
 import {cartesiantoDegrees, degreesToLv95, round} from '../projection.js';
 import {crossSection, getCrossSectionUrl} from '../gst.js';
 import {showError} from '../message.js';
+import i18next from 'i18next';
+import {onAccordionClick} from '../utils.js';
+import {render} from 'lit-html';
 
-
-class NgmGstInteraction extends LitElement {
+export class NgmGstInteraction extends LitElement {
 
   static get properties() {
     return {

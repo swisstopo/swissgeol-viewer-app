@@ -1,6 +1,7 @@
 {
   "add_area_btn_label": "",
   "altitudes_label": "",
+  "aoi_section_title": "",
   "area_of_interest_add_hint": "",
   "area_of_interest_empty_hint": "",
   "background_label": "",
@@ -22,6 +23,7 @@
   "geological_map_series_label": "",
   "geological_maps_label": "",
   "geothermal_energy_label": "",
+  "gst_accordion_title": "Sections GST",
   "hide_btn_tooltip": "",
   "info_clockwise_rotate": "",
   "info_clockwise_rotate_label": "",

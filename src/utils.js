@@ -1,4 +1,6 @@
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import {html} from 'lit-element';
+
 
 export async function readTextFile(url) {
   const response = await fetch(url);
@@ -40,19 +42,15 @@ export function clickOnElement(id) {
   document.getElementById(id).click();
 }
 
-/**
- * Show/hide accordion
- * @param evt
- */
-export function onAccordionTitleClick(evt) {
-  if (!evt.target.nextElementSibling) return;
-  evt.target.classList.toggle('active');
-  evt.target.nextElementSibling.classList.toggle('active');
-}
 
-export function onAccordionIconClick(evt) {
-  const event = {...evt, target: evt.target.parentElement};
-  onAccordionTitleClick(event);
+export function onAccordionClick(evt) {
+  let target = evt.target;
+  while (!target.classList.contains('title')) {
+    target = target.parentElement;
+  }
+  if (!target.nextElementSibling) return;
+  target.classList.toggle('active');
+  target.nextElementSibling.classList.toggle('active');
 }
 
 /**
