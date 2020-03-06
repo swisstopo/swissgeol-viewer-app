@@ -94,8 +94,9 @@ export function setupViewer(container) {
   // Set the globe translucency to 0.8 when the
   // camera is 1500 meters from the surface and 1.0
   // as the camera distance approaches 50000 meters.
-  globe.translucencyMode = GlobeTranslucencyMode.FRONT_FACES_ONLY;
-  globe.translucencyByDistance = new NearFarScalar(1500, 0.8, 50000, 1.0);
+  // FIXME: deactivated because it broke the drawing tools
+  // globe.translucencyMode = GlobeTranslucencyMode.FRONT_FACES_ONLY;
+  // globe.translucencyByDistance = new NearFarScalar(1500, 0.8, 50000, 1.0);
 
   const imageryLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
