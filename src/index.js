@@ -1,4 +1,5 @@
 // @ts-check
+import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';
 import {SWITZERLAND_RECTANGLE, DRILL_PICK_LIMIT} from './constants.js';
 
@@ -21,6 +22,7 @@ import LayerTree from './layers/layers.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
 import {setupWebComponents} from './elements/appElements.js';
 
+initSentry();
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));

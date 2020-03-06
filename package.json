@@ -6,10 +6,12 @@
     "extract-i18n": "i18next",
     "start": "rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "rm -rf dist/* && rollup --environment mode:production -c",
-    "postinstall": "scripts/npm_postinstall.sh"
+    "postinstall": "scripts/npm_postinstall.sh",
+    "sentry-sourcemaps-upload": "sentry-cli releases files $1 upload-sourcemaps dist/src"
   },
   "dependencies": {
     "@geoblocks/ga-search": "^0.0.10",
+    "@sentry/browser": "^5.13.2",
     "@webcomponents/webcomponentsjs": "^2.4.2",
     "cesium": "https://github.com/CesiumGS/cesium/archive/1bc6370.tar.gz",
     "fomantic-ui-css": "^2.8.4",
@@ -27,6 +29,7 @@
     "@babel/preset-env": "^7.8.3",
     "@rollup/plugin-alias": "^3.0.1",
     "@rollup/plugin-commonjs": "^11.0.2",
+    "@sentry/cli": "^1.51.1",
     "autoprefixer": "^9.7.4",
     "core-js": "^3.6.4",
     "eslint": "^6.8.0",
