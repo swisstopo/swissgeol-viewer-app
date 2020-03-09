@@ -1,7 +1,7 @@
-import {onAccordionClick} from "../utils.js";
-import i18next from "i18next";
-import {I18nMixin} from "../i18n.js";
-import {html, LitElement} from "lit-element";
+import {onAccordionClick} from '../utils.js';
+import i18next from 'i18next';
+import {I18nMixin} from '../i18n.js';
+import {html, LitElement} from 'lit-element';
 import './ngm-gst-interaction.js';
 
 

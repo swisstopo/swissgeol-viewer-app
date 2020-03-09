@@ -1,5 +1,4 @@
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import {html} from 'lit-element';
 
 
 export async function readTextFile(url) {
