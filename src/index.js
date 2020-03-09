@@ -31,7 +31,10 @@ async function zoomTo(config) {
   const p = await config.promise;
   if (p.boundingSphere) {
     const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 4, 3 * p.boundingSphere.radius);
-    this.viewer.zoomTo(p, zoomHeadingPitchRange);
+    this.viewer.camera.flyToBoundingSphere(p.boundingSphere, {
+      duration: 0,
+      offset: zoomHeadingPitchRange
+    });
   } else {
     this.viewer.zoomTo(p);
   }
