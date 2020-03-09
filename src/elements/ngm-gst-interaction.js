@@ -86,30 +86,28 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
 
   render() {
     return html`
-      <div class="ui segment">
-        <div class="ui tiny icon buttons">
-          <button class="ui button" @click="${this.toggleBoreHole}"
-            data-tooltip=${i18next.t('Borehole')}
-            data-position="top center"
-            data-variation="mini"
-          >
-            <i class="ruler vertical icon"></i>
-          </button>
-          <button class="ui button" @click="${this.toggleCrossSection}"
-            data-tooltip=${i18next.t('Vertical cross sections')}
-            data-position="top center"
-            data-variation="mini"
-          >
-            <i class="map icon"></i>
-          </button>
-          <button class="ui button" @click="${this.toggleHorizontalCrossSection}"
-            data-tooltip=${i18next.t('Horizontal cross sections')}
-            data-position="top center"
-            data-variation="mini"
-          >
-            <i class="cube icon"></i>
-          </button>
-        </div>
+      <div class="ui tiny icon buttons">
+        <button class="ui button" @click="${this.toggleBoreHole}"
+          data-tooltip=${i18next.t('Borehole')}
+          data-position="top center"
+          data-variation="mini"
+        >
+          <i class="ruler vertical icon"></i>
+        </button>
+        <button class="ui button" @click="${this.toggleCrossSection}"
+          data-tooltip=${i18next.t('Vertical cross sections')}
+          data-position="top center"
+          data-variation="mini"
+        >
+          <i class="map icon"></i>
+        </button>
+        <button class="ui button" @click="${this.toggleHorizontalCrossSection}"
+          data-tooltip=${i18next.t('Horizontal cross sections')}
+          data-position="top center"
+          data-variation="mini"
+        >
+          <i class="cube icon"></i>
+        </button>
       </div>
       <ngm-gst-modal .imageUrl="${this.imageUrl}"></ngm-gst-modal>
     `;
