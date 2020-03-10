@@ -13,7 +13,7 @@ import {
   createSwisstopoWMTSImageryLayer,
   syncCheckboxes
 } from './helpers.js';
-import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, AOI_DATASOURCE_NAME} from '../constants.js';
+import {LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
 import Cartesian3 from 'cesium/Core/Cartesian3';
 import Color from 'cesium/Core/Color.js';
 

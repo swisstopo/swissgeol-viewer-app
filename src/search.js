@@ -6,7 +6,6 @@ import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import Math from 'cesium/Core/Math.js';
 import {extractEntitiesAttributes} from './objectInformation.js';
-import {AOI_DATASOURCE_NAME} from './constants.js';
 
 /**
  * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
