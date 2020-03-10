@@ -2,3 +2,5 @@
 /secrets.txt
 /dist
 /.cache
+scripts/environments/
+src/environments/

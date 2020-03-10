@@ -4,7 +4,7 @@
   "scripts": {
     "lint": "eslint src/",
     "extract-i18n": "i18next",
-    "start": "rollup --environment SERVE:true -c --watch --no-treeshake",
+    "start": "node scripts/environment.js && rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "rm -rf dist/* && rollup --environment mode:production -c",
     "postinstall": "scripts/npm_postinstall.sh",
     "sentry-sourcemaps-upload": "sentry-cli releases files $RELEASE upload-sourcemaps dist/bundle.*"
