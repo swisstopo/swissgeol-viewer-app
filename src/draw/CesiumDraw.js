@@ -193,41 +193,36 @@ export class CesiumDraw extends EventTarget {
 
 const scratchAB = new Cartesian3();
 const scratchAC = new Cartesian3();
-const scratchCross = new Cartesian3();
-const scratch4 = new Cartesian3();
-const scratch5 = new Cartesian3();
+const scratchAM = new Cartesian3();
+const scratchAP = new Cartesian3();
+const scratchBP = new Cartesian3();
 
 function rectanglify(coordinates) {
   if (coordinates.length === 3 && !Cartesian3.equals(coordinates[1], coordinates[2])) {
-    // A and B are the base of the triangle, C is the point currently moving
-    // create flat (no z) Cartesian3 from the coordinates
-    const cartoA = Cartographic.fromCartesian(coordinates[0]);
-    const cartoB = Cartographic.fromCartesian(coordinates[1]);
-    const cartoC = Cartographic.fromCartesian(coordinates[2]);
-    const A = Cartesian3.fromRadians(cartoA.longitude, cartoA.latitude, 0);
-    const B = Cartesian3.fromRadians(cartoB.longitude, cartoB.latitude, 0);
-    const C = Cartesian3.fromRadians(cartoC.longitude, cartoC.latitude, 0);
+    // A and B are the base of the triangle, C is the point currently moving:
+    //
+    // A -- AP
+    // |\
+    // | \
+    // |  \
+    // |   \
+    // M    C
+    // |
+    // B -- AB
 
-    // create the two vectors from the triangle coordianates
+    const A = coordinates[0];
+    const B = coordinates[1];
+    const C = coordinates[2];
+
+    // create the two vectors from the triangle coordinates
     const AB = Cartesian3.subtract(B, A, scratchAB);
     const AC = Cartesian3.subtract(C, A, scratchAC);
 
-    // compute the cross product to get the area of the triangle and the normal vector
-    const cross = Cartesian3.cross(AB, AC, scratchCross);
-    const twoArea = Cartesian3.magnitude(cross);
-    // use again the cross product to get a vector perpendicular to AB
-    const v = Cartesian3.cross(cross, AB, cross);
-    const normv = Cartesian3.normalize(v, v);
+    const AM = Cartesian3.projectVector(AC, AB, scratchAM);
 
-    // height of the triangle going through C
-    const width = twoArea / Cartesian3.magnitude(AB);
+    const AP = Cartesian3.subtract(C, AM, scratchAP);
+    const BP = Cartesian3.add(AP, AB, scratchBP);
 
-    // resize vector
-    const res = Cartesian3.multiplyByScalar(normv, width, normv);
-
-    // create two new points perpendicular to A and B
-    const AP = Cartesian3.add(A, res, scratch4);
-    const BP = Cartesian3.add(B, res, scratch5);
     return [A, B, BP, AP];
   } else {
     return coordinates;
