@@ -6,6 +6,7 @@ stages:
   - test
   - build
   - deploy
+  - sentry_deploy
 
 npm_install:
   stage: setup
