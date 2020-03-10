@@ -1,5 +1,5 @@
 const util = require('util');
-const environment = require('./environment.json');
+const environment = require('./environments/environment.json');
 
 const execAsync = util.promisify(require('child_process').exec);
 

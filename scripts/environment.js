@@ -23,6 +23,7 @@ const mkdirpAsync = util.promisify(mkdirp);
     await mkdirpAsync(path.resolve(__dirname, dir));
     await mkdirpAsync(path.resolve(__dirname, dirNode));
 
+    console.log(`Creating environment for ${branch}...`);
     await writeFileAsync(path.resolve(__dirname, `${dir}/${filename}.js`), content, {encoding: 'utf8'}); // for frontend
     await writeFileAsync(path.resolve(__dirname, `${dirNode}/${filename}.json`), jsonContent, {encoding: 'utf8'}); // for node
     process.exit(0);
