@@ -5,8 +5,15 @@ const verticalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createCross
 const verticalCrossSectionParams = 'csRootElement=0&csRootScale=-1&depthRangeMax=3.40282e%2B38&depthRangeMin=-3.40282e%2B38&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType=PDF&overviewMap=&pointProjectionDistance=0&propertySelection=&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=03-CS_swisstopo_Map_2019.svg&title={title}&user=NGM';
 
 const horizontalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createHorizontalSectionAsService.php';
-const horizontalSectionParams = 'boxWidth={width}&csRootElement=0&csRootScale=-1&depth=-2500&direction={direction}&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType=PDF&overviewMap=&propertySelection=&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=04-HS_swisstopo_Map_2019.svg&title=TEST&user=NGM';
+const horizontalSectionParams = 'boxWidth={width}&csRootElement=0&csRootScale=-1&depth={depth}&direction={direction}&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType=PDF&overviewMap=&propertySelection=&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=04-HS_swisstopo_Map_2019.svg&title=TEST&user=NGM';
 
+
+/**
+ * @param {Array<Array<number>>} coordinates
+ * @param {number} [depth=5000] depth in meters
+ * @param {string} [title=''] output title
+ * @return {Promise}
+ */
 export function borehole(coordinates, depth = 5000, title = '') {
   const url = `${boreholeBaseUrl}?${boreholeParams}`
     .replace('{coordinates}', coordinates.map(coordinate => coordinate.join(' ')).join(','))
@@ -16,6 +23,12 @@ export function borehole(coordinates, depth = 5000, title = '') {
   return fetch(url).then(response => response.json());
 }
 
+
+/**
+ * @param {Array<Array<number>>} coordinates
+ * @param {string} [title=''] output title
+ * @return {Promise}
+ */
 export function verticalCrossSection(coordinates, title = '') {
   const url = `${verticalCrossSectionBaseUrl}?${verticalCrossSectionParams}`
     .replace('{coordinates}', coordinates.map(coordinate => coordinate.join(' ')).join(','))
@@ -24,7 +37,14 @@ export function verticalCrossSection(coordinates, title = '') {
   return fetch(url).then(response => response.json());
 }
 
-export function horizontalCrossSection(coordinates, title = '') {
+
+/**
+ * @param {Array<Array<number>>} coordinates
+ * @param {number} [depth=-2500] depth in meters
+ * @param {string} [title=''] output title
+ * @return {Promise}
+ */
+export function horizontalCrossSection(coordinates, depth = -2500, title = '') {
   // 'coordinates' parameter is the rectangle:
   // 0 ---------- 3
   // |            |
@@ -45,13 +65,18 @@ export function horizontalCrossSection(coordinates, title = '') {
     .replace('{coordinates}', side.map(coordinate => coordinate.join(' ')).join(','))
     .replace('{direction}', direction)
     .replace('{width}', magnitude)
+    .replace('{depth}', depth)
     .replace('{title}', title);
 
   return fetch(url).then(response => response.json());
 }
 
+
 /**
- * Return if 'c' is on the left side of the line passing by 'a' and 'b'
+ * @param {Array<number>} a point on the line
+ * @param {Array<number>} b point on the line
+ * @param {Array<number>} c point to test
+ * @return {boolean} point 'c' is on the left side of the line passing by 'a' and 'b'
  */
 function isLeft(a, b, c) {
   return ((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])) > 0;
