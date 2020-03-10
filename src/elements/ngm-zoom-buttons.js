@@ -20,6 +20,8 @@ class NgmZoomButtons extends LitElement {
     this.zoomingOut = false;
 
     this.unlistenFromPostRender = null;
+
+    this.stopZoomFunction = this.stopZoom.bind(this);
   }
 
   updated() {
@@ -34,10 +36,16 @@ class NgmZoomButtons extends LitElement {
     }
   }
 
+  connectedCallback() {
+    document.addEventListener('pointerup', this.stopZoomFunction);
+    super.connectedCallback();
+  }
+
   disconnectedCallback() {
     if (this.unlistenFromPostRender) {
       this.unlistenFromPostRender();
     }
+    document.removeEventListener('pointerup', this.stopZoomFunction);
     super.disconnectedCallback();
   }
 
@@ -47,17 +55,14 @@ class NgmZoomButtons extends LitElement {
     event.preventDefault();
   }
 
-  stopZoomIn() {
-    this.zoomingIn = false;
-  }
-
   startZoomOut(event) {
     this.zoomingOut = true;
     this.scene.requestRender();
     event.preventDefault();
   }
 
-  stopZoomOut() {
+  stopZoom() {
+    this.zoomingIn = false;
     this.zoomingOut = false;
   }
 
@@ -71,13 +76,13 @@ class NgmZoomButtons extends LitElement {
     if (this.scene) {
       return html`
         <div class="ui vertical compact mini icon buttons">
-          <button class="ui button" @pointerdown="${this.startZoomIn}" @pointerup="${this.stopZoomIn}">
+          <button class="ui button" @pointerdown="${this.startZoomIn}">
             <i class="plus icon"></i>
           </button>
           <button class="ui button" @click="${this.flyToHome}">
             <i class="home icon"></i>
           </button>
-          <button class="ui button" @pointerdown="${this.startZoomOut}" @pointerup="${this.stopZoomOut}">
+          <button class="ui button" @pointerdown="${this.startZoomOut}">
             <i class="minus icon"></i>
           </button>
         </div>
