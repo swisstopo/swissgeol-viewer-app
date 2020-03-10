@@ -10,17 +10,17 @@
   },
   "dependencies": {
     "@geoblocks/ga-search": "^0.0.10",
-    "@webcomponents/webcomponentsjs": "^2.4.1",
+    "@webcomponents/webcomponentsjs": "^2.4.2",
     "cesium": "https://github.com/CesiumGS/cesium/archive/1bc6370.tar.gz",
-    "fomantic-ui-css": "^2.8.3",
-    "i18next": "^19.1.0",
+    "fomantic-ui-css": "^2.8.4",
+    "i18next": "^19.3.2",
     "i18next-xhr-backend": "^3.2.2",
-    "interactjs": "^1.8.4",
+    "interactjs": "^1.9.2",
     "jquery": "^3.4.1",
     "lit-html": "^1.1.2",
     "loc-i18next": "^0.1.4",
     "proj4": "^2.6.0",
-    "typeface-source-sans-pro": "0.0.75"
+    "typeface-source-sans-pro": "1.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.8.3",
