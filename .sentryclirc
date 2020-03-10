@@ -1,4 +1,4 @@
 [defaults]
 url = https://sentry.io/
-org = dev-test-qd
-project = javascript
+org = camptocamp
+project = ngm
