@@ -4,6 +4,9 @@ import CallbackProperty from 'cesium/DataSources/CallbackProperty.js';
 import Color from 'cesium/Core/Color.js';
 import HeightReference from 'cesium/Scene/HeightReference.js';
 import PolygonHierarchy from 'cesium/Core/PolygonHierarchy.js';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import Cartographic from 'cesium/Core/Cartographic.js';
+
 
 /**
  * @typedef {object} Options
@@ -16,7 +19,7 @@ export class CesiumDraw extends EventTarget {
 
   /**
    * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
-   * @param {"line" | "polygon"} type
+   * @param {"point" | "line" | "polygon" | "rectangle"} type
    * @param {Options} [options]
    */
   constructor(viewer, type, options = {}) {
@@ -49,10 +52,12 @@ export class CesiumDraw extends EventTarget {
    */
   set active(value) {
     if (value) {
-      this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
-      this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
-      this.eventHandler_.setInputAction(this.onMouseMove_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
-      this.eventHandler_.setInputAction(this.onDoubleClick_.bind(this), ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+      if (!this.eventHandler_) {
+        this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
+        this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
+        this.eventHandler_.setInputAction(this.onMouseMove_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
+        this.eventHandler_.setInputAction(this.onDoubleClick_.bind(this), ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+      }
     } else {
       this.eventHandler_.destroy();
       this.eventHandler_ = undefined;
@@ -64,13 +69,22 @@ export class CesiumDraw extends EventTarget {
    */
   finishDrawing() {
     this.activePoints_.pop();
-    this.entities_.push(this.drawShape_(this.activePoints_));
+    let positions = this.activePoints_;
+    if (this.type === 'point') {
+      this.entities_.push(this.drawShape_(this.activePoints_[0]));
+    } else if (this.type === 'rectangle') {
+      positions = rectanglify(this.activePoints_);
+      this.entities_.push(this.drawShape_(positions));
+    } else {
+      this.entities_.push(this.drawShape_(this.activePoints_));
+    }
+
     this.viewer_.entities.remove(this.floatingPoint_);
     this.viewer_.entities.remove(this.activeEntity_);
 
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
-        positions: this.activePoints_
+        positions: positions.map(cartesiantoDegrees)
       }
     }));
 
@@ -98,7 +112,19 @@ export class CesiumDraw extends EventTarget {
   }
 
   drawShape_(positions) {
-    if (this.type === 'line') {
+    if (this.type === 'point') {
+      return this.viewer_.entities.add({
+        position: positions,
+        point: {
+          color: this.fillColor_,
+          outlineWidth: 2,
+          outlineColor: this.strokeColor_,
+          pixelSize: this.strokeWidth_,
+          heightReference: HeightReference.CLAMP_TO_GROUND
+        }
+      });
+
+    } else if (this.type === 'line') {
       return this.viewer_.entities.add({
         polyline: {
           positions: positions,
@@ -107,7 +133,7 @@ export class CesiumDraw extends EventTarget {
           material: this.strokeColor_
         }
       });
-    } else if (this.type === 'polygon') {
+    } else if (this.type === 'polygon' || this.type === 'rectangle') {
       return this.viewer_.entities.add({
         polygon: {
           hierarchy: positions,
@@ -127,13 +153,24 @@ export class CesiumDraw extends EventTarget {
         const dynamicPositions = new CallbackProperty(() => {
           if (this.type === 'polygon') {
             return new PolygonHierarchy(this.activePoints_);
+          } else if (this.type === 'rectangle') {
+            return new PolygonHierarchy(rectanglify(this.activePoints_));
           } else {
             return this.activePoints_;
           }
         }, false);
         this.activeEntity_ = this.drawShape_(dynamicPositions);
+
+        if (this.type === 'point') {
+          this.activePoints_.push(position);
+          this.finishDrawing();
+          return;
+        }
       }
       this.activePoints_.push(position);
+      if (this.type === 'rectangle' && this.activePoints_.length === 4) {
+        this.finishDrawing();
+      }
     }
   }
 
@@ -152,4 +189,56 @@ export class CesiumDraw extends EventTarget {
     this.activePoints_.pop();
     this.finishDrawing();
   }
+}
+
+const scratchAB = new Cartesian3();
+const scratchAC = new Cartesian3();
+const scratchAM = new Cartesian3();
+const scratchAP = new Cartesian3();
+const scratchBP = new Cartesian3();
+
+function rectanglify(coordinates) {
+  if (coordinates.length === 3 && !Cartesian3.equals(coordinates[1], coordinates[2])) {
+    // A and B are the base of the triangle, C is the point currently moving:
+    //
+    // A -- AP
+    // |\
+    // | \
+    // |  \
+    // |   \
+    // M    C
+    // |
+    // B -- AB
+
+    const A = coordinates[0];
+    const B = coordinates[1];
+    const C = coordinates[2];
+
+    // create the two vectors from the triangle coordinates
+    const AB = Cartesian3.subtract(B, A, scratchAB);
+    const AC = Cartesian3.subtract(C, A, scratchAC);
+
+    const AM = Cartesian3.projectVector(AC, AB, scratchAM);
+
+    const AP = Cartesian3.subtract(C, AM, scratchAP);
+    const BP = Cartesian3.add(AP, AB, scratchBP);
+
+    return [A, B, BP, AP];
+  } else {
+    return coordinates;
+  }
+}
+
+
+/**
+ * @param {import('cesium/Core/Cartesian3').default} cartesian
+ * @return {Array<number>}
+ */
+function cartesiantoDegrees(cartesian) {
+  const cartographic = Cartographic.fromCartesian(cartesian);
+  return [
+    cartographic.longitude * 180 / Math.PI,
+    cartographic.latitude * 180 / Math.PI,
+    cartographic.height
+  ];
 }

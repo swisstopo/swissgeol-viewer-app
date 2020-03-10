@@ -22,4 +22,5 @@ rules:
   quotes: [error, single, {avoidEscape: true}]
   semi: error
   space-before-blocks: error
+  space-in-parens: error
   space-infix-ops: error
