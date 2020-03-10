@@ -23,5 +23,6 @@ export function isPickable(object) {
 }
 
 export function extractEntitiesAttributes(entity) {
+  if (!entity.properties) return;
   return entity.properties.getValue(JulianDate.fromDate(new Date()));
 }

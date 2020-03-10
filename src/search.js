@@ -82,7 +82,7 @@ export function setupSearch(viewer, element, layerTree) {
         const dataSource = dataSources.get(i);
         dataSource.entities.values.forEach(entity => {
           const attributes = extractEntitiesAttributes(entity);
-          if (regexp.test(attributes.EventLocationName)) {
+          if (attributes && regexp.test(attributes.EventLocationName)) {
             matches.push({
               entity: entity,
               label: `${attributes.EventLocationName} (${attributes.Magnitude})`,
