@@ -14,19 +14,19 @@ ENV="$1"
 if [ "$ENV" = "prod" ]
 then
     DESTINATION="s3://$PROD_BUCKET"
-    RELEASE==$PROD_BUCKET
+    RELEASE=$PROD_BUCKET
 fi
 
 if [ "$ENV" = "int" ]
 then
     DESTINATION="s3://$INT_BUCKET"
-    RELEASE==$INT_BUCKET
+    RELEASE=$INT_BUCKET
 fi
 
 if [ "$ENV" = "dev" ]
 then
     DESTINATION="s3://$DEV_BUCKET"
-    RELEASE==$DEV_BUCKET
+    RELEASE=$DEV_BUCKET
 fi
 
 if [ "$ENV" = "review" ]
@@ -38,7 +38,7 @@ then
       exit 1
     fi
     DESTINATION="s3://$REVIEW_BUCKET/$BRANCH/"
-    RELEASE=="$REVIEW_BUCKET/$BRANCH"
+    RELEASE="$REVIEW_BUCKET/$BRANCH"
 fi
 
 if [ -z "$DESTINATION" ]
@@ -49,5 +49,5 @@ fi
 
 $S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' dist/ $DESTINATION
 $S3_CMD cp --cache-control no-cache dist/index.html $DESTINATION
-npm run sentry-sourcemaps-upload
+RELEASE=$RELEASE npm run sentry-sourcemaps-upload
 exit $?
