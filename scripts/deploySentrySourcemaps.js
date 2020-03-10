@@ -3,11 +3,11 @@ const environment = require('./environments/environment.json');
 
 const execAsync = util.promisify(require('child_process').exec);
 
-(async () => {
+(async (sentryToken) => {
   try {
     if (environment && environment.branch) {
       console.log(`Uploading sourcemaps for ${environment.branch}...`);
-      await execAsync(`RELEASE=${environment.branch} npm run sentry-sourcemaps-upload`);
+      await execAsync(`SENTRY_TOKEN=${sentryToken} RELEASE=${environment.branch} npm run sentry-sourcemaps-upload`);
       console.log('Sourcemaps uploaded.');
       process.exit(0);
     } else {
@@ -18,4 +18,4 @@ const execAsync = util.promisify(require('child_process').exec);
     console.error(`Failed with error: "${e.message}".`);
     process.exit(1);
   }
-})();
+})(process.argv.slice(2)[0]);

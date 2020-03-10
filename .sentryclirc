@@ -2,6 +2,3 @@
 url = https://sentry.io/
 org = dev-test-qd
 project = javascript
-
-[auth]
-token=7c4aaa9ddb1b45ce82553eed62a96730e42e4b2879034c69aa7ac21e05e8404b

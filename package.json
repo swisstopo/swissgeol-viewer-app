@@ -7,7 +7,7 @@
     "start": "node scripts/environment.js && rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "rm -rf dist/* && rollup --environment mode:production -c",
     "postinstall": "scripts/npm_postinstall.sh",
-    "sentry-sourcemaps-upload": "sentry-cli releases files $RELEASE upload-sourcemaps dist/bundle.*"
+    "sentry-sourcemaps-upload": "sentry-cli --auth-token $SENTRY_TOKEN releases files $RELEASE upload-sourcemaps dist/bundle.*.js"
   },
   "dependencies": {
     "@geoblocks/ga-search": "^0.0.10",

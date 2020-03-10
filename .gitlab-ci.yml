@@ -47,7 +47,7 @@ add_link_for_reviews:
 
 setup_environment:
   stage: setup_environment
-  script: CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME node scripts/environment.js $CI_COMMIT_REF_NAME
+  script: node scripts/environment.js $CI_COMMIT_REF_NAME
   artifacts:
     paths:
       - scripts/environments/
@@ -56,4 +56,4 @@ setup_environment:
 
 deploy_sentry_sourcemaps:
   stage: sentry_deploy
-  script: node scripts/deploySentrySourcemaps.js
+  script: node scripts/deploySentrySourcemaps.js $SENTRY_API_TOKEN
