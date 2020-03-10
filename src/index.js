@@ -21,11 +21,12 @@ import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import LayerTree from './layers/layers.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
+import {setupWebComponents} from './elements/appElements.js';
 
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
-
+setupWebComponents(viewer);
 
 async function zoomTo(config) {
   const p = await config.promise;
@@ -119,10 +120,6 @@ document.querySelector('#fpsMode').addEventListener('click', event => {
 new AreaOfInterestDrawer(viewer);
 
 initInfoPopup();
-
-const gstInteraction = document.querySelector('ngm-gst-interaction');
-gstInteraction.viewer = viewer;
-
 
 const compass = document.querySelector('cesium-compass');
 compass.scene = viewer.scene;

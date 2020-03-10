@@ -1,6 +1,7 @@
 {
   "add_area_btn_label": "Add Area",
   "altitudes_label": "Altitudes",
+  "aoi_section_title": "Areas Of Interest",
   "area_of_interest_add_hint": "Hold down left mouse button and drag the cursor to draw area",
   "area_of_interest_empty_hint": "Click on 'Add Area' button or hold down 'left mouse button + Shift' to draw area",
   "background_label": "Background data",
@@ -22,6 +23,7 @@
   "geological_map_series_label": "Geological map series",
   "geological_maps_label": "Geological maps",
   "geothermal_energy_label": "Geothermal energy",
+  "gst_accordion_title": "GST sections",
   "hide_btn_tooltip": "Hide",
   "info_clockwise_rotate": "\"J\" / \"L\" key",
   "info_clockwise_rotate_label": "Rotate clockwise/counterclockwise",

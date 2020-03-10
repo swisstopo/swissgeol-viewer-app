@@ -4,7 +4,6 @@ import {cartesiantoDegrees, degreesToLv95, round} from '../projection.js';
 import {crossSection, getCrossSectionUrl} from '../gst.js';
 import {showError} from '../message.js';
 
-
 class NgmGstInteraction extends LitElement {
 
   static get properties() {

@@ -6,7 +6,7 @@ import {repeat} from 'lit-html/directives/repeat.js';
 
 import i18next from 'i18next';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
-import {onAccordionTitleClick, onAccordionIconClick, insertAndShift} from '../utils.js';
+import {onAccordionClick, insertAndShift} from '../utils.js';
 import {
   create3DTilesetFromConfig, createEarthquakeFromConfig,
   createIonGeoJSONFromConfig,
@@ -163,7 +163,7 @@ export default class LayerTree {
           <input id="layer-item-${id}" class="ngm-layer-checkbox" type="checkbox" name="${config.layer}"
           .checked=${config.visible}
           @change=${changeVisibility}>
-          <label for="layer-item-${id}" data-i18n>${i18next.t(config.label)}</label>
+          <label for="layer-item-${id}">${i18next.t(config.label)}</label>
         </div>
         <div class="ui icon buttons compact mini" ?hidden=${!displayedRender}>
             <button class="ui button"
@@ -197,7 +197,7 @@ export default class LayerTree {
         </div>
     </div>
     <div class="ngm-displayed-container" ?hidden=${!config.setOpacity || !displayedRender}>
-      <label data-i18n>${i18next.t('opacity_label')}: </label>
+      <label>${i18next.t('opacity_label')}: </label>
       <input type="range" min="0" max="1" .value=${config.opacity || 1} @input=${changeOpacity} step="0.05">
     </div>
     `;
@@ -220,8 +220,8 @@ export default class LayerTree {
       };
 
       const categoryRender = (layerCat) => html`
-      <div class="title ngm-layer-title" @click=${onAccordionTitleClick} data-i18n>
-        <i class="dropdown icon" @click=${onAccordionIconClick}></i>
+      <div class="title ngm-layer-title" @click=${onAccordionClick}>
+        <i class="dropdown icon"></i>
         ${i18next.t(layerCat.label)}
       </div>
       <div class="content ngm-layer-content">
@@ -250,8 +250,8 @@ export default class LayerTree {
     };
     const displayedLayers = this.displayedLayers();
     return html`
-      <div class="title ngm-layer-title active" @click=${onAccordionTitleClick} data-i18n>
-        <i class="dropdown icon" @click=${onAccordionIconClick}></i>
+      <div class="title ngm-layer-title active" @click=${onAccordionClick}>
+        <i class="dropdown icon"></i>
        ${i18next.t('displayed_maps_label')}
       </div>
       <div class="content ngm-layer-content active">

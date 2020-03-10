@@ -1,7 +1,7 @@
 import {html} from 'lit-html';
 import {repeat} from 'lit-html/directives/repeat';
 import i18next from 'i18next';
-import {clickOnElement, onAccordionTitleClick, onAccordionIconClick} from '../utils.js';
+import {clickOnElement, onAccordionClick} from '../utils.js';
 
 const areaUploadInputId = 'areaUpload';
 
@@ -20,9 +20,9 @@ export default function getTemplate() {
   };
 
   return html`
-  <div class="title" @click=${onAccordionTitleClick}>
-    <i class="dropdown icon" @click=${onAccordionIconClick}></i>
-    Areas of Interest
+  <div class="title" @click=${onAccordionClick}>
+    <i class="dropdown icon"></i>
+    ${i18next.t('aoi_section_title')}
   </div>
   <div class="content">
     <div class="ui tiny fluid buttons" ?hidden=${this.drawMode_}>
