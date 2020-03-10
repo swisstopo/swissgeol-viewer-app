@@ -122,12 +122,14 @@ main {
 
 .navigation-widgets {
   position: absolute;
+  z-index: 1;
+  right: 0;
+}
+
+.navigation-widgets, ngm-navigation-widgets {
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 1;
-  margin: 6px;
-  right: 0;
 }
 
 .navigation-widgets .ui.button {
