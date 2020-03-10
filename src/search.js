@@ -33,8 +33,8 @@ export function setupSearch(viewer, element, layerTree) {
       // from geoadmin
       iconName = result.properties.origin === 'layer' ? 'layer group' : 'map pin';
     } else {
-      // from earthquake
-      iconName = 'house damage';
+      // from cesium entities
+      iconName = 'cube';
     }
     return `<i class="${iconName} grey icon"></i> ${label}`;
   };
