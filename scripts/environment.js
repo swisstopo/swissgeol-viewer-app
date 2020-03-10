@@ -1,10 +1,10 @@
 const fs = require('fs');
 const util = require('util');
 const path = require('path');
-const mkdirp = require('mkdirp');
 
 const exec = util.promisify(require('child_process').exec);
 const writeFileAsync = util.promisify(fs.writeFile);
+const mkdirp = require('mkdirp');
 const mkdirpAsync = util.promisify(mkdirp);
 
 (async (branch) => {
