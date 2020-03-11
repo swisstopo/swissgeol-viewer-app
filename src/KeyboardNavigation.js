@@ -1,5 +1,6 @@
 import {setCameraHeight} from './utils.js';
-import Math from 'cesium/Core/Math';
+import CMath from 'cesium/Core/Math';
+import {verticalDirectionRotate} from './utils';
 
 const moveUpCodes = ['q', ' ', '+'];
 const moveDownCodes = ['e', '-'];
@@ -20,7 +21,7 @@ export default class KeyboardNavigation {
    * @param {number} [rotateAmount]
    * @param {number} [boostFactor]
    */
-  constructor(scene, moveAmount = 50, rotateAmount = Math.PI / 400, boostFactor = 4) {
+  constructor(scene, moveAmount = 50, rotateAmount = CMath.PI / 400, boostFactor = 4) {
 
     this.scene_ = scene;
 
@@ -91,6 +92,7 @@ export default class KeyboardNavigation {
 
     const moveAmount = this.moveAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
     const rotateAmount = this.rotateAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
+    const angle = rotateAmount / 300;
 
     let heading;
     let pitch;
@@ -102,10 +104,10 @@ export default class KeyboardNavigation {
       setCameraHeight(camera, camera.positionCartographic.height - moveAmount);
     }
     if (this.flags_.moveForward) {
-      camera.moveForward(moveAmount);
+      verticalDirectionRotate(camera, angle);
     }
     if (this.flags_.moveBackward) {
-      camera.moveBackward(moveAmount);
+      verticalDirectionRotate(camera, -angle);
     }
     if (this.flags_.moveLeft) {
       camera.moveLeft(moveAmount);

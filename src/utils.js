@@ -1,4 +1,5 @@
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import CMath from 'cesium/Core/Math';
 
 
 export async function readTextFile(url) {
@@ -62,4 +63,17 @@ export function insertAndShift(array, fromIdx, toIdx) {
   const cutOut = array.splice(fromIdx, 1)[0];
   array.splice(toIdx, 0, cutOut);
   return array;
+}
+
+export function verticalDirectionRotate(camera, angle) {
+  const position = Cartesian3.normalize(camera.position, new Cartesian3());
+  const direction = Cartesian3.normalize(camera.direction, new Cartesian3());
+
+  const angleBetween = Number(Cartesian3.angleBetween(position, direction).toFixed(2));
+  if (angleBetween >= 3.14) {
+    angle = -angle;
+  }
+
+  const tangent = Cartesian3.cross(direction, position, new Cartesian3());
+  camera.rotate(tangent, angle);
 }
