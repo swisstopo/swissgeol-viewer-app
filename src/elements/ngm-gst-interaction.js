@@ -14,8 +14,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      viewer: {type: Object},
-      imageUrl: {type: String}
+      viewer: {type: Object}
     };
   }
 
@@ -39,7 +38,10 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     this.loading = true;
     const coordinates = positions.map(degreesToLv95).map(round);
     promise(coordinates)
-      .then(json => this.imageUrl = json.imageUrl)
+      .then(json => {
+        this.imageUrl = json.imageUrl;
+        this.requestUpdate();
+      })
       .catch(err => showError(`${err.name}: ${err.message}`))
       .finally(() => this.loading = false);
   }
