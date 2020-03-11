@@ -20,7 +20,7 @@ export default function getTemplate() {
   };
 
   return html`
-    <div class="ui tiny fluid buttons ngm-aoi-buttons" ?hidden=${this.drawMode_}>
+    <div class="ui tiny fluid buttons ngm-aoi-buttons" ?hidden=${this.draw_.active}>
         <button class="ui button" @click=${this.onAddAreaClick_.bind(this)}>
             <i class="plus icon"></i>${btnTranslation.add}
         </button>
@@ -31,11 +31,11 @@ export default function getTemplate() {
     <!-- <button class="ui tiny fluid button"
             @click=${this.onRemoveEntityClick_.bind(this, null)}
 
-            ?hidden=${this.drawMode_}>
+            ?hidden=${this.draw_.active}>
             <i class="trash alternate outline icon"></i>${btnTranslation.removeAll}
     </button> -->
     <input id="${areaUploadInputId}" type='file' accept=".kml,.KML" hidden @change=${this.uploadArea_.bind(this)} />
-    <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.drawMode_}>
+    <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.draw_.active}>
         <button class="ui button" @click=${this.cancelDraw_.bind(this)}>${btnTranslation.cancel}</button>
         <button class="ui button ngm-help-btn"
                 data-tooltip=${tooltipTranslationLabel}

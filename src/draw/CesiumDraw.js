@@ -12,9 +12,9 @@ import {EventTarget} from 'event-target-shim';
 
 /**
  * @typedef {object} Options
- * @property {string} [strokeColor='rgba(0, 153, 255, 0.75)']
+ * @property {string|Color} [strokeColor='rgba(0, 153, 255, 0.75)']
  * @property {number} [strokeWidth=4]
- * @property {string} [fillColor='rgba(0, 153, 255, 0.3)']
+ * @property {string|Color} [fillColor='rgba(0, 153, 255, 0.3)']
  */
 
 export class CesiumDraw extends EventTarget {
@@ -29,12 +29,13 @@ export class CesiumDraw extends EventTarget {
     this.viewer_ = viewer;
     this.type = type;
 
-    this.eventHandler_ = undefined;
-
-    this.strokeColor_ = Color.fromCssColorString(options.strokeColor || 'rgba(0, 153, 255, 0.75)');
+    this.strokeColor_ = options.strokeColor instanceof Color ?
+      options.strokeColor : Color.fromCssColorString(options.strokeColor || 'rgba(0, 153, 255, 0.75)');
     this.strokeWidth_ = options.strokeWidth !== undefined ? options.strokeWidth : 4;
-    this.fillColor_ = Color.fromCssColorString(options.fillColor || 'rgba(0, 153, 255, 0.3)');
+    this.fillColor_ = options.fillColor instanceof Color ?
+      options.fillColor : Color.fromCssColorString(options.fillColor || 'rgba(0, 153, 255, 0.3)');
 
+    this.eventHandler_ = undefined;
     this.activePoints_ = [];
     this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
