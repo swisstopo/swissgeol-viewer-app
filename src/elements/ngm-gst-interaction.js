@@ -46,15 +46,16 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
       .finally(() => this.loading = false);
   }
 
-  set loading(value) {
+  set loading(loading) {
     const buttons = this.querySelectorAll('button');
-    if (value) {
+    if (loading) {
       this.viewer.canvas.style.cursor = 'wait';
       buttons.forEach(button => button.classList.add('disabled'));
     } else {
       this.viewer.canvas.style.cursor = 'default';
       buttons.forEach(button => button.classList.remove('disabled'));
     }
+    this.draw_.active = !loading;
   }
 
   changeTool(event, type) {
