@@ -1,7 +1,7 @@
 import {html} from 'lit-html';
 import {repeat} from 'lit-html/directives/repeat';
 import i18next from 'i18next';
-import {clickOnElement, onAccordionClick} from '../utils.js';
+import {clickOnElement} from '../utils.js';
 
 const areaUploadInputId = 'areaUpload';
 
