@@ -7,6 +7,9 @@
 # Deploy to integration (from local machine)
 
 ```bash
+RELEASE_NAME="RELEASE_NAME_FOR_SENTRY" npm run build
+node scripts/deploySentrySourcemaps.js <SENTRY_AUTH_TOKEN>
+
 # ex int_sprint2.1
 export VERSION="int_sprint???"
 
@@ -15,8 +18,10 @@ git push origin $VERSION
 ```
 
 # Deploy to production (from local machine)
-
 ```bash
+RELEASE_NAME="RELEASE_NAME_FOR_SENTRY" npm run build
+node scripts/deploySentrySourcemaps.js <SENTRY_AUTH_TOKEN>
+
 export VERSION="THE_TAG_YOU_WANT_DEPLOYED"
 
 git checkout $VERSION
