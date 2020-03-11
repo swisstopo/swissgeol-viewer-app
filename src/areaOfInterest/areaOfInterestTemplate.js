@@ -20,11 +20,6 @@ export default function getTemplate() {
   };
 
   return html`
-  <div class="title" @click=${onAccordionClick}>
-    <i class="dropdown icon"></i>
-    ${i18next.t('aoi_section_title')}
-  </div>
-  <div class="content">
     <div class="ui tiny fluid buttons ngm-aoi-buttons" ?hidden=${this.drawMode_}>
         <button class="ui button" @click=${this.onAddAreaClick_.bind(this)}>
             <i class="plus icon"></i>${btnTranslation.add}
@@ -82,6 +77,5 @@ export default function getTemplate() {
     <div ?hidden=${this.entitiesList_ && this.entitiesList_.length} class="ui tertiary center aligned segment">
         <span>${hintTranslationLabel}</span>
     </div>
-  </div>
   `;
 }

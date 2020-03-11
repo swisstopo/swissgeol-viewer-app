@@ -26,7 +26,17 @@ class LeftSideBar extends I18nMixin(LitElement) {
     return html`
     <div class="left sidebar">
       <div class="ui styled accordion" id="layers"></div>
-      <div id="areasOfInterest" class="ui styled accordion"></div>
+
+      <div class="ui styled accordion">
+        <div class="title" @click=${onAccordionClick}>
+          <i class="dropdown icon"></i>
+          ${i18next.t('aoi_section_title')}
+        </div>
+        <div class="content">
+          <div id="areasOfInterest"></div>
+        </div>
+      </div>
+
       <div class="ui styled accordion">
         <div class="title" @click=${onAccordionClick}>
           <i class="dropdown icon"></i>
