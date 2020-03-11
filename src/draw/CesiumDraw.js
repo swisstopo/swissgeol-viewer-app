@@ -100,7 +100,7 @@ export class CesiumDraw extends EventTarget {
     this.entities_.forEach(entity => this.viewer_.entities.remove(entity));
   }
 
-  createPoint_(position) {
+  drawControlPoint_(position) {
     return this.viewer_.entities.add({
       position: position,
       point: {
@@ -148,7 +148,7 @@ export class CesiumDraw extends EventTarget {
     if (position) {
       if (!this.floatingPoint_) {
         this.dispatchEvent(new CustomEvent('drawstart'));
-        this.floatingPoint_ = this.createPoint_(position);
+        this.floatingPoint_ = this.drawControlPoint_(position);
         this.activePoints_.push(position);
         const dynamicPositions = new CallbackProperty(() => {
           if (this.type === 'polygon') {
