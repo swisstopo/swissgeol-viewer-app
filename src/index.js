@@ -14,21 +14,21 @@ import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
-import AreaOfInterestDrawer from './areaOfInterest/AreaOfInterestDrawer.js';
 import Color from 'cesium/Core/Color.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import LayerTree from './layers/layers.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
-import {setupWebComponents} from './elements/appElements.js';
 import {showConfirmationMessage} from './message.js';
 import i18next from 'i18next';
+import './elements/ngm-left-side-bar.js';
 
 initSentry();
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
-setupWebComponents(viewer);
+document.querySelector('ngm-left-side-bar').viewer = viewer;
+// setupWebComponents(viewer);
 
 async function zoomTo(config) {
   const p = await config.promise;
@@ -52,7 +52,6 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     viewer.scene.globe.maximumScreenSpaceError = originMaximumScreenSpaceError;
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
-
       const layerTree = new LayerTree(viewer, document.getElementById('layers'), zoomTo);
       setupSearch(viewer, document.querySelector('ga-search'), layerTree);
       document.getElementById('loader').style.display = 'none';
@@ -124,8 +123,6 @@ viewer.camera.flyTo({
 });
 
 viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
-
-new AreaOfInterestDrawer(viewer);
 
 initInfoPopup();
 
