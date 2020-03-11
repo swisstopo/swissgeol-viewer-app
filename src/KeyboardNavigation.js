@@ -51,8 +51,11 @@ export default class KeyboardNavigation {
     this.scene_.postRender.addEventListener(onPostRender);
   }
 
+  /**
+   * @param {KeyboardEvent} event
+   */
   onKey_(event) {
-    if (targetNotEditable(event.target)) {
+    if (event.ctrlKey === false && targetNotEditable(event.target)) {
       const pressed = event.type === 'keydown';
       const key = event.key.toLowerCase();
 

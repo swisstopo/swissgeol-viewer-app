@@ -19,9 +19,7 @@ class NgmGstModal extends I18nMixin(LitElement) {
       const element = $('.ngm-gst-modal.ui.modal').modal({
         centered: false,
         onHidden: () => this.imageUrl = null,
-        onApprove: () => {
-          window.open(this.imageUrl, '_blank');
-        }
+        onApprove: () => window.open(this.imageUrl, '_blank')
       });
       element.modal('show');
     }
@@ -31,7 +29,7 @@ class NgmGstModal extends I18nMixin(LitElement) {
     return html`
       <div class="ngm-gst-modal ui large modal">
         <div class="content">
-          ${this.imageUrl ? html`<embed .src="${this.imageUrl}"></embed>` : html``}
+          ${this.imageUrl ? html`<embed src="${this.imageUrl}"></embed>` : html``}
         </div>
         <div class="actions">
           <div class="ui cancel small labeled icon button">

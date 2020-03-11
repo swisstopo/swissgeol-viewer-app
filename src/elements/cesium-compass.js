@@ -139,6 +139,7 @@ class CesiumCompass extends LitElement {
   }
 
   handlePointerDown(event) {
+    const camera = this.scene.camera;
     const compassElement = event.currentTarget;
     this.context.compassRectangle = compassElement.getBoundingClientRect();
     this.context.compassCenter = new Cartesian2(
@@ -151,6 +152,17 @@ class CesiumCompass extends LitElement {
     );
     const vector = Cartesian2.subtract(clickLocation, this.context.compassCenter, vectorScratch);
     const distanceFromCenter = Cartesian2.magnitude(vector);
+
+    windowPositionScratch.x = this.scene.canvas.clientWidth / 2;
+    windowPositionScratch.y = this.scene.canvas.clientHeight / 2;
+    const ray = camera.getPickRay(windowPositionScratch, pickRayScratch);
+    this.context.viewCenter = this.scene.globe.pick(ray, this.scene, centerScratch);
+
+    this.context.frame = Transforms.eastNorthUpToFixedFrame(
+      this.context.viewCenter ? this.context.viewCenter : camera.positionWC,
+      Ellipsoid.WGS84,
+      newTransformScratch
+    );
 
     const maxDistance = this.context.compassRectangle.width / 2;
     const distanceFraction = distanceFromCenter / maxDistance;
@@ -168,19 +180,10 @@ class CesiumCompass extends LitElement {
     const camera = this.scene.camera;
 
     this.context.rotateInitialCursorAngle = Math.atan2(-cursorVector.y, cursorVector.x);
-    windowPositionScratch.x = this.scene.canvas.clientWidth / 2;
-    windowPositionScratch.y = this.scene.canvas.clientHeight / 2;
-    const ray = camera.getPickRay(windowPositionScratch, pickRayScratch);
-    const viewCenter = this.scene.globe.pick(ray, this.scene, centerScratch);
 
-    this.context.rotateFrame = Transforms.eastNorthUpToFixedFrame(
-      viewCenter ? viewCenter : camera.positionWC,
-      Ellipsoid.WGS84,
-      newTransformScratch
-    );
     const oldTransform = Matrix4.clone(camera.transform, oldTransformScratch);
 
-    camera.lookAtTransform(this.context.rotateFrame);
+    camera.lookAtTransform(this.context.frame);
     this.context.rotateInitialCameraAngle = Math.atan2(camera.position.y, camera.position.x);
     camera.lookAtTransform(oldTransform);
 
@@ -203,7 +206,7 @@ class CesiumCompass extends LitElement {
     );
 
     const oldTransform = Matrix4.clone(camera.transform, oldTransformScratch);
-    camera.lookAtTransform(this.context.rotateFrame);
+    camera.lookAtTransform(this.context.frame);
     const currentCameraAngle = Math.atan2(camera.position.y, camera.position.x);
     camera.rotateRight(newCameraAngle - currentCameraAngle);
     camera.lookAtTransform(oldTransform);
@@ -215,19 +218,7 @@ class CesiumCompass extends LitElement {
   }
 
   orbit(cursorVector) {
-    const camera = this.scene.camera;
-
-    windowPositionScratch.x = this.scene.canvas.clientWidth / 2;
-    windowPositionScratch.y = this.scene.canvas.clientHeight / 2;
-    const ray = camera.getPickRay(windowPositionScratch, pickRayScratch);
-    const viewCenter = this.scene.globe.pick(ray, this.scene, centerScratch);
-
-    this.context.orbitFrame = Transforms.eastNorthUpToFixedFrame(
-      viewCenter ? viewCenter : camera.positionWC,
-      Ellipsoid.WGS84,
-      newTransformScratch
-    );
-    this.context.orbitIsLook = !viewCenter;
+    this.context.orbitIsLook = !this.context.viewCenter;
     this.context.orbitLastTimestamp = getTimestamp();
 
     document.addEventListener('pointermove', this.handleOrbitPointerMoveFunction, false);
@@ -251,7 +242,7 @@ class CesiumCompass extends LitElement {
     const y = Math.sin(angle) * distance;
 
     const oldTransform = Matrix4.clone(camera.transform, oldTransformScratch);
-    camera.lookAtTransform(this.context.orbitFrame);
+    camera.lookAtTransform(this.context.frame);
     if (this.context.orbitIsLook) {
       camera.look(Cartesian3.UNIT_Z, -x);
       camera.look(camera.right, -y);

@@ -14,8 +14,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      viewer: {type: Object},
-      imageUrl: {type: String}
+      viewer: {type: Object}
     };
   }
 
@@ -39,20 +38,24 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     this.loading = true;
     const coordinates = positions.map(degreesToLv95).map(round);
     promise(coordinates)
-      .then(json => this.imageUrl = json.imageUrl)
+      .then(json => {
+        this.imageUrl = json.imageUrl;
+        this.requestUpdate();
+      })
       .catch(err => showError(`${err.name}: ${err.message}`))
       .finally(() => this.loading = false);
   }
 
-  set loading(value) {
+  set loading(loading) {
     const buttons = this.querySelectorAll('button');
-    if (value) {
+    if (loading) {
       this.viewer.canvas.style.cursor = 'wait';
       buttons.forEach(button => button.classList.add('disabled'));
     } else {
       this.viewer.canvas.style.cursor = 'default';
       buttons.forEach(button => button.classList.remove('disabled'));
     }
+    this.draw_.active = !loading;
   }
 
   changeTool(event, type) {
