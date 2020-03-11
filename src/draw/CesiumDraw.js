@@ -198,7 +198,7 @@ const scratchAP = new Cartesian3();
 const scratchBP = new Cartesian3();
 
 function rectanglify(coordinates) {
-  if (coordinates.length === 3 && !Cartesian3.equals(coordinates[1], coordinates[2])) {
+  if (coordinates.length === 3) {
     // A and B are the base of the triangle, C is the point currently moving:
     //
     // A -- AP
@@ -208,7 +208,7 @@ function rectanglify(coordinates) {
     // |   \
     // M    C
     // |
-    // B -- AB
+    // B -- BP
 
     const A = coordinates[0];
     const B = coordinates[1];
