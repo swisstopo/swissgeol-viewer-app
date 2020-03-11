@@ -83,5 +83,7 @@
   "zoom_in_btn": "Zoom In",
   "zoom_out_btn": "Zoom Out",
   "zoom_to": "Zoom to",
-  "zoom_to_object": "Zoom to object"
+  "zoom_to_object": "Zoom to object",
+  "sentry_message": "Sentry is used for application monitoring and bug tracking. <br> For further questions: datenschutz@swisstopo.ch",
+  "ok_btn_label": "Ok"
 }
