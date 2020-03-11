@@ -8,6 +8,7 @@ import babel from 'rollup-plugin-babel';
 import serve from 'rollup-plugin-serve';
 import alias from '@rollup/plugin-alias';
 import postcss from 'rollup-plugin-postcss';
+import inlinesvg from 'postcss-inline-svg';
 import cssimport from 'postcss-import';
 import postcssurl from 'postcss-url';
 import autoprefixer from 'autoprefixer';
@@ -36,6 +37,7 @@ const config = {
       inject: false,
       extract: 'dist/bundle.css',
       plugins: [
+        inlinesvg(),
         cssimport({
           plugins: [
             postcssurl([
