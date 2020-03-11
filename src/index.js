@@ -5,12 +5,10 @@ import {SWITZERLAND_RECTANGLE, DRILL_PICK_LIMIT} from './constants.js';
 import './style/index.css';
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
-import FirstPersonCameraMode from './FirstPersonCameraMode.js';
 
 import './elements/ngm-object-information.js';
 import './elements/ngm-gst-interaction.js';
-import './elements/cesium-compass.js';
-import './elements/ngm-zoom-buttons.js';
+import './elements/ngm-navigation-widgets.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
@@ -111,19 +109,9 @@ viewer.camera.flyTo({
 
 viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
-const firstPersonCameraMode = new FirstPersonCameraMode(viewer.scene);
-
-document.querySelector('#fpsMode').addEventListener('click', event => {
-  firstPersonCameraMode.active = true;
-});
-
 new AreaOfInterestDrawer(viewer);
 
 initInfoPopup();
 
-const compass = document.querySelector('cesium-compass');
-compass.scene = viewer.scene;
-compass.clock = viewer.clock;
-
-const zoomButtons = document.querySelector('ngm-zoom-buttons');
-zoomButtons.scene = viewer.scene;
+const widgets = document.querySelector('ngm-navigation-widgets');
+widgets.viewer = viewer;
