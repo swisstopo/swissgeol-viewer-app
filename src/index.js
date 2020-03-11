@@ -58,7 +58,12 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       document.getElementById('loader').style.display = 'none';
       console.log(`loading mask displayed ${(performance.now() / 1000).toFixed(3)}s`);
 
-      showConfirmationMessage(i18next.t('sentry_message'), i18next.t('ok_btn_label'));
+      const sentryConfirmed = localStorage.getItem('sentryConfirmed') === 'true';
+      if (!sentryConfirmed) {
+        showConfirmationMessage(i18next.t('sentry_message'), i18next.t('ok_btn_label'), () => {
+          localStorage.setItem('sentryConfirmed', 'true');
+        });
+      }
     });
   }
 });
