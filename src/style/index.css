@@ -158,3 +158,20 @@ cesium-compass {
 .ui.checkbox label {
   cursor: pointer;
 }
+
+.ui.icon.buttons .button > .icon.svg-icon {
+  opacity: 0.6;
+}
+.ui.icon.buttons .button:hover > .icon.svg-icon {
+  opacity: 0.8;
+}
+.ui.icon.buttons .grey.button > .icon.svg-icon, .ui.icon.buttons .grey.button:hover > .icon.svg-icon {
+  opacity: 0.9;
+}
+
+.ui.buttons .button > .icon.horizontal-layer:before {
+  content: svg-load('../images/horizontal-layer.svg', fill=#000);
+}
+.ui.buttons .grey.button > .icon.horizontal-layer:before {
+  content: svg-load('../images/horizontal-layer.svg', fill=#fff);
+}

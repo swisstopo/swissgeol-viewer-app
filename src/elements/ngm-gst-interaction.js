@@ -106,7 +106,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
           data-position="top center"
           data-variation="mini"
         >
-          <i class="cube icon"></i>
+          <i class="horizontal-layer svg-icon icon"></i>
         </button>
       </div>
       <ngm-gst-modal .imageUrl="${this.imageUrl}"></ngm-gst-modal>
