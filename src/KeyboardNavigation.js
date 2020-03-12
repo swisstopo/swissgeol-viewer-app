@@ -1,33 +1,47 @@
 import {setCameraHeight} from './utils.js';
-import Math from 'cesium/Core/Math';
 
-const moveUpCodes = ['q', ' ', '+'];
-const moveDownCodes = ['e', '-'];
-const moveForwardCodes = ['w', 'arrowup'];
-const moveBackwardCodes = ['s', 'arrowdown'];
-const moveLeftCodes = ['a', 'arrowleft'];
-const moveRightCodes = ['d', 'arrowright'];
-const lookUpCodes = ['i'];
-const lookDownCodes = ['k'];
-const lookLeftCodes = ['j'];
-const lookRightCodes = ['l'];
+/**
+ * @typedef {Object} Options
+ * @property {number} [moveAmount=50]
+ * @property {number} [rotateAmount=Math.PI/400]
+ * @property {number} [boostFactor=4]
+ * @property {Array<string>} [moveUpKeys=['q', ' ', '+']]
+ * @property {Array<string>} [moveDownKeys=['e', '-']]
+ * @property {Array<string>} [moveForwardKeys=['w', 'arrowup']]
+ * @property {Array<string>} [moveBackwardKeys=['s', 'arrowdown']]
+ * @property {Array<string>} [moveLeftKeys=['a', 'arrowleft']]
+ * @property {Array<string>} [moveRightKeys=['d', 'arrowright']]
+ * @property {Array<string>} [lookUpKeys=['i']]
+ * @property {Array<string>} [lookDownKeys=['k']]
+ * @property {Array<string>} [lookLeftKeys=['j']]
+ * @property {Array<string>} [lookRightKeys=['l']]
+ */
+
 
 export default class KeyboardNavigation {
 
   /**
    * @param {import('cesium/Scene/Scene').default} scene
-   * @param {number} [moveAmount]
-   * @param {number} [rotateAmount]
-   * @param {number} [boostFactor]
+   * @param {Options} [options]
    */
-  constructor(scene, moveAmount = 50, rotateAmount = Math.PI / 400, boostFactor = 4) {
+  constructor(scene, options = {}) {
 
     this.scene_ = scene;
 
-    this.moveAmount_ = moveAmount;
-    this.rotateAmount_ = rotateAmount;
+    this.moveAmount_ = options.moveAmount !== undefined ? options.moveAmount : 50;
+    this.rotateAmount_ = options.rotateAmount !== undefined ? options.rotateAmount : Math.PI / 400;
+    this.boostFactor_ = options.boostFactor !== undefined ? options.boostFactor : 4;
 
-    this.boostFactor_ = boostFactor;
+    this.moveUpKeys_ = options.moveUpKeys || ['q', ' ', '+'];
+    this.moveDownKeys_ = options.moveDownKeys || ['e', '-'];
+    this.moveForwardKeys_ = options.moveForwardKeys || ['w', 'arrowup'];
+    this.moveBackwardKeys_ = options.moveBackwardKeys || ['s', 'arrowdown'];
+    this.moveLeftKeys_ = options.moveLeftKeys || ['a', 'arrowleft'];
+    this.moveRightKeys_ = options.moveRightKeys || ['d', 'arrowright'];
+    this.lookUpKeys_ = options.lookUpKeys || ['i'];
+    this.lookDownKeys_ = options.lookDownKeys || ['k'];
+    this.lookLeftKeys_ = options.lookLeftKeys || ['j'];
+    this.lookRightKeys_ = options.lookRightKeys || ['l'];
 
     this.flags_ = {
       booster: false,
@@ -59,25 +73,25 @@ export default class KeyboardNavigation {
       const pressed = event.type === 'keydown';
       const key = event.key.toLowerCase();
 
-      if (moveUpCodes.includes(key)) {
+      if (this.moveUpKeys_.includes(key)) {
         this.flags_.moveUp = pressed;
-      } else if (moveDownCodes.includes(key)) {
+      } else if (this.moveDownKeys_.includes(key)) {
         this.flags_.moveDown = pressed;
-      } else if (moveForwardCodes.includes(key)) {
+      } else if (this.moveForwardKeys_.includes(key)) {
         this.flags_.moveForward = pressed;
-      } else if (moveBackwardCodes.includes(key)) {
+      } else if (this.moveBackwardKeys_.includes(key)) {
         this.flags_.moveBackward = pressed;
-      } else if (moveLeftCodes.includes(key)) {
+      } else if (this.moveLeftKeys_.includes(key)) {
         this.flags_.moveLeft = pressed;
-      } else if (moveRightCodes.includes(key)) {
+      } else if (this.moveRightKeys_.includes(key)) {
         this.flags_.moveRight = pressed;
-      } else if (lookUpCodes.includes(key)) {
+      } else if (this.lookUpKeys_.includes(key)) {
         this.flags_.lookUp = pressed;
-      } else if (lookDownCodes.includes(key)) {
+      } else if (this.lookDownKeys_.includes(key)) {
         this.flags_.lookDown = pressed;
-      } else if (lookLeftCodes.includes(key)) {
+      } else if (this.lookLeftKeys_.includes(key)) {
         this.flags_.lookLeft = pressed;
-      } else if (lookRightCodes.includes(key)) {
+      } else if (this.lookRightKeys_.includes(key)) {
         this.flags_.lookRight = pressed;
       }
 
