@@ -77,5 +77,11 @@
   "zoom_to": "Zoom to",
   "zoom_to_object": "Zoom to object",
   "review_link": "Review beta.swissgeol.ch",
-  "tunnel_label": "Tunnel"
+  "tunnel_label": "Tunnel",
+  "zoom_in_btn": "Zoom In",
+  "zoom_out_btn": "Zoom Out",
+  "reset_view_btn": "Reset View",
+  "fps_btn": "First Person Mode",
+  "out_navigation_ring": "Click and drag to tilt rotate",
+  "in_navigation_ring": "Click and drag to tilt"
 }

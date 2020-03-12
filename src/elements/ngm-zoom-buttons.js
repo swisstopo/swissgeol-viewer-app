@@ -1,6 +1,7 @@
 import {LitElement, html} from 'lit-element';
 
 import Camera from 'cesium/Scene/Camera';
+import i18next from 'i18next';
 
 class NgmZoomButtons extends LitElement {
 
@@ -77,13 +78,28 @@ class NgmZoomButtons extends LitElement {
     if (this.scene) {
       return html`
         <div class="ui vertical compact mini icon buttons">
-          <button class="ui button" @pointerdown="${this.startZoomIn}">
+          <button
+          data-tooltip=${i18next.t('zoom_in_btn')}
+          data-position="left center"
+          data-variation="mini"
+          class="ui button"
+          @pointerdown="${this.startZoomIn}">
             <i class="plus icon"></i>
           </button>
-          <button class="ui button" @click="${this.flyToHome}">
+          <button
+          data-tooltip=${i18next.t('zoom_out_btn')}
+          data-position="left center"
+          data-variation="mini"
+          class="ui button"
+          @click="${this.flyToHome}">
             <i class="home icon"></i>
           </button>
-          <button class="ui button" @pointerdown="${this.startZoomOut}">
+          <button
+          data-tooltip=${i18next.t('reset_view_btn')}
+          data-position="left center"
+          data-variation="mini"
+          class="ui button"
+          @pointerdown="${this.startZoomOut}">
             <i class="minus icon"></i>
           </button>
         </div>

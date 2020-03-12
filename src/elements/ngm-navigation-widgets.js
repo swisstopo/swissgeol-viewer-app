@@ -2,6 +2,7 @@ import {LitElement, html} from 'lit-element';
 import FirstPersonCameraMode from '../FirstPersonCameraMode.js';
 import './cesium-compass.js';
 import './ngm-zoom-buttons.js';
+import i18next from 'i18next';
 
 class NgmNavigationWidgets extends LitElement {
 
@@ -31,7 +32,12 @@ class NgmNavigationWidgets extends LitElement {
       return html`
         <cesium-compass .scene="${this.viewer.scene}" .clock="${this.viewer.clock}"></cesium-compass>
         <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
-        <button class="ui compact mini icon button" @click="${this.activateFpsMode}">
+        <button
+        data-tooltip=${i18next.t('fps_btn')}
+        data-position="left center"
+        data-variation="mini"
+        class="ui compact mini icon button"
+        @click="${this.activateFpsMode}">
           <i class="eye icon"></i>
         </button>
       `;

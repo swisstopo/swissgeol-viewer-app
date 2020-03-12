@@ -14,6 +14,7 @@ import Ellipsoid from 'cesium/Core/Ellipsoid';
 import Ray from 'cesium/Core/Ray';
 import CesiumMath from 'cesium/Core/Math';
 import getTimestamp from 'cesium/Core/getTimestamp';
+import i18next from 'i18next';
 
 const vectorScratch = new Cartesian2();
 const windowPositionScratch = new Cartesian2();
@@ -288,9 +289,17 @@ class CesiumCompass extends LitElement {
       return html`
         <div class="compass" @pointerdown=${this.handlePointerDown}>
           <div class="outer-ring-background"></div>
-          <div class="outer-ring" style=${styleMap(this.outerRingStyle)}>${outerRingSvg}</div>
+          <div
+          data-content=${i18next.t('out_navigation_ring')}
+          data-position="left center"
+          data-variation="mini"
+          class="outer-ring" style=${styleMap(this.outerRingStyle)}>${outerRingSvg}</div>
           <div class="inner-ring-background"></div>
-          <div class="inner-ring">${innerRingSvg}</div>
+          <div
+          data-content=${i18next.t('in_navigation_ring')}
+          data-position="left center"
+          data-variation="mini"
+          class="inner-ring">${innerRingSvg}</div>
           <div class="rotation-marker" style=${styleMap(this.rotationMarkerStyle)}>${rotationMarkerSvg}</div>
         </div>
       `;
