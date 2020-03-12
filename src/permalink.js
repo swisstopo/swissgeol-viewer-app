@@ -8,7 +8,6 @@ import {
   LAYERS_VISIBILITY_URL_PARAM,
   ASSET_IDS_URL_PARAM
 } from './constants.js';
-import {layersConfig} from './layers/layerConfigs.js';
 
 export function getCameraView() {
   let destination;
@@ -77,13 +76,12 @@ export function getAssetIds() {
   return [];
 }
 
-export function syncLayersParam(layers) {
-  const displayedLayers = layers.filter(l => layersConfig.find(lc => lc.layer === l.layer));
+export function syncLayersParam(activeLayers) {
   const params = getURLSearchParams();
   const layerNames = [];
   const layersOpacity = [];
   const layersVisibility = [];
-  displayedLayers.forEach(l => {
+  activeLayers.forEach(l => {
     layerNames.push(l.layer);
     layersOpacity.push(isNaN(l.opacity) ? 1 : l.opacity);
     layersVisibility.push(l.visible);
@@ -102,7 +100,7 @@ export function syncLayersParam(layers) {
   const assetParams = getAssetIds();
 
   if (assetParams.length) {
-    const assetIds = assetParams.filter(id => layers.find(l => l.assetId === id && l.displayed));
+    const assetIds = assetParams.filter(id => activeLayers.find(l => l.assetId === id && l.displayed));
     if (assetIds.length) {
       params.set(ASSET_IDS_URL_PARAM, assetIds.join(','));
     } else {

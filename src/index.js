@@ -17,7 +17,6 @@ import {getCameraView, syncCamera} from './permalink.js';
 import Color from 'cesium/Core/Color.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 import {initInfoPopup} from './elements/keyboard-info-popup.js';
-import LayerTree from './layers/layers.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
 import {showConfirmationMessage} from './message.js';
 import i18next from 'i18next';
@@ -27,32 +26,36 @@ initSentry();
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
-document.querySelector('ngm-left-side-bar').viewer = viewer;
-// setupWebComponents(viewer);
 
 async function zoomTo(config) {
   const p = await config.promise;
   if (p.boundingSphere) {
     const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 4, 3 * p.boundingSphere.radius);
-    this.viewer.camera.flyToBoundingSphere(p.boundingSphere, {
+    viewer.camera.flyToBoundingSphere(p.boundingSphere, {
       duration: 0,
       offset: zoomHeadingPitchRange
     });
   } else {
-    this.viewer.zoomTo(p);
+    viewer.zoomTo(p);
   }
 }
 
 // Temporarily increasing the maximum screen space error to load low LOD tiles.
 const originMaximumScreenSpaceError = viewer.scene.globe.maximumScreenSpaceError;
 viewer.scene.globe.maximumScreenSpaceError = 10000;
+
+// setup web components
+document.querySelector('ngm-left-side-bar').viewer = viewer;
+document.querySelector('ngm-left-side-bar').zoomTo = zoomTo;
+
+
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
     viewer.scene.globe.maximumScreenSpaceError = originMaximumScreenSpaceError;
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
-      const layerTree = new LayerTree(viewer, document.getElementById('layers'), zoomTo);
+      const layerTree = document.querySelector('ngm-layers');
       setupSearch(viewer, document.querySelector('ga-search'), layerTree);
       document.getElementById('loader').style.display = 'none';
       console.log(`loading mask displayed ${(performance.now() / 1000).toFixed(3)}s`);
