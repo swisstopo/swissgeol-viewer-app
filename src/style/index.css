@@ -126,6 +126,7 @@ main {
   position: absolute;
   z-index: 1;
   right: 0;
+  margin: 6px;
 }
 
 .navigation-widgets, ngm-navigation-widgets {
