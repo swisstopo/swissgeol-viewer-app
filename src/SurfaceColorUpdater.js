@@ -13,8 +13,7 @@ export default class SurfaceColorUpdater {
   }
 
   checkPosition_() {
-    // FIXME: use 'cameraUnderground' instead of '_cameraUnderground' (https://github.com/CesiumGS/cesium/pull/8765)
-    const belowSurface = this.scene_._cameraUnderground;
+    const belowSurface = this.scene_.cameraUnderground;
 
     const currentLayersCount = this.scene_.imageryLayers.length;
     const layersCountChanged = currentLayersCount !== this.layersCount_;

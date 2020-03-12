@@ -11,8 +11,7 @@ import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Color from 'cesium/Core/Color.js';
 import Ion from 'cesium/Core/Ion.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
-// import GlobeTranslucencyMode from 'cesium/Scene/GlobeTranslucencyMode.js';
-// import NearFarScalar from 'cesium/Core/NearFarScalar.js';
+import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
@@ -122,6 +121,8 @@ export function setupViewer(container) {
   new KeyboardNavigation(viewer.scene);
 
   scene.screenSpaceCameraController.enableCollisionDetection = false;
+  scene.useDepthPicking = true;
+  scene.pickTranslucentDepth = true;
 
   globe.baseColor = Color.WHITE;
   globe.depthTestAgainstTerrain = true;
@@ -132,9 +133,10 @@ export function setupViewer(container) {
   // Set the globe translucency to 0.8 when the
   // camera is 1500 meters from the surface and 1.0
   // as the camera distance approaches 50000 meters.
-  // FIXME: deactivated because it broke the drawing tools
-  // globe.translucencyMode = GlobeTranslucencyMode.FRONT_FACES_ONLY;
-  // globe.translucencyByDistance = new NearFarScalar(1500, 0.8, 50000, 1.0);
+  globe.translucencyEnabled = true;
+  globe.frontFaceAlphaByDistance = new NearFarScalar(10000, 0.6, 50000, 1.0);
+  globe.backFaceAlpha = 1.0;
+  globe.undergroundColor = undefined;
 
   setupBaseLayers(viewer);
 
