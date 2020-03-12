@@ -14,7 +14,7 @@ class NgmZoomButtons extends LitElement {
   constructor() {
     super();
 
-    this.moveAmount = 125;
+    this.moveAmount = 200;
 
     this.zoomingIn = false;
     this.zoomingOut = false;
@@ -27,10 +27,11 @@ class NgmZoomButtons extends LitElement {
   updated() {
     if (this.scene && !this.unlistenFromPostRender) {
       this.unlistenFromPostRender = this.scene.postRender.addEventListener(() => {
+        const amount = Math.abs(this.scene.camera.positionCartographic.height) / this.moveAmount;
         if (this.zoomingIn) {
-          this.scene.camera.moveForward(this.moveAmount);
+          this.scene.camera.moveForward(amount);
         } else if (this.zoomingOut) {
-          this.scene.camera.moveBackward(this.moveAmount);
+          this.scene.camera.moveBackward(amount);
         }
       });
     }
