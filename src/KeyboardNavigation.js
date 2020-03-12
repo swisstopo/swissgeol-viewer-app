@@ -1,6 +1,4 @@
-import {setCameraHeight} from './utils.js';
-import CMath from 'cesium/Core/Math';
-import {verticalDirectionRotate} from './utils';
+import {setCameraHeight, verticalDirectionRotate} from './utils.js';
 
 /**
  * @typedef {Object} Options
@@ -9,8 +7,10 @@ import {verticalDirectionRotate} from './utils';
  * @property {number} [boostFactor=4]
  * @property {Array<string>} [moveUpKeys=['q', ' ', '+']]
  * @property {Array<string>} [moveDownKeys=['e', '-']]
- * @property {Array<string>} [moveForwardKeys=['w', 'arrowup']]
- * @property {Array<string>} [moveBackwardKeys=['s', 'arrowdown']]
+ * @property {Array<string>} [moveForwardKeys=['w']]
+ * @property {Array<string>} [moveBackwardKeys=['s']]
+ * @property {Array<string>} [zoomInKeys=['arrowdown']]
+ * @property {Array<string>} [zoomOutKeys=['arrowdown']]
  * @property {Array<string>} [moveLeftKeys=['a', 'arrowleft']]
  * @property {Array<string>} [moveRightKeys=['d', 'arrowright']]
  * @property {Array<string>} [lookUpKeys=['i']]
@@ -36,8 +36,10 @@ export default class KeyboardNavigation {
 
     this.moveUpKeys_ = options.moveUpKeys || ['q', ' ', '+'];
     this.moveDownKeys_ = options.moveDownKeys || ['e', '-'];
-    this.moveForwardKeys_ = options.moveForwardKeys || ['w', 'arrowup'];
-    this.moveBackwardKeys_ = options.moveBackwardKeys || ['s', 'arrowdown'];
+    this.moveForwardKeys_ = options.moveForwardKeys || ['w'];
+    this.moveBackwardKeys_ = options.moveBackwardKeys || ['s'];
+    this.zoomInKeys_ = options.zoomInKeys || ['arrowup'];
+    this.zoomOutKeys_ = options.zoomOutKeys || ['arrowdown'];
     this.moveLeftKeys_ = options.moveLeftKeys || ['a', 'arrowleft'];
     this.moveRightKeys_ = options.moveRightKeys || ['d', 'arrowright'];
     this.lookUpKeys_ = options.lookUpKeys || ['i'];
@@ -56,7 +58,9 @@ export default class KeyboardNavigation {
       lookUp: false,
       lookDown: false,
       lookLeft: false,
-      lookRight: false
+      lookRight: false,
+      zoomIn: false,
+      zoomOut: false
     };
 
     const onKey = this.onKey_.bind(this);
@@ -95,6 +99,10 @@ export default class KeyboardNavigation {
         this.flags_.lookLeft = pressed;
       } else if (this.lookRightKeys_.includes(key)) {
         this.flags_.lookRight = pressed;
+      } else if (this.zoomInKeys_.includes(key)) {
+        this.flags_.zoomIn = pressed;
+      } else if (this.zoomOutKeys_.includes(key)) {
+        this.flags_.zoomOut = pressed;
       }
 
       this.flags_.booster = event.shiftKey;
@@ -145,6 +153,12 @@ export default class KeyboardNavigation {
     if (this.flags_.lookDown) {
       heading = camera.heading;
       pitch = camera.pitch - rotateAmount;
+    }
+    if (this.flags_.zoomIn) {
+      camera.moveForward(moveAmount);
+    }
+    if (this.flags_.zoomOut) {
+      camera.moveBackward(moveAmount);
     }
     if (heading !== undefined && pitch !== undefined) {
       camera.setView({
