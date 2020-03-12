@@ -48,6 +48,8 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       const layerTree = new LayerTree(viewer, document.getElementById('layers'), zoomTo);
       setupSearch(viewer, document.querySelector('ga-search'), layerTree);
       document.getElementById('loader').style.display = 'none';
+
+      console.log(`loading mask displayed ${(performance.now() / 1000).toFixed(3)}s`);
     });
   }
 });
