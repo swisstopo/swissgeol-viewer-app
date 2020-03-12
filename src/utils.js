@@ -67,13 +67,13 @@ export function insertAndShift(array, fromIdx, toIdx) {
 
 export function verticalDirectionRotate(camera, angle) {
   const position = Cartesian3.normalize(camera.position, new Cartesian3());
-  const direction = Cartesian3.normalize(camera.direction, new Cartesian3());
+  const up = Cartesian3.normalize(camera.up, new Cartesian3());
 
-  const angleBetween = Number(Cartesian3.angleBetween(position, direction).toFixed(2));
-  if (angleBetween >= 3.14) {
+  const pitch = CMath.toDegrees(camera.pitch);
+  if (pitch < -90 || pitch > 0) {
     angle = -angle;
   }
 
-  const tangent = Cartesian3.cross(direction, position, new Cartesian3());
+  const tangent = Cartesian3.cross(up, position, new Cartesian3());
   camera.rotate(tangent, angle);
 }

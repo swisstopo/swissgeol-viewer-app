@@ -92,7 +92,7 @@ export default class KeyboardNavigation {
 
     const moveAmount = this.moveAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
     const rotateAmount = this.rotateAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
-    const angle = rotateAmount / 300;
+    const angle = rotateAmount / 500;
 
     let heading;
     let pitch;
