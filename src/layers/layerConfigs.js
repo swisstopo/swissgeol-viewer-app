@@ -1,4 +1,10 @@
-import {SWISSTOPO_LABEL_STYLE, LAS_POINT_CLOUD_STYLE, LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
+import {
+  SWISSTOPO_LABEL_STYLE,
+  LAS_POINT_CLOUD_STYLE,
+  LAYER_TYPES,
+  DEFAULT_LAYER_OPACITY,
+  TUNNEL_STYLE
+} from '../constants.js';
 
 const t = a => a;
 export const layerCategories = [
@@ -122,6 +128,15 @@ export const layersConfig = [{
   assetId: 69922,
   label: t('temperature_model_label'),
   layer: 'temperature_model',
+  opacityDisabled: true
+}, {
+  parent: 1234,
+  type: LAYER_TYPES.tiles3d,
+  assetId: 77319,
+  style: TUNNEL_STYLE,
+  label: t('tunnel_label'),
+  layer: 'tunnel',
+  pickable: true,
   opacityDisabled: true
 }];
 

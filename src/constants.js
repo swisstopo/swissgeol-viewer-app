@@ -85,3 +85,13 @@ export const LAYER_TYPES = {
 export const DEFAULT_LAYER_OPACITY = 0.7;
 
 export const AOI_DATASOURCE_NAME = 'interestAreas';
+
+export const TUNNEL_STYLE = {
+  color:
+    {
+      conditions: [
+        ['${TunnelType} === "RailTunnel"', 'color("red")'],
+        ['${TunnelType} === "RoadTunnel"', 'color("blue")']
+      ]
+    }
+};
