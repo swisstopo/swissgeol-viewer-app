@@ -29,12 +29,12 @@ const infoConfig = [
     title: t('info_look_label'),
     content: [
       {
-        title: t('pc_label'),
-        content: t('info_look_pc')
+        title: t('pc_mac_label'),
+        content: t('info_look_mouse')
       },
       {
-        title: t('mac_label'),
-        content: t('info_look_mac')
+        title: t('pc_mac_label'),
+        content: t('info_look_key')
       },
       {
         title: t('touch_label'),
@@ -51,6 +51,10 @@ const infoConfig = [
         content: t('info_zoom')
       },
       {
+        title: t('pc_mac_label'),
+        content: t('info_zoom_key')
+      },
+      {
         title: t('touch_label'),
         content: t('info_zoom_touch'),
         img: '../images/info/TouchZoom.png'
@@ -63,6 +67,10 @@ const infoConfig = [
       {
         title: t('pc_mac_label'),
         content: t('info_move')
+      },
+      {
+        title: t('pc_mac_label'),
+        content: t('info_move_mouse')
       },
       {
         title: t('touch_label'),
@@ -78,6 +86,10 @@ const infoConfig = [
         content: t('info_move_forward')
       },
       {
+        title: t('pc_mac_label'),
+        content: t('info_move_forward_mouse')
+      },
+      {
         title: t('touch_label'),
         content: t('info_move_forward_touch')
       }
@@ -89,24 +101,6 @@ const infoConfig = [
       {
         title: t('pc_mac_label'),
         content: t('info_elevator')
-      }
-    ]
-  },
-  {
-    title: t('info_clockwise_rotate_label'),
-    content: [
-      {
-        title: t('pc_mac_label'),
-        content: t('info_clockwise_rotate')
-      }
-    ]
-  },
-  {
-    title: t('info_rotate_label'),
-    content: [
-      {
-        title: t('pc_mac_label'),
-        content: t('info_rotate')
       }
     ]
   }

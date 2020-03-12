@@ -29,16 +29,12 @@
   "gst_accordion_title": "GST sections",
   "hide_btn_tooltip": "Hide",
   "Horizontal cross sections": "",
-
   "info_elevator": "\"+\" / \"-\" key",
   "info_elevator_label": "Move up/down (elevator)",
-
   "info_look_label": "Look around / Rotate",
   "info_look_mouse": "CTRL + left mouse button + drag left/right",
   "info_look_key": "\"J\" / \"L\" key",
   "info_look_touch": "Keep one finger fix and move the other one.",
-
-
   "info_move_label": "Move left/right",
   "info_move_forward_label": "Move forward/backward",
   "info_move": "Left/right arrow or \"A\"/\"D\" key",
@@ -47,20 +43,15 @@
   "info_move_forward": "\"W\"/\"S\" key",
   "info_move_forward_mouse": "Left mouse button + drag up/down",
   "info_move_forward_touch": "One finger drag forward/backward",
-
   "info_tilt_label": "Tilt up/down",
   "info_tilt_pc_1": "CTRL + left mouse button + drag up/down",
   "info_tilt_pc_2": "\"I\" / \"K\" key",
   "info_tilt_touch": "Tilts the viewer toward \"horizon\" / \"top-down\" view",
-
-
   "info_zoom_label": "Zoom in/out",
   "info_zoom": "Scroll wheel or right mouse button + drag up/down or scroll on trackpad",
   "info_zoom_key": "Up/down arrow",
   "info_zoom_touch": "Zooms the viewer in and out",
-
   "info_tip": "Tip: press \"shift\" to increase the speed",
-
   "layer_down": "Layer Down",
   "layer_up": "Layer Up",
   "loading_message": "Loading, please wait",
