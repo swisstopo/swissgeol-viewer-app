@@ -21,7 +21,7 @@ const infoConfig = [
       {
         title: t('touch_label'),
         content: t('info_tilt_touch'),
-        img: '../images/info/TouchTilt.png'
+        img: './src/images/info/TouchTilt.png'
       }
     ]
   },
@@ -39,7 +39,7 @@ const infoConfig = [
       {
         title: t('touch_label'),
         content: t('info_look_touch'),
-        img: '../images/info/TouchRotate.png'
+        img: './src/images/info/TouchRotate.png'
       }
     ]
   },
@@ -57,7 +57,7 @@ const infoConfig = [
       {
         title: t('touch_label'),
         content: t('info_zoom_touch'),
-        img: '../images/info/TouchZoom.png'
+        img: './src/images/info/TouchZoom.png'
       }
     ]
   },
