@@ -39,9 +39,13 @@ async function zoomTo(config) {
   }
 }
 
+// Temporarily increasing the maximum screen space error to load low LOD tiles.
+const originMaximumScreenSpaceError = viewer.scene.globe.maximumScreenSpaceError;
+viewer.scene.globe.maximumScreenSpaceError = 10000;
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
+    viewer.scene.globe.maximumScreenSpaceError = originMaximumScreenSpaceError;
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
 
