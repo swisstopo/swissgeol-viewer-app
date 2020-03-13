@@ -2,8 +2,9 @@ import {LitElement, html} from 'lit-element';
 
 import Camera from 'cesium/Scene/Camera';
 import i18next from 'i18next';
+import {I18nMixin} from '../i18n.js';
 
-class NgmZoomButtons extends LitElement {
+class NgmZoomButtons extends I18nMixin(LitElement) {
 
   static get properties() {
     return {

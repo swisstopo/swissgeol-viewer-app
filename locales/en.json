@@ -82,6 +82,7 @@
   "zoom_out_btn": "Zoom Out",
   "reset_view_btn": "Reset View",
   "fps_btn": "First Person Mode",
-  "out_navigation_ring": "Click and drag to tilt rotate",
-  "in_navigation_ring": "Click and drag to tilt"
+  "out_navigation_ring": "Outer ring: Click and drag to tilt rotate",
+  "in_navigation_ring": "Inner circle: Click and drag to tilt",
+  "info_btn": "Information"
 }

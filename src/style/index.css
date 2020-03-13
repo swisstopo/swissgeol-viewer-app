@@ -181,7 +181,6 @@ cesium-compass {
   content: svg-load('../images/horizontal-layer.svg', fill=#fff);
 }
 
-
 body:after { /* Beta label */
   content: "beta";
   position: fixed;
@@ -209,4 +208,10 @@ body:after { /* Beta label */
 
 .ngm-header-links > a {
   color: #ff0000;
+}
+
+#compass-info-popup {
+  position: absolute;
+  width: 70px;
+  height: 90px;
 }

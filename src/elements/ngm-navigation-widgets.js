@@ -3,8 +3,9 @@ import FirstPersonCameraMode from '../FirstPersonCameraMode.js';
 import './cesium-compass.js';
 import './ngm-zoom-buttons.js';
 import i18next from 'i18next';
+import {I18nMixin} from '../i18n.js';
 
-class NgmNavigationWidgets extends LitElement {
+class NgmNavigationWidgets extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
@@ -30,6 +31,7 @@ class NgmNavigationWidgets extends LitElement {
   render() {
     if (this.viewer) {
       return html`
+        <div id="compass-info-popup"></div>
         <cesium-compass .scene="${this.viewer.scene}" .clock="${this.viewer.clock}"></cesium-compass>
         <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
         <button
