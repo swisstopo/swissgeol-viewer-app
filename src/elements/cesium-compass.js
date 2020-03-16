@@ -14,10 +14,6 @@ import Ellipsoid from 'cesium/Core/Ellipsoid';
 import Ray from 'cesium/Core/Ray';
 import CesiumMath from 'cesium/Core/Math';
 import getTimestamp from 'cesium/Core/getTimestamp';
-import i18next from 'i18next';
-
-import $ from '../jquery.js';
-import 'fomantic-ui-css/components/popup.js';
 
 const vectorScratch = new Cartesian2();
 const windowPositionScratch = new Cartesian2();
@@ -286,28 +282,10 @@ class CesiumCompass extends LitElement {
     this.orbitCursorOpacity = 0;
   }
 
-  handleTooltip() {
-    const element = $('#compass-info-popup');
-    console.log(element.popup('exists'));
-    if (!element.popup('exists')) {
-      element.popup({
-        position: 'left center',
-        variation: 'mini',
-        html: `${i18next.t('out_navigation_ring')} <br> ${i18next.t('in_navigation_ring')}`,
-        on: 'manual'
-      });
-    }
-    if (element.popup('is hidden')) {
-      element.popup('show');
-      setTimeout(() => element.popup('hide'), 3000);
-    }
-  }
-
-
   render() {
     if (this.ready) {
       return html`
-        <div class="compass" @pointerdown=${this.handlePointerDown} @mouseover=${this.handleTooltip} >
+        <div class="compass" @pointerdown=${this.handlePointerDown}>
           <div class="outer-ring-background"></div>
           <div class="outer-ring" style=${styleMap(this.outerRingStyle)}>${outerRingSvg}</div>
           <div class="inner-ring-background"></div>

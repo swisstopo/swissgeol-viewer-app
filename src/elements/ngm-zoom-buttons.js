@@ -88,7 +88,7 @@ class NgmZoomButtons extends I18nMixin(LitElement) {
             <i class="plus icon"></i>
           </button>
           <button
-          data-tooltip=${i18next.t('zoom_out_btn')}
+          data-tooltip=${i18next.t('reset_view_btn')}
           data-position="left center"
           data-variation="mini"
           class="ui button"
@@ -96,7 +96,7 @@ class NgmZoomButtons extends I18nMixin(LitElement) {
             <i class="home icon"></i>
           </button>
           <button
-          data-tooltip=${i18next.t('reset_view_btn')}
+          data-tooltip=${i18next.t('zoom_out_btn')}
           data-position="left center"
           data-variation="mini"
           class="ui button"

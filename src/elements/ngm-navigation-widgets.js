@@ -32,7 +32,11 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
     if (this.viewer) {
       return html`
         <div id="compass-info-popup"></div>
-        <cesium-compass .scene="${this.viewer.scene}" .clock="${this.viewer.clock}"></cesium-compass>
+        <cesium-compass .scene="${this.viewer.scene}" .clock="${this.viewer.clock}"
+        data-tooltip=${i18next.t('cesium_compass_tooltip')}
+        data-position="left center"
+        data-variation="mini"
+        ></cesium-compass>
         <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
         <button
         data-tooltip=${i18next.t('fps_btn')}

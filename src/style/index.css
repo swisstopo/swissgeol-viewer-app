@@ -209,9 +209,3 @@ body:after { /* Beta label */
 .ngm-header-links > a {
   color: #ff0000;
 }
-
-#compass-info-popup {
-  position: absolute;
-  width: 70px;
-  height: 90px;
-}
