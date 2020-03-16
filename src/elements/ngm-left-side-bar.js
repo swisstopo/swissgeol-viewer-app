@@ -6,9 +6,10 @@ import '../layers/ngm-catalog.js';
 import {defaultLayerTree} from '../constants.js';
 import '../layers/ngm-layers.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
-import {LAYER_TYPES} from '../constants.js';
+import {LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
 import {onAccordionClick} from '../utils.js';
 import i18next from 'i18next';
+import {insertAndShift} from '../utils.js';
 
 
 class LeftSideBar extends I18nMixin(LitElement) {
@@ -47,8 +48,11 @@ class LeftSideBar extends I18nMixin(LitElement) {
 
     const activeLayers = [];
     urlLayers.forEach(urlLayer => {
-      const layer = flatLayers.find(fl => fl.layer === urlLayer.name);
-      console.assert(layer);
+      let layer = flatLayers.find(fl => fl.layer === urlLayer.name);
+      if (!layer) {
+        // Layers from the search are not present in the flat layers.
+        layer = this.createSearchLayer(urlLayer.name, urlLayer.name);
+      }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
       layer.displayed = true;
@@ -116,6 +120,45 @@ class LeftSideBar extends I18nMixin(LitElement) {
     return flat;
   }
 
+
+  // adds layer from search to 'Displayed Layers'
+  addLayerFromSearch(searchLayer) {
+    let layer;
+    if (searchLayer.dataSourceName) {
+      layer = this.activeLayers.find(l => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
+    } else {
+      layer = this.activeLayers.find(l => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
+    }
+
+    if (layer) { // for layers added before
+      if (layer.type === LAYER_TYPES.swisstopoWMTS) {
+        const index = this.activeLayers.indexOf(layer);
+        insertAndShift(this.layers, index, 0);
+        layer.add(0);
+      }
+      layer.setVisibility(true);
+      layer.visible = true;
+      layer.displayed = true;
+      this.viewer.scene.requestRender();
+    } else { // for new layers
+      this.activeLayers.unshift(this.createSearchLayer(searchLayer.title, searchLayer.layer));
+    }
+    this.activeLayers = [...this.activeLayers];
+    syncLayersParam(this.activeLayers);
+    this.requestUpdate();
+  }
+
+  createSearchLayer(title, layer) {
+    return {
+      type: LAYER_TYPES.swisstopoWMTS,
+      label: title,
+      layer: layer,
+      visible: true,
+      displayed: true,
+      opacity: DEFAULT_LAYER_OPACITY
+    };
+  }
+
   render() {
     if (!this.viewer) {
       return '';
@@ -133,8 +176,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
           <ngm-catalog
             .layers=${this.catalogLayers}
             @layerclick=${this.onCatalogLayerClicked}
-            .viewer=${this.viewer}
-            .zoomTo=${this.zoomTo}></ngm-catalog>
+            .viewer=${this.viewer}>
+          </ngm-catalog>
         </div>
       </div>
 
@@ -148,7 +191,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             .layers=${this.activeLayers}
             .viewer=${this.viewer}
-            .zoomTo=${this.zoomTo}></ngm-layers>
+            @zoomTo=${evt => this.zoomTo(evt.detail)}>
+          </ngm-layers>
         </div>
       </div>
 

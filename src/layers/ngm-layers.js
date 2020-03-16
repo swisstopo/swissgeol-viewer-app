@@ -2,9 +2,8 @@
 
 import i18next from 'i18next';
 import {syncLayersParam} from '../permalink.js';
-import {insertAndShift} from '../utils.js';
 import {createCesiumObject} from './helpers.js';
-import {LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
+import {LAYER_TYPES} from '../constants.js';
 import Cartesian3 from 'cesium/Core/Cartesian3';
 import Color from 'cesium/Core/Color.js';
 import {html, LitElement} from 'lit-element';
@@ -17,9 +16,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
   static get properties() {
     return {
       viewer: {type: Object},
-      zoomTo: {type: Function},
       layers: {type: Object},
-      removeDisplayed: {type: Function},
     };
   }
 
@@ -105,7 +102,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
             data-tooltip=${i18next.t('zoom_to')}
             data-position="top center"
             data-variation="mini"
-            @click=${this.zoomTo.bind(this, config)}>
+            @click=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}>
               <i class="search plus icon"></i>
             </button>
             <button class="ui button ${classMap(upClassMap)}"
@@ -146,39 +143,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
   // builds ui structure of layertree and makes render
   render() {
     return html`${this.layers.map((l, idx) => this.getLayerRender(l, idx))}`;
-  }
-
-
-  // adds layer from search to 'Displayed Layers'
-  addLayerFromSearch(searchLayer) {
-    let layer;
-    if (searchLayer.dataSourceName) {
-      layer = this.layers.find(l => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
-    } else {
-      layer = this.layers.find(l => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
-    }
-
-    if (layer) { // for layers added before
-      if (layer.type === LAYER_TYPES.swisstopoWMTS) {
-        const index = this.layers.indexOf(layer);
-        insertAndShift(this.layers, index, 0);
-        layer.add(0);
-      }
-      layer.setVisibility(true);
-      layer.visible = true;
-      layer.displayed = true;
-      this.viewer.scene.requestRender();
-    } else { // for new layers
-      this.layers.unshift({
-        type: LAYER_TYPES.swisstopoWMTS,
-        label: searchLayer.title,
-        layer: searchLayer.layer,
-        visible: true,
-        displayed: true,
-        opacity: DEFAULT_LAYER_OPACITY
-      });
-    }
-    this.requestUpdate();
   }
 
   // changes layer position in 'Displayed Layers'

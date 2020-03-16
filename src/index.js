@@ -55,8 +55,8 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     viewer.scene.globe.maximumScreenSpaceError = originMaximumScreenSpaceError;
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
-      const layerTree = document.querySelector('ngm-layers');
-      setupSearch(viewer, document.querySelector('ga-search'), layerTree);
+      const sideBar = document.querySelector('ngm-left-side-bar');
+      setupSearch(viewer, document.querySelector('ga-search'), sideBar);
       document.getElementById('loader').style.display = 'none';
       console.log(`loading mask displayed ${(performance.now() / 1000).toFixed(3)}s`);
 
