@@ -46,7 +46,7 @@ export function create3DTilesetFromConfig(viewer, config) {
         const color = `${colorType}(${colorValue}, ${opacity})`;
         tileset.style = new Cesium3DTileStyle({...style, [propertyName]: color});
       } else {
-        const color = `color("", ${opacity})`;
+        const color = `color("white", ${opacity})`;
         tileset.style = new Cesium3DTileStyle({...style, color});
       }
     };
