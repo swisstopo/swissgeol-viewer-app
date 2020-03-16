@@ -1,5 +1,7 @@
 #navigationInfo {
   margin-right: 70px;
+  min-width: 300px; /* fomatic-ui fix for Edge */
+  max-width: 510px;
 }
 
 #navigationInfo .ngm-keyboard-info-content {
