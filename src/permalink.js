@@ -45,35 +45,31 @@ export function syncCamera(camera) {
   setURLSearchParams(params);
 }
 
+function safeSplit(str) {
+  return str ? str.split(',') : [];
+}
+
+/**
+ * Parses the URL and returns an array of layer configs.
+ */
 export function getLayerParams() {
   const params = getURLSearchParams();
-  const layers = params.get(LAYERS_URL_PARAM);
+  const layersOpacity = safeSplit(params.get(LAYERS_OPACITY_URL_PARAM));
+  const layersVisibility = safeSplit(params.get(LAYERS_VISIBILITY_URL_PARAM));
+  const layers = safeSplit(params.get(LAYERS_URL_PARAM));
 
-  if (!layers || !layers.length) {
-    return [];
-  }
-
-  let layersOpacity = params.get(LAYERS_OPACITY_URL_PARAM);
-  let layersVisibility = params.get(LAYERS_VISIBILITY_URL_PARAM);
-  layersOpacity = layersOpacity ? layersOpacity.split(',') : [];
-  layersVisibility = layersVisibility ? layersVisibility.split(',') : [];
-  return layers.split(',').map((layer, key) => {
+  return layers.map((layer, key) => {
     return {
       name: layer,
       opacity: Number(layersOpacity[key]),
       visible: layersVisibility[key] === 'true',
-      position: key
     };
   });
 }
 
 export function getAssetIds() {
   const params = getURLSearchParams();
-  const assetIds = params.get(ASSET_IDS_URL_PARAM);
-  if (assetIds) {
-    return assetIds.split(',');
-  }
-  return [];
+  return safeSplit(params.get(ASSET_IDS_URL_PARAM));
 }
 
 export function syncLayersParam(activeLayers) {
