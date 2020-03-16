@@ -118,7 +118,7 @@ main {
   pointer-events: all;
 }
 
-:lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en, :lang(rm) .lang-rm {
+:lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en {
   font-weight: bold;
 }
 
