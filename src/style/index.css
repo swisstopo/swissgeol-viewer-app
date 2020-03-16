@@ -151,6 +151,7 @@ cesium-compass {
   width: 280px;
   overflow-y: auto;
   overflow-x: inherit;
+  height: 100%;
 }
 
 .sidebar.left {
