@@ -1,11 +1,9 @@
 // @ts-check
 
 import i18next from 'i18next';
-import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
+import {syncLayersParam} from '../permalink.js';
 import {insertAndShift} from '../utils.js';
-import {
-  createCesiumObject,
-} from './helpers.js';
+import {createCesiumObject} from './helpers.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
 import Cartesian3 from 'cesium/Core/Cartesian3';
 import Color from 'cesium/Core/Color.js';
@@ -29,13 +27,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
     return this;
   }
 
-  constructor() {
-    super();
-
-    this.layersSynced = false;
-  }
-
-
   updated() {
     if (this.viewer && !this.boundingSphereEntity) {
       this.boundingSphereEntity = this.viewer.entities.add({
@@ -49,48 +40,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
     }
   }
 
-  // adds layers from url params on first run
-  syncLayers() {
-    if (this.layersSynced) return;
-    const displayedLayers = getLayerParams();
-    const assestIds = getAssetIds();
-    // adds layers from url params to 'Displayed Layers' (only configured in config)
-    if (displayedLayers.length || assestIds.length) {
-      this.layers = this.layers.map(layer => {
-        const layerParams = displayedLayers.find(dl => dl.name === layer.layer);
-        return {
-          ...layer,
-          ...layerParams,
-          visible: layerParams ? layerParams.visible : false,
-          opacity: layerParams ? layerParams.opacity : DEFAULT_LAYER_OPACITY,
-          displayed: !!layerParams,
-        };
-      });
-      // adds custom Cesium ion assets from url params to 'Displayed Layers'
-      if (assestIds.length) {
-        // add Cesium ion assets
-        assestIds.forEach(assetId => {
-          this.layers.push({
-            type: LAYER_TYPES.tiles3d,
-            assetId: assetId,
-            label: assetId,
-            layer: assetId,
-            visible: true,
-            displayed: true,
-            opacityDisabled: true
-          });
-        });
-      }
-    }
-    // if no url params - adds visible layers from config to 'Displayed Layers'
-    if (!displayedLayers.length && !assestIds.length) {
-      this.layers = this.layers.map(layer => {
-        return {...layer, displayed: layer.visible};
-      });
-      syncLayersParam(this.layers);
-    }
-    this.layersSynced = true;
-  }
 
   // builds html container for layer
   getLayerRender(config, idx) {
@@ -101,12 +50,12 @@ export default class LayerTree extends I18nMixin(LitElement) {
       config.setVisibility(evt.target.checked);
       config.visible = evt.target.checked;
       if (evt.target.checked && !config.displayed) {
+        console.log('XXXX how is it possible?');
         if (config.type === LAYER_TYPES.swisstopoWMTS) config.add(0);
         config.displayed = true;
       }
-      syncLayersParam(this.layers);
+      syncLayersParam(this.layers); // FIXME: these calls should be moved to left side bar or the app
       this.viewer.scene.requestRender();
-      this.requestUpdate();
     };
 
     const changeOpacity = evt => {
@@ -115,7 +64,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
       config.opacity = opacity;
       syncLayersParam(this.layers);
       this.viewer.scene.requestRender();
-      this.requestUpdate();
     };
 
 
@@ -135,23 +83,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
         this.viewer.scene.requestRender();
       }
     };
-    const id = `${config.parent}-${(Math.random() * 100).toFixed()}`;
-
-
-    // removes layer from 'Displayed Layers'
-    const removeDisplayed = () => {
-      config.setVisibility(false);
-      config.visible = false;
-      config.displayed = false;
-      if (config.type === LAYER_TYPES.swisstopoWMTS) {
-        config.remove();
-      }
-      const idx = this.layers.findIndex(l => l.label === config.label);
-      this.layers.splice(idx, 1);
-      syncLayersParam(this.layers);
-      this.viewer.scene.requestRender();
-      this.removeDisplayed(config);
-    };
 
     const upClassMap = {disabled: idx === 0};
     const downClassMap = {disabled: (idx === this.layers.length - 1)};
@@ -161,10 +92,13 @@ export default class LayerTree extends I18nMixin(LitElement) {
         @mouseenter=${mouseEnter}
         @mouseleave=${mouseLeave}>
         <div class="ui checkbox">
-          <input id="layer-item-${id}" class="ngm-layer-checkbox" type="checkbox" name="${config.layer}"
-          .checked=${config.visible}
-          @change=${changeVisibility}>
-          <label for="layer-item-${id}">${i18next.t(config.label)}</label>
+          <input class="ngm-layer-checkbox" type="checkbox"
+                 .checked=${config.visible} @change=${changeVisibility}>
+          <label @click=${evt => {
+            const input = evt.target.previousElementSibling;
+            input.checked = !input.checked;
+            input.dispatchEvent(new Event('change'));
+          }}>${i18next.t(config.label)}</label>
         </div>
         <div class="ui icon buttons compact mini">
             <button class="ui button"
@@ -192,7 +126,12 @@ export default class LayerTree extends I18nMixin(LitElement) {
             data-tooltip=${i18next.t('remove_btn_tooltip')}
             data-position="top center"
             data-variation="mini"
-            @click=${removeDisplayed}>
+            @click=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {
+              detail: {
+                config,
+                idx
+              }
+            }))}>
           <i class="icon trash alternate outline"></i>
         </button>
         </div>
@@ -207,7 +146,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
   // builds ui structure of layertree and makes render
   render() {
     return html`${this.layers.map((l, idx) => this.getLayerRender(l, idx))}`;
-    // FIXME what's this?  syncCheckboxes(this.layers);
   }
 
 

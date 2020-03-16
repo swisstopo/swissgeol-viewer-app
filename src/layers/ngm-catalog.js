@@ -9,7 +9,6 @@ class Catalog extends I18nMixin(LitElement) {
   static get properties() {
     return {
       layers: {type: Object},
-      onclick: {type: Function},
     };
   }
 
@@ -21,7 +20,7 @@ class Catalog extends I18nMixin(LitElement) {
 
   getCategoryTemplate(category) {
     return html`
-    <div class="ui styled accordion">
+    <div class="ui styled ngm-layers-categories accordion">
       <div class="title ngm-layer-title" @click=${onAccordionClick}>
         <i class="dropdown icon"></i>
         ${i18next.t(category.label)}
@@ -37,9 +36,11 @@ class Catalog extends I18nMixin(LitElement) {
   getLayerTemplate(layer) {
     return html`
       <div class="ui checkbox" @click=${() => {
-        layer.displayed = !layer.displayed;
-        layer.visible = layer.displayed;
-        this.onclick(layer);
+        this.dispatchEvent(new CustomEvent('layerclick', {
+          detail: {
+            layer
+          }
+        }));
       }}>
         <input
           class="ngm-layer-checkbox"
