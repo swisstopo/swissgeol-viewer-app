@@ -10,7 +10,6 @@ const mkdirpAsync = util.promisify(mkdirp);
 (async (branch) => {
   try {
     const dir = '../src/environments';
-    const dirNode = './environments';
     const filename = 'environment';
 
     if (!branch) {
@@ -21,11 +20,9 @@ const mkdirpAsync = util.promisify(mkdirp);
     const content = `export const environment = ${jsonContent};`;
 
     await mkdirpAsync(path.resolve(__dirname, dir));
-    await mkdirpAsync(path.resolve(__dirname, dirNode));
 
     console.log(`Creating environment for ${branch}...`);
     await writeFileAsync(path.resolve(__dirname, `${dir}/${filename}.js`), content, {encoding: 'utf8'}); // for frontend
-    await writeFileAsync(path.resolve(__dirname, `${dirNode}/${filename}.json`), jsonContent, {encoding: 'utf8'}); // for node
     process.exit(0);
   } catch (e) {
     console.error(e);

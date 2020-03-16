@@ -6,8 +6,7 @@
     "extract-i18n": "i18next",
     "start": "node scripts/environment.js && rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "node scripts/environment.js $RELEASE_NAME && rm -rf dist/* && rollup --environment mode:production -c",
-    "postinstall": "scripts/npm_postinstall.sh",
-    "sentry-sourcemaps-upload": "sentry-cli --auth-token $SENTRY_TOKEN releases files $RELEASE upload-sourcemaps dist/bundle.*.js"
+    "postinstall": "scripts/npm_postinstall.sh"
   },
   "dependencies": {
     "@geoblocks/ga-search": "^0.0.10",

@@ -6,7 +6,6 @@ stages:
   - test
   - build
   - deploy
-  - sentry_deploy
 
 npm_install:
   stage: setup
@@ -29,7 +28,6 @@ build:
   script: RELEASE_NAME=$CI_COMMIT_REF_NAME npm run build
   artifacts:
     paths:
-      - scripts/environments/
       - dist/
     expire_in: 30d
 
@@ -44,7 +42,3 @@ add_link_for_reviews:
  stage: setup
  script: scripts/gitlab_add_link_for_reviews.sh
  only: [merge_requests]
-
-deploy_sentry_sourcemaps:
-  stage: sentry_deploy
-  script: node scripts/deploySentrySourcemaps.js $SENTRY_API_TOKEN
