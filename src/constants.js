@@ -213,18 +213,35 @@ const background = {
       url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
       label: t('swissnames_label'),
       style: SWISSTOPO_LABEL_STYLE,
-      visible: false,
       layer: 'ch.swisstopo.swissnames3d.3d',
       opacity: DEFAULT_LAYER_OPACITY
     },
   ]
 };
 
+const man_made_objects = {
+  label: t('man_made_objects_label'),
+  children: [{
+      type: LAYER_TYPES.tiles3d,
+      assetId: 77319,
+      style: TUNNEL_STYLE,
+      label: t('tunnel_label'),
+      layer: 'tunnel',
+      pickable: true,
+      opacityDisabled: true
+    },
+  ]
+};
+
+// A "displayed" layer appears in the list of active layers.
+// A "visible" layer is actually shown on the globe.
+// Normaly, visible => displayed
 export const defaultLayerTree = [
   geo_map_series,
   geo_base,
   geo_energy,
   natural_hazard,
   subsurface,
-  background
+  background,
+  man_made_objects
 ];
