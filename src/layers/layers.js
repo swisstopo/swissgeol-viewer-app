@@ -78,7 +78,8 @@ export default class LayerTree {
             layer: assetId,
             visible: true,
             displayed: true,
-            opacityDisabled: true
+            opacityDisabled: true,
+            pickable: true
           });
         });
       }
