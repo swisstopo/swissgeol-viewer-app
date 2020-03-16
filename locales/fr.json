@@ -80,5 +80,7 @@
   "zoom_in_btn": "",
   "zoom_out_btn": "",
   "zoom_to": "",
-  "zoom_to_object": ""
+  "zoom_to_object": "",
+  "sentry_message": "",
+  "ok_btn_label": ""
 }

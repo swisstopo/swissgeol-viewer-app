@@ -25,7 +25,7 @@ lint:
 
 build:
   stage: build
-  script: npm run build
+  script: RELEASE_NAME=$CI_COMMIT_REF_NAME npm run build
   artifacts:
     paths:
       - dist/

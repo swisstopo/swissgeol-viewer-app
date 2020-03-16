@@ -1,4 +1,5 @@
 // @ts-check
+import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';
 import {SWITZERLAND_RECTANGLE, DRILL_PICK_LIMIT} from './constants.js';
 
@@ -20,7 +21,10 @@ import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import LayerTree from './layers/layers.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
 import {setupWebComponents} from './elements/appElements.js';
+import {showConfirmationMessage} from './message.js';
+import i18next from 'i18next';
 
+initSentry();
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
@@ -52,8 +56,14 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       const layerTree = new LayerTree(viewer, document.getElementById('layers'), zoomTo);
       setupSearch(viewer, document.querySelector('ga-search'), layerTree);
       document.getElementById('loader').style.display = 'none';
-
       console.log(`loading mask displayed ${(performance.now() / 1000).toFixed(3)}s`);
+
+      const sentryConfirmed = localStorage.getItem('sentryConfirmed') === 'true';
+      if (!sentryConfirmed) {
+        showConfirmationMessage(i18next.t('sentry_message'), i18next.t('ok_btn_label'), () => {
+          localStorage.setItem('sentryConfirmed', 'true');
+        });
+      }
     });
   }
 });
