@@ -1,8 +1,10 @@
 import {LitElement, html} from 'lit-element';
 
 import Camera from 'cesium/Scene/Camera';
+import i18next from 'i18next';
+import {I18nMixin} from '../i18n.js';
 
-class NgmZoomButtons extends LitElement {
+class NgmZoomButtons extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
@@ -14,7 +16,7 @@ class NgmZoomButtons extends LitElement {
   constructor() {
     super();
 
-    this.moveAmount = 125;
+    this.moveAmount = 200;
 
     this.zoomingIn = false;
     this.zoomingOut = false;
@@ -27,10 +29,11 @@ class NgmZoomButtons extends LitElement {
   updated() {
     if (this.scene && !this.unlistenFromPostRender) {
       this.unlistenFromPostRender = this.scene.postRender.addEventListener(() => {
+        const amount = Math.abs(this.scene.camera.positionCartographic.height) / this.moveAmount;
         if (this.zoomingIn) {
-          this.scene.camera.moveForward(this.moveAmount);
+          this.scene.camera.moveForward(amount);
         } else if (this.zoomingOut) {
-          this.scene.camera.moveBackward(this.moveAmount);
+          this.scene.camera.moveBackward(amount);
         }
       });
     }
@@ -76,13 +79,28 @@ class NgmZoomButtons extends LitElement {
     if (this.scene) {
       return html`
         <div class="ui vertical compact mini icon buttons">
-          <button class="ui button" @pointerdown="${this.startZoomIn}">
+          <button
+          data-tooltip=${i18next.t('zoom_in_btn')}
+          data-position="left center"
+          data-variation="mini"
+          class="ui button"
+          @pointerdown="${this.startZoomIn}">
             <i class="plus icon"></i>
           </button>
-          <button class="ui button" @click="${this.flyToHome}">
+          <button
+          data-tooltip=${i18next.t('reset_view_btn')}
+          data-position="left center"
+          data-variation="mini"
+          class="ui button"
+          @click="${this.flyToHome}">
             <i class="home icon"></i>
           </button>
-          <button class="ui button" @pointerdown="${this.startZoomOut}">
+          <button
+          data-tooltip=${i18next.t('zoom_out_btn')}
+          data-position="left center"
+          data-variation="mini"
+          class="ui button"
+          @pointerdown="${this.startZoomOut}">
             <i class="minus icon"></i>
           </button>
         </div>
