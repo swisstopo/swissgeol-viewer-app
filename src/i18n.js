@@ -56,7 +56,7 @@ export function setupI18n() {
     returnEmptyString: false,
     fallbackLng: 'en',
     //load: 'languageOnly',
-    debug: true,
+    debug: false,
     backend: {
       loadPath: 'locales/{{lng}}.json'
     }

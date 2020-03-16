@@ -282,7 +282,6 @@ class CesiumCompass extends LitElement {
     this.orbitCursorOpacity = 0;
   }
 
-
   render() {
     if (this.ready) {
       return html`

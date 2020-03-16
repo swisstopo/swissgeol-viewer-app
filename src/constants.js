@@ -7,7 +7,7 @@ export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 
 export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS);
 
-export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en', 'rm'];
+export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'];
 export const DRILL_PICK_LIMIT = 1;
 
 export const BELOW_SURFACE_CONFIGURATION = {
@@ -85,3 +85,13 @@ export const LAYER_TYPES = {
 export const DEFAULT_LAYER_OPACITY = 0.7;
 
 export const AOI_DATASOURCE_NAME = 'interestAreas';
+
+export const TUNNEL_STYLE = {
+  color:
+    {
+      conditions: [
+        ['${TunnelType} === "RailTunnel"', 'color("red")'],
+        ['${TunnelType} === "RoadTunnel"', 'color("blue")']
+      ]
+    }
+};

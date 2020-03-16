@@ -22,3 +22,11 @@
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+.ngm-aoi-buttons.ui.buttons {
+  display: flex;
+}
+
+.ngm-aoi-buttons.ui.buttons > button {
+  flex: 1
+}

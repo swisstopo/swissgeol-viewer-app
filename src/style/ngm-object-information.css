@@ -4,6 +4,8 @@ ngm-object-information {
   z-index: 1;
   margin: 6px;
   right: 0;
+  overflow-y: auto;
+  max-height: 80vh;
 }
 
 ngm-object-information .header {

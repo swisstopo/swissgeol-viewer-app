@@ -1,6 +1,5 @@
 import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
-import KeyboardEventModifier from 'cesium/Core/KeyboardEventModifier.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
@@ -33,13 +32,7 @@ export default class AreaOfInterestDrawer {
     this.drawMode_ = false;
     this.areasCounter_ = 0;
 
-    this.screenSpaceEventHandler_.setInputAction(this.drawArea_.bind(this), ScreenSpaceEventType.MOUSE_MOVE, KeyboardEventModifier.SHIFT);
-
     this.getAreaLocation = new CallbackProperty(this.getAreaLocationCallback_.bind(this), false);
-
-    this.screenSpaceEventHandler_.setInputAction(this.startDrawing_.bind(this), ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.SHIFT);
-
-    this.screenSpaceEventHandler_.setInputAction(this.endDrawing_.bind(this), ScreenSpaceEventType.LEFT_UP, KeyboardEventModifier.SHIFT);
 
     this.screenSpaceEventHandler_.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
 

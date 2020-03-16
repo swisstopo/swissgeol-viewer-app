@@ -37,7 +37,10 @@
       <ul class="search-results"></ul>
     </ga-search>
     <div style="flex: auto;"></div>
-    <div id="langs" class="ui horizontal selection list"></div>
+    <div class="ngm-header-links">
+      <div id="langs" class="ui horizontal selection list"></div>
+      <a href="https://findmind.ch/c/XmNb9jKz2w" target="_blank" data-i18n="review_link"></a>
+    </div>
   </header>
   <main class="ui dimmable dimmed">
     <div id="loader" class="ui active inverted dimmer">
@@ -51,7 +54,12 @@
     <div id="cesium">
       <div class="navigation-widgets">
         <ngm-navigation-widgets></ngm-navigation-widgets>
-        <button id="navigationInfoBtn" class="ui compact mini icon button">
+        <button
+          id="navigationInfoBtn"
+          class="ui compact mini icon button"
+          data-position="left center"
+          data-variation="mini"
+          data-i18n="[data-tooltip]info_btn">
           <i class="info icon"></i>
         </button>
         <div id="navigationInfo" class="ui basic popup left center"></div>

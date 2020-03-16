@@ -72,6 +72,7 @@ header {
 
 header > .logo {
   margin-right: 80px;
+  margin-left: 40px;
   margin-bottom: 10px;
 }
 
@@ -118,7 +119,7 @@ main {
   pointer-events: all;
 }
 
-:lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en, :lang(rm) .lang-rm {
+:lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en {
   font-weight: bold;
 }
 
@@ -126,6 +127,7 @@ main {
   position: absolute;
   z-index: 1;
   right: 0;
+  margin: 6px;
 }
 
 .navigation-widgets, ngm-navigation-widgets {
@@ -162,9 +164,11 @@ cesium-compass {
 .ui.icon.buttons .button > .icon.svg-icon {
   opacity: 0.6;
 }
+
 .ui.icon.buttons .button:hover > .icon.svg-icon {
   opacity: 0.8;
 }
+
 .ui.icon.buttons .grey.button > .icon.svg-icon, .ui.icon.buttons .grey.button:hover > .icon.svg-icon {
   opacity: 0.9;
 }
@@ -172,6 +176,36 @@ cesium-compass {
 .ui.buttons .button > .icon.horizontal-layer:before {
   content: svg-load('../images/horizontal-layer.svg', fill=#000);
 }
+
 .ui.buttons .grey.button > .icon.horizontal-layer:before {
   content: svg-load('../images/horizontal-layer.svg', fill=#fff);
+}
+
+body:after { /* Beta label */
+  content: "beta";
+  position: fixed;
+  width: 80px;
+  height: 25px;
+  background: #ff0000;
+  top: 7px;
+  left: -20px;
+  text-align: center;
+  font-size: 13px;
+  font-family: sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #fff;
+  line-height: 27px;
+  transform: rotate(-45deg);
+}
+
+.ngm-header-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.ngm-header-links > a {
+  color: #ff0000;
 }
