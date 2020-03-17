@@ -21,12 +21,12 @@ class LeftSideBar extends I18nMixin(LitElement) {
 
   constructor() {
     super();
-    this.catalogLayers = [...defaultLayerTree];
-    this.initializeActiveLayers();
+
+
   }
 
   initializeActiveLayers() {
-    const flatLayers = this.getFlatLayers(this.catalogLayers);
+    const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
 
     const urlLayers = getLayerParams();
     const assestIds = getAssetIds();
@@ -48,7 +48,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.name);
       if (!layer) {
         // Layers from the search are not present in the flat layers.
-        layer = this.createSearchLayer(urlLayer.name, urlLayer.name);
+        layer = LeftSideBar.createSearchLayer(urlLayer.name, urlLayer.name);
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
@@ -72,10 +72,20 @@ class LeftSideBar extends I18nMixin(LitElement) {
     syncLayersParam(this.activeLayers);
   }
 
-  updated() {
+  update(changedProperties) {
+    if (!this.catalogLayers) {
+      this.catalogLayers = [...defaultLayerTree];
+      this.initializeActiveLayers();
+    }
+    super.update(changedProperties);
+  }
+
+  updated(changedProperties) {
     if (this.viewer && !this.aoiDrawer) {
       this.aoiDrawer = new AreaOfInterestDrawer(this.viewer);
     }
+
+    super.updated(changedProperties);
   }
 
   onCatalogLayerClicked(evt) {
@@ -83,7 +93,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     const layer = evt.detail.layer;
     layer.displayed = !layer.displayed;
     layer.visible = layer.displayed;
-    const flatLayers = this.getFlatLayers(this.catalogLayers);
+    const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
     this.activeLayers = flatLayers.filter(l => l.displayed);
     this.catalogLayers = [...this.catalogLayers];
     this.requestUpdate();
@@ -105,11 +115,11 @@ class LeftSideBar extends I18nMixin(LitElement) {
     this.requestUpdate();
   }
 
-  getFlatLayers(tree) {
+  static getFlatLayers(tree) {
     const flat = [];
     for (const layer of tree) {
       if (layer.children) {
-        flat.push(...this.getFlatLayers(layer.children));
+        flat.push(...LeftSideBar.getFlatLayers(layer.children));
       } else {
         flat.push(layer);
       }
@@ -138,14 +148,14 @@ class LeftSideBar extends I18nMixin(LitElement) {
       layer.displayed = true;
       this.viewer.scene.requestRender();
     } else { // for new layers
-      this.activeLayers.unshift(this.createSearchLayer(searchLayer.title, searchLayer.layer));
+      this.activeLayers.unshift(LeftSideBar.createSearchLayer(searchLayer.title, searchLayer.layer));
     }
     this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);
     this.requestUpdate();
   }
 
-  createSearchLayer(title, layer) {
+  static createSearchLayer(title, layer) {
     return {
       type: LAYER_TYPES.swisstopoWMTS,
       label: title,
