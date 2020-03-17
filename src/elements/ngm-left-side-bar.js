@@ -3,13 +3,10 @@ import {I18nMixin} from '../i18n.js';
 import AreaOfInterestDrawer from '../areaOfInterest/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
-import {defaultLayerTree} from '../constants.js';
-import '../layers/ngm-layers.js';
+import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
-import {LAYER_TYPES, DEFAULT_LAYER_OPACITY} from '../constants.js';
-import {onAccordionClick} from '../utils.js';
+import {onAccordionClick, insertAndShift} from '../utils.js';
 import i18next from 'i18next';
-import {insertAndShift} from '../utils.js';
 
 
 class LeftSideBar extends I18nMixin(LitElement) {
