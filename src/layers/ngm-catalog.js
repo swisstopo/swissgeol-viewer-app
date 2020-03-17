@@ -35,7 +35,7 @@ class Catalog extends I18nMixin(LitElement) {
 
   getLayerTemplate(layer) {
     return html`
-      <div class="ui checkbox" @click=${() => {
+      <div class="ui checkbox ngm-displayed-container" @click=${() => {
         this.dispatchEvent(new CustomEvent('layerclick', {
           detail: {
             layer
