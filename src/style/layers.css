@@ -16,10 +16,6 @@
   font-size: 0.95em;
 }
 
-.ngm-layer-divider.ui.divider {
-  margin: 10px 0;
-}
-
 .ngm-displayed-container {
   display: flex;
   justify-content: space-between;

@@ -4,6 +4,7 @@ import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
 import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
+import {LAYER_TYPES} from '../constants.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -77,6 +78,17 @@ export function createSwisstopoWMTSImageryLayer(viewer, config) {
     layer.show = !!config.visible;
     return layer;
   });
+}
+
+
+export function createCesiumObject(viewer, config) {
+  const factories = {
+    [LAYER_TYPES.ionGeoJSON]: createIonGeoJSONFromConfig,
+    [LAYER_TYPES.tiles3d]: create3DTilesetFromConfig,
+    [LAYER_TYPES.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
+    [LAYER_TYPES.earthquakes]: createEarthquakeFromConfig,
+  };
+  return factories[config.type](viewer, config);
 }
 
 function styleColorParser(style) {
