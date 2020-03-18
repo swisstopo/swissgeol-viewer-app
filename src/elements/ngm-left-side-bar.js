@@ -219,7 +219,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
           ${i18next.t('gst_accordion_title')}
         </div>
         <div class="content">
-          <ngm-gst-interaction .viewer=${this.viewer}></ngm-gst-interaction>,
+          <ngm-gst-interaction .viewer=${this.viewer}></ngm-gst-interaction>
         </div>
       </div>
     `;
