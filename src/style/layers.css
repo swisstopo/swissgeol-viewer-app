@@ -16,7 +16,7 @@
   font-size: 0.95em;
 }
 
-.ngm-displayed-container {
+.ui.checkbox.ngm-displayed-container, .ngm-displayed-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
