@@ -5,6 +5,10 @@ import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
 import {LAYER_TYPES} from '../constants.js';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import Color from 'cesium/Core/Color.js';
+import HeightReference from 'cesium/Scene/HeightReference.js';
+import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -32,6 +36,39 @@ export function create3DTilesetFromConfig(viewer, config) {
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible
   });
+  if (config.assetId === 68857) { // TODO temp
+    tileset.tileLoad.addEventListener(function (tile) {
+      console.log(tile)
+      for (let i = 0; i < tile.content.featuresLength; i++) {
+        const feature = tile.content.getFeature(i);
+        const longitude = feature.getProperty('Longitude');
+        const latitude = feature.getProperty('Latitude');
+        const height = feature.getProperty('Height');
+        const position = Cartesian3.fromDegrees(longitude, latitude, height);
+        const dataSource = viewer.dataSources.getByName('billboards').length
+          ? viewer.dataSources.getByName('billboards')[0]
+          : viewer.dataSources.add(new CustomDataSource('billboards'));
+        dataSource.entities.add({
+          position: position,
+          ellipsoid: {
+            radii: new Cartesian3(1000, 1000, 1000),
+            material: new Color(0, 0, 0),
+            heightReference: HeightReference.RELATIVE_TO_GROUND
+          }
+        });
+        console.log(dataSource);
+        console.log(viewer);
+      }
+    });
+
+    // GeoJsonDataSource.load('./src/layers/BH_Location.geojson').then(dataSource => {
+    //   console.log(viewer.scene);
+    //   console.log(tileset, dataSource);
+    //   viewer.dataSources.add(dataSource);
+    //   dataSource.show = true;
+    //   return dataSource;
+    // });
+  }
   if (config.style) {
     tileset.style = new Cesium3DTileStyle(config.style);
   }
