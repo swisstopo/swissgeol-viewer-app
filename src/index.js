@@ -10,6 +10,7 @@ import {setupViewer, addMantelEllipsoid} from './viewer.js';
 import './elements/ngm-object-information.js';
 import './elements/ngm-gst-interaction.js';
 import './elements/ngm-navigation-widgets.js';
+import './elements/ngm-camera-information.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
@@ -131,3 +132,5 @@ initInfoPopup();
 
 const widgets = document.querySelector('ngm-navigation-widgets');
 widgets.viewer = viewer;
+
+document.querySelector('ngm-camera-information').scene = viewer.scene;

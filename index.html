@@ -47,29 +47,32 @@
       <div class="ui text loader" data-i18n="loading_message"></div>
     </div>
     <ngm-left-side-bar></ngm-left-side-bar>
-    <div id="cesium">
-      <div class="navigation-widgets">
-        <ngm-navigation-widgets></ngm-navigation-widgets>
-        <button
-          id="navigationInfoBtn"
-          class="ui compact mini icon button"
-          data-position="left center"
-          data-variation="mini"
-          data-i18n="[data-tooltip]info_btn">
-          <i class="info icon"></i>
-        </button>
-        <div id="navigationInfo" class="ui basic popup left center"></div>
+    <div class="map">
+      <div id="cesium">
+        <div class="navigation-widgets">
+          <ngm-navigation-widgets></ngm-navigation-widgets>
+          <button
+            id="navigationInfoBtn"
+            class="ui compact mini icon button"
+            data-position="left center"
+            data-variation="mini"
+            data-i18n="[data-tooltip]info_btn">
+            <i class="info icon"></i>
+          </button>
+          <div id="navigationInfo" class="ui basic popup left center"></div>
+        </div>
+        <ngm-object-information></ngm-object-information>
       </div>
-      <ngm-object-information></ngm-object-information>
+      <div class="footer">
+        <ngm-camera-information></ngm-camera-information>
+        <div style="flex: auto;"></div>
+        <div class="ui horizontal link list">
+          <a class="item" target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
+          <a class="item" target='_blank' data-i18n="[href]disclaimer_href;disclaimer_text"></a>
+        </div>
+      </div>
     </div>
   </main>
-  <footer>
-    <div style="flex: auto;"></div>
-    <div class="ui horizontal link list">
-      <a class="item" target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
-      <a class="item" target='_blank' data-i18n="[href]disclaimer_href;disclaimer_text"></a>
-    </div>
-  </footer>
   <script type="module">
     const debug = !location.search.includes('prod') && (location.search.includes('debug') || location.hostname === 'localhost');
     const script = document.createElement('script');
