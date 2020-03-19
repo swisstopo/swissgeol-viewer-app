@@ -4,12 +4,12 @@ import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
 import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
-import {LAYER_TYPES} from '../constants.js';
+import {LAYER_TYPES, BILLBOARDS_PREFIX} from '../constants.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Color from 'cesium/Core/Color.js';
 import HeightReference from 'cesium/Scene/HeightReference.js';
 import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
-import Cartographic from 'cesium/Source/Core/Cartographic';
+import Cartographic from 'cesium/Core/Cartographic';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -35,40 +35,10 @@ export function createIonGeoJSONFromConfig(viewer, config) {
 export function create3DTilesetFromConfig(viewer, config) {
   const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
-    show: !!config.visible
+    show: !!config.visible,
+    maximumScreenSpaceError: 0
   });
-  if (config.assetId === 68857) { // TODO temp
-    tileset.allTilesLoaded.addEventListener(function () {
-      for (let i = 0; i < tileset.root.content.featuresLength; i++) {
-        const feature = tileset.root.content.getFeature(i);
-        const longitude = feature.getProperty('Longitude');
-        const latitude = feature.getProperty('Latitude');
-        const height = feature.getProperty('Height');
-        const position = new Cartographic(longitude, latitude, height);
-        const dataSource = viewer.dataSources.getByName('billboards').length
-          ? viewer.dataSources.getByName('billboards')[0]
-          : viewer.dataSources.add(new CustomDataSource('billboards'));
-        dataSource.entities.add({
-          position: Cartographic.toCartesian(position),
-          ellipsoid: {
-            radii: new Cartesian3(10, 10, 10),
-            material: new Color(0, 0, 0),
-            heightReference: HeightReference.RELATIVE_TO_GROUND
-          }
-        });
-      }
-    });
 
-    console.log(tileset);
-
-    // GeoJsonDataSource.load('./src/layers/BH_Location.geojson').then(dataSource => {
-    //   console.log(viewer.scene);
-    //   console.log(tileset, dataSource);
-    //   viewer.dataSources.add(dataSource);
-    //   dataSource.show = true;
-    //   return dataSource;
-    // });
-  }
   if (config.style) {
     tileset.style = new Cesium3DTileStyle(config.style);
   }
@@ -88,6 +58,10 @@ export function create3DTilesetFromConfig(viewer, config) {
         tileset.style = new Cesium3DTileStyle({...style, color});
       }
     };
+  }
+
+  if (config.billboards && config.billboards.latPropName && config.billboards.lonPropName) {
+    addBillboardsForTileset(viewer, tileset, config);
   }
 
   return tileset;
@@ -137,6 +111,7 @@ function styleColorParser(style) {
   return {propertyName, colorType, colorValue};
 }
 
+
 /**
  * To avoid incorrect handling of checkboxes during render
  * @param layers
@@ -148,4 +123,30 @@ export function syncCheckboxes(layers) {
       elements[i].checked = l.visible;
     }
   });
+}
+
+function addBillboardsForTileset(viewer, tileset, config) {
+  const dataSourceName = getBillboardDataSourceName(config.layer);
+  viewer.dataSources.add(new CustomDataSource(dataSourceName));
+  tileset.tileLoad.addEventListener(function (tile) {
+    for (let i = 0; i < tile.content.featuresLength; i++) {
+      const feature = tile.content.getFeature(i);
+      const longitude = feature.getProperty(config.billboards.lonPropName);
+      const latitude = feature.getProperty(config.billboards.latPropName);
+      const position = new Cartographic(longitude, latitude, 0);
+      const dataSource = viewer.dataSources.getByName(dataSourceName)[0];
+      dataSource.entities.add({
+        position: Cartographic.toCartesian(position),
+        ellipsoid: {
+          radii: new Cartesian3(10, 10, 10),
+          material: new Color(0, 0, 0),
+          heightReference: HeightReference.RELATIVE_TO_GROUND
+        }
+      });
+    }
+  });
+}
+
+export function getBillboardDataSourceName(layer) {
+  return `${BILLBOARDS_PREFIX}${layer}`;
 }
