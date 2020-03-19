@@ -44,5 +44,6 @@ then
 fi
 
 $S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' dist/ $DESTINATION
+$S3_CMD sync --cache-control max-age=3600 dist/Workers/ $DESTINATION/dist/
 $S3_CMD cp --cache-control no-cache dist/index.html $DESTINATION
 exit $?
