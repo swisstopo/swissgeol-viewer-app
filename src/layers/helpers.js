@@ -5,11 +5,10 @@ import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
 import {LAYER_TYPES, BILLBOARDS_PREFIX} from '../constants.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Color from 'cesium/Core/Color.js';
 import HeightReference from 'cesium/Scene/HeightReference.js';
 import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
-import Cartographic from 'cesium/Core/Cartographic';
+import Cartographic from 'cesium/Core/Cartographic.js';
+import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -137,10 +136,11 @@ function addBillboardsForTileset(viewer, tileset, config) {
       const dataSource = viewer.dataSources.getByName(dataSourceName)[0];
       dataSource.entities.add({
         position: Cartographic.toCartesian(position),
-        ellipsoid: {
-          radii: new Cartesian3(10, 10, 10),
-          material: new Color(0, 0, 0),
-          heightReference: HeightReference.RELATIVE_TO_GROUND
+        billboard: {
+          image: './src/images/map-pin-solid.png',
+          scale: 0.1,
+          // scaleByDistance: new NearFarScalar(0.1, 0.1, 0.1, 0.1),
+          heightReference: HeightReference.CLAMP_TO_GROUND
         }
       });
     }
