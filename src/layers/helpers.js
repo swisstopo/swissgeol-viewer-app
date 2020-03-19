@@ -132,15 +132,16 @@ function addBillboardsForTileset(viewer, tileset, config) {
       const feature = tile.content.getFeature(i);
       const longitude = feature.getProperty(config.billboards.lonPropName);
       const latitude = feature.getProperty(config.billboards.latPropName);
-      const position = new Cartographic(longitude, latitude, 0);
+      const position = new Cartographic(longitude, latitude, 50);
       const dataSource = viewer.dataSources.getByName(dataSourceName)[0];
       dataSource.entities.add({
         position: Cartographic.toCartesian(position),
         billboard: {
           image: './src/images/map-pin-solid.png',
-          scale: 0.1,
-          // scaleByDistance: new NearFarScalar(0.1, 0.1, 0.1, 0.1),
-          heightReference: HeightReference.CLAMP_TO_GROUND
+          scale: 0.2,
+          scaleByDistance: new NearFarScalar(0, 0.1, viewer.camera.maximumZoomDistance, 0.2),
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          heightReference: HeightReference.RELATIVE_TO_GROUND
         }
       });
     }
