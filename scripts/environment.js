@@ -16,7 +16,7 @@ const mkdirpAsync = util.promisify(mkdirp);
       branch = (await exec('git rev-parse --abbrev-ref HEAD')).stdout.toString().trim();
     }
 
-    const jsonContent = `{"branch": "${branch}"}`;
+    const jsonContent = `{'branch': '${branch}'}`;
     const content = `export const environment = ${jsonContent};`;
 
     await mkdirpAsync(path.resolve(__dirname, dir));
