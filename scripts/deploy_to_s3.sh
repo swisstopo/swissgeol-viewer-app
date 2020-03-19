@@ -34,7 +34,7 @@ then
       echo "Missing branch name for review env"
       exit 1
     fi
-    DESTINATION="s3://$REVIEW_BUCKET/$BRANCH/"
+    DESTINATION="s3://$REVIEW_BUCKET/$BRANCH"
 fi
 
 if [ -z "$DESTINATION" ]
@@ -44,6 +44,6 @@ then
 fi
 
 $S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' dist/ $DESTINATION
-$S3_CMD sync --cache-control max-age=3600 dist/Workers/ $DESTINATION/dist/
+$S3_CMD sync --cache-control max-age=3600 dist/Workers/ $DESTINATION/dist/Workers
 $S3_CMD cp --cache-control no-cache dist/index.html $DESTINATION
 exit $?
