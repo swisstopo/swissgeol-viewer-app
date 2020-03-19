@@ -17,7 +17,7 @@ npm_install:
 
 pipeline_ok:
   stage: test
-  script: tests/test_gitlab_deploy.sh && tests/test_deploy_to_s3.sh
+  script: tests/test_gitlab_deploy.sh
 
 lint:
   stage: test
