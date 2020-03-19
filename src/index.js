@@ -22,6 +22,7 @@ import './elements/ngm-object-information.js';
 import './elements/ngm-gst-interaction.js';
 import './elements/ngm-navigation-widgets.js';
 import './elements/ngm-camera-information.js';
+import './elements/ngm-feature-depth.js';
 import './elements/ngm-left-side-bar.js';
 
 initSentry();
@@ -135,3 +136,4 @@ const widgets = document.querySelector('ngm-navigation-widgets');
 widgets.viewer = viewer;
 
 document.querySelector('ngm-camera-information').scene = viewer.scene;
+document.querySelector('ngm-feature-depth').viewer = viewer;

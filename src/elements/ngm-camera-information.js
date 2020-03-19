@@ -53,11 +53,9 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
   render() {
     if (this.elevation !== undefined && this.heading !== undefined) {
       return html`
-        <div class="ui mini horizontal link list">
-          <code class="item">
-            ${i18next.t('Your position')}: ${this.integerFormat.format(this.elevation)} m, ${this.integerFormat.format(this.heading)}°
-          </code>
-        </div>
+        <code>
+          ${i18next.t('Your position')}: ${this.integerFormat.format(this.elevation)} m, ${this.integerFormat.format(this.heading)}°
+        </code>
       `;
     } else {
       return html``;
