@@ -8,7 +8,9 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      scene: {type: Object}
+      scene: {type: Object},
+      elevation: {type: Number},
+      heading: {type: Number}
     };
   }
 
@@ -44,7 +46,6 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
       // globe is ready
       this.elevation = this.scene.camera._positionCartographic.height - altitude;
       this.heading = CesiumMath.toDegrees(this.scene.camera.heading);
-      this.requestUpdate();
     }
   }
 
