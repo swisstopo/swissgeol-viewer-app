@@ -83,5 +83,9 @@
   "zoom_to": "Zoom to",
   "zoom_to_object": "Zoom to object",
   "sentry_message": "Sentry is used for application monitoring and bug tracking. <br> For further questions: datenschutz@swisstopo.ch",
-  "ok_btn_label": "Ok"
+  "ok_btn_label": "Ok",
+  "top_dogger_label": "Top dogger",
+  "base_cenozoic_label": "Base cenozoic",
+  "top_lower_freshwater_molasse_label": "Top Lower Freshwater Molasse",
+  "top_bedrock_label": "Top Bedrock"
 }

@@ -83,5 +83,9 @@
   "zoom_to": "",
   "zoom_to_object": "",
   "sentry_message": "",
-  "ok_btn_label": ""
+  "ok_btn_label": "",
+  "top_dogger_label": "",
+  "base_cenozoic_label": "",
+  "top_lower_freshwater_molasse_label": "",
+  "top_bedrock_label": ""
 }
