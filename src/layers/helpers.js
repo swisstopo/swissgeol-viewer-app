@@ -9,6 +9,7 @@ import HeightReference from 'cesium/Scene/HeightReference.js';
 import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import NearFarScalar from 'cesium/Core/NearFarScalar.js';
+import VerticalOrigin from 'cesium/Scene/VerticalOrigin.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -44,7 +45,14 @@ export function create3DTilesetFromConfig(viewer, config) {
   tileset.pickable = config.pickable !== undefined ? config.pickable : false;
   viewer.scene.primitives.add(tileset);
 
-  config.setVisibility = visible => tileset.show = !!visible;
+  config.setVisibility = visible => {
+    tileset.show = !!visible;
+    const dataSource = viewer.dataSources.getByName(getBillboardDataSourceName(config.layer)); // Check for billboards
+    if (dataSource.length) {
+      dataSource[0].show = !!visible;
+    }
+  };
+
   if (!config.opacityDisabled) {
     config.setOpacity = opacity => {
       const style = config.style;
@@ -132,15 +140,15 @@ function addBillboardsForTileset(viewer, tileset, config) {
       const feature = tile.content.getFeature(i);
       const longitude = feature.getProperty(config.billboards.lonPropName);
       const latitude = feature.getProperty(config.billboards.latPropName);
-      const position = new Cartographic(longitude, latitude, 50);
+      const position = new Cartographic(longitude, latitude, 20);
       const dataSource = viewer.dataSources.getByName(dataSourceName)[0];
       dataSource.entities.add({
         position: Cartographic.toCartesian(position),
         billboard: {
-          image: './src/images/map-pin-solid.png',
-          scale: 0.2,
-          scaleByDistance: new NearFarScalar(0, 0.1, viewer.camera.maximumZoomDistance, 0.2),
-          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          image: './src/images/map-pin-solid.svg',
+          scale: 0.1,
+          translucencyByDistance: new NearFarScalar(6000, 0.9, 60000, 0.1),
+          verticalOrigin: VerticalOrigin.BOTTOM,
           heightReference: HeightReference.RELATIVE_TO_GROUND
         }
       });
