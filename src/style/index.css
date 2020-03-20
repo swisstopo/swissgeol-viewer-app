@@ -55,7 +55,7 @@ a {
   text-decoration: none;
 }
 
-header, footer {
+header {
   display: flex;
 }
 
@@ -74,15 +74,6 @@ header > .logo {
   margin-right: 80px;
   margin-left: 40px;
   margin-bottom: 10px;
-}
-
-footer {
-  padding: 0 4px;
-  background-color: rgba(214, 214, 214, 0.9);
-}
-
-footer .link.list .item {
-  vertical-align: middle;
 }
 
 #outdated-browser {
@@ -107,8 +98,28 @@ main {
   overflow: hidden;
 }
 
-#cesium {
+.map {
+  display: flex;
+  flex-direction: column;
   flex: auto;
+}
+.map .footer {
+  display: flex;
+  padding: 0 4px;
+  background-color: rgba(214, 214, 214, 0.9);
+}
+.map .footer .list .item {
+  vertical-align: middle;
+}
+
+#cesium {
+  display: flex;
+  flex: auto;
+}
+
+/* This is workaround to make the 'clientHeight' works in cesium when the parent element is in flex grow */
+#cesium .cesium-widget {
+  position: absolute;
 }
 
 #cesium .cesium-viewer-bottom {
@@ -209,4 +220,8 @@ body:after { /* Beta label */
 
 .ngm-header-links > a {
   color: #ff0000;
+}
+
+ngm-camera-information {
+  display: flex;
 }
