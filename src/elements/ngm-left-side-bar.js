@@ -95,6 +95,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     layer.visible = layer.displayed;
     const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
     this.activeLayers = flatLayers.filter(l => l.displayed);
+    syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];
     this.requestUpdate();
   }
