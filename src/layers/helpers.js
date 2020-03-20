@@ -5,6 +5,8 @@ import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
 import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
 import {LAYER_TYPES} from '../constants.js';
+import {isLabelOutlineEnabled} from '../permalink.js';
+import LabelStyle from 'cesium/Scene/LabelStyle.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -33,6 +35,9 @@ export function create3DTilesetFromConfig(viewer, config) {
     show: !!config.visible
   });
   if (config.style) {
+    if (config.layer === 'ch.swisstopo.swissnames3d.3d') { // for performance testing
+      config.style.labelStyle = isLabelOutlineEnabled() ? LabelStyle.FILL_AND_OUTLINE : LabelStyle.FILL;
+    }
     tileset.style = new Cesium3DTileStyle(config.style);
   }
   tileset.pickable = config.pickable !== undefined ? config.pickable : false;
