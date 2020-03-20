@@ -53,18 +53,11 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
   render() {
     if (this.elevation !== undefined && this.heading !== undefined) {
       return html`
-        <code>
-          ${i18next.t('Your position')}: ${this.integerFormat.format(this.elevation)} m, ${this.integerFormat.format(this.heading)}°
-        </code>
+        ${i18next.t('Your position')}: ${this.integerFormat.format(this.elevation)} m, ${this.integerFormat.format(this.heading)}°
       `;
     } else {
       return html``;
     }
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }
 

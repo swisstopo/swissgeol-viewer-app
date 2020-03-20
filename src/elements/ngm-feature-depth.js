@@ -57,16 +57,11 @@ class NgmFeatureDepth extends I18nMixin(LitElement) {
   render() {
     if (this.depth !== undefined) {
       return html`
-        <code>${i18next.t('Depth')}: ${this.integerFormat.format(this.depth)} m</code>
+        ${i18next.t('Depth')}: ${this.integerFormat.format(this.depth)} m
       `;
     } else {
       return html``;
     }
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }
 
