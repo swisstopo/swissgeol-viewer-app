@@ -36,7 +36,7 @@ export function create3DTilesetFromConfig(viewer, config) {
   const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
-    maximumScreenSpaceError: 0
+    maximumScreenSpaceError: 0 // required for billboards render
   });
 
   if (config.style) {
@@ -132,15 +132,23 @@ export function syncCheckboxes(layers) {
   });
 }
 
+/**
+ * Adds on terrain billboards for tileset based on longitude and latitude properties
+ * @param viewer
+ * @param tileset
+ * @param config
+ */
 function addBillboardsForTileset(viewer, tileset, config) {
   const dataSourceName = getBillboardDataSourceName(config.layer);
   viewer.dataSources.add(new CustomDataSource(dataSourceName));
+
   tileset.tileLoad.addEventListener(function (tile) {
     for (let i = 0; i < tile.content.featuresLength; i++) {
       const feature = tile.content.getFeature(i);
       const longitude = feature.getProperty(config.billboards.lonPropName);
       const latitude = feature.getProperty(config.billboards.latPropName);
       const position = new Cartographic(longitude, latitude, 20);
+
       const dataSource = viewer.dataSources.getByName(dataSourceName)[0];
       dataSource.entities.add({
         position: Cartographic.toCartesian(position),
