@@ -45,7 +45,8 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
     if (altitude !== undefined) {
       // globe is ready
       this.elevation = this.scene.camera._positionCartographic.height - altitude;
-      this.heading = CesiumMath.toDegrees(this.scene.camera.heading);
+      // flip the angle to have a similar angle to a real compass
+      this.heading = CesiumMath.toDegrees(CesiumMath.TWO_PI - this.scene.camera.heading);
     }
   }
 
