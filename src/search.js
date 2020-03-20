@@ -1,6 +1,7 @@
 import '@geoblocks/ga-search';
 
 import {getLayersConfig} from './swisstopoImagery.js';
+import {escapeRegExp} from './utils.js';
 
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
@@ -76,7 +77,7 @@ export function setupSearch(viewer, element, layerTree) {
   element.additionalSource = {
     search: input => {
       const matches = [];
-      const regexp = new RegExp(input, 'i');
+      const regexp = new RegExp(escapeRegExp(input), 'i');
       const dataSources = viewer.dataSources;
       for (let i = 0, ii = dataSources.length; i < ii; i++) {
         const dataSource = dataSources.get(i);
