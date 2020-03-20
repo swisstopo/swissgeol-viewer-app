@@ -55,9 +55,10 @@ export function onAccordionClick(evt) {
 
 /**
  * Change element position in array
- * array - target array
- * fromIdx - from index
- * toIdx - to index
+ * @param {Array} array target array
+ * @param {number} fromIdx from index
+ * @param {number} toIdx to index
+ * @return {Array}
  */
 export function insertAndShift(array, fromIdx, toIdx) {
   const cutOut = array.splice(fromIdx, 1)[0];
