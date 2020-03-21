@@ -9,7 +9,7 @@
     "postinstall": "scripts/npm_postinstall.sh"
   },
   "dependencies": {
-    "@geoblocks/ga-search": "^0.0.12",
+    "@geoblocks/ga-search": "^0.0.13",
     "@sentry/browser": "^5.14.2",
     "@webcomponents/webcomponentsjs": "^2.4.3",
     "cesium": "https://github.com/CesiumGS/cesium/archive/1bc6370.tar.gz",

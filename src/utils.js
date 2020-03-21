@@ -78,3 +78,7 @@ export function verticalDirectionRotate(camera, angle) {
   const tangent = Cartesian3.cross(up, position, new Cartesian3());
   camera.rotate(tangent, angle);
 }
+
+export function escapeRegExp(string) {
+  return string ? string.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&') : string;
+}
