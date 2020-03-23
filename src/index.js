@@ -7,10 +7,6 @@ import './style/index.css';
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
 
-import './elements/ngm-object-information.js';
-import './elements/ngm-gst-interaction.js';
-import './elements/ngm-navigation-widgets.js';
-import './elements/ngm-camera-information.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
@@ -21,6 +17,11 @@ import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
 import {showConfirmationMessage} from './message.js';
 import i18next from 'i18next';
+
+import './elements/ngm-object-information.js';
+import './elements/ngm-gst-interaction.js';
+import './elements/ngm-navigation-widgets.js';
+import './elements/ngm-camera-information.js';
 import './elements/ngm-left-side-bar.js';
 
 initSentry();
@@ -46,8 +47,9 @@ const originMaximumScreenSpaceError = viewer.scene.globe.maximumScreenSpaceError
 viewer.scene.globe.maximumScreenSpaceError = 10000;
 
 // setup web components
-document.querySelector('ngm-left-side-bar').viewer = viewer;
-document.querySelector('ngm-left-side-bar').zoomTo = zoomTo;
+const sideBar = document.querySelector('ngm-left-side-bar');
+sideBar.viewer = viewer;
+sideBar.zoomTo = zoomTo;
 
 
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
@@ -56,7 +58,6 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     viewer.scene.globe.maximumScreenSpaceError = originMaximumScreenSpaceError;
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
-      const sideBar = document.querySelector('ngm-left-side-bar');
       setupSearch(viewer, document.querySelector('ga-search'), sideBar);
       document.getElementById('loader').style.display = 'none';
       console.log(`loading mask displayed ${(performance.now() / 1000).toFixed(3)}s`);
@@ -71,19 +72,19 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
   }
 });
 
-const objectInfo = document.querySelector('ngm-object-information');
 
 const silhouette = PostProcessStageLibrary.createEdgeDetectionStage();
 silhouette.uniforms.color = Color.LIME;
 silhouette.uniforms.length = 0.01;
 silhouette.selected = [];
+viewer.scene.postProcessStages.add(PostProcessStageLibrary.createSilhouetteStage([silhouette]));
 
+const objectInfo = document.querySelector('ngm-object-information');
 objectInfo.addEventListener('closed', () => {
   silhouette.selected = [];
   viewer.scene.requestRender();
 });
 
-viewer.scene.postProcessStages.add(PostProcessStageLibrary.createSilhouetteStage([silhouette]));
 
 viewer.screenSpaceEventHandler.setInputAction(click => {
   silhouette.selected = [];
@@ -102,7 +103,7 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
       silhouette.selected = [object];
     } else if (object.id && object.id.properties) {
       const props = extractEntitiesAttributes(object.id);
-      attributes = {...props};
+      attributes = Object.assign({}, props);
       attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
       if (attributes.zoomHeadingPitchRange) {
         // Don't show the value in the object info window

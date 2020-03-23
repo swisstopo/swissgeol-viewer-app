@@ -267,7 +267,7 @@ const man_made_objects = {
 
 // A "displayed" layer appears in the list of active layers.
 // A "visible" layer is actually shown on the globe.
-// Normaly, visible => displayed
+// Normally, visible => displayed
 export const defaultLayerTree = [
   geo_map_series,
   geo_base,

@@ -29,11 +29,13 @@ export default class EarthquakeVisualizer {
       const latitude = Number(data.Latitude);
       const position = Cartesian3.fromDegrees(longitude, latitude, height);
       const cameraDistance = size * 4;
-      const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.toRadians(25), cameraDistance);
       if (!this.boundingSphere) {
         this.boundingSphere = new BoundingSphere(position, size);
       }
       BoundingSphere.expand(this.boundingSphere, position, this.boundingSphere);
+      const properties = Object.assign({
+        zoomHeadingPitchRange: new HeadingPitchRange(0, Math.toRadians(25), cameraDistance)
+      }, data);
       return this.earthquakeDataSource.entities.add({
         position: position,
         ellipsoid: {
@@ -41,10 +43,7 @@ export default class EarthquakeVisualizer {
           material: getColorForMagnitude(data.Magnitude),
           heightReference: HeightReference.RELATIVE_TO_GROUND
         },
-        properties: {
-          ...data,
-          zoomHeadingPitchRange
-        }
+        properties: properties
       });
     });
   }
