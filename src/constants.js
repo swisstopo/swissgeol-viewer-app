@@ -194,7 +194,39 @@ const subsurface = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 68722,
+          assetId: 76814,
+          label: t('top_bedrock_label'),
+          layer: 'top_bedrock',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 76931,
+          label: t('top_lower_freshwater_molasse_label'),
+          layer: 'top_lower_freshwater_molasse',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 76815,
+          label: t('base_cenozoic_label'),
+          layer: 'base_cenozoic',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 76817,
+          label: t('top_dogger_label'),
+          layer: 'top_dogger',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 76816,
           label: t('base_mesozoic_label'),
           layer: 'base_mesozoic',
           opacity: DEFAULT_LAYER_OPACITY,

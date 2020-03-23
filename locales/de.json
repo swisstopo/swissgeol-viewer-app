@@ -81,5 +81,9 @@
   "zoom_in_btn": "",
   "zoom_out_btn": "",
   "zoom_to": "Zoomen",
-  "zoom_to_object": "Auf Objekt Zoomen"
+  "zoom_to_object": "Auf Objekt Zoomen",
+  "top_dogger_label": "",
+  "base_cenozoic_label": "",
+  "top_lower_freshwater_molasse_label": "",
+  "top_bedrock_label": ""
 }
