@@ -142,7 +142,7 @@ function addBillboardsForTileset(viewer, tileset, config) {
   const dataSourceName = getBillboardDataSourceName(config.layer);
   viewer.dataSources.add(new CustomDataSource(dataSourceName));
 
-  tileset.tileLoad.addEventListener(function (tile) {
+  tileset.tileLoad.addEventListener(tile => {
     for (let i = 0; i < tile.content.featuresLength; i++) {
       const feature = tile.content.getFeature(i);
       const longitude = feature.getProperty(config.billboards.lonPropName);
@@ -164,6 +164,6 @@ function addBillboardsForTileset(viewer, tileset, config) {
   });
 }
 
-export function getBillboardDataSourceName(layer) {
+function getBillboardDataSourceName(layer) {
   return `${BILLBOARDS_PREFIX}${layer}`;
 }
