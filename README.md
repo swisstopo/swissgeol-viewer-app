@@ -7,8 +7,6 @@
 # Deploy to integration (from local machine)
 
 ```bash
-RELEASE_NAME="RELEASE_NAME_FOR_SENTRY" npm run build
-
 # ex int_sprint2.1
 export VERSION="int_sprint???"
 
