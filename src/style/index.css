@@ -108,7 +108,11 @@ main {
   padding: 0 4px;
   background-color: rgba(214, 214, 214, 0.9);
 }
-.map .footer .list .item {
+
+.map .footer .ui.list {
+  margin: 0;
+}
+.map .footer .ui.list .item {
   vertical-align: middle;
 }
 
@@ -220,8 +224,4 @@ body:after { /* Beta label */
 
 .ngm-header-links > a {
   color: #ff0000;
-}
-
-ngm-camera-information {
-  display: flex;
 }
