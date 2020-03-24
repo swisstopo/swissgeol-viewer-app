@@ -103,7 +103,7 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
       silhouette.selected = [object];
     } else if (object.id && object.id.properties) {
       const props = extractEntitiesAttributes(object.id);
-      attributes = Object.assign({}, props);
+      attributes = {...props};
       attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
       if (attributes.zoomHeadingPitchRange) {
         // Don't show the value in the object info window

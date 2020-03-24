@@ -41,14 +41,15 @@ export function create3DTilesetFromConfig(viewer, config) {
   config.setVisibility = visible => tileset.show = !!visible;
   if (!config.opacityDisabled) {
     config.setOpacity = opacity => {
-      const style = Object.assign({}, config.style);
+      const style = config.style;
       if (style && (style.color || style.labelColor)) {
         const {propertyName, colorType, colorValue} = styleColorParser(style);
-        style[propertyName] = `${colorType}(${colorValue}, ${opacity})`;
+        const color = `${colorType}(${colorValue}, ${opacity})`;
+        tileset.style = new Cesium3DTileStyle({...style, [propertyName]: color});
       } else {
-        style.color = `color("white", ${opacity})`;
+        const color = `color("white", ${opacity})`;
+        tileset.style = new Cesium3DTileStyle({...style, color});
       }
-      tileset.style = new Cesium3DTileStyle(style);
     };
   }
 
