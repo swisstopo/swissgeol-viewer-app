@@ -87,5 +87,7 @@
   "top_dogger_label": "Top dogger",
   "base_cenozoic_label": "Base cenozoic",
   "top_lower_freshwater_molasse_label": "Top Lower Freshwater Molasse",
-  "top_bedrock_label": "Top Bedrock"
+  "top_bedrock_label": "Top Bedrock",
+  "up_btn": "Move Up",
+  "down_btn": "Move Down"
 }
