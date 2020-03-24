@@ -1,11 +1,21 @@
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Color from 'cesium/Core/Color.js';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import CMath from 'cesium/Core/Math.js';
 import LabelStyle from 'cesium/Scene/LabelStyle.js';
 
 
 export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 
 export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS);
+
+export const DEFAULT_VIEW = {
+  destination: new Cartesian3(4908864.293775153, 703132.7307690362, 4556988.123570525),
+  orientation: {
+    heading: CMath.toRadians(2.0),
+    pitch: CMath.toRadians(-40.0)
+  }
+};
 
 export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'];
 export const DRILL_PICK_LIMIT = 1;

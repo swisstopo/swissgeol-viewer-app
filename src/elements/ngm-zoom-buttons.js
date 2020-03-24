@@ -1,8 +1,8 @@
 import {LitElement, html} from 'lit-element';
 
-import Camera from 'cesium/Scene/Camera';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
+import {DEFAULT_VIEW} from '../constants.js';
 
 class NgmZoomButtons extends I18nMixin(LitElement) {
 
@@ -70,9 +70,7 @@ class NgmZoomButtons extends I18nMixin(LitElement) {
   }
 
   flyToHome() {
-    this.scene.camera.flyTo({
-      destination: Camera.DEFAULT_VIEW_RECTANGLE
-    });
+    this.scene.camera.flyTo(DEFAULT_VIEW);
   }
 
   render() {
