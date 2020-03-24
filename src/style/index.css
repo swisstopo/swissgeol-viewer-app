@@ -147,7 +147,7 @@ main {
   align-items: center;
 }
 
-.navigation-widgets .ui.button {
+.navigation-widgets .ui.button, ngm-elevator-buttons{
   margin: .5em 0 0 0;
 }
 

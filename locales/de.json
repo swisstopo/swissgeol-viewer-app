@@ -85,5 +85,7 @@
   "top_dogger_label": "",
   "base_cenozoic_label": "",
   "top_lower_freshwater_molasse_label": "",
-  "top_bedrock_label": ""
+  "top_bedrock_label": "",
+  "up_btn": "",
+  "down_btn": ""
 }
