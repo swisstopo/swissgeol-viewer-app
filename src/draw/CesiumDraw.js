@@ -7,6 +7,8 @@ import PolygonHierarchy from 'cesium/Core/PolygonHierarchy.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 
+// Safari and old versions of Edge are not able to extends EventTarget
+import {EventTarget} from 'event-target-shim';
 
 /**
  * @typedef {object} Options
