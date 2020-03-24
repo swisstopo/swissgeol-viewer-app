@@ -5,6 +5,7 @@ cd node_modules/cesium
 mv -f gulpfile.js gulpfile.cjs || true
 npm i
 node_modules/.bin/gulp -f gulpfile.cjs minifyRelease
-rm -fr node_modules/
+# save some disk space
+rm -fr node_modules/ Documentation/
 
 echo "Cesium compilation finished"
