@@ -143,15 +143,17 @@ class LeftSideBar extends I18nMixin(LitElement) {
     if (layer) { // for layers added before
       if (layer.type === LAYER_TYPES.swisstopoWMTS) {
         const index = this.activeLayers.indexOf(layer);
-        insertAndShift(this.layers, index, 0);
+        this.activeLayers.splice(index, 1);
+        layer.remove();
         layer.add(0);
+        this.activeLayers.push(layer);
       }
       layer.setVisibility(true);
       layer.visible = true;
       layer.displayed = true;
       this.viewer.scene.requestRender();
     } else { // for new layers
-      this.activeLayers.unshift(LeftSideBar.createSearchLayer(searchLayer.title, searchLayer.layer));
+      this.activeLayers.push(LeftSideBar.createSearchLayer(searchLayer.title, searchLayer.layer));
     }
     this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);

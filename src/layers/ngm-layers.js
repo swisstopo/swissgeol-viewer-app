@@ -81,7 +81,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
     const downClassMap = {disabled: (idx === this.layers.length - 1)};
 
     return html`
-    <div class="ngm-displayed-container"
+      <div class="ngm-displayed-container"
         @mouseenter=${mouseEnter}
         @mouseleave=${mouseLeave}>
         <div class="ui checkbox">
