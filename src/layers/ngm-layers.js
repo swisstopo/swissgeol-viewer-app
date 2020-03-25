@@ -15,6 +15,7 @@ import CMath from 'cesium/Core/Math';
 import Transforms from 'cesium/Core/Transforms';
 import HeadingPitchRoll from 'cesium/Core/HeadingPitchRoll';
 import Rectangle from 'cesium/Core/Rectangle';
+import Cartographic from 'cesium/Core/Cartographic';
 
 export default class LayerTree extends I18nMixin(LitElement) {
 
@@ -35,7 +36,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
       const pitch = CMath.toRadians(0.0);
       const roll = CMath.toRadians(0.0);
       const orientation = Transforms.headingPitchRollQuaternion(Cartesian3.ZERO, new HeadingPitchRoll(heading, pitch, roll));
-      this.boundingBoxEntity = this.viewer.entities.add({
+      this.defaultBoxValue = {
         position: Cartesian3.ZERO,
         orientation: orientation,
         show: false,
@@ -53,7 +54,8 @@ export default class LayerTree extends I18nMixin(LitElement) {
         //   material: Color.RED.withAlpha(0.5),
         //   radii: new Cartesian3(1, 1, 1),
         // }
-      });
+      };
+      this.boundingBoxEntity = this.viewer.entities.add(this.defaultBoxValue);
     }
   }
 
@@ -88,22 +90,37 @@ export default class LayerTree extends I18nMixin(LitElement) {
       const p = await config.promise;
       if (p.root && p.root.boundingVolume) {
         const b = p.root.boundingVolume.boundingVolume;
-        const halfAxes = b.halfAxes;
         this.boundingBoxEntity.position = b.center;
         // this.boundingBoxEntity.ellipsoid.radii = new Cartesian3(b.radius, b.radius, b.radius);
-        const heading = CMath.toRadians(90);
+        const boundingRect = p.root.boundingVolume.rectangle;
+        let heading = CMath.toRadians(0);
+        if (boundingRect) {
+          const sw = Cartographic.toCartesian(Rectangle.southwest(boundingRect, new Cartographic()));
+          const se = Cartographic.toCartesian(Rectangle.southeast(boundingRect, new Cartographic()));
+          const nw = Cartographic.toCartesian(Rectangle.northwest(boundingRect, new Cartographic()));
+          const x = Cartesian3.distance(sw, se);
+          const y = Cartesian3.distance(sw, nw);
+
+          this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, 500);
+          this.boundingBoxEntity.rectangle.coordinates = boundingRect;
+        } else {
+          const halfAxes = b.halfAxes;
+          const absMatrix = Matrix3.abs(halfAxes, new Matrix3());
+          this.boundingBoxEntity.box.dimensions = Matrix3.multiplyByVector(absMatrix, new Cartesian3(2, 2, 2), new Cartesian3());
+          heading = CMath.toRadians(90);
+        }
         this.boundingBoxEntity.orientation = Transforms.headingPitchRollQuaternion(b.center, new HeadingPitchRoll(heading, 0, 0));
-        const absMatrix = Matrix3.abs(halfAxes, new Matrix3());
-        console.log(p.root.boundingVolume.rectangle);
-        this.boundingBoxEntity.box.dimensions = Matrix3.multiplyByVector(absMatrix, new Cartesian3(2, 2, 2), new Cartesian3());
-        this.boundingBoxEntity.rectangle.coordinates = p.root.boundingVolume.rectangle;
         this.boundingBoxEntity.show = true;
         this.viewer.scene.requestRender();
       }
     };
     const mouseLeave = () => {
       if (this.boundingBoxEntity.show) {
-        this.boundingBoxEntity.show = false;
+        this.boundingBoxEntity.show = this.defaultBoxValue.show; // TODO 
+        this.boundingBoxEntity.rectangle = this.defaultBoxValue.rectangle;
+        this.boundingBoxEntity.orientation = this.defaultBoxValue.orientation;
+        this.boundingBoxEntity.box = this.defaultBoxValue.box;
+        this.boundingBoxEntity.position = this.defaultBoxValue.position;
         this.viewer.scene.requestRender();
       }
     };
