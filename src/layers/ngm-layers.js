@@ -46,11 +46,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
     const changeVisibility = evt => {
       config.setVisibility(evt.target.checked);
       config.visible = evt.target.checked;
-      if (evt.target.checked && !config.displayed) {
-        console.log('XXXX how is it possible?');
-        if (config.type === LAYER_TYPES.swisstopoWMTS) config.add(0);
-        config.displayed = true;
-      }
       syncLayersParam(this.layers); // FIXME: these calls should be moved to left side bar or the app
       this.dispatchEvent(new CustomEvent('layerChanged'));
       this.viewer.scene.requestRender();
