@@ -28,6 +28,7 @@ export const LAYERS_URL_PARAM = 'layers';
 export const LAYERS_VISIBILITY_URL_PARAM = 'layers_visibility';
 export const LAYERS_OPACITY_URL_PARAM = 'layers_opacity';
 export const ASSET_IDS_URL_PARAM = 'assetIds';
+export const BILLBOARDS_PREFIX = 'billboards_';
 
 export const DEFAULT_AOI_COLOR = Color.BLACK.withAlpha(0.3);
 export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);
@@ -153,7 +154,11 @@ const geo_base = {
           label: t('boreholes_label'),
           layer: 'boreholes',
           opacity: DEFAULT_LAYER_OPACITY,
-          pickable: true
+          pickable: true,
+          billboards: {
+            lonPropName: 'Longitude',
+            latPropName: 'Latitude'
+          }
         }, {
           type: LAYER_TYPES.tiles3d,
           assetId: 68881,
@@ -206,7 +211,39 @@ const subsurface = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 68722,
+          assetId: 76814,
+          label: t('top_bedrock_label'),
+          layer: 'top_bedrock',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 76931,
+          label: t('top_lower_freshwater_molasse_label'),
+          layer: 'top_lower_freshwater_molasse',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 76815,
+          label: t('base_cenozoic_label'),
+          layer: 'base_cenozoic',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 76817,
+          label: t('top_dogger_label'),
+          layer: 'top_dogger',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 76816,
           label: t('base_mesozoic_label'),
           layer: 'base_mesozoic',
           opacity: DEFAULT_LAYER_OPACITY,
@@ -247,7 +284,7 @@ const man_made_objects = {
 
 // A "displayed" layer appears in the list of active layers.
 // A "visible" layer is actually shown on the globe.
-// Normaly, visible => displayed
+// Normally, visible => displayed
 export const defaultLayerTree = [
   geo_map_series,
   geo_base,

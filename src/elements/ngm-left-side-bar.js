@@ -19,19 +19,13 @@ class LeftSideBar extends I18nMixin(LitElement) {
     };
   }
 
-  constructor() {
-    super();
-
-
-  }
-
   initializeActiveLayers() {
     const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
 
     const urlLayers = getLayerParams();
-    const assestIds = getAssetIds();
+    const assetIds = getAssetIds();
 
-    if (!urlLayers.length && !assestIds.length) {
+    if (!urlLayers.length && !assetIds.length) {
       this.activeLayers = flatLayers.filter(l => l.displayed);
       syncLayersParam(this.activeLayers);
       return;
@@ -56,7 +50,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       activeLayers.push(layer);
     });
 
-    assestIds.forEach(assetId => {
+    assetIds.forEach(assetId => {
       activeLayers.push({
         type: LAYER_TYPES.tiles3d,
         assetId: assetId,

@@ -2,6 +2,7 @@ import {LitElement, html} from 'lit-element';
 import FirstPersonCameraMode from '../FirstPersonCameraMode.js';
 import './cesium-compass.js';
 import './ngm-zoom-buttons.js';
+import './ngm-elevator-buttons.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 
@@ -38,6 +39,7 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
         data-variation="mini"
         ></cesium-compass>
         <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
+        <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
         <button
         data-tooltip=${i18next.t('fps_btn')}
         data-position="left center"

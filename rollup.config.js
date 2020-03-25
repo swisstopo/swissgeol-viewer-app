@@ -102,6 +102,9 @@ if (process.env.mode === 'production') {
           }
         ]
       ],
+      plugins: [
+        '@babel/plugin-proposal-object-rest-spread'
+      ],
       // exclude: 'node_modules/**'
       exclude: ['node_modules/cesium/**', 'node_modules/core-js/**', 'node_modules/@babel/**'],
     }),

@@ -33,10 +33,10 @@ export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
 
           resolve(imageryLayer);
         } else {
-          reject('unsupported layer type');
+          reject(`unsupported layer type: ${config.type}`);
         }
       } else {
-        reject('layer not found');
+        reject(`layer not found: ${layer}`);
       }
     });
   });
