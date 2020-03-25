@@ -36,7 +36,8 @@ export function create3DTilesetFromConfig(viewer, config) {
   const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
-    maximumScreenSpaceError: 0 // required for billboards render
+    maximumScreenSpaceError: 0, // required for billboards render
+    debugShowBoundingVolume: true
   });
 
   if (config.style) {
@@ -70,6 +71,8 @@ export function create3DTilesetFromConfig(viewer, config) {
   if (config.billboards && config.billboards.latPropName && config.billboards.lonPropName) {
     addBillboardsForTileset(viewer, tileset, config);
   }
+
+  console.log(tileset);
 
   return tileset;
 }

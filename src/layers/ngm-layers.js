@@ -5,11 +5,16 @@ import {syncLayersParam} from '../permalink.js';
 import {createCesiumObject} from './helpers.js';
 import {LAYER_TYPES} from '../constants.js';
 import Cartesian3 from 'cesium/Core/Cartesian3';
+import Matrix3 from 'cesium/Core/Matrix3';
 import Color from 'cesium/Core/Color.js';
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
 
 import {classMap} from 'lit-html/directives/class-map';
+import CMath from 'cesium/Core/Math';
+import Transforms from 'cesium/Core/Transforms';
+import HeadingPitchRoll from 'cesium/Core/HeadingPitchRoll';
+import Rectangle from 'cesium/Core/Rectangle';
 
 export default class LayerTree extends I18nMixin(LitElement) {
 
@@ -25,14 +30,29 @@ export default class LayerTree extends I18nMixin(LitElement) {
   }
 
   updated() {
-    if (this.viewer && !this.boundingSphereEntity) {
-      this.boundingSphereEntity = this.viewer.entities.add({
+    if (this.viewer && !this.boundingBoxEntity) {
+      const heading = CMath.toRadians(0.0);
+      const pitch = CMath.toRadians(0.0);
+      const roll = CMath.toRadians(0.0);
+      const orientation = Transforms.headingPitchRollQuaternion(Cartesian3.ZERO, new HeadingPitchRoll(heading, pitch, roll));
+      this.boundingBoxEntity = this.viewer.entities.add({
         position: Cartesian3.ZERO,
+        orientation: orientation,
         show: false,
-        ellipsoid: {
-          material: Color.RED.withAlpha(0.5),
-          radii: new Cartesian3(1, 1, 1),
+        box: {
+          material: Color.RED.withAlpha(0),
+          dimensions: new Cartesian3(1, 1, 1),
+          outline: true,
+          outlineColor: Color.RED
+        },
+        rectangle: {
+          material: Color.BLUE.withAlpha(0.5),
+          coordinates: new Rectangle(0, 0, 0, 0)
         }
+        // ellipsoid: {
+        //   material: Color.RED.withAlpha(0.5),
+        //   radii: new Cartesian3(1, 1, 1),
+        // }
       });
     }
   }
@@ -66,17 +86,24 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
     const mouseEnter = async () => {
       const p = await config.promise;
-      const b = p.boundingSphere;
-      if (b) {
-        this.boundingSphereEntity.position = b.center;
-        this.boundingSphereEntity.ellipsoid.radii = new Cartesian3(b.radius, b.radius, b.radius);
-        this.boundingSphereEntity.show = true;
+      if (p.root && p.root.boundingVolume) {
+        const b = p.root.boundingVolume.boundingVolume;
+        const halfAxes = b.halfAxes;
+        this.boundingBoxEntity.position = b.center;
+        // this.boundingBoxEntity.ellipsoid.radii = new Cartesian3(b.radius, b.radius, b.radius);
+        const heading = CMath.toRadians(90);
+        this.boundingBoxEntity.orientation = Transforms.headingPitchRollQuaternion(b.center, new HeadingPitchRoll(heading, 0, 0));
+        const absMatrix = Matrix3.abs(halfAxes, new Matrix3());
+        console.log(p.root.boundingVolume.rectangle);
+        this.boundingBoxEntity.box.dimensions = Matrix3.multiplyByVector(absMatrix, new Cartesian3(2, 2, 2), new Cartesian3());
+        this.boundingBoxEntity.rectangle.coordinates = p.root.boundingVolume.rectangle;
+        this.boundingBoxEntity.show = true;
         this.viewer.scene.requestRender();
       }
     };
     const mouseLeave = () => {
-      if (this.boundingSphereEntity.show) {
-        this.boundingSphereEntity.show = false;
+      if (this.boundingBoxEntity.show) {
+        this.boundingBoxEntity.show = false;
         this.viewer.scene.requestRender();
       }
     };
@@ -92,10 +119,10 @@ export default class LayerTree extends I18nMixin(LitElement) {
           <input class="ngm-layer-checkbox" type="checkbox"
                  .checked=${config.visible} @change=${changeVisibility}>
           <label @click=${evt => {
-            const input = evt.target.previousElementSibling;
-            input.checked = !input.checked;
-            input.dispatchEvent(new Event('change'));
-          }}>${i18next.t(config.label)}</label>
+      const input = evt.target.previousElementSibling;
+      input.checked = !input.checked;
+      input.dispatchEvent(new Event('change'));
+    }}>${i18next.t(config.label)}</label>
         </div>
         <div class="ui icon buttons compact mini">
             <button class="ui button"
@@ -124,11 +151,11 @@ export default class LayerTree extends I18nMixin(LitElement) {
             data-position="top center"
             data-variation="mini"
             @click=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {
-              detail: {
-                config,
-                idx
-              }
-            }))}>
+      detail: {
+        config,
+        idx
+      }
+    }))}>
           <i class="icon trash alternate outline"></i>
         </button>
         </div>
