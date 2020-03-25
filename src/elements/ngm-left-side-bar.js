@@ -169,7 +169,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     return html`
     <div class="left sidebar">
 
-      <div class="ui styled accordion">
+      <div class="ui styled accordion catalog">
         <div class="title" @click=${onAccordionClick}>
           <i class="dropdown icon"></i>
           ${i18next.t('geocatalog_label')}

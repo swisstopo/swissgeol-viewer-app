@@ -26,9 +26,7 @@ class Catalog extends I18nMixin(LitElement) {
         ${i18next.t(category.label)}
       </div>
       <div class="content ngm-layer-content">
-        <div>
         ${category.children.map(c => this.getCategoryOrLayerTemplate(c))}
-        </div>
       </div>
     </div>`;
   }
