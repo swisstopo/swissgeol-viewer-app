@@ -5,7 +5,7 @@ import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
-import {onAccordionClick, insertAndShift} from '../utils.js';
+import {onAccordionClick} from '../utils.js';
 import i18next from 'i18next';
 
 
