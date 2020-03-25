@@ -85,6 +85,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
   onCatalogLayerClicked(evt) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
     const layer = evt.detail.layer;
+    if (!layer.displayed && layer.type === LAYER_TYPES.swisstopoWMTS) {
+      layer.add();
+      layer.setVisibility(true);
+    }
     layer.displayed = !layer.displayed;
     layer.visible = layer.displayed;
     const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
