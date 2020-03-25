@@ -1,7 +1,7 @@
 // @ts-check
 import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';
-import {SWITZERLAND_RECTANGLE, DRILL_PICK_LIMIT} from './constants.js';
+import {DEFAULT_VIEW, DRILL_PICK_LIMIT} from './constants.js';
 
 import './style/index.css';
 import {setupSearch} from './search.js';
@@ -123,8 +123,8 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
 
 const {destination, orientation} = getCameraView();
 viewer.camera.flyTo({
-  destination: destination || SWITZERLAND_RECTANGLE,
-  orientation: orientation,
+  destination: destination || DEFAULT_VIEW.destination,
+  orientation: orientation || DEFAULT_VIEW.orientation,
   duration: 0
 });
 

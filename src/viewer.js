@@ -12,7 +12,6 @@ import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Color from 'cesium/Core/Color.js';
 import Ion from 'cesium/Core/Ion.js';
-import Camera from 'cesium/Scene/Camera.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
 // import GlobeTranslucencyMode from 'cesium/Scene/GlobeTranslucencyMode.js';
 // import NearFarScalar from 'cesium/Core/NearFarScalar.js';
@@ -74,9 +73,6 @@ export function setupViewer(container) {
 
   // Position the sun the that shadows look nice
   viewer.clock.currentTime = JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
-
-  // Set the fly home rectangle
-  Camera.DEFAULT_VIEW_RECTANGLE = SWITZERLAND_RECTANGLE;
 
 
   // Limit the volume inside which the user can navigate
