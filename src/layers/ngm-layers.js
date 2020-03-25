@@ -96,7 +96,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
         <div class="ui icon buttons compact mini">
             <button class="ui button"
             data-tooltip=${i18next.t('zoom_to')}
-            data-position="top center"
+            data-position="top left"
             data-variation="mini"
             @click=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}>
               <i class="search plus icon"></i>
@@ -117,7 +117,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
             </button>
             <button class="ui button"
             data-tooltip=${i18next.t('remove_btn_tooltip')}
-            data-position="top center"
+            data-position="top right"
             data-variation="mini"
             @click=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {
               detail: {
