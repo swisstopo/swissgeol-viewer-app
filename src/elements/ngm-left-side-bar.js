@@ -94,6 +94,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
     this.requestUpdate();
   }
 
+  onLayerChanged() {
+    this.catalogLayers = [...this.catalogLayers];
+  }
+
   onRemoveDisplayedLayer(evt) {
     const {config, idx} = evt.detail;
     this.activeLayers.splice(idx, 1);
@@ -191,6 +195,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         <div class="content active">
           <ngm-layers
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
+            @layerChanged=${this.onLayerChanged}
             .layers=${this.activeLayers}
             .viewer=${this.viewer}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>

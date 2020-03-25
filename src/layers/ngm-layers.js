@@ -52,6 +52,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
         config.displayed = true;
       }
       syncLayersParam(this.layers); // FIXME: these calls should be moved to left side bar or the app
+      this.dispatchEvent(new CustomEvent('layerChanged'));
       this.viewer.scene.requestRender();
     };
 
