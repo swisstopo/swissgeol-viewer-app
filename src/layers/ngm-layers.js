@@ -11,9 +11,6 @@ import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
 
 import {classMap} from 'lit-html/directives/class-map';
-import CMath from 'cesium/Core/Math';
-import Transforms from 'cesium/Core/Transforms';
-import HeadingPitchRoll from 'cesium/Core/HeadingPitchRoll';
 import Rectangle from 'cesium/Core/Rectangle';
 import Cartographic from 'cesium/Core/Cartographic';
 
@@ -32,13 +29,8 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
   updated() {
     if (this.viewer && !this.boundingBoxEntity) {
-      const heading = CMath.toRadians(0.0);
-      const pitch = CMath.toRadians(0.0);
-      const roll = CMath.toRadians(0.0);
-      const orientation = Transforms.headingPitchRollQuaternion(Cartesian3.ZERO, new HeadingPitchRoll(heading, pitch, roll));
       this.defaultBoxValue = {
         position: Cartesian3.ZERO,
-        orientation: orientation,
         show: false,
         box: {
           material: Color.RED.withAlpha(0),
@@ -47,13 +39,9 @@ export default class LayerTree extends I18nMixin(LitElement) {
           outlineColor: Color.RED
         },
         rectangle: {
-          material: Color.BLUE.withAlpha(0.5),
+          material: Color.BLACK.withAlpha(0.3),
           coordinates: new Rectangle(0, 0, 0, 0)
         }
-        // ellipsoid: {
-        //   material: Color.RED.withAlpha(0.5),
-        //   radii: new Cartesian3(1, 1, 1),
-        // }
       };
       this.boundingBoxEntity = this.viewer.entities.add(this.defaultBoxValue);
     }
@@ -93,7 +81,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
         this.boundingBoxEntity.position = b.center;
         // this.boundingBoxEntity.ellipsoid.radii = new Cartesian3(b.radius, b.radius, b.radius);
         const boundingRect = p.root.boundingVolume.rectangle;
-        let heading = CMath.toRadians(0);
         if (boundingRect) {
           const sw = Cartographic.toCartesian(Rectangle.southwest(boundingRect, new Cartographic()));
           const se = Cartographic.toCartesian(Rectangle.southeast(boundingRect, new Cartographic()));
@@ -101,24 +88,31 @@ export default class LayerTree extends I18nMixin(LitElement) {
           const x = Cartesian3.distance(sw, se);
           const y = Cartesian3.distance(sw, nw);
 
-          this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, 500);
+          this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, p.root.boundingVolume.maximumHeight);
           this.boundingBoxEntity.rectangle.coordinates = boundingRect;
         } else {
           const halfAxes = b.halfAxes;
           const absMatrix = Matrix3.abs(halfAxes, new Matrix3());
-          this.boundingBoxEntity.box.dimensions = Matrix3.multiplyByVector(absMatrix, new Cartesian3(2, 2, 2), new Cartesian3());
-          heading = CMath.toRadians(90);
+          const boxSize = Matrix3.multiplyByVector(absMatrix, new Cartesian3(2, 2.4, 2), new Cartesian3());
+          this.boundingBoxEntity.box.dimensions = new Cartesian3(boxSize.y, boxSize.x, boxSize.z);
+
+          const width = boxSize.y * 0.87; // TODO for some reason sizes for rect applies not the same as for box
+          const height = boxSize.x * 1.25;
+
+          const nw = new Cartesian3(b.center.x - height / 2, b.center.y - width / 2, b.center.z);
+          const sw = new Cartesian3(nw.x + height, nw.y, b.center.z);
+          const se = new Cartesian3(sw.x, sw.y + width, b.center.z);
+          const ne = new Cartesian3(se.x - height, se.y, b.center.z);
+          this.boundingBoxEntity.rectangle.coordinates = Rectangle.fromCartesianArray([sw, se, ne, nw]);
         }
-        this.boundingBoxEntity.orientation = Transforms.headingPitchRollQuaternion(b.center, new HeadingPitchRoll(heading, 0, 0));
         this.boundingBoxEntity.show = true;
         this.viewer.scene.requestRender();
       }
     };
     const mouseLeave = () => {
       if (this.boundingBoxEntity.show) {
-        this.boundingBoxEntity.show = this.defaultBoxValue.show; // TODO 
+        this.boundingBoxEntity.show = this.defaultBoxValue.show; // TODO
         this.boundingBoxEntity.rectangle = this.defaultBoxValue.rectangle;
-        this.boundingBoxEntity.orientation = this.defaultBoxValue.orientation;
         this.boundingBoxEntity.box = this.defaultBoxValue.box;
         this.boundingBoxEntity.position = this.defaultBoxValue.position;
         this.viewer.scene.requestRender();
