@@ -37,7 +37,7 @@ export function create3DTilesetFromConfig(viewer, config) {
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
     maximumScreenSpaceError: 0, // required for billboards render
-    // debugShowBoundingVolume: true
+    debugShowBoundingVolume: true
   });
 
   if (config.style) {

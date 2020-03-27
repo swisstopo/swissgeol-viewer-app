@@ -13,6 +13,8 @@ import {I18nMixin} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map';
 import Rectangle from 'cesium/Core/Rectangle';
 import Cartographic from 'cesium/Core/Cartographic';
+import Ellipsoid from 'cesium/Core/Ellipsoid';
+import CMath from 'cesium/Core/Math';
 
 export default class LayerTree extends I18nMixin(LitElement) {
 
@@ -39,7 +41,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
           outlineColor: Color.RED
         },
         rectangle: {
-          material: Color.BLACK.withAlpha(0.3),
+          material: Color.RED.withAlpha(0.3),
           coordinates: new Rectangle(0, 0, 0, 0)
         }
       };
@@ -79,42 +81,57 @@ export default class LayerTree extends I18nMixin(LitElement) {
       if (p.root && p.root.boundingVolume) {
         const b = p.root.boundingVolume.boundingVolume;
         this.boundingBoxEntity.position = b.center;
-        // this.boundingBoxEntity.ellipsoid.radii = new Cartesian3(b.radius, b.radius, b.radius);
         const boundingRect = p.root.boundingVolume.rectangle;
         if (boundingRect) {
           const sw = Cartographic.toCartesian(Rectangle.southwest(boundingRect, new Cartographic()));
           const se = Cartographic.toCartesian(Rectangle.southeast(boundingRect, new Cartographic()));
           const nw = Cartographic.toCartesian(Rectangle.northwest(boundingRect, new Cartographic()));
-          const x = Cartesian3.distance(sw, se);
-          const y = Cartesian3.distance(sw, nw);
+          const x = Cartesian3.distance(sw, se); // gets box width
+          const y = Cartesian3.distance(sw, nw); // gets box length
 
           this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, p.root.boundingVolume.maximumHeight);
           this.boundingBoxEntity.rectangle.coordinates = boundingRect;
         } else {
-          const halfAxes = b.halfAxes;
-          const absMatrix = Matrix3.abs(halfAxes, new Matrix3());
-          const boxSize = Matrix3.multiplyByVector(absMatrix, new Cartesian3(2, 2.4, 2), new Cartesian3());
-          this.boundingBoxEntity.box.dimensions = new Cartesian3(boxSize.y, boxSize.x, boxSize.z);
+          const absMatrix = Matrix3.abs(b.halfAxes, new Matrix3());
+          const boxSize = new Cartesian3();
+          for (let i = 0; i < 3; i++) {
+            const column = Matrix3.getColumn(absMatrix, i, new Cartesian3());
+            const row = Matrix3.getRow(absMatrix, i, new Cartesian3());
+            boxSize.y = boxSize.y + column.x + row.x;
+            boxSize.x = boxSize.x + column.y + row.y;
+            boxSize.z = boxSize.z + column.z + row.z;
+          }
 
-          const width = boxSize.y * 0.87; // TODO for some reason sizes for rect applies not the same as for box
-          const height = boxSize.x * 1.25;
+          //calculate rectangle extent
+          const diagonal = Math.sqrt(boxSize.x * boxSize.x + boxSize.y * boxSize.y);
+          const radius = p.root.boundingVolume.boundingSphere.radius;
+          const shortSideScale = diagonal / (radius * 2);
+          const longSideScale = (radius * 2) / diagonal;
 
-          const nw = new Cartesian3(b.center.x - height / 2, b.center.y - width / 2, b.center.z);
-          const sw = new Cartesian3(nw.x + height, nw.y, b.center.z);
-          const se = new Cartesian3(sw.x, sw.y + width, b.center.z);
-          const ne = new Cartesian3(se.x - height, se.y, b.center.z);
-          this.boundingBoxEntity.rectangle.coordinates = Rectangle.fromCartesianArray([sw, se, ne, nw]);
+
+          const width = boxSize.x > boxSize.y ? boxSize.x * longSideScale : boxSize.y * shortSideScale;
+          const height = boxSize.x > boxSize.y ? boxSize.x * shortSideScale : boxSize.y * longSideScale;
+
+          const w = new Cartesian3(b.center.x, b.center.y - width / 2, b.center.z);
+          const wlon = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(w).longitude);
+          const s = new Cartesian3(b.center.x + height / 2, b.center.y, b.center.z);
+          const slat = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(s).latitude);
+          const e = new Cartesian3(b.center.x, b.center.y + width / 2, b.center.z);
+          const elon = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(e).longitude);
+          const n = new Cartesian3(b.center.x - height / 2, b.center.y, b.center.z);
+          const nlat = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(n).latitude);
+
+          this.boundingBoxEntity.box.dimensions = boxSize;
+          this.boundingBoxEntity.rectangle.coordinates = Rectangle.fromDegrees(wlon, slat, elon, nlat);
         }
         this.boundingBoxEntity.show = true;
         this.viewer.scene.requestRender();
       }
     };
+
     const mouseLeave = () => {
       if (this.boundingBoxEntity.show) {
-        this.boundingBoxEntity.show = this.defaultBoxValue.show; // TODO
-        this.boundingBoxEntity.rectangle = this.defaultBoxValue.rectangle;
-        this.boundingBoxEntity.box = this.defaultBoxValue.box;
-        this.boundingBoxEntity.position = this.defaultBoxValue.position;
+        this.boundingBoxEntity.show = this.defaultBoxValue.show;
         this.viewer.scene.requestRender();
       }
     };
