@@ -252,20 +252,6 @@ const subsurface = {
   ]
 };
 
-const background = {
-  label: t('background_label'),
-  children: [
-    {
-      type: LAYER_TYPES.tiles3d,
-      url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
-      label: t('swissnames_label'),
-      style: SWISSTOPO_LABEL_STYLE,
-      layer: 'ch.swisstopo.swissnames3d.3d',
-      opacity: DEFAULT_LAYER_OPACITY
-    },
-  ]
-};
-
 const man_made_objects = {
   label: t('man_made_objects_label'),
   children: [{
@@ -280,6 +266,22 @@ const man_made_objects = {
   ]
 };
 
+const background = {
+  label: t('background_label'),
+  children: [
+    {
+      type: LAYER_TYPES.tiles3d,
+      url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
+      label: t('swissnames_label'),
+      style: SWISSTOPO_LABEL_STYLE,
+      layer: 'ch.swisstopo.swissnames3d.3d',
+      opacity: DEFAULT_LAYER_OPACITY
+    },
+    man_made_objects,
+  ]
+};
+
+
 // A "displayed" layer appears in the list of active layers.
 // A "visible" layer is actually shown on the globe.
 // Normally, visible => displayed
@@ -290,5 +292,4 @@ export const defaultLayerTree = [
   natural_hazard,
   subsurface,
   background,
-  man_made_objects
 ];
