@@ -88,6 +88,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
           this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, p.root.boundingVolume.maximumHeight);
           this.boundingBoxEntity.rectangle.coordinates = boundingRect;
         } else {
+          // get box sizes from boundingVolume
           const absMatrix = Matrix3.abs(b.halfAxes, new Matrix3());
           const boxSize = new Cartesian3();
           for (let i = 0; i < 3; i++) {
@@ -98,16 +99,14 @@ export default class LayerTree extends I18nMixin(LitElement) {
             boxSize.z = boxSize.z + column.z + row.z;
           }
 
-          //calculate rectangle extent
+          //calculate rectangle extent according to boundingSphere
           const diagonal = Math.sqrt(boxSize.x * boxSize.x + boxSize.y * boxSize.y);
           const radius = p.root.boundingVolume.boundingSphere.radius;
           const shortSideScale = diagonal / (radius * 2);
           const longSideScale = (radius * 2) / diagonal;
-
-
           const width = boxSize.x > boxSize.y ? boxSize.x * longSideScale : boxSize.y * shortSideScale;
           const height = boxSize.x > boxSize.y ? boxSize.x * shortSideScale : boxSize.y * longSideScale;
-
+          // calculate rectangle coords
           const w = new Cartesian3(b.center.x, b.center.y - width / 2, b.center.z);
           const wlon = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(w).longitude);
           const s = new Cartesian3(b.center.x + height / 2, b.center.y, b.center.z);
@@ -116,6 +115,9 @@ export default class LayerTree extends I18nMixin(LitElement) {
           const elon = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(e).longitude);
           const n = new Cartesian3(b.center.x - height / 2, b.center.y, b.center.z);
           const nlat = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(n).latitude);
+          //make box bigger the rectangle
+          boxSize.x = boxSize.x * Math.max(longSideScale, shortSideScale);
+          boxSize.y = boxSize.y * Math.max(longSideScale, shortSideScale);
 
           this.boundingBoxEntity.box.dimensions = boxSize;
           this.boundingBoxEntity.rectangle.coordinates = Rectangle.fromDegrees(wlon, slat, elon, nlat);
