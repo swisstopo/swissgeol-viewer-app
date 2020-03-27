@@ -4,17 +4,17 @@ import i18next from 'i18next';
 import {syncLayersParam} from '../permalink.js';
 import {createCesiumObject} from './helpers.js';
 import {LAYER_TYPES} from '../constants.js';
-import Cartesian3 from 'cesium/Core/Cartesian3';
-import Matrix3 from 'cesium/Core/Matrix3';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import Matrix3 from 'cesium/Core/Matrix3.js';
+import Rectangle from 'cesium/Core/Rectangle.js';
+import Cartographic from 'cesium/Core/Cartographic.js';
+import Ellipsoid from 'cesium/Core/Ellipsoid.js';
+import CMath from 'cesium/Core/Math.js';
 import Color from 'cesium/Core/Color.js';
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
 
 import {classMap} from 'lit-html/directives/class-map';
-import Rectangle from 'cesium/Core/Rectangle';
-import Cartographic from 'cesium/Core/Cartographic';
-import Ellipsoid from 'cesium/Core/Ellipsoid';
-import CMath from 'cesium/Core/Math';
 
 export default class LayerTree extends I18nMixin(LitElement) {
 
@@ -31,11 +31,11 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
   updated() {
     if (this.viewer && !this.boundingBoxEntity) {
-      this.defaultBoxValue = {
+      this.boundingBoxEntity = this.viewer.entities.add({
         position: Cartesian3.ZERO,
         show: false,
         box: {
-          material: Color.RED.withAlpha(0),
+          fill: false,
           dimensions: new Cartesian3(1, 1, 1),
           outline: true,
           outlineColor: Color.RED
@@ -44,8 +44,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
           material: Color.RED.withAlpha(0.3),
           coordinates: new Rectangle(0, 0, 0, 0)
         }
-      };
-      this.boundingBoxEntity = this.viewer.entities.add(this.defaultBoxValue);
+      });
     }
   }
 
@@ -129,7 +128,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
     const mouseLeave = () => {
       if (this.boundingBoxEntity.show) {
-        this.boundingBoxEntity.show = this.defaultBoxValue.show;
+        this.boundingBoxEntity.show = false;
         this.viewer.scene.requestRender();
       }
     };
