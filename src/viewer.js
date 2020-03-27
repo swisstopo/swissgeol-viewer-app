@@ -19,7 +19,9 @@ import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
-import SurfaceColorUpdater from './SurfaceColorUpdater';
+import SurfaceColorUpdater from './SurfaceColorUpdater.js';
+import Rectangle from 'cesium/Core/Rectangle.js';
+import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -37,6 +39,13 @@ Object.assign(RequestScheduler.requestsByServer, {
  * @param {HTMLElement} container
  */
 export function setupViewer(container) {
+
+  // The first layer of Cesium is special; using a 1x1 white image to workaround it.
+  // See https://github.com/AnalyticalGraphicsInc/cesium/issues/1323 for details.
+  const firstImageryProvider = new SingleTileImageryProvider({
+    url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=',
+    rectangle: Rectangle.fromDegrees(0, 0, 1, 1) // the Rectangle dimensions are arbitrary
+  });
 
   const viewer = new Viewer(container, {
     contextOptions: {
@@ -58,7 +67,7 @@ export function setupViewer(container) {
     navigationInstructionsInitiallyVisible: false,
     scene3DOnly: true,
     skyBox: false,
-    imageryProvider: false,
+    imageryProvider: firstImageryProvider,
     showRenderLoopErrors: false,
     useBrowserRecommendedResolution: true,
     terrainProvider: new CesiumTerrainProvider({
@@ -100,7 +109,7 @@ export function setupViewer(container) {
 
   const imageryLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
-      url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{z}/{x}/{y}.jpeg',
+      url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg',
       rectangle: SWITZERLAND_RECTANGLE,
       credit: new Credit('swisstopo')
     }));
