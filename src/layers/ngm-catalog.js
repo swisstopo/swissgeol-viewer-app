@@ -26,9 +26,7 @@ class Catalog extends I18nMixin(LitElement) {
         ${i18next.t(category.label)}
       </div>
       <div class="content ngm-layer-content">
-        <div>
         ${category.children.map(c => this.getCategoryOrLayerTemplate(c))}
-        </div>
       </div>
     </div>`;
   }
@@ -45,7 +43,7 @@ class Catalog extends I18nMixin(LitElement) {
         <input
           class="ngm-layer-checkbox"
           type="checkbox"
-          .checked=${layer.displayed}>
+          .checked=${layer.visible}>
         <label>${i18next.t(layer.label)}</label>
       </div>`;
   }

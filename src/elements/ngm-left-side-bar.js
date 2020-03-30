@@ -5,7 +5,7 @@ import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
-import {onAccordionClick, insertAndShift} from '../utils.js';
+import {onAccordionClick} from '../utils.js';
 import i18next from 'i18next';
 
 
@@ -85,6 +85,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
   onCatalogLayerClicked(evt) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
     const layer = evt.detail.layer;
+    if (!layer.displayed && layer.type === LAYER_TYPES.swisstopoWMTS) {
+      layer.add();
+      layer.setVisibility(true);
+    }
     layer.displayed = !layer.displayed;
     layer.visible = layer.displayed;
     const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
@@ -92,6 +96,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
     syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];
     this.requestUpdate();
+  }
+
+  onLayerChanged() {
+    this.catalogLayers = [...this.catalogLayers];
   }
 
   onRemoveDisplayedLayer(evt) {
@@ -135,15 +143,17 @@ class LeftSideBar extends I18nMixin(LitElement) {
     if (layer) { // for layers added before
       if (layer.type === LAYER_TYPES.swisstopoWMTS) {
         const index = this.activeLayers.indexOf(layer);
-        insertAndShift(this.layers, index, 0);
+        this.activeLayers.splice(index, 1);
+        layer.remove();
         layer.add(0);
+        this.activeLayers.push(layer);
       }
       layer.setVisibility(true);
       layer.visible = true;
       layer.displayed = true;
       this.viewer.scene.requestRender();
     } else { // for new layers
-      this.activeLayers.unshift(LeftSideBar.createSearchLayer(searchLayer.title, searchLayer.layer));
+      this.activeLayers.push(LeftSideBar.createSearchLayer(searchLayer.title, searchLayer.layer));
     }
     this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);
@@ -191,6 +201,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         <div class="content active">
           <ngm-layers
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
+            @layerChanged=${this.onLayerChanged}
             .layers=${this.activeLayers}
             .viewer=${this.viewer}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>
