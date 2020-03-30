@@ -84,15 +84,19 @@ export class CesiumDraw extends EventTarget {
       this.entities_.push(this.drawShape_(this.activePoints_));
     }
 
-    this.viewer_.entities.remove(this.sketchPoint_);
-    this.viewer_.entities.remove(this.sketchLine_);
-    this.viewer_.entities.remove(this.activeEntity_);
-
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
         positions: positions.map(cartesiantoDegrees)
       }
     }));
+
+    this.removeSketches();
+  }
+
+  removeSketches() {
+    this.viewer_.entities.remove(this.sketchPoint_);
+    this.viewer_.entities.remove(this.sketchLine_);
+    this.viewer_.entities.remove(this.activeEntity_);
 
     this.activePoints_ = [];
     this.activeEntity_ = undefined;
@@ -104,6 +108,7 @@ export class CesiumDraw extends EventTarget {
    *
    */
   clear() {
+    this.removeSketches();
     this.entities_.forEach(entity => this.viewer_.entities.remove(entity));
   }
 
