@@ -3,7 +3,7 @@ import {I18nMixin} from '../i18n.js';
 import AreaOfInterestDrawer from '../areaOfInterest/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
-import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
+import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree, TOOL_CHANGED_EVENT} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
 import {onAccordionClick} from '../utils.js';
 import i18next from 'i18next';
@@ -171,6 +171,15 @@ class LeftSideBar extends I18nMixin(LitElement) {
     };
   }
 
+  onDrawToolAccordionClick(evt) {
+    dispatchEvent(new CustomEvent(TOOL_CHANGED_EVENT, {
+      detail: {
+        nextTool: null
+      }
+    }));
+    onAccordionClick(evt);
+  }
+
   render() {
     if (!this.viewer) {
       return '';
@@ -210,7 +219,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       </div>
 
       <div class="ui styled accordion">
-        <div class="title" @click=${onAccordionClick}>
+        <div class="title" @click=${this.onDrawToolAccordionClick}>
           <i class="dropdown icon"></i>
           ${i18next.t('aoi_section_title')}
         </div>
@@ -220,7 +229,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       </div>
 
       <div class="ui styled accordion">
-        <div class="title" @click=${onAccordionClick}>
+        <div class="title" @click=${this.onDrawToolAccordionClick}>
           <i class="dropdown icon"></i>
           ${i18next.t('gst_accordion_title')}
         </div>

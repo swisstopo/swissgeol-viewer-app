@@ -7,6 +7,7 @@ import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 
 import './ngm-gst-modal.js';
+import {DRAW_TOOL_GST, TOOL_CHANGED_EVENT} from '../constants.js';
 
 const CSS_ACTIVE_CLASS = 'grey';
 
@@ -24,6 +25,17 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
       this.draw_.addEventListener('drawstart', () => this.draw_.clear());
       this.draw_.addEventListener('drawend', (event) => this.getGST(event.detail.positions));
     }
+    this.drawTool = null;
+    addEventListener(TOOL_CHANGED_EVENT, (event) => {
+      const nextTool = event.detail.nextTool;
+      if (this.drawTool === nextTool) return;
+      if ((!nextTool && this.drawTool === DRAW_TOOL_GST) || (nextTool && nextTool !== DRAW_TOOL_GST)) {
+        this.drawTool = nextTool;
+        this.changeTool();
+        return;
+      }
+      this.drawTool = nextTool;
+    });
   }
 
   getGST(positions) {
@@ -63,15 +75,23 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
 
     this.draw_.clear();
     this.viewer.scene.requestRender();
-
-    if (this.draw_.active && this.draw_.type === type) {
-      // tool is already active, turn it off
+    let changedDrawTool = this.drawTool;
+    if (this.draw_.active && (this.draw_.type === type || !type)) {
+      // turn it off
       this.draw_.active = false;
-      event.currentTarget.classList.remove(CSS_ACTIVE_CLASS);
-    } else {
+      changedDrawTool = this.drawTool === DRAW_TOOL_GST ? null : this.drawTool;
+    } else if (event && type) {
       this.draw_.type = type;
       this.draw_.active = true;
       event.currentTarget.classList.add(CSS_ACTIVE_CLASS);
+      changedDrawTool = DRAW_TOOL_GST;
+    }
+    if (this.drawTool !== changedDrawTool) {
+      dispatchEvent(new CustomEvent(TOOL_CHANGED_EVENT, {
+        detail: {
+          nextTool: changedDrawTool
+        }
+      }));
     }
   }
 

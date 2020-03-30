@@ -293,3 +293,7 @@ export const defaultLayerTree = [
   subsurface,
   background,
 ];
+
+export const TOOL_CHANGED_EVENT = 'drawToolChanged';
+export const DRAW_TOOL_GST = 'drawToolGST';
+export const DRAW_TOOL_AOI = 'drawToolAOI';
