@@ -10,6 +10,8 @@ import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 import VerticalOrigin from 'cesium/Scene/VerticalOrigin.js';
+import {isLabelOutlineEnabled} from '../permalink.js';
+import LabelStyle from 'cesium/Scene/LabelStyle.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import CMath from 'cesium/Core/Math.js';
@@ -44,6 +46,9 @@ export function create3DTilesetFromConfig(viewer, config) {
   });
 
   if (config.style) {
+    if (config.layer === 'ch.swisstopo.swissnames3d.3d') { // for performance testing
+      config.style.labelStyle = isLabelOutlineEnabled() ? LabelStyle.FILL_AND_OUTLINE : LabelStyle.FILL;
+    }
     tileset.style = new Cesium3DTileStyle(config.style);
   }
   tileset.pickable = config.pickable !== undefined ? config.pickable : false;
