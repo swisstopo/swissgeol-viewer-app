@@ -95,6 +95,7 @@ export class CesiumDraw extends EventTarget {
     } else {
       this.entities_.push(this.drawShape_(this.activePoints_));
     }
+    this.viewer_.scene.requestRender();
 
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {

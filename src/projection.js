@@ -7,7 +7,7 @@ proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.43958333
  * @return {Array<number>}
  */
 export function degreesToLv95(coordinates) {
-  return proj4('EPSG:4326', 'EPSG:2056', coordinates);
+  return proj4('EPSG:4326', 'EPSG:2056', coordinates.slice());
 }
 
 /**
