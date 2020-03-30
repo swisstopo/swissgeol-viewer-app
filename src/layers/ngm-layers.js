@@ -73,7 +73,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
       const p = await config.promise;
       if (p.boundingRectangle) { // earthquakes
         const {x, y} = getCartesianBoxSize(p.boundingRectangle);
-        console.log(x, y);
         this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
         this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, p.maximumHeight);
         this.boundingBoxEntity.rectangle.coordinates = p.boundingRectangle;
@@ -84,7 +83,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
         const boundingRectangle = p.root.boundingVolume.rectangle;
         const boundingSphere = p.root.boundingVolume.boundingSphere;
         this.boundingBoxEntity.position = boundingVolume.center;
-        if (false && boundingRectangle) {
+        if (boundingRectangle) {
           const {x, y} = getCartesianBoxSize(boundingRectangle);
           this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, p.root.boundingVolume.maximumHeight);
           this.boundingBoxEntity.rectangle.coordinates = boundingRectangle;
