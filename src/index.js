@@ -1,7 +1,7 @@
 // @ts-check
 import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';
-import {DEFAULT_VIEW, DRILL_PICK_LIMIT} from './constants.js';
+import {DEFAULT_VIEW, DRILL_PICK_LIMIT, SWITZERLAND_RECTANGLE} from './constants.js';
 
 import './style/index.css';
 import {setupSearch} from './search.js';
@@ -17,6 +17,8 @@ import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
 import {showConfirmationMessage} from './message.js';
 import i18next from 'i18next';
+import BoundingSphere from 'cesium/Core/BoundingSphere.js';
+import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 
 import './elements/ngm-object-information.js';
 import './elements/ngm-gst-interaction.js';
@@ -33,8 +35,17 @@ const viewer = setupViewer(document.querySelector('#cesium'));
 async function zoomTo(config) {
   const p = await config.promise;
   if (p.boundingSphere) {
-    const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 4, 3 * p.boundingSphere.radius);
-    viewer.camera.flyToBoundingSphere(p.boundingSphere, {
+    const switzerlandBS = BoundingSphere.fromRectangle3D(SWITZERLAND_RECTANGLE, Ellipsoid.WGS84);
+    let radiusCoef = switzerlandBS.radius / p.boundingSphere.radius;
+    radiusCoef = radiusCoef > 3 ? 3 : radiusCoef;
+    let boundingSphere = p.boundingSphere;
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, radiusCoef * p.boundingSphere.radius);
+    if (radiusCoef <= 1) {
+      zoomHeadingPitchRange.range = p.boundingSphere.radius * 0.8;
+      zoomHeadingPitchRange.heading = Math.PI / 2;
+      boundingSphere = switzerlandBS;
+    }
+    viewer.camera.flyToBoundingSphere(boundingSphere, {
       duration: 0,
       offset: zoomHeadingPitchRange
     });
