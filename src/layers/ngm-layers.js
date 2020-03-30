@@ -2,14 +2,12 @@
 
 import i18next from 'i18next';
 import {syncLayersParam} from '../permalink.js';
-import {createCesiumObject} from './helpers.js';
+import {createCesiumObject, calculateRectangle, getCartesianBoxSize} from './helpers.js';
 import {LAYER_TYPES} from '../constants.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Matrix3 from 'cesium/Core/Matrix3.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
-import Ellipsoid from 'cesium/Core/Ellipsoid.js';
-import CMath from 'cesium/Core/Math.js';
 import Color from 'cesium/Core/Color.js';
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
@@ -73,22 +71,26 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
     const mouseEnter = async () => {
       const p = await config.promise;
-      if (p.root && p.root.boundingVolume) {
-        const b = p.root.boundingVolume.boundingVolume;
-        this.boundingBoxEntity.position = b.center;
-        const boundingRect = p.root.boundingVolume.rectangle;
-        if (boundingRect) {
-          const sw = Cartographic.toCartesian(Rectangle.southwest(boundingRect, new Cartographic()));
-          const se = Cartographic.toCartesian(Rectangle.southeast(boundingRect, new Cartographic()));
-          const nw = Cartographic.toCartesian(Rectangle.northwest(boundingRect, new Cartographic()));
-          const x = Cartesian3.distance(sw, se); // gets box width
-          const y = Cartesian3.distance(sw, nw); // gets box length
-
+      if (p.boundingRectangle) { // earthquakes
+        const {x, y} = getCartesianBoxSize(p.boundingRectangle);
+        console.log(x, y);
+        this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
+        this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, p.maximumHeight);
+        this.boundingBoxEntity.rectangle.coordinates = p.boundingRectangle;
+        this.boundingBoxEntity.show = true;
+        this.viewer.scene.requestRender();
+      } else if (p.root && p.root.boundingVolume) {
+        const boundingVolume = p.root.boundingVolume.boundingVolume;
+        const boundingRectangle = p.root.boundingVolume.rectangle;
+        const boundingSphere = p.root.boundingVolume.boundingSphere;
+        this.boundingBoxEntity.position = boundingVolume.center;
+        if (false && boundingRectangle) {
+          const {x, y} = getCartesianBoxSize(boundingRectangle);
           this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, p.root.boundingVolume.maximumHeight);
-          this.boundingBoxEntity.rectangle.coordinates = boundingRect;
+          this.boundingBoxEntity.rectangle.coordinates = boundingRectangle;
         } else {
           // get box sizes from boundingVolume
-          const absMatrix = Matrix3.abs(b.halfAxes, new Matrix3());
+          const absMatrix = Matrix3.abs(boundingVolume.halfAxes, new Matrix3());
           const boxSize = new Cartesian3();
           for (let i = 0; i < 3; i++) {
             const column = Matrix3.getColumn(absMatrix, i, new Cartesian3());
@@ -97,34 +99,21 @@ export default class LayerTree extends I18nMixin(LitElement) {
             boxSize.x = boxSize.x + column.y + row.y;
             boxSize.z = boxSize.z + column.z + row.z;
           }
-
           //calculate rectangle extent according to boundingSphere
           const diagonal = Math.sqrt(boxSize.x * boxSize.x + boxSize.y * boxSize.y);
-          const radius = p.root.boundingVolume.boundingSphere.radius;
-          const shortSideScale = diagonal / (radius * 2);
-          const longSideScale = (radius * 2) / diagonal;
-          const width = boxSize.x > boxSize.y ? boxSize.x * longSideScale : boxSize.y * shortSideScale;
-          const height = boxSize.x > boxSize.y ? boxSize.x * shortSideScale : boxSize.y * longSideScale;
-          // calculate rectangle coords
-          const w = new Cartesian3(b.center.x, b.center.y - width / 2, b.center.z);
-          const wlon = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(w).longitude);
-          const s = new Cartesian3(b.center.x + height / 2, b.center.y, b.center.z);
-          const slat = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(s).latitude);
-          const e = new Cartesian3(b.center.x, b.center.y + width / 2, b.center.z);
-          const elon = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(e).longitude);
-          const n = new Cartesian3(b.center.x - height / 2, b.center.y, b.center.z);
-          const nlat = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(n).latitude);
-          //make box bigger the rectangle
-          boxSize.x = boxSize.x * Math.max(longSideScale, shortSideScale);
-          boxSize.y = boxSize.y * Math.max(longSideScale, shortSideScale);
-
+          const radius = boundingSphere.radius;
+          const scale = Math.max(diagonal / (radius * 2), (radius * 2) / diagonal);
+          boxSize.x = boxSize.x * scale;
+          boxSize.y = boxSize.y * scale;
+          boxSize.z = boxSize.z > 60000 ? 60000 : boxSize.z;
           this.boundingBoxEntity.box.dimensions = boxSize;
-          this.boundingBoxEntity.rectangle.coordinates = Rectangle.fromDegrees(wlon, slat, elon, nlat);
+          this.boundingBoxEntity.rectangle.coordinates = calculateRectangle(boxSize.x, boxSize.y, boundingVolume.center);
         }
         this.boundingBoxEntity.show = true;
         this.viewer.scene.requestRender();
       }
     };
+
 
     const mouseLeave = () => {
       if (this.boundingBoxEntity.show) {
