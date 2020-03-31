@@ -76,12 +76,11 @@
       </div>
     </div>
   </main>
+  <script type="module" id="app-script" crossorigin="use-credentials"></script>
   <script type="module">
     const debug = !location.search.includes('prod') && (location.search.includes('debug') || location.hostname === 'localhost');
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.setAttribute('src', debug ? './bundle.debug.js' : './bundle.min.js');
-    document.head.appendChild(script);
+    const script = document.querySelector('#app-script');
+    script.src = debug ? 'bundle.debug.js' : 'bundle.min.js';
   </script>
   <script nomodule>
     document.querySelector('#outdated-browser').style.display = '';
