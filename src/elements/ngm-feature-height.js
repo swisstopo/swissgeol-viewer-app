@@ -6,19 +6,19 @@ import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 
 
-class NgmFeatureDepth extends I18nMixin(LitElement) {
+class NgmFeatureHeight extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
       viewer: {type: Object},
-      depth: {type: Number}
+      height: {type: Number}
     };
   }
 
   constructor() {
     super();
 
-    this.depth = undefined;
+    this.height = undefined;
     this.eventHandler = undefined;
 
     // always use the 'de-CH' locale to always have the simple tick as thousands separator
@@ -45,19 +45,18 @@ class NgmFeatureDepth extends I18nMixin(LitElement) {
   onMouseMove(movement) {
     const feature = this.viewer.scene.pick(movement.endPosition);
     if (feature) {
-      // FIXME: validate this !
       const position = Cartographic.fromCartesian(this.viewer.scene.pickPosition(movement.endPosition));
       const altitude = this.viewer.scene.globe.getHeight(position);
-      this.depth = altitude - position.height;
+      this.height = position.height - altitude;
     } else {
-      this.depth = undefined;
+      this.height = undefined;
     }
   }
 
   render() {
-    if (this.depth !== undefined) {
+    if (this.height !== undefined) {
       return html`
-        ${i18next.t('Depth')}: ${this.integerFormat.format(this.depth)} m
+        ${i18next.t('Object height')}: ${this.integerFormat.format(this.height)} m
       `;
     } else {
       return html``;
@@ -65,4 +64,4 @@ class NgmFeatureDepth extends I18nMixin(LitElement) {
   }
 }
 
-customElements.define('ngm-feature-depth', NgmFeatureDepth);
+customElements.define('ngm-feature-height', NgmFeatureHeight);
