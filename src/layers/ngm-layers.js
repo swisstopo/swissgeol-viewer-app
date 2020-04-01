@@ -150,14 +150,14 @@ export default class LayerTree extends I18nMixin(LitElement) {
             data-position="top center"
             data-variation="mini"
             @click=${this.moveLayer.bind(this, config, -1)}>
-              <i class="angle up icon"></i>
+              <i class="angle down icon"></i>
             </button>
             <button class="ui button ${classMap(downClassMap)}"
             data-tooltip=${i18next.t('layer_down')}
             data-position="top center"
             data-variation="mini"
             @click=${this.moveLayer.bind(this, config, +1)}>
-              <i class="angle down icon"></i>
+              <i class="angle up icon"></i>
             </button>
             <button class="ui button"
             data-tooltip=${i18next.t('remove_btn_tooltip')}
@@ -182,7 +182,9 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
   // builds ui structure of layertree and makes render
   render() {
-    return html`${this.layers.map((l, idx) => this.getLayerRender(l, idx))}`;
+    const layerTemplates = this.layers.map((l, idx) => this.getLayerRender(l, idx));
+    layerTemplates.reverse();
+    return html`${layerTemplates}`;
   }
 
   // changes layer position in 'Displayed Layers'
