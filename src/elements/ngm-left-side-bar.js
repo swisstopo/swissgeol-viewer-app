@@ -4,10 +4,12 @@ import AreaOfInterestDrawer from '../areaOfInterest/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import './ngm-gst-interaction.js';
-import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree, TOOL_CHANGED_EVENT} from '../constants.js';
+import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
-import {onAccordionClick} from '../utils.js';
 import i18next from 'i18next';
+import {DRAW_TOOL_AOI, DRAW_TOOL_GST} from '../constants';
+import 'fomantic-ui-css/components/accordion.js';
+import $ from '../jquery.js';
 
 
 class LeftSideBar extends I18nMixin(LitElement) {
@@ -78,6 +80,33 @@ class LeftSideBar extends I18nMixin(LitElement) {
   updated(changedProperties) {
     if (this.viewer && !this.aoiDrawer) {
       this.aoiDrawer = new AreaOfInterestDrawer(this.viewer);
+    }
+    if (!this.accordionInited) { // TODO move to separate function
+      const sideBarElement = document.querySelector('ngm-left-side-bar').firstElementChild;
+      for (let i = 0; i < sideBarElement.childElementCount; i++) {
+        const element = sideBarElement.children.item(i);
+        if (element.classList.contains('accordion')) {
+          switch (element.id) {
+            case DRAW_TOOL_GST: {
+              $(element).accordion({
+                onClosing: () => this.dispatchEvent(new CustomEvent('gstClosed')),
+                onOpening: () => $(`#${DRAW_TOOL_AOI}`).accordion('close', 0)
+              });
+              break;
+            }
+            case DRAW_TOOL_AOI: {
+              $(element).accordion({
+                onClosing: () => this.dispatchEvent(new CustomEvent('aoiClosed')),
+                onOpening: () => $(`#${DRAW_TOOL_GST}`).accordion('close', 0)
+              });
+              break;
+            }
+            default:
+              $(element).accordion();
+          }
+        }
+      }
+      this.accordionInited = true;
     }
 
     super.updated(changedProperties);
@@ -172,15 +201,6 @@ class LeftSideBar extends I18nMixin(LitElement) {
     };
   }
 
-  onDrawToolAccordionClick(evt) {
-    dispatchEvent(new CustomEvent(TOOL_CHANGED_EVENT, {
-      detail: {
-        nextTool: null
-      }
-    }));
-    onAccordionClick(evt);
-  }
-
   render() {
     if (!this.viewer) {
       return '';
@@ -190,7 +210,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     <div class="left sidebar">
 
       <div class="ui styled accordion">
-        <div class="title" @click=${onAccordionClick}>
+        <div class="title">
           <i class="dropdown icon"></i>
           ${i18next.t('geocatalog_label')}
         </div>
@@ -204,7 +224,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       </div>
 
       <div class="ui styled accordion">
-        <div class="title active" @click=${onAccordionClick}>
+        <div class="title active">
           <i class="dropdown icon"></i>
           ${i18next.t('displayed_maps_label')}
         </div>
@@ -219,8 +239,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
       </div>
 
-      <div class="ui styled accordion">
-        <div class="title" @click=${this.onDrawToolAccordionClick}>
+      <div class="ui styled accordion" id="${DRAW_TOOL_AOI}">
+        <div class="title">
           <i class="dropdown icon"></i>
           ${i18next.t('aoi_section_title')}
         </div>
@@ -229,8 +249,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
       </div>
 
-      <div class="ui styled accordion">
-        <div class="title" @click=${this.onDrawToolAccordionClick}>
+      <div class="ui styled accordion" id="${DRAW_TOOL_GST}">
+        <div class="title">
           <i class="dropdown icon"></i>
           ${i18next.t('gst_accordion_title')}
         </div>
@@ -240,6 +260,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       </div>
     `;
   }
+
   createRenderRoot() {
     return this;
   }

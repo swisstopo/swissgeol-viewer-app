@@ -306,6 +306,5 @@ export const defaultLayerTree = [
   background,
 ];
 
-export const TOOL_CHANGED_EVENT = 'drawToolChanged';
-export const DRAW_TOOL_GST = 'drawToolGST';
-export const DRAW_TOOL_AOI = 'drawToolAOI';
+export const DRAW_TOOL_GST = 'draw-tool-gst';
+export const DRAW_TOOL_AOI = 'draw-tool-aoi';

@@ -15,9 +15,7 @@ import i18next from 'i18next';
 import {
   DEFAULT_AOI_COLOR,
   CESIUM_NOT_GRAPHICS_ENTITY_PROPS,
-  AOI_DATASOURCE_NAME,
-  DRAW_TOOL_AOI,
-  TOOL_CHANGED_EVENT
+  AOI_DATASOURCE_NAME
 } from '../constants.js';
 import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
@@ -53,18 +51,7 @@ export default class AreaOfInterestDrawer {
       this.doRender_();
     });
     this.doRender_();
-
-    this.drawTool = null;
-    addEventListener(TOOL_CHANGED_EVENT, (event) => {
-      const nextTool = event.detail.nextTool;
-      if (this.drawTool === nextTool) return;
-      if ((!nextTool && this.drawTool === DRAW_TOOL_AOI) || (nextTool && nextTool !== DRAW_TOOL_AOI)) {
-        this.drawTool = nextTool;
-        this.cancelDraw_();
-        return;
-      }
-      this.drawTool = nextTool;
-    });
+    document.querySelector('ngm-left-side-bar').addEventListener('aoiClosed', this.cancelDraw_.bind(this)); // TODO update event type
   }
 
   startDrawing_() {
@@ -123,14 +110,6 @@ export default class AreaOfInterestDrawer {
     this.screenSpaceEventHandler_.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
     this.screenSpaceEventHandler_.removeInputAction(ScreenSpaceEventType.LEFT_DOWN);
     this.screenSpaceEventHandler_.removeInputAction(ScreenSpaceEventType.LEFT_UP);
-    const changedDrawTool = this.drawTool === DRAW_TOOL_AOI ? null : this.drawTool;
-    if (changedDrawTool !== this.drawTool) {
-      dispatchEvent(new CustomEvent(TOOL_CHANGED_EVENT, {
-        detail: {
-          nextTool: changedDrawTool
-        }
-      }));
-    }
   }
 
   getAreaLocationCallback_(time, result) {
@@ -162,10 +141,6 @@ export default class AreaOfInterestDrawer {
   }
 
   onClick_(click) {
-    if (this.drawTool) {
-      this.deselectArea();
-      return;
-    }
     const pickedObject = this.viewer_.scene.pick(click.position);
     if (!defined(pickedObject) || !pickedObject.id) {
       this.deselectArea();
@@ -226,11 +201,6 @@ export default class AreaOfInterestDrawer {
   }
 
   onAddAreaClick_() {
-    dispatchEvent(new CustomEvent(TOOL_CHANGED_EVENT, {
-      detail: {
-        nextTool: DRAW_TOOL_AOI
-      }
-    }));
     this.drawMode_ = true;
     this.doRender_();
 
