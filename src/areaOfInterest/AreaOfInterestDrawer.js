@@ -35,6 +35,7 @@ export default class AreaOfInterestDrawer {
     this.mouseDown_ = false;
     this.drawMode_ = false;
     this.areasCounter_ = 0;
+    this.areasClickable = false;
 
     this.getAreaLocation = new CallbackProperty(this.getAreaLocationCallback_.bind(this), false);
 
@@ -141,6 +142,7 @@ export default class AreaOfInterestDrawer {
   }
 
   onClick_(click) {
+    if (!this.areasClickable) return;
     const pickedObject = this.viewer_.scene.pick(click.position);
     if (!defined(pickedObject) || !pickedObject.id) {
       this.deselectArea();
@@ -248,6 +250,13 @@ export default class AreaOfInterestDrawer {
       entity.polygon.material = DEFAULT_AOI_COLOR;
       this.interestAreasDataSource.entities.add(entity);
       this.viewer_.flyTo(entity);
+    }
+  }
+
+  setAreasClickable(areasClickable) {
+    this.areasClickable = areasClickable;
+    if (!this.areasClickable) {
+      this.deselectArea();
     }
   }
 }

@@ -89,8 +89,14 @@ class LeftSideBar extends I18nMixin(LitElement) {
           switch (element.id) {
             case DRAW_TOOL_GST: {
               $(element).accordion({
-                onClosing: () => this.dispatchEvent(new CustomEvent('gstClosed')),
-                onOpening: () => $(`#${DRAW_TOOL_AOI}`).accordion('close', 0)
+                onClosing: () => {
+                  this.dispatchEvent(new CustomEvent('gstClosed'));
+                  this.aoiDrawer.setAreasClickable(true);
+                },
+                onOpening: () => {
+                  $(`#${DRAW_TOOL_AOI}`).accordion('close', 0);
+                  this.aoiDrawer.setAreasClickable(false);
+                }
               });
               break;
             }
