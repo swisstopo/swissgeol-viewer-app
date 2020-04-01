@@ -3,6 +3,7 @@ import {I18nMixin} from '../i18n.js';
 import AreaOfInterestDrawer from '../areaOfInterest/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
+import './ngm-gst-interaction.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree, TOOL_CHANGED_EVENT} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
 import {onAccordionClick} from '../utils.js';

@@ -57,8 +57,20 @@ export const SWISSTOPO_LABEL_STYLE = {
   anchorLineEnabled: false,
   heightOffset: 200,
   pointSize: 0,
-  labelColor: 'color("black")',
-  font: '"bold 32px arial"',
+  labelColor: {
+    conditions: [
+      ['${OBJEKTART} === "See"', 'color("blue")'],
+      ['true', 'color("black")']
+    ]
+  },
+  labelOutlineColor: 'color("white", 1)',
+  labelOutlineWidth: 5,
+  font: {
+    conditions: [
+      ['${OBJEKTART} === "See"', '"bold 32px arial"'],
+      ['true', '"32px arial"']
+    ]
+  },
   scaleByDistance: {
     conditions: [
       ['${LOD} === "7"', 'vec4(1000, 1, 5000, 0.4)'],

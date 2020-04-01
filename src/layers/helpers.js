@@ -10,6 +10,12 @@ import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 import VerticalOrigin from 'cesium/Scene/VerticalOrigin.js';
+import {isLabelOutlineEnabled} from '../permalink.js';
+import LabelStyle from 'cesium/Scene/LabelStyle.js';
+import Rectangle from 'cesium/Core/Rectangle.js';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import CMath from 'cesium/Core/Math.js';
+import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -40,6 +46,9 @@ export function create3DTilesetFromConfig(viewer, config) {
   });
 
   if (config.style) {
+    if (config.layer === 'ch.swisstopo.swissnames3d.3d') { // for performance testing
+      config.style.labelStyle = isLabelOutlineEnabled() ? LabelStyle.FILL_AND_OUTLINE : LabelStyle.FILL;
+    }
     tileset.style = new Cesium3DTileStyle(config.style);
   }
   tileset.pickable = config.pickable !== undefined ? config.pickable : false;
@@ -166,4 +175,38 @@ function addBillboardsForTileset(viewer, tileset, config) {
 
 function getBillboardDataSourceName(layer) {
   return `${BILLBOARDS_PREFIX}${layer}`;
+}
+
+/**
+ * Returns width and length for box
+ * @param rectangle
+ * @returns {{x: Number, y: Number}}
+ */
+export function getCartesianBoxSize(rectangle) {
+  const sw = Cartographic.toCartesian(Rectangle.southwest(rectangle, new Cartographic()));
+  const se = Cartographic.toCartesian(Rectangle.southeast(rectangle, new Cartographic()));
+  const nw = Cartographic.toCartesian(Rectangle.northwest(rectangle, new Cartographic()));
+  const x = Cartesian3.distance(sw, se); // gets box width
+  const y = Cartesian3.distance(sw, nw); // gets box length
+  return {x, y};
+}
+
+/**
+ * Returns rectangle from width height and center point
+ * @param width
+ * @param height
+ * @param center
+ * @returns {Rectangle}
+ */
+export function calculateRectangle(width, height, center) {
+  const w = new Cartesian3(center.x, center.y - width / 2, center.z);
+  const west = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(w).longitude);
+  const s = new Cartesian3(center.x + height / 2, center.y, center.z);
+  const south = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(s).latitude);
+  const e = new Cartesian3(center.x, center.y + width / 2, center.z);
+  const east = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(e).longitude);
+  const n = new Cartesian3(center.x - height / 2, center.y, center.z);
+  const north = CMath.toDegrees(Ellipsoid.WGS84.cartesianToCartographic(n).latitude);
+
+  return Rectangle.fromDegrees(west, south, east, north);
 }
