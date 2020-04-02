@@ -1,5 +1,4 @@
 import {LitElement, html} from 'lit-element';
-import FirstPersonCameraMode from '../FirstPersonCameraMode.js';
 import './cesium-compass.js';
 import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';
@@ -14,21 +13,6 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
     };
   }
 
-  constructor() {
-    super();
-    this.fpsMode = null;
-  }
-
-  updated() {
-    if (this.viewer && !this.fpsMode) {
-      this.fpsMode = new FirstPersonCameraMode(this.viewer.scene);
-    }
-  }
-
-  activateFpsMode() {
-    this.fpsMode.active = true;
-  }
-
   render() {
     if (this.viewer) {
       return html`
@@ -40,14 +24,6 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
         ></cesium-compass>
         <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
         <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
-        <button
-        data-tooltip=${i18next.t('fps_btn')}
-        data-position="left center"
-        data-variation="mini"
-        class="ui compact mini icon button"
-        @click="${this.activateFpsMode}">
-          <i class="eye icon"></i>
-        </button>
       `;
     } else {
       return html``;
