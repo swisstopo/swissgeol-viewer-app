@@ -9,9 +9,11 @@ import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
 import Entity from 'cesium/DataSources/Entity.js';
 import defined from 'cesium/Core/defined.js';
-import {render} from 'lit-html';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
+
+import {LitElement} from 'lit-element';
+
 import {
   DEFAULT_AOI_COLOR,
   CESIUM_NOT_GRAPHICS_ENTITY_PROPS,
@@ -19,47 +21,58 @@ import {
 } from '../constants.js';
 import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
+import {I18nMixin} from '../i18n';
 
-export default class AreaOfInterestDrawer {
-  constructor(viewer) {
-    this.viewer_ = viewer;
+class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
+
+  static get properties() {
+    return {
+      viewer: {type: Object}
+    };
+  }
+
+  update(changedProperties) {
+    if (!this.aoiInited && this.viewer) {
+      this.initAoi();
+    }
+    super.update(changedProperties);
+  }
+
+  initAoi() {
     this.area_ = null;
     this.areaRectangle_ = new Rectangle();
-    this.screenSpaceEventHandler_ = new ScreenSpaceEventHandler(this.viewer_.scene.canvas);
     this.cartesian_ = new Cartesian3();
     this.tempCartographic_ = new Cartographic();
     this.firstPoint_ = new Cartographic();
     this.firstPointSet_ = false;
-    this.camera_ = this.viewer_.camera;
     this.selectedArea_ = null;
     this.mouseDown_ = false;
     this.drawMode_ = false;
     this.areasCounter_ = 0;
     this.areasClickable = false;
-
     this.getAreaLocation = new CallbackProperty(this.getAreaLocationCallback_.bind(this), false);
-
-    this.screenSpaceEventHandler_.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
-
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
-    this.viewer_.dataSources.add(this.interestAreasDataSource);
+    this.viewer.dataSources.add(this.interestAreasDataSource);
 
+    this.screenSpaceEventHandler_ = new ScreenSpaceEventHandler(this.viewer.scene.canvas);
+    this.screenSpaceEventHandler_.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
-      this.viewer_.scene.requestRender();
-      this.doRender_();
+      this.viewer.scene.requestRender();
+      this.requestUpdate();
     });
-    i18next.on('languageChanged', options => {
-      this.doRender_();
-    });
-    this.doRender_();
-    document.querySelector('ngm-left-side-bar').addEventListener('aoiClosed', this.cancelDraw_.bind(this)); // TODO update event type
+    const sideBarElement = document.querySelector('ngm-left-side-bar');
+    sideBarElement.addEventListener('ngm-aoi-closed', this.cancelDraw_.bind(this));
+    sideBarElement.addEventListener('ngm-gst-closed', this.setAreasClickable.bind(this, true));
+    sideBarElement.addEventListener('ngm-gst-opened', this.setAreasClickable.bind(this, false));
+
+    this.aoiInited = true;
   }
 
   startDrawing_() {
-    this.viewer_.scene.screenSpaceCameraController.enableTranslate = false;
-    this.viewer_.scene.screenSpaceCameraController.enableTilt = false;
-    this.viewer_.scene.screenSpaceCameraController.enableLook = false;
-    this.viewer_.scene.screenSpaceCameraController.enableRotate = false;
+    this.viewer.scene.screenSpaceCameraController.enableTranslate = false;
+    this.viewer.scene.screenSpaceCameraController.enableTilt = false;
+    this.viewer.scene.screenSpaceCameraController.enableLook = false;
+    this.viewer.scene.screenSpaceCameraController.enableRotate = false;
 
 
     this.areasCounter_ = this.areasCounter_ + 1;
@@ -79,10 +92,10 @@ export default class AreaOfInterestDrawer {
   }
 
   endDrawing_() {
-    this.viewer_.scene.screenSpaceCameraController.enableTranslate = true;
-    this.viewer_.scene.screenSpaceCameraController.enableTilt = true;
-    this.viewer_.scene.screenSpaceCameraController.enableLook = true;
-    this.viewer_.scene.screenSpaceCameraController.enableRotate = true;
+    this.viewer.scene.screenSpaceCameraController.enableTranslate = true;
+    this.viewer.scene.screenSpaceCameraController.enableTilt = true;
+    this.viewer.scene.screenSpaceCameraController.enableLook = true;
+    this.viewer.scene.screenSpaceCameraController.enableRotate = true;
 
     this.mouseDown_ = false;
     this.firstPointSet_ = false;
@@ -107,10 +120,10 @@ export default class AreaOfInterestDrawer {
       return;
     }
     this.drawMode_ = false;
-    this.doRender_();
     this.screenSpaceEventHandler_.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
     this.screenSpaceEventHandler_.removeInputAction(ScreenSpaceEventType.LEFT_DOWN);
     this.screenSpaceEventHandler_.removeInputAction(ScreenSpaceEventType.LEFT_UP);
+    this.requestUpdate();
   }
 
   getAreaLocationCallback_(time, result) {
@@ -122,7 +135,7 @@ export default class AreaOfInterestDrawer {
       return;
     }
 
-    this.cartesian_ = this.viewer_.scene.pickPosition(movement.endPosition);
+    this.cartesian_ = this.viewer.scene.pickPosition(movement.endPosition);
 
     if (this.cartesian_) {
       this.tempCartographic_ = Cartographic.fromCartesian(this.cartesian_, Ellipsoid.WGS84, this.tempCartographic_);
@@ -143,7 +156,7 @@ export default class AreaOfInterestDrawer {
 
   onClick_(click) {
     if (!this.areasClickable) return;
-    const pickedObject = this.viewer_.scene.pick(click.position);
+    const pickedObject = this.viewer.scene.pick(click.position);
     if (!defined(pickedObject) || !pickedObject.id) {
       this.deselectArea();
     } else if (this.interestAreasDataSource.entities.contains(pickedObject.id)) {
@@ -155,7 +168,7 @@ export default class AreaOfInterestDrawer {
     if (this.selectedArea_) {
       updateColor(this.selectedArea_, false);
       this.selectedArea_ = null;
-      this.doRender_();
+      this.requestUpdate();
     }
   }
 
@@ -170,11 +183,6 @@ export default class AreaOfInterestDrawer {
     }
     this.selectedArea_ = entity;
     updateColor(this.selectedArea_, true);
-  }
-
-  doRender_() {
-    const element = document.getElementById('areasOfInterest');
-    render(getTemplate.call(this), element);
   }
 
   get entitiesList_() {
@@ -204,11 +212,10 @@ export default class AreaOfInterestDrawer {
 
   onAddAreaClick_() {
     this.drawMode_ = true;
-    this.doRender_();
-
     this.screenSpaceEventHandler_.setInputAction(this.drawArea_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
     this.screenSpaceEventHandler_.setInputAction(this.startDrawing_.bind(this), ScreenSpaceEventType.LEFT_DOWN);
     this.screenSpaceEventHandler_.setInputAction(this.endDrawing_.bind(this), ScreenSpaceEventType.LEFT_UP);
+    this.requestUpdate();
   }
 
   flyToArea_(id) {
@@ -216,7 +223,7 @@ export default class AreaOfInterestDrawer {
     if (!entity.isShowing) {
       entity.show = !entity.isShowing;
     }
-    this.viewer_.flyTo(entity);
+    this.viewer.flyTo(entity);
     this.pickArea_(id);
   }
 
@@ -230,8 +237,8 @@ export default class AreaOfInterestDrawer {
       }
       const kmlDataSource = await KmlDataSource.load(file,
         {
-          camera: this.viewer_.scene.camera,
-          canvas: this.viewer_.scene.canvas,
+          camera: this.viewer.scene.camera,
+          canvas: this.viewer.scene.canvas,
           clampToGround: true
         });
       evt.target.value = null;
@@ -249,7 +256,7 @@ export default class AreaOfInterestDrawer {
       entity.polygon.fill = true;
       entity.polygon.material = DEFAULT_AOI_COLOR;
       this.interestAreasDataSource.entities.add(entity);
-      this.viewer_.flyTo(entity);
+      this.viewer.flyTo(entity);
     }
   }
 
@@ -259,4 +266,19 @@ export default class AreaOfInterestDrawer {
       this.deselectArea();
     }
   }
+
+  render() {
+    if (!this.viewer) {
+      return '';
+    }
+
+    return getTemplate.call(this);
+  }
+
+  createRenderRoot() {
+    return this;
+  }
+
 }
+
+customElements.define('ngm-aoi-drawer', NgmAreaOfInterestDrawer);

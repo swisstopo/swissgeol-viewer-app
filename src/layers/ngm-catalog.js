@@ -33,12 +33,12 @@ class Catalog extends I18nMixin(LitElement) {
   getLayerTemplate(layer) {
     return html`
       <div class="ui checkbox ngm-displayed-container" @click=${() => {
-        this.dispatchEvent(new CustomEvent('layerclick', {
-          detail: {
-            layer
-          }
-        }));
-      }}>
+      this.dispatchEvent(new CustomEvent('layerclick', {
+        detail: {
+          layer
+        }
+      }));
+    }}>
         <input
           class="ngm-layer-checkbox"
           type="checkbox"
@@ -48,7 +48,7 @@ class Catalog extends I18nMixin(LitElement) {
   }
 
   render() {
-    if (!this.layers) return; // TODO check why layers undefined in some cases
+    if (!this.layers) return '';
     const templates = this.layers.map(l => this.getCategoryOrLayerTemplate(l));
     return html`${templates}`;
   }

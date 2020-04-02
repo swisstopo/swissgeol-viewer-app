@@ -1,7 +1,5 @@
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import CMath from 'cesium/Core/Math';
-import $ from './jquery';
-import 'fomantic-ui-css/components/accordion.js';
+import CMath from 'cesium/Core/Math.js';
 
 
 export async function readTextFile(url) {

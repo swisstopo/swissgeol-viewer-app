@@ -305,6 +305,3 @@ export const defaultLayerTree = [
   subsurface,
   background,
 ];
-
-export const DRAW_TOOL_GST = 'draw-tool-gst';
-export const DRAW_TOOL_AOI = 'draw-tool-aoi';

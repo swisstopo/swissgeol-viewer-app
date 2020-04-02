@@ -1,16 +1,17 @@
 import {LitElement, html} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
-import AreaOfInterestDrawer from '../areaOfInterest/AreaOfInterestDrawer.js';
+import '../areaOfInterest/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import './ngm-gst-interaction.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
 import i18next from 'i18next';
-import {DRAW_TOOL_AOI, DRAW_TOOL_GST} from '../constants';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 
+const DRAW_TOOL_GST = 'draw-tool-gst';
+const DRAW_TOOL_AOI = 'draw-tool-aoi';
 
 class LeftSideBar extends I18nMixin(LitElement) {
 
@@ -78,41 +79,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   updated(changedProperties) {
-    if (this.viewer && !this.aoiDrawer) {
-      this.aoiDrawer = new AreaOfInterestDrawer(this.viewer);
-    }
-    if (!this.accordionInited) { // TODO move to separate function
-      const sideBarElement = document.querySelector('ngm-left-side-bar').firstElementChild;
-      for (let i = 0; i < sideBarElement.childElementCount; i++) {
-        const element = sideBarElement.children.item(i);
-        if (element.classList.contains('accordion')) {
-          switch (element.id) {
-            case DRAW_TOOL_GST: {
-              $(element).accordion({
-                onClosing: () => {
-                  this.dispatchEvent(new CustomEvent('gstClosed'));
-                  this.aoiDrawer.setAreasClickable(true);
-                },
-                onOpening: () => {
-                  $(`#${DRAW_TOOL_AOI}`).accordion('close', 0);
-                  this.aoiDrawer.setAreasClickable(false);
-                }
-              });
-              break;
-            }
-            case DRAW_TOOL_AOI: {
-              $(element).accordion({
-                onClosing: () => this.dispatchEvent(new CustomEvent('aoiClosed')),
-                onOpening: () => $(`#${DRAW_TOOL_GST}`).accordion('close', 0)
-              });
-              break;
-            }
-            default:
-              $(element).accordion();
-          }
-        }
-      }
-      this.accordionInited = true;
+    if (!this.accordionInited) {
+      this.initBarAccordions();
     }
 
     super.updated(changedProperties);
@@ -207,6 +175,43 @@ class LeftSideBar extends I18nMixin(LitElement) {
     };
   }
 
+  accordionFactory(element) {
+    switch (element.id) {
+      case DRAW_TOOL_GST: {
+        $(element).accordion({
+          onClosing: () => this.dispatchEvent(new CustomEvent('ngm-gst-closed')),
+          onOpening: () => {
+            this.dispatchEvent(new CustomEvent('ngm-gst-opened'));
+            $(`#${DRAW_TOOL_AOI}`).accordion('close', 0);
+          }
+        });
+        break;
+      }
+      case DRAW_TOOL_AOI: {
+        $(element).accordion({
+          onClosing: () => this.dispatchEvent(new CustomEvent('ngm-aoi-closed')),
+          onOpening: () => $(`#${DRAW_TOOL_GST}`).accordion('close', 0)
+        });
+        break;
+      }
+      default:
+        $(element).accordion();
+    }
+  }
+
+  initBarAccordions() {
+    const sideBarElement = document.querySelector('ngm-left-side-bar').firstElementChild;
+
+    for (let i = 0; i < sideBarElement.childElementCount; i++) {
+      const element = sideBarElement.children.item(i);
+      if (element.classList.contains('accordion')) {
+        this.accordionFactory(element);
+      }
+    }
+
+    this.accordionInited = true;
+  }
+
   render() {
     if (!this.viewer) {
       return '';
@@ -251,7 +256,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
           ${i18next.t('aoi_section_title')}
         </div>
         <div class="content">
-          <div id="areasOfInterest"></div>
+          <ngm-aoi-drawer .viewer=${this.viewer}></ngm-aoi-drawer>
         </div>
       </div>
 
