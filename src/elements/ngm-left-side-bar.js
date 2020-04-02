@@ -33,11 +33,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
       <div class="ui styled accordion">
         <div class="ngmlightgrey title ${!hideWelcome ? 'active' : ''}"
           @click=${evt => {
-            const newValue = !(localStorage.getItem('hideWelcome') === 'true');
-            localStorage.setItem('hideWelcome', newValue);
-            onAccordionClick(evt);
-            this.requestUpdate();
-          }}>
+      const newValue = !(localStorage.getItem('hideWelcome') === 'true');
+      localStorage.setItem('hideWelcome', newValue);
+      this.requestUpdate();
+    }}>
           <i class="dropdown icon"></i>
           ${i18next.t('welcome_label')}
         </div>
@@ -51,7 +50,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       </div>
 
       <div class="ui styled accordion">
-        <div class="title ngmlightgrey active" @click=${onAccordionClick}>
+        <div class="title ngmlightgrey active">
           <i class="dropdown icon"></i>
           ${i18next.t('geocatalog_label')}
         </div>
@@ -65,7 +64,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       </div>
 
       <div class="ui styled accordion">
-        <div class="title ngmverylightgrey active" @click=${onAccordionClick}>
+        <div class="title ngmverylightgrey active">
           <i class="dropdown icon"></i>
           ${i18next.t('displayed_maps_label')}
         </div>
@@ -80,18 +79,18 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
       </div>
 
-      <div class="ui styled accordion">
-        <div class="title ngmmidgrey" @click=${onAccordionClick}>
+      <div class="ui styled accordion" id="${DRAW_TOOL_AOI}">
+        <div class="title ngmmidgrey">
           <i class="dropdown icon"></i>
           ${i18next.t('aoi_section_title')}
         </div>
         <div class="content">
-          <div id="areasOfInterest"></div>
+          <ngm-aoi-drawer .viewer=${this.viewer}></ngm-aoi-drawer>
         </div>
       </div>
 
-      <div class="ui styled accordion">
-        <div class="title ngmmidgrey" @click=${onAccordionClick}>
+      <div class="ui styled accordion" id="${DRAW_TOOL_GST}">
+        <div class="title ngmmidgrey">
           <i class="dropdown icon"></i>
           ${i18next.t('gst_accordion_title')}
         </div>
@@ -289,7 +288,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   initBarAccordions() {
-    const sideBarElement = document.querySelector('ngm-left-side-bar').firstElementChild;
+    const sideBarElement = document.querySelector('ngm-left-side-bar');
 
     for (let i = 0; i < sideBarElement.childElementCount; i++) {
       const element = sideBarElement.children.item(i);
@@ -299,66 +298,6 @@ class LeftSideBar extends I18nMixin(LitElement) {
     }
 
     this.accordionInited = true;
-  }
-
-  render() {
-    if (!this.viewer) {
-      return '';
-    }
-
-    return html`
-    <div class="left sidebar">
-
-      <div class="ui styled accordion">
-        <div class="title">
-          <i class="dropdown icon"></i>
-          ${i18next.t('geocatalog_label')}
-        </div>
-        <div class="content ngm-layer-content">
-          <ngm-catalog
-            .layers=${this.catalogLayers}
-            @layerclick=${this.onCatalogLayerClicked}
-            .viewer=${this.viewer}>
-          </ngm-catalog>
-        </div>
-      </div>
-
-      <div class="ui styled accordion">
-        <div class="title active">
-          <i class="dropdown icon"></i>
-          ${i18next.t('displayed_maps_label')}
-        </div>
-        <div class="content active">
-          <ngm-layers
-            @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
-            @layerChanged=${this.onLayerChanged}
-            .layers=${this.activeLayers}
-            .viewer=${this.viewer}
-            @zoomTo=${evt => this.zoomTo(evt.detail)}>
-          </ngm-layers>
-        </div>
-      </div>
-
-      <div class="ui styled accordion" id="${DRAW_TOOL_AOI}">
-        <div class="title">
-          <i class="dropdown icon"></i>
-          ${i18next.t('aoi_section_title')}
-        </div>
-        <div class="content">
-          <ngm-aoi-drawer .viewer=${this.viewer}></ngm-aoi-drawer>
-        </div>
-      </div>
-
-      <div class="ui styled accordion" id="${DRAW_TOOL_GST}">
-        <div class="title">
-          <i class="dropdown icon"></i>
-          ${i18next.t('gst_accordion_title')}
-        </div>
-        <div class="content">
-          <ngm-gst-interaction .viewer=${this.viewer}></ngm-gst-interaction>
-        </div>
-      </div>
-    `;
   }
 
   createRenderRoot() {
