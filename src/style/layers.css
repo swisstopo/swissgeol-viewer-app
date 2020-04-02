@@ -34,3 +34,15 @@
 .ngm-displayed-container label {
   margin-right: 10px;
 }
+
+.ngmmidgrey {
+  background-color: #999 !important;
+}
+
+.ngmlightgrey {
+  background-color: #c7c7c7 !important;
+}
+
+.ngmverylightgrey {
+  background-color: #e9e9e9 !important;
+}
