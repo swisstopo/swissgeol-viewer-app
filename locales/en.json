@@ -91,5 +91,8 @@
   "top_lower_freshwater_molasse_label": "Top Lower Freshwater Molasse",
   "top_bedrock_label": "Top Bedrock",
   "up_btn": "Move Up",
-  "down_btn": "Move Down"
+  "down_btn": "Move Down",
+  "welcome_label": "National Geological Model",
+  "welcome_text": "Welcome to the 3D subsurface viewer of the national geologcal model!",
+  "welcome_instructions": "Navigate with the mouse and use 'CTRL' to tilt the 3D view"
 }
