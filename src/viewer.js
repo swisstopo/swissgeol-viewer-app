@@ -47,6 +47,9 @@ export function setupViewer(container) {
     rectangle: Rectangle.fromDegrees(0, 0, 1, 1) // the Rectangle dimensions are arbitrary
   });
 
+  const searchParams = new URLSearchParams(location.search);
+
+  const terrainExaggeration = parseFloat(searchParams.get('terrainExaggeration') || '1');
   const viewer = new Viewer(container, {
     contextOptions: {
       webgl: {
@@ -73,7 +76,7 @@ export function setupViewer(container) {
     terrainProvider: new CesiumTerrainProvider({
       url: IonResource.fromAssetId(1)
     }),
-    terrainExaggeration: 1,
+    terrainExaggeration: terrainExaggeration,
     requestRenderMode: true,
     // maximumRenderTimeChange: 10,
   });
