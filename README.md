@@ -1,8 +1,8 @@
 # Instances
 
-- dev https://ngmpub.dev.bgdi.ch/
-- int https://ngmpub.int.bgdi.ch/
-- prod https://ngmpub.prod.bgdi.ch/ (username: agch, password: OhnooTh1)
+- dev https://dev.swissgeol.ch/
+- int https://int.swissgeol.ch/
+- prod https://beta.swissgeol.ch/ (username: agch, password: OhnooTh1)
 
 # Deploy to integration (from local machine)
 
