@@ -125,6 +125,12 @@ main {
 #cesium .cesium-widget {
   position: absolute;
 }
+#cesium .cesium-viewer {
+  flex: auto;
+  width: auto;
+  height: auto;
+}
+/* End of workaround */
 
 #cesium .cesium-viewer-bottom {
   pointer-events: none;

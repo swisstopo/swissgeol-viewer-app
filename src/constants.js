@@ -165,6 +165,8 @@ const geo_base = {
           layer: 'boreholes',
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
+          visible: true,
+          displayed: true,
           billboards: {
             lonPropName: 'Longitude',
             latPropName: 'Latitude'
@@ -175,6 +177,8 @@ const geo_base = {
           label: t('cross_section_label'),
           layer: 'cross_section',
           opacity: DEFAULT_LAYER_OPACITY,
+          visible: true,
+          displayed: true,
           pickable: true
         },
       ]
@@ -208,6 +212,8 @@ const natural_hazard = {
       type: LAYER_TYPES.earthquakes,
       label: t('earthquakes_label'),
       layer: 'earthquakes',
+      visible: true,
+      displayed: true,
       opacity: DEFAULT_LAYER_OPACITY
     },
   ]
