@@ -44,7 +44,7 @@ class Catalog extends I18nMixin(LitElement) {
           class="ngm-layer-checkbox"
           type="checkbox"
           .checked=${layer.visible}>
-        <label>${i18next.t(layer.label)}</label>
+        <label class=${layer.displayed ? 'displayed' : ''}>${i18next.t(layer.label)}</label>
       </div>`;
   }
 

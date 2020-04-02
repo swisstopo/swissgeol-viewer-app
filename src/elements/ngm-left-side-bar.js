@@ -17,6 +17,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       viewer: {type: Object},
       zoomTo: {type: Function},
       catalogLayers: {type: Object},
+      activeLayers: {type: Object},
     };
   }
 
