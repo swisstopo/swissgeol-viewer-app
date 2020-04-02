@@ -27,8 +27,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
 
     const hideWelcome = localStorage.getItem('hideWelcome') === 'true';
     return html`
-    <div class="left sidebar">
-    <div class="ui styled accordion">
+      <div class="ui styled accordion">
         <div class="ngmlightgrey title ${!hideWelcome ? 'active' : ''}"
           @click=${evt => {
             const newValue = !(localStorage.getItem('hideWelcome') === 'true');
