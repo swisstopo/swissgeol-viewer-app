@@ -179,9 +179,15 @@ class LeftSideBar extends I18nMixin(LitElement) {
     switch (element.id) {
       case DRAW_TOOL_GST: {
         $(element).accordion({
-          onClosing: () => this.dispatchEvent(new CustomEvent('ngm-gst-closed')),
+          onClosing: () => {
+            const aoiElement = this.querySelector('ngm-aoi-drawer');
+            aoiElement.setAreasClickable(true);
+            const gstElement = this.querySelector('ngm-gst-interaction');
+            gstElement.changeTool();
+          },
           onOpening: () => {
-            this.dispatchEvent(new CustomEvent('ngm-gst-opened'));
+            const aoiElement = this.querySelector('ngm-aoi-drawer');
+            aoiElement.setAreasClickable(false);
             $(`#${DRAW_TOOL_AOI}`).accordion('close', 0);
           }
         });
@@ -189,7 +195,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
       }
       case DRAW_TOOL_AOI: {
         $(element).accordion({
-          onClosing: () => this.dispatchEvent(new CustomEvent('ngm-aoi-closed')),
+          onClosing: () => {
+            const aoiElement = this.querySelector('ngm-aoi-drawer');
+            aoiElement.cancelDraw();
+          },
           onOpening: () => $(`#${DRAW_TOOL_GST}`).accordion('close', 0)
         });
         break;

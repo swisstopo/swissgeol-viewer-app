@@ -24,10 +24,6 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
       this.draw_.addEventListener('drawstart', () => this.draw_.clear());
       this.draw_.addEventListener('drawend', (event) => this.getGST(event.detail.positions));
     }
-    if (!this.subscribedOnClose) {
-      document.querySelector('ngm-left-side-bar').addEventListener('ngm-gst-closed', this.changeTool.bind(this));
-      this.subscribedOnClose = true;
-    }
   }
 
   getGST(positions) {

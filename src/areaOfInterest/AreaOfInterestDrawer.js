@@ -62,13 +62,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       this.viewer.scene.requestRender();
       this.requestUpdate();
     });
-    const sideBarElement = document.querySelector('ngm-left-side-bar');
-    sideBarElement.addEventListener('ngm-aoi-closed', this.cancelDraw_.bind(this));
-    sideBarElement.addEventListener('ngm-gst-closed', this.setAreasClickable.bind(this, true));
-    sideBarElement.addEventListener('ngm-gst-opened', this.setAreasClickable.bind(this, false));
-
     this.aoiInited = true;
   }
+
 
   startDrawing_() {
     this.viewer.scene.screenSpaceCameraController.enableTranslate = false;
@@ -103,7 +99,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.firstPointSet_ = false;
 
     if (this.drawMode_) {
-      this.cancelDraw_();
+      this.cancelDraw();
     }
 
     if (this.areaRectangle_.width === 0 || this.areaRectangle_.height === 0) {
@@ -116,7 +112,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     }
   }
 
-  cancelDraw_() {
+  cancelDraw() {
     if (this.mouseDown_) {
       this.endDrawing_();
       return;

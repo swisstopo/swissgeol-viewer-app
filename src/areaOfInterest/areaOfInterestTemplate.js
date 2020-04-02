@@ -22,7 +22,7 @@ export default function getTemplate() {
     </button> -->
     <input id="${areaUploadInputId}" type='file' accept=".kml,.KML" hidden @change=${this.uploadArea_.bind(this)} />
     <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.drawMode_}>
-        <button class="ui button" @click=${this.cancelDraw_.bind(this)}>${i18next.t('cancel_area_btn_label')}</button>
+        <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('cancel_area_btn_label')}</button>
         <button class="ui button ngm-help-btn"
                 data-tooltip=${i18next.t('area_of_interest_add_hint')}
                 data-variation="tiny"
