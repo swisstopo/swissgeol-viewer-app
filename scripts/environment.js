@@ -3,13 +3,10 @@ const util = require('util');
 const path = require('path');
 
 const exec = util.promisify(require('child_process').exec);
-const writeFileAsync = util.promisify(fs.writeFile);
-const mkdirp = require('mkdirp');
-const mkdirpAsync = util.promisify(mkdirp);
 
 (async (branch) => {
   try {
-    const dir = '../src/environments';
+    const dir = '../src';
     const filename = 'environment';
 
     if (!branch) {
@@ -19,10 +16,8 @@ const mkdirpAsync = util.promisify(mkdirp);
     const jsonContent = `{'branch': '${branch}'}`;
     const content = `export const environment = ${jsonContent};`;
 
-    await mkdirpAsync(path.resolve(__dirname, dir));
-
     console.log(`Creating environment for ${branch}...`);
-    await writeFileAsync(path.resolve(__dirname, `${dir}/${filename}.js`), content, {encoding: 'utf8'}); // for frontend
+    fs.writeFileSync(path.resolve(__dirname, `${dir}/${filename}.js`), content, {encoding: 'utf8'}); // for frontend
     process.exit(0);
   } catch (e) {
     console.error(e);
