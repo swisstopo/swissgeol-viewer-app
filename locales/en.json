@@ -33,29 +33,28 @@
   "hide_btn_tooltip": "Hide",
   "Horizontal cross sections": "Horizontal cross sections",
   "info_btn": "Information / Help",
+
   "info_elevator": "\"+\" / \"-\" key",
   "info_elevator_label": "Move up/down (elevator)",
+
   "info_look_key": "\"J\" / \"L\" key",
   "info_look_label": "Look around / Rotate",
-  "info_look_mouse": "CTRL + left mouse button + drag left/right",
-  "info_look_touch": "Keep one finger fix and move the other one",
-  "info_move": "Left/right arrow or \"A\"/\"D\" key",
+
+
   "info_move_forward": "\"W\"/\"S\" key",
   "info_move_forward_label": "Move forward/backward",
-  "info_move_forward_mouse": "Left mouse button + drag up/down",
-  "info_move_forward_touch": "One finger drag forward/backward",
+
   "info_move_label": "Move left/right",
-  "info_move_mouse": "Left mouse button + drag left/right",
-  "info_move_touch": "One finger drag left/right",
+  "info_move": "Left/right arrow or \"A\"/\"D\" key",
+
   "info_tilt_label": "Tilt up/down",
-  "info_tilt_pc_1": "CTRL + left mouse button + drag up/down",
-  "info_tilt_pc_2": "\"I\" / \"K\" key",
-  "info_tilt_touch": "Tilts the viewer toward \"horizon\" / \"top-down\" view",
+  "info_tilt": "\"I\" / \"K\" key",
+
   "info_tip": "Tip: press \"shift\" to increase the speed",
-  "info_zoom": "Scroll wheel or right mouse button + drag up/down or scroll on trackpad",
+
   "info_zoom_key": "Up/down arrow",
   "info_zoom_label": "Zoom in/out",
-  "info_zoom_touch": "Zooms the viewer in and out",
+
   "layer_down": "Layer Down",
   "layer_up": "Layer Up",
   "loading_message": "Loading, please wait",
@@ -63,7 +62,6 @@
   "natural_hazard_label": "Natural hazards",
   "Object height": "",
   "opacity_label": "Opacity",
-  "pc_mac_label": "PC + Mac",
   "remove_all_area_btn_label": "Clear Areas",
   "remove_btn_tooltip": "Remove",
   "reset_view_btn": "Reset View",
@@ -72,7 +70,6 @@
   "subsurface_label": "Subsurface geometry",
   "swissnames_label": "SwissNAMES",
   "temperature_model_label": "Temperature model",
-  "touch_label": "Touch",
   "tunnel_label": "Tunnel",
   "unhide_btn_tooltip": "Unhide",
   "unsupported_file_warning": "Unsupported file extension. Please upload KML",

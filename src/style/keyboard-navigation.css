@@ -1,42 +1,34 @@
-#navigationInfo {
+#ngm-navigation-info {
   margin-right: 70px;
   min-width: 300px; /* fomatic-ui fix for Edge */
   max-width: 510px;
 }
 
-#navigationInfo .ngm-keyboard-info-content {
+#ngm-navigation-info .ngm-keyboard-info-content {
   width: 40vw;
   max-width: 500px;
   max-height: 80vh;
   overflow-y: auto;
 }
 
-#navigationInfo h4 {
+#ngm-navigation-info h4 {
   margin: 5px 0;
 }
 
-#navigationInfo .ngm-keyboard-tip {
+#ngm-navigation-info .ngm-keyboard-tip {
   margin-top: 15px;
   font-style: italic;
 }
 
-#navigationInfo .column {
+#ngm-navigation-info .column {
   padding: 5px 10px;
-}
-
-.ngm-info-line {
   display: flex;
-  margin: 5px;
 }
 
-.ngm-info-line-title {
+#ngm-navigation-info .column > div {
   flex: 1;
-  display: flex;
 }
+
 .ngm-info-line-title img {
   margin-left: 10px;
-}
-
-.ngm-info-line-content {
-  flex: 3;
 }

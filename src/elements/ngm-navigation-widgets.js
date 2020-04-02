@@ -3,6 +3,7 @@ import FirstPersonCameraMode from '../FirstPersonCameraMode.js';
 import './cesium-compass.js';
 import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';
+import './ngm-keyboard-info-popup.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 
@@ -48,6 +49,7 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
         @click="${this.activateFpsMode}">
           <i class="eye icon"></i>
         </button>
+        <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
       `;
     } else {
       return html``;
