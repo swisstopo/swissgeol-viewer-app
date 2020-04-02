@@ -129,7 +129,6 @@ export function setupViewer(container) {
  */
 export function addMantelEllipsoid(viewer) {
   // Add Mantel ellipsoid
-  if (noLimit) return;
   const radii = Ellipsoid.WGS84.radii.clone();
   const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
   radii.x -= mantelDepth;
