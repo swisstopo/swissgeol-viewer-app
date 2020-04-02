@@ -28,8 +28,6 @@ window['CESIUM_BASE_URL'] = '.';
 
 Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
-const noLimit = document.location.search.includes('noLimit');
-
 Object.assign(RequestScheduler.requestsByServer, {
   'wmts.geo.admin.ch:443': 18,
   'vectortiles0.geo.admin.ch:443': 18
@@ -50,6 +48,8 @@ export function setupViewer(container) {
   const searchParams = new URLSearchParams(location.search);
 
   const terrainExaggeration = parseFloat(searchParams.get('terrainExaggeration') || '1');
+  const noLimit = searchParams.has('noLimit');
+
   const viewer = new Viewer(container, {
     contextOptions: {
       webgl: {
