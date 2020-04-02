@@ -40,13 +40,10 @@ class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
   get infoLineTemplate() {
     return infoConfig.map(value => html`
     <div class="row">
-    <div class="column">
       <div>
         ${i18next.t(value.title)}:
-        ${value.img ? html`<img src="${value.img}">` : ''}
       </div>
       <div>${i18next.t(value.content)}</div>
-      </div>
     </div>`);
   }
 
@@ -59,9 +56,13 @@ class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
       data-tooltip=${i18next.t('info_btn')} @click=${this.closeInfoPopup}>
       <i class="keyboard icon"></i>
     </button>
-    <div id=${popupId} class="ui basic popup left center">
-      <div class="ui internally celled grid ngm-keyboard-info-content">
-       ${this.infoLineTemplate}
+    <div id=${popupId} class="ui basic popup">
+      <h4>${i18next.t('info_popup_label')}</h4>
+      <div class="ngm-keyboard-info-content">
+        <div class="row">
+          <img src="../images/keyboard-layout_navigation.png">
+        </div>
+        ${this.infoLineTemplate}
       </div>
       <h4 class="ngm-keyboard-tip">${i18next.t('info_tip')}</h4>
     </div>`;

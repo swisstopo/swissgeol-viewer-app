@@ -41,6 +41,7 @@
   "info_move_forward": "\"W\"/\"S\" key",
   "info_move_forward_label": "Move forward/backward",
   "info_move_label": "Move left/right",
+  "info_popup_label": "Keyboard navigation",
   "info_tilt": "\"I\" / \"K\" key",
   "info_tilt_label": "Tilt up/down",
   "info_tip": "Tip: press \"shift\" to increase the speed",

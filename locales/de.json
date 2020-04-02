@@ -41,6 +41,7 @@
   "info_move_forward": "\"W\"/\"S\"-Tasten",
   "info_move_forward_label": "Vor- und zurückbewegen",
   "info_move_label": "Links/rechts bewegen",
+  "info_popup_label": "",
   "info_tilt": "\"I\" / \"K\"-Tasten",
   "info_tilt_label": "Auf/ab kippen",
   "info_tip": "Tip: \"Shift\" drücken, um Geschwindigkeit zu erhöhen",
