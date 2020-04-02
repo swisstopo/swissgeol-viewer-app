@@ -1,5 +1,4 @@
 import {LitElement, html} from 'lit-element';
-import {onAccordionClick} from '../utils.js';
 import {I18nMixin} from '../i18n.js';
 import i18next from 'i18next';
 
@@ -21,7 +20,7 @@ class Catalog extends I18nMixin(LitElement) {
   getCategoryTemplate(category) {
     return html`
     <div class="ui styled ngm-layers-categories accordion">
-      <div class="title ngm-layer-title" @click=${onAccordionClick}>
+      <div class="title ngm-layer-title">
         <i class="dropdown icon"></i>
         ${i18next.t(category.label)}
       </div>
@@ -34,12 +33,12 @@ class Catalog extends I18nMixin(LitElement) {
   getLayerTemplate(layer) {
     return html`
       <div class="ui checkbox ngm-displayed-container" @click=${() => {
-        this.dispatchEvent(new CustomEvent('layerclick', {
-          detail: {
-            layer
-          }
-        }));
-      }}>
+      this.dispatchEvent(new CustomEvent('layerclick', {
+        detail: {
+          layer
+        }
+      }));
+    }}>
         <input
           class="ngm-layer-checkbox"
           type="checkbox"
@@ -49,6 +48,7 @@ class Catalog extends I18nMixin(LitElement) {
   }
 
   render() {
+    if (!this.layers) return '';
     const templates = this.layers.map(l => this.getCategoryOrLayerTemplate(l));
     return html`${templates}`;
   }

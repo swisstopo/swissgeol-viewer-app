@@ -1,5 +1,5 @@
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import CMath from 'cesium/Core/Math';
+import CMath from 'cesium/Core/Math.js';
 
 
 export async function readTextFile(url) {
@@ -40,17 +40,6 @@ export function setURLSearchParams(params) {
  */
 export function clickOnElement(id) {
   document.getElementById(id).click();
-}
-
-
-export function onAccordionClick(evt) {
-  let target = evt.target;
-  while (!target.classList.contains('title')) {
-    target = target.parentElement;
-  }
-  if (!target.nextElementSibling) return;
-  target.classList.toggle('active');
-  target.nextElementSibling.classList.toggle('active');
 }
 
 /**

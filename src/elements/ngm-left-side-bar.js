@@ -1,14 +1,17 @@
 import {LitElement, html} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
-import AreaOfInterestDrawer from '../areaOfInterest/AreaOfInterestDrawer.js';
+import '../areaOfInterest/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import './ngm-gst-interaction.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
-import {onAccordionClick} from '../utils.js';
 import i18next from 'i18next';
+import 'fomantic-ui-css/components/accordion.js';
+import $ from '../jquery.js';
 
+const DRAW_TOOL_GST = 'draw-tool-gst';
+const DRAW_TOOL_AOI = 'draw-tool-aoi';
 
 class LeftSideBar extends I18nMixin(LitElement) {
 
@@ -18,6 +21,84 @@ class LeftSideBar extends I18nMixin(LitElement) {
       zoomTo: {type: Function},
       catalogLayers: {type: Object},
     };
+  }
+
+  render() {
+    if (!this.viewer) {
+      return '';
+    }
+
+    const hideWelcome = localStorage.getItem('hideWelcome') === 'true';
+    return html`
+      <div class="ui styled accordion">
+        <div class="ngmlightgrey title ${!hideWelcome ? 'active' : ''}"
+          @click=${evt => {
+      const newValue = !(localStorage.getItem('hideWelcome') === 'true');
+      localStorage.setItem('hideWelcome', newValue);
+      this.requestUpdate();
+    }}>
+          <i class="dropdown icon"></i>
+          ${i18next.t('welcome_label')}
+        </div>
+        <div class="content ${!hideWelcome ? 'active' : ''}">
+          <div>${i18next.t('welcome_text')}</div>
+          <div class="ui tertiary center aligned segment">
+            <i class="ui lightbulb icon"></i>
+            ${i18next.t('welcome_instructions')}
+          </div>
+        </div>
+      </div>
+
+      <div class="ui styled accordion">
+        <div class="title ngmlightgrey active">
+          <i class="dropdown icon"></i>
+          ${i18next.t('geocatalog_label')}
+        </div>
+        <div class="content ngm-layer-content active">
+          <ngm-catalog
+            .layers=${this.catalogLayers}
+            @layerclick=${this.onCatalogLayerClicked}
+            .viewer=${this.viewer}>
+          </ngm-catalog>
+        </div>
+      </div>
+
+      <div class="ui styled accordion">
+        <div class="title ngmverylightgrey active">
+          <i class="dropdown icon"></i>
+          ${i18next.t('displayed_maps_label')}
+        </div>
+        <div class="content active">
+          <ngm-layers
+            @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
+            @layerChanged=${this.onLayerChanged}
+            .layers=${this.activeLayers}
+            .viewer=${this.viewer}
+            @zoomTo=${evt => this.zoomTo(evt.detail)}>
+          </ngm-layers>
+        </div>
+      </div>
+
+      <div class="ui styled accordion" id="${DRAW_TOOL_AOI}">
+        <div class="title ngmmidgrey">
+          <i class="dropdown icon"></i>
+          ${i18next.t('aoi_section_title')}
+        </div>
+        <div class="content">
+          <ngm-aoi-drawer .viewer=${this.viewer}></ngm-aoi-drawer>
+        </div>
+      </div>
+
+      <div class="ui styled accordion" id="${DRAW_TOOL_GST}">
+        <div class="title ngmmidgrey">
+          <i class="dropdown icon"></i>
+          ${i18next.t('gst_accordion_title')}
+        </div>
+        <div class="content">
+          <ngm-gst-interaction .viewer=${this.viewer}></ngm-gst-interaction>
+        </div>
+      </div>
+    `;
   }
 
   initializeActiveLayers() {
@@ -59,7 +140,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
         layer: assetId,
         visible: true,
         displayed: true,
-        opacityDisabled: true
+        opacityDisabled: true,
+        pickable: true
       });
     });
 
@@ -76,8 +158,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   updated(changedProperties) {
-    if (this.viewer && !this.aoiDrawer) {
-      this.aoiDrawer = new AreaOfInterestDrawer(this.viewer);
+    if (!this.accordionInited) {
+      this.initBarAccordions();
     }
 
     super.updated(changedProperties);
@@ -172,65 +254,52 @@ class LeftSideBar extends I18nMixin(LitElement) {
     };
   }
 
-  render() {
-    if (!this.viewer) {
-      return '';
+  accordionFactory(element) {
+    switch (element.id) {
+      case DRAW_TOOL_GST: {
+        $(element).accordion({
+          onClosing: () => {
+            const aoiElement = this.querySelector('ngm-aoi-drawer');
+            aoiElement.setAreasClickable(true);
+            const gstElement = this.querySelector('ngm-gst-interaction');
+            gstElement.changeTool();
+          },
+          onOpening: () => {
+            const aoiElement = this.querySelector('ngm-aoi-drawer');
+            aoiElement.setAreasClickable(false);
+            $(`#${DRAW_TOOL_AOI}`).accordion('close', 0);
+          }
+        });
+        break;
+      }
+      case DRAW_TOOL_AOI: {
+        $(element).accordion({
+          onClosing: () => {
+            const aoiElement = this.querySelector('ngm-aoi-drawer');
+            aoiElement.cancelDraw();
+          },
+          onOpening: () => $(`#${DRAW_TOOL_GST}`).accordion('close', 0)
+        });
+        break;
+      }
+      default:
+        $(element).accordion();
+    }
+  }
+
+  initBarAccordions() {
+    const sideBarElement = document.querySelector('ngm-left-side-bar');
+
+    for (let i = 0; i < sideBarElement.childElementCount; i++) {
+      const element = sideBarElement.children.item(i);
+      if (element.classList.contains('accordion')) {
+        this.accordionFactory(element);
+      }
     }
 
-    return html`
-    <div class="left sidebar">
-
-      <div class="ui styled accordion">
-        <div class="title" @click=${onAccordionClick}>
-          <i class="dropdown icon"></i>
-          ${i18next.t('geocatalog_label')}
-        </div>
-        <div class="content ngm-layer-content">
-          <ngm-catalog
-            .layers=${this.catalogLayers}
-            @layerclick=${this.onCatalogLayerClicked}
-            .viewer=${this.viewer}>
-          </ngm-catalog>
-        </div>
-      </div>
-
-      <div class="ui styled accordion">
-        <div class="title active" @click=${onAccordionClick}>
-          <i class="dropdown icon"></i>
-          ${i18next.t('displayed_maps_label')}
-        </div>
-        <div class="content active">
-          <ngm-layers
-            @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
-            @layerChanged=${this.onLayerChanged}
-            .layers=${this.activeLayers}
-            .viewer=${this.viewer}
-            @zoomTo=${evt => this.zoomTo(evt.detail)}>
-          </ngm-layers>
-        </div>
-      </div>
-
-      <div class="ui styled accordion">
-        <div class="title" @click=${onAccordionClick}>
-          <i class="dropdown icon"></i>
-          ${i18next.t('aoi_section_title')}
-        </div>
-        <div class="content">
-          <div id="areasOfInterest"></div>
-        </div>
-      </div>
-
-      <div class="ui styled accordion">
-        <div class="title" @click=${onAccordionClick}>
-          <i class="dropdown icon"></i>
-          ${i18next.t('gst_accordion_title')}
-        </div>
-        <div class="content">
-          <ngm-gst-interaction .viewer=${this.viewer}></ngm-gst-interaction>
-        </div>
-      </div>
-    `;
+    this.accordionInited = true;
   }
+
   createRenderRoot() {
     return this;
   }

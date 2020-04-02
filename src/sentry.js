@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/browser';
-import {environment} from './environments/environment.js';
+import {environment} from './environment.js';
 
 export function initSentry() {
   Sentry.init({

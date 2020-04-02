@@ -2,10 +2,9 @@
 
 import i18next from 'i18next';
 import {syncLayersParam} from '../permalink.js';
-import {createCesiumObject, calculateRectangle, getCartesianBoxSize} from './helpers.js';
+import {createCesiumObject, calculateRectangle, getBoxFromRectangle, calculateBox} from './helpers.js';
 import {LAYER_TYPES} from '../constants.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Matrix3 from 'cesium/Core/Matrix3.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import Color from 'cesium/Core/Color.js';
@@ -72,39 +71,20 @@ export default class LayerTree extends I18nMixin(LitElement) {
     const mouseEnter = async () => {
       const p = await config.promise;
       if (p.boundingRectangle) { // earthquakes
-        const {x, y} = getCartesianBoxSize(p.boundingRectangle);
         this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
-        this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, p.maximumHeight);
+        this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(p.boundingRectangle, p.maximumHeight);
         this.boundingBoxEntity.rectangle.coordinates = p.boundingRectangle;
         this.boundingBoxEntity.show = true;
         this.viewer.scene.requestRender();
       } else if (p.root && p.root.boundingVolume) {
         const boundingVolume = p.root.boundingVolume.boundingVolume;
         const boundingRectangle = p.root.boundingVolume.rectangle;
-        const boundingSphere = p.root.boundingVolume.boundingSphere;
         this.boundingBoxEntity.position = boundingVolume.center;
         if (boundingRectangle) {
-          const {x, y} = getCartesianBoxSize(boundingRectangle);
-          this.boundingBoxEntity.box.dimensions = new Cartesian3(x, y, p.root.boundingVolume.maximumHeight);
+          this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(boundingRectangle, p.root.boundingVolume.maximumHeight);
           this.boundingBoxEntity.rectangle.coordinates = boundingRectangle;
         } else {
-          // get box sizes from boundingVolume
-          const absMatrix = Matrix3.abs(boundingVolume.halfAxes, new Matrix3());
-          const boxSize = new Cartesian3();
-          for (let i = 0; i < 3; i++) {
-            const column = Matrix3.getColumn(absMatrix, i, new Cartesian3());
-            const row = Matrix3.getRow(absMatrix, i, new Cartesian3());
-            boxSize.y = boxSize.y + column.x + row.x;
-            boxSize.x = boxSize.x + column.y + row.y;
-            boxSize.z = boxSize.z + column.z + row.z;
-          }
-          //calculate rectangle extent according to boundingSphere
-          const diagonal = Math.sqrt(boxSize.x * boxSize.x + boxSize.y * boxSize.y);
-          const radius = boundingSphere.radius;
-          const scale = Math.max(diagonal / (radius * 2), (radius * 2) / diagonal);
-          boxSize.x = boxSize.x * scale;
-          boxSize.y = boxSize.y * scale;
-          boxSize.z = boxSize.z > 60000 ? 60000 : boxSize.z;
+          const boxSize = calculateBox(boundingVolume.halfAxes, p.root.boundingSphere.radius);
           this.boundingBoxEntity.box.dimensions = boxSize;
           this.boundingBoxEntity.rectangle.coordinates = calculateRectangle(boxSize.x, boxSize.y, boundingVolume.center);
         }
@@ -150,14 +130,14 @@ export default class LayerTree extends I18nMixin(LitElement) {
             data-position="top center"
             data-variation="mini"
             @click=${this.moveLayer.bind(this, config, -1)}>
-              <i class="angle up icon"></i>
+              <i class="angle down icon"></i>
             </button>
             <button class="ui button ${classMap(downClassMap)}"
             data-tooltip=${i18next.t('layer_down')}
             data-position="top center"
             data-variation="mini"
             @click=${this.moveLayer.bind(this, config, +1)}>
-              <i class="angle down icon"></i>
+              <i class="angle up icon"></i>
             </button>
             <button class="ui button"
             data-tooltip=${i18next.t('remove_btn_tooltip')}
@@ -182,7 +162,9 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
   // builds ui structure of layertree and makes render
   render() {
-    return html`${this.layers.map((l, idx) => this.getLayerRender(l, idx))}`;
+    const layerTemplates = this.layers.map((l, idx) => this.getLayerRender(l, idx));
+    layerTemplates.reverse();
+    return html`${layerTemplates}`;
   }
 
   // changes layer position in 'Displayed Layers'

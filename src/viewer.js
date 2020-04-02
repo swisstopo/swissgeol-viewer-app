@@ -28,8 +28,6 @@ window['CESIUM_BASE_URL'] = '.';
 
 Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
-const noLimit = document.location.search.includes('noLimit');
-
 Object.assign(RequestScheduler.requestsByServer, {
   'wmts.geo.admin.ch:443': 18,
   'vectortiles0.geo.admin.ch:443': 18
@@ -46,6 +44,11 @@ export function setupViewer(container) {
     url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=',
     rectangle: Rectangle.fromDegrees(0, 0, 1, 1) // the Rectangle dimensions are arbitrary
   });
+
+  const searchParams = new URLSearchParams(location.search);
+
+  const terrainExaggeration = parseFloat(searchParams.get('terrainExaggeration') || '1');
+  const noLimit = searchParams.has('noLimit');
 
   const viewer = new Viewer(container, {
     contextOptions: {
@@ -73,7 +76,7 @@ export function setupViewer(container) {
     terrainProvider: new CesiumTerrainProvider({
       url: IonResource.fromAssetId(1)
     }),
-    terrainExaggeration: 1,
+    terrainExaggeration: terrainExaggeration,
     requestRenderMode: true,
     // maximumRenderTimeChange: 10,
   });
@@ -126,7 +129,6 @@ export function setupViewer(container) {
  */
 export function addMantelEllipsoid(viewer) {
   // Add Mantel ellipsoid
-  if (noLimit) return;
   const radii = Ellipsoid.WGS84.radii.clone();
   const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
   radii.x -= mantelDepth;
