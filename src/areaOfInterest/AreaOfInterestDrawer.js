@@ -27,7 +27,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      viewer: {type: Object}
+      viewer: {type: Object},
+      drawMode_: {type: Boolean},
+      selectedArea_: {type: Object},
     };
   }
 
@@ -123,7 +125,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.screenSpaceEventHandler_.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
     this.screenSpaceEventHandler_.removeInputAction(ScreenSpaceEventType.LEFT_DOWN);
     this.screenSpaceEventHandler_.removeInputAction(ScreenSpaceEventType.LEFT_UP);
-    this.requestUpdate();
   }
 
   getAreaLocationCallback_(time, result) {
@@ -168,7 +169,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     if (this.selectedArea_) {
       updateColor(this.selectedArea_, false);
       this.selectedArea_ = null;
-      this.requestUpdate();
     }
   }
 
@@ -215,7 +215,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.screenSpaceEventHandler_.setInputAction(this.drawArea_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
     this.screenSpaceEventHandler_.setInputAction(this.startDrawing_.bind(this), ScreenSpaceEventType.LEFT_DOWN);
     this.screenSpaceEventHandler_.setInputAction(this.endDrawing_.bind(this), ScreenSpaceEventType.LEFT_UP);
-    this.requestUpdate();
   }
 
   flyToArea_(id) {
