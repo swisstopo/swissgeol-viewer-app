@@ -20,6 +20,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       viewer: {type: Object},
       zoomTo: {type: Function},
       catalogLayers: {type: Object},
+      activeLayers: {type: Object},
     };
   }
 
@@ -96,6 +97,9 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
         <div class="content">
           <ngm-gst-interaction .viewer=${this.viewer}></ngm-gst-interaction>
+          <div class="ui tertiary center aligned segment">
+            ${i18next.t('gst_instructions')}
+          </div>
         </div>
       </div>
     `;
