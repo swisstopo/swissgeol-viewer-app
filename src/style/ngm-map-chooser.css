@@ -1,0 +1,30 @@
+ngm-map-chooser > div {
+  bottom: 30px;
+  right: 10px;
+  position: absolute;
+  z-index: 10;
+  display: flex;
+}
+
+.ngm-map-preview {
+  background-color: white;
+  text-align: center;
+  margin-right: 4px;
+  border: 1px solid lightgrey;
+}
+
+.ngm-map-preview img {
+  padding: 0 5px;
+  width: 96px;
+  height: 64px;
+}
+
+.ngm-map-preview label {
+  position: absolute;
+  background-color: white;
+  width: 96px;
+}
+
+.ngm-map-preview.active {
+  border: 2px solid red;
+}

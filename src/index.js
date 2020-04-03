@@ -25,6 +25,7 @@ import './elements/ngm-navigation-widgets.js';
 import './elements/ngm-camera-information.js';
 import './elements/ngm-feature-height.js';
 import './elements/ngm-left-side-bar.js';
+import './elements/ngm-map-chooser.js';
 
 initSentry();
 setupI18n();
@@ -61,6 +62,9 @@ viewer.scene.globe.maximumScreenSpaceError = 10000;
 const sideBar = document.querySelector('ngm-left-side-bar');
 sideBar.viewer = viewer;
 sideBar.zoomTo = zoomTo;
+
+const mapChooser = document.querySelector('ngm-map-chooser');
+mapChooser.viewer = viewer;
 
 
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {

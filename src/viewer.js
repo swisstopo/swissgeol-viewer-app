@@ -110,14 +110,7 @@ export function setupViewer(container) {
   // globe.translucencyMode = GlobeTranslucencyMode.FRONT_FACES_ONLY;
   // globe.translucencyByDistance = new NearFarScalar(1500, 0.8, 50000, 1.0);
 
-  const imageryLayer = new ImageryLayer(
-    new UrlTemplateImageryProvider({
-      url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg',
-      rectangle: SWITZERLAND_RECTANGLE,
-      credit: new Credit('swisstopo')
-    }));
-
-  scene.imageryLayers.add(imageryLayer);
+  setupBaseLayers(scene);
 
   new SurfaceColorUpdater(scene);
 
@@ -144,4 +137,58 @@ export function addMantelEllipsoid(viewer) {
   entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
 
   new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
+}
+
+function setupBaseLayers(scene) {
+  const baseProviderOptions = {
+    rectangle: SWITZERLAND_RECTANGLE,
+    credit: new Credit('swisstopo')
+  };
+
+  const greyLayerName = 'ch.swisstopo.pixelkarte-grau';
+  const imageryGreyLayer = new ImageryLayer(
+    new UrlTemplateImageryProvider({
+      ...baseProviderOptions,
+      url: `https://wmts.geo.admin.ch/1.0.0/${greyLayerName}/default/current/3857/{z}/{x}/{y}.jpeg`
+    }));
+  scene.imageryLayers.add(imageryGreyLayer);
+
+  const arealLayerName = 'ch.swisstopo.swissimage';
+  const imageryArealLayer = new ImageryLayer(
+    new UrlTemplateImageryProvider({
+      ...baseProviderOptions,
+      url: `https://wmts.geo.admin.ch/1.0.0/${arealLayerName}/default/current/3857/{z}/{x}/{y}.jpeg`
+    }), {show: false});
+  scene.imageryLayers.add(imageryArealLayer);
+
+  const detailedLayerName = 'ch.swisstopo.landeskarte-grau-10';
+  const imageryDetailedLayer = new ImageryLayer(
+    new UrlTemplateImageryProvider({
+      ...baseProviderOptions,
+      url: `https://wmts.geo.admin.ch/1.0.0/${detailedLayerName}/default/current/3857/{z}/{x}/{y}.png`
+    }), {show: false});
+  scene.imageryLayers.add(imageryDetailedLayer);
+
+  const t = a => a;
+  const mapsConfig = [
+    {
+      layerName: arealLayerName,
+      translationTag: t('areal_map_label'),
+      imgSrc: '../images/arealimage.png', //relative to ngm-map-chooser
+      layer: imageryArealLayer
+    },
+    {
+      layerName: greyLayerName,
+      translationTag: t('grey_map_label'),
+      imgSrc: '../images/grey.png',
+      layer: imageryGreyLayer
+    },
+    {
+      layerName: detailedLayerName,
+      translationTag: t('detailed_map_label'),
+      imgSrc: '../images/detailed.png',
+      layer: imageryDetailedLayer
+    }];
+
+  document.querySelector('ngm-map-chooser').setMaps(mapsConfig);
 }
