@@ -33,6 +33,8 @@ Object.assign(RequestScheduler.requestsByServer, {
   'vectortiles0.geo.admin.ch:443': 18
 });
 
+let noLimit;
+
 /**
  * @param {HTMLElement} container
  */
@@ -48,7 +50,10 @@ export function setupViewer(container) {
   const searchParams = new URLSearchParams(location.search);
 
   const terrainExaggeration = parseFloat(searchParams.get('terrainExaggeration') || '1');
-  const noLimit = searchParams.has('noLimit');
+  noLimit = document.location.hostname === 'localhost' || searchParams.has('noLimit');
+  if (searchParams.get('noLimit') === 'false') {
+    noLimit = false;
+  }
 
   const viewer = new Viewer(container, {
     contextOptions: {
@@ -128,6 +133,9 @@ export function setupViewer(container) {
  * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
  */
 export function addMantelEllipsoid(viewer) {
+  if (noLimit) {
+    return;
+  }
   // Add Mantel ellipsoid
   const radii = Ellipsoid.WGS84.radii.clone();
   const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
