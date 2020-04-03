@@ -170,12 +170,12 @@ class LeftSideBar extends I18nMixin(LitElement) {
     super.updated(changedProperties);
   }
 
-  onCatalogLayerClicked(evt) {
+  async onCatalogLayerClicked(evt) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
     const layer = evt.detail.layer;
     if (!layer.displayed) {
+      await (layer.promise || (layer.promise = createCesiumObject(this.viewer, layer)));
       layer.add && layer.add();
-      layer.promise || (layer.promise = createCesiumObject(this.viewer, layer));
       layer.visible = true;
       layer.displayed = true;
     } else {
