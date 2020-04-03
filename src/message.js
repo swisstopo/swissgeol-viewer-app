@@ -21,16 +21,3 @@ export function showMessage(message, options = {}) {
     message: message
   }, options));
 }
-
-export function showConfirmationMessage(message, buttonText, clickCallback = undefined) {
-  $('body')
-    .toast({
-      message: message,
-      displayTime: 0,
-      classActions: 'basic left',
-      actions: [{
-        text: buttonText,
-        click: clickCallback
-      }]
-    });
-}

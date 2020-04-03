@@ -15,7 +15,7 @@ import Color from 'cesium/Core/Color.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
 import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
-import {showConfirmationMessage} from './message.js';
+import {showMessage} from './message.js';
 import i18next from 'i18next';
 import BoundingSphere from 'cesium/Core/BoundingSphere.js';
 import Ellipsoid from 'cesium/Core/Ellipsoid.js';
@@ -75,9 +75,18 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
       const sentryConfirmed = localStorage.getItem('sentryConfirmed') === 'true';
       if (!sentryConfirmed) {
-        showConfirmationMessage(i18next.t('sentry_message'), i18next.t('ok_btn_label'), () => {
-          localStorage.setItem('sentryConfirmed', 'true');
-        });
+        const options = {
+          displayTime: 0,
+          position: 'bottom right',
+          classActions: 'basic left',
+          actions: [{
+            text: i18next.t('ok_btn_label'),
+            click: () => {
+              localStorage.setItem('sentryConfirmed', 'true');
+            }
+          }]
+        };
+        showMessage(i18next.t('sentry_message'), options);
       }
     });
   }
