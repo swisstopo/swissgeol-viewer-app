@@ -178,6 +178,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       layer.add && layer.add();
       layer.visible = true;
       layer.displayed = true;
+      this.activeLayers.push(layer);
     } else {
       if (!layer.visible) {
         layer.visible = true;
@@ -185,15 +186,15 @@ class LeftSideBar extends I18nMixin(LitElement) {
         layer.displayed = false;
         layer.visible = false;
         layer.remove && layer.remove();
+        const idx = this.activeLayers.findIdx(layer);
+        this.activeLayers.splice(idx, 1);
       }
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
 
-    const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
-    this.activeLayers = flatLayers.filter(l => l.displayed);
     syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];
-    this.requestUpdate();
+    this.activeLayers = [...this.activeLayers];
   }
 
   onLayerChanged() {
