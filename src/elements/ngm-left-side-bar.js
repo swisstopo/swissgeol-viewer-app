@@ -6,6 +6,7 @@ import '../layers/ngm-catalog.js';
 import './ngm-gst-interaction.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
+import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
@@ -172,12 +173,22 @@ class LeftSideBar extends I18nMixin(LitElement) {
   onCatalogLayerClicked(evt) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
     const layer = evt.detail.layer;
-    if (!layer.displayed && layer.type === LAYER_TYPES.swisstopoWMTS) {
-      layer.add();
-      layer.setVisibility(true);
+    if (!layer.displayed) {
+      layer.add && layer.add();
+      layer.promise || (layer.promise = createCesiumObject(this.viewer, layer));
+      layer.visible = true;
+      layer.displayed = true;
+    } else {
+      if (!layer.visible) {
+        layer.visible = true;
+      } else {
+        layer.displayed = false;
+        layer.visible = false;
+        layer.remove && layer.remove();
+      }
     }
-    layer.displayed = !layer.displayed;
-    layer.visible = layer.displayed;
+    layer.setVisibility && layer.setVisibility(layer.visible);
+
     const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
     this.activeLayers = flatLayers.filter(l => l.displayed);
     syncLayersParam(this.activeLayers);
