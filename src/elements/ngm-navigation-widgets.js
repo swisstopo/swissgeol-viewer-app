@@ -1,5 +1,5 @@
 import {LitElement, html} from 'lit-element';
-import './cesium-compass.js';
+import '@geoblocks/cesium-compass';
 import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';
 import i18next from 'i18next';
