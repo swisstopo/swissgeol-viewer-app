@@ -46,8 +46,10 @@ Then, run the `npm run extract-i18n` command to add this new key (`text_key`) to
 See https://docs.gitlab.com/ee/user/project/integrations/jira.html
 
 # URL Parameters
+
 - `noLimit` disable the navigation limits (sphere and lava)
 - `assetIds` display some additionnal Cesium ION 3dtilesets (coma separated list of CesiumIon ids)
+- `maximumScreenSpaceError` define the visual quality (default: 2.0 except for localhost which is 100.0)
 
 # Notes
 
