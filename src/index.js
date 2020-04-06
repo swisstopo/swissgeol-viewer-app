@@ -54,7 +54,6 @@ async function zoomTo(config) {
 }
 
 // Temporarily increasing the maximum screen space error to load low LOD tiles.
-const originMaximumScreenSpaceError = viewer.scene.globe.maximumScreenSpaceError;
 viewer.scene.globe.maximumScreenSpaceError = 10000;
 
 // setup web components
@@ -66,7 +65,15 @@ sideBar.zoomTo = zoomTo;
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
-    viewer.scene.globe.maximumScreenSpaceError = originMaximumScreenSpaceError;
+    let sse = 2;
+    const searchParams = new URLSearchParams(document.location.search);
+    if (document.location.hostname === 'localhost') {
+      sse = 100;
+    }
+    if (searchParams.has('maximumScreenSpaceError')) {
+      sse = parseFloat(searchParams.get('maximumScreenSpaceError'));
+    }
+    viewer.scene.globe.maximumScreenSpaceError = sse;
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
       setupSearch(viewer, document.querySelector('ga-search'), sideBar);
