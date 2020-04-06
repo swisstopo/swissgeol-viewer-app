@@ -13,7 +13,6 @@ import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from 
 import {getCameraView, syncCamera} from './permalink.js';
 import Color from 'cesium/Core/Color.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
-import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
 import {showMessage} from './message.js';
 import i18next from 'i18next';
@@ -155,8 +154,6 @@ viewer.camera.flyTo({
 });
 
 viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
-
-initInfoPopup();
 
 const widgets = document.querySelector('ngm-navigation-widgets');
 widgets.viewer = viewer;

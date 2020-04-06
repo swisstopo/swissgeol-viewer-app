@@ -2,6 +2,7 @@ import {LitElement, html} from 'lit-element';
 import '@geoblocks/cesium-compass';
 import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';
+import './ngm-keyboard-info-popup.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 
@@ -24,6 +25,7 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
         ></cesium-compass>
         <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
         <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
+        <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
       `;
     } else {
       return html``;

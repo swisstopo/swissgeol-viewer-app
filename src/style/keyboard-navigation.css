@@ -1,42 +1,35 @@
-#navigationInfo {
+#ngm-navigation-info {
   margin-right: 70px;
-  min-width: 300px; /* fomatic-ui fix for Edge */
-  max-width: 510px;
+  max-width: 510px; /* fomatic-ui fix for Edge */
 }
 
-#navigationInfo .ngm-keyboard-info-content {
-  width: 40vw;
-  max-width: 500px;
+#ngm-navigation-info .ngm-keyboard-info-content {
+  width: 500px;
   max-height: 80vh;
   overflow-y: auto;
 }
 
-#navigationInfo h4 {
-  margin: 5px 0;
+#ngm-navigation-info h4 {
+  margin: 5px 0 10px 0;
 }
 
-#navigationInfo .ngm-keyboard-tip {
-  margin-top: 15px;
+#ngm-navigation-info .ngm-keyboard-tip {
   font-style: italic;
 }
 
-#navigationInfo .column {
-  padding: 5px 10px;
-}
-
-.ngm-info-line {
+#ngm-navigation-info .row {
+  padding: 2px 10px;
   display: flex;
-  margin: 5px;
 }
 
-.ngm-info-line-title {
+#ngm-navigation-info .row > div {
   flex: 1;
-  display: flex;
-}
-.ngm-info-line-title img {
-  margin-left: 10px;
 }
 
-.ngm-info-line-content {
-  flex: 3;
+.ngm-keyboard-layout {
+  background-image: url(../images/keyboard-layout_navigation.png); /** See README for image update **/
+  background-size: cover;
+  width: 500px;
+  height: 150px;
 }
+
