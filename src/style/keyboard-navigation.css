@@ -26,6 +26,10 @@
   flex: 1;
 }
 
-#ngm-navigation-info .row > img {
-  width: 100%;
+.ngm-keyboard-layout {
+  background-image: url(../images/keyboard-layout_navigation.png); /** See README for image update **/
+  background-size: cover;
+  width: 500px;
+  height: 150px;
 }
+

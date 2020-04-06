@@ -34,7 +34,7 @@ const infoConfig = [
 
 class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
   closeInfoPopup() {
-    document.getElementById(popupId).classList.toggle('visible');
+    this.querySelector(`#${popupId}`).classList.toggle('visible');
   }
 
   get infoLineTemplate() {
@@ -59,9 +59,7 @@ class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
     <div id=${popupId} class="ui basic popup">
       <h4>${i18next.t('info_popup_label')}</h4>
       <div class="ngm-keyboard-info-content">
-        <div class="row">
-          <img src="../images/keyboard-layout_navigation.png">
-        </div>
+        <div class="ngm-keyboard-layout"></div>
         ${this.infoLineTemplate}
       </div>
       <h4 class="ngm-keyboard-tip">${i18next.t('info_tip')}</h4>

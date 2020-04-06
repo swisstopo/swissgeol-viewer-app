@@ -52,3 +52,5 @@ See https://docs.gitlab.com/ee/user/project/integrations/jira.html
 # Notes
 
 Lava texture CC0 by https://opengameart.org/content/template-orange-texture-pack
+
+Keyboard layout made with [keyboard-layout-editor](http://www.keyboard-layout-editor.com/) and [json to import](https://jira.camptocamp.com/secure/attachment/42145/keyboard-layout_upd.json)
