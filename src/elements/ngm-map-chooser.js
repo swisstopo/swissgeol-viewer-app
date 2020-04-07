@@ -1,59 +1,37 @@
 import {LitElement, html} from 'lit-element';
+import {classMap} from 'lit-html/directives/class-map';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
-import {getMapParam, syncMapParam} from '../permalink.js';
 
 class NgmMapChooser extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      viewer: {type: Object},
-      maps: {type: Object},
-      selectedLayer: {type: Object}
+      choices: {type: Array},
+      active: {type: Object}
     };
   }
 
   updated() {
-    const layerName = getMapParam();
-    const visibleMap = this.maps.find(map => map.layerName === layerName);
-    if (visibleMap) {
-      this.selectMap(visibleMap);
-    }
-  }
-
-  /**
-   * @param {[{layerName: string, translationTag: string, imgSrc: string, layer: ImageryLayer}]} config
-   */
-  setMaps(config) {
-    this.maps = config;
-    const visibleMap = this.maps.find(map => map.layer.show);
-    this.selectedLayer = visibleMap.layer;
-  }
-
-  selectMap(mapConfig) {
-    this.selectedLayer.show = false;
-    mapConfig.layer.show = true;
-    this.selectedLayer = mapConfig.layer;
-    this.viewer.scene.requestRender();
-    syncMapParam(mapConfig.layerName);
+    this.dispatchEvent(new CustomEvent('change', {
+      detail: {
+        active: this.active
+      }
+    }));
   }
 
   get mapTemplates() {
-    return this.maps.map(mapConfig =>
-      html`<div class="ngm-map-preview ${mapConfig.layer.show ? 'active' : ''}"
-                @click=${this.selectMap.bind(this, mapConfig)}>
-              <label>${i18next.t(mapConfig.translationTag)}</label>
-              <img src=${mapConfig.imgSrc} />
+    return this.choices.map(mapConfig =>
+      html`<div class="ngm-map-preview ${classMap({active: mapConfig.id === this.active.id})}"
+                @click=${() => this.active = mapConfig}>
+              <label>${i18next.t(mapConfig.labelKey)}</label>
+              <img src=${mapConfig.backgroundImgSrc} />
            </div>`
     );
   }
 
   render() {
-    if (this.viewer) {
-      return html`<div>${this.mapTemplates}</div>`;
-    } else {
-      return html``;
-    }
+    return html`<div>${this.mapTemplates}</div>`;
   }
 
   createRenderRoot() {

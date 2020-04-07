@@ -22,6 +22,7 @@ import KeyboardNavigation from './KeyboardNavigation.js';
 import SurfaceColorUpdater from './SurfaceColorUpdater.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
+import MapChooser from './MapChooser';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -110,7 +111,7 @@ export function setupViewer(container) {
   // globe.translucencyMode = GlobeTranslucencyMode.FRONT_FACES_ONLY;
   // globe.translucencyByDistance = new NearFarScalar(1500, 0.8, 50000, 1.0);
 
-  setupBaseLayers(scene);
+  setupBaseLayers(viewer);
 
   new SurfaceColorUpdater(scene);
 
@@ -139,56 +140,56 @@ export function addMantelEllipsoid(viewer) {
   new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
 }
 
-function setupBaseLayers(scene) {
+function setupBaseLayers(viewer) {
   const baseProviderOptions = {
     rectangle: SWITZERLAND_RECTANGLE,
     credit: new Credit('swisstopo')
   };
 
-  const greyLayerName = 'ch.swisstopo.pixelkarte-grau';
+  const greyLayer = 'ch.swisstopo.pixelkarte-grau';
   const imageryGreyLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
       ...baseProviderOptions,
-      url: `https://wmts.geo.admin.ch/1.0.0/${greyLayerName}/default/current/3857/{z}/{x}/{y}.jpeg`
+      url: `https://wmts.geo.admin.ch/1.0.0/${greyLayer}/default/current/3857/{z}/{x}/{y}.jpeg`
     }));
-  scene.imageryLayers.add(imageryGreyLayer);
+  viewer.scene.imageryLayers.add(imageryGreyLayer);
 
-  const arealLayerName = 'ch.swisstopo.swissimage';
+  const arealLayer = 'ch.swisstopo.swissimage';
   const imageryArealLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
       ...baseProviderOptions,
-      url: `https://wmts.geo.admin.ch/1.0.0/${arealLayerName}/default/current/3857/{z}/{x}/{y}.jpeg`
+      url: `https://wmts.geo.admin.ch/1.0.0/${arealLayer}/default/current/3857/{z}/{x}/{y}.jpeg`
     }), {show: false});
-  scene.imageryLayers.add(imageryArealLayer);
+  viewer.scene.imageryLayers.add(imageryArealLayer);
 
-  const detailedLayerName = 'ch.swisstopo.landeskarte-grau-10';
+  const detailedLayer = 'ch.swisstopo.landeskarte-grau-10';
   const imageryDetailedLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
       ...baseProviderOptions,
-      url: `https://wmts.geo.admin.ch/1.0.0/${detailedLayerName}/default/current/3857/{z}/{x}/{y}.png`
+      url: `https://wmts.geo.admin.ch/1.0.0/${detailedLayer}/default/current/3857/{z}/{x}/{y}.png`
     }), {show: false});
-  scene.imageryLayers.add(imageryDetailedLayer);
+  viewer.scene.imageryLayers.add(imageryDetailedLayer);
 
   const t = a => a;
   const mapsConfig = [
     {
-      layerName: arealLayerName,
-      translationTag: t('areal_map_label'),
-      imgSrc: '../images/arealimage.png', //relative to ngm-map-chooser
+      id: arealLayer,
+      labelKey: t('areal_map_label'),
+      backgroundImgSrc: '../images/arealimage.png', //relative to ngm-map-chooser
       layer: imageryArealLayer
     },
     {
-      layerName: greyLayerName,
-      translationTag: t('grey_map_label'),
-      imgSrc: '../images/grey.png',
+      id: greyLayer,
+      labelKey: t('grey_map_label'),
+      backgroundImgSrc: '../images/grey.png',
       layer: imageryGreyLayer
     },
     {
-      layerName: detailedLayerName,
-      translationTag: t('detailed_map_label'),
-      imgSrc: '../images/detailed.png',
+      id: detailedLayer,
+      labelKey: t('detailed_map_label'),
+      backgroundImgSrc: '../images/detailed.png',
       layer: imageryDetailedLayer
     }];
 
-  document.querySelector('ngm-map-chooser').setMaps(mapsConfig);
+  new MapChooser(viewer, mapsConfig);
 }

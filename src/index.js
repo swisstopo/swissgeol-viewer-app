@@ -63,9 +63,6 @@ const sideBar = document.querySelector('ngm-left-side-bar');
 sideBar.viewer = viewer;
 sideBar.zoomTo = zoomTo;
 
-const mapChooser = document.querySelector('ngm-map-chooser');
-mapChooser.viewer = viewer;
-
 
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
