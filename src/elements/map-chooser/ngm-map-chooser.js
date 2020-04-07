@@ -1,9 +1,12 @@
 import {LitElement, html} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map';
-import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import style from './ngm-map-chooser-style.js';
 
-class NgmMapChooser extends I18nMixin(LitElement) {
+class NgmMapChooser extends LitElement {
+
+  static get styles() {
+    return style;
+  }
 
   static get properties() {
     return {
@@ -24,18 +27,14 @@ class NgmMapChooser extends I18nMixin(LitElement) {
     return this.choices.map(mapConfig =>
       html`<div class="ngm-map-preview ${classMap({active: mapConfig.id === this.active.id})}"
                 @click=${() => this.active = mapConfig}>
-              <label>${i18next.t(mapConfig.labelKey)}</label>
+              <label>${mapConfig.labelKey}</label>
               <img src=${mapConfig.backgroundImgSrc} />
            </div>`
     );
   }
 
   render() {
-    return html`<div>${this.mapTemplates}</div>`;
-  }
-
-  createRenderRoot() {
-    return this;
+    return html`<div class="ngm-maps-container">${this.mapTemplates}</div>`;
   }
 }
 

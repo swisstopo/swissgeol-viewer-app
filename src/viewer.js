@@ -3,8 +3,6 @@ import {SWITZERLAND_RECTANGLE} from './constants.js';
 
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
 import RequestScheduler from 'cesium/Core/RequestScheduler.js';
-import UrlTemplateImageryProvider from 'cesium/Scene/UrlTemplateImageryProvider.js';
-import Credit from 'cesium/Core/Credit.js';
 import CesiumTerrainProvider from 'cesium/Core/CesiumTerrainProvider.js';
 import IonResource from 'cesium/Core/IonResource.js';
 import JulianDate from 'cesium/Core/JulianDate.js';
@@ -16,13 +14,13 @@ import Cartesian2 from 'cesium/Core/Cartesian2.js';
 // import GlobeTranslucencyMode from 'cesium/Scene/GlobeTranslucencyMode.js';
 // import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
-import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
 import SurfaceColorUpdater from './SurfaceColorUpdater.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
 import MapChooser from './MapChooser';
+import {addSwisstopoLayer} from './swisstopoImagery.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -141,54 +139,28 @@ export function addMantelEllipsoid(viewer) {
 }
 
 function setupBaseLayers(viewer) {
-  const baseProviderOptions = {
-    rectangle: SWITZERLAND_RECTANGLE,
-    credit: new Credit('swisstopo')
-  };
-
-  const greyLayer = 'ch.swisstopo.pixelkarte-grau';
-  const imageryGreyLayer = new ImageryLayer(
-    new UrlTemplateImageryProvider({
-      ...baseProviderOptions,
-      url: `https://wmts.geo.admin.ch/1.0.0/${greyLayer}/default/current/3857/{z}/{x}/{y}.jpeg`
-    }));
-  viewer.scene.imageryLayers.add(imageryGreyLayer);
-
   const arealLayer = 'ch.swisstopo.swissimage';
-  const imageryArealLayer = new ImageryLayer(
-    new UrlTemplateImageryProvider({
-      ...baseProviderOptions,
-      url: `https://wmts.geo.admin.ch/1.0.0/${arealLayer}/default/current/3857/{z}/{x}/{y}.jpeg`
-    }), {show: false});
-  viewer.scene.imageryLayers.add(imageryArealLayer);
-
+  const greyLayer = 'ch.swisstopo.pixelkarte-grau';
   const detailedLayer = 'ch.swisstopo.landeskarte-grau-10';
-  const imageryDetailedLayer = new ImageryLayer(
-    new UrlTemplateImageryProvider({
-      ...baseProviderOptions,
-      url: `https://wmts.geo.admin.ch/1.0.0/${detailedLayer}/default/current/3857/{z}/{x}/{y}.png`
-    }), {show: false});
-  viewer.scene.imageryLayers.add(imageryDetailedLayer);
 
-  const t = a => a;
   const mapsConfig = [
     {
       id: arealLayer,
-      labelKey: t('areal_map_label'),
+      labelKey: 'areal_map_label',
       backgroundImgSrc: '../images/arealimage.png', //relative to ngm-map-chooser
-      layer: imageryArealLayer
+      layer: addSwisstopoLayer(viewer, arealLayer, 'jpeg', false)
     },
     {
       id: greyLayer,
-      labelKey: t('grey_map_label'),
+      labelKey: 'grey_map_label',
       backgroundImgSrc: '../images/grey.png',
-      layer: imageryGreyLayer
+      layer: addSwisstopoLayer(viewer, greyLayer, 'jpeg')
     },
     {
       id: detailedLayer,
-      labelKey: t('detailed_map_label'),
+      labelKey: 'detailed_map_label',
       backgroundImgSrc: '../images/detailed.png',
-      layer: imageryDetailedLayer
+      layer: addSwisstopoLayer(viewer, detailedLayer, 'png', false)
     }];
 
   new MapChooser(viewer, mapsConfig);

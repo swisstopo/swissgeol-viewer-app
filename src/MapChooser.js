@@ -1,4 +1,5 @@
 import {getMapParam, syncMapParam} from './permalink.js';
+import i18next from 'i18next';
 
 export default class MapChooser {
   constructor(viewer, config) {
@@ -7,9 +8,13 @@ export default class MapChooser {
     this.selectedMap = this.getInitialMap();
 
     this.mapChooser = document.querySelector('ngm-map-chooser');
-    this.mapChooser.choices = this.config;
+    this.mapChooser.choices = this.choices;
     this.mapChooser.active = this.selectedMap;
     this.mapChooser.addEventListener('change', (event) => this.selectMap(event.detail.active));
+
+    i18next.on('languageChanged', () => {
+      this.mapChooser.choices = this.choices;
+    });
   }
 
   getInitialMap() {
@@ -34,5 +39,11 @@ export default class MapChooser {
     syncMapParam(mapConfig.id);
   }
 
-
+  get choices() {
+    return this.config.map(map => {
+      const choice = {...map, labelKey: i18next.t(map.labelKey)};
+      delete choice.layer;
+      return choice;
+    });
+  }
 }

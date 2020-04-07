@@ -1,9 +1,25 @@
-ngm-map-chooser > div {
+import {css} from 'lit-element';
+
+const style = css`
+.ngm-maps-container {
   bottom: 30px;
   right: 10px;
   position: absolute;
   z-index: 10;
   display: flex;
+}
+
+img {
+  padding: 0 5px;
+  width: 96px;
+  height: 64px;
+}
+
+label {
+  position: absolute;
+  background-color: white;
+  padding: 0 5px;
+  width: 96px;
 }
 
 .ngm-map-preview {
@@ -13,18 +29,9 @@ ngm-map-chooser > div {
   border: 1px solid lightgrey;
 }
 
-.ngm-map-preview img {
-  padding: 0 5px;
-  width: 96px;
-  height: 64px;
-}
-
-.ngm-map-preview label {
-  position: absolute;
-  background-color: white;
-  width: 96px;
-}
-
 .ngm-map-preview.active {
   border: 2px solid red;
 }
+`;
+
+export default style;

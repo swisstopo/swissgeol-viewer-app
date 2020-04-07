@@ -29,7 +29,6 @@
 @import 'keyboard-navigation.css';
 @import 'layers.css';
 @import 'slider.css';
-@import 'ngm-map-chooser.css';
 
 [hidden] {
   display: none !important;
