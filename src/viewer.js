@@ -12,7 +12,6 @@ import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Color from 'cesium/Core/Color.js';
 import Ion from 'cesium/Core/Ion.js';
-import Camera from 'cesium/Scene/Camera.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
 // import GlobeTranslucencyMode from 'cesium/Scene/GlobeTranslucencyMode.js';
 // import NearFarScalar from 'cesium/Core/NearFarScalar.js';
@@ -20,24 +19,41 @@ import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
-import SurfaceColorUpdater from './SurfaceColorUpdater';
+import SurfaceColorUpdater from './SurfaceColorUpdater.js';
+import Rectangle from 'cesium/Core/Rectangle.js';
+import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
 
 Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
-const noLimit = document.location.search.includes('noLimit');
-
 Object.assign(RequestScheduler.requestsByServer, {
   'wmts.geo.admin.ch:443': 18,
   'vectortiles0.geo.admin.ch:443': 18
 });
 
+let noLimit;
+
 /**
  * @param {HTMLElement} container
  */
 export function setupViewer(container) {
+
+  // The first layer of Cesium is special; using a 1x1 white image to workaround it.
+  // See https://github.com/AnalyticalGraphicsInc/cesium/issues/1323 for details.
+  const firstImageryProvider = new SingleTileImageryProvider({
+    url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=',
+    rectangle: Rectangle.fromDegrees(0, 0, 1, 1) // the Rectangle dimensions are arbitrary
+  });
+
+  const searchParams = new URLSearchParams(location.search);
+
+  const terrainExaggeration = parseFloat(searchParams.get('terrainExaggeration') || '1');
+  noLimit = document.location.hostname === 'localhost' || searchParams.has('noLimit');
+  if (searchParams.get('noLimit') === 'false') {
+    noLimit = false;
+  }
 
   const viewer = new Viewer(container, {
     contextOptions: {
@@ -59,13 +75,13 @@ export function setupViewer(container) {
     navigationInstructionsInitiallyVisible: false,
     scene3DOnly: true,
     skyBox: false,
-    imageryProvider: false,
+    imageryProvider: firstImageryProvider,
     showRenderLoopErrors: false,
     useBrowserRecommendedResolution: true,
     terrainProvider: new CesiumTerrainProvider({
       url: IonResource.fromAssetId(1)
     }),
-    terrainExaggeration: 1,
+    terrainExaggeration: terrainExaggeration,
     requestRenderMode: true,
     // maximumRenderTimeChange: 10,
   });
@@ -74,9 +90,6 @@ export function setupViewer(container) {
 
   // Position the sun the that shadows look nice
   viewer.clock.currentTime = JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
-
-  // Set the fly home rectangle
-  Camera.DEFAULT_VIEW_RECTANGLE = SWITZERLAND_RECTANGLE;
 
 
   // Limit the volume inside which the user can navigate
@@ -104,7 +117,7 @@ export function setupViewer(container) {
 
   const imageryLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
-      url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-grau.3d/default/current/3857/{z}/{x}/{y}.jpeg',
+      url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg',
       rectangle: SWITZERLAND_RECTANGLE,
       credit: new Credit('swisstopo')
     }));
@@ -120,8 +133,10 @@ export function setupViewer(container) {
  * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
  */
 export function addMantelEllipsoid(viewer) {
+  if (noLimit) {
+    return;
+  }
   // Add Mantel ellipsoid
-  if (noLimit) return;
   const radii = Ellipsoid.WGS84.radii.clone();
   const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
   radii.x -= mantelDepth;

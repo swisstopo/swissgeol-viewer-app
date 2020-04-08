@@ -10,6 +10,12 @@ import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
 import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 import VerticalOrigin from 'cesium/Scene/VerticalOrigin.js';
+import {isLabelOutlineEnabled} from '../permalink.js';
+import LabelStyle from 'cesium/Scene/LabelStyle.js';
+import Rectangle from 'cesium/Core/Rectangle.js';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import Ellipsoid from 'cesium/Core/Ellipsoid.js';
+import Matrix3 from 'cesium/Core/Matrix3.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -40,6 +46,9 @@ export function create3DTilesetFromConfig(viewer, config) {
   });
 
   if (config.style) {
+    if (config.layer === 'ch.swisstopo.swissnames3d.3d') { // for performance testing
+      config.style.labelStyle = isLabelOutlineEnabled() ? LabelStyle.FILL_AND_OUTLINE : LabelStyle.FILL;
+    }
     tileset.style = new Cesium3DTileStyle(config.style);
   }
   tileset.pickable = config.pickable !== undefined ? config.pickable : false;
@@ -166,4 +175,69 @@ function addBillboardsForTileset(viewer, tileset, config) {
 
 function getBillboardDataSourceName(layer) {
   return `${BILLBOARDS_PREFIX}${layer}`;
+}
+
+/**
+ * Returns box sizes
+ * @param rectangle
+ * @param height
+ * @param result
+ * @returns {Cartesian3}
+ */
+export function getBoxFromRectangle(rectangle, height, result = new Cartesian3()) {
+  const sw = Cartographic.toCartesian(Rectangle.southwest(rectangle, new Cartographic()));
+  const se = Cartographic.toCartesian(Rectangle.southeast(rectangle, new Cartographic()));
+  const nw = Cartographic.toCartesian(Rectangle.northwest(rectangle, new Cartographic()));
+  result.x = Cartesian3.distance(sw, se); // gets box width
+  result.y = Cartesian3.distance(sw, nw); // gets box length
+  result.z = height;
+  return result;
+}
+
+/**
+ * Returns rectangle from width height and center point
+ * @param width
+ * @param height
+ * @param center
+ * @param result
+ * @returns {Rectangle}
+ */
+export function calculateRectangle(width, height, center, result = new Rectangle()) {
+  const w = new Cartesian3(center.x, center.y - width / 2, center.z);
+  result.west = Ellipsoid.WGS84.cartesianToCartographic(w).longitude;
+  const s = new Cartesian3(center.x + height / 2, center.y, center.z);
+  result.south = Ellipsoid.WGS84.cartesianToCartographic(s).latitude;
+  const e = new Cartesian3(center.x, center.y + width / 2, center.z);
+  result.east = Ellipsoid.WGS84.cartesianToCartographic(e).longitude;
+  const n = new Cartesian3(center.x - height / 2, center.y, center.z);
+  result.north = Ellipsoid.WGS84.cartesianToCartographic(n).latitude;
+
+  return result;
+}
+
+/**
+ * Calculates box from bounding volume
+ * @param {Matrix3} halfAxes
+ * @param {Number} boundingSphereRadius
+ * @param {Cartesian3} result
+ * @returns {Cartesian3|Cartesian3}
+ */
+export function calculateBox(halfAxes, boundingSphereRadius, result = new Cartesian3()) {
+  const absMatrix = Matrix3.abs(halfAxes, new Matrix3());
+  for (let i = 0; i < 3; i++) {
+    const column = Matrix3.getColumn(absMatrix, i, new Cartesian3());
+    const row = Matrix3.getRow(absMatrix, i, new Cartesian3());
+    result.y = result.y + column.x + row.x;
+    result.x = result.x + column.y + row.y;
+    result.z = result.z + column.z + row.z;
+  }
+  // scale according to bounding sphere
+  const diagonal = Math.sqrt(result.x * result.x + result.y * result.y);
+  const radius = boundingSphereRadius;
+  const scale = Math.max(diagonal / (radius * 2), (radius * 2) / diagonal);
+  result.x = result.x * scale;
+  result.y = result.y * scale;
+  result.z = result.z > 60000 ? 60000 : result.z;
+
+  return new Cartesian3(result.x, result.y, result.z);
 }

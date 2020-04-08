@@ -59,16 +59,15 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
   }
 
   changeTool(event, type) {
+    if (!this.draw_) return;
     this.querySelectorAll('button').forEach(button => button.classList.remove(CSS_ACTIVE_CLASS));
 
     this.draw_.clear();
     this.viewer.scene.requestRender();
-
-    if (this.draw_.active && this.draw_.type === type) {
-      // tool is already active, turn it off
+    if (this.draw_.active && (this.draw_.type === type || !type)) {
+      // turn it off
       this.draw_.active = false;
-      event.currentTarget.classList.remove(CSS_ACTIVE_CLASS);
-    } else {
+    } else if (event && type) {
       this.draw_.type = type;
       this.draw_.active = true;
       event.currentTarget.classList.add(CSS_ACTIVE_CLASS);

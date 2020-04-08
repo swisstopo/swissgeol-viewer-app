@@ -1,8 +1,8 @@
 # Instances
 
-- dev https://ngmpub.dev.bgdi.ch/
-- int https://ngmpub.int.bgdi.ch/
-- prod https://ngmpub.prod.bgdi.ch/ (username: agch, password: OhnooTh1)
+- dev https://dev.swissgeol.ch/
+- int https://int.swissgeol.ch/
+- prod https://beta.swissgeol.ch/ (username: agch, password: OhnooTh1)
 
 # Deploy to integration (from local machine)
 
@@ -46,9 +46,13 @@ Then, run the `npm run extract-i18n` command to add this new key (`text_key`) to
 See https://docs.gitlab.com/ee/user/project/integrations/jira.html
 
 # URL Parameters
-- `noLimit` disable the navigation limits (sphere and lava)
+
+- `noLimit` disable the navigation limits (sphere and lava). Use noLimit=false to enforce limits on local dev.
 - `assetIds` display some additionnal Cesium ION 3dtilesets (coma separated list of CesiumIon ids)
+- `maximumScreenSpaceError` define the visual quality (default: 2.0 except for localhost which is 100.0)
 
 # Notes
 
 Lava texture CC0 by https://opengameart.org/content/template-orange-texture-pack
+
+Keyboard layout made with [keyboard-layout-editor](http://www.keyboard-layout-editor.com/) and [json to import](https://jira.camptocamp.com/secure/attachment/42145/keyboard-layout_upd.json)

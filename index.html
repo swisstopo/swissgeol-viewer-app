@@ -46,27 +46,18 @@
     <div id="loader" class="ui active inverted dimmer">
       <div class="ui text loader" data-i18n="loading_message"></div>
     </div>
-    <ngm-left-side-bar></ngm-left-side-bar>
+    <ngm-left-side-bar class="left sidebar"></ngm-left-side-bar>
     <div class="map">
       <div id="cesium">
         <div class="navigation-widgets">
           <ngm-navigation-widgets></ngm-navigation-widgets>
-          <button
-            id="navigationInfoBtn"
-            class="ui compact mini icon button"
-            data-position="left center"
-            data-variation="mini"
-            data-i18n="[data-tooltip]info_btn">
-            <i class="info icon"></i>
-          </button>
-          <div id="navigationInfo" class="ui basic popup left center"></div>
         </div>
         <ngm-object-information></ngm-object-information>
       </div>
       <div class="footer">
         <div class="ui horizontal link list">
           <ngm-camera-information class="item"></ngm-camera-information>
-          <ngm-feature-depth class="item"></ngm-feature-depth>
+          <ngm-feature-height class="item"></ngm-feature-height>
         </div>
         <div style="flex: auto;"></div>
         <div class="ui horizontal link list">
@@ -76,12 +67,11 @@
       </div>
     </div>
   </main>
+  <script type="module" id="app-script" crossorigin="use-credentials"></script>
   <script type="module">
     const debug = !location.search.includes('prod') && (location.search.includes('debug') || location.hostname === 'localhost');
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.setAttribute('src', debug ? './bundle.debug.js' : './bundle.min.js');
-    document.head.appendChild(script);
+    const script = document.querySelector('#app-script');
+    script.src = debug ? 'bundle.debug.js' : 'bundle.min.js';
   </script>
   <script nomodule>
     document.querySelector('#outdated-browser').style.display = '';

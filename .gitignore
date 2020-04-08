@@ -1,4 +1,4 @@
 /node_modules
 /dist
 /.cache
-src/environments/
+src/environment.js

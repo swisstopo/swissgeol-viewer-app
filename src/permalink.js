@@ -106,3 +106,8 @@ export function syncLayersParam(activeLayers) {
 
   setURLSearchParams(params);
 }
+
+export function isLabelOutlineEnabled() {
+  const params = getURLSearchParams();
+  return params.get('labelOutline') === 'true';
+}

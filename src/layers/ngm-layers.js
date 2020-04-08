@@ -2,9 +2,11 @@
 
 import i18next from 'i18next';
 import {syncLayersParam} from '../permalink.js';
-import {createCesiumObject} from './helpers.js';
+import {createCesiumObject, calculateRectangle, getBoxFromRectangle, calculateBox} from './helpers.js';
 import {LAYER_TYPES} from '../constants.js';
-import Cartesian3 from 'cesium/Core/Cartesian3';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import Rectangle from 'cesium/Core/Rectangle.js';
+import Cartographic from 'cesium/Core/Cartographic.js';
 import Color from 'cesium/Core/Color.js';
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
@@ -25,13 +27,19 @@ export default class LayerTree extends I18nMixin(LitElement) {
   }
 
   updated() {
-    if (this.viewer && !this.boundingSphereEntity) {
-      this.boundingSphereEntity = this.viewer.entities.add({
+    if (this.viewer && !this.boundingBoxEntity) {
+      this.boundingBoxEntity = this.viewer.entities.add({
         position: Cartesian3.ZERO,
         show: false,
-        ellipsoid: {
-          material: Color.RED.withAlpha(0.5),
-          radii: new Cartesian3(1, 1, 1),
+        box: {
+          fill: false,
+          dimensions: new Cartesian3(1, 1, 1),
+          outline: true,
+          outlineColor: Color.RED
+        },
+        rectangle: {
+          material: Color.RED.withAlpha(0.3),
+          coordinates: new Rectangle(0, 0, 0, 0)
         }
       });
     }
@@ -46,12 +54,8 @@ export default class LayerTree extends I18nMixin(LitElement) {
     const changeVisibility = evt => {
       config.setVisibility(evt.target.checked);
       config.visible = evt.target.checked;
-      if (evt.target.checked && !config.displayed) {
-        console.log('XXXX how is it possible?');
-        if (config.type === LAYER_TYPES.swisstopoWMTS) config.add(0);
-        config.displayed = true;
-      }
       syncLayersParam(this.layers); // FIXME: these calls should be moved to left side bar or the app
+      this.dispatchEvent(new CustomEvent('layerChanged'));
       this.viewer.scene.requestRender();
     };
 
@@ -66,17 +70,33 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
     const mouseEnter = async () => {
       const p = await config.promise;
-      const b = p.boundingSphere;
-      if (b) {
-        this.boundingSphereEntity.position = b.center;
-        this.boundingSphereEntity.ellipsoid.radii = new Cartesian3(b.radius, b.radius, b.radius);
-        this.boundingSphereEntity.show = true;
+      if (p.boundingRectangle) { // earthquakes
+        this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
+        this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(p.boundingRectangle, p.maximumHeight);
+        this.boundingBoxEntity.rectangle.coordinates = p.boundingRectangle;
+        this.boundingBoxEntity.show = true;
+        this.viewer.scene.requestRender();
+      } else if (p.root && p.root.boundingVolume) {
+        const boundingVolume = p.root.boundingVolume.boundingVolume;
+        const boundingRectangle = p.root.boundingVolume.rectangle;
+        this.boundingBoxEntity.position = boundingVolume.center;
+        if (boundingRectangle) {
+          this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(boundingRectangle, p.root.boundingVolume.maximumHeight);
+          this.boundingBoxEntity.rectangle.coordinates = boundingRectangle;
+        } else {
+          const boxSize = calculateBox(boundingVolume.halfAxes, p.root.boundingSphere.radius);
+          this.boundingBoxEntity.box.dimensions = boxSize;
+          this.boundingBoxEntity.rectangle.coordinates = calculateRectangle(boxSize.x, boxSize.y, boundingVolume.center);
+        }
+        this.boundingBoxEntity.show = true;
         this.viewer.scene.requestRender();
       }
     };
+
+
     const mouseLeave = () => {
-      if (this.boundingSphereEntity.show) {
-        this.boundingSphereEntity.show = false;
+      if (this.boundingBoxEntity.show) {
+        this.boundingBoxEntity.show = false;
         this.viewer.scene.requestRender();
       }
     };
@@ -85,22 +105,22 @@ export default class LayerTree extends I18nMixin(LitElement) {
     const downClassMap = {disabled: (idx === this.layers.length - 1)};
 
     return html`
-    <div class="ngm-displayed-container"
+      <div class="ngm-displayed-container"
         @mouseenter=${mouseEnter}
         @mouseleave=${mouseLeave}>
         <div class="ui checkbox">
           <input class="ngm-layer-checkbox" type="checkbox"
                  .checked=${config.visible} @change=${changeVisibility}>
           <label @click=${evt => {
-            const input = evt.target.previousElementSibling;
-            input.checked = !input.checked;
-            input.dispatchEvent(new Event('change'));
-          }}>${i18next.t(config.label)}</label>
+      const input = evt.target.previousElementSibling;
+      input.checked = !input.checked;
+      input.dispatchEvent(new Event('change'));
+    }}>${i18next.t(config.label)}</label>
         </div>
         <div class="ui icon buttons compact mini">
             <button class="ui button"
             data-tooltip=${i18next.t('zoom_to')}
-            data-position="top center"
+            data-position="top left"
             data-variation="mini"
             @click=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}>
               <i class="search plus icon"></i>
@@ -110,25 +130,25 @@ export default class LayerTree extends I18nMixin(LitElement) {
             data-position="top center"
             data-variation="mini"
             @click=${this.moveLayer.bind(this, config, -1)}>
-              <i class="angle up icon"></i>
+              <i class="angle down icon"></i>
             </button>
             <button class="ui button ${classMap(downClassMap)}"
             data-tooltip=${i18next.t('layer_down')}
             data-position="top center"
             data-variation="mini"
             @click=${this.moveLayer.bind(this, config, +1)}>
-              <i class="angle down icon"></i>
+              <i class="angle up icon"></i>
             </button>
             <button class="ui button"
             data-tooltip=${i18next.t('remove_btn_tooltip')}
-            data-position="top center"
+            data-position="top right"
             data-variation="mini"
             @click=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {
-              detail: {
-                config,
-                idx
-              }
-            }))}>
+      detail: {
+        config,
+        idx
+      }
+    }))}>
           <i class="icon trash alternate outline"></i>
         </button>
         </div>
@@ -142,7 +162,9 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
   // builds ui structure of layertree and makes render
   render() {
-    return html`${this.layers.map((l, idx) => this.getLayerRender(l, idx))}`;
+    const layerTemplates = this.layers.map((l, idx) => this.getLayerRender(l, idx));
+    layerTemplates.reverse();
+    return html`${layerTemplates}`;
   }
 
   // changes layer position in 'Displayed Layers'

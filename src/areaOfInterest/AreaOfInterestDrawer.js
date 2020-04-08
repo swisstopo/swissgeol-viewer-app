@@ -3,20 +3,44 @@ import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
 import Entity from 'cesium/DataSources/Entity.js';
-import {render} from 'lit-html';
+import {DEFAULT_AOI_COLOR, CESIUM_NOT_GRAPHICS_ENTITY_PROPS, AOI_DATASOURCE_NAME} from '../constants.js';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
-import {DEFAULT_AOI_COLOR, CESIUM_NOT_GRAPHICS_ENTITY_PROPS, AOI_DATASOURCE_NAME} from '../constants.js';
+
+import {LitElement} from 'lit-element';
+
+import {
+  DEFAULT_AOI_COLOR,
+  CESIUM_NOT_GRAPHICS_ENTITY_PROPS,
+  AOI_DATASOURCE_NAME
+} from '../constants.js';
 import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
+import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
 
-export default class AreaOfInterestDrawer {
-  constructor(viewer) {
+class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
+  static get properties() {
+    return {
+      viewer: {type: Object},
+      drawMode_: {type: Boolean},
+      selectedArea_: {type: Object},
+    };
+  }
+
+  update(changedProperties) {
+    if (!this.aoiInited && this.viewer) {
+      this.initAoi();
+    }
+    super.update(changedProperties);
+  }
+
+  initAoi() {
     this.selectedArea_ = null;
 
     this.areasCounter_ = 0;
+    this.areasClickable = false;
 
     this.viewer_ = viewer;
 
@@ -30,16 +54,15 @@ export default class AreaOfInterestDrawer {
     this.viewer_.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
 
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
-    this.viewer_.dataSources.add(this.interestAreasDataSource);
+    this.viewer.dataSources.add(this.interestAreasDataSource);
 
+    this.screenSpaceEventHandler_ = new ScreenSpaceEventHandler(this.viewer.scene.canvas);
+    this.screenSpaceEventHandler_.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
-      this.viewer_.scene.requestRender();
-      this.doRender_();
+      this.viewer.scene.requestRender();
+      this.requestUpdate();
     });
-    i18next.on('languageChanged', options => {
-      this.doRender_();
-    });
-    this.doRender_();
+    this.aoiInited = true;
   }
 
   endDrawing_(event) {
@@ -66,7 +89,6 @@ export default class AreaOfInterestDrawer {
   cancelDraw_() {
     this.draw_.active = false;
     this.draw_.clear();
-    this.doRender_();
   }
 
   onClick_(click) {
@@ -78,9 +100,15 @@ export default class AreaOfInterestDrawer {
         } else if (this.selectedArea_) {
           updateColor(this.selectedArea_, false);
           this.selectedArea_ = null;
-          this.doRender_();
         }
       }
+    }
+  }
+
+  deselectArea() {
+    if (this.selectedArea_) {
+      updateColor(this.selectedArea_, false);
+      this.selectedArea_ = null;
     }
   }
 
@@ -95,11 +123,6 @@ export default class AreaOfInterestDrawer {
     }
     this.selectedArea_ = entity;
     updateColor(this.selectedArea_, true);
-  }
-
-  doRender_() {
-    const element = document.getElementById('areasOfInterest');
-    render(getTemplate.call(this), element);
   }
 
   get entitiesList_() {
@@ -129,7 +152,6 @@ export default class AreaOfInterestDrawer {
 
   onAddAreaClick_() {
     this.draw_.active = true;
-    this.doRender_();
   }
 
   flyToArea_(id) {
@@ -137,7 +159,7 @@ export default class AreaOfInterestDrawer {
     if (!entity.isShowing) {
       entity.show = !entity.isShowing;
     }
-    this.viewer_.flyTo(entity);
+    this.viewer.flyTo(entity);
     this.pickArea_(id);
   }
 
@@ -151,8 +173,8 @@ export default class AreaOfInterestDrawer {
       }
       const kmlDataSource = await KmlDataSource.load(file,
         {
-          camera: this.viewer_.scene.camera,
-          canvas: this.viewer_.scene.canvas,
+          camera: this.viewer.scene.camera,
+          canvas: this.viewer.scene.canvas,
           clampToGround: true
         });
       evt.target.value = null;
@@ -170,7 +192,29 @@ export default class AreaOfInterestDrawer {
       entity.polygon.fill = true;
       entity.polygon.material = DEFAULT_AOI_COLOR;
       this.interestAreasDataSource.entities.add(entity);
-      this.viewer_.flyTo(entity);
+      this.viewer.flyTo(entity);
     }
   }
+
+  setAreasClickable(areasClickable) {
+    this.areasClickable = areasClickable;
+    if (!this.areasClickable) {
+      this.deselectArea();
+    }
+  }
+
+  render() {
+    if (!this.viewer) {
+      return '';
+    }
+
+    return getTemplate.call(this);
+  }
+
+  createRenderRoot() {
+    return this;
+  }
+
 }
+
+customElements.define('ngm-aoi-drawer', NgmAreaOfInterestDrawer);

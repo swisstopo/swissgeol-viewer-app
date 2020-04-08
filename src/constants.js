@@ -1,11 +1,34 @@
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Color from 'cesium/Core/Color.js';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import CMath from 'cesium/Core/Math.js';
 import LabelStyle from 'cesium/Scene/LabelStyle.js';
 
 
 export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 
 export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS);
+
+export const DEFAULT_VIEW = (function() {
+  if (document.location.hostname === 'localhost') {
+    return {
+      destination: Cartesian3.fromDegrees(8.16834, 44.83954, -112297),
+      orientation: {
+        heading: CMath.toRadians(359),
+        pitch: CMath.toRadians(30)
+      }
+    };
+  } else {
+    return {
+      destination: new Cartesian3(4908864.293775153, 703132.7307690362, 4556988.123570525),
+      orientation: {
+        heading: CMath.toRadians(2.0),
+        pitch: CMath.toRadians(-40.0)
+      }
+    };
+  }
+})();
+
 
 export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'];
 export const DRILL_PICK_LIMIT = 1;
@@ -47,8 +70,20 @@ export const SWISSTOPO_LABEL_STYLE = {
   anchorLineEnabled: false,
   heightOffset: 200,
   pointSize: 0,
-  labelColor: 'color("black")',
-  font: '"bold 32px arial"',
+  labelColor: {
+    conditions: [
+      ['${OBJEKTART} === "See"', 'color("blue")'],
+      ['true', 'color("black")']
+    ]
+  },
+  labelOutlineColor: 'color("white", 1)',
+  labelOutlineWidth: 5,
+  font: {
+    conditions: [
+      ['${OBJEKTART} === "See"', '"bold 32px arial"'],
+      ['true', '"32px arial"']
+    ]
+  },
   scaleByDistance: {
     conditions: [
       ['${LOD} === "7"', 'vec4(1000, 1, 5000, 0.4)'],
@@ -143,6 +178,8 @@ const geo_base = {
           layer: 'boreholes',
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
+          visible: true,
+          displayed: true,
           billboards: {
             lonPropName: 'Longitude',
             latPropName: 'Latitude'
@@ -153,6 +190,8 @@ const geo_base = {
           label: t('cross_section_label'),
           layer: 'cross_section',
           opacity: DEFAULT_LAYER_OPACITY,
+          visible: true,
+          displayed: true,
           pickable: true
         },
       ]
@@ -186,6 +225,8 @@ const natural_hazard = {
       type: LAYER_TYPES.earthquakes,
       label: t('earthquakes_label'),
       layer: 'earthquakes',
+      visible: true,
+      displayed: true,
       opacity: DEFAULT_LAYER_OPACITY
     },
   ]
@@ -242,20 +283,6 @@ const subsurface = {
   ]
 };
 
-const background = {
-  label: t('background_label'),
-  children: [
-    {
-      type: LAYER_TYPES.tiles3d,
-      url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
-      label: t('swissnames_label'),
-      style: SWISSTOPO_LABEL_STYLE,
-      layer: 'ch.swisstopo.swissnames3d.3d',
-      opacity: DEFAULT_LAYER_OPACITY
-    },
-  ]
-};
-
 const man_made_objects = {
   label: t('man_made_objects_label'),
   children: [{
@@ -270,6 +297,22 @@ const man_made_objects = {
   ]
 };
 
+const background = {
+  label: t('background_label'),
+  children: [
+    {
+      type: LAYER_TYPES.tiles3d,
+      url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
+      label: t('swissnames_label'),
+      style: SWISSTOPO_LABEL_STYLE,
+      layer: 'ch.swisstopo.swissnames3d.3d',
+      opacity: DEFAULT_LAYER_OPACITY
+    },
+    man_made_objects,
+  ]
+};
+
+
 // A "displayed" layer appears in the list of active layers.
 // A "visible" layer is actually shown on the globe.
 // Normally, visible => displayed
@@ -280,5 +323,4 @@ export const defaultLayerTree = [
   natural_hazard,
   subsurface,
   background,
-  man_made_objects
 ];

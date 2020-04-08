@@ -1,7 +1,7 @@
 // @ts-check
 import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';
-import {SWITZERLAND_RECTANGLE, DRILL_PICK_LIMIT} from './constants.js';
+import {DEFAULT_VIEW, DRILL_PICK_LIMIT, SWITZERLAND_RECTANGLE} from './constants.js';
 
 import './style/index.css';
 import {setupSearch} from './search.js';
@@ -13,16 +13,16 @@ import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from 
 import {getCameraView, syncCamera} from './permalink.js';
 import Color from 'cesium/Core/Color.js';
 import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
-import {initInfoPopup} from './elements/keyboard-info-popup.js';
 import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
-import {showConfirmationMessage} from './message.js';
+import {showMessage} from './message.js';
 import i18next from 'i18next';
+import BoundingSphere from 'cesium/Core/BoundingSphere.js';
+import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 
 import './elements/ngm-object-information.js';
-import './elements/ngm-gst-interaction.js';
 import './elements/ngm-navigation-widgets.js';
 import './elements/ngm-camera-information.js';
-import './elements/ngm-feature-depth.js';
+import './elements/ngm-feature-height.js';
 import './elements/ngm-left-side-bar.js';
 
 initSentry();
@@ -33,8 +33,17 @@ const viewer = setupViewer(document.querySelector('#cesium'));
 async function zoomTo(config) {
   const p = await config.promise;
   if (p.boundingSphere) {
-    const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 4, 3 * p.boundingSphere.radius);
-    viewer.camera.flyToBoundingSphere(p.boundingSphere, {
+    const switzerlandBS = BoundingSphere.fromRectangle3D(SWITZERLAND_RECTANGLE, Ellipsoid.WGS84);
+    let radiusCoef = switzerlandBS.radius / p.boundingSphere.radius;
+    radiusCoef = radiusCoef > 3 ? 3 : radiusCoef;
+    let boundingSphere = p.boundingSphere;
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, radiusCoef * p.boundingSphere.radius);
+    if (radiusCoef <= 1) {
+      zoomHeadingPitchRange.range = p.boundingSphere.radius * 0.8;
+      zoomHeadingPitchRange.heading = Math.PI / 2;
+      boundingSphere = switzerlandBS;
+    }
+    viewer.camera.flyToBoundingSphere(boundingSphere, {
       duration: 0,
       offset: zoomHeadingPitchRange
     });
@@ -44,7 +53,6 @@ async function zoomTo(config) {
 }
 
 // Temporarily increasing the maximum screen space error to load low LOD tiles.
-const originMaximumScreenSpaceError = viewer.scene.globe.maximumScreenSpaceError;
 viewer.scene.globe.maximumScreenSpaceError = 10000;
 
 // setup web components
@@ -56,7 +64,15 @@ sideBar.zoomTo = zoomTo;
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
     unlisten();
-    viewer.scene.globe.maximumScreenSpaceError = originMaximumScreenSpaceError;
+    let sse = 2;
+    const searchParams = new URLSearchParams(document.location.search);
+    if (document.location.hostname === 'localhost') {
+      sse = 100;
+    }
+    if (searchParams.has('maximumScreenSpaceError')) {
+      sse = parseFloat(searchParams.get('maximumScreenSpaceError'));
+    }
+    viewer.scene.globe.maximumScreenSpaceError = sse;
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
       setupSearch(viewer, document.querySelector('ga-search'), sideBar);
@@ -65,9 +81,18 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
 
       const sentryConfirmed = localStorage.getItem('sentryConfirmed') === 'true';
       if (!sentryConfirmed) {
-        showConfirmationMessage(i18next.t('sentry_message'), i18next.t('ok_btn_label'), () => {
-          localStorage.setItem('sentryConfirmed', 'true');
-        });
+        const options = {
+          displayTime: 0,
+          position: 'bottom right',
+          classActions: 'basic left',
+          actions: [{
+            text: i18next.t('ok_btn_label'),
+            click: () => {
+              localStorage.setItem('sentryConfirmed', 'true');
+            }
+          }]
+        };
+        showMessage(i18next.t('sentry_message'), options);
       }
     });
   }
@@ -123,17 +148,15 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
 
 const {destination, orientation} = getCameraView();
 viewer.camera.flyTo({
-  destination: destination || SWITZERLAND_RECTANGLE,
-  orientation: orientation,
+  destination: destination || DEFAULT_VIEW.destination,
+  orientation: orientation || DEFAULT_VIEW.orientation,
   duration: 0
 });
 
 viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
-initInfoPopup();
-
 const widgets = document.querySelector('ngm-navigation-widgets');
 widgets.viewer = viewer;
 
 document.querySelector('ngm-camera-information').scene = viewer.scene;
-document.querySelector('ngm-feature-depth').viewer = viewer;
+document.querySelector('ngm-feature-height').viewer = viewer;

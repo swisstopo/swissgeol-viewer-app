@@ -34,8 +34,8 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
   }
 
   disconnectedCallback() {
-    if (this.unlistenFromPostRender) {
-      this.unlistenFromPostRender();
+    if (this.unlistenPostRender) {
+      this.unlistenPostRender();
     }
     super.disconnectedCallback();
   }

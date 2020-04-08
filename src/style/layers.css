@@ -1,12 +1,12 @@
 .ui.styled.accordion .ngm-layer-title.title,
 .ui.accordion .ngm-layer-title.title {
-  padding-bottom: 0.5em;
-  padding-top: 0.5em;
+  padding-bottom: 0.2em;
+  padding-top: 0.2em;
 }
 
 .ui.accordion .ngm-layer-content.content,
 .ui.styled.accordion .ngm-layer-content.content {
-  padding-bottom: 0.5em;
+  padding-bottom: 0.2em;
 }
 
 .ngm-layer-content .ngm-layers-categories.ui.accordion {
@@ -22,6 +22,31 @@
   align-items: center;
   margin-left: 18px;
 }
+
+.ui.checkbox.ngm-displayed-container {
+  padding-top: 8px;
+}
+
+.ui.checkbox.ngm-displayed-container:first-child {
+  padding-top: 0;
+}
+
 .ngm-displayed-container label {
   margin-right: 10px;
+}
+
+.ngmmidgrey {
+  background-color: #999 !important;
+}
+
+.ngmlightgrey {
+  background-color: #c7c7c7 !important;
+}
+
+.ngmverylightgrey {
+  background-color: #e9e9e9 !important;
+}
+
+.ngm-displayed-container label.displayed {
+  color: red;
 }

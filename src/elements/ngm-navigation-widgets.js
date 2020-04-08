@@ -1,8 +1,8 @@
 import {LitElement, html} from 'lit-element';
-import FirstPersonCameraMode from '../FirstPersonCameraMode.js';
-import './cesium-compass.js';
+import '@geoblocks/cesium-compass';
 import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';
+import './ngm-keyboard-info-popup.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 
@@ -12,21 +12,6 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
     return {
       viewer: {type: Object}
     };
-  }
-
-  constructor() {
-    super();
-    this.fpsMode = null;
-  }
-
-  updated() {
-    if (this.viewer && !this.fpsMode) {
-      this.fpsMode = new FirstPersonCameraMode(this.viewer.scene);
-    }
-  }
-
-  activateFpsMode() {
-    this.fpsMode.active = true;
   }
 
   render() {
@@ -40,14 +25,7 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
         ></cesium-compass>
         <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
         <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
-        <button
-        data-tooltip=${i18next.t('fps_btn')}
-        data-position="left center"
-        data-variation="mini"
-        class="ui compact mini icon button"
-        @click="${this.activateFpsMode}">
-          <i class="eye icon"></i>
-        </button>
+        <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
       `;
     } else {
       return html``;
