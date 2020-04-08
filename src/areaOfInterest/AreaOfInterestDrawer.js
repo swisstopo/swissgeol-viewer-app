@@ -3,7 +3,6 @@ import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
 import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
 import Entity from 'cesium/DataSources/Entity.js';
-import {DEFAULT_AOI_COLOR, CESIUM_NOT_GRAPHICS_ENTITY_PROPS, AOI_DATASOURCE_NAME} from '../constants.js';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 
@@ -42,22 +41,18 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.areasCounter_ = 0;
     this.areasClickable = false;
 
-    this.viewer_ = viewer;
-
-    this.draw_ = new CesiumDraw(this.viewer_, 'polygon', {
+    this.draw_ = new CesiumDraw(this.viewer, 'polygon', {
       fillColor: DEFAULT_AOI_COLOR
     });
     this.draw_.active = false;
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
 
-    this.viewer_.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
+    this.viewer.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
 
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
 
-    this.screenSpaceEventHandler_ = new ScreenSpaceEventHandler(this.viewer.scene.canvas);
-    this.screenSpaceEventHandler_.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer.scene.requestRender();
       this.requestUpdate();
@@ -82,18 +77,16 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         material: DEFAULT_AOI_COLOR
       }
     });
-
-    this.doRender_();
   }
 
-  cancelDraw_() {
+  cancelDraw() {
     this.draw_.active = false;
     this.draw_.clear();
   }
 
   onClick_(click) {
     if (!this.draw_.active) {
-      const pickedObject = this.viewer_.scene.pick(click.position);
+      const pickedObject = this.viewer.scene.pick(click.position);
       if (pickedObject) {
         if (this.interestAreasDataSource.entities.contains(pickedObject.id)) {
           this.pickArea_(pickedObject.id.id);
