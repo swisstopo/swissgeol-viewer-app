@@ -5,7 +5,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import {terser} from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy';
 import babel from 'rollup-plugin-babel';
-import serve from 'rollup-plugin-serve';
 import alias from '@rollup/plugin-alias';
 import postcss from 'rollup-plugin-postcss';
 import inlinesvg from 'postcss-inline-svg';
@@ -79,13 +78,6 @@ const config = {
 
   ],
 };
-
-if (process.env.SERVE) {
-  config.plugins.push(serve({
-    contentBase: 'dist',
-    port: 8000
-  }));
-}
 
 if (process.env.mode === 'production') {
   config.plugins.push(...[
