@@ -164,8 +164,8 @@ main {
 cesium-compass {
   width: 98px;
   height: 98px;
-  --cesium-compass-stroke-color: rgb(224, 225, 226);
-  --cesium-compass-fill-color: rgba(0, 0, 0, 0.6);
+  --cesium-compass-stroke-color:rgba(0, 0, 0, 0.6);
+  --cesium-compass-fill-color: rgb(224, 225, 226);
 }
 
 .sidebar {
