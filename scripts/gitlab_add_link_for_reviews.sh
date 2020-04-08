@@ -8,7 +8,7 @@ MR_API_URL="$API_URL/projects/$P_ID/merge_requests/$MR_IID"
 
 BRANCH="$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
 JIRA_ISSUE="`echo $BRANCH | sed 's/.*GSNGM/GSNGM/'`"
-DEMO_NOTE="Links: [demo](https://review.swisgeo.ch/$BRANCH/index.html) and $JIRA_ISSUE"
+DEMO_NOTE="Links: [demo](https://review.swissgeol.ch/$BRANCH/index.html) and $JIRA_ISSUE"
 
 if curl --fail -s --header "Private-Token: $MY_API_TOKEN" $MR_API_URL/notes | grep -Fq "$DEMO_NOTE"
 then
