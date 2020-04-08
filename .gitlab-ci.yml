@@ -9,7 +9,17 @@ stages:
 
 npm_install:
   stage: setup
-  script: npm ci
+  script:
+    - npm ci
+    - npm rm webpack
+    - npm rm webpack-cli
+    - npm rm webpack-dev-server
+    - npm rm copy-webpack-plugin
+    - npm rm speed-measure-webpack-plugin
+    - npm rm mini-css-extract-plugin
+    - npm rm css-loader
+    - npm rm file-loader
+    - du -sh node_modules/
   artifacts:
     paths:
       - node_modules/
