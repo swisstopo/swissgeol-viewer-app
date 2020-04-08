@@ -23,8 +23,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   static get properties() {
     return {
       viewer: {type: Object},
-      drawMode_: {type: Boolean},
-      selectedArea_: {type: Object},
+      selectedArea_: {type: Object}
     };
   }
 
@@ -37,46 +36,45 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   initAoi() {
     this.selectedArea_ = null;
-
     this.areasCounter_ = 0;
-    this.areasClickable = false;
-
+    this.areasClickable = true;
     this.draw_ = new CesiumDraw(this.viewer, 'polygon', {
       fillColor: DEFAULT_AOI_COLOR
     });
     this.draw_.active = false;
-
-    this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
-
-    this.viewer.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
-
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
 
+    this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
+    this.draw_.addEventListener('statechanged', () => this.requestUpdate());
+    this.viewer.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer.scene.requestRender();
       this.requestUpdate();
     });
+
     this.aoiInited = true;
   }
 
   endDrawing_(event) {
+    console.log('endDrawing_')
     this.draw_.active = false;
     this.draw_.clear();
 
-    this.areasCounter_ += 1;
-
-    // wgs84 to Cartesian3
-    const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
-
-    this.interestAreasDataSource.entities.add({
-      selectable: false,
-      name: `Area ${this.areasCounter_}`,
-      polygon: {
-        hierarchy: positions,
-        material: DEFAULT_AOI_COLOR
-      }
-    });
+    // if (event.detail.positions.length > 2) {
+      // wgs84 to Cartesian3
+      const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
+      this.areasCounter_ += 1;
+      this.interestAreasDataSource.entities.add({
+        name: `Area ${this.areasCounter_}`,
+        polygon: {
+          hierarchy: positions,
+          material: DEFAULT_AOI_COLOR
+        }
+      });
+    // } else {
+    //   showWarning('Please add at least three points');
+    // }
   }
 
   cancelDraw() {
@@ -85,9 +83,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   onClick_(click) {
-    if (!this.draw_.active) {
+    if (!this.draw_.active && this.areasClickable) {
       const pickedObject = this.viewer.scene.pick(click.position);
-      if (pickedObject) {
+      if (pickedObject.id) { // to prevent error on tileset click
         if (this.interestAreasDataSource.entities.contains(pickedObject.id)) {
           this.pickArea_(pickedObject.id.id);
         } else if (this.selectedArea_) {
@@ -143,7 +141,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     }
   }
 
-  onAddAreaClick_() {
+  onAddAreaClick_(type) {
+    this.draw_.type = type;
     this.draw_.active = true;
   }
 

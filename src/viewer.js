@@ -22,6 +22,7 @@ import KeyboardNavigation from './KeyboardNavigation.js';
 import SurfaceColorUpdater from './SurfaceColorUpdater.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
+import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -107,6 +108,8 @@ export function setupViewer(container) {
   globe.showGroundAtmosphere = false;
   globe.showWaterEffect = false;
   globe.backFaceCulling = false;
+
+  viewer.screenSpaceEventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOUBLE_CLICK); // it doesn't work for tilesets and conflict with draw
 
   // Set the globe translucency to 0.8 when the
   // camera is 1500 meters from the surface and 1.0

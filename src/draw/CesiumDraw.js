@@ -68,6 +68,7 @@ export class CesiumDraw extends EventTarget {
       }
       this.eventHandler_ = undefined;
     }
+    this.dispatchEvent(new CustomEvent('statechanged'));
   }
 
   /**
@@ -79,9 +80,11 @@ export class CesiumDraw extends EventTarget {
     if (this.type === 'point') {
       this.entities_.push(this.drawShape_(this.activePoints_[0]));
     } else if (this.type === 'rectangle') {
+      if (positions.length < 2) return;
       positions = rectanglify(this.activePoints_);
       this.entities_.push(this.drawShape_(positions));
     } else {
+      if (this.type === 'polygon' && positions.length < 3) return;
       this.entities_.push(this.drawShape_(this.activePoints_));
     }
 

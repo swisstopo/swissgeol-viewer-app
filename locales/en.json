@@ -1,8 +1,9 @@
 {
-  "add_area_btn_label": "Draw",
+  "add_rect_area_btn_label": "Draw rectangle",
+  "add_polygon_area_btn_label": "Draw polygon",
   "aoi_section_title": "Areas Of Interest",
-  "area_of_interest_add_hint": "Click 'Draw' or hold down left mouse button to draw area",
-  "area_of_interest_empty_hint": "Click 'Draw' or hold down left mouse button to draw area",
+  "area_of_interest_add_hint": "Click on the 3D viewer to draw. Double click to end drawing",
+  "area_of_interest_empty_hint": "Choose draw mode and click on the 3D viewer to start drawing",
   "background_label": "Background data",
   "base_cenozoic_label": "Base cenozoic",
   "base_mesozoic_label": "Base Mesozoic",

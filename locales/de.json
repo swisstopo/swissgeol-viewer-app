@@ -1,8 +1,8 @@
 {
   "add_area_btn_label": "Zeichnen",
   "aoi_section_title": "Untersuchsgebiete",
-  "area_of_interest_add_hint": "'Zeichnen' anklicken oder linke Maustaste drücken, um Fläche aufzuziehen",
-  "area_of_interest_empty_hint": "'Zeichnen' anklicken oder linke Maustaste drücken, um Fläche aufzuziehen",
+  "area_of_interest_add_hint": "",
+  "area_of_interest_empty_hint": "",
   "background_label": "Hintergrunddaten",
   "base_cenozoic_label": "Basis Känozoikum",
   "base_mesozoic_label": "Basis Mesozoikum",
