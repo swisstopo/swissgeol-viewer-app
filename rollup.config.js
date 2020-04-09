@@ -65,6 +65,7 @@ const config = {
         { src: 'index.html', dest: 'dist/' },
         { src: 'src', dest: 'dist/' },
         { src: 'locales', dest: 'dist/' },
+        { src: 'robots.txt', dest: 'dist/' },
         { src: cesiumSource + '/' + cesiumWorkers, dest: 'dist/' },
         { src: cesiumSource + '/Assets', dest: 'dist/' },
         { src: cesiumSource + '/Widgets', dest: 'dist/' },
