@@ -1,14 +1,13 @@
 #ngm-navigation-info {
-  margin-right: 70px;
-  max-width: 510px; /* fomatic-ui fix for Edge */
+  margin-top: 2px;
+  max-width: 525px
 }
 
 #ngm-navigation-info .ngm-keyboard-info-content {
-  width: 500px;
   max-height: 80vh;
   overflow-y: auto;
+  overflow-x: hidden;
 }
-
 #ngm-navigation-info h4 {
   margin: 5px 0 10px 0;
 }
@@ -31,5 +30,9 @@
   background-size: cover;
   width: 500px;
   height: 150px;
+}
+
+#ngm-navigation-info-btn {
+  pointer-events: all;
 }
 

@@ -1,8 +1,12 @@
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n';
 import {LitElement, html} from 'lit-element';
+import $ from '../jquery.js';
+
+import 'fomantic-ui-css/components/popup.js';
 
 const popupId = 'ngm-navigation-info';
+const btnId = 'ngm-navigation-info-btn';
 
 const t = a => a;
 const infoConfig = [
@@ -33,8 +37,42 @@ const infoConfig = [
 ];
 
 class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
-  closeInfoPopup() {
-    this.querySelector(`#${popupId}`).classList.toggle('visible');
+
+  updated() {
+    if (!this.popupInited && i18next.language) {
+      $(`#${btnId}`).popup({
+        position: 'left center',
+        content: i18next.t('info_btn'),
+        variation: 'mini',
+        onShow: () => {
+          if (this.querySelector(`#${popupId}`).classList.contains('visible')) {
+            return false;
+          }
+        }
+      });
+      $(this).popup({
+        popup: $(`#${popupId}`),
+        on: 'click',
+        closable: false,
+        onShow: () => this.toggleInfoPopup(),
+        onHide: () => this.toggleInfoPopup(false),
+        position: 'left center'
+      });
+      this.popupInited = true;
+    }
+  }
+
+  toggleInfoPopup(show = true) {
+    const navigationWidgetClassList = document.querySelector('ngm-navigation-widgets').classList;
+    const buttonClassList = this.querySelector(`#${btnId}`).classList;
+    if (show) {
+      navigationWidgetClassList.add('no-pointer-events');
+      buttonClassList.add('grey');
+      $(`#${btnId}`).popup('hide');
+      return;
+    }
+    navigationWidgetClassList.remove('no-pointer-events');
+    buttonClassList.remove('grey');
   }
 
   get infoLineTemplate() {
@@ -50,13 +88,11 @@ class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
   render() {
     return html`
     <button
-      class="ui compact mini icon button"
-      data-position="left center"
-      data-variation="mini"
-      data-tooltip=${i18next.t('info_btn')} @click=${this.closeInfoPopup}>
+      id=${btnId}
+      class="ui compact mini icon button">
       <i class="keyboard icon"></i>
     </button>
-    <div id=${popupId} class="ui basic popup">
+    <div id=${popupId} class="ui popup">
       <h4>${i18next.t('info_popup_label')}</h4>
       <div class="ngm-keyboard-info-content">
         <div class="ngm-keyboard-layout"></div>
