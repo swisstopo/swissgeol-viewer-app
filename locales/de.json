@@ -1,5 +1,6 @@
 {
-  "add_area_btn_label": "Zeichnen",
+  "add_polygon_area_btn_label": "",
+  "add_rect_area_btn_label": "",
   "aoi_section_title": "Untersuchsgebiete",
   "area_of_interest_add_hint": "",
   "area_of_interest_empty_hint": "",
@@ -21,6 +22,7 @@
   "down_btn": "Nach unten",
   "Download PDF": "Download PDF",
   "earthquakes_label": "Erdbeben",
+  "error_need_more_points": "",
   "fly_to_btn_tooltip": "heranzoomen",
   "geo_energy_label": "Geoenergie",
   "geocatalog_label": "Datenkatalog",
@@ -29,6 +31,7 @@
   "geological_maps_label": "Geologische Karten",
   "geothermal_energy_label": "Geothermie",
   "gst_accordion_title": "Schnitte erstellen",
+  "gst_instructions": "",
   "hide_btn_tooltip": "Ausblenden",
   "Horizontal cross sections": "Horizonale Schnitte",
   "info_btn": "Informationen / Hilfe",

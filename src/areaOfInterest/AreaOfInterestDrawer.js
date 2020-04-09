@@ -8,11 +8,7 @@ import i18next from 'i18next';
 
 import {LitElement} from 'lit-element';
 
-import {
-  DEFAULT_AOI_COLOR,
-  CESIUM_NOT_GRAPHICS_ENTITY_PROPS,
-  AOI_DATASOURCE_NAME
-} from '../constants.js';
+import {AOI_DATASOURCE_NAME, CESIUM_NOT_GRAPHICS_ENTITY_PROPS, DEFAULT_AOI_COLOR} from '../constants.js';
 import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
@@ -47,6 +43,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
     this.draw_.addEventListener('statechanged', () => this.requestUpdate());
+    this.draw_.addEventListener('drawerror', evt => {
+      if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
+        showWarning(i18next.t('error_need_more_points'));
+      }
+    });
     this.viewer.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer.scene.requestRender();
@@ -57,24 +58,19 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   endDrawing_(event) {
-    console.log('endDrawing_')
     this.draw_.active = false;
     this.draw_.clear();
 
-    // if (event.detail.positions.length > 2) {
-      // wgs84 to Cartesian3
-      const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
-      this.areasCounter_ += 1;
-      this.interestAreasDataSource.entities.add({
-        name: `Area ${this.areasCounter_}`,
-        polygon: {
-          hierarchy: positions,
-          material: DEFAULT_AOI_COLOR
-        }
-      });
-    // } else {
-    //   showWarning('Please add at least three points');
-    // }
+    // wgs84 to Cartesian3
+    const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
+    this.areasCounter_ += 1;
+    this.interestAreasDataSource.entities.add({
+      name: `Area ${this.areasCounter_}`,
+      polygon: {
+        hierarchy: positions,
+        material: DEFAULT_AOI_COLOR
+      }
+    });
   }
 
   cancelDraw() {
@@ -85,7 +81,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   onClick_(click) {
     if (!this.draw_.active && this.areasClickable) {
       const pickedObject = this.viewer.scene.pick(click.position);
-      if (pickedObject.id) { // to prevent error on tileset click
+      if (pickedObject && pickedObject.id) { // to prevent error on tileset click
         if (this.interestAreasDataSource.entities.contains(pickedObject.id)) {
           this.pickArea_(pickedObject.id.id);
         } else if (this.selectedArea_) {

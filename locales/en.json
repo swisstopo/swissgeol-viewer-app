@@ -1,6 +1,6 @@
 {
-  "add_rect_area_btn_label": "Draw rectangle",
   "add_polygon_area_btn_label": "Draw polygon",
+  "add_rect_area_btn_label": "Draw rectangle",
   "aoi_section_title": "Areas Of Interest",
   "area_of_interest_add_hint": "Click on the 3D viewer to draw. Double click to end drawing",
   "area_of_interest_empty_hint": "Choose draw mode and click on the 3D viewer to start drawing",
@@ -22,6 +22,7 @@
   "down_btn": "Move Down",
   "Download PDF": "Download PDF",
   "earthquakes_label": "Earthquakes",
+  "error_need_more_points": "Please add more points",
   "fly_to_btn_tooltip": "Zoom To",
   "geo_energy_label": "Geo-energy",
   "geocatalog_label": "Data catalog",

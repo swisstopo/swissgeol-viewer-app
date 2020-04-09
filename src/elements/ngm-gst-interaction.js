@@ -2,7 +2,7 @@ import {LitElement, html} from 'lit-element';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
 import {degreesToLv95, round} from '../projection.js';
 import {borehole, verticalCrossSection, horizontalCrossSection} from '../gst.js';
-import {showError} from '../message.js';
+import {showError, showWarning} from '../message.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 
@@ -23,6 +23,11 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
       this.draw_ = new CesiumDraw(this.viewer, 'line');
       this.draw_.addEventListener('drawstart', () => this.draw_.clear());
       this.draw_.addEventListener('drawend', (event) => this.getGST(event.detail.positions));
+      this.draw_.addEventListener('drawerror', evt => {
+        if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
+          showWarning(i18next.t('error_need_more_points'));
+        }
+      });
     }
   }
 

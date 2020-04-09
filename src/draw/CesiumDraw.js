@@ -42,6 +42,8 @@ export class CesiumDraw extends EventTarget {
     this.sketchLine_ = undefined;
 
     this.entities_ = [];
+
+    this.ERROR_TYPES = {needMorePoints: 'need_more_points'};
   }
 
   /**
@@ -77,14 +79,20 @@ export class CesiumDraw extends EventTarget {
   finishDrawing() {
     this.activePoints_.pop();
     let positions = this.activePoints_;
+    if ((this.type === 'polygon' || this.type === 'rectangle') && positions.length < 3) {
+      this.dispatchEvent(new CustomEvent('drawerror', {
+        detail: {
+          error: this.ERROR_TYPES.needMorePoints
+        }
+      }));
+      return;
+    }
     if (this.type === 'point') {
       this.entities_.push(this.drawShape_(this.activePoints_[0]));
     } else if (this.type === 'rectangle') {
-      if (positions.length < 2) return;
       positions = rectanglify(this.activePoints_);
       this.entities_.push(this.drawShape_(positions));
     } else {
-      if (this.type === 'polygon' && positions.length < 3) return;
       this.entities_.push(this.drawShape_(this.activePoints_));
     }
 
