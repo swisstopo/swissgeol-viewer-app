@@ -11,6 +11,7 @@ import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 
+const WELCOME_PANEL = 'welcome-panel';
 const DRAW_TOOL_GST = 'draw-tool-gst';
 const DRAW_TOOL_AOI = 'draw-tool-aoi';
 
@@ -32,13 +33,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
 
     const hideWelcome = localStorage.getItem('hideWelcome') === 'true';
     return html`
-      <div class="ui styled accordion">
-        <div class="ngmlightgrey title ${!hideWelcome ? 'active' : ''}"
-          @click=${evt => {
-      const newValue = !(localStorage.getItem('hideWelcome') === 'true');
-      localStorage.setItem('hideWelcome', newValue);
-      this.requestUpdate();
-    }}>
+      <div class="ui styled accordion" id="${WELCOME_PANEL}">
+        <div class="ngmlightgrey title ${!hideWelcome ? 'active' : ''}">
           <i class="dropdown icon"></i>
           ${i18next.t('welcome_label')}
         </div>
@@ -272,8 +268,17 @@ class LeftSideBar extends I18nMixin(LitElement) {
 
   accordionFactory(element) {
     switch (element.id) {
+      case WELCOME_PANEL: {
+        accordion(element, {
+          onChange: () => {
+            const newValue = !(localStorage.getItem('hideWelcome') === 'true');
+            localStorage.setItem('hideWelcome', newValue);
+          }
+        });
+        break;
+      }
       case DRAW_TOOL_GST: {
-        $(element).accordion({
+        accordion(element, {
           onClosing: () => {
             const aoiElement = this.querySelector('ngm-aoi-drawer');
             aoiElement.setAreasClickable(true);
@@ -289,7 +294,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         break;
       }
       case DRAW_TOOL_AOI: {
-        $(element).accordion({
+        accordion(element, {
           onClosing: () => {
             const aoiElement = this.querySelector('ngm-aoi-drawer');
             aoiElement.cancelDraw();
@@ -299,7 +304,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         break;
       }
       default:
-        $(element).accordion();
+        accordion(element);
     }
   }
 
@@ -320,5 +325,12 @@ class LeftSideBar extends I18nMixin(LitElement) {
     return this;
   }
 }
+
+function accordion(element, options = {}) {
+  return $(element).accordion(Object.assign({
+    duration: 150
+  }, options));
+}
+
 
 customElements.define('ngm-left-side-bar', LeftSideBar);
