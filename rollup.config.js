@@ -89,13 +89,10 @@ if (process.env.mode === 'production') {
           '@babel/preset-env', {
             //debug: true, // disable to get debug information
             modules: false,
-            useBuiltIns: 'usage', // does it make sense?
+            useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
             corejs: { version: 3, proposals: false },
           }
         ]
-      ],
-      plugins: [
-        '@babel/plugin-proposal-object-rest-spread'
       ],
       // exclude: 'node_modules/**'
       exclude: ['node_modules/cesium/**', 'node_modules/core-js/**', 'node_modules/@babel/**'],
