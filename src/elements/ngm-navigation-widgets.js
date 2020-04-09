@@ -1,5 +1,6 @@
 import {LitElement, html} from 'lit-element';
 import '@geoblocks/cesium-compass';
+import './cesium-view-cube.js';
 import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';
 import './ngm-keyboard-info-popup.js';
@@ -18,6 +19,7 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
     if (this.viewer) {
       return html`
         <div id="compass-info-popup"></div>
+        <cesium-view-cube .scene="${this.viewer.scene}"></cesium-view-cube>
         <cesium-compass .scene="${this.viewer.scene}" .clock="${this.viewer.clock}"
         data-tooltip=${i18next.t('cesium_compass_tooltip')}
         data-position="left center"
