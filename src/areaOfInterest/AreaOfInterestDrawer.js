@@ -9,7 +9,7 @@ import i18next from 'i18next';
 import {LitElement} from 'lit-element';
 
 import {AOI_DATASOURCE_NAME, CESIUM_NOT_GRAPHICS_ENTITY_PROPS, DEFAULT_AOI_COLOR} from '../constants.js';
-import {updateColor} from './helpers.js';
+import {updateColor, getStoredAoi, setAoiInStorage} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -40,6 +40,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.active = false;
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
+    this.addStoredAreas();
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
     this.draw_.addEventListener('statechanged', () => this.requestUpdate());
@@ -52,6 +53,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer.scene.requestRender();
       this.requestUpdate();
+      setAoiInStorage(this.entitiesList_);
     });
 
     this.aoiInited = true;
@@ -118,6 +120,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         id: val.id,
         name: val.name,
         show: val.isShowing,
+        positions: val.polygon.hierarchy ? val.polygon.hierarchy.getValue().positions : undefined,
         selected: this.selectedArea_ && this.selectedArea_.id === val.id
       };
     });
@@ -135,6 +138,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       this.interestAreasDataSource.entities.removeAll();
       this.areasCounter_ = 0;
     }
+    setAoiInStorage(this.entitiesList_);
   }
 
   onAddAreaClick_(type) {
@@ -189,6 +193,28 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     if (!this.areasClickable) {
       this.deselectArea();
     }
+  }
+
+  addStoredAreas() {
+    const areas = getStoredAoi();
+    areas.forEach(area => {
+      if (!area.positions) return;
+      const areaNumber = Number(area.name.split(' ')[1]);
+      if (!isNaN(areaNumber) && areaNumber > this.areasCounter_) {
+        this.areasCounter_ = areaNumber;
+      }
+      const entity = this.interestAreasDataSource.entities.add({
+        name: area.name,
+        show: area.show,
+        polygon: {
+          hierarchy: area.positions,
+          material: DEFAULT_AOI_COLOR
+        }
+      });
+      if (area.selected) {
+        this.pickArea_(entity.id);
+      }
+    });
   }
 
   render() {

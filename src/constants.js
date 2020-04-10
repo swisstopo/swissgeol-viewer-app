@@ -123,6 +123,9 @@ export const LAYER_TYPES = {
 export const DEFAULT_LAYER_OPACITY = 0.7;
 
 export const AOI_DATASOURCE_NAME = 'interestAreas';
+export const LOCALSTORAGE_AOI_ITEM_NAME = 'aoi';
+export const LOCALSTORAGE_AOI_TIME_ITEM_NAME = `${LOCALSTORAGE_AOI_ITEM_NAME}_timestamp`;
+export const LOCALSTORAGE_AOI_TIMEOUT = 2 * 1000 * 60 * 60; // 2h
 
 export const TUNNEL_STYLE = {
   color:
