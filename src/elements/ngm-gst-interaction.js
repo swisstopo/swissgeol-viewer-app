@@ -5,6 +5,9 @@ import {borehole, verticalCrossSection, horizontalCrossSection} from '../gst.js'
 import {showError} from '../message.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
+import IonResource from 'cesium/Core/IonResource.js';
+import Color from 'cesium/Core/Color.js';
+import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
 
 import './ngm-gst-modal.js';
 
@@ -14,7 +17,8 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      viewer: {type: Object}
+      viewer: {type: Object},
+      gstExtent: {type: Object}
     };
   }
 
@@ -23,6 +27,25 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
       this.draw_ = new CesiumDraw(this.viewer, 'line');
       this.draw_.addEventListener('drawstart', () => this.draw_.clear());
       this.draw_.addEventListener('drawend', (event) => this.getGST(event.detail.positions));
+    }
+    this.initExtent();
+  }
+
+  async initExtent() {
+    if (this.extentInited || !this.viewer) return;
+    this.extentInited = true;
+    const resource = await IonResource.fromAssetId(85445);
+    this.gstExtent = await KmlDataSource.load(resource, {
+      camera: this.viewer.scene.camera,
+      canvas: this.viewer.scene.canvas,
+      clampToGround: true
+    });
+    this.viewer.dataSources.add(this.gstExtent);
+    this.gstExtent.show = false;
+    const entity = this.gstExtent.entities.values.find(ent => !!ent.polygon);
+    if (entity) {
+      entity.polygon.fill = true;
+      entity.polygon.material = Color.RED.withAlpha(0.1);
     }
   }
 
@@ -67,9 +90,11 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     if (this.draw_.active && (this.draw_.type === type || !type)) {
       // turn it off
       this.draw_.active = false;
+      this.gstExtent.show = false;
     } else if (event && type) {
       this.draw_.type = type;
       this.draw_.active = true;
+      this.gstExtent.show = true;
       event.currentTarget.classList.add(CSS_ACTIVE_CLASS);
     }
   }

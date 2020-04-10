@@ -237,3 +237,7 @@ body:after { /* Beta label */
 .ngm-header-links > a {
   color: #ff0000;
 }
+
+.no-pointer-events {
+  pointer-events: none;
+}
