@@ -164,8 +164,14 @@ main {
 cesium-compass {
   width: 98px;
   height: 98px;
-  --cesium-compass-stroke-color: rgb(224, 225, 226);
-  --cesium-compass-fill-color: rgba(0, 0, 0, 0.6);
+  --cesium-compass-stroke-color:rgba(0, 0, 0, 0.6);
+  --cesium-compass-fill-color: rgb(224, 225, 226);
+}
+
+cesium-view-cube {
+  --cesium-view-cube-stroke-color: rgba(0, 0, 0, 0.6);
+  --cesium-view-cube-fill-color: rgb(224, 225, 226);
+  --cesium-view-cube-opacity: 0.8;
 }
 
 .sidebar {
@@ -230,4 +236,8 @@ body:after { /* Beta label */
 
 .ngm-header-links > a {
   color: #ff0000;
+}
+
+.no-pointer-events {
+  pointer-events: none;
 }

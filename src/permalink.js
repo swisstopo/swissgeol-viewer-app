@@ -6,7 +6,8 @@ import {
   LAYERS_OPACITY_URL_PARAM,
   LAYERS_URL_PARAM,
   LAYERS_VISIBILITY_URL_PARAM,
-  ASSET_IDS_URL_PARAM
+  ASSET_IDS_URL_PARAM,
+  MAP_URL_PARAM
 } from './constants.js';
 
 export function getCameraView() {
@@ -110,4 +111,15 @@ export function syncLayersParam(activeLayers) {
 export function isLabelOutlineEnabled() {
   const params = getURLSearchParams();
   return params.get('labelOutline') === 'true';
+}
+
+export function syncMapParam(layerName) {
+  const params = getURLSearchParams();
+  params.set(MAP_URL_PARAM, layerName);
+  setURLSearchParams(params);
+}
+
+export function getMapParam() {
+  const params = getURLSearchParams();
+  return params.get(MAP_URL_PARAM);
 }

@@ -71,3 +71,20 @@ export function getLayersConfig() {
   }
   return layersConfigPromise;
 }
+
+export function addSwisstopoLayer(viewer, layer, format, show = true) {
+  const url = layerUrlTemplate
+    .replace('{layer}', layer)
+    .replace('{timestamp}', 'current')
+    .replace('{format}', format);
+
+  const imageryLayer = new ImageryLayer(
+    new UrlTemplateImageryProvider({
+      rectangle: SWITZERLAND_RECTANGLE,
+      credit: new Credit('swisstopo'),
+      url: url
+    }), {show});
+  viewer.scene.imageryLayers.add(imageryLayer);
+
+  return imageryLayer;
+}

@@ -24,6 +24,7 @@ import './elements/ngm-navigation-widgets.js';
 import './elements/ngm-camera-information.js';
 import './elements/ngm-feature-height.js';
 import './elements/ngm-left-side-bar.js';
+import './elements/map-chooser/ngm-map-chooser.js';
 
 initSentry();
 setupI18n();

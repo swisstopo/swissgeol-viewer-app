@@ -5,7 +5,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import {terser} from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy';
 import babel from 'rollup-plugin-babel';
-import serve from 'rollup-plugin-serve';
 import alias from '@rollup/plugin-alias';
 import postcss from 'rollup-plugin-postcss';
 import inlinesvg from 'postcss-inline-svg';
@@ -66,6 +65,7 @@ const config = {
         { src: 'index.html', dest: 'dist/' },
         { src: 'src', dest: 'dist/' },
         { src: 'locales', dest: 'dist/' },
+        { src: 'robots.txt', dest: 'dist/' },
         { src: cesiumSource + '/' + cesiumWorkers, dest: 'dist/' },
         { src: cesiumSource + '/Assets', dest: 'dist/' },
         { src: cesiumSource + '/Widgets', dest: 'dist/' },
@@ -80,13 +80,6 @@ const config = {
   ],
 };
 
-if (process.env.SERVE) {
-  config.plugins.push(serve({
-    contentBase: 'dist',
-    port: 8000
-  }));
-}
-
 if (process.env.mode === 'production') {
   config.plugins.push(...[
     babel({
@@ -97,13 +90,10 @@ if (process.env.mode === 'production') {
           '@babel/preset-env', {
             //debug: true, // disable to get debug information
             modules: false,
-            useBuiltIns: 'usage', // does it make sense?
+            useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
             corejs: { version: 3, proposals: false },
           }
         ]
-      ],
-      plugins: [
-        '@babel/plugin-proposal-object-rest-spread'
       ],
       // exclude: 'node_modules/**'
       exclude: ['node_modules/cesium/**', 'node_modules/core-js/**', 'node_modules/@babel/**'],
