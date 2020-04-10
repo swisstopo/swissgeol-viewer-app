@@ -3,8 +3,6 @@ import {SWITZERLAND_RECTANGLE} from './constants.js';
 
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
 import RequestScheduler from 'cesium/Core/RequestScheduler.js';
-import UrlTemplateImageryProvider from 'cesium/Scene/UrlTemplateImageryProvider.js';
-import Credit from 'cesium/Core/Credit.js';
 import CesiumTerrainProvider from 'cesium/Core/CesiumTerrainProvider.js';
 import IonResource from 'cesium/Core/IonResource.js';
 import JulianDate from 'cesium/Core/JulianDate.js';
@@ -16,12 +14,13 @@ import Cartesian2 from 'cesium/Core/Cartesian2.js';
 // import GlobeTranslucencyMode from 'cesium/Scene/GlobeTranslucencyMode.js';
 // import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
-import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
 import SurfaceColorUpdater from './SurfaceColorUpdater.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
+import MapChooser from './MapChooser';
+import {addSwisstopoLayer} from './swisstopoImagery.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -115,14 +114,7 @@ export function setupViewer(container) {
   // globe.translucencyMode = GlobeTranslucencyMode.FRONT_FACES_ONLY;
   // globe.translucencyByDistance = new NearFarScalar(1500, 0.8, 50000, 1.0);
 
-  const imageryLayer = new ImageryLayer(
-    new UrlTemplateImageryProvider({
-      url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg',
-      rectangle: SWITZERLAND_RECTANGLE,
-      credit: new Credit('swisstopo')
-    }));
-
-  scene.imageryLayers.add(imageryLayer);
+  setupBaseLayers(viewer);
 
   new SurfaceColorUpdater(scene);
 
@@ -152,4 +144,32 @@ export function addMantelEllipsoid(viewer) {
   entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
 
   new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
+}
+
+function setupBaseLayers(viewer) {
+  const arealLayer = 'ch.swisstopo.swissimage';
+  const greyLayer = 'ch.swisstopo.pixelkarte-grau';
+  const detailedLayer = 'ch.swisstopo.landeskarte-grau-10';
+
+  const mapsConfig = [
+    {
+      id: arealLayer,
+      labelKey: 'areal_map_label',
+      backgroundImgSrc: '../images/arealimage.png', //relative to ngm-map-chooser
+      layer: addSwisstopoLayer(viewer, arealLayer, 'jpeg', false)
+    },
+    {
+      id: greyLayer,
+      labelKey: 'grey_map_label',
+      backgroundImgSrc: '../images/grey.png',
+      layer: addSwisstopoLayer(viewer, greyLayer, 'jpeg')
+    },
+    {
+      id: detailedLayer,
+      labelKey: 'detailed_map_label',
+      backgroundImgSrc: '../images/detailed.png',
+      layer: addSwisstopoLayer(viewer, detailedLayer, 'png', false)
+    }];
+
+  new MapChooser(viewer, mapsConfig);
 }
