@@ -7,7 +7,7 @@ export function updateColor(entity, selected) {
 }
 
 export function getStoredAoi() {
-  const aoiTimestamp = localStorage.getItem(LOCALSTORAGE_AOI_ITEM_NAME);
+  const aoiTimestamp = localStorage.getItem(LOCALSTORAGE_AOI_TIME_ITEM_NAME);
   if (aoiTimestamp) {
     const timestamp = new Date(aoiTimestamp);
     if ((new Date - timestamp) > LOCALSTORAGE_AOI_TIMEOUT) {
