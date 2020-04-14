@@ -14,6 +14,12 @@ import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
 
+import Color from 'cesium/Core/Color';
+import LabelStyle from 'cesium/Scene/LabelStyle';
+import HeightReference from 'cesium/Scene/HeightReference';
+import VerticalOrigin from 'cesium/Scene/VerticalOrigin';
+import Cartesian2 from 'cesium/Core/Cartesian2';
+
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   static get properties() {
@@ -63,12 +69,23 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
     // wgs84 to Cartesian3
     const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
+    const dimension = event.detail.dimension;
     this.areasCounter_ += 1;
     this.interestAreasDataSource.entities.add({
+      position: positions[positions.length - 1],
       name: `Area ${this.areasCounter_}`,
       polygon: {
         hierarchy: positions,
         material: DEFAULT_AOI_COLOR
+      },
+      label: {
+        text: dimension,
+        font: '14pt monospace',
+        fillColor: Color.RED,
+        style: LabelStyle.FILL,
+        heightReference: HeightReference.RELATIVE_TO_GROUND,
+        verticalOrigin: VerticalOrigin.TOP,
+        pixelOffset: new Cartesian2(50, 0)
       }
     });
   }

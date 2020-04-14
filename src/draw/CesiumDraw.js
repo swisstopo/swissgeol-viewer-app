@@ -85,6 +85,7 @@ export class CesiumDraw extends EventTarget {
   finishDrawing() {
     this.activePoints_.pop();
     let positions = this.activePoints_;
+    let dimension = '';
     if ((this.type === 'polygon' || this.type === 'rectangle') && positions.length < 3) {
       this.dispatchEvent(new CustomEvent('drawerror', {
         detail: {
@@ -97,14 +98,23 @@ export class CesiumDraw extends EventTarget {
       this.entities_.push(this.drawShape_(this.activePoints_[0]));
     } else if (this.type === 'rectangle') {
       positions = rectanglify(this.activePoints_);
+      dimension = this.activeDistances_.join('km x ') + 'km';
       this.entities_.push(this.drawShape_(positions));
     } else {
+      console.log(this.activePoints_);
+      if (this.type === 'polygon') {
+        const distance = Cartesian3.distance(this.activePoints_[this.activePoints_.length - 1], this.activePoints_[0]);
+        this.activeDistances_.push(Number((distance / 1000).toFixed(2)));
+      }
+      const perimeter = this.activeDistances_.reduce((a, b) => a + b, 0);
+      dimension = perimeter.toFixed(2) + 'km';
       this.entities_.push(this.drawShape_(this.activePoints_));
     }
 
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
-        positions: positions.map(cartesiantoDegrees)
+        positions: positions.map(cartesiantoDegrees),
+        dimension: dimension
       }
     }));
 
@@ -190,9 +200,6 @@ export class CesiumDraw extends EventTarget {
         polygon: {
           hierarchy: positions,
           material: this.fillColor_
-        },
-        properties: {
-          length: this.activeDistances_ // TODO
         }
       });
     }
@@ -233,8 +240,8 @@ export class CesiumDraw extends EventTarget {
       } else {
         distance = Cartesian3.distance(positions[pointsLength - 2], positions[pointsLength - 1]);
       }
-      this.activeDistance_ = distance / 1000;
-      this.sketchPoint_.label.text.setValue(`${this.activeDistance_.toFixed(2)}km`);
+      this.activeDistance_ = Number((distance / 1000).toFixed(2));
+      this.sketchPoint_.label.text.setValue(`${this.activeDistance_}km`);
       return;
     }
     this.sketchPoint_.label.text.setValue('0km');
@@ -259,9 +266,10 @@ export class CesiumDraw extends EventTarget {
           this.finishDrawing();
           return;
         }
+      } else {
+        this.activeDistances_.push(this.activeDistance_);
       }
       this.activePoints_.push(position);
-      this.activeDistances_.push(this.activeDistance_);
       if (this.type === 'rectangle' && this.activePoints_.length === 4) {
         this.finishDrawing();
       }
