@@ -99,6 +99,23 @@ class LeftSideBar extends I18nMixin(LitElement) {
           </div>
         </div>
       </div>
+
+      <div class="ui styled accordion">
+        <div class="title">
+          <i class="dropdown icon"></i>
+          ${i18next.t('swissforages_accordion_title')}
+        </div>
+        <div class="content">
+          <div class="ui link list">
+            <a class="item" target="_blank" href="https://swissforages.ch/">
+             <button class="ui icon button">
+               <i class="pencil ruler icon"></i>
+             </button>
+             swissforages.ch
+            </a>
+          </div>
+        </div>
+      </div>
     `;
   }
 
