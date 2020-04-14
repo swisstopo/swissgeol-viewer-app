@@ -37,26 +37,26 @@ class CesiumViewCube extends LitElement {
         border: 1px solid var(--cesium-view-cube-stroke-color);
         opacity: var(--cesium-view-cube-opacity);
       }
-      #side1 {
+      #side_t {
         transform: rotatex(90deg) translateZ(25px);
       }
-      #side2 {
+      #side_e {
         transform: rotateY(-90deg) translateZ(25px);
         border-left: 2px solid blue !important;
         border-bottom: 2px solid red !important;
       }
-      #side3 {
+      #side_s {
         transform: translateZ(25px);
       }
-      #side4 {
+      #side_w {
         transform: rotateY(90deg) translateZ(25px);
       }
-      #side5 {
+      #side_n {
         transform: rotateY(180deg) translateZ(25px);
         border-right: 2px solid blue !important;
         border-bottom: 2px solid green !important;
       }
-      #side6 {
+      #side_b {
         transform: rotateX(-90deg) translateZ(25px);
         border-left: 2px solid red !important;
         border-bottom: 2px solid green !important;
@@ -96,12 +96,12 @@ class CesiumViewCube extends LitElement {
     return html`
       <div id="wrapper">
         <div id="cube">
-          <div id="side1">top</div>
-          <div id="side2">2</div>
-          <div id="side3">3</div>
-          <div id="side4">4</div>
-          <div id="side5">5</div>
-          <div id="side6">bottom</div>
+          <div id="side_t">top</div>
+          <div id="side_e">E</div>
+          <div id="side_s">S</div>
+          <div id="side_w">W</div>
+          <div id="side_n">N</div>
+          <div id="side_b">bottom</div>
         </div>
       </div>
     `;

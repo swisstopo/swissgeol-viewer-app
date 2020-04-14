@@ -110,6 +110,7 @@ export class CesiumDraw extends EventTarget {
       dimension = perimeter.toFixed(2) + 'km';
       this.entities_.push(this.drawShape_(this.activePoints_));
     }
+    this.viewer_.scene.requestRender();
 
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
