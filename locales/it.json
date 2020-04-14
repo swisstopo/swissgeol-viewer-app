@@ -1,5 +1,6 @@
 {
-  "add_area_btn_label": "",
+  "add_polygon_area_btn_label": "",
+  "add_rect_area_btn_label": "",
   "aoi_section_title": "",
   "area_of_interest_add_hint": "",
   "area_of_interest_empty_hint": "",
@@ -23,6 +24,7 @@
   "down_btn": "",
   "Download PDF": "",
   "earthquakes_label": "",
+  "error_need_more_points": "",
   "fly_to_btn_tooltip": "",
   "geo_energy_label": "",
   "geocatalog_label": "",

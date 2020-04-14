@@ -6,22 +6,36 @@ const areaUploadInputId = 'areaUpload';
 
 export default function getTemplate() {
   return html`
-    <div class="ui tiny fluid buttons ngm-aoi-buttons" ?hidden=${this.drawMode_}>
-        <button class="ui button" @click=${this.onAddAreaClick_.bind(this)}>
-            <i class="plus icon"></i>${i18next.t('add_area_btn_label')}
+    <div class="ui tiny fluid buttons ngm-aoi-buttons" ?hidden=${this.draw_.active}>
+        <button class="ui button"
+                data-tooltip=${i18next.t('add_polygon_area_btn_label')}
+                data-variation="mini"
+                data-position="top center"
+                @click=${this.onAddAreaClick_.bind(this, 'polygon')}>
+            <i class="draw polygon icon"></i>
         </button>
-        <button class="ui button" @click=${clickOnElement.bind(null, areaUploadInputId)}>
-            <i class="file upload icon"></i>${i18next.t('upload_btn_label')}
+        <button class="ui button"
+                data-tooltip=${i18next.t('add_rect_area_btn_label')}
+                data-variation="mini"
+                data-position="top center"
+                @click=${this.onAddAreaClick_.bind(this, 'rectangle')}>
+            <i class="vector square icon"></i>
+        </button>
+        <button class="ui button"
+                data-tooltip=${i18next.t('upload_btn_label')}
+                data-variation="mini"
+                data-position="top center"
+                @click=${clickOnElement.bind(null, areaUploadInputId)}>
+            <i class="file upload icon"></i>
         </button>
     </div>
     <!-- <button class="ui tiny fluid button"
             @click=${this.onRemoveEntityClick_.bind(this, null)}
-
-            ?hidden=${this.drawMode_}>
+            ?hidden=${this.draw_.active}>
             <i class="trash alternate outline icon"></i>${i18next.t('remove_all_area_btn_label')}
     </button> -->
     <input id="${areaUploadInputId}" type='file' accept=".kml,.KML" hidden @change=${this.uploadArea_.bind(this)} />
-    <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.drawMode_}>
+    <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.draw_.active}>
         <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('cancel_area_btn_label')}</button>
         <button class="ui button ngm-help-btn"
                 data-tooltip=${i18next.t('area_of_interest_add_hint')}
