@@ -199,7 +199,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         layer.displayed = false;
         layer.visible = false;
         layer.remove && layer.remove();
-        const idx = this.activeLayers.findIdx(layer);
+        const idx = this.activeLayers.findIndex(layer);
         this.activeLayers.splice(idx, 1);
       }
     }
