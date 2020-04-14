@@ -47,7 +47,7 @@
   "info_move_label": "Déplacer à gauche/droite",
   "grey_map_label": "",
   "info_popup_label": "",
-  "info_tilt": "",
+  "info_tilt": "Touche \"I\" / \"K\"",
   "info_tilt_label": "Incliner vers le haut/bas",
   "info_tip": "Conseil: appuyez sur \"shift\" pour augmenter la vitesse",
   "info_zoom_key": "Flèche haut/bas",
