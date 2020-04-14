@@ -14,11 +14,7 @@ import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
 
-import Color from 'cesium/Core/Color';
-import LabelStyle from 'cesium/Scene/LabelStyle';
-import HeightReference from 'cesium/Scene/HeightReference';
-import VerticalOrigin from 'cesium/Scene/VerticalOrigin';
-import Cartesian2 from 'cesium/Core/Cartesian2';
+import {getDimensionLabel} from '../draw/helpers.js'; // TODO use another way
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -78,15 +74,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         hierarchy: positions,
         material: DEFAULT_AOI_COLOR
       },
-      label: {
-        text: dimension,
-        font: '14pt monospace',
-        fillColor: Color.RED,
-        style: LabelStyle.FILL,
-        heightReference: HeightReference.RELATIVE_TO_GROUND,
-        verticalOrigin: VerticalOrigin.TOP,
-        pixelOffset: new Cartesian2(50, 0)
-      }
+      label: getDimensionLabel(dimension)
     });
   }
 

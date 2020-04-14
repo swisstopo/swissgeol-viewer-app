@@ -5,14 +5,11 @@ import Color from 'cesium/Core/Color.js';
 import HeightReference from 'cesium/Scene/HeightReference.js';
 import PolygonHierarchy from 'cesium/Core/PolygonHierarchy.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Cartesian2 from 'cesium/Core/Cartesian2.js';
 import Cartographic from 'cesium/Core/Cartographic.js';
-import Rectangle from 'cesium/Core/Rectangle.js';
-import VerticalOrigin from 'cesium/Scene/VerticalOrigin.js';
-import LabelStyle from 'cesium/Scene/LabelStyle.js';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
+import {getDimensionLabel, getDimensionText} from './helpers.js';
 
 /**
  * @typedef {object} Options
@@ -85,7 +82,6 @@ export class CesiumDraw extends EventTarget {
   finishDrawing() {
     this.activePoints_.pop();
     let positions = this.activePoints_;
-    let dimension = '';
     if ((this.type === 'polygon' || this.type === 'rectangle') && positions.length < 3) {
       this.dispatchEvent(new CustomEvent('drawerror', {
         detail: {
@@ -98,16 +94,12 @@ export class CesiumDraw extends EventTarget {
       this.entities_.push(this.drawShape_(this.activePoints_[0]));
     } else if (this.type === 'rectangle') {
       positions = rectanglify(this.activePoints_);
-      dimension = this.activeDistances_.join('km x ') + 'km';
       this.entities_.push(this.drawShape_(positions));
     } else {
-      console.log(this.activePoints_);
       if (this.type === 'polygon') {
         const distance = Cartesian3.distance(this.activePoints_[this.activePoints_.length - 1], this.activePoints_[0]);
-        this.activeDistances_.push(Number((distance / 1000).toFixed(2)));
+        this.activeDistances_.push(distance / 1000);
       }
-      const perimeter = this.activeDistances_.reduce((a, b) => a + b, 0);
-      dimension = perimeter.toFixed(2) + 'km';
       this.entities_.push(this.drawShape_(this.activePoints_));
     }
     this.viewer_.scene.requestRender();
@@ -115,7 +107,7 @@ export class CesiumDraw extends EventTarget {
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
         positions: positions.map(cartesiantoDegrees),
-        dimension: dimension
+        dimension: getDimensionText(this.type, this.activeDistances_)
       }
     }));
 
@@ -151,15 +143,7 @@ export class CesiumDraw extends EventTarget {
         pixelSize: 6,
         heightReference: HeightReference.CLAMP_TO_GROUND
       },
-      label: {
-        text: '0km',
-        font: '14pt monospace',
-        fillColor: Color.RED,
-        style: LabelStyle.FILL,
-        heightReference: HeightReference.RELATIVE_TO_GROUND,
-        verticalOrigin: VerticalOrigin.TOP,
-        pixelOffset: new Cartesian2(50, 0)
-      }
+      label: getDimensionLabel()
     });
   }
 
@@ -189,19 +173,23 @@ export class CesiumDraw extends EventTarget {
 
     } else if (this.type === 'line') {
       return this.viewer_.entities.add({
+        position: positions[positions.length - 1],
         polyline: {
           positions: positions,
           clampToGround: true,
           width: this.strokeWidth_,
           material: this.strokeColor_
-        }
+        },
+        label: getDimensionLabel(getDimensionText(this.type, this.activeDistances_))
       });
     } else if (this.type === 'polygon' || this.type === 'rectangle') {
       return this.viewer_.entities.add({
+        position: positions[positions.length - 1],
         polygon: {
           hierarchy: positions,
           material: this.fillColor_
-        }
+        },
+        label: getDimensionLabel(getDimensionText(this.type, this.activeDistances_))
       });
     }
   }
@@ -267,7 +255,7 @@ export class CesiumDraw extends EventTarget {
           this.finishDrawing();
           return;
         }
-      } else {
+      } else if (!this.activeDistances_.includes(this.activeDistance_)) {
         this.activeDistances_.push(this.activeDistance_);
       }
       this.activePoints_.push(position);
@@ -290,6 +278,9 @@ export class CesiumDraw extends EventTarget {
   }
 
   onDoubleClick_() {
+    if (!this.activeDistances_.includes(this.activeDistance_)) {
+      this.activeDistances_.push(this.activeDistance_);
+    }
     this.activePoints_.pop();
     this.finishDrawing();
   }

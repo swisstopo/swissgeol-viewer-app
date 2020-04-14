@@ -44,8 +44,9 @@ class NgmFeatureHeight extends I18nMixin(LitElement) {
 
   onMouseMove(movement) {
     const feature = this.viewer.scene.pick(movement.endPosition);
-    if (feature) {
-      const position = Cartographic.fromCartesian(this.viewer.scene.pickPosition(movement.endPosition));
+    const cartesianPosition = this.viewer.scene.pickPosition(movement.endPosition);
+    if (feature && cartesianPosition) {
+      const position = Cartographic.fromCartesian(cartesianPosition);
       const altitude = this.viewer.scene.globe.getHeight(position);
       this.height = position.height - altitude;
     } else {
