@@ -34,7 +34,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     const hideWelcome = localStorage.getItem('hideWelcome') === 'true';
     return html`
       <div class="ui styled accordion" id="${WELCOME_PANEL}">
-        <div class="ngmlightgrey title ${!hideWelcome ? 'active' : ''}">
+        <div class="title ${!hideWelcome ? 'active' : ''}">
           <i class="dropdown icon"></i>
           ${i18next.t('welcome_label')}
         </div>
