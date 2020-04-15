@@ -3,6 +3,7 @@ import {I18nMixin} from '../i18n.js';
 import '../areaOfInterest/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
+import LayersActions from '../layers/LayersActions.js';
 import './ngm-gst-interaction.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
@@ -56,7 +57,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
           <ngm-catalog
             .layers=${this.catalogLayers}
             @layerclick=${this.onCatalogLayerClicked}
-            .viewer=${this.viewer}>
+          >
           </ngm-catalog>
         </div>
       </div>
@@ -71,7 +72,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             @layerChanged=${this.onLayerChanged}
             .layers=${this.activeLayers}
-            .viewer=${this.viewer}
+            .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>
           </ngm-layers>
         </div>
@@ -120,7 +121,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   initializeActiveLayers() {
-    const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
+    const flatLayers = this.getFlatLayers(this.catalogLayers);
 
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
@@ -142,7 +143,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.name);
       if (!layer) {
         // Layers from the search are not present in the flat layers.
-        layer = LeftSideBar.createSearchLayer(urlLayer.name, urlLayer.name);
+        layer = this.createSearchLayer(urlLayer.name, urlLayer.name);
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
@@ -151,7 +152,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     });
 
     assetIds.forEach(assetId => {
-      activeLayers.push({
+      const layer = {
         type: LAYER_TYPES.tiles3d,
         assetId: assetId,
         label: assetId,
@@ -160,7 +161,9 @@ class LeftSideBar extends I18nMixin(LitElement) {
         displayed: true,
         opacityDisabled: true,
         pickable: true
-      });
+      };
+      layer.load = () => layer.promise = createCesiumObject(this.viewer, layer);
+      activeLayers.push(layer);
     });
 
     this.activeLayers = activeLayers;
@@ -168,6 +171,9 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   update(changedProperties) {
+    if (this.viewer && !this.layerActions) {
+      this.layerActions = new LayersActions(this.viewer);
+    }
     if (!this.catalogLayers) {
       this.catalogLayers = [...defaultLayerTree];
       this.initializeActiveLayers();
@@ -186,22 +192,22 @@ class LeftSideBar extends I18nMixin(LitElement) {
   async onCatalogLayerClicked(evt) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
     const layer = evt.detail.layer;
-    if (!layer.displayed) {
+    if (layer.displayed) {
+      if (layer.visible) {
+        layer.displayed = false;
+        layer.visible = false;
+        layer.remove && layer.remove();
+        const idx = this.activeLayers.findIndex(l => l === layer);
+        this.activeLayers.splice(idx, 1);
+      } else {
+        layer.visible = true;
+      }
+    } else {
       await (layer.promise || (layer.promise = createCesiumObject(this.viewer, layer)));
       layer.add && layer.add();
       layer.visible = true;
       layer.displayed = true;
       this.activeLayers.push(layer);
-    } else {
-      if (!layer.visible) {
-        layer.visible = true;
-      } else {
-        layer.displayed = false;
-        layer.visible = false;
-        layer.remove && layer.remove();
-        const idx = this.activeLayers.findIdx(layer);
-        this.activeLayers.splice(idx, 1);
-      }
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
 
@@ -212,6 +218,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
 
   onLayerChanged() {
     this.catalogLayers = [...this.catalogLayers];
+    syncLayersParam(this.activeLayers);
   }
 
   onRemoveDisplayedLayer(evt) {
@@ -230,12 +237,13 @@ class LeftSideBar extends I18nMixin(LitElement) {
     this.requestUpdate();
   }
 
-  static getFlatLayers(tree) {
+  getFlatLayers(tree) {
     const flat = [];
     for (const layer of tree) {
       if (layer.children) {
-        flat.push(...LeftSideBar.getFlatLayers(layer.children));
+        flat.push(...this.getFlatLayers(layer.children));
       } else {
+        layer.load = () => layer.promise = createCesiumObject(this.viewer, layer);
         flat.push(layer);
       }
     }
@@ -265,15 +273,15 @@ class LeftSideBar extends I18nMixin(LitElement) {
       layer.displayed = true;
       this.viewer.scene.requestRender();
     } else { // for new layers
-      this.activeLayers.push(LeftSideBar.createSearchLayer(searchLayer.title, searchLayer.layer));
+      this.activeLayers.push(this.createSearchLayer(searchLayer.title, searchLayer.layer));
     }
     this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);
     this.requestUpdate();
   }
 
-  static createSearchLayer(title, layer) {
-    return {
+  createSearchLayer(title, layer) {
+    const config = {
       type: LAYER_TYPES.swisstopoWMTS,
       label: title,
       layer: layer,
@@ -281,6 +289,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
       displayed: true,
       opacity: DEFAULT_LAYER_OPACITY
     };
+    config.load = () => config.promise = createCesiumObject(this.viewer, config);
+    return config;
   }
 
   accordionFactory(element) {

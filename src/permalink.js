@@ -79,9 +79,11 @@ export function syncLayersParam(activeLayers) {
   const layersOpacity = [];
   const layersVisibility = [];
   activeLayers.forEach(l => {
-    layerNames.push(l.layer);
-    layersOpacity.push(isNaN(l.opacity) ? 1 : l.opacity);
-    layersVisibility.push(l.visible);
+    if (!l.assetId) {
+      layerNames.push(l.layer);
+      layersOpacity.push(isNaN(l.opacity) ? 1 : l.opacity);
+      layersVisibility.push(l.visible);
+    }
   });
 
   if (layerNames.length) {

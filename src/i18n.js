@@ -76,6 +76,9 @@ export function setupI18n() {
 
 }
 
+/**
+ * @param {import('lit-element').LitElement} Base
+ */
 export const I18nMixin = Base => class extends Base {
 
   connectedCallback() {
