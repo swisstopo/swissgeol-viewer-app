@@ -143,7 +143,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.name);
       if (!layer) {
         // Layers from the search are not present in the flat layers.
-        layer = LeftSideBar.createSearchLayer(urlLayer.name, urlLayer.name);
+        layer = this.createSearchLayer(urlLayer.name, urlLayer.name);
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
