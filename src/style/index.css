@@ -175,6 +175,13 @@ cesium-view-cube {
   --cesium-view-cube-opacity: 0.8;
 }
 
+ngm-map-chooser {
+  bottom: 30px;
+  right: 10px;
+  position: absolute;
+  z-index: 10;
+}
+
 .sidebar {
   width: 300px;
   overflow-y: auto;
