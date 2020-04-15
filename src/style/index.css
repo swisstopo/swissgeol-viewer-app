@@ -19,6 +19,7 @@
 @import 'fomantic-ui-css/components/divider.css';
 @import 'fomantic-ui-css/components/grid.css';
 @import 'fomantic-ui-css/components/modal.css';
+@import 'fomantic-ui-css/components/form.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
@@ -172,6 +173,13 @@ cesium-view-cube {
   --cesium-view-cube-stroke-color: rgba(0, 0, 0, 0.6);
   --cesium-view-cube-fill-color: rgb(224, 225, 226);
   --cesium-view-cube-opacity: 0.8;
+}
+
+ngm-map-chooser {
+  bottom: 30px;
+  right: 10px;
+  position: absolute;
+  z-index: 10;
 }
 
 .sidebar {
