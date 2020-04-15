@@ -3,6 +3,7 @@ import {I18nMixin} from '../i18n.js';
 import '../areaOfInterest/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
+import LayersActions from '../layers/LayersActions.js';
 import './ngm-gst-interaction.js';
 import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
@@ -56,7 +57,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
           <ngm-catalog
             .layers=${this.catalogLayers}
             @layerclick=${this.onCatalogLayerClicked}
-            .viewer=${this.viewer}>
+          >
           </ngm-catalog>
         </div>
       </div>
@@ -71,7 +72,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             @layerChanged=${this.onLayerChanged}
             .layers=${this.activeLayers}
-            .viewer=${this.viewer}
+            .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>
           </ngm-layers>
         </div>
@@ -168,6 +169,9 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   update(changedProperties) {
+    if (this.viewer && !this.layerActions) {
+      this.layerActions = new LayersActions(this.viewer);
+    }
     if (!this.catalogLayers) {
       this.catalogLayers = [...defaultLayerTree];
       this.initializeActiveLayers();

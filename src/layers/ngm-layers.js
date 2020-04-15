@@ -1,13 +1,10 @@
 // @ts-check
 
 import i18next from 'i18next';
-import {syncLayersParam} from '../permalink.js';
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
-
 import {classMap} from 'lit-html/directives/class-map';
 
-import LayersActions from './LayersActions.js';
 
 class LayerTreeItem extends I18nMixin(LitElement) {
 
@@ -103,7 +100,7 @@ export default class LayerTree extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      viewer: {type: Object},
+      actions: {type: Object},
       layers: {type: Object},
     };
   }
@@ -111,13 +108,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
   createRenderRoot() {
     return this;
   }
-
-  updated() {
-    if (this.viewer && !this.actions) {
-      this.actions = new LayersActions(this.viewer);
-    }
-  }
-
 
   // builds ui structure of layertree and makes render
   render() {
@@ -161,7 +151,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
   // changes layer position in 'Displayed Layers'
   moveLayer(config, delta) {
     this.actions.moveLayer(this.layers, config, delta);
-    syncLayersParam(this.layers);
     this.requestUpdate();
   }
 }
