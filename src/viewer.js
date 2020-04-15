@@ -54,6 +54,14 @@ export function setupViewer(container) {
     noLimit = false;
   }
 
+  let terrainUrl;
+  const ownTerrain = searchParams.has('ownterrain');
+  if (ownTerrain) {
+    terrainUrl = 'https://terrain.dev.bgdi.ch/1.0.0/ch.swisstopo.terrain.3d/default/0.14/4326/';
+  } else {
+    terrainUrl = IonResource.fromAssetId(1);
+  }
+
   const viewer = new Viewer(container, {
     contextOptions: {
       webgl: {
@@ -78,7 +86,7 @@ export function setupViewer(container) {
     showRenderLoopErrors: false,
     useBrowserRecommendedResolution: true,
     terrainProvider: new CesiumTerrainProvider({
-      url: IonResource.fromAssetId(1)
+      url: terrainUrl
     }),
     terrainExaggeration: terrainExaggeration,
     requestRenderMode: true,
@@ -86,6 +94,17 @@ export function setupViewer(container) {
   });
 
   const scene = viewer.scene;
+  const globe = scene.globe;
+
+  if (ownTerrain) {
+    const rectangle = Rectangle.fromDegrees(
+      5.86725126512748,
+      45.8026860136571,
+      10.9209100671547,
+      47.8661652478939
+    );
+    globe.cartographicLimitRectangle = rectangle;
+  }
 
   // Position the sun the that shadows look nice
   viewer.clock.currentTime = JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
@@ -100,7 +119,6 @@ export function setupViewer(container) {
 
   scene.screenSpaceCameraController.enableCollisionDetection = false;
 
-  const globe = scene.globe;
   globe.baseColor = Color.WHITE;
   globe.depthTestAgainstTerrain = true;
   globe.showGroundAtmosphere = false;
