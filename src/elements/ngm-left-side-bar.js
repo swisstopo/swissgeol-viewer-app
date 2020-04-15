@@ -120,7 +120,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   initializeActiveLayers() {
-    const flatLayers = LeftSideBar.getFlatLayers(this.catalogLayers);
+    const flatLayers = this.getFlatLayers(this.catalogLayers);
 
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
@@ -186,22 +186,22 @@ class LeftSideBar extends I18nMixin(LitElement) {
   async onCatalogLayerClicked(evt) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
     const layer = evt.detail.layer;
-    if (!layer.displayed) {
+    if (layer.displayed) {
+      if (layer.visible) {
+        layer.displayed = false;
+        layer.visible = false;
+        layer.remove && layer.remove();
+        const idx = this.activeLayers.findIndex(l => l === layer);
+        this.activeLayers.splice(idx, 1);
+      } else {
+        layer.visible = true;
+      }
+    } else {
       await (layer.promise || (layer.promise = createCesiumObject(this.viewer, layer)));
       layer.add && layer.add();
       layer.visible = true;
       layer.displayed = true;
       this.activeLayers.push(layer);
-    } else {
-      if (!layer.visible) {
-        layer.visible = true;
-      } else {
-        layer.displayed = false;
-        layer.visible = false;
-        layer.remove && layer.remove();
-        const idx = this.activeLayers.findIndex(layer);
-        this.activeLayers.splice(idx, 1);
-      }
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
 
@@ -212,6 +212,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
 
   onLayerChanged() {
     this.catalogLayers = [...this.catalogLayers];
+    syncLayersParam(this.activeLayers);
   }
 
   onRemoveDisplayedLayer(evt) {
@@ -230,12 +231,13 @@ class LeftSideBar extends I18nMixin(LitElement) {
     this.requestUpdate();
   }
 
-  static getFlatLayers(tree) {
+  getFlatLayers(tree) {
     const flat = [];
     for (const layer of tree) {
       if (layer.children) {
-        flat.push(...LeftSideBar.getFlatLayers(layer.children));
+        flat.push(...this.getFlatLayers(layer.children));
       } else {
+        layer.load = () => layer.promise = createCesiumObject(this.viewer, layer);
         flat.push(layer);
       }
     }
@@ -265,15 +267,15 @@ class LeftSideBar extends I18nMixin(LitElement) {
       layer.displayed = true;
       this.viewer.scene.requestRender();
     } else { // for new layers
-      this.activeLayers.push(LeftSideBar.createSearchLayer(searchLayer.title, searchLayer.layer));
+      this.activeLayers.push(this.createSearchLayer(searchLayer.title, searchLayer.layer));
     }
     this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);
     this.requestUpdate();
   }
 
-  static createSearchLayer(title, layer) {
-    return {
+  createSearchLayer(title, layer) {
+    const config = {
       type: LAYER_TYPES.swisstopoWMTS,
       label: title,
       layer: layer,
@@ -281,6 +283,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
       displayed: true,
       opacity: DEFAULT_LAYER_OPACITY
     };
+    config.load = () => config.promise = createCesiumObject(this.viewer, config);
+    return config;
   }
 
   accordionFactory(element) {
