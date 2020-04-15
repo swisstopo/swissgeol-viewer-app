@@ -152,7 +152,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     });
 
     assetIds.forEach(assetId => {
-      activeLayers.push({
+      const layer = {
         type: LAYER_TYPES.tiles3d,
         assetId: assetId,
         label: assetId,
@@ -161,7 +161,9 @@ class LeftSideBar extends I18nMixin(LitElement) {
         displayed: true,
         opacityDisabled: true,
         pickable: true
-      });
+      };
+      layer.load = () => layer.promise = createCesiumObject(this.viewer, layer);
+      activeLayers.push(layer);
     });
 
     this.activeLayers = activeLayers;
