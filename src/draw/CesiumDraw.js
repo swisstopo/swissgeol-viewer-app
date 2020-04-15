@@ -107,7 +107,7 @@ export class CesiumDraw extends EventTarget {
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
         positions: positions.map(cartesiantoDegrees),
-        dimension: getDimensionText(this.type, this.activeDistances_)
+        dimensionLabel: getDimensionLabel(this.type, this.activeDistances_)
       }
     }));
 
@@ -143,7 +143,7 @@ export class CesiumDraw extends EventTarget {
         pixelSize: 6,
         heightReference: HeightReference.CLAMP_TO_GROUND
       },
-      label: getDimensionLabel()
+      label: getDimensionLabel(this.type, this.activeDistances_)
     });
   }
 
@@ -180,7 +180,7 @@ export class CesiumDraw extends EventTarget {
           width: this.strokeWidth_,
           material: this.strokeColor_
         },
-        label: getDimensionLabel(getDimensionText(this.type, this.activeDistances_))
+        label: getDimensionLabel(this.type, this.activeDistances_)
       });
     } else if (this.type === 'polygon' || this.type === 'rectangle') {
       return this.viewer_.entities.add({
@@ -189,7 +189,7 @@ export class CesiumDraw extends EventTarget {
           hierarchy: positions,
           material: this.fillColor_
         },
-        label: getDimensionLabel(getDimensionText(this.type, this.activeDistances_))
+        label: getDimensionLabel(this.type, this.activeDistances_)
       });
     }
   }
@@ -219,13 +219,15 @@ export class CesiumDraw extends EventTarget {
     }, false);
   }
 
-  dynamicSketchLineLength() {
+  updateSketchLineLabel() {
     const positions = this.type === 'rectangle' ? rectanglify(this.activePoints_) : this.activePoints_;
     const pointsLength = positions.length;
     if (pointsLength > 1) {
-      let distance = 0;
+      let distance;
       if (this.type === 'rectangle' && pointsLength > 2) {
-        distance = Cartesian3.distance(positions[1], positions[2]);
+        const b = positions[1]; //according to rectanglify
+        const bp = positions[2];
+        distance = Cartesian3.distance(b, bp);
       } else {
         distance = Cartesian3.distance(positions[pointsLength - 2], positions[pointsLength - 1]);
       }
@@ -248,7 +250,9 @@ export class CesiumDraw extends EventTarget {
           this.sketchLine_ = this.drawSketchLine_(this.dynamicSketLinePositions());
         }
 
-        this.activeEntity_ = this.drawShape_(this.dynamicShapePositions());
+        if (this.type !== 'rectangle') { // disrupts work of size calculation for rectangle
+          this.activeEntity_ = this.drawShape_(this.dynamicShapePositions());
+        }
 
         if (this.type === 'point') {
           this.activePoints_.push(position);
@@ -270,7 +274,7 @@ export class CesiumDraw extends EventTarget {
       const position = this.viewer_.scene.pickPosition(event.endPosition);
       if (position) {
         this.sketchPoint_.position.setValue(position);
-        this.dynamicSketchLineLength();
+        this.updateSketchLineLabel(position);
         this.activePoints_.pop();
         this.activePoints_.push(position);
       }
