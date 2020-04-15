@@ -101,7 +101,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       </div>
 
       <div class="ui styled accordion">
-        <div class="title">
+        <div class="title ngmmidgrey">
           <i class="dropdown icon"></i>
           ${i18next.t('swissforages_accordion_title')}
         </div>
