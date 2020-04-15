@@ -9,7 +9,7 @@ import Cartographic from 'cesium/Core/Cartographic.js';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
-import {getDimensionLabel, getDimensionText} from './helpers.js';
+import {getDimensionLabel} from './helpers.js';
 
 /**
  * @typedef {object} Options
