@@ -2,10 +2,6 @@ import {css} from 'lit-element';
 
 const style = css`
 .ngm-maps-container {
-  bottom: 30px;
-  right: 10px;
-  position: absolute;
-  z-index: 10;
   display: flex;
 }
 
