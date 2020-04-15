@@ -13,6 +13,7 @@ import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
+import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -28,6 +29,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       this.initAoi();
     }
     super.update(changedProperties);
+  }
+
+
+  disconnectedCallback() {
+    if (this.screenSpaceEventHandler) {
+      this.screenSpaceEventHandler.destroy();
+    }
   }
 
   initAoi() {
@@ -48,7 +56,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         showWarning(i18next.t('error_need_more_points'));
       }
     });
-    this.viewer.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
+
+    this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+    this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer.scene.requestRender();
       this.requestUpdate();
