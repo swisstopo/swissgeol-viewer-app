@@ -20,10 +20,11 @@ export const DEFAULT_VIEW = (function() {
     };
   } else {
     return {
-      destination: new Cartesian3(4908864.293775153, 703132.7307690362, 4556988.123570525),
+      destination: Cartesian3.fromDegrees(
+        6.06749, 43.77784, 204227),
       orientation: {
-        heading: CMath.toRadians(2.0),
-        pitch: CMath.toRadians(-40.0)
+        heading: CMath.toRadians(26.0),
+        pitch: CMath.toRadians(-33.0)
       }
     };
   }
