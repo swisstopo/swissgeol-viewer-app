@@ -169,22 +169,23 @@ function setupBaseLayers(viewer) {
   const greyLayer = 'ch.swisstopo.pixelkarte-grau';
   const detailedLayer = 'ch.swisstopo.landeskarte-grau-10';
 
+  const t = a => a;
   const mapsConfig = [
     {
       id: arealLayer,
-      labelKey: 'areal_map_label',
+      labelKey: t('areal_map_label'),
       backgroundImgSrc: '../images/arealimage.png', //relative to ngm-map-chooser
       layer: addSwisstopoLayer(viewer, arealLayer, 'jpeg', false)
     },
     {
       id: greyLayer,
-      labelKey: 'grey_map_label',
+      labelKey: t('grey_map_label'),
       backgroundImgSrc: '../images/grey.png',
       layer: addSwisstopoLayer(viewer, greyLayer, 'jpeg')
     },
     {
       id: detailedLayer,
-      labelKey: 'detailed_map_label',
+      labelKey: t('detailed_map_label'),
       backgroundImgSrc: '../images/detailed.png',
       layer: addSwisstopoLayer(viewer, detailedLayer, 'png', false)
     }];

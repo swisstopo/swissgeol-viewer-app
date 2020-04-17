@@ -202,7 +202,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
         <div class="ui segment">
           <div class="ui tiny form depth">
             <div class="field">
-              <label>${i18next.t('Cross sections depth')}</label>
+              <label>${i18next.t('cross_sections_depth')}</label>
               <input type="number"
                 .value="${this.depth}"
                 @change="${this.onDepthChange}"
@@ -215,7 +215,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
               </div>
             </div>
             <div class="ui tiny submit button ${this.hasValidParams() ? '' : 'disabled'}" @click="${this.getGST}">
-              ${i18next.t('Get image')}
+              ${i18next.t('get_result')}
             </div>
           </div>
         </div>
