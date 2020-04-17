@@ -21,6 +21,7 @@ import Rectangle from 'cesium/Core/Rectangle.js';
 import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
+import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -92,6 +93,9 @@ export function setupViewer(container) {
     requestRenderMode: true,
     // maximumRenderTimeChange: 10,
   });
+
+  // remove the default behaviour of calling 'zoomTo' on the double clicked entity
+  viewer.screenSpaceEventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
   const scene = viewer.scene;
   const globe = scene.globe;
