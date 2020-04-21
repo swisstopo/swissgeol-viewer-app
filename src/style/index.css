@@ -171,8 +171,7 @@ cesium-compass {
 
 cesium-view-cube {
   --cesium-view-cube-stroke-color: rgba(0, 0, 0, 0.6);
-  --cesium-view-cube-fill-color: rgb(224, 225, 226);
-  --cesium-view-cube-opacity: 0.8;
+  --cesium-view-cube-fill-color: rgba(224, 225, 226, 0.8);
 }
 
 ngm-map-chooser {
