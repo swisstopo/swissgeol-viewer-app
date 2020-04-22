@@ -72,7 +72,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     const entity = this.gstExtent.entities.values.find(ent => !!ent.polygon);
     if (entity) {
       entity.polygon.fill = true;
-      entity.polygon.material = Color.RED.withAlpha(0.1);
+      entity.polygon.material = Color.RED.withAlpha(0.25);
     }
   }
 
