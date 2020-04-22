@@ -219,7 +219,7 @@ export class CesiumDraw extends EventTarget {
     }, false);
   }
 
-  updateSketchLineLabel() {
+  updateSketchPoint() {
     const positions = this.type === 'rectangle' ? rectanglify(this.activePoints_) : this.activePoints_;
     const pointsLength = positions.length;
     if (pointsLength > 1) {
@@ -228,8 +228,11 @@ export class CesiumDraw extends EventTarget {
         const b = positions[1]; //according to rectanglify
         const bp = positions[2];
         distance = Cartesian3.distance(b, bp);
+        this.sketchPoint_.position.setValue(bp);
       } else {
-        distance = Cartesian3.distance(positions[pointsLength - 2], positions[pointsLength - 1]);
+        const lastPoint = positions[pointsLength - 1];
+        distance = Cartesian3.distance(positions[pointsLength - 2], lastPoint);
+        this.sketchPoint_.position.setValue(lastPoint);
       }
       this.activeDistance_ = Number((distance / 1000).toFixed(2));
       this.sketchPoint_.label.text.setValue(`${this.activeDistance_}km`);
@@ -273,8 +276,7 @@ export class CesiumDraw extends EventTarget {
     if (this.sketchPoint_) {
       const position = this.viewer_.scene.pickPosition(event.endPosition);
       if (position) {
-        this.sketchPoint_.position.setValue(position);
-        this.updateSketchLineLabel(position);
+        this.updateSketchPoint(position);
         this.activePoints_.pop();
         this.activePoints_.push(position);
       }
