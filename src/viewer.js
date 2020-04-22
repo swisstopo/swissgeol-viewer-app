@@ -11,8 +11,7 @@ import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Color from 'cesium/Core/Color.js';
 import Ion from 'cesium/Core/Ion.js';
 import Cartesian2 from 'cesium/Core/Cartesian2.js';
-// import GlobeTranslucencyMode from 'cesium/Scene/GlobeTranslucencyMode.js';
-// import NearFarScalar from 'cesium/Core/NearFarScalar.js';
+import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
@@ -21,6 +20,7 @@ import Rectangle from 'cesium/Core/Rectangle.js';
 import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
+import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -54,6 +54,14 @@ export function setupViewer(container) {
     noLimit = false;
   }
 
+  let terrainUrl;
+  const ownTerrain = searchParams.has('ownterrain');
+  if (ownTerrain) {
+    terrainUrl = 'https://terrain.dev.bgdi.ch/1.0.0/ch.swisstopo.terrain.3d/default/0.14/4326/';
+  } else {
+    terrainUrl = IonResource.fromAssetId(1);
+  }
+
   const viewer = new Viewer(container, {
     contextOptions: {
       webgl: {
@@ -78,14 +86,28 @@ export function setupViewer(container) {
     showRenderLoopErrors: false,
     useBrowserRecommendedResolution: true,
     terrainProvider: new CesiumTerrainProvider({
-      url: IonResource.fromAssetId(1)
+      url: terrainUrl
     }),
     terrainExaggeration: terrainExaggeration,
     requestRenderMode: true,
     // maximumRenderTimeChange: 10,
   });
 
+  // remove the default behaviour of calling 'zoomTo' on the double clicked entity
+  viewer.screenSpaceEventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
   const scene = viewer.scene;
+  const globe = scene.globe;
+
+  if (ownTerrain) {
+    const rectangle = Rectangle.fromDegrees(
+      5.86725126512748,
+      45.8026860136571,
+      10.9209100671547,
+      47.8661652478939
+    );
+    globe.cartographicLimitRectangle = rectangle;
+  }
 
   // Position the sun the that shadows look nice
   viewer.clock.currentTime = JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
@@ -99,8 +121,9 @@ export function setupViewer(container) {
   new KeyboardNavigation(viewer.scene);
 
   scene.screenSpaceCameraController.enableCollisionDetection = false;
+  scene.useDepthPicking = true;
+  scene.pickTranslucentDepth = true;
 
-  const globe = scene.globe;
   globe.baseColor = Color.WHITE;
   globe.depthTestAgainstTerrain = true;
   globe.showGroundAtmosphere = false;
@@ -110,9 +133,10 @@ export function setupViewer(container) {
   // Set the globe translucency to 0.8 when the
   // camera is 1500 meters from the surface and 1.0
   // as the camera distance approaches 50000 meters.
-  // FIXME: deactivated because it broke the drawing tools
-  // globe.translucencyMode = GlobeTranslucencyMode.FRONT_FACES_ONLY;
-  // globe.translucencyByDistance = new NearFarScalar(1500, 0.8, 50000, 1.0);
+  globe.translucencyEnabled = true;
+  globe.frontFaceAlphaByDistance = new NearFarScalar(10000, 0.6, 50000, 1.0);
+  globe.backFaceAlpha = 1.0;
+  globe.undergroundColor = undefined;
 
   setupBaseLayers(viewer);
 
@@ -151,22 +175,23 @@ function setupBaseLayers(viewer) {
   const greyLayer = 'ch.swisstopo.pixelkarte-grau';
   const detailedLayer = 'ch.swisstopo.landeskarte-grau-10';
 
+  const t = a => a;
   const mapsConfig = [
     {
       id: arealLayer,
-      labelKey: 'areal_map_label',
+      labelKey: t('areal_map_label'),
       backgroundImgSrc: '../images/arealimage.png', //relative to ngm-map-chooser
       layer: addSwisstopoLayer(viewer, arealLayer, 'jpeg', false)
     },
     {
       id: greyLayer,
-      labelKey: 'grey_map_label',
+      labelKey: t('grey_map_label'),
       backgroundImgSrc: '../images/grey.png',
       layer: addSwisstopoLayer(viewer, greyLayer, 'jpeg')
     },
     {
       id: detailedLayer,
-      labelKey: 'detailed_map_label',
+      labelKey: t('detailed_map_label'),
       backgroundImgSrc: '../images/detailed.png',
       layer: addSwisstopoLayer(viewer, detailedLayer, 'png', false)
     }];

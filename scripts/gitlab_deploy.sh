@@ -31,7 +31,7 @@ fi
 
 # the DEV_BRANCH branch is deployed to the dev environment
 # the PROD_BRANCH branch is deployed to the production environment
-# all branches with GSNGM- in their name are deployed to the review environment
+# all the other branches are deployed to the review environment
 if [ -n "$CI_COMMIT_REF_NAME" ]
 then
   NAME="$CI_COMMIT_REF_NAME"
@@ -47,14 +47,8 @@ then
     exit $?
   fi
 
-  if [[ $NAME == *GSNGM-* ]]
-  then
-    $DEPLOY_TO_S3 review $NAME
-    exit $?
-  fi
-
-  echo "Not a managed branch, skipping"
-  exit 0
+  $DEPLOY_TO_S3 review $NAME
+  exit $?
 fi
 
 echo "If you see this there is something wrong"

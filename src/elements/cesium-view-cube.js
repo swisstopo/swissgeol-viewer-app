@@ -32,10 +32,10 @@ class CesiumViewCube extends LitElement {
         position: absolute;
         width: 100%;
         height: 100%;
+        user-select: none;
         color: var(--cesium-view-cube-stroke-color);
         background-color: var(--cesium-view-cube-fill-color);
         border: 1px solid var(--cesium-view-cube-stroke-color);
-        opacity: var(--cesium-view-cube-opacity);
       }
       #side_t {
         transform: rotatex(90deg) translateZ(25px);
@@ -68,7 +68,12 @@ class CesiumViewCube extends LitElement {
   constructor() {
     super();
 
+    this.cubeElement = undefined;
     this.unlistenPostRender = null;
+  }
+
+  firstUpdated() {
+    this.cubeElement = this.shadowRoot.querySelector('#cube');
   }
 
   updated() {
@@ -85,10 +90,9 @@ class CesiumViewCube extends LitElement {
   }
 
   updateFromCamera() {
-    const element = this.shadowRoot.querySelector('#cube');
-    if (element) {
+    if (this.cubeElement) {
       const camera = this.scene.camera;
-      element.style.transform = `rotateX(${camera.pitch}rad) rotateY(${camera.heading}rad)`;
+      this.cubeElement.style.transform = `rotateX(${camera.pitch}rad) rotateY(${camera.heading}rad)`;
     }
   }
 
