@@ -3,35 +3,30 @@ import LabelStyle from 'cesium/Scene/LabelStyle';
 import HeightReference from 'cesium/Scene/HeightReference';
 import VerticalOrigin from 'cesium/Scene/VerticalOrigin';
 import HorizontalOrigin from 'cesium/Scene/HorizontalOrigin';
-import NearFarScalar from 'cesium/Core/NearFarScalar';
+import i18next from 'i18next';
 
-export function getDimensionLabel(type, distances) {
-  let farScaleDistance = 700000;
+export function getDimensionLabelText(type, distances) {
   const perimeter = distances.reduce((a, b) => a + b, 0);
-  const perimeterM = perimeter * 1000;
-  const near = perimeterM > 5000 ? perimeterM : 5000;
-  if (distances && distances.length > 1) {
-    farScaleDistance = near * distances.length;
-  }
   let text;
   if (type === 'rectangle') {
     text = `${distances.join('km x ')}km`;
   } else {
-    const dimensionType = type === 'polygon' ? 'Perimeter' : 'Length';
+    const dimensionType = type === 'polygon' ? i18next.t('Perimeter') : i18next.t('Length');
     text = `${dimensionType}: ${perimeter.toFixed(2)}km`;
   }
+  return text;
+}
 
+export function getDimensionLabel(type, distances) {
   return {
-    text: text,
-    font: '9pt arial',
+    text: getDimensionLabelText(type, distances),
+    font: '8pt arial',
     style: LabelStyle.FILL,
     showBackground: true,
     heightReference: HeightReference.CLAMP_TO_GROUND,
     verticalOrigin: VerticalOrigin.BOTTOM,
     horizontalOrigin: HorizontalOrigin.RIGHT,
     pixelOffset: new Cartesian2(-5, -5),
-    scaleByDistance: new NearFarScalar(near, 1, farScaleDistance, 0.4),
-    translucencyByDistance: new NearFarScalar(farScaleDistance, 1, farScaleDistance * 3, 0),
     disableDepthTestDistance: Number.POSITIVE_INFINITY
   };
 }

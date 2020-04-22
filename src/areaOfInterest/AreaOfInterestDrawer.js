@@ -75,13 +75,14 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
     this.areasCounter_ += 1;
     this.interestAreasDataSource.entities.add({
-      position: positions[positions.length - 1],
       name: `Area ${this.areasCounter_}`,
       polygon: {
         hierarchy: positions,
         material: DEFAULT_AOI_COLOR
       },
-      label: event.detail.dimensionLabel
+      properties: {
+        dimensionLabel: event.detail.dimensionLabel
+      }
     });
   }
 
@@ -126,10 +127,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   get entitiesList_() {
     return this.interestAreasDataSource.entities.values.map(val => {
+      console.log(val);
       return {
         id: val.id,
         name: val.name,
         show: val.isShowing,
+        dimensionLabel: val.properties.dimensionLabel.getValue(),
         selected: this.selectedArea_ && this.selectedArea_.id === val.id
       };
     });

@@ -9,7 +9,7 @@ import Cartographic from 'cesium/Core/Cartographic.js';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
-import {getDimensionLabel} from './helpers.js';
+import {getDimensionLabel, getDimensionLabelText} from './helpers.js';
 
 /**
  * @typedef {object} Options
@@ -107,7 +107,7 @@ export class CesiumDraw extends EventTarget {
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
         positions: positions.map(cartesiantoDegrees),
-        dimensionLabel: getDimensionLabel(this.type, this.activeDistances_)
+        dimensionLabel: getDimensionLabelText(this.type, this.activeDistances_)
       }
     }));
 
