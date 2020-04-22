@@ -11,7 +11,7 @@
     "postinstall": "scripts/npm_postinstall.sh"
   },
   "dependencies": {
-    "@geoblocks/cesium-compass": "0.0.4",
+    "@geoblocks/cesium-compass": "0.0.5",
     "@geoblocks/ga-search": "^0.0.13",
     "@sentry/browser": "^5.15.4",
     "@webcomponents/webcomponentsjs": "^2.4.3",
