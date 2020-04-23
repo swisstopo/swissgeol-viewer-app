@@ -15,7 +15,7 @@
     "@geoblocks/ga-search": "^0.0.13",
     "@sentry/browser": "^5.15.4",
     "@webcomponents/webcomponentsjs": "^2.4.3",
-    "cesium": "https://github.com/CesiumGS/cesium/archive/3f14850.tar.gz",
+    "cesium": "https://github.com/CesiumGS/cesium/archive/f90e141.tar.gz",
     "event-target-shim": "^5.0.1",
     "fomantic-ui-css": "^2.8.4",
     "i18next": "^19.3.4",
