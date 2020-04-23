@@ -31,3 +31,4 @@ tester "" "prod" "deploy_to_s3.sh prod" # should deploy the prod branch
 
 tester "" int "skipping" # should skip deploying int branch (merge request)
 tester "" blabla_GSNGM-45 "deploy_to_s3.sh review blabla_GSNGM-45" # should deploy branch
+tester "" bla_bla "deploy_to_s3.sh review bla_bla" # should deploy branch
