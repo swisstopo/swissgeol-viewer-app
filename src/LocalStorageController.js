@@ -3,17 +3,6 @@ const LOCALSTORAGE_WELCOME_KEY = 'hideWelcome';
 const LOCALSTORAGE_SENTRY_KEY = 'sentryConfirmed';
 
 export class LocalStorageController {
-  constructor() {
-    const aoiElement = document.querySelector('ngm-aoi-drawer');
-    aoiElement.addStoredAreas(this.getStoredAoi());
-    aoiElement.addEventListener('aoi_list_changed', evt => this.setAoiInStorage(evt.detail.entities));
-
-
-    const sideBarElement = document.querySelector('ngm-left-side-bar');
-    sideBarElement.hideWelcome = this.hideWelcomeValue;
-    sideBarElement.addEventListener('welcome_panel_changed', this.updateWelcomePanelState);
-  }
-
   get isSentryConfirmed() {
     return localStorage.getItem(LOCALSTORAGE_SENTRY_KEY) === 'true';
   }

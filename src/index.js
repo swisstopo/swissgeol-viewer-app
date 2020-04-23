@@ -96,6 +96,15 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
         };
         showMessage(i18next.t('sentry_message'), options);
       }
+
+      const aoiElement = document.querySelector('ngm-aoi-drawer');
+      aoiElement.addStoredAreas(localStorageController.getStoredAoi());
+      aoiElement.addEventListener('aoi_list_changed', evt =>
+        localStorageController.setAoiInStorage(evt.detail.entities));
+
+      const sideBarElement = document.querySelector('ngm-left-side-bar');
+      sideBarElement.hideWelcome = localStorageController.hideWelcomeValue;
+      sideBarElement.addEventListener('welcome_panel_changed', localStorageController.updateWelcomePanelState);
     });
   }
 });
