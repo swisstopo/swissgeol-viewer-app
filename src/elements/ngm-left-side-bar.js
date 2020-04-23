@@ -214,6 +214,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];
     this.activeLayers = [...this.activeLayers];
+    this.viewer.scene.requestRender();
   }
 
   onLayerChanged() {
