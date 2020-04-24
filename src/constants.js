@@ -34,20 +34,6 @@ export const DEFAULT_VIEW = (function() {
 export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'];
 export const DRILL_PICK_LIMIT = 1;
 
-export const BELOW_SURFACE_CONFIGURATION = {
-  colorToAlpha: Color.DARKGRAY,
-  colorToAlphaThreshold: 0,
-  brightness: 0.5,
-  gamma: 0.7
-};
-
-export const ABOVE_SURFACE_CONFIGURATION = {
-  colorToAlpha: undefined,
-  colorToAlphaThreshold: 0.004,
-  brightness: 1,
-  gamma: 1
-};
-
 export const LAYERS_URL_PARAM = 'layers';
 export const LAYERS_VISIBILITY_URL_PARAM = 'layers_visibility';
 export const LAYERS_OPACITY_URL_PARAM = 'layers_opacity';

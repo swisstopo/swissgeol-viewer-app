@@ -15,7 +15,6 @@ import NearFarScalar from 'cesium/Core/NearFarScalar.js';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
-import SurfaceColorUpdater from './SurfaceColorUpdater.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
 import MapChooser from './MapChooser';
@@ -130,17 +129,19 @@ export function setupViewer(container) {
   globe.showWaterEffect = false;
   globe.backFaceCulling = false;
 
-  // Set the globe translucency to 0.8 when the
-  // camera is 1500 meters from the surface and 1.0
+  // Set the globe translucency to 0.6 when the
+  // camera is 10000 meters from the surface and 1.0
   // as the camera distance approaches 50000 meters.
   globe.translucencyEnabled = true;
   globe.frontFaceAlphaByDistance = new NearFarScalar(10000, 0.6, 50000, 1.0);
+  globe.undergroundColorByDistance = new NearFarScalar(6000, 0.1, 500000, 1.0);
   globe.backFaceAlpha = 1.0;
-  globe.undergroundColor = undefined;
+
+  scene.postRender.addEventListener((scene) => {
+    scene.skyAtmosphere.show = !scene.cameraUnderground;
+  });
 
   setupBaseLayers(viewer);
-
-  new SurfaceColorUpdater(scene);
 
   return viewer;
 }
