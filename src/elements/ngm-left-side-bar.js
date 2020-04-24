@@ -160,7 +160,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
         visible: true,
         displayed: true,
         opacityDisabled: true,
-        pickable: true
+        pickable: true,
+        customAsset: true
       };
       layer.load = () => layer.promise = createCesiumObject(this.viewer, layer);
       activeLayers.push(layer);
