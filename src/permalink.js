@@ -79,7 +79,7 @@ export function syncLayersParam(activeLayers) {
   const layersOpacity = [];
   const layersVisibility = [];
   activeLayers.forEach(l => {
-    if (!l.assetId) {
+    if (!l.customAsset) {
       layerNames.push(l.layer);
       layersOpacity.push(isNaN(l.opacity) ? 1 : l.opacity);
       layersVisibility.push(l.visible);
