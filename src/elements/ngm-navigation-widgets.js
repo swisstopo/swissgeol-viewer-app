@@ -19,8 +19,8 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
   render() {
     if (this.viewer) {
       return html`
-        <cesium-minimap .scene="${this.viewer.scene}" extent="[4.838149149, 43.343659149, 11.779662851, 50.285172851]">
-          <i slot="marker" class="video icon"></i>
+        <cesium-minimap .scene="${this.viewer.scene}" extent="[5.910642046, 45.791912227, 10.554524194, 47.804750923]">
+          <i slot="marker" class="chevron left icon"></i>
           <img slot="image" src="src/images/overview.svg">
         </cesium-minimap>
         <div id="compass-info-popup"></div>
