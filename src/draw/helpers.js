@@ -9,7 +9,7 @@ export function getDimensionLabelText(type, distances) {
   const perimeter = distances.reduce((a, b) => a + b, 0);
   let text;
   if (type === 'rectangle') {
-    text = `${distances.join('km x ')}km`;
+    text = `${distances[0]}km x ${distances[1]}km`;
   } else {
     const dimensionType = type === 'polygon' ? i18next.t('Perimeter') : i18next.t('Length');
     text = `${dimensionType}: ${perimeter.toFixed(2)}km`;

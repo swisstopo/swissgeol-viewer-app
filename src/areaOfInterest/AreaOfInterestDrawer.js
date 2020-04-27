@@ -132,7 +132,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   get entitiesList_() {
     return this.interestAreasDataSource.entities.values.map(val => {
-      console.log(val);
       return {
         id: val.id,
         name: val.name,
