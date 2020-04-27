@@ -57,6 +57,18 @@ class CesiumMinimap extends LitElement {
     this.bottom = (lat - this.extent[1]) / (this.extent[3] - this.extent[1]);
     this.heading = this.scene.camera.heading;
 
+    if (this.left < 0) { // TODO make it better
+      this.left = 0;
+    } else if (this.left > 0.95) {
+      this.left = 0.95;
+    }
+
+    if (this.bottom < 0) {
+      this.bottom = 0;
+    } else if (this.bottom > 0.95) {
+      this.bottom = 0.95;
+    }
+
     this.requestUpdate();
   }
 
