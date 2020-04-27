@@ -24,6 +24,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       zoomTo: {type: Function},
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
+      hideWelcome: {type: Boolean}
     };
   }
 
@@ -32,14 +33,13 @@ class LeftSideBar extends I18nMixin(LitElement) {
       return '';
     }
 
-    const hideWelcome = localStorage.getItem('hideWelcome') === 'true';
     return html`
       <div class="ui styled accordion" id="${WELCOME_PANEL}">
-        <div class="title ${!hideWelcome ? 'active' : ''}">
+        <div class="title ${!this.hideWelcome ? 'active' : ''}">
           <i class="dropdown icon"></i>
           ${i18next.t('welcome_label')}
         </div>
-        <div class="content ${!hideWelcome ? 'active' : ''}">
+        <div class="content ${!this.hideWelcome ? 'active' : ''}">
           <div>${i18next.t('welcome_text')}</div>
           <div class="ui tertiary center aligned segment">
             <i class="ui lightbulb icon"></i>
@@ -160,7 +160,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
         visible: true,
         displayed: true,
         opacityDisabled: true,
-        pickable: true
+        pickable: true,
+        customAsset: true
       };
       layer.load = () => layer.promise = createCesiumObject(this.viewer, layer);
       activeLayers.push(layer);
@@ -214,6 +215,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];
     this.activeLayers = [...this.activeLayers];
+    this.viewer.scene.requestRender();
   }
 
   onLayerChanged() {
@@ -297,10 +299,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
     switch (element.id) {
       case WELCOME_PANEL: {
         accordion(element, {
-          onChange: () => {
-            const newValue = !(localStorage.getItem('hideWelcome') === 'true');
-            localStorage.setItem('hideWelcome', newValue);
-          }
+          onChange: () => this.dispatchEvent(new CustomEvent('welcome_panel_changed'))
         });
         break;
       }

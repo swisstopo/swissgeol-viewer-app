@@ -25,6 +25,7 @@ import './elements/ngm-camera-information.js';
 import './elements/ngm-feature-height.js';
 import './elements/ngm-left-side-bar.js';
 import './elements/map-chooser/ngm-map-chooser.js';
+import {LocalStorageController} from './LocalStorageController.js';
 
 initSentry();
 setupI18n();
@@ -80,7 +81,9 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       document.getElementById('loader').style.display = 'none';
       console.log(`loading mask displayed ${(performance.now() / 1000).toFixed(3)}s`);
 
-      const sentryConfirmed = localStorage.getItem('sentryConfirmed') === 'true';
+      const localStorageController = new LocalStorageController();
+
+      const sentryConfirmed = localStorageController.isSentryConfirmed;
       if (!sentryConfirmed) {
         const options = {
           displayTime: 0,
@@ -88,13 +91,20 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
           classActions: 'basic left',
           actions: [{
             text: i18next.t('ok_btn_label'),
-            click: () => {
-              localStorage.setItem('sentryConfirmed', 'true');
-            }
+            click: localStorageController.saveSentryConfirmation
           }]
         };
         showMessage(i18next.t('sentry_message'), options);
       }
+
+      const aoiElement = document.querySelector('ngm-aoi-drawer');
+      aoiElement.addStoredAreas(localStorageController.getStoredAoi());
+      aoiElement.addEventListener('aoi_list_changed', evt =>
+        localStorageController.setAoiInStorage(evt.detail.entities));
+
+      const sideBarElement = document.querySelector('ngm-left-side-bar');
+      sideBarElement.hideWelcome = localStorageController.hideWelcomeValue;
+      sideBarElement.addEventListener('welcome_panel_changed', localStorageController.updateWelcomePanelState);
     });
   }
 });
