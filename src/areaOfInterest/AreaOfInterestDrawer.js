@@ -224,6 +224,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         polygon: {
           hierarchy: area.positions,
           material: DEFAULT_AOI_COLOR
+        },
+        properties: {
+          dimensionLabel: area.dimensionLabel
         }
       });
       if (area.selected) {
