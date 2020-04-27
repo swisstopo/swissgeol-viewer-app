@@ -84,6 +84,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       polygon: {
         hierarchy: positions,
         material: DEFAULT_AOI_COLOR
+      },
+      properties: {
+        dimensionLabel: event.detail.dimensionLabel
       }
     });
   }
@@ -133,6 +136,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         id: val.id,
         name: val.name,
         show: val.isShowing,
+        dimensionLabel: val.properties.dimensionLabel.getValue(),
         positions: val.polygon.hierarchy ? val.polygon.hierarchy.getValue().positions : undefined,
         selected: this.selectedArea_ && this.selectedArea_.id === val.id
       };

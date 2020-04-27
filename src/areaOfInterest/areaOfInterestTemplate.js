@@ -57,7 +57,10 @@ function aoiListTemplate() {
   return this.entitiesList_.map(i =>
     html`
       <div class="ui segment ${i.selected ? 'secondary' : ''} ngm-aoi-segment">
-        <label class="ngm-aoi-title">${i.name}</label>
+        <div class="ngm-aoi-title-container">
+            <label class="ngm-aoi-title">${i.name}</label>
+            <label class="ngm-aoi-subtitle">${i.dimensionLabel}</label>
+        </div>
         <div class="ui small basic icon buttons">
             <button
             class="ui button"
