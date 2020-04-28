@@ -152,10 +152,14 @@ main {
   margin: 6px;
 }
 
-.navigation-widgets, ngm-navigation-widgets {
+.navigation-widgets, ngm-navigation-widgets, .ngm-navigation-buttons {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+ngm-navigation-widgets {
+  align-items: flex-end;
 }
 
 .navigation-widgets .ui.button, ngm-elevator-buttons{

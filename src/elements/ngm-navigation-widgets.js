@@ -23,16 +23,18 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
           <i slot="marker" class="chevron left icon"></i>
           <img slot="image" src="src/images/overview.svg">
         </cesium-minimap>
-        <div id="compass-info-popup"></div>
-        <cesium-view-cube .scene="${this.viewer.scene}"></cesium-view-cube>
-        <cesium-compass .scene="${this.viewer.scene}" .clock="${this.viewer.clock}"
-        data-tooltip=${i18next.t('cesium_compass_tooltip')}
-        data-position="left center"
-        data-variation="mini"
-        ></cesium-compass>
-        <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
-        <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
-        <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
+        <div class="ngm-navigation-buttons">
+          <div id="compass-info-popup"></div>
+          <cesium-view-cube .scene="${this.viewer.scene}"></cesium-view-cube>
+          <cesium-compass .scene="${this.viewer.scene}" .clock="${this.viewer.clock}"
+          data-tooltip=${i18next.t('cesium_compass_tooltip')}
+          data-position="left center"
+          data-variation="mini"
+          ></cesium-compass>
+          <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
+          <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
+          <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
+        </div>
       `;
     } else {
       return html``;
