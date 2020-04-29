@@ -3,6 +3,7 @@ import {styleMap} from 'lit-html/directives/style-map';
 
 import CesiumMath from 'cesium/Core/Math.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
+import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
 import {SWITZERLAND_RECTANGLE} from '../constants'; // todo pass as prop
 
@@ -23,6 +24,8 @@ class CesiumMinimap extends LitElement {
         overflow: hidden;
         user-select: none;
         border: 1px solid lightgrey;
+      }
+      slot {
         pointer-events: none;
       }
     `;
@@ -35,8 +38,21 @@ class CesiumMinimap extends LitElement {
 
   updated() {
     if (this.scene && !this.unlistenPostRender) {
-      this.unlistenPostRender = this.scene.postRender.addEventListener(() => this.updateFromCamera());
+      this.unlistenPostRender = this.scene.postRender.addEventListener(() => {
+        this.updateFromCamera();
+      });
     }
+    this.addEventListener('mousemove', (evt) => {
+      if (this.move) {
+        this.moveCamera(evt.x, evt.y);
+      }
+    });
+    this.addEventListener('click', (evt) => {
+      if (!this.move) {
+        this.moveCamera(evt.x, evt.y);
+      }
+    });
+    this.addEventListener('mouseup', () => this.move = false);
   }
 
   disconnectedCallback() {
@@ -63,23 +79,40 @@ class CesiumMinimap extends LitElement {
   }
 
   updateFromCamera() {
+    const cameraRect = this.scene.camera.computeViewRectangle(this.scene.globe.ellipsoid, new Rectangle());
+    const cameraLeftBottom = this.getCameraLeftBottom();
+    this.left = cameraLeftBottom.left;
+    this.bottom = cameraLeftBottom.bottom;
+    this.heading = this.scene.camera.heading;
+    this.widthScale = cameraRect.width / SWITZERLAND_RECTANGLE.width;
+    this.requestUpdate();
+  }
+
+  getCameraLeftBottom() {
     const position = this.scene.camera.positionCartographic;
     const lon = CesiumMath.toDegrees(position.longitude);
     const lat = CesiumMath.toDegrees(position.latitude);
     const cameraRect = this.scene.camera.computeViewRectangle(this.scene.globe.ellipsoid, new Rectangle());
     const cameraWest = CesiumMath.toDegrees(cameraRect.west);
     const cameraSouth = CesiumMath.toDegrees(cameraRect.south);
-    this.left = (Math.max(cameraWest, lon) - this.extent[0]) / (this.extent[2] - this.extent[0]);
-    this.bottom = (Math.max(cameraSouth, lat) - this.extent[1]) / (this.extent[3] - this.extent[1]);
-    this.heading = this.scene.camera.heading;
-    this.widthScale = cameraRect.width / SWITZERLAND_RECTANGLE.width;
+    const left = (Math.max(cameraWest, lon) - this.extent[0]) / (this.extent[2] - this.extent[0]);
+    const bottom = (Math.max(cameraSouth, lat) - this.extent[1]) / (this.extent[3] - this.extent[1]);
+    return {left, bottom};
+  }
 
-    this.requestUpdate();
+  moveCamera(evtX, evtY) {
+    const boundingRect = this.getBoundingClientRect();
+    const left = (evtX - boundingRect.left) / (boundingRect.right - boundingRect.left);
+    const bottom = (evtY - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
+    const lon = SWITZERLAND_RECTANGLE.width * left + SWITZERLAND_RECTANGLE.west;
+    const lat = SWITZERLAND_RECTANGLE.height * bottom + SWITZERLAND_RECTANGLE.south;
+    this.scene.camera.position = Cartesian3.fromRadians(lon, lat, this.scene.camera.positionCartographic.height);
   }
 
   render() {
     return html`
-      <div id="cesium-minimap-marker" style=${styleMap(this.markerStyle)}>
+      <div id="cesium-minimap-marker" style=${styleMap(this.markerStyle)}
+       @mousedown="${() => this.move = true}">
         <slot name="marker"></slot>
       </div>
       <slot name="image"></slot>
