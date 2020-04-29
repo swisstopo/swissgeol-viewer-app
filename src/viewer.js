@@ -98,7 +98,7 @@ export function setupViewer(container) {
   const scene = viewer.scene;
   const globe = scene.globe;
 
-  if (ownTerrain && !searchParams.has('fullterrain')) {
+  if (searchParams.has('swissrectangle')) {
     const rectangle = Rectangle.fromDegrees(
       5.86725126512748,
       45.8026860136571,
