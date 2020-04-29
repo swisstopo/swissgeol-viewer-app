@@ -2,6 +2,9 @@ import {LitElement, css, html} from 'lit-element';
 import {styleMap} from 'lit-html/directives/style-map';
 
 import CesiumMath from 'cesium/Core/Math.js';
+import Rectangle from 'cesium/Core/Rectangle.js';
+
+import {SWITZERLAND_RECTANGLE} from '../constants'; // todo pass as prop
 
 class CesiumMinimap extends LitElement {
 
@@ -44,32 +47,32 @@ class CesiumMinimap extends LitElement {
   }
 
   get markerStyle() {
-    const markerElement = this.renderRoot.querySelector('#cesium-minimap-marker');
-    if (markerElement) {
-      const halfOfWidth = markerElement.clientWidth / 2;
-      return {
-        position: 'absolute',
-        left: `calc(${this.left * 100}% - ${halfOfWidth}px)`,
-        bottom: `calc(${this.bottom * 100}% - ${halfOfWidth}px)`,
-        transform: `rotate(${-CesiumMath.PI_OVER_TWO + this.heading}rad)`,
-      };
-    }
-    return {};
+    let markerWidth = this.clientWidth * this.widthScale;
+    markerWidth = Math.min(Math.max(markerWidth, 35), 70);
+    // apply restriction
+    this.left = Math.min(Math.max(this.left, 0.02), 0.98);
+    this.bottom = Math.min(Math.max(this.bottom, 0.04), 0.91);
+
+    return {
+      position: 'absolute',
+      left: `calc(${this.left * 100}% - ${markerWidth / 2}px)`,
+      bottom: `calc(${this.bottom * 100}% - ${markerWidth / 2}px)`,
+      transform: `rotate(${this.heading}rad)`,
+      width: `${markerWidth}px`
+    };
   }
+
   updateFromCamera() {
     const position = this.scene.camera.positionCartographic;
     const lon = CesiumMath.toDegrees(position.longitude);
     const lat = CesiumMath.toDegrees(position.latitude);
-
-    this.left = (lon - this.extent[0]) / (this.extent[2] - this.extent[0]);
-    this.bottom = (lat - this.extent[1]) / (this.extent[3] - this.extent[1]);
+    const cameraRect = this.scene.camera.computeViewRectangle(this.scene.globe.ellipsoid, new Rectangle());
+    const cameraWest = CesiumMath.toDegrees(cameraRect.west);
+    const cameraSouth = CesiumMath.toDegrees(cameraRect.south);
+    this.left = (Math.max(cameraWest, lon) - this.extent[0]) / (this.extent[2] - this.extent[0]);
+    this.bottom = (Math.max(cameraSouth, lat) - this.extent[1]) / (this.extent[3] - this.extent[1]);
     this.heading = this.scene.camera.heading;
-
-    // apply restriction
-    const minValue = 0.01;
-    const maxValue = 1;
-    this.left = Math.min(Math.max(this.left, minValue), maxValue);
-    this.bottom = Math.min(Math.max(this.bottom, minValue), maxValue);
+    this.widthScale = cameraRect.width / SWITZERLAND_RECTANGLE.width;
 
     this.requestUpdate();
   }

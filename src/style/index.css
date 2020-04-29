@@ -160,6 +160,7 @@ main {
 
 ngm-navigation-widgets {
   align-items: flex-end;
+  width: 0;
 }
 
 .navigation-widgets .ui.button, ngm-elevator-buttons{

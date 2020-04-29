@@ -20,7 +20,7 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
     if (this.viewer) {
       return html`
         <cesium-minimap .scene="${this.viewer.scene}" extent="[5.910642046, 45.791912227, 10.554524194, 47.804750923]">
-          <i slot="marker" class="chevron left icon"></i>
+          <img slot="marker" src="src/images/mapMarker.svg">
           <img slot="image" src="src/images/overview.svg">
         </cesium-minimap>
         <div class="ngm-navigation-buttons">
