@@ -52,6 +52,7 @@ See https://docs.gitlab.com/ee/user/project/integrations/jira.html
 - `maximumScreenSpaceError` define the visual quality (default: 2.0 except for localhost which is 100.0)
 - `ownterrain` activates Swisstopo terrain (mind that their is only data in the swissrectangle)
 - `swissrectangle` restrict rendering to the Swiss rectangle
+- `inspector` display the Cesium Inspector widget
 
 # Notes
 

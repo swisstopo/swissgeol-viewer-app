@@ -248,3 +248,8 @@ body:after { /* Beta label */
 .no-pointer-events {
   pointer-events: none;
 }
+
+#divinspector {
+  position:absolute;
+  z-index:10;
+}
