@@ -51,6 +51,7 @@ See https://docs.gitlab.com/ee/user/project/integrations/jira.html
 - `assetIds` display some additionnal Cesium ION 3dtilesets (coma separated list of CesiumIon ids)
 - `maximumScreenSpaceError` define the visual quality (default: 2.0 except for localhost which is 100.0)
 - `ownterrain` activates Swisstopo terrain and restrict to the Swiss rectangle (where there is data)
+- `fullterrain` do not restrict to the Swiss rectangle when using own terrain
 
 # Notes
 
