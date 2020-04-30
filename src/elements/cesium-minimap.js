@@ -53,6 +53,7 @@ class CesiumMinimap extends LitElement {
       }
     });
     this.addEventListener('mouseup', () => this.moveMarker = false);
+    this.addEventListener('mouseout', () => this.moveMarker = false);
   }
 
   disconnectedCallback() {
@@ -101,6 +102,14 @@ class CesiumMinimap extends LitElement {
 
   moveCamera(evtX, evtY) {
     const boundingRect = this.getBoundingClientRect();
+    const cameraRect = this.scene.camera.computeViewRectangle(this.scene.globe.ellipsoid, new Rectangle());
+    let pinchScaleW = 1;
+    let pinchScaleH = 1;
+    if (cameraRect) {
+      const position = this.scene.camera.positionCartographic;
+      pinchScaleW = cameraRect.west > position.longitude ? position.longitude / cameraRect.west : 1;
+      pinchScaleH = cameraRect.south > position.latitude ? position.latitude / cameraRect.south : 1;
+    }
     // calculate left, bottom percentage from event
     const left = (evtX - boundingRect.left) / (boundingRect.right - boundingRect.left);
     const bottom = (evtY - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
@@ -110,8 +119,8 @@ class CesiumMinimap extends LitElement {
     // get distance to point in radians
     const width = CesiumMath.toRadians(this.extent[2] - this.extent[0]) * left + leftDiff;
     const height = CesiumMath.toRadians(this.extent[3] - this.extent[1]) * bottom + bottomDiff;
-    const lon = width + this.mapRectangle.west;
-    const lat = height + this.mapRectangle.south;
+    const lon = (width + this.mapRectangle.west) * pinchScaleW;
+    const lat = (height + this.mapRectangle.south) * pinchScaleH;
     this.scene.camera.position = Cartesian3.fromRadians(lon, lat, this.scene.camera.positionCartographic.height);
   }
 
