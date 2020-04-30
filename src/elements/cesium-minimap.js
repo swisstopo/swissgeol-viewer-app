@@ -81,24 +81,22 @@ class CesiumMinimap extends LitElement {
 
   updateFromCamera() {
     const cameraRect = this.scene.camera.computeViewRectangle(this.scene.globe.ellipsoid, new Rectangle());
-    const cameraLeftBottom = this.getLeftBottomFromCamera();
-    this.left = cameraLeftBottom.left;
-    this.bottom = cameraLeftBottom.bottom;
-    this.heading = this.scene.camera.heading;
-    this.widthScale = cameraRect.width / this.mapRectangle.width;
-    this.requestUpdate();
-  }
-
-  getLeftBottomFromCamera() {
     const position = this.scene.camera.positionCartographic;
-    const lon = CesiumMath.toDegrees(position.longitude);
-    const lat = CesiumMath.toDegrees(position.latitude);
-    const cameraRect = this.scene.camera.computeViewRectangle(this.scene.globe.ellipsoid, new Rectangle());
-    const cameraWest = CesiumMath.toDegrees(cameraRect.west);
-    const cameraSouth = CesiumMath.toDegrees(cameraRect.south);
-    const left = (Math.max(cameraWest, lon) - this.extent[0]) / (this.extent[2] - this.extent[0]);
-    const bottom = (Math.max(cameraSouth, lat) - this.extent[1]) / (this.extent[3] - this.extent[1]);
-    return {left, bottom};
+    let lon = CesiumMath.toDegrees(position.longitude);
+    let lat = CesiumMath.toDegrees(position.latitude);
+    if (cameraRect) {
+      this.widthScale = cameraRect.width / this.mapRectangle.width;
+      // fixes camera position when low pitch and zoomed out
+      const cameraWest = CesiumMath.toDegrees(cameraRect.west);
+      const cameraSouth = CesiumMath.toDegrees(cameraRect.south);
+      lon = Math.max(lon, cameraWest);
+      lat = Math.max(lat, cameraSouth);
+    }
+    this.left = (lon - this.extent[0]) / (this.extent[2] - this.extent[0]);
+    this.bottom = (lat - this.extent[1]) / (this.extent[3] - this.extent[1]);
+    this.heading = this.scene.camera.heading;
+
+    this.requestUpdate();
   }
 
   moveCamera(evtX, evtY) {
