@@ -24,6 +24,7 @@ class CesiumMinimap extends LitElement {
         overflow: hidden;
         user-select: none;
         border: 1px solid lightgrey;
+        cursor: pointer;
       }
       slot {
         pointer-events: none;
@@ -43,16 +44,16 @@ class CesiumMinimap extends LitElement {
       });
     }
     this.addEventListener('mousemove', (evt) => {
-      if (this.move) {
+      if (this.moveMarker) {
         this.moveCamera(evt.x, evt.y);
       }
     });
     this.addEventListener('click', (evt) => {
-      if (!this.move) {
+      if (!this.moveMarker) {
         this.moveCamera(evt.x, evt.y);
       }
     });
-    this.addEventListener('mouseup', () => this.move = false);
+    this.addEventListener('mouseup', () => this.moveMarker = false);
   }
 
   disconnectedCallback() {
@@ -102,17 +103,24 @@ class CesiumMinimap extends LitElement {
 
   moveCamera(evtX, evtY) {
     const boundingRect = this.getBoundingClientRect();
+    // calculate left, bottom percentage from event
     const left = (evtX - boundingRect.left) / (boundingRect.right - boundingRect.left);
     const bottom = (evtY - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
-    const lon = SWITZERLAND_RECTANGLE.width * left + SWITZERLAND_RECTANGLE.west;
-    const lat = SWITZERLAND_RECTANGLE.height * bottom + SWITZERLAND_RECTANGLE.south;
+    // calculate difference between minimap extent and map
+    const leftDiff = CesiumMath.toRadians(this.extent[0]) - SWITZERLAND_RECTANGLE.west;
+    const bottomDiff = CesiumMath.toRadians(this.extent[1]) - SWITZERLAND_RECTANGLE.south;
+    // get distance to point in radians
+    const width = CesiumMath.toRadians(this.extent[2] - this.extent[0]) * left + leftDiff;
+    const height = CesiumMath.toRadians(this.extent[3] - this.extent[1]) * bottom + bottomDiff;
+    const lon = width + SWITZERLAND_RECTANGLE.west;
+    const lat = height + SWITZERLAND_RECTANGLE.south;
     this.scene.camera.position = Cartesian3.fromRadians(lon, lat, this.scene.camera.positionCartographic.height);
   }
 
   render() {
     return html`
       <div id="cesium-minimap-marker" style=${styleMap(this.markerStyle)}
-       @mousedown="${() => this.move = true}">
+       @mousedown="${() => this.moveMarker = true}">
         <slot name="marker"></slot>
       </div>
       <slot name="image"></slot>
