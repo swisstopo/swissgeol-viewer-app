@@ -24,6 +24,8 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
         .scene="${this.viewer.scene}"
         extent="[5.910642046, 45.791912227, 10.554524194, 47.804750923]"
         .mapRectangle="${SWITZERLAND_RECTANGLE}">
+          <i slot="collapse-icon" class="compress arrows alternate icon"></i>
+          <i slot="expand-icon" class="expand arrows alternate icon"></i>
           <img slot="marker" src="src/images/mapMarker.svg">
           <img slot="image" src="src/images/overview.svg">
         </cesium-minimap>

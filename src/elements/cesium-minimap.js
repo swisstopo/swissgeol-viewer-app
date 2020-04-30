@@ -1,5 +1,6 @@
 import {LitElement, css, html} from 'lit-element';
 import {styleMap} from 'lit-html/directives/style-map';
+import {classMap} from 'lit-html/directives/class-map';
 
 import CesiumMath from 'cesium/Core/Math.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
@@ -28,12 +29,23 @@ class CesiumMinimap extends LitElement {
       slot {
         pointer-events: none;
       }
+      .hidden {
+        display: none;
+      }
+      .change-size-icon {
+        position: absolute;
+        right: 0;
+        width: 20px;
+        height: 20px;
+        color: lightgrey;
+      }
     `;
   }
 
   constructor() {
     super();
     this.unlistenPostRender = null;
+    this.expanded = true;
   }
 
   updated() {
@@ -48,7 +60,9 @@ class CesiumMinimap extends LitElement {
       }
     });
     this.addEventListener('click', (evt) => {
-      if (!this.moveMarker) {
+      const path = evt.composedPath ? evt.composedPath() : evt.path;
+      const includeIcon = path.find(el => el.classList && el.classList.contains('change-size-icon'));
+      if (!this.moveMarker && !includeIcon) {
         this.moveCamera(evt.x, evt.y);
       }
     });
@@ -67,7 +81,8 @@ class CesiumMinimap extends LitElement {
     // calculate width according to current view
     let markerWidth = this.clientWidth * this.widthScale;
     // apply restriction
-    markerWidth = Math.min(Math.max(markerWidth, 35), 70);
+    const maxWidth = this.expanded ? 70 : 50;
+    markerWidth = Math.min(Math.max(markerWidth, 35), maxWidth);
     this.left = Math.min(Math.max(this.left, 0.02), 0.98);
     this.bottom = Math.min(Math.max(this.bottom, 0.04), 0.91);
 
@@ -124,11 +139,27 @@ class CesiumMinimap extends LitElement {
     this.scene.camera.position = Cartesian3.fromRadians(lon, lat, this.scene.camera.positionCartographic.height);
   }
 
+  changeMinimapSize() {
+    const overviewElem = this.querySelector('[slot="image"]');
+    overviewElem.style.width = this.expanded ? '100px' : 'auto';
+    this.expanded = !this.expanded;
+    this.requestUpdate();
+  }
+
   render() {
     return html`
-      <div id="cesium-minimap-marker" style=${styleMap(this.markerStyle)}
+      <div style=${styleMap(this.markerStyle)}
        @mousedown="${() => this.moveMarker = true}">
         <slot name="marker"></slot>
+      </div>
+      <div class="change-size-icon" @click="${this.changeMinimapSize}">
+        <slot class=${classMap({hidden: !this.expanded})}
+          name="collapse-icon">
+        </slot>
+        <slot
+          class=${classMap({hidden: this.expanded})}
+          name="expand-icon">
+        </slot>
       </div>
       <slot name="image"></slot>
     `;
