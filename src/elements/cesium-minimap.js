@@ -5,14 +5,13 @@ import CesiumMath from 'cesium/Core/Math.js';
 import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
-import {SWITZERLAND_RECTANGLE} from '../constants'; // todo pass as prop
-
 class CesiumMinimap extends LitElement {
 
   static get properties() {
     return {
       scene: {type: Object},
-      extent: {type: Array}
+      extent: {type: Array},
+      mapRectangle: {type: Object}
     };
   }
 
@@ -64,9 +63,10 @@ class CesiumMinimap extends LitElement {
   }
 
   get markerStyle() {
+    // calculate width according to current view
     let markerWidth = this.clientWidth * this.widthScale;
-    markerWidth = Math.min(Math.max(markerWidth, 35), 70);
     // apply restriction
+    markerWidth = Math.min(Math.max(markerWidth, 35), 70);
     this.left = Math.min(Math.max(this.left, 0.02), 0.98);
     this.bottom = Math.min(Math.max(this.bottom, 0.04), 0.91);
 
@@ -81,15 +81,15 @@ class CesiumMinimap extends LitElement {
 
   updateFromCamera() {
     const cameraRect = this.scene.camera.computeViewRectangle(this.scene.globe.ellipsoid, new Rectangle());
-    const cameraLeftBottom = this.getCameraLeftBottom();
+    const cameraLeftBottom = this.getLeftBottomFromCamera();
     this.left = cameraLeftBottom.left;
     this.bottom = cameraLeftBottom.bottom;
     this.heading = this.scene.camera.heading;
-    this.widthScale = cameraRect.width / SWITZERLAND_RECTANGLE.width;
+    this.widthScale = cameraRect.width / this.mapRectangle.width;
     this.requestUpdate();
   }
 
-  getCameraLeftBottom() {
+  getLeftBottomFromCamera() {
     const position = this.scene.camera.positionCartographic;
     const lon = CesiumMath.toDegrees(position.longitude);
     const lat = CesiumMath.toDegrees(position.latitude);
@@ -107,13 +107,13 @@ class CesiumMinimap extends LitElement {
     const left = (evtX - boundingRect.left) / (boundingRect.right - boundingRect.left);
     const bottom = (evtY - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
     // calculate difference between minimap extent and map
-    const leftDiff = CesiumMath.toRadians(this.extent[0]) - SWITZERLAND_RECTANGLE.west;
-    const bottomDiff = CesiumMath.toRadians(this.extent[1]) - SWITZERLAND_RECTANGLE.south;
+    const leftDiff = CesiumMath.toRadians(this.extent[0]) - this.mapRectangle.west;
+    const bottomDiff = CesiumMath.toRadians(this.extent[1]) - this.mapRectangle.south;
     // get distance to point in radians
     const width = CesiumMath.toRadians(this.extent[2] - this.extent[0]) * left + leftDiff;
     const height = CesiumMath.toRadians(this.extent[3] - this.extent[1]) * bottom + bottomDiff;
-    const lon = width + SWITZERLAND_RECTANGLE.west;
-    const lat = height + SWITZERLAND_RECTANGLE.south;
+    const lon = width + this.mapRectangle.west;
+    const lat = height + this.mapRectangle.south;
     this.scene.camera.position = Cartesian3.fromRadians(lon, lat, this.scene.camera.positionCartographic.height);
   }
 
