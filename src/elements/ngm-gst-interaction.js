@@ -28,7 +28,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     super();
 
     this.minDepth_ = -6000;
-    this.maxDepth_ = 0;
+    this.maxDepth_ = 1000;
     this.depth = -1500;
 
     this.positions_ = null;

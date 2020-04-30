@@ -23,10 +23,20 @@
   overflow: hidden;
 }
 
+.ngm-aoi-subtitle {
+  font-size: 10px;
+}
+
 .ngm-aoi-buttons.ui.buttons {
   display: flex;
 }
 
 .ngm-aoi-buttons.ui.buttons > button {
   flex: 1
+}
+
+.ngm-aoi-title-container {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
 }

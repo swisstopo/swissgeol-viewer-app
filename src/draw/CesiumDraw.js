@@ -9,6 +9,7 @@ import Cartographic from 'cesium/Core/Cartographic.js';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
+import {getDimensionLabel, getDimensionLabelText} from './helpers.js';
 
 /**
  * @typedef {object} Options
@@ -40,6 +41,8 @@ export class CesiumDraw extends EventTarget {
     this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
     this.sketchLine_ = undefined;
+    this.activeDistance_ = 0;
+    this.activeDistances_ = [];
 
     this.entities_ = [];
 
@@ -93,13 +96,18 @@ export class CesiumDraw extends EventTarget {
       positions = rectanglify(this.activePoints_);
       this.entities_.push(this.drawShape_(positions));
     } else {
+      if (this.type === 'polygon') {
+        const distance = Cartesian3.distance(this.activePoints_[this.activePoints_.length - 1], this.activePoints_[0]);
+        this.activeDistances_.push(distance / 1000);
+      }
       this.entities_.push(this.drawShape_(this.activePoints_));
     }
     this.viewer_.scene.requestRender();
 
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
-        positions: positions.map(cartesiantoDegrees)
+        positions: positions.map(cartesiantoDegrees),
+        dimensionLabel: getDimensionLabelText(this.type, this.activeDistances_)
       }
     }));
 
@@ -115,6 +123,8 @@ export class CesiumDraw extends EventTarget {
     this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
     this.sketchLine_ = undefined;
+    this.activeDistance_ = 0;
+    this.activeDistances_ = [];
   }
 
   /**
@@ -132,7 +142,8 @@ export class CesiumDraw extends EventTarget {
         color: Color.WHITE,
         pixelSize: 6,
         heightReference: HeightReference.CLAMP_TO_GROUND
-      }
+      },
+      label: getDimensionLabel(this.type, this.activeDistances_)
     });
   }
 
@@ -162,19 +173,23 @@ export class CesiumDraw extends EventTarget {
 
     } else if (this.type === 'line') {
       return this.viewer_.entities.add({
+        position: positions[positions.length - 1],
         polyline: {
           positions: positions,
           clampToGround: true,
           width: this.strokeWidth_,
           material: this.strokeColor_
-        }
+        },
+        label: getDimensionLabel(this.type, this.activeDistances_)
       });
     } else if (this.type === 'polygon' || this.type === 'rectangle') {
       return this.viewer_.entities.add({
+        position: positions[positions.length - 1],
         polygon: {
           hierarchy: positions,
           material: this.fillColor_
-        }
+        },
+        label: getDimensionLabel(this.type, this.activeDistances_)
       });
     }
   }
@@ -204,6 +219,28 @@ export class CesiumDraw extends EventTarget {
     }, false);
   }
 
+  updateSketchPoint() {
+    const positions = this.type === 'rectangle' ? rectanglify(this.activePoints_) : this.activePoints_;
+    const pointsLength = positions.length;
+    if (pointsLength > 1) {
+      let distance;
+      if (this.type === 'rectangle' && pointsLength > 2) {
+        const b = positions[1]; //according to rectanglify
+        const bp = positions[2];
+        distance = Cartesian3.distance(b, bp);
+        this.sketchPoint_.position.setValue(bp);
+      } else {
+        const lastPoint = positions[pointsLength - 1];
+        distance = Cartesian3.distance(positions[pointsLength - 2], lastPoint);
+        this.sketchPoint_.position.setValue(lastPoint);
+      }
+      this.activeDistance_ = Number((distance / 1000).toFixed(2));
+      this.sketchPoint_.label.text.setValue(`${this.activeDistance_}km`);
+      return;
+    }
+    this.sketchPoint_.label.text.setValue('0km');
+  }
+
   onLeftClick_(event) {
     const position = this.viewer_.scene.pickPosition(event.position);
     if (position) {
@@ -216,13 +253,17 @@ export class CesiumDraw extends EventTarget {
           this.sketchLine_ = this.drawSketchLine_(this.dynamicSketLinePositions());
         }
 
-        this.activeEntity_ = this.drawShape_(this.dynamicShapePositions());
+        if (this.type !== 'rectangle') { // disrupts work of size calculation for rectangle
+          this.activeEntity_ = this.drawShape_(this.dynamicShapePositions());
+        }
 
         if (this.type === 'point') {
           this.activePoints_.push(position);
           this.finishDrawing();
           return;
         }
+      } else if (!this.activeDistances_.includes(this.activeDistance_)) {
+        this.activeDistances_.push(this.activeDistance_);
       }
       this.activePoints_.push(position);
       if (this.type === 'rectangle' && this.activePoints_.length === 4) {
@@ -235,7 +276,7 @@ export class CesiumDraw extends EventTarget {
     if (this.sketchPoint_) {
       const position = this.viewer_.scene.pickPosition(event.endPosition);
       if (position) {
-        this.sketchPoint_.position.setValue(position);
+        this.updateSketchPoint(position);
         this.activePoints_.pop();
         this.activePoints_.push(position);
       }
@@ -243,6 +284,9 @@ export class CesiumDraw extends EventTarget {
   }
 
   onDoubleClick_() {
+    if (!this.activeDistances_.includes(this.activeDistance_)) {
+      this.activeDistances_.push(this.activeDistance_);
+    }
     this.activePoints_.pop();
     this.finishDrawing();
   }

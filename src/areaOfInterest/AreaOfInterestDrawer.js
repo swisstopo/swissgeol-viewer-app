@@ -62,6 +62,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer.scene.requestRender();
       this.requestUpdate();
+      this.dispatchEvent(new CustomEvent('aoi_list_changed', {
+        detail: {
+          entities: this.entitiesList_
+        }
+      }));
     });
 
     this.aoiInited = true;
@@ -79,6 +84,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       polygon: {
         hierarchy: positions,
         material: DEFAULT_AOI_COLOR
+      },
+      properties: {
+        dimensionLabel: event.detail.dimensionLabel
       }
     });
   }
@@ -128,6 +136,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         id: val.id,
         name: val.name,
         show: val.isShowing,
+        dimensionLabel: val.properties.dimensionLabel.getValue(),
+        positions: val.polygon.hierarchy ? val.polygon.hierarchy.getValue().positions : undefined,
         selected: this.selectedArea_ && this.selectedArea_.id === val.id
       };
     });
@@ -199,6 +209,30 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     if (!this.areasClickable) {
       this.deselectArea();
     }
+  }
+
+  addStoredAreas(areas) {
+    areas.forEach(area => {
+      if (!area.positions) return;
+      const areaNumber = Number(area.name.split(' ')[1]);
+      if (!isNaN(areaNumber) && areaNumber > this.areasCounter_) {
+        this.areasCounter_ = areaNumber;
+      }
+      const entity = this.interestAreasDataSource.entities.add({
+        name: area.name,
+        show: area.show,
+        polygon: {
+          hierarchy: area.positions,
+          material: DEFAULT_AOI_COLOR
+        },
+        properties: {
+          dimensionLabel: area.dimensionLabel
+        }
+      });
+      if (area.selected) {
+        this.pickArea_(entity.id);
+      }
+    });
   }
 
   render() {
