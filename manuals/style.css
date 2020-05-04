@@ -1,0 +1,28 @@
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  border-bottom: 1px solid lightgray;
+  text-align: center;
+  width: 100%;
+}
+
+.ngm-help-main {
+  display: flex;
+  width: 95%;
+  padding: 15px;
+}
+
+.ngm-help-titles {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+}
+
+.ngm-help-content {
+  width: 60%;
+}

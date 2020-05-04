@@ -74,6 +74,7 @@ const config = {
         { src: 'node_modules/typeface-source-sans-pro/files/*', dest: 'dist/fonts/' },
         { src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', dest: 'dist/fonts/' },
         { src: 'node_modules/@webcomponents/webcomponentsjs/*', dest: 'dist/webcomponentsjs/' },
+        { from: 'manuals', to: 'dist/' },
       ]
     }),
 

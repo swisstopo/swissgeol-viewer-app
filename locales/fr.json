@@ -92,5 +92,6 @@
   "zoom_in_btn": "Zoom avant",
   "zoom_out_btn": "Zoom arrière",
   "zoom_to": "Zoom sur",
-  "zoom_to_object": "Zoom sur l'objet"
+  "zoom_to_object": "Zoom sur l'objet",
+  "help_link": "Aide"
 }

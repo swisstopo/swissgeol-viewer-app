@@ -62,6 +62,7 @@ module.exports = smp.wrap({
         { from: 'node_modules/typeface-source-sans-pro/files/*', flatten: true, to: 'fonts/' },
         { from: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', flatten: true, to: 'fonts/' },
         { from: 'node_modules/@webcomponents/webcomponentsjs/*', flatten: true, to: 'webcomponentsjs/' },
+        { from: 'manuals/', to: 'manuals/' },
       ]),
       new MiniCssExtractPlugin({
         filename: 'bundle.css'
