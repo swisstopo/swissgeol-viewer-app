@@ -1,5 +1,7 @@
 body {
   font-family: 'Source Sans Pro', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,16 +13,26 @@ header {
   width: 100%;
 }
 
+h2,h3,h4 {
+  margin-bottom: 0.5rem;
+  font-family: inherit;
+  line-height: 1.1;
+  font-weight: 400;
+  color: black;
+}
+
+h3 {
+  font-size: 1.3rem;
+}
+
+.ngm-main-label {
+  margin: 3px 0;
+}
+
 .ngm-help-main {
   display: flex;
   width: 95%;
   padding: 15px;
-}
-
-.ngm-help-titles {
-  display: flex;
-  flex-direction: column;
-  width: 40%;
 }
 
 .ngm-help-content {
@@ -34,6 +46,36 @@ header {
 input[type="radio"] {
   display: none;
 }
+
 input[type="radio"]:checked + div {
   display: block !important;
+}
+
+.ngm-help-titles {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+}
+
+.ngm-help-titles > label {
+  margin-top: 5px;
+  color: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+.ngm-help-titles > label.ngm-selected-label {
+  color: red;
+}
+
+.ngm-lang-selector {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+}
+
+.ngm-lang-selector > a {
+  color: rgba(0, 0, 0, 0.4);
+  text-decoration: none;
+  cursor: pointer;
+  margin-right: 5px;
 }
