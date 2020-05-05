@@ -26,3 +26,14 @@ header {
 .ngm-help-content {
   width: 60%;
 }
+
+.ngm-help-topic {
+  display: none;
+}
+
+input[type="radio"] {
+  display: none;
+}
+input[type="radio"]:checked + div {
+  display: block !important;
+}

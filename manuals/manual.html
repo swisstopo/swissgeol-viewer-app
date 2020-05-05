@@ -13,28 +13,30 @@
 </header>
 <div class="ngm-help-main">
   <div class="ngm-help-titles">
-    Table of Contents
-    <a class="c9" href="#h.xa74r9orwlee">Supported browser versions</a>
-    <a class="c9" href="#h.kfkv245hsc1f">Getting started</a>
-    <a class="c9" href="#h.plwg0jo3ekgh">Change the application language</a>
-    <a class="c9" href="#h.pac8rrcubalz">Navigation</a>
-    <a class="c9" href="#h.ho25qt2la4me">Back to the start view - Reset</a>
-    <a class="c9" href="#h.ychnmwti6j11">Camera height and orientation and object height</a>
-    <a class="c9" href="#h.p5sdsq9n2l41">Search for a place, postal code, field name or data set</a>
-    <a class="c9" href="#h.xyeq2kj4ex9b">Add and view 3D data</a>
-    <a class="c9" href="#h.63ws50ivmmcl">Changing the map background</a>
-    <a class="c9" href="#h.whij88qlf2lc">Changing the transparency of the data sets</a>
-    <a class="c9" href="#h.45bjr3phyzzx">Changing the order of the data sets</a>
-    <a class="c9" href="#h.pisrluazx5oh">Removing the data sets</a>
-    <a class="c9" href="#h.sjjr68ukterp">Detailed information of a 3D element</a>
-    <a class="c9" href="#h.p2dsaeggv9xy">Saving and sending the current 3D view</a>
-    <a class="c9" href="#h.etxhllj8spay">Areas Of Interest</a>
-    <a class="c9" href="#h.o0o1y6i6ewk">Create sections</a>
-    <a class="c9" href="#h.urw85psutjbz">Swissforages</a>
-    <a class="c9" href="#h.g14qitj9ekta">Technical and legal information</a>
+    <h4>Table of Contents</h4>
+    <label for="ngm-sbv-topic">Supported browser versions</label>
+    <label for="ngm-gs-topic">Getting started</label>
+    <label for="ngm-cal-topic">Change the application language</label>
+    <label for="ngm-nav-topic">Navigation</label>
+    <label for="ngm-bsv-topic">Back to the start view - Reset</label>
+    <label for="ngm-cho-topic">Camera height and orientation and object height</label>
+    <label for="ngm-sp-topic">Search for a place, postal code, field name or data set</label>
+    <label for="ngm-avd-topic">Add and view 3D data</label>
+    <label for="ngm-cmb-topic">Changing the map background</label>
+    <label for="ngm-ctds-topic">Changing the transparency of the data sets</label>
+    <label for="ngm-cods-topic">Changing the order of the data sets</label>
+    <label for="ngm-rds-topic">Removing the data sets</label>
+    <label for="ngm-die-topic">Detailed information of a 3D element</label>
+    <label for="ngm-sscv-topic">Saving and sending the current 3D view</label>
+    <label for="ngm-aoi-topic">Areas Of Interest</label>
+    <label for="ngm-cs-topic">Create sections</label>
+    <label for="ngm-sf-topic">Swissforages</label>
+    <label for="ngm-tlv-topic">Technical and legal information</label>
   </div>
   <div class="ngm-help-content">
-    <div>
+
+    <input id="ngm-sbv-topic" type="radio" name="topic" checked>
+    <div class="ngm-help-topic">
       <h3>Supported browser versions</h3>
       <div>
         <p>To enable an optimal and high-performance use, the application requires one of the following browsers:</p>
@@ -47,7 +49,8 @@
       </div>
     </div>
 
-    <div>
+    <input id="ngm-gs-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Getting started</h3>
       <p>After loading the application, the whole of Switzerland is displayed from diagonally above (viewing direction
         north-east). You can navigate with the mouse and with CTLR+mouse, both above and below the surface of the earth.
@@ -58,13 +61,15 @@
         etc.</p>
     </div>
 
-    <div>
+    <input id="ngm-cal-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Change the application language</h3>
       <p>The application recognizes the language preferred by the browser. If you want to change the default language,
         you can use the selection menu in the upper right corner.</p>
     </div>
 
-    <div>
+    <input id="ngm-nav-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Navigation</h3>
       <p>The navigation can be done in three different ways:</p>
       <p>With Mouse / Trackpad the view can be moved (Drag&amp;Drop), zoomed (mouse wheel) and tilted (hold CTRL key
@@ -77,69 +82,80 @@
         keys can also be used to navigate.</p>
     </div>
 
-    <div>
+    <input id="ngm-bsv-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Back to the start view - Reset</h3>
       <p>By clicking on the house button between the navigation buttons, you can return to the home screen of the
         viewer. This will reset the view to the whole of Switzerland.</p>
     </div>
 
-    <div>
+    <input id="ngm-cho-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Camera height and orientation and object height</h3>
       <p>The height of the viewer (camera height) and the viewing direction are displayed directly below the 3D view. If
         the mouse pointer is over a 3D object, the height relative to the earth&#39;s surface of the respective point on
         the object is displayed.</p>
     </div>
 
-    <div>
+    <input id="ngm-sp-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Search for a place, postal code, field name or data set</h3>
       <p>The &quot;Search...&quot; field provides access to names of towns and municipalities, postcodes, geographical
         names (mountain peaks, settlements, valleys, areas, waters, roads and facilities). You can also search for a
         data set / layer in the search field.</p>
     </div>
 
-    <div>
+    <input id="ngm-avd-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Add and view 3D data</h3>
       <p>Under &quot;Data Catalogue&quot; you will find a list of all digital 2D and 3D data that are centrally
         available in the 3D Viewer, arranged by topic. If you select data, they will be displayed directly in the 3D
         viewer and added to the category &quot;Data displayed&quot;.</p>
     </div>
 
-    <div>
+    <input id="ngm-cmb-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Changing the map background</h3>
       <p>At the bottom right you can change the map background. You can choose between the aerial image, the national
         maps in black and white (different degrees of detail), and the national map 1:10,000.</p>
     </div>
 
-    <div>
-      h3>Changing the transparency of the data sets</h3>
+    <input id="ngm-ctds-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
+      <h3>Changing the transparency of the data sets</h3>
       <p>Move&nbsp;the horizontal slider of the respective data set in the &quot;Data displayed&quot; section. </p>
     </div>
 
-    <div>
+    <input id="ngm-cods-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Changing the order of the data sets</h3>
       <p>Click on the up/down arrows of the respective record in the &quot;Data displayed&quot; section. Changing the
         order will only have an effect on 2D data that are laid over the terrain.</p>
     </div>
 
-    <div>
+    <input id="ngm-rds-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Removing the data sets</h3>
       <p>The loaded data layers can be removed from the &ldquo;Data displayed&rdquo; section and the 3D view with the
         &ldquo;rubbish bin&rdquo; button.</p>
     </div>
 
-    <div>
+    <input id="ngm-die-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Detailed information of a 3D element</h3>
       <p>If available, the attributes of 3D objects can be retrieved by a simple mouse click. If several objects are
         placed on top of each other, the attribute information of the frontmost object is displayed.</p>
     </div>
 
-    <div>
+    <input id="ngm-sscv-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Saving and sending the current 3D view</h3>
       <p>The current 3D view can be saved or shared by saving the entire URL as a bookmark in the browser or by copying
         the URL and sending it as e-mail or via social media.</p>
     </div>
 
-    <div>
+    <input id="ngm-aoi-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Areas Of Interest</h3>
       <p>In the section &quot;Areas Of Interest&quot; one or more areas on the earth&#39;s surface can be defined, which
         can be used for further functionalities in future versions of the application. The investigation areas can
@@ -148,26 +164,28 @@
         geometry objects (lines, points, etc.).</p>
     </div>
 
-    <div>
+    <input id="ngm-cs-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Create sections</h3>
       <p>In the &quot;Create sections&quot; section, virtual boreholes, vertical and horizontal sections can be created
         by clicking / clicking several times on the earth&rsquo;s surface. The application GST is queried in the
         background and the result is a PDF, which can be saved or printed if required.</p>
     </div>
 
-    <div>
+    <input id="ngm-sf-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Swissforages</h3>
       <p>The Swissforages application can be accessed under the section &quot;Swissforages&quot;. The Swissforages
         application allows to enter rock layer based data of wells according to the boreholes data model.</p>
     </div>
 
-    <div>
+    <input id="ngm-tlv-topic" type="radio" name="topic">
+    <div class="ngm-help-topic">
       <h3>Technical and legal information</h3>
-      <p>Developed by <a class="c9" href="https://camptocamp.com">Camptocamp SA</a>&nbsp;and <a class="c9"
-                                                                                                href="https://cesium.com">Cesium
-        Inc</a>&nbsp;on behalf of swisstopo.</p>
-      <p>For swissgeol.ch, the general provisions according to <a class="c9" href="http://www.disclaimer.admin.ch">http://www.disclaimer.admin.ch</a>&nbsp;and
-        <a class="c9" href="https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html%23copyright">https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright</a>&nbsp;apply.
+      <p>Developed by <a href="https://camptocamp.com">Camptocamp SA</a>&nbsp;and
+        <a href="https://cesium.com">Cesium Inc</a>&nbsp;on behalf of swisstopo.</p>
+      <p>For swissgeol.ch, the general provisions according to <a href="http://www.disclaimer.admin.ch">http://www.disclaimer.admin.ch</a>&nbsp;and
+        <a href="https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html%23copyright">https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright</a>&nbsp;apply.
       </p>
     </div>
   </div>
