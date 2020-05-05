@@ -59,7 +59,7 @@ input[type="radio"]:checked + div {
 
 .ngm-help-titles > label {
   margin-top: 5px;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(0, 0, 0, 0.6);
   cursor: pointer;
 }
 
