@@ -180,5 +180,5 @@ document.querySelector('ngm-map-configuration').viewer = viewer;
 
 i18next.on('languageChanged', (lang) => {
   document.querySelector('#ngm-help-btn').href =
-    lang === 'de' ? '/manuals/manual_de.html' : '/manuals/manual_en.html';
+    lang === 'de' ? './manuals/manual_de.html' : './manuals/manual_en.html';
 });
