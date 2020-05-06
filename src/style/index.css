@@ -30,6 +30,7 @@
 @import 'keyboard-navigation.css';
 @import 'layers.css';
 @import 'slider.css';
+@import 'review-window.css';
 
 [hidden] {
   display: none !important;
