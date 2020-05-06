@@ -75,6 +75,7 @@ const config = {
         { src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', dest: 'dist/fonts/' },
         { src: 'node_modules/@webcomponents/webcomponentsjs/*', dest: 'dist/webcomponentsjs/' },
         { src: 'manuals/dist/*', dest: 'dist/manuals/' },
+        { src: 'manuals/images/', dest: 'dist/manuals/' },
         { src: 'manuals/style.css', dest: 'dist/manuals/' },
       ]
     }),

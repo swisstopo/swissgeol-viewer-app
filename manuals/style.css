@@ -8,9 +8,9 @@ body {
 }
 
 header {
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   text-align: center;
-  width: 100%;
+  width: 85%;
 }
 
 h2,h3,h4 {
@@ -25,13 +25,23 @@ h3 {
   font-size: 1.3rem;
 }
 
+.ngm-help-header {
+  display: flex;
+  background-image: url('images/header-geologieportal.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: right;
+  background-color: #fff;
+  padding: 10px;
+}
+
 .ngm-main-label {
   margin: 3px 0;
 }
 
 .ngm-help-main {
   display: flex;
-  width: 95%;
+  width: 85%;
   padding: 15px;
 }
 
@@ -70,7 +80,7 @@ input[type="radio"]:checked + div {
 .ngm-lang-selector {
   position: absolute;
   top: 2px;
-  right: 10px;
+  right: 7%;
 }
 
 .ngm-lang-selector > a {

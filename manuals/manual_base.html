@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="document_lang">
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="style.css">
@@ -7,12 +7,15 @@
 </head>
 <body>
 <header>
+  <div class="ngm-help-header">
+    <img src="./images/logo-CH.svg"/>
+    <div class="ngm-lang-selector">
+      <a id="ngm-en-link" href="manual_en.html">EN</a>
+      <a id="ngm-de-link" href="manual_de.html">DE</a>
+    </div>
+  </div>
   <h2>welcome_label</h2>
   <h4>welcome_subtitle</h4>
-  <div class="ngm-lang-selector">
-    <a href="manual_en.html">EN</a>
-    <a href="manual_de.html">DE</a>
-  </div>
 </header>
 <div class="ngm-help-main">
   <div class="ngm-help-titles">
@@ -165,6 +168,13 @@
     var checkedId = document.querySelector('input[type="radio"]:checked').id;
     document.querySelector('label[for="' + checkedId + '"]').classList.add('ngm-selected-label');
   }
+
+  var lang = document.querySelector('html').lang;
+  var elem = document.querySelector('#ngm-en-link');
+  if(lang === 'de') {
+    elem = document.querySelector('#ngm-de-link');
+  }
+  elem.style['font-weight'] = 'bold';
 </script>
 </body>
 </html>

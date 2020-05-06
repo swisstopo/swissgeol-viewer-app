@@ -1,5 +1,9 @@
 [
   {
+    "tag": "document_lang",
+    "text": "en"
+  },
+  {
     "tag": "welcome_label",
     "text": "Welcome to swissgeol.ch, the 3D underground viewer!"
   },
