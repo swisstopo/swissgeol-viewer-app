@@ -5,9 +5,9 @@
     "lint": "eslint src/",
     "extract-i18n": "i18next",
     "start": "npm run webpack-start",
-    "webpack-start": "node scripts/environment.js && webpack-dev-server",
-    "rollup-start": "node scripts/environment.js && rollup --environment SERVE:true -c --watch --no-treeshake",
-    "build": "node scripts/environment.js $RELEASE_NAME && rm -rf dist/* && rollup --environment mode:production -c && scripts/create_versions.sh",
+    "webpack-start": "node scripts/environment.js && node scripts/generateManuals.js && webpack-dev-server",
+    "rollup-start": "node scripts/environment.js && node scripts/generateManuals.js && rollup --environment SERVE:true -c --watch --no-treeshake",
+    "build": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && rm -rf dist/* && rollup --environment mode:production -c && scripts/create_versions.sh",
     "postinstall": "scripts/npm_postinstall.sh"
   },
   "dependencies": {

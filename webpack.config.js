@@ -62,8 +62,7 @@ module.exports = smp.wrap({
         { from: 'node_modules/typeface-source-sans-pro/files/*', flatten: true, to: 'fonts/' },
         { from: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', flatten: true, to: 'fonts/' },
         { from: 'node_modules/@webcomponents/webcomponentsjs/*', flatten: true, to: 'webcomponentsjs/' },
-        { from: 'manuals/manual_de.html', to: './manuals' },
-        { from: 'manuals/manual_en.html', to: './manuals' },
+        { from: 'manuals/dist/*', to: './manuals/' },
         { from: 'manuals/style.css', to: './manuals/' },
       ]),
       new MiniCssExtractPlugin({
