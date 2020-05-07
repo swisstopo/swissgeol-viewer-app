@@ -248,3 +248,7 @@ body:after { /* Beta label */
 .no-pointer-events {
   pointer-events: none;
 }
+
+ngm-gst-interaction > .ui.tiny.icon.buttons {
+  display: flex;
+}
