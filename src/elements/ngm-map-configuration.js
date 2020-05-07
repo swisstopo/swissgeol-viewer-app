@@ -14,22 +14,17 @@ class NgmMapConfiguration extends I18nMixin(LitElement) {
 
   firstUpdated() {
     this.dispatchEvent(new CustomEvent('rendered'));
-  }
 
-  updated() {
-    if (!this.sliderInited && this.viewer) {
-      $('#ngm-transparency-slider').slider({
-        min: 0.01,
-        max: 0.99,
-        start: this.viewer.scene.globe.frontFaceAlphaByDistance.nearValue,
-        step: 0,
-        onMove: (val) => {
-          this.viewer.scene.globe.frontFaceAlphaByDistance.nearValue = val;
-          this.viewer.scene.requestRender();
-        }
-      });
-      this.sliderInited = true;
-    }
+    $('#ngm-transparency-slider').slider({
+      min: 0.01,
+      max: 0.99,
+      start: this.viewer.scene.globe.frontFaceAlphaByDistance.nearValue,
+      step: 0,
+      onMove: (val) => {
+        this.viewer.scene.globe.frontFaceAlphaByDistance.nearValue = val;
+        this.viewer.scene.requestRender();
+      }
+    });
   }
 
   render() {
