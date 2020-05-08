@@ -104,7 +104,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       <div class="ui styled accordion">
         <div class="title ngmmidgrey">
           <i class="dropdown icon"></i>
-          ${i18next.t('swissforages_accordion_title')}
+          ${i18next.t('external_tools_label')}
         </div>
         <div class="content">
           <div class="ui link list">
@@ -113,6 +113,12 @@ class LeftSideBar extends I18nMixin(LitElement) {
                <i class="pencil ruler icon"></i>
              </button>
              swissforages.ch
+            </a>
+            <a class="item" target="_blank" href="https://www.strati.ch/">
+             <button class="ui icon button">
+               <i class="receipt icon"></i>
+             </button>
+             strati.ch
             </a>
           </div>
         </div>
