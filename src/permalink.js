@@ -7,7 +7,8 @@ import {
   LAYERS_URL_PARAM,
   LAYERS_VISIBILITY_URL_PARAM,
   ASSET_IDS_URL_PARAM,
-  MAP_URL_PARAM
+  MAP_URL_PARAM,
+  MAP_TRANSPARENCY_URL_PARAM
 } from './constants.js';
 
 export function getCameraView() {
@@ -124,4 +125,15 @@ export function syncMapParam(layerName) {
 export function getMapParam() {
   const params = getURLSearchParams();
   return params.get(MAP_URL_PARAM);
+}
+
+export function syncMapTransparencyParam(transparency) {
+  const params = getURLSearchParams();
+  params.set(MAP_TRANSPARENCY_URL_PARAM, transparency);
+  setURLSearchParams(params);
+}
+
+export function getMapTransparencyParam() {
+  const params = getURLSearchParams();
+  return Number(params.get(MAP_TRANSPARENCY_URL_PARAM));
 }

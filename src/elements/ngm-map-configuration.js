@@ -4,6 +4,7 @@ import {I18nMixin} from '../i18n.js';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/slider.js';
 import './map-chooser/ngm-map-chooser.js';
+import {syncMapTransparencyParam} from '../permalink.js';
 
 class NgmMapConfiguration extends I18nMixin(LitElement) {
   static get properties() {
@@ -23,6 +24,7 @@ class NgmMapConfiguration extends I18nMixin(LitElement) {
       onMove: (val) => {
         this.viewer.scene.globe.frontFaceAlphaByDistance.nearValue = val;
         this.viewer.scene.requestRender();
+        syncMapTransparencyParam(val);
       }
     });
   }

@@ -21,6 +21,7 @@ import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
 import CesiumInspector from 'cesium/Widgets/CesiumInspector/CesiumInspector.js';
+import {getMapTransparencyParam} from './permalink.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -134,7 +135,8 @@ export function setupViewer(container) {
   // camera is 10000 meters from the surface and 1.0
   // as the camera distance approaches 50000 meters.
   globe.translucencyEnabled = true;
-  globe.frontFaceAlphaByDistance = new NearFarScalar(10000, 0.6, 50000, 1.0);
+  const transparency = getMapTransparencyParam() || 0.6;
+  globe.frontFaceAlphaByDistance = new NearFarScalar(10000, transparency, 50000, 1.0);
   globe.undergroundColorByDistance = new NearFarScalar(6000, 0.1, 500000, 1.0);
   globe.backFaceAlpha = 1.0;
 
