@@ -254,3 +254,7 @@ body:after { /* Beta label */
   position:absolute;
   z-index:10;
 }
+
+ngm-gst-interaction > .ui.tiny.icon.buttons {
+  display: flex;
+}
