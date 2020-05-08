@@ -20,6 +20,7 @@ import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
+import CesiumInspector from 'cesium/Widgets/CesiumInspector/CesiumInspector.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -143,6 +144,12 @@ export function setupViewer(container) {
 
   setupBaseLayers(viewer);
 
+  if (searchParams.has('inspector')) {
+    const div = document.createElement('div');
+    div.id = 'divinspector';
+    document.body.appendChild(div);
+    new CesiumInspector('divinspector', scene);
+  }
   return viewer;
 }
 
