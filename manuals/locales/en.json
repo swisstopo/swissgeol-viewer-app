@@ -1,0 +1,166 @@
+[
+  {
+    "tag": "document_lang",
+    "text": "en"
+  },
+  {
+    "tag": "welcome_label",
+    "text": "Welcome to swissgeol.ch, the 3D underground viewer!"
+  },
+  {
+    "tag": "welcome_subtitle",
+    "text": "Swissgeol.ch is the 3D underground viewer from swisstopo. With this intuitive web application, which puts geological models in a geographical context, data from different sources and topics can be combined."
+  },
+  {
+    "tag": "table_of_contents",
+    "text": "Table of Contents"
+  },
+  {
+    "tag": "supported_browser_versions",
+    "text": "Supported browser versions"
+  },
+  {
+    "tag": "getting_started",
+    "text": "Getting started"
+  },
+  {
+    "tag": "change_application_language",
+    "text": "Change the application language"
+  },
+  {
+    "tag": "navigation_topic",
+    "text": "Navigation"
+  },
+  {
+    "tag": "reset_topic",
+    "text": "Back to the start view - Reset"
+  },
+  {
+    "tag": "camera_height_orientation",
+    "text": "Camera height and orientation and object height"
+  },
+  {
+    "tag": "search_topic",
+    "text": "Search for a place, postal code, field name or data set"
+  },
+  {
+    "tag": "3d_data_topic",
+    "text": "Add and view 3D data"
+  },
+  {
+    "tag": "changing_background",
+    "text": "Changing the map background"
+  },
+  {
+    "tag": "changing_transparency",
+    "text": "Changing the transparency of the data sets"
+  },
+  {
+    "tag": "changing_order",
+    "text": "Changing the order of the data sets"
+  },
+  {
+    "tag": "removing_datasets",
+    "text": "Removing the data sets"
+  },
+  {
+    "tag": "detailed_information",
+    "text": "Detailed information of a 3D element"
+  },
+  {
+    "tag": "saving_sending",
+    "text": "Saving and sending the current 3D view"
+  },
+  {
+    "tag": "area_of_interest",
+    "text": "Areas Of Interest"
+  },
+  {
+    "tag": "creates_sections",
+    "text": "Create sections"
+  },
+  {
+    "tag": "swissforages_topic",
+    "text": "Swissforages"
+  },
+  {
+    "tag": "technical_legal_info",
+    "text": "Technical and legal information"
+  },
+  {
+    "tag": "latest_stable_version",
+    "text": "latest stable version"
+  },
+  {
+    "tag": "supported_browser_versions_text",
+    "text": "To enable an optimal and high-performance use, the application requires one of the following browsers:"
+  },
+  {
+    "tag": "getting_started_text",
+    "text": "<p>After loading the application, the whole of Switzerland is displayed from diagonally above (viewing direction north-east). You can navigate with the mouse and with CTLR+mouse, both above and below the surface of the earth.\nMost of the data is located below the earth&#39;s surface.</p>\n<p>In the left panel, additional data can be switched on in the data catalogue, which then appears in the &quot;Data displayed&quot; section.</p>\n<p>The same panel also offers many functionalities such as &quot;Investigation areas&quot;, &quot;Create sections&quot;, etc.</p>"
+  },
+  {
+    "tag": "change_application_language_text",
+    "text": "The application recognizes the language preferred by the browser. If you want to change the default language, you can use the selection menu in the upper right corner."
+  },
+  {
+    "tag": "navigation_topic_text",
+    "text": "<p>The navigation can be done in three different ways:</p>\n <p>With Mouse / Trackpad the view can be moved (Drag&amp;Drop), zoomed (mouse wheel) and tilted (hold CTRL key while Drag&amp;Drop).</p>\n <p>The buttons on the upper right side of the viewer can be used to change the orientation in horizontal and vertical axis (Drag&amp;Drop on the outer and inner ring of the compass rose), the view can be zoomed in and zoomed out (&quot;+&quot; and &quot;-&quot; buttons) and can be moved up / down as with an elevator (arrow buttons).</p>\n<p>Using the keyboard, the combinations &quot;WASD&quot;, &quot;IJKL&quot;, &quot;+-&quot; as well as the arrow keys can also be used to navigate.</p>"
+  },
+  {
+    "tag": "reset_topic_text",
+    "text": "By clicking on the house button between the navigation buttons, you can return to the home screen of the viewer. This will reset the view to the whole of Switzerland."
+  },
+  {
+    "tag": "camera_height_orientation_text",
+    "text": "The height of the viewer (camera height) and the viewing direction are displayed directly below the 3D view. If the mouse pointer is over a 3D object, the height relative to the earth&#39;s surface of the respective point on the object is displayed."
+  },
+  {
+    "tag": "search_topic_text",
+    "text": "The &quot;Search...&quot; field provides access to names of towns and municipalities, postcodes, geographical names (mountain peaks, settlements, valleys, areas, waters, roads and facilities). You can also search for a data set / layer in the search field."
+  },
+  {
+    "tag": "3d_data_topic_text",
+    "text": "Under &quot;Data Catalogue&quot; you will find a list of all digital 2D and 3D data that are centrally available in the 3D Viewer, arranged by topic. If you select data, they will be displayed directly in the 3D viewer and added to the category &quot;Data displayed&quot;."
+  },
+  {
+    "tag": "changing_background_text",
+    "text": "At the bottom right you can change the map background. You can choose between the aerial image, the national maps in black and white (different degrees of detail), and the national map 1:10,000."
+  },
+  {
+    "tag": "changing_transparency_text",
+    "text": "Move the horizontal slider of the respective data set in the &quot;Data displayed&quot; section."
+  },
+  {
+    "tag": "changing_order_text",
+    "text": "Click on the up/down arrows of the respective record in the &quot;Data displayed&quot; section. Changing the order will only have an effect on 2D data that are laid over the terrain."
+  },
+  {
+    "tag": "removing_datasets_text",
+    "text": "The loaded data layers can be removed from the &ldquo;Data displayed&rdquo; section and the 3D view with the &ldquo;rubbish bin&rdquo; button."
+  },
+  {
+    "tag": "detailed_information_text",
+    "text": "If available, the attributes of 3D objects can be retrieved by a simple mouse click. If several objects are placed on top of each other, the attribute information of the frontmost object is displayed."
+  },
+  {
+    "tag": "saving_sending_text",
+    "text": "The current 3D view can be saved or shared by saving the entire URL as a bookmark in the browser or by copying the URL and sending it as e-mail or via social media."
+  },
+  {
+    "tag": "area_of_interest_text",
+    "text": "In the section &quot;Areas Of Interest&quot; one or more areas on the earth&#39;s surface can be defined, which can be used for further functionalities in future versions of the application. The investigation areas can either be drawn by clicking on the earth&#39;s surface (both from the view above and below the earth&#39;s surface), or a KML can be uploaded. The KML must contain at least one polygon and may not contain any other geometry objects (lines, points, etc.)."
+  },
+  {
+    "tag": "creates_sections_text",
+    "text": "In the &quot;Create sections&quot; section, virtual boreholes, vertical and horizontal sections can be created by clicking / clicking several times on the earth&rsquo;s surface. The application GST is queried in the background and the result is a PDF, which can be saved or printed if required."
+  },
+  {
+    "tag": "swissforages_topic_text",
+    "text": "The Swissforages application can be accessed under the section &quot;Swissforages&quot;. The Swissforages application allows to enter rock layer based data of wells according to the boreholes data model."
+  },
+  {
+    "tag": "technical_legal_info_text",
+    "text": "<p>Developed by <a href=\"https://camptocamp.com\">Camptocamp SA</a>&nbsp;and <a href=\"https://cesium.com\">Cesium Inc</a>&nbsp;on behalf of swisstopo.</p>\n <p>For swissgeol.ch, the general provisions according to <a href=\"http://www.disclaimer.admin.ch\">http://www.disclaimer.admin.ch</a>&nbsp;and <a href=\"https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html%23copyright\">https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright</a>&nbsp;apply.</p>"
+  }
+]

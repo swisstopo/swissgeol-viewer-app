@@ -1,0 +1,166 @@
+[
+  {
+    "tag": "document_lang",
+    "text": "de"
+  },
+  {
+    "tag": "welcome_label",
+    "text": "Willkommen bei swissgeol.ch, dem 3D-Untergrundviewer!"
+  },
+  {
+    "tag": "welcome_subtitle",
+    "text": "Swissgeol.ch ist der 3D-Untergrundviewer von swisstopo. Mit dieser intuitiven Webanwendung, welche geologische Modelle in einen geografischen Kontext setzt, können Daten aus verschiedenen Quellen und Themenbereichen kombiniert werden."
+  },
+  {
+    "tag": "table_of_contents",
+    "text": "Inhaltsverzeichnis"
+  },
+  {
+    "tag": "supported_browser_versions",
+    "text": "Unterstützte Browserversionen"
+  },
+  {
+    "tag": "getting_started",
+    "text": "Erste Schritte"
+  },
+  {
+    "tag": "change_application_language",
+    "text": "Wechsel der Sprache der Anwendung"
+  },
+  {
+    "tag": "navigation_topic",
+    "text": "Navigation"
+  },
+  {
+    "tag": "reset_topic",
+    "text": "Zurück in die Startansicht - Reset"
+  },
+  {
+    "tag": "camera_height_orientation",
+    "text": "Kamerahöhe und -ausrichtung sowie Objekthöhe"
+  },
+  {
+    "tag": "search_topic",
+    "text": "Suchen eines Orts, PLZ, Flurnamen oder Datensatz"
+  },
+  {
+    "tag": "3d_data_topic",
+    "text": "3D-Daten hinzufügen und ansehen"
+  },
+  {
+    "tag": "changing_background",
+    "text": "Ändern des Kartenhintergrundes"
+  },
+  {
+    "tag": "changing_transparency",
+    "text": "Ändern der Transparenz der Datensätze"
+  },
+  {
+    "tag": "changing_order",
+    "text": "Ändern der Reihenfolge der Datensätze"
+  },
+  {
+    "tag": "removing_datasets",
+    "text": "Entfernen der Datensätze"
+  },
+  {
+    "tag": "detailed_information",
+    "text": "Detailinformationen eines Kartenelements"
+  },
+  {
+    "tag": "saving_sending",
+    "text": "Kartendarstellung abspeichern und versenden"
+  },
+  {
+    "tag": "area_of_interest",
+    "text": "Untersuchungsgebiete"
+  },
+  {
+    "tag": "creates_sections",
+    "text": "Schnitte erstellen"
+  },
+  {
+    "tag": "swissforages_topic",
+    "text": "Bohrlöcher erfassen"
+  },
+  {
+    "tag": "technical_legal_info",
+    "text": "Technische und rechtliche Informationen"
+  },
+  {
+    "tag": "latest_stable_version",
+    "text": "neueste stabile Version"
+  },
+  {
+    "tag": "supported_browser_versions_text",
+    "text": "Um eine optimale und performante Nutzung zu ermöglichen, setzt die Applikation eine der nachfolgenden Browser voraus:"
+  },
+  {
+    "tag": "getting_started_text",
+    "text": "<p>Nach dem Laden der Anwendung wird die gesamte Schweiz von schräg oben (Blickrichtung Nord-Ost) angezeigt. Mit der Maus und mit CTLR+Maus kann navigiert werden, sowohl über als auch unter der Erdoberfläche. Die meisten Daten befinden sich unter der Erdoberfläche.</p>\n<p>Im linken Panel können zusätzliche Daten im Datenkatalog eingeschaltet werden, welche darauf in der Rubrik “Angezeigte Daten” erscheinen.</p>\n<p>Im gleichen Panel werden auch verschiedene Funktionalitäten angeboten wie z.B. “Untersuchungsgebiete”, “Schnitte erstellen”, etc.</p>"
+  },
+  {
+    "tag": "change_application_language_text",
+    "text": "Die Anwendung erkennt die vom Browser bevorzugte Sprache. Wenn Sie die Default-Sprache  wechseln möchten, können sie dafür das Auswahlmenü oben rechts benutzen."
+  },
+  {
+    "tag": "navigation_topic_text",
+    "text": "<p>Die Navigation kann auf drei verschiedene Arten erfolgen:</p>\n <p>Mit Maus / Trackpad kann die Ansicht verschoben werden (Drag&Drop), gezoomt werden (Mausrad) und gekippt werden (CTRL-Taste gedrückt halten während Drag&Drop).</p>\n <p>Mit den Schaltflächen an der oberen rechten Seite des Viewers kann die Ausrichtung in horizontaler und vertikaler Achse verändert werden (Drag&Drop auf dem äusseren und inneren Ring der Kompassrose), in die Ansicht kann hinein-  und hinausgezoomt werden (“+” und “-” Knopf) sowie per Aufzug hinauf- / hinab-bewegt werden (Pfeil-Knöpfe).</p>\n<p>Mittels Tastatur kann mit den Kombinationen “WASD”, “IJKL”, “+-” sowie den Pfeiltasten ebenfalls navigiert werden.</p>"
+  },
+  {
+    "tag": "reset_topic_text",
+    "text": "Indem Sie auf das Haussymbol zwischen den Navigations-Knöpfen oben rechts klicken,  können Sie zur Startansicht des Viewers zurückkehren. Dabei wird die Ansicht auf die ganze Schweiz zurückgesetzt."
+  },
+  {
+    "tag": "camera_height_orientation_text",
+    "text": "Die Höhe des Betrachters (Kamerahöhe) und die Sicht-Richtung werden direkt unter der 3D-Ansicht angezeigt. Falls der Mauszeiger über einem 3D-Objekt liegt, wird die Höhe relativ zur Erdoberfläche des jeweiligen Punktes auf dem Objekt angezeigt."
+  },
+  {
+    "tag": "search_topic_text",
+    "text": "Das Feld \"Suchen...\" ermöglicht den Zugriff auf Orts - und Gemeindenamen, Postleitzahlen, geografische Bezeichnungen (Berggipfel, Siedlungen, Täler, Gebiete, Gewässer, Strassen und Anlagen). Zusätzlich kann ausserdem nach Daten / Layern gesucht werden."
+  },
+  {
+    "tag": "3d_data_topic_text",
+    "text": "Unter \"Datenkatalog\" finden Sie ein nach Themen gegliedertes Verzeichnis aller digitalen 2D- und 3D-Daten, die zentral im 3D-Viewer verfügbar sind. Wenn Sie Daten auswählen, werden diese direkt im 3D-Viewer angezeigt und der Rubrik “Angezeigte Daten” hinzugefügt."
+  },
+  {
+    "tag": "changing_background_text",
+    "text": "Unten rechts kann der Kartenhintergrund gewechselt werden. Es stehen wahlweise das Luftbild, die Landeskarten schwarz-weiss (verschiedene Detaillierungsgrade), und die Landeskarte 1:10’000 zur Verfügung."
+  },
+  {
+    "tag": "changing_transparency_text",
+    "text": "Betätigen Sie den horizontalen Regler des jeweiligen Datensatzes in der Rubrik \"Angezeigte Daten\"."
+  },
+  {
+    "tag": "changing_order_text",
+    "text": "Klicken Sie auf die Rauf-/Runter-Pfeile des jeweiligen Datensatzes in der Rubrik \"Angezeigte Daten\". Die Änderung der Reihenfolge wird nur für 2D-Daten, welche über das Gelände gelegt sind, Auswirkungen haben."
+  },
+  {
+    "tag": "removing_datasets_text",
+    "text": "Die geladenen Datenebenen können mit dem \"Mülleimer\"-Icon wieder aus der Rubrik und der 3D-Ansicht entfernt werden."
+  },
+  {
+    "tag": "detailed_information_text",
+    "text": "Sofern vorhanden können bei 3D-Objekten die Attribute jedes Objekts durch einen einfachen Mausklick abgerufen werden. Bei mehreren übereinanderliegenden Geoobjekten wird die Attributinformation des vordersten Objekts angezeigt."
+  },
+  {
+    "tag": "saving_sending_text",
+    "text": "Aktuelle 3D-Darstellung kann abgespeichert oder geteilt werden, indem die gesamte URL als Bookmark im Browser gespeichert wird oder die URL kopiert und als E-Mail oder über soziale Medien versendet wird."
+  },
+  {
+    "tag": "area_of_interest_text",
+    "text": "In der Rubrik “Untersuchungsgebiete” kann ein oder mehrere Gebiete auf der Erdoberfläche definiert werden, welche in zukünftigen Versionen der Applikation für weitere Funktionalitäten genutzt werden können. Die Untersuchungsgebiete können entweder per Klick auf die Erdoberfläche gezeichnet werden (sowohl aus der Ansicht über als auch unter der Erdoberfläche), oder aber als KML mit hochgeladen werden. Das KML muss mindestens ein Polygon enthalten und darf keine anderen Geometrie-Objekte (Linien, Punkte, etc.) enthalten."
+  },
+  {
+    "tag": "creates_sections_text",
+    "text": "In der Rubrik “Schnitte erstellen” können mittels Klick / mehrmaligem Klick virtuelle Borlöcher, vertikal und horizontale Schnitte erstellt werden. Dabei wird die Applikation GST  im Hintergrund abgefragt und als Resultat ein PDF zurückgegeben, welches anschliessend abgespeichert bzw. bei Bedarf ausgedruckt werden kann."
+  },
+  {
+    "tag": "swissforages_topic_text",
+    "text": "In der Rubrik “Bohrlöcher erfassen” kann die Applikation swissforages.ch aufgerufen werden. Mitteles swissforages.ch können Bohrungen schichtbasiert nach dem Datenmodell Bohrdaten erfasst werden."
+  },
+  {
+    "tag": "technical_legal_info_text",
+    "text": "<p>Entwickelt durch <a href=\"https://camptocamp.com\">Camptocamp SA</a> und <a href=\"https://cesium.com\">Cesium Inc</a> im Auftrag von swisstopo.</p>\n <p>Für swissgeol.ch gelten die allgemeinen Bestimmungen gemäss <a href=\"http://www.disclaimer.admin.ch\">http://www.disclaimer.admin.ch</a> und <a href=\"https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html%23copyright\">https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html#copyright</a></p>"
+  }
+]

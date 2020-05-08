@@ -93,5 +93,6 @@
   "zoom_out_btn": "Zoom Out",
   "zoom_to": "Zoom to",
   "zoom_to_object": "Zoom to object",
-  "review_window_text": "Welcome to swissgeol.ch, the 3D subsurface viewer! This is a beta-version with limited functionality and limited data, errors may occur."
+  "review_window_text": "Welcome to swissgeol.ch, the 3D subsurface viewer! This is a beta-version with limited functionality and limited data, errors may occur.",
+  "help_link": "Help"
 }

@@ -2,3 +2,4 @@
 /dist
 /.cache
 src/environment.js
+manuals/dist

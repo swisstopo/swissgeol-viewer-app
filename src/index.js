@@ -177,3 +177,8 @@ widgets.viewer = viewer;
 document.querySelector('ngm-camera-information').scene = viewer.scene;
 document.querySelector('ngm-feature-height').viewer = viewer;
 document.querySelector('ngm-map-configuration').viewer = viewer;
+
+i18next.on('languageChanged', (lang) => {
+  document.querySelector('#ngm-help-btn').href =
+    lang === 'de' ? './manuals/manual_de.html' : './manuals/manual_en.html';
+});
