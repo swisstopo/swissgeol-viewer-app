@@ -24,8 +24,8 @@ class NgmReviewWindow extends I18nMixin(LitElement) {
     <div class="ui inverted segment">
         <div class="ui inverted accordion">
           <div class="title ${!this.hideReviewWindow ? 'active' : ''}">
-            ${i18next.t('review_link')}
             <i class="dropdown icon"></i>
+            ${i18next.t('review_link')}
           </div>
           <div class="content ${!this.hideReviewWindow ? 'active' : ''}">
           <p>${i18next.t('review_window_text')}</p>

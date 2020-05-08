@@ -16,8 +16,8 @@ ngm-review-window .ui.inverted.accordion > .title {
   padding: 2px;
 }
 
-ngm-review-window .ui.inverted.accordion > .title > .icon {
-  transform: rotate(180deg);
+ngm-review-window .ui.inverted.accordion > .content {
+  text-align: right;
 }
 
 ngm-review-window a {
