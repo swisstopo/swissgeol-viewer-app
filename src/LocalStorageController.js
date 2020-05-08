@@ -1,6 +1,7 @@
 const LOCALSTORAGE_AOI_KEY = 'aoi';
 const LOCALSTORAGE_WELCOME_KEY = 'hideWelcome';
 const LOCALSTORAGE_SENTRY_KEY = 'sentryConfirmed';
+const LOCALSTORAGE_REVIEW_KEY = 'hideReviewWindow';
 
 export class LocalStorageController {
   get isSentryConfirmed() {
@@ -9,6 +10,10 @@ export class LocalStorageController {
 
   get hideWelcomeValue() {
     return localStorage.getItem(LOCALSTORAGE_WELCOME_KEY) === 'true';
+  }
+
+  get hideReviewWindowValue() {
+    return localStorage.getItem(LOCALSTORAGE_REVIEW_KEY) === 'true';
   }
 
   saveSentryConfirmation() {
@@ -30,5 +35,10 @@ export class LocalStorageController {
 
   setAoiInStorage(areas) {
     localStorage.setItem(LOCALSTORAGE_AOI_KEY, JSON.stringify(areas));
+  }
+
+  updateReviewWindowState() {
+    const newValue = !(localStorage.getItem(LOCALSTORAGE_REVIEW_KEY) === 'true');
+    localStorage.setItem(LOCALSTORAGE_REVIEW_KEY, newValue);
   }
 }

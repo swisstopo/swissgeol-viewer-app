@@ -1,0 +1,25 @@
+ngm-review-window > .ui.inverted.segment {
+  position: absolute;
+  right: 150px;
+  top: 10px;
+  padding: 5px;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 250px;
+  text-align: center;
+}
+
+ngm-review-window .ui.inverted.accordion > .title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px;
+}
+
+ngm-review-window .ui.inverted.accordion > .content {
+  text-align: right;
+}
+
+ngm-review-window a {
+  color: #ff0000;
+}
