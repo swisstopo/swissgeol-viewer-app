@@ -249,6 +249,11 @@ body:after { /* Beta label */
   pointer-events: none;
 }
 
+#divinspector {
+  position:absolute;
+  z-index:10;
+}
+
 ngm-gst-interaction > .ui.tiny.icon.buttons {
   display: flex;
 }
