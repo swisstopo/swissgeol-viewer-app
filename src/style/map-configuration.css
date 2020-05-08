@@ -1,0 +1,23 @@
+ngm-map-configuration {
+  position: absolute;
+  width: 235px;
+  z-index: 1;
+  bottom: 30px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+ngm-map-configuration > .ui.segment {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+  padding: 2px;
+  border: 1px solid lightgrey;
+}
+
+ngm-map-configuration > .ui.segment .ui.slider {
+  padding: 2px;
+  margin-left: 5px;
+}

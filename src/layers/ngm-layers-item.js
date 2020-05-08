@@ -4,6 +4,7 @@ import i18next from 'i18next';
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map';
+import $ from '../jquery';
 
 
 export class LayerTreeItem extends I18nMixin(LitElement) {
@@ -17,6 +18,16 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
     };
   }
 
+  firstUpdated() {
+    $(`#${this.config.label}-opacity`).slider({
+      min: 0,
+      max: 1,
+      start: !isNaN(this.config.opacity) ? this.config.opacity : 1,
+      step: 0.05,
+      onMove: (val) => this.changeOpacity(val)
+    });
+  }
+
   createRenderRoot() {
     return this;
   }
@@ -27,8 +38,7 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
 
-  changeOpacity(evt) {
-    const opacity = Number(evt.target.value);
+  changeOpacity(opacity) {
     this.actions.changeOpacity(this.config, opacity);
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
@@ -91,9 +101,7 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
     </div>
     <div class="ngm-displayed-container" ?hidden=${!this.config.setOpacity}>
       <label>${i18next.t('opacity_label')}: </label>
-      <input
-      type="range" min="0" max="1" .value=${this.config.opacity || 1}
-      @input=${this.changeOpacity} step="0.05">
+      <div class="ui grey small slider" id="${this.config.label}-opacity"></div>
     </div>
     `;
   }

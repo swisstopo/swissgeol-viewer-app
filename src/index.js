@@ -24,7 +24,7 @@ import './elements/ngm-navigation-widgets.js';
 import './elements/ngm-camera-information.js';
 import './elements/ngm-feature-height.js';
 import './elements/ngm-left-side-bar.js';
-import './elements/map-chooser/ngm-map-chooser.js';
+import './elements/ngm-map-configuration.js';
 import './elements/ngm-review-window.js';
 import {LocalStorageController} from './LocalStorageController.js';
 
@@ -176,3 +176,4 @@ widgets.viewer = viewer;
 
 document.querySelector('ngm-camera-information').scene = viewer.scene;
 document.querySelector('ngm-feature-height').viewer = viewer;
+document.querySelector('ngm-map-configuration').viewer = viewer;

@@ -7,10 +7,13 @@ export default class MapChooser {
     this.config = config;
     this.selectedMap = this.getInitialMap();
 
-    this.mapChooser = document.querySelector('ngm-map-chooser');
-    this.mapChooser.choices = this.choices;
-    this.mapChooser.active = this.selectedMap;
-    this.mapChooser.addEventListener('change', (event) => this.selectMap(event.detail.active));
+    const mapConfiguration = document.querySelector('ngm-map-configuration');
+    mapConfiguration.addEventListener('rendered', () => {
+      this.mapChooser = mapConfiguration.querySelector('ngm-map-chooser');
+      this.mapChooser.choices = this.choices;
+      this.mapChooser.active = this.selectedMap;
+      this.mapChooser.addEventListener('change', (event) => this.selectMap(event.detail.active));
+    });
 
     i18next.on('languageChanged', () => {
       this.mapChooser.choices = this.choices;

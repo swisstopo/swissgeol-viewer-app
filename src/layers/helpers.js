@@ -74,6 +74,7 @@ export function create3DTilesetFromConfig(viewer, config) {
         tileset.style = new Cesium3DTileStyle({...style, color});
       }
     };
+    config.setOpacity(!isNaN(config.opacity) ? config.opacity : 1);
   }
 
   if (config.billboards && config.billboards.latPropName && config.billboards.lonPropName) {
