@@ -56,11 +56,10 @@ a {
   text-decoration: none;
 }
 
-header {
-  display: flex;
-}
 
 header {
+  display: flex;
+  flex-shrink: 0;
   padding: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
