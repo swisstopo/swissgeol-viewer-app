@@ -25,6 +25,7 @@ import './elements/ngm-camera-information.js';
 import './elements/ngm-feature-height.js';
 import './elements/ngm-left-side-bar.js';
 import './elements/ngm-map-configuration.js';
+import './elements/ngm-review-window.js';
 import {LocalStorageController} from './LocalStorageController.js';
 
 initSentry();
@@ -105,6 +106,10 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       const sideBarElement = document.querySelector('ngm-left-side-bar');
       sideBarElement.hideWelcome = localStorageController.hideWelcomeValue;
       sideBarElement.addEventListener('welcome_panel_changed', localStorageController.updateWelcomePanelState);
+
+      const reviewWindowElement = document.querySelector('ngm-review-window');
+      reviewWindowElement.hideReviewWindow = localStorageController.hideReviewWindowValue;
+      reviewWindowElement.addEventListener('review_window_changed', localStorageController.updateReviewWindowState);
     });
   }
 });

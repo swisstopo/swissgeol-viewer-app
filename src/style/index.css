@@ -31,6 +31,7 @@
 @import 'keyboard-navigation.css';
 @import 'layers.css';
 @import 'map-configuration.css';
+@import 'review-window.css';
 
 [hidden] {
   display: none !important;
@@ -241,4 +242,13 @@ body:after { /* Beta label */
 
 .no-pointer-events {
   pointer-events: none;
+}
+
+#divinspector {
+  position:absolute;
+  z-index:10;
+}
+
+ngm-gst-interaction > .ui.tiny.icon.buttons {
+  display: flex;
 }
