@@ -22,7 +22,7 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
     $(`#${this.config.label}-opacity`).slider({
       min: 0,
       max: 1,
-      start: this.config.opacity || 1,
+      start: !isNaN(this.config.opacity) ? this.config.opacity : 1,
       step: 0.05,
       onMove: (val) => this.changeOpacity(val)
     });
