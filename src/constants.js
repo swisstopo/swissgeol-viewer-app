@@ -163,17 +163,13 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 68857,
+          assetId: 96289,
           label: t('boreholes_label'),
           layer: 'boreholes',
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           visible: true,
           displayed: true,
-          billboards: {
-            lonPropName: 'Longitude',
-            latPropName: 'Latitude'
-          }
         }, {
           type: LAYER_TYPES.tiles3d,
           assetId: 68881,
