@@ -174,7 +174,6 @@ viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 const widgets = document.querySelector('ngm-navigation-widgets');
 widgets.viewer = viewer;
 
-document.querySelector('ngm-camera-information').scene = viewer.scene;
 document.querySelector('ngm-feature-height').viewer = viewer;
 document.querySelector('ngm-map-configuration').viewer = viewer;
 
