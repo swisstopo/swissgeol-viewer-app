@@ -62,6 +62,8 @@
   "loading_message": "Seite wird geladen, bitte warten",
   "man_made_objects_label": "Kunstbauten",
   "map_transparency_label": "Transparenz",
+  "nadir_activate_btn": "",
+  "nadir_deactivate_btn": "",
   "natural_hazard_label": "Naturgefahren",
   "Object height": "Objekthöhe",
   "ok_btn_label": "Ok",

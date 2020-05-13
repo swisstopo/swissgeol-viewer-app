@@ -62,6 +62,8 @@
   "loading_message": "Chargement, veuillez patienter",
   "man_made_objects_label": "Objets artificiels",
   "map_transparency_label": "Transparence:",
+  "nadir_activate_btn": "",
+  "nadir_deactivate_btn": "",
   "natural_hazard_label": "Risques naturels",
   "Object height": "Altitude de l'objet",
   "ok_btn_label": "Ok",
