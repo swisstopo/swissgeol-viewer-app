@@ -296,7 +296,7 @@ const background = {
       label: t('swissnames_label'),
       style: SWISSTOPO_LABEL_STYLE,
       layer: 'ch.swisstopo.swissnames3d.3d',
-      opacity: DEFAULT_LAYER_OPACITY
+      opacityDisabled: true // opacity not work with color conditions
     },
     man_made_objects,
   ]
