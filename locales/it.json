@@ -38,6 +38,7 @@
   "grey_map_label": "",
   "gst_accordion_title": "",
   "gst_instructions": "",
+  "help_link": "Aiuto",
   "hide_btn_tooltip": "",
   "Horizontal cross sections": "",
   "info_btn": "",
@@ -70,6 +71,7 @@
   "remove_btn_tooltip": "",
   "reset_view_btn": "",
   "review_link": "",
+  "review_window_text": "",
   "search_placeholder": "Ricercare...",
   "sentry_message": "",
   "subsurface_label": "",
@@ -92,6 +94,5 @@
   "zoom_in_btn": "",
   "zoom_out_btn": "",
   "zoom_to": "",
-  "zoom_to_object": "",
-  "help_link": "Aiuto"
+  "zoom_to_object": ""
 }
