@@ -12,7 +12,8 @@ class CesiumMinimap extends LitElement {
     return {
       scene: {type: Object},
       extent: {type: Array},
-      mapRectangle: {type: Object}
+      mapRectangle: {type: Object},
+      expanded: {type: Boolean},
     };
   }
 
@@ -143,7 +144,11 @@ class CesiumMinimap extends LitElement {
     const overviewElem = this.querySelector('[slot="image"]');
     overviewElem.style.width = this.expanded ? '100px' : 'auto';
     this.expanded = !this.expanded;
-    this.requestUpdate();
+    this.dispatchEvent(new CustomEvent('sizechanged', {
+      detail: {
+        expanded: this.expanded
+      }
+    }));
   }
 
   render() {

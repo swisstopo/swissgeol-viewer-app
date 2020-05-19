@@ -90,7 +90,7 @@
   "welcome_instructions": "Navigate with the mouse and use 'CTRL' to tilt the 3D view",
   "welcome_label": "swissgeol.ch",
   "welcome_text": "Welcome to swissgeol.ch, the 3D subsurface viewer!",
-  "Your position": "Camera height and view-angle",
+  "camera_position": "Coords: {{coordinates}}<br/>Height / Angle: {{height}} m, {{angle}}°",
   "zoom_in_btn": "Zoom In",
   "zoom_out_btn": "Zoom Out",
   "zoom_to": "Zoom to",

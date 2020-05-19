@@ -17,3 +17,14 @@ export function degreesToLv95(coordinates) {
 export function round(coordinates) {
   return coordinates.map(Math.round);
 }
+
+const swissIntegerFormat = new Intl.NumberFormat('de-CH', {
+  maximumFractionDigits: 0
+});
+
+export function formatCartographicAs2DLv95(carto) {
+  return proj4('EPSG:4326', 'EPSG:2056', [
+    carto.longitude * 180 / Math.PI,
+    carto.latitude * 180 / Math.PI,
+  ]).map(Math.round).map(swissIntegerFormat.format).join(', ');
+}

@@ -32,6 +32,7 @@
 @import 'layers.css';
 @import 'map-configuration.css';
 @import 'review-window.css';
+@import 'ngm-camera-information.css';
 
 [hidden] {
   display: none !important;
