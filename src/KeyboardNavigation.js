@@ -52,7 +52,7 @@ export default class KeyboardNavigation {
     this.lookRightKeys_ = options.lookRightKeys || ['l'];
 
     this.flags_ = {
-      booster: false,
+      accelerationFactor: 0,
       moveUp: false,
       moveDown: false,
       moveForward: false,
