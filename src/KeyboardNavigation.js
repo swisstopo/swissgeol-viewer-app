@@ -4,7 +4,9 @@ import {setCameraHeight, verticalDirectionRotate} from './utils.js';
  * @typedef {Object} Options
  * @property {number} [moveAmount=50]
  * @property {number} [rotateAmount=Math.PI/400]
+ * @property {number} [slowFactor=0.15]
  * @property {number} [boostFactor=4]
+ * @property {number} [accelerationFactor=1.2]
  * @property {Array<string>} [moveUpKeys=['q', ' ', '+']]
  * @property {Array<string>} [moveDownKeys=['e', '-']]
  * @property {Array<string>} [moveForwardKeys=['w']]
@@ -33,6 +35,8 @@ export default class KeyboardNavigation {
     this.moveAmount_ = options.moveAmount !== undefined ? options.moveAmount : 50;
     this.rotateAmount_ = options.rotateAmount !== undefined ? options.rotateAmount : Math.PI / 400;
     this.boostFactor_ = options.boostFactor !== undefined ? options.boostFactor : 4;
+    this.slowFactor_ = options.slowFactor !== undefined ? options.slowFactor : 0.15;
+    this.accelerationFactor_ = options.accelerationFactor !== undefined ? options.accelerationFactor : 1.2;
 
     this.moveUpKeys_ = options.moveUpKeys || ['q', ' ', '+'];
     this.moveDownKeys_ = options.moveDownKeys || ['e', '-'];
@@ -48,7 +52,7 @@ export default class KeyboardNavigation {
     this.lookRightKeys_ = options.lookRightKeys || ['l'];
 
     this.flags_ = {
-      booster: false,
+      accelerationFactor: 0,
       moveUp: false,
       moveDown: false,
       moveForward: false,
@@ -71,6 +75,17 @@ export default class KeyboardNavigation {
     this.scene_.postRender.addEventListener(onPostRender);
   }
 
+  hasKeyDown_() {
+    let pressed = false;
+    for (const key in this.flags_) {
+      const flag = this.flags_[key];
+      if (typeof flag === 'boolean') {
+        pressed |= flag;
+      }
+    }
+    return pressed;
+  }
+
   /**
    * @param {KeyboardEvent} event
    */
@@ -79,6 +94,10 @@ export default class KeyboardNavigation {
       const pressed = event.type === 'keydown';
       const key = event.key.toLowerCase();
 
+      if (!this.hasKeyDown_()) {
+        // reset acceleration
+        this.flags_.acceleration = this.slowFactor_;
+      }
       if (this.moveUpKeys_.includes(key)) {
         this.flags_.moveUp = pressed;
       } else if (this.moveDownKeys_.includes(key)) {
@@ -105,7 +124,14 @@ export default class KeyboardNavigation {
         this.flags_.zoomOut = pressed;
       }
 
-      this.flags_.booster = event.shiftKey;
+      if (this.hasKeyDown_()) {
+        this.flags_.acceleration *= this.accelerationFactor_;
+        if (this.flags_.acceleration > 1)
+          this.flags_.acceleration = 1;
+        if (event.shiftKey)
+          this.flags_.acceleration = this.boostFactor_;
+        console.log(this.flags_.acceleration);
+      }
       this.scene_.requestRender();
     }
   }
@@ -113,8 +139,8 @@ export default class KeyboardNavigation {
   onPostRender_() {
     const camera = this.scene_.camera;
 
-    const moveAmount = this.moveAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
-    const rotateAmount = this.rotateAmount_ * (this.flags_.booster ? this.boostFactor_ : 1);
+    const moveAmount = this.moveAmount_ * this.flags_.acceleration;
+    const rotateAmount = this.rotateAmount_ * this.flags_.acceleration;
     const angle = rotateAmount / 500;
 
     let heading;
