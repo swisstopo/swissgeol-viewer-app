@@ -33,6 +33,7 @@ export const DEFAULT_VIEW = (function() {
 
 export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'];
 export const DRILL_PICK_LIMIT = 1;
+export const DRILL_PICK_LENGTH = 1;
 
 export const LAYERS_URL_PARAM = 'layers';
 export const LAYERS_VISIBILITY_URL_PARAM = 'layers_visibility';
