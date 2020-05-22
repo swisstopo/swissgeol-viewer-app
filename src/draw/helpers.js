@@ -55,7 +55,6 @@ export function getDimensionLabel(type, distances) {
 }
 
 export function getMeasurements(positions, distances, type) {
-  console.log(positions);
   const result = {
     segmentsNumber: positions.length
   };
