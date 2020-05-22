@@ -21,6 +21,8 @@
 @import 'fomantic-ui-css/components/modal.css';
 @import 'fomantic-ui-css/components/form.css';
 @import 'fomantic-ui-css/components/slider.css';
+@import 'fomantic-ui-css/components/dropdown.css';
+@import 'fomantic-ui-css/components/label.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
@@ -33,6 +35,7 @@
 @import 'map-configuration.css';
 @import 'review-window.css';
 @import 'ngm-camera-information.css';
+@import 'ngm-position-edit.css';
 
 [hidden] {
   display: none !important;
@@ -256,4 +259,14 @@ body:after { /* Beta label */
 
 ngm-gst-interaction > .ui.tiny.icon.buttons {
   display: flex;
+}
+
+ngm-camera-information {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+ngm-camera-information .ui.icon.button {
+  margin: 0;
 }

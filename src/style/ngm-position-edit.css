@@ -1,0 +1,11 @@
+.ngm-coord-input, .ngm-angle-height-input {
+  display: flex;
+}
+
+.ngm-angle-height-input {
+  margin-top: 5px;
+}
+
+.ngm-angle-height-input > div:first-child {
+  margin-right: 5px;
+}
