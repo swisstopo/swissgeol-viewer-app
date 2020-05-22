@@ -5,6 +5,7 @@ import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
 import Entity from 'cesium/DataSources/Entity.js';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
+import {getMeasurements} from '../utils.js';
 
 import {LitElement} from 'lit-element';
 
@@ -206,6 +207,23 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         showWarning(i18next.t('unsupported_kml_warning'));
         return;
       }
+
+      const positions = entity.polygon.hierarchy.getValue().positions;
+      const distances = [];
+      positions.forEach((p, key) => {
+        if (key > 0) {
+          distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
+        }
+      });
+
+      const measurements = getMeasurements(positions, distances, 'polygon');
+      entity.properties = {
+        area: measurements.area,
+        perimeter: measurements.perimeter,
+        numberOfSegments: measurements.segmentsNumber,
+        sidesLength: measurements.sidesLength,
+        type: 'polygon',
+      };
 
       entity.polygon.fill = true;
       entity.polygon.material = DEFAULT_AOI_COLOR;
