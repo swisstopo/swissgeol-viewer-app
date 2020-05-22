@@ -5,6 +5,7 @@ import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
 import Entity from 'cesium/DataSources/Entity.js';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
+import {getMeasurements} from '../utils.js';
 
 import {LitElement} from 'lit-element';
 
@@ -78,6 +79,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
     // wgs84 to Cartesian3
     const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
+    const measurements = event.detail.measurements;
+
     this.areasCounter_ += 1;
     this.interestAreasDataSource.entities.add({
       name: `Area ${this.areasCounter_}`,
@@ -86,7 +89,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         material: DEFAULT_AOI_COLOR
       },
       properties: {
-        dimensionLabel: event.detail.dimensionLabel
+        area: measurements.area,
+        perimeter: measurements.perimeter,
+        numberOfSegments: measurements.segmentsNumber,
+        sidesLength: measurements.sidesLength,
+        type: event.detail.type,
       }
     });
   }
@@ -136,9 +143,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         id: val.id,
         name: val.name,
         show: val.isShowing,
-        dimensionLabel: val.properties.dimensionLabel.getValue(),
         positions: val.polygon.hierarchy ? val.polygon.hierarchy.getValue().positions : undefined,
-        selected: this.selectedArea_ && this.selectedArea_.id === val.id
+        selected: this.selectedArea_ && this.selectedArea_.id === val.id,
+        area: val.properties.area ? val.properties.area.getValue() : undefined,
+        perimeter: val.properties.perimeter ? val.properties.perimeter.getValue() : undefined,
+        sidesLength: val.properties.sidesLength ? val.properties.sidesLength.getValue() : undefined,
+        numberOfSegments: val.properties.numberOfSegments ? val.properties.numberOfSegments.getValue() : undefined,
+        type: val.properties.type ? val.properties.type.getValue() : undefined,
       };
     });
   }
@@ -197,6 +208,23 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         return;
       }
 
+      const positions = entity.polygon.hierarchy.getValue().positions;
+      const distances = [];
+      positions.forEach((p, key) => {
+        if (key > 0) {
+          distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
+        }
+      });
+
+      const measurements = getMeasurements(positions, distances, 'polygon');
+      entity.properties = {
+        area: measurements.area,
+        perimeter: measurements.perimeter,
+        numberOfSegments: measurements.segmentsNumber,
+        sidesLength: measurements.sidesLength,
+        type: 'polygon',
+      };
+
       entity.polygon.fill = true;
       entity.polygon.material = DEFAULT_AOI_COLOR;
       this.interestAreasDataSource.entities.add(entity);
@@ -226,13 +254,26 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
           material: DEFAULT_AOI_COLOR
         },
         properties: {
-          dimensionLabel: area.dimensionLabel
+          area: area.area ? area.area : '-',
+          perimeter: area.perimeter ? area.perimeter : '-',
+          numberOfSegments: area.numberOfSegments ? area.numberOfSegments : '-',
+          sidesLength: area.sidesLength ? area.sidesLength : [],
+          type: area.type ? area.type : '-',
         }
       });
       if (area.selected) {
         this.pickArea_(entity.id);
       }
     });
+  }
+
+  getInfoProps(props) {
+    return {
+      [i18next.t('nameLabel')]: props.name,
+      [i18next.t('Area')]: `${props.area}km²`,
+      [i18next.t('Perimeter')]: `${props.perimeter}km`,
+      [i18next.t('numberOfSegments')]: props.numberOfSegments
+    };
   }
 
   render() {

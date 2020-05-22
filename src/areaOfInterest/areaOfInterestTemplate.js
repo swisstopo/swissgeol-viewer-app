@@ -59,7 +59,11 @@ function aoiListTemplate() {
       <div class="ui segment ${i.selected ? 'secondary' : ''} ngm-aoi-segment">
         <div class="ngm-aoi-title-container">
             <label class="ngm-aoi-title">${i.name}</label>
-            <label class="ngm-aoi-subtitle">${i.dimensionLabel}</label>
+            <label class="ngm-aoi-subtitle">
+                ${i.type === 'rectangle' && i.sidesLength ?
+                `${i.sidesLength[0]}km x ${i.sidesLength[1]}km` :
+                `${i18next.t('Area')}: ${i.area}km²`}
+            </label>
         </div>
         <div class="ui small basic icon buttons">
             <button

@@ -1,7 +1,13 @@
 // @ts-check
 import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';
-import {DEFAULT_VIEW, DRILL_PICK_LIMIT, SWITZERLAND_RECTANGLE, DRILL_PICK_LENGTH} from './constants.js';
+import {
+  DEFAULT_VIEW,
+  DRILL_PICK_LIMIT,
+  SWITZERLAND_RECTANGLE,
+  DRILL_PICK_LENGTH,
+  AOI_DATASOURCE_NAME
+} from './constants.js';
 
 import './style/index.css';
 import {setupSearch} from './search.js';
@@ -154,11 +160,16 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
     } else if (object.id && object.id.properties) {
       const props = extractEntitiesAttributes(object.id);
       attributes = {...props};
-      attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
-      if (attributes.zoomHeadingPitchRange) {
+      const aoiDataSource = viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
+      if (aoiDataSource.entities.contains(object.id)) {
+        attributes = {...attributes, name: object.id.name};
+        attributes = document.querySelector('ngm-aoi-drawer').getInfoProps(attributes);
+      } else if (attributes.zoomHeadingPitchRange) {
         // Don't show the value in the object info window
         delete attributes.zoomHeadingPitchRange;
       }
+      attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
+
       silhouette.selected = [object];
     }
   }

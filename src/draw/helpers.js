@@ -6,15 +6,14 @@ import HorizontalOrigin from 'cesium/Scene/HorizontalOrigin';
 import i18next from 'i18next';
 
 export function getDimensionLabelText(type, distances) {
-  const perimeter = distances.reduce((a, b) => a + b, 0);
   let text;
   if (type === 'rectangle') {
     text = `${distances[0]}km x ${distances[1]}km`;
   } else {
-    const dimensionType = type === 'polygon' ? i18next.t('Perimeter') : i18next.t('Length');
-    text = `${dimensionType}: ${perimeter.toFixed(2)}km`;
+    const length = distances.reduce((a, b) => a + b, 0);
+    text = `${i18next.t('Length')}: ${length}km`;
   }
-  return text;
+  return text.includes('undefined') ? '' : text;
 }
 
 export function getDimensionLabel(type, distances) {
