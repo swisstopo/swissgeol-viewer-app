@@ -9,3 +9,11 @@
 .ngm-angle-height-input > div:first-child {
   margin-right: 5px;
 }
+
+#ngm-position-edit-popup {
+  min-width: 290px;
+}
+
+#ngm-position-edit-popup input {
+  width: 100px;
+}
