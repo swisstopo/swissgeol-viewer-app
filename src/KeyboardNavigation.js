@@ -130,7 +130,6 @@ export default class KeyboardNavigation {
           this.flags_.acceleration = 1;
         if (event.shiftKey)
           this.flags_.acceleration = this.boostFactor_;
-        console.log(this.flags_.acceleration);
       }
       this.scene_.requestRender();
     }
