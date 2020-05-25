@@ -38,7 +38,7 @@ class NgmNadirView extends I18nMixin(LitElement) {
 
 
   updateFromCamera() {
-    if (this.active && !CesiumMath.equalsEpsilon(this.scene.camera.pitch, -Math.PI / 2, CesiumMath.EPSILON2)) {
+    if (this.active && !CesiumMath.equalsEpsilon(this.scene.camera.pitch, -Math.PI / 2, CesiumMath.EPSILON1)) {
       this.active = false;
     }
   }
