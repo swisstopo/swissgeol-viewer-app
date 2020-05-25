@@ -10,6 +10,10 @@ export function degreesToLv95(coordinates) {
   return proj4('EPSG:4326', 'EPSG:2056', coordinates.slice());
 }
 
+export function lv95ToDegrees(coordinates) {
+  return proj4('EPSG:2056', 'EPSG:4326', coordinates);
+}
+
 /**
  * @param {Array<number>} coordinates
  * @return {Array<number>}

@@ -70,10 +70,15 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
 
       return html`
          ${unsafeHTML(i18next.t('camera_position', {coordinates, height, angle}))}
+        <ngm-position-edit .scene="${this.scene}"></ngm-position-edit>
       `;
     } else {
       return html``;
     }
+  }
+
+  createRenderRoot() {
+    return this;
   }
 }
 
