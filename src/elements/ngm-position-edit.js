@@ -32,7 +32,7 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
   }
 
   firstUpdated() {
-    $('#ngm-coord-type-select').dropdown({
+    $(this.querySelector('#ngm-coord-type-select')).dropdown({
       onChange: value => {
         this.coordsType = value;
         this.coordsStep = value === 'lv95' ? 100 : 0.001;
@@ -52,23 +52,22 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
       ]
     });
 
-    $('#ngm-position-edit-btn').popup(
+    $(this.querySelector('#ngm-position-edit-btn')).popup(
       {
         on: 'click',
-        popup: $('#ngm-position-edit-popup'),
+        popup: $(this.querySelector('#ngm-position-edit-popup')),
         position: 'bottom right',
         delay: {
           show: 0,
           hide: 0
         },
-        onShow: () => this.updateInputValues()
+        onShow: () => {
+          this.updateInputValues();
+          document.addEventListener('keyup', this.onKeyUp);
+        },
+        onHide: () => document.removeEventListener('keyup', this.onKeyUp)
       }
     );
-    document.addEventListener('keyup', (event) => {
-      if (event.target.tagName.toLowerCase() !== 'input') {
-        this.updateInputValues();
-      }
-    });
   }
 
   updateInputValues() {
@@ -158,6 +157,12 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
         </div>
     </div>
     `;
+  }
+
+  onKeyUp(event) {
+    if (event.target.tagName.toLowerCase() !== 'input') {
+      this.querySelector('ngm-position-edit').updateInputValues();
+    }
   }
 
   render() {
