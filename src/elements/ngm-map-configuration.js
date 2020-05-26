@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/slider.js';
-import './map-chooser/ngm-map-chooser.js';
+import './ngm-map-chooser.js';
 import {syncMapTransparencyParam} from '../permalink.js';
 
 class NgmMapConfiguration extends I18nMixin(LitElement) {

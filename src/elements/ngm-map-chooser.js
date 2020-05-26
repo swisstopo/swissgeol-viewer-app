@@ -1,12 +1,7 @@
 import {LitElement, html} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map';
-import style from './ngm-map-chooser-style.js';
 
 class NgmMapChooser extends LitElement {
-
-  static get styles() {
-    return style;
-  }
 
   static get properties() {
     return {
@@ -26,8 +21,10 @@ class NgmMapChooser extends LitElement {
   get mapTemplates() {
     return this.choices.map(mapConfig =>
       html`<div class="ngm-map-preview ${classMap({active: mapConfig.id === this.active.id})}"
+                data-tooltip="${mapConfig.labelKey}"
+                data-variation="mini"
+                data-position="top center"
                 @click=${() => this.active = mapConfig}>
-              <label>${mapConfig.labelKey}</label>
               <img src=${mapConfig.backgroundImgSrc} />
            </div>`
     );
@@ -35,6 +32,11 @@ class NgmMapChooser extends LitElement {
 
   render() {
     return html`<div class="ngm-maps-container">${this.mapTemplates}</div>`;
+  }
+
+  createRenderRoot() {
+    // no shadow dom
+    return this;
   }
 }
 
