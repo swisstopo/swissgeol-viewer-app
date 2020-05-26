@@ -281,6 +281,15 @@ const man_made_objects = {
       pickable: true,
       transparencyDisabled: true
     },
+    {
+      type: LAYER_TYPES.tiles3d,
+      url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20190924/tileset.json',
+      label: t('swiss_buildins'),
+      style: SWISSTOPO_LABEL_STYLE,
+      layer: 'ch.swisstopo.swisstlm3d.3d',
+      pickable: false,
+      transparencyDisabled: true // TODO check
+    }
   ]
 };
 
