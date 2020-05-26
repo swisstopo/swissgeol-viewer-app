@@ -164,7 +164,7 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 96289,
+          assetId: 105125,
           label: t('boreholes_label'),
           layer: 'boreholes',
           opacity: DEFAULT_LAYER_OPACITY,
