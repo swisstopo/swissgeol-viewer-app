@@ -23,7 +23,7 @@ export function createEarthquakeFromConfig(viewer, config) {
     earthquakeVisualizer.setVisible(true);
   }
   config.setVisibility = visible => earthquakeVisualizer.setVisible(visible);
-  config.setOpacity = opacity => earthquakeVisualizer.setOpacity(opacity);
+  config.setTransparency = transparency => earthquakeVisualizer.setOpacity(1 - transparency);
   return earthquakeVisualizer;
 }
 
@@ -62,8 +62,9 @@ export function create3DTilesetFromConfig(viewer, config) {
     }
   };
 
-  if (!config.opacityDisabled) {
-    config.setOpacity = opacity => {
+  if (!config.transparencyDisabled) {
+    config.setTransparency = transparency => {
+      const opacity = 1 - transparency;
       const style = config.style;
       if (style && (style.color || style.labelColor)) {
         const {propertyName, colorType, colorValue} = styleColorParser(style);
@@ -74,7 +75,7 @@ export function create3DTilesetFromConfig(viewer, config) {
         tileset.style = new Cesium3DTileStyle({...style, color});
       }
     };
-    config.setOpacity(!isNaN(config.opacity) ? config.opacity : 1);
+    config.setTransparency(!isNaN(config.transparency) ? config.transparency : 0);
   }
 
   if (config.billboards && config.billboards.latPropName && config.billboards.lonPropName) {
@@ -87,7 +88,7 @@ export function create3DTilesetFromConfig(viewer, config) {
 export function createSwisstopoWMTSImageryLayer(viewer, config) {
   let layer = null;
   config.setVisibility = visible => layer.show = !!visible;
-  config.setOpacity = opacity => layer.alpha = opacity;
+  config.setTransparency = transparency => layer.alpha = 1 - transparency;
   config.remove = () => viewer.scene.imageryLayers.remove(layer, false);
   config.add = (toIndex) => {
     const layersLength = viewer.scene.imageryLayers.length;
@@ -102,7 +103,7 @@ export function createSwisstopoWMTSImageryLayer(viewer, config) {
   return getSwisstopoImagery(config.layer).then(l => {
     layer = l;
     viewer.scene.imageryLayers.add(layer);
-    layer.alpha = config.opacity || 1;
+    layer.alpha = 1 - config.transparency || 0;
     layer.show = !!config.visible;
     return layer;
   });

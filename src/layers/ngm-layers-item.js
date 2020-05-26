@@ -19,12 +19,12 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
   }
 
   firstUpdated() {
-    $(`#${this.config.label}-opacity`).slider({
+    $(`#${this.config.label}-transparency`).slider({
       min: 0,
       max: 1,
-      start: !isNaN(this.config.opacity) ? this.config.opacity : 1,
+      start: !isNaN(this.config.transparency) ? this.config.transparency : 0,
       step: 0.05,
-      onMove: (val) => this.changeOpacity(val)
+      onMove: (val) => this.changeTransparency(val)
     });
   }
 
@@ -38,8 +38,8 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
 
-  changeOpacity(opacity) {
-    this.actions.changeOpacity(this.config, opacity);
+  changeTransparency(transparency) {
+    this.actions.changeTransparency(this.config, transparency);
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
 
@@ -99,9 +99,9 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
       </div>
       ${this.buttons}
     </div>
-    <div class="ngm-displayed-container" ?hidden=${!this.config.setOpacity}>
-      <label>${i18next.t('opacity_label')}: </label>
-      <div class="ui grey small slider" id="${this.config.label}-opacity"></div>
+    <div class="ngm-displayed-container" ?hidden=${!this.config.setTransparency}>
+      <label>${i18next.t('map_transparency_label')} </label>
+      <div class="ui grey small slider" id="${this.config.label}-transparency"></div>
     </div>
     `;
   }

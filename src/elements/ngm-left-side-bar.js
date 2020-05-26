@@ -5,7 +5,7 @@ import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
 import './ngm-gst-interaction.js';
-import {LAYER_TYPES, DEFAULT_LAYER_OPACITY, defaultLayerTree} from '../constants.js';
+import {LAYER_TYPES, DEFAULT_LAYER_TRANSPARENCY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
@@ -152,7 +152,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         layer = this.createSearchLayer(urlLayer.name, urlLayer.name);
       }
       layer.visible = urlLayer.visible;
-      layer.opacity = urlLayer.opacity;
+      layer.transparency = urlLayer.transparency;
       layer.displayed = true;
       activeLayers.push(layer);
     });
@@ -165,7 +165,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         layer: assetId,
         visible: true,
         displayed: true,
-        opacityDisabled: true,
+        transparencyDisabled: true,
         pickable: true,
         customAsset: true
       };
@@ -295,7 +295,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       layer: layer,
       visible: true,
       displayed: true,
-      opacity: DEFAULT_LAYER_OPACITY
+      transparency: DEFAULT_LAYER_TRANSPARENCY
     };
     config.load = () => config.promise = createCesiumObject(this.viewer, config);
     return config;

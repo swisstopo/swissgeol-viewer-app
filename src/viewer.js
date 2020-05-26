@@ -134,7 +134,8 @@ export function setupViewer(container) {
   // Set the globe translucency to 0.6 when the
   // camera is 10000 meters from the surface and 1.0
   // as the camera distance approaches 50000 meters.
-  const transparency = getMapTransparencyParam() || 0.6;
+  const transparencyParam = getMapTransparencyParam();
+  const transparency = transparencyParam ? 1 - transparencyParam : 0.6;
   globe.translucencyEnabled = transparency !== 1;
   globe.frontFaceAlphaByDistance = new NearFarScalar(10000, transparency, 50000, 1.0);
   globe.undergroundColorByDistance = new NearFarScalar(6000, 0.1, 500000, 1.0);
