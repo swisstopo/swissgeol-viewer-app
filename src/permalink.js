@@ -3,7 +3,7 @@ import Cartesian3 from 'cesium/Core/Cartesian3.js';
 
 import {getURLSearchParams, setURLSearchParams} from './utils.js';
 import {
-  LAYERS_OPACITY_URL_PARAM,
+  LAYERS_TRANSPARENCY_URL_PARAM,
   LAYERS_URL_PARAM,
   LAYERS_VISIBILITY_URL_PARAM,
   ASSET_IDS_URL_PARAM,
@@ -56,14 +56,14 @@ function safeSplit(str) {
  */
 export function getLayerParams() {
   const params = getURLSearchParams();
-  const layersOpacity = safeSplit(params.get(LAYERS_OPACITY_URL_PARAM));
+  const layersTransparency = safeSplit(params.get(LAYERS_TRANSPARENCY_URL_PARAM));
   const layersVisibility = safeSplit(params.get(LAYERS_VISIBILITY_URL_PARAM));
   const layers = safeSplit(params.get(LAYERS_URL_PARAM));
 
   return layers.map((layer, key) => {
     return {
       name: layer,
-      opacity: Number(layersOpacity[key]),
+      transparency: Number(layersTransparency[key]),
       visible: layersVisibility[key] === 'true',
     };
   });
@@ -77,12 +77,12 @@ export function getAssetIds() {
 export function syncLayersParam(activeLayers) {
   const params = getURLSearchParams();
   const layerNames = [];
-  const layersOpacity = [];
+  const layersTransparency = [];
   const layersVisibility = [];
   activeLayers.forEach(l => {
     if (!l.customAsset) {
       layerNames.push(l.layer);
-      layersOpacity.push(isNaN(l.opacity) ? 1 : l.opacity);
+      layersTransparency.push(isNaN(l.transparency) ? 1 : l.transparency);
       layersVisibility.push(l.visible);
     }
   });
@@ -90,10 +90,10 @@ export function syncLayersParam(activeLayers) {
   if (layerNames.length) {
     params.set(LAYERS_URL_PARAM, layerNames.join(','));
     params.set(LAYERS_VISIBILITY_URL_PARAM, layersVisibility.join(','));
-    params.set(LAYERS_OPACITY_URL_PARAM, layersOpacity.join(','));
+    params.set(LAYERS_TRANSPARENCY_URL_PARAM, layersTransparency.join(','));
   } else {
     params.delete(LAYERS_URL_PARAM);
-    params.delete(LAYERS_OPACITY_URL_PARAM);
+    params.delete(LAYERS_TRANSPARENCY_URL_PARAM);
     params.delete(LAYERS_VISIBILITY_URL_PARAM);
   }
 
