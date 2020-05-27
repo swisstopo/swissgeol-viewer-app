@@ -16,6 +16,8 @@ import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 import Matrix3 from 'cesium/Core/Matrix3.js';
+import Matrix4 from 'cesium/Core/Matrix4.js';
+import {defined, when, sampleTerrainMostDetailed} from 'cesium/Cesium';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -82,7 +84,57 @@ export function create3DTilesetFromConfig(viewer, config) {
     addBillboardsForTileset(viewer, tileset, config);
   }
 
+  tileset.readyPromise.then(() => {
+
+    const setHeight = (val = 100) => {
+      const cartographic = Cartographic.fromCartesian(tileset.boundingSphere.center);
+      const surface = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+      const offset = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, val);
+      const translation = Cartesian3.subtract(offset, surface, new Cartesian3());
+      tileset.modelMatrix = Matrix4.fromTranslation(translation);
+      viewer.scene.requestRender();
+    };
+    console.log(setHeight);
+  });
+  tileset.tileLoad.addEventListener(function (tile) {
+    // const cartographic = Cartographic.fromCartesian(tile.boundingSphere.center);
+    // const surface = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+    // const offset = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 20);
+    // const translation = Cartesian3.subtract(offset, surface, new Cartesian3());
+    // tile.transform = Matrix4.fromTranslation(translation);
+    updateTile(viewer, tile);
+  });
+  console.log(viewer);
+
   return tileset;
+}
+
+function updateTile(viewer, tile) {
+  let boundingVolume = tile.boundingVolume;
+  if (defined(tile.contentBoundingVolume)) {
+    boundingVolume = tile.contentBoundingVolume;
+  }
+  const content = tile.content;
+  const model = content._model;
+  const height = boundingVolume.minimumHeight;
+  if (!model) return;
+  const center = model._rtcCenter;
+  const normal = viewer.scene.globe.ellipsoid.geodeticSurfaceNormal(center, new Cartesian3());
+  const offset = Cartesian3.multiplyByScalar(normal, height, new Cartesian3());
+  const carto = Cartographic.fromCartesian(center);
+  const promise = sampleTerrainMostDetailed(viewer.scene.terrainProvider, [carto]).then(function (results) {
+    const result = results[0];
+    if (!defined(result)) {
+      return carto;
+    }
+    return result;
+  });
+
+  promise.then(function (result) {
+    result = Cartographic.toCartesian(result);
+    const position = Cartesian3.subtract(result, offset, new Cartesian3());
+    model._rtcCenter = Cartesian3.clone(position, model._rtcCenter);
+  });
 }
 
 export function createSwisstopoWMTSImageryLayer(viewer, config) {
