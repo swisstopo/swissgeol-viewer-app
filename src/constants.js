@@ -9,7 +9,7 @@ export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 
 export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS);
 
-export const DEFAULT_VIEW = (function() {
+export const DEFAULT_VIEW = (function () {
   if (document.location.hostname === 'localhost') {
     return {
       destination: Cartesian3.fromDegrees(8.16834, 44.83954, -112297),
@@ -137,20 +137,20 @@ const geo_map_series = {
           visible: true,
           displayed: true,
           transparency: 0.3,
-        // }, {
-        //   type: LAYER_TYPES.swisstopoWMTS,
-        //   label: t('ch.swisstopo.pixelkarte-farbe'),
-        //   layer: 'ch.swisstopo.pixelkarte-farbe',
-        //   visible: true,
-        //   displayed: true,
-        //   transparency DEFAULT_LAYER_OPACITY,
-        // }, {
-        //   type: LAYER_TYPES.swisstopoWMTS,
-        //   label: t('ch.swisstopo.swisstlm3d-wanderwege'),
-        //   layer: 'ch.swisstopo.swisstlm3d-wanderwege',
-        //   visible: true,
-        //   displayed: true,
-        //   transparency DEFAULT_LAYER_OPACITY,
+          // }, {
+          //   type: LAYER_TYPES.swisstopoWMTS,
+          //   label: t('ch.swisstopo.pixelkarte-farbe'),
+          //   layer: 'ch.swisstopo.pixelkarte-farbe',
+          //   visible: true,
+          //   displayed: true,
+          //   transparency DEFAULT_LAYER_OPACITY,
+          // }, {
+          //   type: LAYER_TYPES.swisstopoWMTS,
+          //   label: t('ch.swisstopo.swisstlm3d-wanderwege'),
+          //   layer: 'ch.swisstopo.swisstlm3d-wanderwege',
+          //   visible: true,
+          //   displayed: true,
+          //   transparency DEFAULT_LAYER_OPACITY,
         },
       ]
     },
@@ -272,7 +272,8 @@ const subsurface = {
 
 const man_made_objects = {
   label: t('man_made_objects_label'),
-  children: [{
+  children: [
+    {
       type: LAYER_TYPES.tiles3d,
       assetId: 77319,
       style: TUNNEL_STYLE,
@@ -281,6 +282,15 @@ const man_made_objects = {
       pickable: true,
       transparencyDisabled: true
     },
+    {
+      type: LAYER_TYPES.tiles3d,
+      url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20190924/tileset.json',
+      label: t('swiss_buildings'),
+      layer: 'ch.swisstopo.swisstlm3d.3d',
+      pickable: false,
+      transparency: DEFAULT_LAYER_TRANSPARENCY,
+      heightOffset: 50
+    }
   ]
 };
 

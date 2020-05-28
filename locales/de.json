@@ -82,6 +82,7 @@
   "search_placeholder": "Suchen...",
   "sentry_message": "Sentry wird genutzt, um die Anwendung zu überwachen und Fehler zu verfolgen. <br> Für weitere Informationen: datenschutz@swisstopo.ch",
   "subsurface_label": "Geometrie des Untergrundes",
+  "swiss_buildings": "",
   "swissnames_label": "SwissNAMES",
   "temperature_model_label": "Temperaturmodell",
   "top_bedrock_label": "Top Felsoberfläche",

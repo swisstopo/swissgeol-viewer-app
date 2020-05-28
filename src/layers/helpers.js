@@ -16,6 +16,7 @@ import Rectangle from 'cesium/Core/Rectangle.js';
 import Cartesian3 from 'cesium/Core/Cartesian3.js';
 import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 import Matrix3 from 'cesium/Core/Matrix3.js';
+import Matrix4 from 'cesium/Core/Matrix4.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -82,6 +83,16 @@ export function create3DTilesetFromConfig(viewer, config) {
     addBillboardsForTileset(viewer, tileset, config);
   }
 
+  if (config.heightOffset) {
+    tileset.readyPromise.then(() => {
+      const cartographic = Cartographic.fromCartesian(tileset.boundingSphere.center);
+      const surface = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+      const offset = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, config.heightOffset);
+      const translation = Cartesian3.subtract(offset, surface, new Cartesian3());
+      tileset.modelMatrix = Matrix4.fromTranslation(translation);
+      viewer.scene.requestRender();
+    });
+  }
   return tileset;
 }
 
