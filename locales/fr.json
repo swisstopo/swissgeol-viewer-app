@@ -82,7 +82,7 @@
   "search_placeholder": "Recherche...",
   "sentry_message": "Sentry est utilisé pour la surveillance des applications et le suivi des erreurs. <br> Pour plus d'informations : datenschutz@swisstopo.ch",
   "subsurface_label": "Géométrie du sous-sol",
-  "swiss_buildins": "",
+  "swiss_buildings": "",
   "swissnames_label": "SwissNAMES",
   "temperature_model_label": "Modèle de température",
   "top_bedrock_label": "Toit du rocher",
