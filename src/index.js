@@ -24,7 +24,6 @@ import {showMessage} from './message.js';
 import i18next from 'i18next';
 import BoundingSphere from 'cesium/Core/BoundingSphere.js';
 import Ellipsoid from 'cesium/Core/Ellipsoid.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
 
 import './elements/ngm-object-information.js';
 import './elements/ngm-navigation-widgets.js';
@@ -144,9 +143,6 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
 
   if (objects.length > 0) {
     const object = objects[0];
-    const cart = Cartographic.fromCartesian(object.content.tile.boundingSphere.center);
-    console.log(cart);
-    console.log(object.content.tile);
     if (!isPickable(object)) {
       return;
     }
