@@ -51,6 +51,15 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
             </div>
           </div>
           <table class="ui compact small very basic table">
+            <thead ?hidden="${!this.info.zoom}">
+              <tr>
+                <th colspan="2">
+                  <button @click="${this.info.zoom}" class="ui right floated mini basic labeled icon button">
+                    <i class="right arrow icon"></i>${i18next.t('zoom_to_object')}
+                  </button>
+                </th>
+              </tr>
+            </thead>
             <tbody>
               ${Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => html`
                 <tr class="top aligned">
@@ -59,15 +68,6 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
                 </tr>
               `)}
             </tbody>
-            <tfoot ?hidden="${!this.info.zoom}">
-              <tr>
-                <th colspan="2">
-                  <button @click="${this.info.zoom}" class="ui right floated mini basic labeled icon button">
-                    <i class="right arrow icon"></i>${i18next.t('zoom_to_object')}
-                  </div>
-                </th>
-              </tr>
-            </tfoot>
           </table>
         </div>
       `;
