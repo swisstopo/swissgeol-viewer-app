@@ -36,6 +36,7 @@
 @import 'review-window.css';
 @import 'ngm-camera-information.css';
 @import 'ngm-position-edit.css';
+@import 'ngm-map-chooser.css';
 
 [hidden] {
   display: none !important;
