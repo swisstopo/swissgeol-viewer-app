@@ -18,13 +18,13 @@
     "cesium": "https://github.com/CesiumGS/cesium/archive/90ff2b6.tar.gz",
     "event-target-shim": "^5.0.1",
     "fomantic-ui-css": "^2.8.4",
-    "i18next": "^19.3.4",
+    "i18next": "^19.4.5",
     "i18next-xhr-backend": "^3.2.2",
-    "interactjs": "^1.9.4",
-    "jquery": "^3.4.1",
-    "lit-html": "^1.1.2",
+    "interactjs": "^1.9.18",
+    "jquery": "^3.5.1",
+    "lit-html": "^1.2.1",
     "loc-i18next": "^0.1.4",
-    "proj4": "^2.6.0",
+    "proj4": "^2.6.2",
     "typeface-source-sans-pro": "1.1.5"
   },
   "devDependencies": {
