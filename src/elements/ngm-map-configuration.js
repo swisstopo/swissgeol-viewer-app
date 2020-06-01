@@ -22,10 +22,12 @@ class NgmMapConfiguration extends I18nMixin(LitElement) {
       start: 1 - this.viewer.scene.globe.frontFaceAlphaByDistance.nearValue,
       step: 0.01,
       onMove: (val) => {
-        this.viewer.scene.globe.backFaceAlpha = 1 - val;
+        // this.viewer.scene.globe.backFaceAlpha = 1 - val;
         if (val === 0) {
           this.viewer.scene.globe.translucencyEnabled = false;
+          this.viewer.scene.globe.backFaceAlpha = 1;
         } else {
+          this.viewer.scene.globe.backFaceAlpha = 0;
           this.viewer.scene.globe.frontFaceAlphaByDistance.nearValue = 1 - val;
           if (!this.viewer.scene.globe.translucencyEnabled) {
             this.viewer.scene.globe.translucencyEnabled = true;
