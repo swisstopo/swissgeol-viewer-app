@@ -141,7 +141,7 @@ export function setupViewer(container) {
   globe.translucencyEnabled = transparency !== 1;
   globe.frontFaceAlphaByDistance = new NearFarScalar(10000, transparency, 50000, 1.0);
   globe.undergroundColorByDistance = new NearFarScalar(6000, 0.1, 500000, 1.0);
-  globe.backFaceAlpha = 1.0;
+  globe.backFaceAlpha = transparency;
 
   // scene.postRender.addEventListener((scene) => {
   //   scene.skyAtmosphere.show = !scene.cameraUnderground;
