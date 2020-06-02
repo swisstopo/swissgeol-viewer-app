@@ -58,7 +58,7 @@ export function setupViewer(container) {
   let terrainUrl;
   const ownTerrain = searchParams.has('ownterrain');
   if (ownTerrain) {
-    terrainUrl = 'https://terrain.dev.bgdi.ch/1.0.0/ch.swisstopo.terrain.3d/default/0.14/4326/';
+    terrainUrl = 'https://terrain.dev.bgdi.ch/1.0.0/ch.swisstopo.terrain.3d/default/20200520/4326/';
   } else {
     terrainUrl = IonResource.fromAssetId(1);
   }
