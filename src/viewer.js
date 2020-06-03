@@ -24,6 +24,8 @@ import PostProcessStage from 'cesium/Scene/PostProcessStage.js';
 import Cartesian4 from 'cesium/Core/Cartesian4.js';
 import CesiumInspector from 'cesium/Widgets/CesiumInspector/CesiumInspector.js';
 import {getMapTransparencyParam} from './permalink.js';
+import Entity from 'cesium/DataSources/Entity.js';
+import HeightReference from 'cesium/Scene/HeightReference.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -177,21 +179,30 @@ export function setupViewer(container) {
   const transparency = !isNaN(transparencyParam) ? 1 - transparencyParam : 0.6;
   globe.translucencyEnabled = transparency !== 1;
   globe.frontFaceAlphaByDistance = new NearFarScalar(10000, transparency, 50000, 1.0);
-  // globe.undergroundColorByDistance = new NearFarScalar(6000, 0.1, 500000, 1.0);
   globe.backFaceAlpha = transparency === 1 ? 1 : 0;
-
   const fog = new PostProcessStage({
     fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
     uniforms: {
-      fogByDistance: new Cartesian4(10, 0.0, 250000, 1.0),
-      fogColor: Color.BLACK,
+      fogByDistance: new Cartesian4(10000, 0.0, 50000, 0.95),
+      fogColor: Color.BLACK
     },
+    name: 'fog'
   });
+  const fogShield = new Entity({
+    rectangle: {
+      material: Color.WHITE,
+      coordinates: scene.globe.cartographicLimitRectangle,
+      heightReference: HeightReference.RELATIVE_TO_GROUND,
+      height: 5000
+    },
+    name: 'fogShield'
+  });
+  viewer.entities.add(fogShield); // hack to avoid black terrain/tilesets when transparency applied
 
   viewer.scene.postProcessStages.add(fog);
-
   scene.postRender.addEventListener((scene) => {
     fog.enabled = scene.cameraUnderground;
+    fogShield.show = scene.cameraUnderground;
   });
 
   setupBaseLayers(viewer);
