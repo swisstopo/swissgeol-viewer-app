@@ -150,8 +150,8 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
     if (object.getPropertyNames) {
       attributes = extractPrimitiveAttributes(object);
       attributes.zoom = () => {
-        const boundingSphere = new BoundingSphere(pickedPosition, 1000);
-        const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, 3 * boundingSphere.radius);
+        const boundingSphere = new BoundingSphere(pickedPosition, 500);
+        const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
         viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
           duration: 0,
           offset: zoomHeadingPitchRange
