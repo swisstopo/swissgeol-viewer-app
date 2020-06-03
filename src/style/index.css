@@ -271,3 +271,7 @@ ngm-camera-information {
 ngm-camera-information .ui.icon.button {
   margin: 0;
 }
+
+[data-tooltip]:before, [data-tooltip]:after {
+  transition: none;
+}
