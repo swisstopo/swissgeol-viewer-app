@@ -68,7 +68,7 @@ function aoiListTemplate() {
         <div class="ui small basic icon buttons">
             <button
             class="ui button"
-            @click=${this.flyToArea_.bind(this, i.id)}
+            @click=${this.flyToArea.bind(this, i.id)}
             data-tooltip=${i18next.t('fly_to_btn_tooltip')}
             data-position="top center"
             data-variation="tiny"

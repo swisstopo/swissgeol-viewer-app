@@ -15,6 +15,8 @@ import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
+import BoundingSphere from 'cesium/Core/BoundingSphere.js';
+import HeadingPitchRange from 'cesium/Core/HeadingPitchRange';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -173,12 +175,20 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.active = true;
   }
 
-  flyToArea_(id) {
+  flyToArea(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
     if (!entity.isShowing) {
       entity.show = !entity.isShowing;
     }
-    this.viewer.flyTo(entity);
+    const positions = entity.polygon.hierarchy.getValue().positions;
+    const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
+    let range = boundingSphere.radius > 1000 ? boundingSphere.radius * 2 : boundingSphere.radius * 5;
+    if (range < 1000) range = 1000; // if less than 1000 it goes inside terrain
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 2), range);
+    this.viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
+      duration: 0,
+      offset: zoomHeadingPitchRange
+    });
     this.pickArea_(id);
   }
 
@@ -228,7 +238,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       entity.polygon.fill = true;
       entity.polygon.material = DEFAULT_AOI_COLOR;
       this.interestAreasDataSource.entities.add(entity);
-      this.viewer.flyTo(entity);
+      this.flyToArea(entity.id);
     }
   }
 
