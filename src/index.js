@@ -162,14 +162,16 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
       const props = extractEntitiesAttributes(object.id);
       attributes = {...props};
       const aoiDataSource = viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
+      attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
       if (aoiDataSource.entities.contains(object.id)) {
         attributes = {...attributes, name: object.id.name};
-        attributes = document.querySelector('ngm-aoi-drawer').getInfoProps(attributes);
+        const aoiElement = document.querySelector('ngm-aoi-drawer');
+        attributes = aoiElement.getInfoProps(attributes);
+        attributes.zoom = () => aoiElement.flyToArea(object.id.id);
       } else if (attributes.zoomHeadingPitchRange) {
         // Don't show the value in the object info window
         delete attributes.zoomHeadingPitchRange;
       }
-      attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
 
       silhouette.selected = [object];
     }
