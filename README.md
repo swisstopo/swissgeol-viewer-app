@@ -2,7 +2,7 @@
 
 - dev https://dev.swissgeol.ch/
 - int https://int.swissgeol.ch/
-- prod https://beta.swissgeol.ch/ (username: agch, password: OhnooTh1)
+- prod https://beta.swissgeol.ch/
 
 # Deploy to integration (from local machine)
 
