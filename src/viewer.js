@@ -179,7 +179,7 @@ export function setupViewer(container) {
   const fog = new PostProcessStage({
     fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
     uniforms: {
-      fogByDistance: new Cartesian4(10000, 0.0, 50000, 0.95),
+      fogByDistance: new Cartesian4(10000, 0.0, 150000, 0.3),
       fogColor: Color.BLACK
     },
     name: 'fog'
