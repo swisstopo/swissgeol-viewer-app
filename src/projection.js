@@ -10,6 +10,10 @@ export function degreesToLv95(coordinates) {
   return proj4('EPSG:4326', 'EPSG:2056', coordinates.slice());
 }
 
+/**
+ * @param {Array<number>} coordinates
+ * @return {Array<number>}
+ */
 export function lv95ToDegrees(coordinates) {
   return proj4('EPSG:2056', 'EPSG:4326', coordinates);
 }
@@ -26,6 +30,10 @@ const swissIntegerFormat = new Intl.NumberFormat('de-CH', {
   maximumFractionDigits: 0
 });
 
+/**
+ * @param {import('cesium/Core/Cartographic').default} carto
+ * @return {string}
+ */
 export function formatCartographicAs2DLv95(carto) {
   return proj4('EPSG:4326', 'EPSG:2056', [
     carto.longitude * 180 / Math.PI,
