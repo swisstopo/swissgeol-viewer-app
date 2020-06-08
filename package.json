@@ -7,15 +7,14 @@
     "start": "npm run webpack-start",
     "webpack-start": "node scripts/environment.js && node scripts/generateManuals.js && webpack-dev-server",
     "rollup-start": "node scripts/environment.js && node scripts/generateManuals.js && rollup --environment SERVE:true -c --watch --no-treeshake",
-    "build": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && rm -rf dist/* && rollup --environment mode:production -c && scripts/create_versions.sh",
-    "postinstall": "scripts/npm_postinstall.sh"
+    "build": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && rm -rf dist/* && rollup --environment mode:production -c && scripts/create_versions.sh"
   },
   "dependencies": {
     "@geoblocks/cesium-compass": "0.0.5",
     "@geoblocks/ga-search": "^0.0.13",
     "@sentry/browser": "^5.15.4",
     "@webcomponents/webcomponentsjs": "^2.4.3",
-    "cesium": "https://github.com/CesiumGS/cesium/archive/90ff2b6.tar.gz",
+    "cesium": "1.70.0",
     "event-target-shim": "^5.0.1",
     "fomantic-ui-css": "^2.8.4",
     "i18next": "^19.4.5",

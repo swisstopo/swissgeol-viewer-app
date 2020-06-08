@@ -173,9 +173,9 @@ export function setupViewer(container) {
   // as the camera distance approaches 50000 meters.
   const transparencyParam = getMapTransparencyParam();
   const transparency = !isNaN(transparencyParam) ? 1 - transparencyParam : 0.6;
-  globe.translucencyEnabled = transparency !== 1;
-  globe.frontFaceAlphaByDistance = new NearFarScalar(10000, transparency, 50000, 1.0);
-  globe.backFaceAlpha = transparency === 1 ? 1 : 0;
+  globe.translucency.enabled = transparency !== 1;
+  globe.translucency.frontFaceAlphaByDistance = new NearFarScalar(10000, transparency, 50000, 1.0);
+  globe.translucency.backFaceAlpha = transparency === 1 ? 1 : 0;
   const fog = new PostProcessStage({
     fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
     uniforms: {
