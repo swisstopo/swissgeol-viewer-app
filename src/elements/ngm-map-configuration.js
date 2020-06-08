@@ -19,17 +19,17 @@ class NgmMapConfiguration extends I18nMixin(LitElement) {
     $('#ngm-transparency-slider').slider({
       min: 0,
       max: 1,
-      start: 1 - this.viewer.scene.globe.frontFaceAlphaByDistance.nearValue,
+      start: 1 - this.viewer.scene.globe.translucency.frontFaceAlphaByDistance.nearValue,
       step: 0.01,
       onMove: (val) => {
         if (val === 0) {
-          this.viewer.scene.globe.translucencyEnabled = false;
-          this.viewer.scene.globe.backFaceAlpha = 1;
+          this.viewer.scene.globe.translucency.enabled = false;
+          this.viewer.scene.globe.translucency.backFaceAlpha = 1;
         } else {
-          this.viewer.scene.globe.backFaceAlpha = 0;
-          this.viewer.scene.globe.frontFaceAlphaByDistance.nearValue = 1 - val;
-          if (!this.viewer.scene.globe.translucencyEnabled) {
-            this.viewer.scene.globe.translucencyEnabled = true;
+          this.viewer.scene.globe.translucency.backFaceAlpha = 0;
+          this.viewer.scene.globe.translucency.frontFaceAlphaByDistance.nearValue = 1 - val;
+          if (!this.viewer.scene.globe.translucency.enabled) {
+            this.viewer.scene.globe.translucency.enabled = true;
           }
         }
         this.viewer.scene.requestRender();
