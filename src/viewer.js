@@ -20,8 +20,12 @@ import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
 import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
+import PostProcessStage from 'cesium/Scene/PostProcessStage.js';
+import Cartesian4 from 'cesium/Core/Cartesian4.js';
 import CesiumInspector from 'cesium/Widgets/CesiumInspector/CesiumInspector.js';
 import {getMapTransparencyParam} from './permalink.js';
+import Entity from 'cesium/DataSources/Entity.js';
+import HeightReference from 'cesium/Scene/HeightReference.js';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -34,6 +38,39 @@ Object.assign(RequestScheduler.requestsByServer, {
 });
 
 let noLimit;
+
+const FOG_FRAGMENT_SHADER_SOURCE = `
+  float getDistance(sampler2D depthTexture, vec2 texCoords) {
+      float depth = czm_unpackDepth(texture2D(depthTexture, texCoords));
+      if (depth == 0.0) {
+          return czm_infinity;
+      }
+      vec4 eyeCoordinate = czm_windowToEyeCoordinates(gl_FragCoord.xy, depth);
+      return -eyeCoordinate.z / eyeCoordinate.w;
+  }
+  float interpolateByDistance(vec4 nearFarScalar, float distance) {
+      float startDistance = nearFarScalar.x;
+      float startValue = nearFarScalar.y;
+      float endDistance = nearFarScalar.z;
+      float endValue = nearFarScalar.w;
+      float t = clamp((distance - startDistance) / (endDistance - startDistance), 0.0, 1.0);
+      return mix(startValue, endValue, t);
+  }
+  vec4 alphaBlend(vec4 sourceColor, vec4 destinationColor) {
+      return sourceColor * vec4(sourceColor.aaa, 1.0) + destinationColor * (1.0 - sourceColor.a);
+  }
+  uniform sampler2D colorTexture;
+  uniform sampler2D depthTexture;
+  uniform vec4 fogByDistance;
+  uniform vec4 fogColor;
+  varying vec2 v_textureCoordinates;
+  void main(void) {
+      float distance = getDistance(depthTexture, v_textureCoordinates);
+      vec4 sceneColor = texture2D(colorTexture, v_textureCoordinates);
+      float blendAmount = interpolateByDistance(fogByDistance, distance);
+      vec4 undergroundColor = vec4(fogColor.rgb, fogColor.a * blendAmount);
+      gl_FragColor = alphaBlend(undergroundColor, sceneColor);
+  }`;
 
 /**
  * @param {HTMLElement} container
@@ -135,14 +172,33 @@ export function setupViewer(container) {
   // camera is 10000 meters from the surface and 1.0
   // as the camera distance approaches 50000 meters.
   const transparencyParam = getMapTransparencyParam();
-  const transparency = transparencyParam ? 1 - transparencyParam : 0.6;
+  const transparency = !isNaN(transparencyParam) ? 1 - transparencyParam : 0.6;
   globe.translucencyEnabled = transparency !== 1;
   globe.frontFaceAlphaByDistance = new NearFarScalar(10000, transparency, 50000, 1.0);
-  globe.undergroundColorByDistance = new NearFarScalar(6000, 0.1, 500000, 1.0);
-  globe.backFaceAlpha = 1.0;
+  globe.backFaceAlpha = transparency === 1 ? 1 : 0;
+  const fog = new PostProcessStage({
+    fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
+    uniforms: {
+      fogByDistance: new Cartesian4(10000, 0.0, 50000, 0.95),
+      fogColor: Color.BLACK
+    },
+    name: 'fog'
+  });
+  const fogShield = new Entity({
+    rectangle: {
+      material: Color.WHITE,
+      coordinates: scene.globe.cartographicLimitRectangle,
+      heightReference: HeightReference.RELATIVE_TO_GROUND,
+      height: 5000
+    },
+    name: 'fogShield'
+  });
+  viewer.entities.add(fogShield); // hack to avoid black terrain/tilesets when transparency applied
 
+  viewer.scene.postProcessStages.add(fog);
   scene.postRender.addEventListener((scene) => {
-    scene.skyAtmosphere.show = !scene.cameraUnderground;
+    fog.enabled = scene.cameraUnderground;
+    fogShield.show = scene.cameraUnderground;
   });
 
   setupBaseLayers(viewer);
