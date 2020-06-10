@@ -72,6 +72,13 @@ export function getLayersConfig() {
   return layersConfigPromise;
 }
 
+/**
+ * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {string} layer
+ * @param {string} format
+ * @param {boolean} show
+ * @return {ImageryLayer}
+ */
 export function addSwisstopoLayer(viewer, layer, format, show = true) {
   const url = layerUrlTemplate
     .replace('{layer}', layer)

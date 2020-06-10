@@ -237,6 +237,9 @@ export function addMantelEllipsoid(viewer) {
   new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
 }
 
+/**
+ * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ */
 function setupBaseLayers(viewer) {
   const arealLayer = 'ch.swisstopo.swissimage';
   const greyLayer = 'ch.swisstopo.pixelkarte-grau';

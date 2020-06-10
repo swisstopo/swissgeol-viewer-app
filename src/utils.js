@@ -56,6 +56,10 @@ export function insertAndShift(array, fromIdx, toIdx) {
   return array;
 }
 
+/**
+ * @param {import('cesium/Scene/Camera').default} camera
+ * @param {number} angle
+ */
 export function verticalDirectionRotate(camera, angle) {
   const position = Cartesian3.normalize(camera.position, new Cartesian3());
   const up = Cartesian3.normalize(camera.up, new Cartesian3());
@@ -69,10 +73,18 @@ export function verticalDirectionRotate(camera, angle) {
   camera.rotate(tangent, angle);
 }
 
+/**
+ * @param {string} string
+ * @return {string}
+ */
 export function escapeRegExp(string) {
   return string ? string.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&') : string;
 }
 
+/**
+ * @param {Array<Cartesian3>} positions
+ * @param {Array<number>} [holes]
+ */
 function getPolygonArea(positions, holes = []) {
   const indices = PolygonPipeline.triangulate(positions, holes);
   let area = 0;
@@ -97,9 +109,9 @@ function getPolygonArea(positions, holes = []) {
 
 /**
  * Returns measurements for geometry
- * @param positions {Array<Cartesian3>}
- * @param distances {Array<number>}
- * @param type {string} line | polygon | rectangle
+ * @param {Array<Cartesian3>} positions
+ * @param {Array<number>} distances
+ * @param {"line" | "polygon" | "rectangle"} type
  */
 export function getMeasurements(positions, distances, type) {
   const result = {
