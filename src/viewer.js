@@ -1,4 +1,3 @@
-// @ts-check
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
 import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
