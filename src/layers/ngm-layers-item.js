@@ -63,15 +63,15 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
       @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
         <i class="search plus icon"></i>
       </button>
-      <button class="ui button ${classMap(this.upClassMap)}"
-      data-tooltip=${i18next.t('layer_up')}
+      <button class="ui button ${classMap(this.downClassMap)}"
+      data-tooltip=${i18next.t('layer_down')}
       data-position="top center"
       data-variation="mini"
       @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
         <i class="angle down icon"></i>
       </button>
-      <button class="ui button ${classMap(this.downClassMap)}"
-      data-tooltip=${i18next.t('layer_down')}
+      <button class="ui button ${classMap(this.upClassMap)}"
+      data-tooltip=${i18next.t('layer_up')}
       data-position="top center"
       data-variation="mini"
       @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
