@@ -22,8 +22,8 @@ export default class LayerTree extends I18nMixin(LitElement) {
       if (!config.promise) {
         config.promise = config.load();
       }
-      const upClassMap = {disabled: idx === 0};
-      const downClassMap = {disabled: (idx === this.layers.length - 1)};
+      const downClassMap = {disabled: idx === 0};
+      const upClassMap = {disabled: (idx === this.layers.length - 1)};
       const detail = {
         config,
         idx

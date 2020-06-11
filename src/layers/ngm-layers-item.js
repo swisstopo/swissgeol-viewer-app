@@ -53,54 +53,54 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
 
   get buttons() {
     return html`
-    <div class="ui icon buttons compact mini">
-      <button class="ui button"
-      data-tooltip=${i18next.t('zoom_to')}
-      data-position="top left"
-      data-variation="mini"
-      @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
-        <i class="search plus icon"></i>
-      </button>
-      <button class="ui button ${classMap(this.upClassMap)}"
-      data-tooltip=${i18next.t('layer_up')}
-      data-position="top center"
-      data-variation="mini"
-      @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
-        <i class="angle down icon"></i>
-      </button>
-      <button class="ui button ${classMap(this.downClassMap)}"
-      data-tooltip=${i18next.t('layer_down')}
-      data-position="top center"
-      data-variation="mini"
-      @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
-        <i class="angle up icon"></i>
-      </button>
-      <button class="ui button"
-      data-tooltip=${i18next.t('remove_btn_tooltip')}
-      data-position="top right"
-      data-variation="mini"
-      @click=${this.onRemove}>
-        <i class="icon trash alternate outline"></i>
-      </button>
-    </div>
+      <div class="ui icon buttons compact mini">
+        <button class="ui button"
+          data-tooltip=${i18next.t('zoom_to')}
+          data-position="top left"
+          data-variation="mini"
+          @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
+            <i class="search plus icon"></i>
+        </button>
+        <button class="ui button ${classMap(this.downClassMap)}"
+          data-tooltip=${i18next.t('layer_down')}
+          data-position="top center"
+          data-variation="mini"
+          @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
+            <i class="angle down icon"></i>
+        </button>
+        <button class="ui button ${classMap(this.upClassMap)}"
+          data-tooltip=${i18next.t('layer_up')}
+          data-position="top center"
+          data-variation="mini"
+          @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
+            <i class="angle up icon"></i>
+        </button>
+        <button class="ui button"
+          data-tooltip=${i18next.t('remove_btn_tooltip')}
+          data-position="top right"
+          data-variation="mini"
+          @click=${this.onRemove}>
+            <i class="icon trash alternate outline"></i>
+        </button>
+      </div>
     `;
   }
 
   render() {
     return html`
-    <div class="ngm-displayed-container">
-      <div class="ui checkbox">
-        <input class="ngm-layer-checkbox" type="checkbox"
-          .checked=${this.config.visible}
-          @change=${this.changeVisibility}>
-        <label @click=${this.onLabelClicked}>${i18next.t(this.config.label)}</label>
+      <div class="ngm-displayed-container">
+        <div class="ui checkbox">
+          <input class="ngm-layer-checkbox" type="checkbox"
+            .checked=${this.config.visible}
+            @change=${this.changeVisibility}>
+          <label @click=${this.onLabelClicked}>${i18next.t(this.config.label)}</label>
+        </div>
+        ${this.buttons}
       </div>
-      ${this.buttons}
-    </div>
-    <div class="ngm-displayed-container" ?hidden=${!this.config.setTransparency}>
-      <label>${i18next.t('map_transparency_label')} </label>
-      <div class="ui grey small slider" id="${this.config.label}-transparency"></div>
-    </div>
+      <div class="ngm-displayed-container" ?hidden=${!this.config.setTransparency}>
+        <label>${i18next.t('map_transparency_label')} </label>
+        <div class="ui grey small slider" id="${this.config.label}-transparency"></div>
+      </div>
     `;
   }
 }
