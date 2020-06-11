@@ -1,4 +1,3 @@
-// @ts-check
 import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';
 import {

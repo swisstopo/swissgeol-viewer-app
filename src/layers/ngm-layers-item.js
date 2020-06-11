@@ -1,5 +1,3 @@
-// @ts-check
-
 import i18next from 'i18next';
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';

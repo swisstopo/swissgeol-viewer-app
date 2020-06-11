@@ -1,5 +1,3 @@
-//@ts-check
-
 import BoundingSphere from 'cesium/Core/BoundingSphere.js';
 import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 import Cartographic from 'cesium/Core/Cartographic.js';

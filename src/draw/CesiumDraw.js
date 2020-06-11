@@ -279,7 +279,7 @@ export class CesiumDraw extends EventTarget {
     if (this.sketchPoint_) {
       const position = this.viewer_.scene.pickPosition(event.endPosition);
       if (position) {
-        this.updateSketchPoint(position);
+        this.updateSketchPoint();
         this.activePoints_.pop();
         this.activePoints_.push(position);
       }

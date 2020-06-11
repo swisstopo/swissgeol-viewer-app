@@ -1,5 +1,3 @@
-// @ts-check
-
 import {syncLayersParam} from '../permalink.js';
 import {calculateRectangle, getBoxFromRectangle, calculateBox} from './helpers.js';
 import {LAYER_TYPES} from '../constants.js';
