@@ -262,16 +262,6 @@ ngm-gst-interaction > .ui.tiny.icon.buttons {
   display: flex;
 }
 
-ngm-camera-information {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-ngm-camera-information .ui.icon.button {
-  margin: 0;
-}
-
 [data-tooltip]:before, [data-tooltip]:after {
   transition: none;
 }

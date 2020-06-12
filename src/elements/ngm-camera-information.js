@@ -25,6 +25,7 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
 
     this.elevation = undefined;
     this.heading = undefined;
+    this.pitch = undefined;
     this.coordinates = undefined;
     this.unlistenPostRender = null;
 
@@ -54,22 +55,24 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
       const camera = this.scene.camera;
       this.elevation = camera._positionCartographic.height - altitude;
       this.heading = CesiumMath.toDegrees(this.scene.camera.heading);
+      this.pitch = CesiumMath.toDegrees(this.scene.camera.pitch);
       this.coordinates = formatCartographicAs2DLv95(camera.positionCartographic);
     }
   }
 
   render() {
-    if (this.elevation !== undefined && this.heading !== undefined) {
+    if (this.elevation !== undefined && this.heading !== undefined && this.pitch !== undefined) {
       const coordinates = this.coordinates;
       const height = this.integerFormat.format(this.elevation);
       let angle = this.integerFormat.format(this.heading);
+      const pitch = this.integerFormat.format(this.pitch);
       if (angle === '360') {
         // the integer format can cause that
         angle = '0';
       }
 
       return html`
-         ${unsafeHTML(i18next.t('camera_position', {coordinates, height, angle}))}
+         ${unsafeHTML(i18next.t('camera_position', {coordinates, height, angle, pitch}))}
         <ngm-position-edit .scene="${this.scene}"></ngm-position-edit>
       `;
     } else {
