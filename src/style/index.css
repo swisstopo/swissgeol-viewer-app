@@ -276,7 +276,7 @@ ngm-camera-information .ui.icon.button {
 }
 
 ngm-slow-loading > .ui.inverted.segment {
-  left: 310px;
+  right: calc(100vw / 2 - 125px);
 }
 
 ngm-slow-loading > .ui.inverted.segment,
