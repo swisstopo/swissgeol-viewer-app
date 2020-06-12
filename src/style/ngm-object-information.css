@@ -21,6 +21,7 @@ ngm-object-information .ui.table .key {
 }
 
 ngm-object-information .ui.table .val {
+  min-width: 160px;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
