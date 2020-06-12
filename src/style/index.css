@@ -33,7 +33,6 @@
 @import 'keyboard-navigation.css';
 @import 'layers.css';
 @import 'map-configuration.css';
-@import 'review-window.css';
 @import 'ngm-camera-information.css';
 @import 'ngm-position-edit.css';
 @import 'ngm-map-chooser.css';
@@ -274,4 +273,44 @@ ngm-camera-information .ui.icon.button {
 
 [data-tooltip]:before, [data-tooltip]:after {
   transition: none;
+}
+
+ngm-slow-loading > .ui.inverted.segment {
+  left: 310px;
+}
+
+ngm-slow-loading > .ui.inverted.segment,
+ngm-review-window > .ui.inverted.segment {
+  position: absolute;
+  padding: 5px;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 250px;
+  text-align: center;
+  top: 6px;
+}
+
+ngm-slow-loading .ui.inverted.accordion > .title,
+ngm-review-window .ui.inverted.accordion > .title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px;
+  user-select: none;
+}
+
+ngm-slow-loading .ui.inverted.accordion > .content {
+  text-align: left;
+}
+
+ngm-review-window > .ui.inverted.segment {
+  right: 245px;
+}
+
+ngm-review-window .ui.inverted.accordion > .content {
+  text-align: right;
+}
+
+ngm-review-window a {
+  color: #ff0000;
 }
