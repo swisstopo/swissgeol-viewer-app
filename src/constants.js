@@ -9,27 +9,14 @@ export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 
 export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS);
 
-export const DEFAULT_VIEW = (function () {
-  if (document.location.hostname === 'localhost') {
-    return {
-      destination: Cartesian3.fromDegrees(8.16834, 44.83954, -112297),
-      orientation: {
-        heading: CMath.toRadians(359),
-        pitch: CMath.toRadians(30)
-      }
-    };
-  } else {
-    return {
-      destination: Cartesian3.fromDegrees(
-        6.06749, 43.77784, 204227),
-      orientation: {
-        heading: CMath.toRadians(26.0),
-        pitch: CMath.toRadians(-33.0)
-      }
-    };
+export const DEFAULT_VIEW = {
+  destination: Cartesian3.fromDegrees(
+    6.06749, 43.77784, 204227),
+  orientation: {
+    heading: CMath.toRadians(26.0),
+    pitch: CMath.toRadians(-33.0)
   }
-})();
-
+};
 
 export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'];
 export const DRILL_PICK_LIMIT = 1;
