@@ -242,8 +242,12 @@ export function addMantelEllipsoid(viewer) {
 function setupBaseLayers(viewer) {
   const arealLayer = 'ch.swisstopo.swissimage';
   const greyLayer = 'ch.swisstopo.pixelkarte-grau';
-  const detailedLayer = 'ch.swisstopo.landeskarte-grau-10';
 
+  const emptyLayer = {
+    layer: {
+      show: false
+    }
+  };
   const t = a => a;
   const mapsConfig = [
     {
@@ -259,10 +263,10 @@ function setupBaseLayers(viewer) {
       layer: addSwisstopoLayer(viewer, greyLayer, 'jpeg')
     },
     {
-      id: detailedLayer,
-      labelKey: t('detailed_map_label'),
-      backgroundImgSrc: '../images/detailed.png',
-      layer: addSwisstopoLayer(viewer, detailedLayer, 'png', false)
+      id: 'empty_map',
+      labelKey: t('empty_map_label'),
+      backgroundImgSrc: '../images/empty.png',
+      layer: emptyLayer
     }];
 
   new MapChooser(viewer, mapsConfig);
