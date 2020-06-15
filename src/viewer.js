@@ -99,6 +99,8 @@ export function setupViewer(container) {
     terrainUrl = IonResource.fromAssetId(1);
   }
 
+  const requestRenderMode = !searchParams.has('norequestrendermode');
+
   const viewer = new Viewer(container, {
     contextOptions: {
       webgl: {
@@ -126,7 +128,7 @@ export function setupViewer(container) {
       url: terrainUrl
     }),
     terrainExaggeration: terrainExaggeration,
-    requestRenderMode: true,
+    requestRenderMode: requestRenderMode,
     // maximumRenderTimeChange: 10,
   });
 
