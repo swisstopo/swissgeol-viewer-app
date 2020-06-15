@@ -91,7 +91,7 @@ export function setupViewer(container) {
   }
 
   let terrainUrl;
-  const ownTerrain = searchParams.has('ownterrain');
+  const ownTerrain = searchParams.get('ownterrain') !== 'false';
   if (ownTerrain) {
     terrainUrl = 'https://terrain.dev.bgdi.ch/1.0.0/ch.swisstopo.terrain.3d/default/20200520/4326/';
   } else {
@@ -137,7 +137,7 @@ export function setupViewer(container) {
   const scene = viewer.scene;
   const globe = scene.globe;
 
-  if (searchParams.has('swissrectangle')) {
+  if (searchParams.get('swissrectangle') !== 'false') {
     const rectangle = Rectangle.fromDegrees(
       5.86725126512748,
       45.8026860136571,
