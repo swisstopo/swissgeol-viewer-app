@@ -77,7 +77,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     let sse = 2;
     const searchParams = new URLSearchParams(document.location.search);
     if (document.location.hostname === 'localhost') {
-      sse = 100;
+      sse = 20;
     }
     if (searchParams.has('maximumScreenSpaceError')) {
       sse = parseFloat(searchParams.get('maximumScreenSpaceError'));
