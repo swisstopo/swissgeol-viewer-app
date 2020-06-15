@@ -287,7 +287,7 @@ const man_made_objects = {
       layer: 'ch.swisstopo.swisstlm3d.3d',
       pickable: false,
       transparency: DEFAULT_LAYER_TRANSPARENCY,
-      heightOffset: 50
+      heightOffset: new URLSearchParams(location.search).has('ownterrain') ? 0 : 50
     }
   ]
 };
