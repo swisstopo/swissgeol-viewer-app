@@ -17,7 +17,8 @@ DEMO_NOTE="Links: [demo](https://review.swissgeol.ch/$BRANCH/index.html)"
 if [[ $BRANCH == *GSNGM-* ]]
 then
   JIRA_ISSUE="`echo $BRANCH | sed 's/.*GSNGM/GSNGM/'`"
-  DEMO_NOTE="$DEMO_NOTE and $JIRA_ISSUE"
+  JIRA_NOTE="[$JIRA_ISSUE](https://jira.camptocamp.com/browse/$JIRA_ISSUE)"
+  DEMO_NOTE="$DEMO_NOTE and $JIRA_NOTE"
 fi
 if curl --fail -s -H "Accept: application/vnd.github.v3+json" $REPO_API_URL/pulls/$PR_ID/reviews | grep -Fq "$DEMO_NOTE"
 then
