@@ -5,7 +5,8 @@ on:
     branches:
       - master
     tags:
-      - test*
+      - "int_*"
+      # - "prod_*" # prod is deployed through the branch, not the tag
   pull_request:
     branches:
       - master
