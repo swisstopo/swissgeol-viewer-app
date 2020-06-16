@@ -8,12 +8,14 @@ PROD_BUCKET="ngmpub-prod-bgdi-ch"
 REVIEW_BUCKET="ngmpub-review-bgdi-ch"
 CACHE_CONTROL="${CACHE_CONTROL:-no-cache}"
 S3_CMD="${S3_CMD:-aws s3}"
+S3_SYNC_OPTIONS=""
 
 ENV="$1"
 
 if [ "$ENV" = "prod" ]
 then
     DESTINATION="s3://$PROD_BUCKET"
+    S3_SYNC_OPTIONS="--exclude robots.txt"
 fi
 
 if [ "$ENV" = "int" ]
@@ -43,7 +45,7 @@ then
     exit 1
 fi
 
-$S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' --exclude 'Workers/*' dist/ $DESTINATION
+$S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' --exclude 'Workers/*' $S3_SYNC_OPTIONS dist/ $DESTINATION
 $S3_CMD sync --cache-control max-age=600 dist/Workers/ $DESTINATION/Workers
 $S3_CMD cp --cache-control no-cache dist/index.html $DESTINATION/index.html
 exit $?
