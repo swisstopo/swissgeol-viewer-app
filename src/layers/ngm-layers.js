@@ -30,8 +30,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
       };
       return html`
       <ngm-layers-item
-         @mouseenter=${() => this.mouseEnter(config)}
-         @mouseleave=${this.mouseLeave}
          .actions=${this.actions}
          .config=${config}
          @removeDisplayedLayer=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}))}
@@ -49,14 +47,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
     layerTemplates.reverse();
 
     return html`${layerTemplates}`;
-  }
-
-  mouseEnter(config) {
-    this.actions.mouseEnter(config);
-  }
-
-  mouseLeave() {
-    this.actions.mouseLeave();
   }
 
   // changes layer position in 'Displayed Layers'
