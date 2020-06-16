@@ -21,14 +21,13 @@ jobs:
     timeout-minutes: 12
 
     steps:
-      - run: export
-
       - uses: actions/checkout@v2
 
-      - name: Setup
-        run: |
-          npm ci && du -sh node_modules
-          THE_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} scripts/github_add_link_for_reviews.sh
+      - name: Add review links
+        run: THE_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} scripts/github_add_link_for_reviews.sh
+
+      - name: Npm setup
+        run: npm ci && du -sh node_modules
 
       - name: Lint
         run: npm run lint
