@@ -40,7 +40,7 @@ export default class LayersAction {
     this.viewer.scene.requestRender();
   }
 
-  async mouseEnter(config) {
+  async showBoundingBox(config) {
     const p = await config.promise;
     if (p.boundingRectangle) { // earthquakes
       this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
@@ -65,7 +65,7 @@ export default class LayersAction {
     }
   }
 
-  mouseLeave() {
+  hideBoundingBox() {
     if (this.boundingBoxEntity.show) {
       this.boundingBoxEntity.show = false;
       this.viewer.scene.requestRender();
