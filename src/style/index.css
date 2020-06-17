@@ -258,6 +258,10 @@ body:after { /* Beta label */
   z-index:10;
 }
 
+ngm-auth > a {
+  color: #ff0000;
+}
+
 ngm-gst-interaction > .ui.tiny.icon.buttons {
   display: flex;
 }
