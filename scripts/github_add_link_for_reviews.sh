@@ -25,6 +25,6 @@ then
   echo "Demo link already present, skipping"
   exit
 else
-  curl -X POST --fail -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $THE_GITHUB_TOKEN" -X POST --data "{\"body\": \"$DEMO_NOTE\", \"event\": \"COMMENT\"}" $REPO_API_URL/pulls/$PR_ID/reviews
+  curl -X POST --fail -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GITHUB_TOKEN" -X POST --data "{\"body\": \"$DEMO_NOTE\", \"event\": \"COMMENT\"}" $REPO_API_URL/pulls/$PR_ID/reviews
   exit $?
 fi
