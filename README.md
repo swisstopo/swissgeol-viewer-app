@@ -41,10 +41,6 @@ To add a new string to translate, use the `data-i18n` attribute in an html file,
 
 Then, run the `npm run extract-i18n` command to add this new key (`text_key`) to the files in the `locales` directory.
 
-# Gitlab <> Jira integration
-
-See https://docs.gitlab.com/ee/user/project/integrations/jira.html
-
 # URL Parameters
 
 - `noLimit` disable the navigation limits (sphere and lava). Use noLimit=false to enforce limits on local dev.
