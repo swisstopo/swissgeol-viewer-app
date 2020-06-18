@@ -1,8 +1,8 @@
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
-import UrlTemplateImageryProvider from 'cesium/Scene/UrlTemplateImageryProvider.js';
-import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
-import Credit from 'cesium/Core/Credit.js';
+import UrlTemplateImageryProvider from 'cesium/Source/Scene/UrlTemplateImageryProvider';
+import ImageryLayer from 'cesium/Source/Scene/ImageryLayer';
+import Credit from 'cesium/Source/Core/Credit';
 
 const layerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}';
 

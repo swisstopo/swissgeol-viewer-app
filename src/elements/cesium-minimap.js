@@ -2,9 +2,9 @@ import {LitElement, css, html} from 'lit-element';
 import {styleMap} from 'lit-html/directives/style-map';
 import {classMap} from 'lit-html/directives/class-map';
 
-import CesiumMath from 'cesium/Core/Math.js';
-import Rectangle from 'cesium/Core/Rectangle.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import CesiumMath from 'cesium/Source/Core/Math';
+import Rectangle from 'cesium/Source/Core/Rectangle';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
 class CesiumMinimap extends LitElement {
 

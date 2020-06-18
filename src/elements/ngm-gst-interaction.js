@@ -5,9 +5,9 @@ import {borehole, verticalCrossSection, horizontalCrossSection} from '../gst.js'
 import {showError, showWarning} from '../message.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
-import IonResource from 'cesium/Core/IonResource.js';
-import Color from 'cesium/Core/Color.js';
-import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
+import IonResource from 'cesium/Source/Core/IonResource';
+import Color from 'cesium/Source/Core/Color';
+import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 
 import './ngm-gst-modal.js';
 

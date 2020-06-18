@@ -1,8 +1,8 @@
-import Rectangle from 'cesium/Core/Rectangle.js';
-import Color from 'cesium/Core/Color.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import CMath from 'cesium/Core/Math.js';
-import LabelStyle from 'cesium/Scene/LabelStyle.js';
+import Rectangle from 'cesium/Source/Core/Rectangle';
+import Color from 'cesium/Source/Core/Color';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import CMath from 'cesium/Source/Core/Math';
+import LabelStyle from 'cesium/Source/Scene/LabelStyle';
 
 
 export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];

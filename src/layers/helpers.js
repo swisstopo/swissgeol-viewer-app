@@ -1,18 +1,18 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
-import IonResource from 'cesium/Core/IonResource.js';
-import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
-import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
-import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
+import IonResource from 'cesium/Source/Core/IonResource';
+import GeoJsonDataSource from 'cesium/Source/DataSources/GeoJsonDataSource';
+import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
+import Cesium3DTileStyle from 'cesium/Source/Scene/Cesium3DTileStyle';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
 import {LAYER_TYPES} from '../constants.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
+import Cartographic from 'cesium/Source/Core/Cartographic';
 import {isLabelOutlineEnabled} from '../permalink.js';
-import LabelStyle from 'cesium/Scene/LabelStyle.js';
-import Rectangle from 'cesium/Core/Rectangle.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Ellipsoid from 'cesium/Core/Ellipsoid.js';
-import Matrix3 from 'cesium/Core/Matrix3.js';
-import Matrix4 from 'cesium/Core/Matrix4.js';
+import LabelStyle from 'cesium/Source/Scene/LabelStyle';
+import Rectangle from 'cesium/Source/Core/Rectangle';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
+import Matrix3 from 'cesium/Source/Core/Matrix3';
+import Matrix4 from 'cesium/Source/Core/Matrix4';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);

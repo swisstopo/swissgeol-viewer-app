@@ -12,17 +12,17 @@ import './style/index.css';
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
 
-import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
-import Color from 'cesium/Core/Color.js';
-import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
-import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
+import Color from 'cesium/Source/Core/Color';
+import PostProcessStageLibrary from 'cesium/Source/Scene/PostProcessStageLibrary';
+import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import {showMessage} from './message.js';
 import i18next from 'i18next';
-import BoundingSphere from 'cesium/Core/BoundingSphere.js';
-import Ellipsoid from 'cesium/Core/Ellipsoid.js';
+import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
+import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 
 import './elements/ngm-object-information.js';
 import './elements/ngm-navigation-widgets.js';

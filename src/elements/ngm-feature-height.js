@@ -1,9 +1,9 @@
 import {LitElement, html} from 'lit-element';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
-import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
-import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
+import Cartographic from 'cesium/Source/Core/Cartographic';
+import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 
 
 class NgmFeatureHeight extends I18nMixin(LitElement) {

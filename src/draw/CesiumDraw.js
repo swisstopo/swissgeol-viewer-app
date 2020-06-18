@@ -1,11 +1,11 @@
-import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
-import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
-import CallbackProperty from 'cesium/DataSources/CallbackProperty.js';
-import Color from 'cesium/Core/Color.js';
-import HeightReference from 'cesium/Scene/HeightReference.js';
-import PolygonHierarchy from 'cesium/Core/PolygonHierarchy.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
+import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty.js';
+import Color from 'cesium/Source/Core/Color';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
+import PolygonHierarchy from 'cesium/Source/Core/PolygonHierarchy';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartographic from 'cesium/Source/Core/Cartographic';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
