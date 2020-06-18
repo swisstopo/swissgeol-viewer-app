@@ -32,6 +32,7 @@ import './elements/ngm-left-side-bar.js';
 import './elements/ngm-map-configuration.js';
 import './elements/ngm-review-window.js';
 import './elements/ngm-position-edit.js';
+import './elements/ngm-slow-loading.js';
 import {LocalStorageController} from './LocalStorageController.js';
 
 initSentry();
@@ -86,7 +87,11 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       addMantelEllipsoid(viewer);
       setupSearch(viewer, document.querySelector('ga-search'), sideBar);
       document.getElementById('loader').style.display = 'none';
-      console.log(`loading mask displayed ${(performance.now() / 1000).toFixed(3)}s`);
+      const loadingTime = performance.now() / 1000;
+      console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
+      if (loadingTime > 10) {
+        document.querySelector('ngm-slow-loading').style.display = 'block';
+      }
 
       const localStorageController = new LocalStorageController();
 
