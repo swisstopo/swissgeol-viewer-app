@@ -14,19 +14,19 @@ function state() {
 }
 
 /**
- * Parses a hash string containing a JWT token and 
+ * Parses a hash string containing a JWT token and
  * returns its payload (i.e. the user) as an object.
- * 
- * @param {*} hash 
+ *
+ * @param {*} hash
  */
 export function initUser(hash) {
   // transform the hash string into a set of set of properties
   const entries = hash.substring(1).split('&').map(entry => entry.split('='));
   const properties = Object.fromEntries(entries);
 
-  // check wether the required auth properties are present 
-  if (properties.access_token === undefined  
-    || properties.state === undefined 
+  // check wether the required auth properties are present
+  if (properties.access_token === undefined
+    || properties.state === undefined
     || properties.state !== state()) {
     return undefined;
   }
@@ -38,7 +38,7 @@ export function initUser(hash) {
   }
 
   // reload the browser when the auth token expires
-  if (properties.expires_in !== undefined 
+  if (properties.expires_in !== undefined
     && !isNaN(parseInt(properties.expires_in))) {
     const expiresIn = parseInt(properties.expires_in) * 1000;
     setInterval(() => {
