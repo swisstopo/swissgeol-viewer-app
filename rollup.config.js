@@ -34,7 +34,7 @@ const config = {
     postcss({
       minimize: true,
       inject: false,
-      extract: 'dist/bundle.css',
+      extract: 'bundle.css',
       plugins: [
         inlinesvg(),
         cssimport({
