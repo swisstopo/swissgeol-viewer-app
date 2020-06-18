@@ -1,4 +1,12 @@
 ngm-camera-information {
   width: 229px;
   background-color: lightgray;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 12px;
+}
+
+ngm-camera-information .ui.icon.button {
+  margin: 0;
 }

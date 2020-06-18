@@ -58,6 +58,8 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
           data-tooltip=${i18next.t('zoom_to')}
           data-position="top left"
           data-variation="mini"
+          @mouseenter=${() => this.actions.showBoundingBox(this.config)}
+          @mouseleave=${() => this.actions.hideBoundingBox()}
           @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
             <i class="search plus icon"></i>
         </button>
