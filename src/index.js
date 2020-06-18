@@ -74,6 +74,7 @@ const auth = document.querySelector('ngm-auth');
 auth.user = user;
 
 // setup the OAuth2 parameters
+auth.endpoint = 'https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize';
 auth.clientId = '5k1mgef7ggiremt415eecn95ki';
 
 // setup web components
