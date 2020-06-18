@@ -73,6 +73,15 @@ class NgmAuth extends I18nMixin(LitElement) {
     };
   }
 
+  constructor() {
+    super();
+
+    this.endpoint = 'https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize';
+    this.responseType = 'token';
+    this.redirectUri = `${location.origin}${location.pathname}`;
+    this.scope = 'openid+profile';
+  }
+
   login() {
     // redirect to cognito with auth parameters
     document.location = `${this.endpoint}?`
