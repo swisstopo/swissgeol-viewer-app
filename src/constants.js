@@ -42,8 +42,6 @@ export const ASSET_IDS_URL_PARAM = 'assetIds';
 export const MAP_URL_PARAM = 'map';
 export const MAP_TRANSPARENCY_URL_PARAM = 'map_transparency';
 
-export const BILLBOARDS_PREFIX = 'billboards_';
-
 export const DEFAULT_AOI_COLOR = Color.BLACK.withAlpha(0.3);
 export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);
 
