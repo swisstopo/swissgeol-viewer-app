@@ -10,7 +10,7 @@
     "build": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && rm -rf dist/* && rollup --environment mode:production -c && scripts/create_versions.sh"
   },
   "dependencies": {
-    "@geoblocks/cesium-compass": "0.0.5",
+    "@geoblocks/cesium-compass": "0.1.0",
     "@geoblocks/ga-search": "^0.0.14",
     "@sentry/browser": "^5.17.0",
     "@webcomponents/webcomponentsjs": "^2.4.3",
