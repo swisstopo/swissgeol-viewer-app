@@ -23,6 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Export
+        run: export
+
       - name: Add review links
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
