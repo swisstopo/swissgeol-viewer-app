@@ -23,9 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Export
-        run: export
-
       - name: Add review links
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -39,8 +36,8 @@ jobs:
 
       - name: Build
         env:
-          RELEASE_NAME: ${scripts/get_github_name.sh}
-        run: npm run build
+          RELEASE_NAME: ${{scripts/get_github_name.sh}}
+        run: echo $RELEASE_NAME; npm run build
 
       - name: Deploy to S3
         env:

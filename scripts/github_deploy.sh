@@ -14,10 +14,18 @@ then
   export BRANCH_NAME=$GITHUB_HEAD_REF
 fi
 
-if [[ $GITHUB_EVENT_NAME == "push" ]] && [[ $GITHUB_REF == refs/tags/* ]]
+if [[ $GITHUB_EVENT_NAME == "push" ]]
 then
-  echo "It is a tag"
-  export TAG_NAME=`echo $GITHUB_REF| sed 'sYrefs/tags/YY'`
+  if [[ $GITHUB_REF == refs/tags/* ]]
+  then
+    echo "It is a tag"
+    export TAG_NAME=`echo $GITHUB_REF | cut -d/ -f3`
+  fi
+  if [[ $GITHUB_REF == refs/heads/* ]]
+  then
+    echo "It is a branch push"
+    export BRANCH_NAME=`echo $GITHUB_REF | cut -d/ -f3`
+  fi
 fi
 echo tag $TAG_NAME
 echo ref $BRANCH_NAME
