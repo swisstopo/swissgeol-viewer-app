@@ -84,7 +84,7 @@ class NgmAuth extends I18nMixin(LitElement) {
 
   login() {
     // redirect to cognito with auth parameters
-    document.location = `${this.endpoint}?`
+    document.location.href = `${this.endpoint}?`
       + `response_type=${this.responseType}`
       + `&client_id=${this.clientId}`
       + `&redirect_uri=${this.redirectUri}`
