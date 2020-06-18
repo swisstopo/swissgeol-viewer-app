@@ -1,4 +1,6 @@
 import {LitElement, html} from 'lit-element';
+import i18next from 'i18next';
+import {I18nMixin} from '../i18n.js';
 
 /**
  * Creates a random persistent state that is used
@@ -56,7 +58,7 @@ export function initUser(hash) {
 /**
  * Authentication component
  */
-class NgmAuth extends LitElement {
+class NgmAuth extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
@@ -87,9 +89,9 @@ class NgmAuth extends LitElement {
 
   render() {
     if (this.user === undefined) {
-      return html`<a @click=${this.login}>Login</a>`;
+      return html`<a @click=${this.login}>${i18next.t('Login')}</a>`;
     } else {
-      return html`${this.user.username} <a @click=${this.logout}>Logout</a>`;
+      return html`${this.user.username} <a @click=${this.logout}>${i18next.t('Logout')}</a>`;
     }
   }
 
