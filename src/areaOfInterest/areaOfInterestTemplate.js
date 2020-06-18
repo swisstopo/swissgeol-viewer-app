@@ -72,7 +72,7 @@ function aoiListTemplate() {
             data-tooltip=${i18next.t('fly_to_btn_tooltip')}
             data-position="top center"
             data-variation="tiny"
-            ><i class="map marked alternate icon"></i></button>
+            ><i class="search plus icon"></i></button>
             <button
             class="ui button"
             @click=${this.onShowHideEntityClick_.bind(this, i.id)}
