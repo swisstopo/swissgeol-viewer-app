@@ -1,13 +1,13 @@
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import HeightReference from 'cesium/Scene/HeightReference.js';
-import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
+import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorForMagnitude} from './helpers.js';
 import {readTextFile} from '../utils.js';
-import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
-import CMath from 'cesium/Core/Math.js';
+import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
+import CMath from 'cesium/Source/Core/Math';
 import {LAYER_TYPES} from '../constants.js';
-import BoundingSphere from 'cesium/Core/BoundingSphere.js';
-import Rectangle from 'cesium/Core/Rectangle.js';
+import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
+import Rectangle from 'cesium/Source/Core/Rectangle';
 
 export default class EarthquakeVisualizer {
   constructor(viewer) {

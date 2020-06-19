@@ -1,7 +1,7 @@
 import {LitElement, html} from 'lit-element';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
-import CesiumMath from 'cesium/Core/Math.js';
+import CesiumMath from 'cesium/Source/Core/Math';
 import {unsafeHTML} from 'lit-html/directives/unsafe-html.js';
 import {formatCartographicAs2DLv95} from '../projection.js';
 

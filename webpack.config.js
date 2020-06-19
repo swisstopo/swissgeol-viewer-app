@@ -12,7 +12,7 @@ const smp = new SpeedMeasurePlugin();
 module.exports = smp.wrap({
   resolve: {
     alias: {
-      cesium: path.resolve(__dirname, 'node_modules/cesium/Source'),
+      cesium: path.resolve(__dirname, 'node_modules/cesium'),
       // we need the aliases below for CSS :( don't know why
       './cesium/Build': path.resolve(__dirname, 'node_modules/cesium/Build'),
       './cesium': path.resolve(__dirname, 'node_modules/cesium/Source'),

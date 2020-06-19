@@ -1,10 +1,10 @@
 import {syncLayersParam} from '../permalink.js';
 import {calculateRectangle, getBoxFromRectangle, calculateBox} from './helpers.js';
 import {LAYER_TYPES} from '../constants.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Rectangle from 'cesium/Core/Rectangle.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
-import Color from 'cesium/Core/Color.js';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Rectangle from 'cesium/Source/Core/Rectangle';
+import Cartographic from 'cesium/Source/Core/Cartographic';
+import Color from 'cesium/Source/Core/Color';
 
 
 export default class LayersAction {

@@ -5,7 +5,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import {terser} from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy';
 import babel from 'rollup-plugin-babel';
-import alias from '@rollup/plugin-alias';
 import postcss from 'rollup-plugin-postcss';
 import inlinesvg from 'postcss-inline-svg';
 import cssimport from 'postcss-import';
@@ -24,13 +23,6 @@ const config = {
     format: 'esm',
   }],
   plugins: [
-    alias({
-      entries: [
-        {
-          find: 'cesium', replacement: cesiumSource,
-        }
-      ]
-    }),
     postcss({
       minimize: true,
       inject: false,

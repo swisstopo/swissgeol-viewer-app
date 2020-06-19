@@ -1,6 +1,6 @@
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import CMath from 'cesium/Core/Math.js';
-import PolygonPipeline from 'cesium/Core/PolygonPipeline';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import CMath from 'cesium/Source/Core/Math';
+import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline';
 
 
 export async function readTextFile(url) {
