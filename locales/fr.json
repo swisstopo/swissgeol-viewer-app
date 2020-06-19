@@ -7,6 +7,7 @@
   "area_of_interest_empty_hint": "Choisissez le mode de dessin et cliquez sur le visualisateur 3D pour commencer à dessiner",
   "areal_map_label": "Photo aérienne",
   "background_label": "Données d'arrière plan",
+  "background_map_label": "",
   "base_cenozoic_label": "Base du Cénozoïque",
   "base_mesozoic_label": "Base du Mésozoïque",
   "bedrock_surface_sediments_label": "Surface du rocher / sédiments",

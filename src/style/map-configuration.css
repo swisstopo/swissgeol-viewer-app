@@ -1,11 +1,7 @@
 ngm-map-configuration {
-  position: absolute;
-  width: 235px;
-  z-index: 1;
-  bottom: 30px;
-  right: 10px;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 ngm-map-configuration > .ui.segment {
@@ -20,4 +16,8 @@ ngm-map-configuration > .ui.segment {
 ngm-map-configuration > .ui.segment .ui.slider {
   padding: 2px;
   margin-left: 5px;
+}
+
+ngm-map-configuration > div {
+  width: 253px;
 }

@@ -200,8 +200,6 @@ export function setupViewer(container) {
     fogShield.show = scene.cameraUnderground;
   });
 
-  setupBaseLayers(viewer);
-
   if (searchParams.has('inspector')) {
     const div = document.createElement('div');
     div.id = 'divinspector';
@@ -239,7 +237,7 @@ export function addMantelEllipsoid(viewer) {
 /**
  * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
  */
-function setupBaseLayers(viewer) {
+export function setupBaseLayers(viewer) {
   const arealLayer = 'ch.swisstopo.swissimage';
   const greyLayer = 'ch.swisstopo.pixelkarte-grau';
 
@@ -269,5 +267,5 @@ function setupBaseLayers(viewer) {
       layer: emptyLayer
     }];
 
-  new MapChooser(viewer, mapsConfig);
+  return new MapChooser(viewer, mapsConfig);
 }
