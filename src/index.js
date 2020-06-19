@@ -89,9 +89,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       document.getElementById('loader').style.display = 'none';
       const loadingTime = performance.now() / 1000;
       console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
-      if (loadingTime > 10) {
-        document.querySelector('ngm-slow-loading').style.display = 'block';
-      }
+      document.querySelector('ngm-slow-loading').style.display = 'none';
 
       const localStorageController = new LocalStorageController();
 
@@ -207,3 +205,22 @@ i18next.on('languageChanged', (lang) => {
   document.querySelector('#ngm-help-btn').href =
     lang === 'de' ? './manuals/manual_de.html' : './manuals/manual_en.html';
 });
+
+function showSlowLoadingWindow() {
+  const timeout = 10000;
+  const loaderDisplayed = () => document.querySelector('#loader').style.display !== 'none';
+  if (loaderDisplayed() && performance.now() > timeout) {
+    document.querySelector('ngm-slow-loading').style.display = 'block';
+  } else {
+    setTimeout(() => {
+      if (loaderDisplayed()) {
+        document.querySelector('ngm-slow-loading').style.display = 'block';
+      }
+    }, timeout - performance.now());
+  }
+}
+
+i18next.on('initialized', () => {
+  showSlowLoadingWindow();
+});
+
