@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@geoblocks/cesium-compass": "0.1.0",
-    "@geoblocks/ga-search": "^0.0.14",
+    "@geoblocks/ga-search": "^0.0.17",
     "@sentry/browser": "^5.17.0",
     "@webcomponents/webcomponentsjs": "^2.4.3",
     "cesium": "1.70.1",
