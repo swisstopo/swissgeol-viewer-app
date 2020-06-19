@@ -267,6 +267,7 @@ ngm-gst-interaction > .ui.tiny.icon.buttons {
 
 ngm-slow-loading > .ui.inverted.segment {
   right: calc(100vw / 2 - 125px);
+  z-index: 1001 !important;
 }
 
 ngm-slow-loading > .ui.inverted.segment,
