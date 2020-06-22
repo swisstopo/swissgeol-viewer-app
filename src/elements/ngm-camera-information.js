@@ -20,7 +20,9 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
   constructor() {
     super();
 
-    /** @type {import('cesium/Scene/Scene.js').default} */
+    /**
+     * @type {import('cesium/Source/Scene/Scene').default}
+     */
     this.scene;
 
     this.elevation = undefined;

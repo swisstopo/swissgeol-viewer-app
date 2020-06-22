@@ -210,7 +210,7 @@ export function setupViewer(container) {
 }
 
 /**
- * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  */
 export function addMantelEllipsoid(viewer) {
   if (noLimit) {
@@ -235,7 +235,7 @@ export function addMantelEllipsoid(viewer) {
 }
 
 /**
- * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  */
 export function setupBaseLayers(viewer) {
   const arealLayer = 'ch.swisstopo.swissimage';

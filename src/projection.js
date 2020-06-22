@@ -31,7 +31,7 @@ const swissIntegerFormat = new Intl.NumberFormat('de-CH', {
 });
 
 /**
- * @param {import('cesium/Core/Cartographic').default} carto
+ * @param {import('cesium/Source/Core/Cartographic').default} carto
  * @return {string}
  */
 export function formatCartographicAs2DLv95(carto) {

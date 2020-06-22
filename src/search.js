@@ -9,7 +9,7 @@ import Math from 'cesium/Source/Core/Math';
 import {extractEntitiesAttributes} from './objectInformation.js';
 
 /**
- * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  * @param {HTMLElement} element
  * @param layerTree
  */

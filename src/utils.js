@@ -13,7 +13,7 @@ export async function readTextFile(url) {
 }
 
 /**
- * @param {import('cesium/Scene/Camera').default} camera
+ * @param {import('cesium/Source/Scene/Camera').default} camera
  * @param {number} height Camera height in meters.
  */
 export function setCameraHeight(camera, height) {
@@ -57,7 +57,7 @@ export function insertAndShift(array, fromIdx, toIdx) {
 }
 
 /**
- * @param {import('cesium/Scene/Camera').default} camera
+ * @param {import('cesium/Source/Scene/Camera').default} camera
  * @param {number} angle
  */
 export function verticalDirectionRotate(camera, angle) {

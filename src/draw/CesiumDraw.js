@@ -22,7 +22,7 @@ import {getMeasurements} from '../utils.js';
 export class CesiumDraw extends EventTarget {
 
   /**
-   * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+   * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
    * @param {"point" | "line" | "polygon" | "rectangle"} type
    * @param {Options} [options]
    */
@@ -336,7 +336,7 @@ function rectanglify(coordinates) {
 
 
 /**
- * @param {import('cesium/Core/Cartesian3').default} cartesian
+ * @param {import('cesium/Source/Core/Cartesian3').default} cartesian
  * @return {Array<number>}
  */
 function cartesiantoDegrees(cartesian) {

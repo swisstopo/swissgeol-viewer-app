@@ -10,8 +10,8 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 export default class NavigableVolumeLimiter {
 
   /**
-   * @param {import('cesium/Scene/Scene').default} scene
-   * @param {import('cesium/Core/Rectangle').default} [rectangle]
+   * @param {import('cesium/Source/Scene/Scene').default} scene
+   * @param {import('cesium/Source/Core/Rectangle').default} [rectangle]
    * @param {number} height
    * @param {function(number): number} ratioFunction
    */

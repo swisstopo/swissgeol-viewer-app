@@ -25,7 +25,7 @@ import {setCameraHeight, verticalDirectionRotate} from './utils.js';
 export default class KeyboardNavigation {
 
   /**
-   * @param {import('cesium/Scene/Scene').default} scene
+   * @param {import('cesium/Source/Scene/Scene').default} scene
    * @param {Options} [options]
    */
   constructor(scene, options = {}) {
