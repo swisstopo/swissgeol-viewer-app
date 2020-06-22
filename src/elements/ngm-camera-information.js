@@ -49,13 +49,13 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
   }
 
   updateFromCamera() {
-    const altitude = this.scene.globe.getHeight(this.scene.camera._positionCartographic);
+    const camera = this.scene.camera;
+    const altitude = this.scene.globe.getHeight(camera.positionCartographic);
     if (altitude !== undefined) {
       // globe is ready
-      const camera = this.scene.camera;
-      this.elevation = camera._positionCartographic.height - altitude;
-      this.heading = CesiumMath.toDegrees(this.scene.camera.heading);
-      this.pitch = CesiumMath.toDegrees(this.scene.camera.pitch);
+      this.elevation = camera.positionCartographic.height - altitude;
+      this.heading = CesiumMath.toDegrees(camera.heading);
+      this.pitch = CesiumMath.toDegrees(camera.pitch);
       this.coordinates = formatCartographicAs2DLv95(camera.positionCartographic);
     }
   }
