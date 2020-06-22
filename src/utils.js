@@ -111,7 +111,7 @@ function getPolygonArea(positions, holes = []) {
  * Returns measurements for geometry
  * @param {Array<Cartesian3>} positions
  * @param {Array<number>} distances
- * @param {"line" | "polygon" | "rectangle"} type
+ * @param {import('./draw/CesiumDraw').ShapeType} type
  */
 export function getMeasurements(positions, distances, type) {
   const result = {

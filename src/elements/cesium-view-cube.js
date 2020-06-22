@@ -68,7 +68,16 @@ class CesiumViewCube extends LitElement {
   constructor() {
     super();
 
+    /**
+     * @type {import('cesium/Source/Scene/Scene').default}
+     */
+    this.scene;
+
+    /**
+     * @type {HTMLElement}
+     */
     this.cubeElement = undefined;
+
     this.unlistenPostRender = null;
   }
 

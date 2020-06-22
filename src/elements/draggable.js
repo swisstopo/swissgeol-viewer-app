@@ -1,5 +1,9 @@
 import interact from 'interactjs';
 
+/**
+ * @param {HTMLElement} target
+ * @param {Interact.DraggableOptions} options
+ */
 export default function draggable(target, options = {}) {
   interact(target).draggable(Object.assign({
     onmove: translate,
@@ -13,6 +17,9 @@ export default function draggable(target, options = {}) {
 
 }
 
+/**
+ * @param {Interact.InteractEvent} event
+ */
 function translate(event) {
   const target = event.target;
   // keep the dragged position in the data-x/data-y attributes
