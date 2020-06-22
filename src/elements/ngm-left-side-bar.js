@@ -11,6 +11,7 @@ import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
+import './ngm-map-configuration.js';
 
 const WELCOME_PANEL = 'welcome-panel';
 const DRAW_TOOL_GST = 'draw-tool-gst';
@@ -24,7 +25,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
       zoomTo: {type: Function},
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
-      hideWelcome: {type: Boolean}
+      hideWelcome: {type: Boolean},
+      mapChooser: {type: Function}
     };
   }
 
@@ -75,6 +77,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
             .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>
           </ngm-layers>
+          <h4 class="ui horizontal divider ngm-background-divider">${i18next.t('background_map_label')}</h4>
+           <ngm-map-configuration .viewer=${this.viewer} .mapChooser=${this.mapChooser}></ngm-map-configuration>
         </div>
       </div>
 

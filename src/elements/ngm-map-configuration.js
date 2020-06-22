@@ -9,12 +9,13 @@ import {syncMapTransparencyParam} from '../permalink.js';
 class NgmMapConfiguration extends I18nMixin(LitElement) {
   static get properties() {
     return {
-      viewer: {type: Object}
+      viewer: {type: Object},
+      mapChooser: {type: Function}
     };
   }
 
   firstUpdated() {
-    this.dispatchEvent(new CustomEvent('rendered'));
+    this.mapChooser.initMapChooser(this.querySelector('ngm-map-chooser'));
 
     $('#ngm-transparency-slider').slider({
       min: 0,
@@ -40,11 +41,11 @@ class NgmMapConfiguration extends I18nMixin(LitElement) {
 
   render() {
     return html`
-      <div class="ui segment">
-        ${i18next.t('map_transparency_label')}
+      <ngm-map-chooser></ngm-map-chooser>
+      <div class="ngm-displayed-container">
+        <label>${i18next.t('map_transparency_label')}</label>
         <div class="ui grey small slider" id="ngm-transparency-slider"></div>
       </div>
-      <ngm-map-chooser></ngm-map-chooser>
       `;
   }
 

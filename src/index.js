@@ -10,7 +10,7 @@ import {
 
 import './style/index.css';
 import {setupSearch} from './search.js';
-import {setupViewer, addMantelEllipsoid} from './viewer.js';
+import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
 
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
@@ -29,7 +29,6 @@ import './elements/ngm-navigation-widgets.js';
 import './elements/ngm-camera-information.js';
 import './elements/ngm-feature-height.js';
 import './elements/ngm-left-side-bar.js';
-import './elements/ngm-map-configuration.js';
 import './elements/ngm-review-window.js';
 import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
@@ -39,6 +38,7 @@ initSentry();
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
+const mapChooser = setupBaseLayers(viewer);
 
 async function zoomTo(config) {
   const p = await config.promise;
@@ -199,7 +199,7 @@ const widgets = document.querySelector('ngm-navigation-widgets');
 widgets.viewer = viewer;
 
 document.querySelector('ngm-feature-height').viewer = viewer;
-document.querySelector('ngm-map-configuration').viewer = viewer;
+document.querySelector('ngm-left-side-bar').mapChooser = mapChooser;
 
 i18next.on('languageChanged', (lang) => {
   document.querySelector('#ngm-help-btn').href =

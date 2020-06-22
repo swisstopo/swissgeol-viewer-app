@@ -305,3 +305,8 @@ ngm-review-window .ui.inverted.accordion > .content {
 ngm-review-window a {
   color: #ff0000;
 }
+
+h4.ui.horizontal.divider.ngm-background-divider {
+  font-weight: normal;
+  text-transform: none;
+}
