@@ -129,13 +129,25 @@ silhouette.uniforms.color = Color.LIME;
 silhouette.uniforms.length = 0.01;
 silhouette.selected = [];
 viewer.scene.postProcessStages.add(PostProcessStageLibrary.createSilhouetteStage([silhouette]));
+let selectedObj = null;
 
 const objectInfo = document.querySelector('ngm-object-information');
 objectInfo.addEventListener('closed', () => {
   silhouette.selected = [];
+  changeHighlight(null);
   viewer.scene.requestRender();
 });
 
+function changeHighlight(obj) {
+  if (selectedObj) {
+    selectedObj.color = Color.WHITE.withAlpha(selectedObj.color.alpha);
+    selectedObj = null;
+  }
+  if (obj) {
+    selectedObj = obj;
+    selectedObj.color = Color.LIME.withAlpha(obj.color.alpha);
+  }
+}
 
 viewer.screenSpaceEventHandler.setInputAction(click => {
   silhouette.selected = [];
@@ -159,7 +171,9 @@ viewer.screenSpaceEventHandler.setInputAction(click => {
           offset: zoomHeadingPitchRange
         });
       };
-      silhouette.selected = [object];
+
+      changeHighlight(object);
+      // silhouette.selected = [object];
     } else if (object.id && object.id.properties) {
       const props = extractEntitiesAttributes(object.id);
       attributes = {...props};
