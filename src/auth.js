@@ -8,13 +8,12 @@ const isToken = /^[\w=-]+.[\w=-]+.[\w=-]+$/;
 export default class Auth {
 
     static initialize() {
-        // try parse and store the cognito response 
+        // try parse and store the cognito response
         // and fail silently otherwise
         try {
             const response = this.parseResponse(window.location.hash);
             if (response.token_type === 'Bearer' && response.state === this.state()) {
                 const user = this.parseToken(response.access_token);
-                
                 this.setUser(user);
             }
         } catch (e) {
