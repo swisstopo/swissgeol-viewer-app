@@ -12,8 +12,9 @@ export default class Auth {
         // and fail silently otherwise
         try {
             const response = this.parseResponse(window.location.hash);
-            if (response.token === 'Bearer' && response.state === this.state()) {
+            if (response.token_type === 'Bearer' && response.state === this.state()) {
                 const user = this.parseToken(response.access_token);
+                
                 this.setUser(user);
             }
         } catch (e) {
