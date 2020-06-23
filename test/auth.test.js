@@ -10,7 +10,7 @@ const token = `#access_token=${jwt}`;
 const type = '&token=Bearer';
 const state = `&state=test`;
 
-// initilize the window, document and localStorage objects
+// initialize the window, document and localStorage objects
 jsdom('', {url: url + token + type + state});
 global.localStorage = window.localStorage;
 
