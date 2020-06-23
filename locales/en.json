@@ -66,6 +66,8 @@
   "layer_up": "Layer Up",
   "Length": "Length",
   "loading_message": "Loading, please wait",
+  "Login": "Login",
+  "Logout": "Logout",
   "man_made_objects_label": "Man-made objects",
   "map_transparency_label": "Transparency:",
   "nadir_activate_btn": "Map view",
