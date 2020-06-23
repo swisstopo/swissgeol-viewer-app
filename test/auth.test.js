@@ -43,7 +43,7 @@ describe('Auth', function () {
   describe('authenticate', function () {
     it('should wait until the user authenticates', async function () {
       Auth.removeUser()
-      setInterval(() => Auth.setUser(user), 100);
+      setInterval(() => Auth.setUser(user), 120);
       await Auth.authenticate();
       assert.deepEqual(Auth.getUser(), user);
     });
