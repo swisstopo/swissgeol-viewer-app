@@ -2,7 +2,10 @@
 const cognitoState = 'cognito_state';
 const cognitoUser = 'cognito_user';
 
+// example: #access_token=header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature&token_type=Bearer&state=1234
 const isResponse = /^#[\w]+=[\w.=-]+(&[\w]+=[\w.=-]+)*$/;
+
+// example: header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature
 const isToken = /^[\w=-]+.[\w=-]+.[\w=-]+$/;
 
 export default class Auth {
@@ -68,7 +71,7 @@ export default class Auth {
         localStorage.removeItem(cognitoUser);
     }
 
-    static async authenticate() {
+    static async waitForAuthenticate() {
         while (localStorage.getItem(cognitoUser) === null) {
             await new Promise((resolve) => {
                 setTimeout(() => resolve(), 100);

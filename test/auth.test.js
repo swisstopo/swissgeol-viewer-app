@@ -7,8 +7,11 @@ const user = {name: "John Doe"};
 const payload = Buffer.from(JSON.stringify(user)).toString('base64').replace(/=/g, '');
 const jwt = `header.${payload}.signature`;
 const token = `#access_token=${jwt}`;
-const type = '&token=Bearer';
+const type = '&token_type=Bearer';
 const state = `&state=test`;
+
+console.log(token + type + state);
+console.log(jwt);
 
 // initilize the window, document and localStorage objects
 jsdom('', {url: url + token + type + state});
@@ -40,11 +43,11 @@ describe('Auth', function () {
     });
   });
 
-  describe('authenticate', function () {
+  describe('waitForAuthenticate', function () {
     it('should wait until the user authenticates', async function () {
       Auth.removeUser()
       setInterval(() => Auth.setUser(user), 100);
-      await Auth.authenticate();
+      await Auth.waitForAuthenticate();
       assert.deepEqual(Auth.getUser(), user);
     });
   });
@@ -76,7 +79,7 @@ describe('Auth', function () {
   });
 
   describe('initialize', function () {
-    it('should throw an error when the input is input', function () {
+    it('should extract the user from the hash in the response URL', function () {
       Auth.state('test');
       Auth.removeUser();
       Auth.initialize();

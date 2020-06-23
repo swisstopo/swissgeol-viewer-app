@@ -44,7 +44,7 @@ class NgmAuth extends I18nMixin(LitElement) {
     const popup = window.open(url);
 
     // wait for the user to be authenticated
-    await Auth.authenticate();
+    await Auth.waitForAuthenticate();
     this.user = Auth.getUser();
 
     // close the authentication popup
@@ -57,7 +57,7 @@ class NgmAuth extends I18nMixin(LitElement) {
   }
 
   render() {
-    if (this.user === null) {
+    if (!this.user) {
       return html`<a @click=${this.login}>${i18next.t('Login')}</a>`;
     } else {
       return html`${this.user.username} <a @click=${this.logout}>${i18next.t('Logout')}</a>`;
