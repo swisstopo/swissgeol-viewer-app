@@ -1,10 +1,13 @@
 import {LitElement, html} from 'lit-element';
 import Auth from '../auth.js';
+import i18next from 'i18next';
+import {I18nMixin} from '../i18n.js';
+
 
 /**
  * Authentication component
  */
-class NgmAuth extends LitElement {
+class NgmAuth extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
@@ -22,6 +25,7 @@ class NgmAuth extends LitElement {
   constructor() {
     super();
     this.user = Auth.getUser();
+
     this.responseType = 'token';
     this.redirectUri = `${location.origin}${location.pathname}`;
     this.scope = 'openid+profile';
@@ -29,7 +33,7 @@ class NgmAuth extends LitElement {
 
   async login() {
     // open the authentication popup
-    const uri = `${this.endpoint}?`
+    const url = `${this.endpoint}?`
       + `response_type=${this.responseType}`
       + `&client_id=${this.clientId}`
       + `&redirect_uri=${this.redirectUri}`
@@ -37,7 +41,7 @@ class NgmAuth extends LitElement {
       + `&state=${Auth.state()}`;
 
     // open the authentication popup
-    const popup = window.open(uri);
+    const popup = window.open(url);
 
     // wait for the user to be authenticated
     await Auth.authenticate();
@@ -54,9 +58,9 @@ class NgmAuth extends LitElement {
 
   render() {
     if (this.user === null) {
-      return html`<a @click=${this.login}>Login</a>`;
+      return html`<a @click=${this.login}>${i18next.t('Login')}</a>`;
     } else {
-      return html`${this.user.username} <a @click=${this.logout}>Logout</a>`;
+      return html`${this.user.username} <a @click=${this.logout}>${i18next.t('Logout')}</a>`;
     }
   }
 

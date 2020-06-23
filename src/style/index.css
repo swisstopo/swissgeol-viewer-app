@@ -260,6 +260,7 @@ body:after { /* Beta label */
 
 ngm-auth > a {
   color: #ff0000;
+  cursor: pointer;
 }
 
 ngm-gst-interaction > .ui.tiny.icon.buttons {
