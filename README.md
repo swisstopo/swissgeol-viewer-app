@@ -1,47 +1,28 @@
-# Instances
+# Swissgeol NGM
 
-- dev https://dev.swissgeol.ch/
-- int https://int.swissgeol.ch/
-- prod https://beta.swissgeol.ch/
+## A Geology 3D viewer
 
-# Deploy to integration (from local machine)
+Swissgeol is the new geology 3D viewer of [Swisstopo](https://swisstopo.ch), available at https://beta.swissgeol.ch.
+It is Open Source and based on the Open Source CesiumJS 3D library.
 
-```bash
-# ex int_sprint2.1
-export VERSION="int_sprint???"
+You are welcome to use and adapt this software for your own uses; see See [LICENCE.md](./LICENCE.md).
 
-git tag $VERSION
-git push origin $VERSION
-```
 
-# Deploy to production (from local machine)
-```bash
-RELEASE_NAME="RELEASE_NAME_FOR_SENTRY" npm run build
+## Your own version: getting started
 
-export VERSION="THE_TAG_YOU_WANT_DEPLOYED"
+git clone https://github.com/swissgeol/ngm.git
+cd ngm; npm i; npm start
+open http://localhost:8080
 
-git checkout $VERSION
-# use gopass to export the S3 access key and secret
-export AWS_ACCESS_KEY_ID=$(gopass ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
-export AWS_SECRET_ACCESS_KEY=$(gopass ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
 
-scripts/deploy_to_prod.sh
-[ $? -eq 0 ] && echo OK || echo failed
-```
+## Developping the Swisstopo version
 
-# i18n: add new string to translate
+See [DEVELOPING.md](./DEVELOPING.md).
 
-The [i18next](https://www.i18next.com/) library is used to localize the application.
 
-To add a new string to translate, use the `data-i18n` attribute in an html file, the value is the translation key.
+## URL Parameters
 
-```html
-<div type="search" data-i18n="text_key"></div>
-```
-
-Then, run the `npm run extract-i18n` command to add this new key (`text_key`) to the files in the `locales` directory.
-
-# URL Parameters
+A few URL parameters will modify the behaviour of the viewer:
 
 - `noLimit` disable the navigation limits (sphere and lava). Use noLimit=false to enforce limits on local dev.
 - `assetIds` display some additionnal Cesium ION 3dtilesets (coma separated list of CesiumIon ids)
@@ -50,7 +31,8 @@ Then, run the `npm run extract-i18n` command to add this new key (`text_key`) to
 - `swissrectangle` restrict rendering to the Swiss rectangle
 - `inspector` display the Cesium Inspector widget
 
-# Notes
+
+## Notes
 
 Lava texture CC0 by https://opengameart.org/content/template-orange-texture-pack
 
