@@ -8,7 +8,6 @@ import {
   AOI_DATASOURCE_NAME
 } from './constants.js';
 
-
 import './style/index.css';
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid} from './viewer.js';
@@ -25,9 +24,10 @@ import i18next from 'i18next';
 import BoundingSphere from 'cesium/Core/BoundingSphere.js';
 import Ellipsoid from 'cesium/Core/Ellipsoid.js';
 
-import {initUser} from './elements/ngm-auth.js';
-const user = initUser(window.location.hash);
+import Auth from './auth.js';
+Auth.initialize();
 
+import './elements/ngm-auth.js';
 import './elements/ngm-object-information.js';
 import './elements/ngm-navigation-widgets.js';
 import './elements/ngm-camera-information.js';
@@ -71,14 +71,8 @@ viewer.scene.globe.maximumScreenSpaceError = 10000;
 
 // setup auth component
 const auth = document.querySelector('ngm-auth');
-auth.user = user;
-
-// setup the OAuth2 parameters
 auth.endpoint = 'https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize';
-auth.responseType = 'token';
 auth.clientId = '5k1mgef7ggiremt415eecn95ki';
-auth.redirectUri = 'http://localhost:8000/';
-auth.scope = 'openid+profile';
 
 // setup web components
 const sideBar = document.querySelector('ngm-left-side-bar');
