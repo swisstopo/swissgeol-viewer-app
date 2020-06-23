@@ -29,6 +29,7 @@ A few URL parameters will modify the behaviour of the viewer:
 - `maximumScreenSpaceError` define the visual quality (default: 2.0 except for localhost which is 100.0)
 - `ownterrain` activates Swisstopo terrain (mind that their is only data in the swissrectangle)
 - `swissrectangle` restrict rendering to the Swiss rectangle
+- `norequestrendermode` disable the resource optimizations (will use 100% CPU)
 - `inspector` display the Cesium Inspector widget
 
 
