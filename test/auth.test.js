@@ -10,10 +10,7 @@ const token = `#access_token=${jwt}`;
 const type = '&token_type=Bearer';
 const state = `&state=test`;
 
-console.log(token + type + state);
-console.log(jwt);
-
-// initilize the window, document and localStorage objects
+// initialize the window, document and localStorage objects
 jsdom('', {url: url + token + type + state});
 global.localStorage = window.localStorage;
 
@@ -46,7 +43,7 @@ describe('Auth', function () {
   describe('waitForAuthenticate', function () {
     it('should wait until the user authenticates', async function () {
       Auth.removeUser()
-      setInterval(() => Auth.setUser(user), 100);
+      setInterval(() => Auth.setUser(user), 120);
       await Auth.waitForAuthenticate();
       assert.deepEqual(Auth.getUser(), user);
     });
