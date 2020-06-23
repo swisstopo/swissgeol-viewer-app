@@ -1,22 +1,18 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
-import IonResource from 'cesium/Core/IonResource.js';
-import GeoJsonDataSource from 'cesium/DataSources/GeoJsonDataSource.js';
-import Cesium3DTileset from 'cesium/Scene/Cesium3DTileset.js';
-import Cesium3DTileStyle from 'cesium/Scene/Cesium3DTileStyle.js';
+import IonResource from 'cesium/Source/Core/IonResource';
+import GeoJsonDataSource from 'cesium/Source/DataSources/GeoJsonDataSource';
+import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
+import Cesium3DTileStyle from 'cesium/Source/Scene/Cesium3DTileStyle';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
-import {LAYER_TYPES, BILLBOARDS_PREFIX} from '../constants.js';
-import HeightReference from 'cesium/Scene/HeightReference.js';
-import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
-import NearFarScalar from 'cesium/Core/NearFarScalar.js';
-import VerticalOrigin from 'cesium/Scene/VerticalOrigin.js';
+import {LAYER_TYPES} from '../constants.js';
+import Cartographic from 'cesium/Source/Core/Cartographic';
 import {isLabelOutlineEnabled} from '../permalink.js';
-import LabelStyle from 'cesium/Scene/LabelStyle.js';
-import Rectangle from 'cesium/Core/Rectangle.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Ellipsoid from 'cesium/Core/Ellipsoid.js';
-import Matrix3 from 'cesium/Core/Matrix3.js';
-import Matrix4 from 'cesium/Core/Matrix4.js';
+import LabelStyle from 'cesium/Source/Scene/LabelStyle';
+import Rectangle from 'cesium/Source/Core/Rectangle';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
+import Matrix3 from 'cesium/Source/Core/Matrix3';
+import Matrix4 from 'cesium/Source/Core/Matrix4';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -43,7 +39,6 @@ export function create3DTilesetFromConfig(viewer, config) {
   const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
-    maximumScreenSpaceError: 0 // required for billboards render
   });
 
   if (config.style) {
@@ -57,10 +52,6 @@ export function create3DTilesetFromConfig(viewer, config) {
 
   config.setVisibility = visible => {
     tileset.show = !!visible;
-    const dataSource = viewer.dataSources.getByName(getBillboardDataSourceName(config.layer)); // Check for billboards
-    if (dataSource.length) {
-      dataSource[0].show = !!visible;
-    }
   };
 
   if (!config.transparencyDisabled) {
@@ -77,10 +68,6 @@ export function create3DTilesetFromConfig(viewer, config) {
       }
     };
     config.setTransparency(!isNaN(config.transparency) ? config.transparency : 0);
-  }
-
-  if (config.billboards && config.billboards.latPropName && config.billboards.lonPropName) {
-    addBillboardsForTileset(viewer, tileset, config);
   }
 
   if (config.heightOffset) {
@@ -152,42 +139,6 @@ export function syncCheckboxes(layers) {
       elements[i].checked = l.visible;
     }
   });
-}
-
-/**
- * Adds on terrain billboards for tileset based on longitude and latitude properties
- * @param viewer
- * @param tileset
- * @param config
- */
-function addBillboardsForTileset(viewer, tileset, config) {
-  const dataSourceName = getBillboardDataSourceName(config.layer);
-  viewer.dataSources.add(new CustomDataSource(dataSourceName));
-
-  tileset.tileLoad.addEventListener(tile => {
-    for (let i = 0; i < tile.content.featuresLength; i++) {
-      const feature = tile.content.getFeature(i);
-      const longitude = feature.getProperty(config.billboards.lonPropName);
-      const latitude = feature.getProperty(config.billboards.latPropName);
-      const position = new Cartographic(longitude, latitude, 20);
-
-      const dataSource = viewer.dataSources.getByName(dataSourceName)[0];
-      dataSource.entities.add({
-        position: Cartographic.toCartesian(position),
-        billboard: {
-          image: './src/images/map-pin-solid.svg',
-          scale: 0.1,
-          translucencyByDistance: new NearFarScalar(6000, 0.9, 60000, 0.1),
-          verticalOrigin: VerticalOrigin.BOTTOM,
-          heightReference: HeightReference.RELATIVE_TO_GROUND
-        }
-      });
-    }
-  });
-}
-
-function getBillboardDataSourceName(layer) {
-  return `${BILLBOARDS_PREFIX}${layer}`;
 }
 
 /**

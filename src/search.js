@@ -3,13 +3,13 @@ import '@geoblocks/ga-search';
 import {getLayersConfig} from './swisstopoImagery.js';
 import {escapeRegExp} from './utils.js';
 
-import Rectangle from 'cesium/Core/Rectangle.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
-import Math from 'cesium/Core/Math.js';
+import Rectangle from 'cesium/Source/Core/Rectangle';
+import Cartographic from 'cesium/Source/Core/Cartographic';
+import Math from 'cesium/Source/Core/Math';
 import {extractEntitiesAttributes} from './objectInformation.js';
 
 /**
- * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  * @param {HTMLElement} element
  * @param layerTree
  */

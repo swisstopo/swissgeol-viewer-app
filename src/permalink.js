@@ -1,5 +1,5 @@
-import Math from 'cesium/Core/Math.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import Math from 'cesium/Source/Core/Math';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
 import {getURLSearchParams, setURLSearchParams} from './utils.js';
 import {

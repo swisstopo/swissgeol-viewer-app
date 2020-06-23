@@ -1,7 +1,7 @@
 import {LitElement, html} from 'lit-element';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
-import CesiumMath from 'cesium/Core/Math.js';
+import CesiumMath from 'cesium/Source/Core/Math';
 import {unsafeHTML} from 'lit-html/directives/unsafe-html.js';
 import {formatCartographicAs2DLv95} from '../projection.js';
 
@@ -20,11 +20,14 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
   constructor() {
     super();
 
-    /** @type {import('cesium/Scene/Scene.js').default} */
+    /**
+     * @type {import('cesium/Source/Scene/Scene').default}
+     */
     this.scene;
 
     this.elevation = undefined;
     this.heading = undefined;
+    this.pitch = undefined;
     this.coordinates = undefined;
     this.unlistenPostRender = null;
 
@@ -48,28 +51,30 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
   }
 
   updateFromCamera() {
-    const altitude = this.scene.globe.getHeight(this.scene.camera._positionCartographic);
+    const camera = this.scene.camera;
+    const altitude = this.scene.globe.getHeight(camera.positionCartographic);
     if (altitude !== undefined) {
       // globe is ready
-      const camera = this.scene.camera;
-      this.elevation = camera._positionCartographic.height - altitude;
-      this.heading = CesiumMath.toDegrees(this.scene.camera.heading);
+      this.elevation = camera.positionCartographic.height - altitude;
+      this.heading = CesiumMath.toDegrees(camera.heading);
+      this.pitch = CesiumMath.toDegrees(camera.pitch);
       this.coordinates = formatCartographicAs2DLv95(camera.positionCartographic);
     }
   }
 
   render() {
-    if (this.elevation !== undefined && this.heading !== undefined) {
+    if (this.elevation !== undefined && this.heading !== undefined && this.pitch !== undefined) {
       const coordinates = this.coordinates;
       const height = this.integerFormat.format(this.elevation);
       let angle = this.integerFormat.format(this.heading);
+      const pitch = this.integerFormat.format(this.pitch);
       if (angle === '360') {
         // the integer format can cause that
         angle = '0';
       }
 
       return html`
-         ${unsafeHTML(i18next.t('camera_position', {coordinates, height, angle}))}
+         ${unsafeHTML(i18next.t('camera_position', {coordinates, height, angle, pitch}))}
         <ngm-position-edit .scene="${this.scene}"></ngm-position-edit>
       `;
     } else {

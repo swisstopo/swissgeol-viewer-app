@@ -3,8 +3,8 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/popup.js';
 import 'fomantic-ui-css/components/dropdown.js';
 import {degreesToLv95, lv95ToDegrees} from '../projection.js';
-import CesiumMath from 'cesium/Core/Math';
-import Cartesian3 from 'cesium/Core/Cartesian3';
+import CesiumMath from 'cesium/Source/Core/Math';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {I18nMixin} from '../i18n.js';
 import i18next from 'i18next';
 
@@ -16,7 +16,8 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
       xValue: {type: Number},
       yValue: {type: Number},
       heightValue: {type: Number},
-      angleValue: {type: Number}
+      angleValue: {type: Number},
+      tiltValue: {type: Number}
     };
   }
 
@@ -26,6 +27,7 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
     this.coordsType = 'lv95';
     this.heightValue = 0;
     this.angleValue = 0;
+    this.tiltValue = 0;
     this.xValue = 0;
     this.yValue = 0;
     this.coordsStep = 1;
@@ -85,6 +87,7 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
     const altitude = this.scene.globe.getHeight(position);
     this.heightValue = Math.round(position.height - altitude);
     this.angleValue = Math.round(CesiumMath.toDegrees(this.scene.camera.heading));
+    this.tiltValue = Math.round(CesiumMath.toDegrees(this.scene.camera.pitch));
   }
 
   onPositionChange() {
@@ -104,12 +107,16 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
     this.updateInputValues();
   }
 
-  onAngleChange(event) {
-    this.angleValue = Number(event.target.value);
+  onViewChange(event) {
+    if (event.target.id === 'ngm-angle-input') {
+      this.angleValue = Number(event.target.value);
+    } else {
+      this.tiltValue = Number(event.target.value);
+    }
     this.scene.camera.setView({
       orientation: {
         heading: CesiumMath.toRadians(this.angleValue),
-        pitch: this.scene.camera.pitch
+        pitch: CesiumMath.toRadians(this.tiltValue)
       }
     });
     this.updateInputValues();
@@ -150,8 +157,15 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
             <div>
                 <label>${i18next.t('view_angle')}:</label>
                 <div class="ui mini input right labeled">
-                    <input type="number" id="ngm-angle-input" .value="${this.angleValue}" @change="${this.onAngleChange}">
+                    <input type="number" id="ngm-angle-input" .value="${this.angleValue}" @change="${this.onViewChange}">
                     <label for="ngm-angle-input" class="ui label">°</label>
+                </div>
+            </div>
+            <div>
+                <label>${i18next.t('view_tilt')}:</label>
+                <div class="ui mini input right labeled">
+                    <input type="number" id="ngm-tilt-input" .value="${this.tiltValue}" @change="${this.onViewChange}">
+                    <label for="ngm-tilt-input" class="ui label">°</label>
                 </div>
             </div>
         </div>

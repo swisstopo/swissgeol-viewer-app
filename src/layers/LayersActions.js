@@ -1,10 +1,10 @@
 import {syncLayersParam} from '../permalink.js';
 import {calculateRectangle, getBoxFromRectangle, calculateBox} from './helpers.js';
 import {LAYER_TYPES} from '../constants.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Rectangle from 'cesium/Core/Rectangle.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
-import Color from 'cesium/Core/Color.js';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Rectangle from 'cesium/Source/Core/Rectangle';
+import Cartographic from 'cesium/Source/Core/Cartographic';
+import Color from 'cesium/Source/Core/Color';
 
 
 export default class LayersAction {
@@ -40,7 +40,7 @@ export default class LayersAction {
     this.viewer.scene.requestRender();
   }
 
-  async mouseEnter(config) {
+  async showBoundingBox(config) {
     const p = await config.promise;
     if (p.boundingRectangle) { // earthquakes
       this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
@@ -65,7 +65,7 @@ export default class LayersAction {
     }
   }
 
-  mouseLeave() {
+  hideBoundingBox() {
     if (this.boundingBoxEntity.show) {
       this.boundingBoxEntity.show = false;
       this.viewer.scene.requestRender();

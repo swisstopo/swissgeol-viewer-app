@@ -1,16 +1,20 @@
-import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
-import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
-import CallbackProperty from 'cesium/DataSources/CallbackProperty.js';
-import Color from 'cesium/Core/Color.js';
-import HeightReference from 'cesium/Scene/HeightReference.js';
-import PolygonHierarchy from 'cesium/Core/PolygonHierarchy.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
+import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
+import Color from 'cesium/Source/Core/Color';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
+import PolygonHierarchy from 'cesium/Source/Core/PolygonHierarchy';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartographic from 'cesium/Source/Core/Cartographic';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
 import {getDimensionLabel} from './helpers.js';
 import {getMeasurements} from '../utils.js';
+
+/**
+ * @typedef {"point" | "line" | "polygon" | "rectangle"} ShapeType
+ */
 
 /**
  * @typedef {object} Options
@@ -22,8 +26,8 @@ import {getMeasurements} from '../utils.js';
 export class CesiumDraw extends EventTarget {
 
   /**
-   * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
-   * @param {"point" | "line" | "polygon" | "rectangle"} type
+   * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
+   * @param {ShapeType} type
    * @param {Options} [options]
    */
   constructor(viewer, type, options = {}) {
@@ -336,7 +340,7 @@ function rectanglify(coordinates) {
 
 
 /**
- * @param {import('cesium/Core/Cartesian3').default} cartesian
+ * @param {import('cesium/Source/Core/Cartesian3').default} cartesian
  * @return {Array<number>}
  */
 function cartesiantoDegrees(cartesian) {

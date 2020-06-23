@@ -1,7 +1,7 @@
-import BoundingSphere from 'cesium/Core/BoundingSphere.js';
-import Ellipsoid from 'cesium/Core/Ellipsoid.js';
-import Cartographic from 'cesium/Core/Cartographic.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
+import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
+import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
+import Cartographic from 'cesium/Source/Core/Cartographic';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
 /**
  * Constrain the camera so that it stays close to the bounding sphere of the map extent.
@@ -10,8 +10,8 @@ import Cartesian3 from 'cesium/Core/Cartesian3.js';
 export default class NavigableVolumeLimiter {
 
   /**
-   * @param {import('cesium/Scene/Scene').default} scene
-   * @param {import('cesium/Core/Rectangle').default} [rectangle]
+   * @param {import('cesium/Source/Scene/Scene').default} scene
+   * @param {import('cesium/Source/Core/Rectangle').default} [rectangle]
    * @param {number} height
    * @param {function(number): number} ratioFunction
    */

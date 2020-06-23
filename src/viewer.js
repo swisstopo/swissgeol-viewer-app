@@ -1,30 +1,30 @@
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
-import Viewer from 'cesium/Widgets/Viewer/Viewer.js';
-import RequestScheduler from 'cesium/Core/RequestScheduler.js';
-import CesiumTerrainProvider from 'cesium/Core/CesiumTerrainProvider.js';
-import IonResource from 'cesium/Core/IonResource.js';
-import JulianDate from 'cesium/Core/JulianDate.js';
-import Ellipsoid from 'cesium/Core/Ellipsoid.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import Color from 'cesium/Core/Color.js';
-import Ion from 'cesium/Core/Ion.js';
-import Cartesian2 from 'cesium/Core/Cartesian2.js';
-import NearFarScalar from 'cesium/Core/NearFarScalar.js';
+import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import RequestScheduler from 'cesium/Source/Core/RequestScheduler';
+import CesiumTerrainProvider from 'cesium/Source/Core/CesiumTerrainProvider';
+import IonResource from 'cesium/Source/Core/IonResource';
+import JulianDate from 'cesium/Source/Core/JulianDate';
+import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Color from 'cesium/Source/Core/Color';
+import Ion from 'cesium/Source/Core/Ion';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
+import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
-import Rectangle from 'cesium/Core/Rectangle.js';
-import SingleTileImageryProvider from 'cesium/Scene/SingleTileImageryProvider.js';
+import Rectangle from 'cesium/Source/Core/Rectangle';
+import SingleTileImageryProvider from 'cesium/Source/Scene/SingleTileImageryProvider';
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
-import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
-import PostProcessStage from 'cesium/Scene/PostProcessStage.js';
-import Cartesian4 from 'cesium/Core/Cartesian4.js';
-import CesiumInspector from 'cesium/Widgets/CesiumInspector/CesiumInspector.js';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import PostProcessStage from 'cesium/Source/Scene/PostProcessStage';
+import Cartesian4 from 'cesium/Source/Core/Cartesian4';
+import CesiumInspector from 'cesium/Source/Widgets/CesiumInspector/CesiumInspector';
 import {getMapTransparencyParam} from './permalink.js';
-import Entity from 'cesium/DataSources/Entity.js';
-import HeightReference from 'cesium/Scene/HeightReference.js';
+import Entity from 'cesium/Source/DataSources/Entity';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -200,8 +200,6 @@ export function setupViewer(container) {
     fogShield.show = scene.cameraUnderground;
   });
 
-  setupBaseLayers(viewer);
-
   if (searchParams.has('inspector')) {
     const div = document.createElement('div');
     div.id = 'divinspector';
@@ -212,7 +210,7 @@ export function setupViewer(container) {
 }
 
 /**
- * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  */
 export function addMantelEllipsoid(viewer) {
   if (noLimit) {
@@ -237,9 +235,9 @@ export function addMantelEllipsoid(viewer) {
 }
 
 /**
- * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  */
-function setupBaseLayers(viewer) {
+export function setupBaseLayers(viewer) {
   const arealLayer = 'ch.swisstopo.swissimage';
   const greyLayer = 'ch.swisstopo.pixelkarte-grau';
 
@@ -269,5 +267,5 @@ function setupBaseLayers(viewer) {
       layer: emptyLayer
     }];
 
-  new MapChooser(viewer, mapsConfig);
+  return new MapChooser(viewer, mapsConfig);
 }

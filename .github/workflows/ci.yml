@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "int_*"
+      # - "prod_*" # prod is deployed through the branch, not the tag
+  pull_request:
+    branches:
+      - master
+      - next-prod
+
+env:
+  IN_CI: "1"
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 12
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Add review links
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: scripts/github_add_link_for_reviews.sh
+
+      - name: Npm setup
+        run: npm ci && du -sh node_modules
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        env:
+          RELEASE_NAME: ${scripts/get_github_name.sh}
+        run: echo $RELEASE_NAME; npm run build
+
+      - name: Deploy to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        run: scripts/github_deploy.sh

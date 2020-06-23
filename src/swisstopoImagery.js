@@ -1,14 +1,14 @@
 import {SWITZERLAND_RECTANGLE} from './constants.js';
 
-import UrlTemplateImageryProvider from 'cesium/Scene/UrlTemplateImageryProvider.js';
-import ImageryLayer from 'cesium/Scene/ImageryLayer.js';
-import Credit from 'cesium/Core/Credit.js';
+import UrlTemplateImageryProvider from 'cesium/Source/Scene/UrlTemplateImageryProvider';
+import ImageryLayer from 'cesium/Source/Scene/ImageryLayer';
+import Credit from 'cesium/Source/Core/Credit';
 
 const layerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}';
 
 /**
  * @param {string} layer Layer identifier
- * @param {import('cesium/Core/Rectangle').default} [rectangle]
+ * @param {import('cesium/Source/Core/Rectangle').default} [rectangle]
  * @return {Promise<ImageryLayer>}
  */
 export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
@@ -43,8 +43,8 @@ export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
 }
 
 /**
- * @param {import('cesium/Scene/ImageryLayerCollection').default} collection
- * @param {import('cesium/Scene/ImageryLayer').default} imageryLayer
+ * @param {import('cesium/Source/Scene/ImageryLayerCollection').default} collection
+ * @param {import('cesium/Source/Scene/ImageryLayer').default} imageryLayer
  * @return {boolean}
  */
 export function containsSwisstopoImagery(collection, imageryLayer) {
@@ -73,7 +73,7 @@ export function getLayersConfig() {
 }
 
 /**
- * @param {import('cesium/Widgets/Viewer/Viewer').default} viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  * @param {string} layer
  * @param {string} format
  * @param {boolean} show

@@ -6,14 +6,23 @@
   margin-top: 5px;
 }
 
-.ngm-angle-height-input > div:first-child {
-  margin-right: 5px;
+.ngm-angle-height-input > div {
+  margin-right: 2px;
 }
 
 #ngm-position-edit-popup {
-  min-width: 290px;
+  min-width: 310px;
 }
 
 #ngm-position-edit-popup input {
-  width: 100px;
+  width: 110px;
 }
+
+input#ngm-height-input {
+  width: 80px;
+}
+
+input#ngm-angle-input, input#ngm-tilt-input {
+  width: 60px;
+}
+

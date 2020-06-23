@@ -1,11 +1,12 @@
 import {LitElement, html} from 'lit-element';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
+import {setCameraHeight} from '../utils.js';
 
-import Cartesian2 from 'cesium/Core/Cartesian2.js';
-import Transforms from 'cesium/Core/Transforms.js';
-import Matrix4 from 'cesium/Core/Matrix4.js';
-import CesiumMath from 'cesium/Core/Math.js';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
+import Transforms from 'cesium/Source/Core/Transforms';
+import Matrix4 from 'cesium/Source/Core/Matrix4';
+import CesiumMath from 'cesium/Source/Core/Math';
 
 class NgmNadirView extends I18nMixin(LitElement) {
   static get properties() {
@@ -75,6 +76,10 @@ class NgmNadirView extends I18nMixin(LitElement) {
       camera.rotateDown(this.pitch + Math.PI / 2);
     }
     camera.lookAtTransform(oldTransform);
+
+    if (!this.active && this.scene.cameraUnderground) {
+      setCameraHeight(camera, 10000);
+    }
 
     this.active = !this.active;
   }

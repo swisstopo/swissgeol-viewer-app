@@ -1,8 +1,8 @@
-import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import CustomDataSource from 'cesium/DataSources/CustomDataSource.js';
-import KmlDataSource from 'cesium/DataSources/KmlDataSource.js';
-import Entity from 'cesium/DataSources/Entity.js';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
+import Entity from 'cesium/Source/DataSources/Entity';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {getMeasurements} from '../utils.js';
@@ -14,9 +14,9 @@ import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
-import ScreenSpaceEventHandler from 'cesium/Core/ScreenSpaceEventHandler.js';
-import BoundingSphere from 'cesium/Core/BoundingSphere.js';
-import HeadingPitchRange from 'cesium/Core/HeadingPitchRange';
+import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
+import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
+import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 

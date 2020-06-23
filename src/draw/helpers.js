@@ -1,10 +1,14 @@
-import Cartesian2 from 'cesium/Core/Cartesian2';
-import LabelStyle from 'cesium/Scene/LabelStyle';
-import HeightReference from 'cesium/Scene/HeightReference';
-import VerticalOrigin from 'cesium/Scene/VerticalOrigin';
-import HorizontalOrigin from 'cesium/Scene/HorizontalOrigin';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
+import LabelStyle from 'cesium/Source/Scene/LabelStyle';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
+import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
+import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
 import i18next from 'i18next';
 
+/**
+ * @param {import('./CesiumDraw').ShapeType} type
+ * @param {Array<number>} distances
+ */
 export function getDimensionLabelText(type, distances) {
   let text;
   if (type === 'rectangle') {
@@ -16,6 +20,10 @@ export function getDimensionLabelText(type, distances) {
   return text.includes('undefined') ? '' : text;
 }
 
+/**
+ * @param {import('./CesiumDraw').ShapeType} type
+ * @param {Array<number>} distances
+ */
 export function getDimensionLabel(type, distances) {
   return {
     text: getDimensionLabelText(type, distances),

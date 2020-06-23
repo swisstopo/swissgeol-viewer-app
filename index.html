@@ -10,6 +10,8 @@
 
   <link href="bundle.css" rel="stylesheet">
 
+  <meta name="description" content="swissgeol.ch is the 3D subsurface viewer of the Swiss Confederation. Geoscientific information below the terrain of Switzerland can be combined with geographic information above terrain.">
+
   <title>swissgeol</title>
 </head>
 
@@ -50,10 +52,10 @@
     <ngm-left-side-bar class="left sidebar"></ngm-left-side-bar>
     <div class="map">
       <div id="cesium">
+        <ngm-slow-loading style="display: none;"></ngm-slow-loading>
         <div class="navigation-widgets">
           <ngm-navigation-widgets></ngm-navigation-widgets>
         </div>
-        <ngm-map-configuration></ngm-map-configuration>
         <ngm-object-information></ngm-object-information>
         <ngm-review-window></ngm-review-window>
       </div>

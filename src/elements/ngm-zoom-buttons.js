@@ -78,28 +78,28 @@ class NgmZoomButtons extends I18nMixin(LitElement) {
       return html`
         <div class="ui vertical compact mini icon buttons">
           <button
-          data-tooltip=${i18next.t('zoom_in_btn')}
-          data-position="left center"
-          data-variation="mini"
-          class="ui button"
-          @pointerdown="${this.startZoomIn}">
-            <i class="plus icon"></i>
+            data-tooltip=${i18next.t('zoom_in_btn')}
+            data-position="left center"
+            data-variation="mini"
+            class="ui button"
+            @pointerdown="${this.startZoomIn}">
+              <i class="plus icon"></i>
           </button>
           <button
-          data-tooltip=${i18next.t('reset_view_btn')}
-          data-position="left center"
-          data-variation="mini"
-          class="ui button"
-          @click="${this.flyToHome}">
-            <i class="home icon"></i>
+            data-tooltip=${i18next.t('reset_view_btn')}
+            data-position="left center"
+            data-variation="mini"
+            class="ui button"
+            @click="${this.flyToHome}">
+              <i class="home icon"></i>
           </button>
           <button
-          data-tooltip=${i18next.t('zoom_out_btn')}
-          data-position="left center"
-          data-variation="mini"
-          class="ui button"
-          @pointerdown="${this.startZoomOut}">
-            <i class="minus icon"></i>
+            data-tooltip=${i18next.t('zoom_out_btn')}
+            data-position="left center"
+            data-variation="mini"
+            class="ui button"
+            @pointerdown="${this.startZoomOut}">
+              <i class="minus icon"></i>
           </button>
         </div>
       `;

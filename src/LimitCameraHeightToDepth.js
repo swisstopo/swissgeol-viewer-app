@@ -2,7 +2,7 @@ import {setCameraHeight} from './utils.js';
 
 export default class LimitCameraHeightToDepth {
   /**
-   * @param {import('cesium/Scene/Scene').default} scene
+   * @param {import('cesium/Source/Scene/Scene').default} scene
    * @param {number} depth
    */
   constructor(scene, depth) {

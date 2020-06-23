@@ -3,13 +3,13 @@
       "checkJs": true,
       "moduleResolution": "node",
       "baseUrl": ".",
-      "paths": {
-        "cesium/*": ["./node_modules/cesium/Source/*"]
-      },
       "target": "es6"
     },
     "include": [
         "src/**/*",
-        "./node_modules/cesium/Source/**/*"
-    ]
+        "node_modules/cesium/Source/Cesium.d.ts"
+    ],
+    "typeAcquisition": {
+      "exclude": ["cesium"]
+    }
   }

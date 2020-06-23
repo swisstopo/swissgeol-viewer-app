@@ -1,6 +1,6 @@
-import Cartesian3 from 'cesium/Core/Cartesian3.js';
-import CMath from 'cesium/Core/Math.js';
-import PolygonPipeline from 'cesium/Core/PolygonPipeline';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import CMath from 'cesium/Source/Core/Math';
+import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline';
 
 
 export async function readTextFile(url) {
@@ -13,7 +13,7 @@ export async function readTextFile(url) {
 }
 
 /**
- * @param {import('cesium/Scene/Camera').default} camera
+ * @param {import('cesium/Source/Scene/Camera').default} camera
  * @param {number} height Camera height in meters.
  */
 export function setCameraHeight(camera, height) {
@@ -57,7 +57,7 @@ export function insertAndShift(array, fromIdx, toIdx) {
 }
 
 /**
- * @param {import('cesium/Scene/Camera').default} camera
+ * @param {import('cesium/Source/Scene/Camera').default} camera
  * @param {number} angle
  */
 export function verticalDirectionRotate(camera, angle) {
@@ -111,7 +111,7 @@ function getPolygonArea(positions, holes = []) {
  * Returns measurements for geometry
  * @param {Array<Cartesian3>} positions
  * @param {Array<number>} distances
- * @param {"line" | "polygon" | "rectangle"} type
+ * @param {import('./draw/CesiumDraw').ShapeType} type
  */
 export function getMeasurements(positions, distances, type) {
   const result = {

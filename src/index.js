@@ -10,19 +10,19 @@ import {
 
 import './style/index.css';
 import {setupSearch} from './search.js';
-import {setupViewer, addMantelEllipsoid} from './viewer.js';
+import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
 
-import ScreenSpaceEventType from 'cesium/Core/ScreenSpaceEventType.js';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
-import Color from 'cesium/Core/Color.js';
-import PostProcessStageLibrary from 'cesium/Scene/PostProcessStageLibrary.js';
-import HeadingPitchRange from 'cesium/Core/HeadingPitchRange.js';
+import Color from 'cesium/Source/Core/Color';
+import PostProcessStageLibrary from 'cesium/Source/Scene/PostProcessStageLibrary';
+import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import {showMessage} from './message.js';
 import i18next from 'i18next';
-import BoundingSphere from 'cesium/Core/BoundingSphere.js';
-import Ellipsoid from 'cesium/Core/Ellipsoid.js';
+import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
+import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 
 import Auth from './auth.js';
 Auth.initialize();
@@ -33,16 +33,16 @@ import './elements/ngm-navigation-widgets.js';
 import './elements/ngm-camera-information.js';
 import './elements/ngm-feature-height.js';
 import './elements/ngm-left-side-bar.js';
-import './elements/ngm-map-configuration.js';
 import './elements/ngm-review-window.js';
 import './elements/ngm-position-edit.js';
-
+import './elements/ngm-slow-loading.js';
 import {LocalStorageController} from './LocalStorageController.js';
 
 initSentry();
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
+const mapChooser = setupBaseLayers(viewer);
 
 async function zoomTo(config) {
   const p = await config.promise;
@@ -95,7 +95,9 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
       addMantelEllipsoid(viewer);
       setupSearch(viewer, document.querySelector('ga-search'), sideBar);
       document.getElementById('loader').style.display = 'none';
-      console.log(`loading mask displayed ${(performance.now() / 1000).toFixed(3)}s`);
+      const loadingTime = performance.now() / 1000;
+      console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
+      document.querySelector('ngm-slow-loading').style.display = 'none';
 
       const localStorageController = new LocalStorageController();
 
@@ -205,9 +207,28 @@ const widgets = document.querySelector('ngm-navigation-widgets');
 widgets.viewer = viewer;
 
 document.querySelector('ngm-feature-height').viewer = viewer;
-document.querySelector('ngm-map-configuration').viewer = viewer;
+document.querySelector('ngm-left-side-bar').mapChooser = mapChooser;
 
 i18next.on('languageChanged', (lang) => {
   document.querySelector('#ngm-help-btn').href =
     lang === 'de' ? './manuals/manual_de.html' : './manuals/manual_en.html';
 });
+
+function showSlowLoadingWindow() {
+  const timeout = 10000;
+  const loaderDisplayed = () => document.querySelector('#loader').style.display !== 'none';
+  if (loaderDisplayed() && performance.now() > timeout) {
+    document.querySelector('ngm-slow-loading').style.display = 'block';
+  } else {
+    setTimeout(() => {
+      if (loaderDisplayed()) {
+        document.querySelector('ngm-slow-loading').style.display = 'block';
+      }
+    }, timeout - performance.now());
+  }
+}
+
+i18next.on('initialized', () => {
+  showSlowLoadingWindow();
+});
+

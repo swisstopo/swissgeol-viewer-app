@@ -16,6 +16,11 @@ class NgmElevatorButtons extends I18nMixin(LitElement) {
   constructor() {
     super();
 
+    /**
+     * @type {import('cesium/Source/Scene/Scene').default}
+     */
+    this.scene;
+
     this.moveAmount = 200;
 
     this.movingUp = false;
@@ -51,12 +56,18 @@ class NgmElevatorButtons extends I18nMixin(LitElement) {
     super.disconnectedCallback();
   }
 
+  /**
+   * @param {PointerEvent} event
+   */
   startMovingUp(event) {
     this.movingUp = true;
     this.scene.requestRender();
     event.preventDefault();
   }
 
+  /**
+   * @param {PointerEvent} event
+   */
   startMovingDown(event) {
     this.movingDown = true;
     this.scene.requestRender();
