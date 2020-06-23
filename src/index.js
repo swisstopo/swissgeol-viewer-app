@@ -24,6 +24,10 @@ import i18next from 'i18next';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 
+import Auth from './auth.js';
+Auth.initialize();
+
+import './elements/ngm-auth.js';
 import './elements/ngm-object-information.js';
 import './elements/ngm-navigation-widgets.js';
 import './elements/ngm-camera-information.js';
@@ -65,11 +69,15 @@ async function zoomTo(config) {
 // Temporarily increasing the maximum screen space error to load low LOD tiles.
 viewer.scene.globe.maximumScreenSpaceError = 10000;
 
+// setup auth component
+const auth = document.querySelector('ngm-auth');
+auth.endpoint = 'https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize';
+auth.clientId = '5k1mgef7ggiremt415eecn95ki';
+
 // setup web components
 const sideBar = document.querySelector('ngm-left-side-bar');
 sideBar.viewer = viewer;
 sideBar.zoomTo = zoomTo;
-
 
 const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
   if (viewer.scene.globe.tilesLoaded) {
@@ -77,7 +85,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     let sse = 2;
     const searchParams = new URLSearchParams(document.location.search);
     if (document.location.hostname === 'localhost') {
-      sse = 100;
+      sse = 20;
     }
     if (searchParams.has('maximumScreenSpaceError')) {
       sse = parseFloat(searchParams.get('maximumScreenSpaceError'));

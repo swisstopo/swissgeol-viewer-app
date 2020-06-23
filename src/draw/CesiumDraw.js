@@ -1,6 +1,6 @@
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty.js';
+import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import Color from 'cesium/Source/Core/Color';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import PolygonHierarchy from 'cesium/Source/Core/PolygonHierarchy';
@@ -13,6 +13,10 @@ import {getDimensionLabel} from './helpers.js';
 import {getMeasurements} from '../utils.js';
 
 /**
+ * @typedef {"point" | "line" | "polygon" | "rectangle"} ShapeType
+ */
+
+/**
  * @typedef {object} Options
  * @property {string|Color} [strokeColor='rgba(0, 153, 255, 0.75)']
  * @property {number} [strokeWidth=4]
@@ -23,7 +27,7 @@ export class CesiumDraw extends EventTarget {
 
   /**
    * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
-   * @param {"point" | "line" | "polygon" | "rectangle"} type
+   * @param {ShapeType} type
    * @param {Options} [options]
    */
   constructor(viewer, type, options = {}) {

@@ -66,6 +66,8 @@
   "layer_up": "Couche supérieure",
   "Length": "Longeur",
   "loading_message": "Chargement, veuillez patienter",
+  "Login": "Connexion",
+  "Logout": "Déconnexion",
   "man_made_objects_label": "Objets artificiels",
   "map_transparency_label": "Transparence:",
   "nadir_activate_btn": "Vue de carte",

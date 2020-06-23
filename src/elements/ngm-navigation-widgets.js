@@ -1,6 +1,6 @@
 import {LitElement, html} from 'lit-element';
 import '@geoblocks/cesium-compass';
-import './cesium-view-cube.js';
+import '@geoblocks/cesium-view-cube';
 import './cesium-minimap.js';
 import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';

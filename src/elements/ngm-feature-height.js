@@ -18,6 +18,11 @@ class NgmFeatureHeight extends I18nMixin(LitElement) {
   constructor() {
     super();
 
+    /**
+     * @type {import('cesium/Source/Widgets/Viewer/Viewer').default}
+     */
+    this.viewer;
+
     this.height = undefined;
     this.eventHandler = undefined;
 
