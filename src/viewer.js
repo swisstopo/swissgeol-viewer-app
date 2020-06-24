@@ -10,7 +10,6 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Color from 'cesium/Source/Core/Color';
 import Ion from 'cesium/Source/Core/Ion';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
