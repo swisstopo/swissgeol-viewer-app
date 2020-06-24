@@ -1,14 +1,16 @@
-import assert from 'assert'
+/* eslint-env node, mocha */
+
+import assert from 'assert';
 import jsdom from 'jsdom-global';
 
 // initialize some constants
 const url = 'http://localhost/';
-const user = {name: "John Doe"};
+const user = {name: 'John Doe'};
 const payload = Buffer.from(JSON.stringify(user)).toString('base64').replace(/=/g, '');
 const jwt = `header.${payload}.signature`;
 const token = `#access_token=${jwt}`;
 const type = '&token_type=Bearer';
-const state = `&state=test`;
+const state = '&state=test';
 
 // initialize the window, document and localStorage objects
 jsdom('', {url: url + token + type + state});
@@ -18,10 +20,10 @@ global.localStorage = window.localStorage;
 import Auth from '../src/auth.js';
 
 describe('Auth', function () {
-  
+
   describe('state', function () {
     it('should initialize the state', function () {
-      let state = Auth.state();
+      const state = Auth.state();
       assert.ok(state.length > 0);
       assert.equal(Auth.state(), state);
       Auth.state('test');
@@ -42,7 +44,7 @@ describe('Auth', function () {
 
   describe('waitForAuthenticate', function () {
     it('should wait until the user authenticates', async function () {
-      Auth.removeUser()
+      Auth.removeUser();
       setInterval(() => Auth.setUser(user), 120);
       await Auth.waitForAuthenticate();
       assert.deepEqual(Auth.getUser(), user);
@@ -80,7 +82,7 @@ describe('Auth', function () {
       Auth.state('test');
       Auth.removeUser();
       Auth.initialize();
-      assert.deepEqual(Auth.getUser(), user)
+      assert.deepEqual(Auth.getUser(), user);
     });
   });
 

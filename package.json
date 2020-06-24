@@ -2,7 +2,7 @@
   "name": "ngm",
   "private": true,
   "scripts": {
-    "lint": "eslint src/",
+    "lint": "eslint src/ test/",
     "extract-i18n": "i18next",
     "start": "npm run webpack-start",
     "webpack-start": "node scripts/environment.js && node scripts/generateManuals.js && webpack-dev-server",
