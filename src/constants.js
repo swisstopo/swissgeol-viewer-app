@@ -154,7 +154,7 @@ const geo_base = {
           layer: 'boreholes',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          visible: true,
+          visible: false,
           displayed: true,
         }, {
           type: LAYER_TYPES.tiles3d,
@@ -162,7 +162,7 @@ const geo_base = {
           label: t('cross_section_label'),
           layer: 'cross_section',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          visible: true,
+          visible: false,
           displayed: true,
           pickable: true
         },
