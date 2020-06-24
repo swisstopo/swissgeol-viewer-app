@@ -169,13 +169,10 @@ export function setupViewer(container) {
   globe.showWaterEffect = false;
   globe.backFaceCulling = false;
 
-  // Set the globe translucency to 0.6 when the
-  // camera is 10000 meters from the surface and 1.0
-  // as the camera distance approaches 50000 meters.
   const transparencyParam = getMapTransparencyParam();
   const transparency = !isNaN(transparencyParam) ? 1 - transparencyParam : 0.6;
   globe.translucency.enabled = transparency !== 1;
-  globe.translucency.frontFaceAlphaByDistance = new NearFarScalar(10000, transparency, 50000, 1.0);
+  globe.translucency.frontFaceAlpha = transparency;
   globe.translucency.backFaceAlpha = transparency === 1 ? 1 : 0;
   const fog = new PostProcessStage({
     fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
