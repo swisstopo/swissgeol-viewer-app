@@ -20,6 +20,7 @@ rules:
   no-var: error
   object-curly-spacing: error
   object-shorthand: [error, consistent]
+  prefer-arrow-callback: error
   prefer-const: error
   quotes: [error, single, {avoidEscape: true}]
   semi: error
