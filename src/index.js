@@ -2,22 +2,14 @@ import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';
 import {
   DEFAULT_VIEW,
-  DRILL_PICK_LIMIT,
   SWITZERLAND_RECTANGLE,
-  DRILL_PICK_LENGTH,
-  AOI_DATASOURCE_NAME
 } from './constants.js';
 
 import './style/index.css';
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
 
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import {extractPrimitiveAttributes, extractEntitiesAttributes, isPickable} from './objectInformation.js';
-
 import {getCameraView, syncCamera} from './permalink.js';
-import Color from 'cesium/Source/Core/Color';
-import PostProcessStageLibrary from 'cesium/Source/Scene/PostProcessStageLibrary';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import {showMessage} from './message.js';
 import i18next from 'i18next';
@@ -37,6 +29,7 @@ import './elements/ngm-review-window.js';
 import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
 import {LocalStorageController} from './LocalStorageController.js';
+import ObjectSelector from './ObjectSelector.js';
 
 initSentry();
 setupI18n();
@@ -131,82 +124,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
   }
 });
 
-
-const silhouette = PostProcessStageLibrary.createEdgeDetectionStage();
-silhouette.uniforms.color = Color.LIME;
-silhouette.uniforms.length = 0.01;
-silhouette.selected = [];
-viewer.scene.postProcessStages.add(PostProcessStageLibrary.createSilhouetteStage([silhouette]));
-let selectedObj = null;
-
-const objectInfo = document.querySelector('ngm-object-information');
-objectInfo.addEventListener('closed', () => {
-  silhouette.selected = [];
-  changeHighlight(null);
-  viewer.scene.requestRender();
-});
-
-function changeHighlight(obj) {
-  if (selectedObj) {
-    selectedObj.color = Color.WHITE.withAlpha(selectedObj.color.alpha);
-    selectedObj = null;
-  }
-  if (obj) {
-    selectedObj = obj;
-    selectedObj.color = Color.LIME.withAlpha(obj.color.alpha);
-  }
-}
-
-viewer.screenSpaceEventHandler.setInputAction(click => {
-  silhouette.selected = [];
-  const objects = viewer.scene.drillPick(click.position, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
-  const pickedPosition = viewer.scene.pickPosition(click.position);
-  let attributes = null;
-
-  if (objects.length > 0) {
-    const object = objects[0];
-    if (!isPickable(object)) {
-      return;
-    }
-
-    if (object.getPropertyNames) {
-      attributes = extractPrimitiveAttributes(object);
-      attributes.zoom = () => {
-        const boundingSphere = new BoundingSphere(pickedPosition, 500);
-        const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
-        viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
-          duration: 0,
-          offset: zoomHeadingPitchRange
-        });
-      };
-
-      changeHighlight(object);
-      // silhouette.selected = [object];
-    } else if (object.id && object.id.properties) {
-      const props = extractEntitiesAttributes(object.id);
-      attributes = {...props};
-      const aoiDataSource = viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
-      attributes.zoom = () => viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
-      if (aoiDataSource.entities.contains(object.id)) {
-        attributes = {...attributes, name: object.id.name};
-        const aoiElement = document.querySelector('ngm-aoi-drawer');
-        attributes = aoiElement.getInfoProps(attributes);
-        attributes.zoom = () => aoiElement.flyToArea(object.id.id);
-      } else if (attributes.zoomHeadingPitchRange) {
-        // Don't show the value in the object info window
-        delete attributes.zoomHeadingPitchRange;
-      }
-
-      silhouette.selected = [object];
-    }
-  }
-
-  objectInfo.info = attributes;
-  objectInfo.opened = !!attributes;
-
-  viewer.scene.requestRender();
-
-}, ScreenSpaceEventType.LEFT_CLICK);
+new ObjectSelector(viewer);
 
 const {destination, orientation} = getCameraView();
 viewer.camera.flyTo({
