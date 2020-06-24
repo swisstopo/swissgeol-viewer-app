@@ -19,9 +19,12 @@ export default class NavigableVolumeLimiter {
     this.blockLimiter_ = false;
     this.boundingSphere_ = BoundingSphere.fromRectangle3D(rectangle, Ellipsoid.WGS84, height);
     this.ratioFunction_ = ratioFunction;
-    scene.postRender.addEventListener(() => this.limit_(scene), scene);
+    scene.camera.moveEnd.addEventListener(() => this.limit_(scene), scene);
   }
 
+  /**
+   * @param {import('cesium/Source/Scene/Scene').default} scene
+   */
   limit_(scene) {
     if (this.boundingSphere_ && !this.blockLimiter_) {
       const camera = scene.camera;
@@ -29,18 +32,12 @@ export default class NavigableVolumeLimiter {
       const carto = Cartographic.fromCartesian(position);
       const ratio = this.ratioFunction_(carto.height);
       if (Cartesian3.distance(this.boundingSphere_.center, position) > this.boundingSphere_.radius * ratio) {
-        const currentlyFlying = camera.flying;
-        if (currentlyFlying === true) {
-          // There is a flying property and its value is true
-          return;
-        } else {
-          this.blockLimiter_ = true;
-          const unblockLimiter = () => this.blockLimiter_ = false;
-          camera.flyToBoundingSphere(this.boundingSphere_, {
-            complete: unblockLimiter,
-            cancel: unblockLimiter
-          });
-        }
+        this.blockLimiter_ = true;
+        const unblockLimiter = () => this.blockLimiter_ = false;
+        camera.flyToBoundingSphere(this.boundingSphere_, {
+          complete: unblockLimiter,
+          cancel: unblockLimiter
+        });
       }
     }
   }
