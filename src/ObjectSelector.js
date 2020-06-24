@@ -1,5 +1,5 @@
 import Color from 'cesium/Source/Core/Color';
-import {AOI_DATASOURCE_NAME, DRILL_PICK_LENGTH, DRILL_PICK_LIMIT} from './constants';
+import {AOI_DATASOURCE_NAME, DRILL_PICK_LENGTH, DRILL_PICK_LIMIT, LAYER_TYPES} from './constants';
 import {extractEntitiesAttributes, extractPrimitiveAttributes, isPickable} from './objectInformation';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
@@ -9,10 +9,11 @@ export default class ObjectSelector {
   constructor(viewer) {
     this.viewer = viewer;
     this.selectedObj = null;
+    this.savedColor = null;
 
     const objectInfo = document.querySelector('ngm-object-information');
     objectInfo.addEventListener('closed', () => {
-      this.changeHighlight(null);
+      this.unhighlight();
       viewer.scene.requestRender();
     });
 
@@ -20,6 +21,7 @@ export default class ObjectSelector {
   }
 
   onClick(click) {
+    this.unhighlight();
     const objectInfo = document.querySelector('ngm-object-information');
     const objects = this.viewer.scene.drillPick(click.position, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
     const pickedPosition = this.viewer.scene.pickPosition(click.position);
@@ -42,23 +44,9 @@ export default class ObjectSelector {
           });
         };
 
-        this.changeHighlight(object);
+        this.toggleTileHighlight(object);
       } else if (object.id && object.id.properties) {
-        const props = extractEntitiesAttributes(object.id);
-        attributes = {...props};
-        const aoiDataSource = this.viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
-        attributes.zoom = () => this.viewer.zoomTo(object.id, props.zoomHeadingPitchRange);
-        if (aoiDataSource.entities.contains(object.id)) {
-          attributes = {...attributes, name: object.id.name};
-          const aoiElement = document.querySelector('ngm-aoi-drawer');
-          attributes = aoiElement.getInfoProps(attributes);
-          attributes.zoom = () => aoiElement.flyToArea(object.id.id);
-        } else if (attributes.zoomHeadingPitchRange) {
-          // Don't show the value in the object info window
-          delete attributes.zoomHeadingPitchRange;
-        }
-
-        // TODO highlight for earthquake
+        attributes = this.handleEntitySelect(object.id, attributes);
       }
     }
 
@@ -68,15 +56,58 @@ export default class ObjectSelector {
     this.viewer.scene.requestRender();
   }
 
-  changeHighlight(obj) {
-    if (this.selectedObj) {
-      this.selectedObj.color = Color.WHITE.withAlpha(this.selectedObj.color.alpha);
+  handleEntitySelect(entity, attributes) {
+    const props = extractEntitiesAttributes(entity);
+    attributes = {...props};
+    const aoiDataSource = this.viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
+    const earthquakesDataSource = this.viewer.dataSources.getByName(LAYER_TYPES.earthquakes)[0];
+
+    attributes.zoom = () => this.viewer.zoomTo(entity, props.zoomHeadingPitchRange);
+
+    if (aoiDataSource.entities.contains(entity)) {
+      attributes = {...attributes, name: entity.name};
+      const aoiElement = document.querySelector('ngm-aoi-drawer');
+      attributes = aoiElement.getInfoProps(attributes);
+      attributes.zoom = () => aoiElement.flyToArea(entity.id);
+    } else if (earthquakesDataSource.entities.contains(entity)) {
+      this.toggleEarthquakeHighlight(entity);
+    }
+
+    if (attributes.zoomHeadingPitchRange) {
+      // Don't show the value in the object info window
+      delete attributes.zoomHeadingPitchRange;
+    }
+    return attributes;
+  }
+
+  toggleEarthquakeHighlight(obj) {
+    if (this.selectedObj && this.selectedObj.ellipsoid) {
+      this.selectedObj.ellipsoid.material = this.savedColor;
       this.selectedObj = null;
     }
     if (obj) {
       this.selectedObj = obj;
+      this.savedColor = Color.clone(obj.ellipsoid.material.color.getValue());
+      const darkenMag = this.savedColor.alpha < 1 ? 0.6 : 0.3;
+      this.selectedObj.ellipsoid.material = Color.LIME.darken(darkenMag, new Color()).withAlpha(this.savedColor.alpha);
+    }
+  }
+
+  toggleTileHighlight(obj) {
+    if (this.selectedObj && this.selectedObj.color) {
+      this.selectedObj.color = this.savedColor;
+      this.selectedObj = null;
+    }
+    if (obj) {
+      this.selectedObj = obj;
+      this.savedColor = Color.clone(obj.color);
       const darkenMag = obj.color.alpha < 1 ? 0.6 : 0.3;
       this.selectedObj.color = Color.LIME.darken(darkenMag, new Color()).withAlpha(obj.color.alpha);
     }
+  }
+
+  unhighlight() {
+    this.toggleTileHighlight(null);
+    this.toggleEarthquakeHighlight(null);
   }
 }
