@@ -110,5 +110,7 @@
   "zoom_in_btn": "Zoom In",
   "zoom_out_btn": "Zoom Out",
   "zoom_to": "Zoom to",
-  "zoom_to_object": "Zoom to object"
+  "zoom_to_object": "Zoom to object",
+  "full_screen_view": "Expand view",
+  "not_full_screen_view": "Collapse view "
 }
