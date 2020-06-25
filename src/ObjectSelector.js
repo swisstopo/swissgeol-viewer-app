@@ -94,8 +94,7 @@ export default class ObjectSelector {
     if (obj) {
       this.selectedObj = obj;
       this.savedColor = Color.clone(obj.ellipsoid.material.color.getValue());
-      const darkenMag = this.savedColor.alpha < 1 ? 0.6 : 0.3;
-      this.selectedObj.ellipsoid.material = OBJECT_HIGHLIGHT_COLOR.darken(darkenMag, new Color()).withAlpha(this.savedColor.alpha);
+      this.selectedObj.ellipsoid.material = OBJECT_HIGHLIGHT_COLOR.withAlpha(this.savedColor.alpha);
     }
   }
 
@@ -107,7 +106,6 @@ export default class ObjectSelector {
     if (obj) {
       this.selectedObj = obj;
       this.savedColor = Color.clone(obj.color);
-      // const darkenMag = obj.color.alpha < 1 ? 0.6 : 0.3; .darken(darkenMag, new Color())
       this.selectedObj.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(obj.color.alpha);
     }
   }
