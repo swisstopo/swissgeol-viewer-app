@@ -63,7 +63,7 @@ a {
 }
 
 
-.ngm-header-content {
+header {
   display: flex;
   flex-shrink: 0;
   padding: 10px;
@@ -76,7 +76,7 @@ a {
   background-color: #fff;
 }
 
-.ngm-header-content > .logo {
+header > .logo {
   margin-right: 80px;
   margin-left: 40px;
   margin-bottom: 10px;
@@ -219,6 +219,7 @@ cesium-view-cube {
   content: svg-load('../images/horizontal-layer.svg', fill=#fff);
 }
 
+#cesium.full-active:after,
 body:after { /* Beta label */
   content: "beta";
   position: fixed;

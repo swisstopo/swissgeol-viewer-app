@@ -2,7 +2,7 @@ import {I18nMixin} from '../i18n';
 import i18next from 'i18next';
 import {LitElement, html} from 'lit-element';
 
-const ELEMENTS_TO_HIDE = ['.ngm-header-content', 'ngm-left-side-bar', '.navigation-widgets', 'ngm-review-window'];
+const ELEMENTS_TO_HIDE = ['.navigation-widgets', 'ngm-review-window'];
 
 class NgmFullScreenView extends I18nMixin(LitElement) {
 
@@ -16,6 +16,14 @@ class NgmFullScreenView extends I18nMixin(LitElement) {
     super();
 
     this.fullScreenActive = false;
+    document.onfullscreenchange = () => {
+      this.fullScreenActive = !this.fullScreenActive;
+      this.classList.toggle('full-active');
+      document.querySelector('#cesium').classList.toggle('full-active');
+      ELEMENTS_TO_HIDE.forEach(selector => {
+        document.querySelector(selector).hidden = this.fullScreenActive;
+      });
+    };
   }
 
   get tooltip() {
@@ -27,11 +35,11 @@ class NgmFullScreenView extends I18nMixin(LitElement) {
   }
 
   toggleView() {
-    this.fullScreenActive = !this.fullScreenActive;
-    this.classList.toggle('full-active');
-    ELEMENTS_TO_HIDE.forEach(selector => {
-      document.querySelector(selector).hidden = this.fullScreenActive;
-    });
+    if (!this.fullScreenActive) {
+      document.querySelector('#cesium').requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
   }
 
   render() {
