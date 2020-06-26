@@ -219,6 +219,7 @@ cesium-view-cube {
   content: svg-load('../images/horizontal-layer.svg', fill=#fff);
 }
 
+#cesium.full-active:after,
 body:after { /* Beta label */
   content: "beta";
   position: fixed;
@@ -314,4 +315,16 @@ ngm-review-window a {
 h4.ui.horizontal.divider.ngm-background-divider {
   font-weight: normal;
   text-transform: none;
+}
+
+ngm-full-screen-view {
+  position: absolute;
+  right: 38px;
+  top: 548px;
+  z-index: 1;
+}
+
+ngm-full-screen-view.full-active {
+  right: 10px;
+  top: 10px;
 }

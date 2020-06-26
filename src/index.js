@@ -36,6 +36,7 @@ import './elements/ngm-left-side-bar.js';
 import './elements/ngm-review-window.js';
 import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
+import './elements/ngm-full-screen-view.js';
 import {LocalStorageController} from './LocalStorageController.js';
 
 initSentry();
