@@ -15,7 +15,7 @@
   "borehole_data_profiles_label": "Boreholes / Profiles",
   "boreholes_label": "Boreholes",
   "camera_height": "Camera Height",
-  "camera_position": "Coords: {{coordinates}}<br/>H. / Dir. / Tilt: {{height}} m, {{angle}}°, {{pitch}}°",
+  "camera_position": "Coords: {{coordinates}}<br/>H: {{height}} m / Dir: {{angle}}° / Tilt: {{pitch}}°",
   "cancel_area_btn_label": "Cancel Draw",
   "cesium_compass_tooltip": "Click and drag to rotate or tilt the camera",
   "ch_swisstopo_geologie_geocover": "GeoCover",
@@ -33,6 +33,7 @@
   "error_need_more_points": "Please add more points",
   "external_tools_label": "External tools",
   "fly_to_btn_tooltip": "Zoom To",
+  "full_screen_view": "Expand view",
   "geo_energy_label": "Geo-energy",
   "geocatalog_label": "Data catalog",
   "geological_bases_label": "Geological base data",
@@ -74,6 +75,7 @@
   "nadir_deactivate_btn": "Go back to previous view",
   "nameLabel": "Name",
   "natural_hazard_label": "Natural hazards",
+  "not_full_screen_view": "Collapse view ",
   "numberOfSegments": "Number of segments",
   "Object height": "Object height",
   "ok_btn_label": "Ok",
@@ -110,7 +112,5 @@
   "zoom_in_btn": "Zoom In",
   "zoom_out_btn": "Zoom Out",
   "zoom_to": "Zoom to",
-  "zoom_to_object": "Zoom to object",
-  "full_screen_view": "Expand view",
-  "not_full_screen_view": "Collapse view "
+  "zoom_to_object": "Zoom to object"
 }
