@@ -306,3 +306,5 @@ export const defaultLayerTree = [
   subsurface,
   background,
 ];
+
+export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Color());
