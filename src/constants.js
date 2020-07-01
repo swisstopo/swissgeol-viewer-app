@@ -145,7 +145,7 @@ const geo_base = {
   label: t('geological_bases_label'),
   children: [
     {
-      label: t('borehole_data_profiles_label'),
+      label: t('boreholes_label'),
       children: [
         {
           type: LAYER_TYPES.tiles3d,
@@ -156,18 +156,44 @@ const geo_base = {
           pickable: true,
           visible: false,
           displayed: true,
-        }, {
+        },
+      ]
+    },
+    {
+      label: t('cross_section_label'),
+      children: [
+        {
           type: LAYER_TYPES.tiles3d,
           assetId: 68881,
-          label: t('cross_section_label'),
+          label: t('cross_section_ga25_label'),
           layer: 'cross_section',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           visible: false,
           displayed: true,
           pickable: true
         },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 99332,
+          label: t('cross_section_geomol_label'),
+          layer: 'cross_section_geomol',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          visible: false,
+          displayed: false,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 99320,
+          label: t('cross_section_geoquat_label'),
+          layer: 'cross_section_geoquat',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          visible: false,
+          displayed: false,
+          pickable: true
+        }
       ]
-    },
+    }
   ]
 };
 
@@ -180,10 +206,11 @@ const geo_energy = {
         {
           type: LAYER_TYPES.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
-          assetId: 69922,
+          assetId: 109931,
           label: t('temperature_model_label'),
           layer: 'temperature_model',
-          transparencyDisabled: true
+          transparencyDisabled: true,
+          pickable: true
         }
       ]
     },
@@ -208,27 +235,61 @@ const subsurface = {
   label: t('subsurface_label'),
   children: [
     {
-      label: t('bedrock_surface_sediments_label'),
+      label: t('unconsolidated_rocks_label'),
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 76814,
+          assetId: 109954,
+          label: t('aare_valley_label'),
+          layer: 'aare_valley',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+      ]
+    },
+    {
+      label: t('top_bedrock_surface_label'),
+      children: [
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111882,
           label: t('top_bedrock_label'),
           layer: 'top_bedrock',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true
         },
+      ]
+    },
+    {
+      label: t('consolidated_rocks_label'),
+      children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 76931,
-          label: t('top_lower_freshwater_molasse_label'),
-          layer: 'top_lower_freshwater_molasse',
+          assetId: 111880,
+          label: t('top_omm_label'),
+          layer: 'top_omm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 76815,
+          assetId: 111879,
+          label: t('top_usm_label'),
+          layer: 'top_usm',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111888,
+          label: t('top_umm_label'),
+          layer: 'top_umm',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111886,
           label: t('base_cenozoic_label'),
           layer: 'base_cenozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
@@ -236,7 +297,31 @@ const subsurface = {
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 76817,
+          assetId: 111881,
+          label: t('top_creatateus_label'),
+          layer: 'top_creatateus',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111890,
+          label: t('top_upper_malm_label'),
+          layer: 'top_upper_malm',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111889,
+          label: t('top_lower_malm_label'),
+          layer: 'top_lower_malm',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111894,
           label: t('top_dogger_label'),
           layer: 'top_dogger',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
@@ -244,14 +329,65 @@ const subsurface = {
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 76816,
+          assetId: 111885,
+          label: t('top_lias_label'),
+          layer: 'top_lias',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 117460,
+          label: t('top_keuper_label'),
+          layer: 'top_keuper',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111893,
+          label: t('top_muschelkalk_label'),
+          layer: 'top_muschelkalk',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111883,
           label: t('base_mesozoic_label'),
           layer: 'base_mesozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true
         },
-      ]
-    },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111891,
+          label: t('base_cermocarboniferous'),
+          layer: 'base_cermocarboniferous',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 111892,
+          label: t('base_cermocarboniferous_supposed'),
+          layer: 'base_cermocarboniferous_supposed',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+      ]},
+    {
+      label: t('fault_zones_label'),
+      children: [
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 114815,
+          label: t('faults_geomol'),
+          layer: 'faults_geomol',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true
+        },
+      ]},
   ]
 };
 
@@ -260,7 +396,7 @@ const man_made_objects = {
   children: [
     {
       type: LAYER_TYPES.tiles3d,
-      assetId: 77319,
+      assetId: 96056,
       style: TUNNEL_STYLE,
       label: t('tunnel_label'),
       layer: 'tunnel',
