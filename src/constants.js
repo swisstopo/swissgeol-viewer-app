@@ -286,7 +286,17 @@ const subsurface = {
           label: t('top_umm_label'),
           layer: 'top_umm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: [
+            'Name',
+            'Horizon',
+            'HARMOS-ORIGINAL',
+            'Download Move',
+            'Download GoCad',
+            'Download DXF',
+            'Download ASCII',
+            'Download All data'
+          ]
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -376,7 +386,8 @@ const subsurface = {
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true
         },
-      ]},
+      ]
+    },
     {
       label: t('fault_zones_label'),
       children: [
@@ -388,7 +399,8 @@ const subsurface = {
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true
         },
-      ]},
+      ]
+    },
   ]
 };
 
