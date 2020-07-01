@@ -156,6 +156,7 @@ const geo_base = {
           pickable: true,
           visible: false,
           displayed: true,
+          propsOrder: ['NAMEPUB', 'ORIGGEOL', 'ORIGNAME'] // all the other attributes will be sorted alphabetically
         }, {
           type: LAYER_TYPES.tiles3d,
           assetId: 68881,
