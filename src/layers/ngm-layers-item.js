@@ -38,6 +38,8 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
 
   changeTransparency(transparency) {
     this.actions.changeTransparency(this.config, transparency);
+    const objectInfo = document.querySelector('ngm-object-information');
+    objectInfo.opened = false;
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
 
