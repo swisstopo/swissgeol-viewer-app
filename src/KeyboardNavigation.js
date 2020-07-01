@@ -90,8 +90,12 @@ export default class KeyboardNavigation {
    * @param {KeyboardEvent} event
    */
   onKey_(event) {
-    if (event.ctrlKey === false && targetNotEditable(event.target)) {
+    if (targetNotEditable(event.target)) {
       const pressed = event.type === 'keydown';
+      if (pressed && event.ctrlKey) {
+        // don't mess with the browser keyboard shortcut
+        return;
+      }
       const key = event.key.toLowerCase();
 
       if (!this.hasKeyDown_()) {
