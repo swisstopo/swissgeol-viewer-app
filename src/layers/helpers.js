@@ -147,9 +147,9 @@ export function syncCheckboxes(layers) {
 
 /**
  * Returns box sizes
- * @param rectangle
- * @param height
- * @param result
+ * @param {Rectangle} rectangle
+ * @param {number} height
+ * @param {Cartesian3} [result]
  * @returns {Cartesian3}
  */
 export function getBoxFromRectangle(rectangle, height, result = new Cartesian3()) {
@@ -164,10 +164,10 @@ export function getBoxFromRectangle(rectangle, height, result = new Cartesian3()
 
 /**
  * Returns rectangle from width height and center point
- * @param width
- * @param height
- * @param center
- * @param result
+ * @param {number} width
+ * @param {number} height
+ * @param {Cartesian3} center
+ * @param {Rectangle} [result]
  * @returns {Rectangle}
  */
 export function calculateRectangle(width, height, center, result = new Rectangle()) {
@@ -187,8 +187,8 @@ export function calculateRectangle(width, height, center, result = new Rectangle
  * Calculates box from bounding volume
  * @param {Matrix3} halfAxes
  * @param {Number} boundingSphereRadius
- * @param {Cartesian3} result
- * @returns {Cartesian3|Cartesian3}
+ * @param {Cartesian3} [result]
+ * @returns {Cartesian3}
  */
 export function calculateBox(halfAxes, boundingSphereRadius, result = new Cartesian3()) {
   const absMatrix = Matrix3.abs(halfAxes, new Matrix3());

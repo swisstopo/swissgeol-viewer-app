@@ -11,6 +11,10 @@ import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 
 import './ngm-gst-modal.js';
 
+/**
+ * @typedef {"borehole" | "crossSection" | "horizontalCrossSection"} ToolType
+ */
+
 const CSS_ACTIVE_CLASS = 'grey';
 
 class NgmGstInteraction extends I18nMixin(LitElement) {
@@ -26,6 +30,16 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
 
   constructor() {
     super();
+
+    /**
+     * @type {import('cesium/Source/Widgets/Viewer/Viewer').default}
+     */
+    this.viewer;
+
+    /**
+     * @type {ToolType}
+     */
+    this.tool;
 
     this.minDepth_ = -6000;
     this.maxDepth_ = 1000;
@@ -137,6 +151,11 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     }
   }
 
+  /**
+   * @param {MouseEvent} event
+   * @param {ToolType} tool
+   * @param {import('../draw/CesiumDraw').ShapeType} type
+   */
   changeTool(event, tool, type) {
     if (this.draw_) {
       this.tool = tool;
@@ -162,14 +181,23 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     this.depth = event.target.value;
   }
 
+  /**
+   * @param {MouseEvent} event
+   */
   toggleBoreHole(event) {
     this.changeTool(event, 'borehole', 'point');
   }
 
+  /**
+   * @param {MouseEvent} event
+   */
   toggleCrossSection(event) {
     this.changeTool(event, 'crossSection', 'line');
   }
 
+  /**
+   * @param {MouseEvent} event
+   */
   toggleHorizontalCrossSection(event) {
     this.changeTool(event, 'horizontalCrossSection', 'rectangle');
   }
