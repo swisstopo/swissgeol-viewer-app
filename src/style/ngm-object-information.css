@@ -4,12 +4,12 @@ ngm-object-information {
   z-index: 2;
   margin: 6px;
   right: 0;
-  overflow-y: auto;
-  max-height: 80vh;
 }
 
 ngm-object-information .header {
   display: flex;
+  align-items: flex-end;
+  flex-direction: column;
 }
 
 ngm-object-information .ui.table {
@@ -25,4 +25,14 @@ ngm-object-information .ui.table .val {
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+ngm-object-information .ui.divider {
+  margin: 10px 0 0 0;
+}
+
+ngm-object-information .content-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 65vh;
 }
