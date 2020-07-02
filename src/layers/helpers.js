@@ -40,6 +40,7 @@ export function create3DTilesetFromConfig(viewer, config) {
   const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
+    backFaceCulling: false,
   });
 
   if (config.style) {
