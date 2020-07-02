@@ -10,7 +10,7 @@ export function extractPrimitiveAttributes(primitive) {
   for (let i = 0; i < length; ++i) {
     const key = propertyNames[i];
     const value = primitive.getProperty(key);
-    if (value) {
+    if (typeof value === 'number' || !!value) {
       data[key] = value;
     }
   }
