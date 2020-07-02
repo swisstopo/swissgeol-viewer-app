@@ -148,6 +148,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
         // turn it off
         this.draw_.active = false;
         this.gstExtent.show = false;
+        this.tool = null;
       } else if (event && type) {
         this.draw_.type = type;
         this.draw_.active = true;
@@ -171,6 +172,19 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
 
   toggleHorizontalCrossSection(event) {
     this.changeTool(event, 'horizontalCrossSection', 'rectangle');
+  }
+
+  get getHintText() {
+    switch (this.tool) {
+      case 'borehole':
+        return i18next.t('gst_instructions_borehole');
+      case 'crossSection':
+        return i18next.t('gst_instructions_v_section');
+      case 'horizontalCrossSection':
+        return i18next.t('gst_instructions_h_section');
+      default:
+        return i18next.t('gst_instructions');
+    }
   }
 
   render() {
@@ -219,6 +233,9 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
             </div>
           </div>
         </div>
+      </div>
+      <div class="ui tertiary center aligned segment">
+            ${this.getHintText}
       </div>
       <ngm-gst-modal .imageUrl="${this.imageUrl}"></ngm-gst-modal>
     `;
