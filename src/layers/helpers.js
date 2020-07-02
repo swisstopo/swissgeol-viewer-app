@@ -131,20 +131,6 @@ function styleColorParser(style) {
   return {propertyName, colorType, colorValue};
 }
 
-
-/**
- * To avoid incorrect handling of checkboxes during render
- * @param layers
- */
-export function syncCheckboxes(layers) {
-  layers.forEach(l => {
-    const elements = document.getElementsByName(l.layer);
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].checked = l.visible;
-    }
-  });
-}
-
 /**
  * Returns box sizes
  * @param {Rectangle} rectangle
