@@ -1,11 +1,11 @@
-const boreholeBaseUrl = 'https://viewer.geomol.ch/webgui/createBoreholeAsService.php';
-const boreholeParams = 'csRootElement=0&csRootScale=-1&intersectionGeometry=multipoint%20z%20(({coordinates}))&legendTemplateFile=&maxBoreDepth={depth}&outputType=PDF&projectZ=true&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=02-BH_swisstopo_Map_2019a.svg&title={title}&user=NGM';
+const boreholeBaseUrl = 'https://viewer.geomol.ch/webgui/createBoreholeWithOverviewMap.php';
+const boreholeParams = 'csRootElement=0&csRootScale=-1&intersectionGeometry=multipoint%20z%20(({coordinates}))&legendTemplateFile=&maxBoreDepth={depth}&outputType=PDF&projectZ=true&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=02-BH_swisstopo_Map_2019a.svg&title={title}&user=NGM&crs=EPSG:2056';
 
-const verticalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createCrossSectionAsService.php';
-const verticalCrossSectionParams = 'csRootElement=0&csRootScale=-1&depthRangeMax=3.40282e%2B38&depthRangeMin=-3.40282e%2B38&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType=PDF&overviewMap=&pointProjectionDistance=0&propertySelection=&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=03-CS_swisstopo_Map_2019.svg&title={title}&user=NGM';
+const verticalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createCrossSectionWithOverviewMap.php';
+const verticalCrossSectionParams = 'csRootElement=0&csRootScale=-1&depthRangeMax=3.40282e%2B38&depthRangeMin=-3.40282e%2B38&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType=PDF&overviewMap=&pointProjectionDistance=0&propertySelection=&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=03-CS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056';
 
-const horizontalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createHorizontalSectionAsService.php';
-const horizontalSectionParams = 'boxWidth={width}&csRootElement=0&csRootScale=-1&depth={depth}&direction={direction}&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType=PDF&overviewMap=&propertySelection=&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=04-HS_swisstopo_Map_2019.svg&title={title}&user=NGM';
+const horizontalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createHorizontalSectionWithOverviewMap.php';
+const horizontalSectionParams = 'boxWidth={width}&colorMapId=&csRootElement=0&csRootScale=-1&depth={depth}&direction={direction}&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType=PDF&overviewMap=&propertySelection=&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=04-HS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056';
 
 
 /**
@@ -62,7 +62,7 @@ export function horizontalCrossSection(coordinates, depth = -2500, title = '') {
 
   const side = [coordinates[0], coordinates[1]];
   const url = `${horizontalCrossSectionBaseUrl}?${horizontalSectionParams}`
-    .replace('{coordinates}', side.map(coordinate => coordinate.join(' ')).join(','))
+    .replace('{coordinates}', side.map(coordinate => coordinate.join(' ')).join(', ')) // space after comma is required for overview map
     .replace('{direction}', direction)
     .replace('{width}', magnitude)
     .replace('{depth}', depth)
