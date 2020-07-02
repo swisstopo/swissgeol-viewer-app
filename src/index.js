@@ -165,3 +165,7 @@ i18next.on('initialized', () => {
   showSlowLoadingWindow();
 });
 
+const origin = window.location.origin;
+const pathname = window.location.pathname;
+document.querySelector('#ngm-home-link').href = `${origin}${pathname}`;
+

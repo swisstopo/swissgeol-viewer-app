@@ -76,7 +76,7 @@ header {
   background-color: #fff;
 }
 
-header > .logo {
+header > a > .logo {
   margin-right: 80px;
   margin-left: 40px;
   margin-bottom: 10px;
