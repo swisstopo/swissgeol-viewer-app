@@ -170,7 +170,8 @@ const geo_base = {
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           visible: false,
           displayed: true,
-          pickable: true
+          pickable: true,
+          zoomToBbox: true
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -190,7 +191,8 @@ const geo_base = {
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           visible: false,
           displayed: false,
-          pickable: true
+          pickable: true,
+          zoomToBbox: true
         }
       ]
     }
@@ -243,7 +245,8 @@ const subsurface = {
           label: t('aare_valley_label'),
           layer: 'aare_valley',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          zoomToBbox: true
         },
       ]
     },
