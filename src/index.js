@@ -167,5 +167,5 @@ i18next.on('initialized', () => {
 
 const origin = window.location.origin;
 const pathname = window.location.pathname;
-document.querySelector('#ngm-home-link').href = origin.includes('review') ? `${origin}${pathname}` : origin;
+document.querySelector('#ngm-home-link').href = `${origin}${pathname}`;
 
