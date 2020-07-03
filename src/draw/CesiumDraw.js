@@ -43,6 +43,7 @@ export class CesiumDraw extends EventTarget {
 
     this.eventHandler_ = undefined;
     this.activePoints_ = [];
+    this.activePoint_ = undefined;
     this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
     this.sketchLine_ = undefined;
@@ -127,6 +128,7 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.entities.remove(this.activeEntity_);
 
     this.activePoints_ = [];
+    this.activePoint_ = undefined;
     this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
     this.sketchLine_ = undefined;
@@ -227,7 +229,8 @@ export class CesiumDraw extends EventTarget {
   }
 
   updateSketchPoint() {
-    const positions = this.type === 'rectangle' ? rectanglify(this.activePoints_) : this.activePoints_;
+    const activePoints = [...this.activePoints_, this.activePoint_];
+    const positions = this.type === 'rectangle' ? rectanglify(activePoints) : activePoints;
     const pointsLength = positions.length;
     if (pointsLength > 1) {
       let distance;
@@ -241,8 +244,8 @@ export class CesiumDraw extends EventTarget {
         distance = Cartesian3.distance(positions[pointsLength - 2], lastPoint);
         this.sketchPoint_.position.setValue(lastPoint);
       }
-      this.activeDistance_ = Number((distance / 1000).toFixed(2));
-      this.sketchPoint_.label.text.setValue(`${this.activeDistance_}km`);
+      this.activeDistance_ = Number((distance / 1000));
+      this.sketchPoint_.label.text.setValue(`${this.activeDistance_.toFixed(2)}km`);
       return;
     }
     this.sketchPoint_.label.text.setValue('0km');
@@ -254,7 +257,8 @@ export class CesiumDraw extends EventTarget {
       if (!this.sketchPoint_) {
         this.dispatchEvent(new CustomEvent('drawstart'));
         this.sketchPoint_ = this.drawSketchPoint_(position);
-        this.activePoints_.push(position);
+        this.activePoint_ = position;
+        // this.activePoints_.push(this.activePoint_);
 
         if (this.type === 'polygon' || this.type === 'rectangle') {
           this.sketchLine_ = this.drawSketchLine_(this.dynamicSketLinePositions());
@@ -272,7 +276,9 @@ export class CesiumDraw extends EventTarget {
       } else if (!this.activeDistances_.includes(this.activeDistance_)) {
         this.activeDistances_.push(this.activeDistance_);
       }
-      this.activePoints_.push(position);
+      console.log(this.activePoint_);
+      this.activePoints_.push({...this.activePoint_});
+      // this.activePoints_.push(position);
       if (this.type === 'rectangle' && this.activePoints_.length === 4) {
         this.finishDrawing();
       }
@@ -283,9 +289,10 @@ export class CesiumDraw extends EventTarget {
     if (this.sketchPoint_) {
       const position = this.viewer_.scene.pickPosition(event.endPosition);
       if (position) {
+        this.activePoint_ = position;
+        // this.activePoints_.pop();
+        // this.activePoints_.push(position);
         this.updateSketchPoint();
-        this.activePoints_.pop();
-        this.activePoints_.push(position);
       }
     }
   }
@@ -294,7 +301,7 @@ export class CesiumDraw extends EventTarget {
     if (!this.activeDistances_.includes(this.activeDistance_)) {
       this.activeDistances_.push(this.activeDistance_);
     }
-    this.activePoints_.pop();
+    // this.activePoints_.pop();
     this.finishDrawing();
   }
 }
