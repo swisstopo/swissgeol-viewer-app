@@ -72,16 +72,20 @@ export function create3DTilesetFromConfig(viewer, config) {
     config.setTransparency(!isNaN(config.transparency) ? config.transparency : 0);
   }
 
-  if (config.heightOffset) {
-    tileset.readyPromise.then(() => {
+
+  tileset.readyPromise.then(() => {
+    if (config.propsOrder) {
+      tileset.properties.propsOrder = config.propsOrder;
+    }
+    if (config.heightOffset) {
       const cartographic = Cartographic.fromCartesian(tileset.boundingSphere.center);
       const surface = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
       const offset = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, config.heightOffset);
       const translation = Cartesian3.subtract(offset, surface, new Cartesian3());
       tileset.modelMatrix = Matrix4.fromTranslation(translation);
       viewer.scene.requestRender();
-    });
-  }
+    }
+  });
   // for correct highlighting
   tileset.colorBlendMode = Cesium3DTileColorBlendMode.REPLACE;
   return tileset;
