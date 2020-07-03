@@ -56,7 +56,8 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
   get buttons() {
     return html`
       <div class="ui icon buttons compact mini">
-        <button class="ui button"
+      ${this.config.zoomToBbox ?
+      html`<button class="ui button"
           data-tooltip=${i18next.t('zoom_to')}
           data-position="top left"
           data-variation="mini"
@@ -64,7 +65,7 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
           @mouseleave=${() => this.actions.hideBoundingBox()}
           @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
             <i class="search plus icon"></i>
-        </button>
+        </button>` : ''}
         <button class="ui button ${classMap(this.downClassMap)}"
           data-tooltip=${i18next.t('layer_down')}
           data-position="top center"
