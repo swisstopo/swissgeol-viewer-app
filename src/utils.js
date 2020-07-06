@@ -1,6 +1,9 @@
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CMath from 'cesium/Source/Core/Math';
+import Matrix4 from 'cesium/Source/Core/Matrix4';
 import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline';
+import Transforms from 'cesium/Source/Core/Transforms';
 
 
 export async function readTextFile(url) {
@@ -21,6 +24,25 @@ export function setCameraHeight(camera, height) {
   camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, height);
 }
 
+/**
+ * @param {import('cesium/Source/Scene/Scene').default} scene
+ * @param {function(import('cesium/Source/Scene/Camera').default): any} func
+ */
+export function aroundCenter(scene, func) {
+  const camera = scene.camera;
+  const windowPosition = new Cartesian2(
+    scene.canvas.clientWidth / 2,
+    scene.canvas.clientHeight / 2
+  );
+  const ray = camera.getPickRay(windowPosition);
+  const center = scene.globe.pick(ray, scene);
+
+  const transform = Transforms.eastNorthUpToFixedFrame(center !== undefined ? center : camera.positionWC);
+  const oldTransform = Matrix4.clone(camera.transform);
+  camera.lookAtTransform(transform);
+  func(camera);
+  camera.lookAtTransform(oldTransform);
+}
 
 /**
  * @return {URLSearchParams}

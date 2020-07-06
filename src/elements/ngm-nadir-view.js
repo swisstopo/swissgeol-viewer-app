@@ -1,11 +1,8 @@
 import {LitElement, html} from 'lit-element';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
-import {setCameraHeight} from '../utils.js';
+import {setCameraHeight, aroundCenter} from '../utils.js';
 
-import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import Transforms from 'cesium/Source/Core/Transforms';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
 import CesiumMath from 'cesium/Source/Core/Math';
 
 class NgmNadirView extends I18nMixin(LitElement) {
@@ -19,7 +16,13 @@ class NgmNadirView extends I18nMixin(LitElement) {
   constructor() {
     super();
 
+    /**
+     * @type {import('cesium/Source/Scene/Scene').default}
+     */
+    this.scene;
+
     this.pitch = undefined;
+    this.height = undefined;
     this.active = false;
     this.unlistenPostRender = null;
   }
@@ -39,7 +42,9 @@ class NgmNadirView extends I18nMixin(LitElement) {
 
 
   updateFromCamera() {
-    if (this.active && !CesiumMath.equalsEpsilon(this.scene.camera.pitch, -Math.PI / 2, CesiumMath.EPSILON1)) {
+    if (this.active && !CesiumMath.equalsEpsilon(this.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1)) {
+      this.pitch = undefined;
+      this.height = undefined;
       this.active = false;
     }
   }
@@ -52,33 +57,29 @@ class NgmNadirView extends I18nMixin(LitElement) {
     }
   }
 
-  viewCenter() {
-    const windowPosition = new Cartesian2(
-      this.scene.canvas.clientWidth / 2,
-      this.scene.canvas.clientHeight / 2
-    );
-    const ray = this.scene.camera.getPickRay(windowPosition);
-    const center = this.scene.globe.pick(ray, this.scene);
-    return center !== undefined ? center : this.scene.camera.positionWC;
-  }
-
   toggle() {
     const camera = this.scene.camera;
-    const transform = Transforms.eastNorthUpToFixedFrame(this.viewCenter());
-    const oldTransform = Matrix4.clone(camera.transform);
-    camera.lookAtTransform(transform);
 
     if (this.active) {
-      camera.rotateUp(this.pitch + Math.PI / 2);
+      aroundCenter(this.scene, () => {
+        camera.rotateUp(this.pitch + CesiumMath.PI_OVER_TWO);
+      });
       this.pitch = undefined;
-    } else {
-      this.pitch = camera.pitch;
-      camera.rotateDown(this.pitch + Math.PI / 2);
-    }
-    camera.lookAtTransform(oldTransform);
 
-    if (!this.active && this.scene.cameraUnderground) {
-      setCameraHeight(camera, 10000);
+      if (this.height !== undefined) {
+        setCameraHeight(camera, this.height);
+      }
+      this.height = undefined;
+    } else {
+      if (this.scene.cameraUnderground) {
+        this.height = camera.positionCartographic.height;
+        setCameraHeight(camera, 10000);
+      }
+
+      this.pitch = camera.pitch;
+      aroundCenter(this.scene, () => {
+        camera.rotateDown(this.pitch + CesiumMath.PI_OVER_TWO);
+      });
     }
 
     this.active = !this.active;
