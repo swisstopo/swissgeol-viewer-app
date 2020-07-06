@@ -69,6 +69,11 @@ export default class KeyboardNavigation {
       zoomOut: false
     };
 
+    /**
+     * @type {Object<string, boolean>}
+     */
+    this.pressedKeys_ = {};
+
     const onKey = this.onKey_.bind(this);
     const onPostRender = this.onPostRender_.bind(this);
 
@@ -104,6 +109,12 @@ export default class KeyboardNavigation {
         // don't mess with the browser keyboard shortcut
         return;
       }
+      // make sure we still have at least one pressed key
+      this.pressedKeys_[event.code] = pressed;
+      if (!Object.values(this.pressedKeys_).some(pressed => pressed)) {
+        this.cancel_();
+      }
+
       const key = event.key.toLowerCase();
 
       if (!this.hasKeyDown_()) {
