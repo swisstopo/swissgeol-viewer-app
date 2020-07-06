@@ -15,6 +15,7 @@
   "base_mesozoic_label": "Basis Mesozoikum",
   "Borehole": "Bohrung",
   "boreholes_label": "Bohrungen",
+  "boreholes_public_label": "",
   "camera_height": "Kamerahöhe",
   "camera_position": "Koord.: {{coordinates}}<br/>H: {{height}} m / Richt: {{angle}}° / Neig: {{pitch}}°",
   "cancel_area_btn_label": "Zeichnen abbrechen",

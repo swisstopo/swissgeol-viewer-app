@@ -15,6 +15,7 @@
   "base_mesozoic_label": "Base Mesozoic",
   "Borehole": "Borehole",
   "boreholes_label": "Boreholes",
+  "boreholes_public_label": "Boreholes public",
   "camera_height": "Camera Height",
   "camera_position": "Coords: {{coordinates}}<br/>H: {{height}} m / Dir: {{angle}}° / Tilt: {{pitch}}°",
   "cancel_area_btn_label": "Cancel Draw",

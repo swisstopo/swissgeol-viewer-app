@@ -150,7 +150,7 @@ const geo_base = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 105125,
-          label: t('boreholes_label'),
+          label: t('boreholes_public_label'),
           layer: 'boreholes',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -242,10 +242,11 @@ const subsurface = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
+          style: LAS_POINT_CLOUD_STYLE,
           assetId: 109954,
           label: t('aare_valley_label'),
           layer: 'aare_valley',
-          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          transparencyDisabled: true,
           pickable: true,
           zoomToBbox: true
         },
