@@ -61,7 +61,7 @@ class NgmNadirView extends I18nMixin(LitElement) {
     const camera = this.scene.camera;
 
     if (this.active) {
-      aroundCenter(this.scene, () => {
+      aroundCenter(this.scene, this.height !== undefined, () => {
         camera.rotateUp(this.pitch + CesiumMath.PI_OVER_TWO);
       });
       this.pitch = undefined;
@@ -77,7 +77,7 @@ class NgmNadirView extends I18nMixin(LitElement) {
       }
 
       this.pitch = camera.pitch;
-      aroundCenter(this.scene, () => {
+      aroundCenter(this.scene, this.scene.cameraUnderground, () => {
         camera.rotateDown(this.pitch + CesiumMath.PI_OVER_TWO);
       });
     }
