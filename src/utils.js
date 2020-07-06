@@ -106,6 +106,7 @@ export function escapeRegExp(string) {
 /**
  * @param {Array<Cartesian3>} positions
  * @param {Array<number>} [holes]
+ * @return {number}
  */
 function getPolygonArea(positions, holes = []) {
   const indices = PolygonPipeline.triangulate(positions, holes);
