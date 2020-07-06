@@ -19,6 +19,7 @@ import {setCameraHeight, verticalDirectionRotate} from './utils.js';
  * @property {Array<string>} [lookDownKeys=['k']]
  * @property {Array<string>} [lookLeftKeys=['j']]
  * @property {Array<string>} [lookRightKeys=['l']]
+ * @property {Array<string>} [cancelKeys=['escape']]
  */
 
 
@@ -50,6 +51,7 @@ export default class KeyboardNavigation {
     this.lookDownKeys_ = options.lookDownKeys || ['k'];
     this.lookLeftKeys_ = options.lookLeftKeys || ['j'];
     this.lookRightKeys_ = options.lookRightKeys || ['l'];
+    this.cancelKeys_ = options.cancelKeys || ['escape'];
 
     this.flags_ = {
       accelerationFactor: 0,
@@ -84,6 +86,12 @@ export default class KeyboardNavigation {
       }
     }
     return pressed;
+  }
+
+  cancel_() {
+    for (const key in this.flags_) {
+      this.flags_[key] = false;
+    }
   }
 
   /**
@@ -126,6 +134,8 @@ export default class KeyboardNavigation {
         this.flags_.zoomIn = pressed;
       } else if (this.zoomOutKeys_.includes(key)) {
         this.flags_.zoomOut = pressed;
+      } else if (this.cancelKeys_.includes(key)) {
+        this.cancel_();
       }
 
       if (this.hasKeyDown_()) {
