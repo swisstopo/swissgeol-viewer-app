@@ -86,7 +86,6 @@ export function escapeRegExp(string) {
  * @param {Array<number>} [holes]
  */
 function getPolygonArea(positions, holes = []) {
-  console.log(positions);
   const indices = PolygonPipeline.triangulate(positions, holes);
   let area = 0;
 
@@ -94,25 +93,16 @@ function getPolygonArea(positions, holes = []) {
     const vector1 = positions[indices[i]];
     const vector2 = positions[indices[i + 1]];
     const vector3 = positions[indices[i + 2]];
-
-    // These vectors define the sides of a parallelogram (double the size of the triangle)
-    // const vectorC = Cartesian3.subtract(vector2, vector1, new Cartesian3());
-    // const vectorD = Cartesian3.subtract(vector3, vector1, new Cartesian3());
-    const a = Cartesian3.distance(vector3, vector2) / 1000;
-    const b = Cartesian3.distance(vector1, vector3) / 1000;
-    const c = Cartesian3.distance(vector1, vector2) / 1000;
-    console.log(a, b, c);
+    //triangle sides
+    const a = Cartesian3.distance(vector3, vector2);
+    const b = Cartesian3.distance(vector1, vector3);
+    const c = Cartesian3.distance(vector1, vector2);
     const p = (a + b + c) / 2;
-    const area2 = Math.sqrt((p - a) * (p - b) * (p - c) * p);
-    console.log(area2);
+    const triangleArea = Math.sqrt((p - a) * (p - b) * (p - c) * p);
 
-    // Area of parallelogram is the cross product of the vectors defining its sides
-    // const areaVector = Cartesian3.cross(vectorC, vectorD, new Cartesian3());
-
-    // Area of the triangle is just half the area of the parallelogram, add it to the sum.
-    area += area2; // Cartesian3.magnitude(areaVector);
+    area += triangleArea;
   }
-  return area;
+  return area * Math.pow(10, -6);
 }
 
 /**
@@ -122,10 +112,6 @@ function getPolygonArea(positions, holes = []) {
  * @param {import('./draw/CesiumDraw').ShapeType} type
  */
 export function getMeasurements(positions, distances, type) {
-  console.log(distances);
-  const p = (distances[0] + distances[1] + distances[2]) / 2;
-  const area = Math.sqrt((p - distances[0]) * (p - distances[1]) * (p - distances[2]) * p);
-  console.log('area: ' + area);
   const result = {
     segmentsNumber: positions.length
   };
@@ -133,11 +119,10 @@ export function getMeasurements(positions, distances, type) {
   if (type === 'rectangle') {
     perimeter *= 2;
     result.sidesLength = [distances[0], distances[1]];
-    result.area = (distances[0] * distances[1]).toFixed(2);
   }
-  result.perimeter = perimeter.toFixed(2);
-  if (type === 'polygon' && positions.length > 2) {
-    result.area = getPolygonArea(positions).toFixed(2);
+  result.perimeter = perimeter.toFixed(3);
+  if (type === 'rectangle' || (type === 'polygon' && positions.length > 2)) {
+    result.area = getPolygonArea(positions).toFixed(3);
   }
   return result;
 }

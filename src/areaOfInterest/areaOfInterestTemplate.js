@@ -61,7 +61,7 @@ function aoiListTemplate() {
             <label class="ngm-aoi-title">${i.name}</label>
             <label class="ngm-aoi-subtitle">
                 ${i.type === 'rectangle' && i.sidesLength ?
-                `${i.sidesLength[0]}km x ${i.sidesLength[1]}km` :
+                `${Number(i.sidesLength[0]).toFixed(3)}km x ${Number(i.sidesLength[1]).toFixed(3)}km` :
                 `${i18next.t('Area')}: ${i.area}km²`}
             </label>
         </div>
