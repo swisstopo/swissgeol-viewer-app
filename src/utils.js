@@ -123,16 +123,14 @@ function getPolygonArea(positions, holes = []) {
     const vector1 = positions[indices[i]];
     const vector2 = positions[indices[i + 1]];
     const vector3 = positions[indices[i + 2]];
+    //triangle sides
+    const a = Cartesian3.distance(vector3, vector2);
+    const b = Cartesian3.distance(vector1, vector3);
+    const c = Cartesian3.distance(vector1, vector2);
+    const p = (a + b + c) / 2;
+    const triangleArea = Math.sqrt((p - a) * (p - b) * (p - c) * p);
 
-    // These vectors define the sides of a parallelogram (double the size of the triangle)
-    const vectorC = Cartesian3.subtract(vector2, vector1, new Cartesian3());
-    const vectorD = Cartesian3.subtract(vector3, vector1, new Cartesian3());
-
-    // Area of parallelogram is the cross product of the vectors defining its sides
-    const areaVector = Cartesian3.cross(vectorC, vectorD, new Cartesian3());
-
-    // Area of the triangle is just half the area of the parallelogram, add it to the sum.
-    area += Cartesian3.magnitude(areaVector) / 2.0;
+    area += triangleArea;
   }
   return area * Math.pow(10, -6);
 }
@@ -151,11 +149,10 @@ export function getMeasurements(positions, distances, type) {
   if (type === 'rectangle') {
     perimeter *= 2;
     result.sidesLength = [distances[0], distances[1]];
-    result.area = (distances[0] * distances[1]).toFixed(2);
   }
-  result.perimeter = perimeter.toFixed(2);
-  if (type === 'polygon' && positions.length > 2) {
-    result.area = getPolygonArea(positions).toFixed(2);
+  result.perimeter = perimeter.toFixed(3);
+  if (type === 'rectangle' || (type === 'polygon' && positions.length > 2)) {
+    result.area = getPolygonArea(positions).toFixed(3);
   }
   return result;
 }

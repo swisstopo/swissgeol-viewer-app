@@ -3,7 +3,6 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import Color from 'cesium/Source/Core/Color';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import PolygonHierarchy from 'cesium/Source/Core/PolygonHierarchy';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 
@@ -43,6 +42,7 @@ export class CesiumDraw extends EventTarget {
 
     this.eventHandler_ = undefined;
     this.activePoints_ = [];
+    this.activePoint_ = undefined;
     this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
     this.sketchLine_ = undefined;
@@ -127,6 +127,7 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.entities.remove(this.activeEntity_);
 
     this.activePoints_ = [];
+    this.activePoint_ = undefined;
     this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
     this.sketchLine_ = undefined;
@@ -201,22 +202,14 @@ export class CesiumDraw extends EventTarget {
     }
   }
 
-  dynamicShapePositions() {
-    return new CallbackProperty(() => {
-      if (this.type === 'polygon') {
-        return new PolygonHierarchy(this.activePoints_);
-      } else if (this.type === 'rectangle') {
-        return new PolygonHierarchy(rectanglify(this.activePoints_));
-      } else {
-        return this.activePoints_;
-      }
-    }, false);
-  }
-
   dynamicSketLinePositions() {
     return new CallbackProperty(() => {
-      const positions = this.type === 'rectangle' ? rectanglify(this.activePoints_) : this.activePoints_;
-      if (positions.length >= 3) {
+      const activePoints = [...this.activePoints_, this.activePoint_];
+      const positions = this.type === 'rectangle' ? rectanglify(activePoints) : activePoints;
+      if (this.type === 'rectangle' && activePoints.length === 4) { // to avoid showing of confusing lines
+        return [];
+      }
+      if (positions.length >= 3 && this.type !== 'line') {
         // close the polygon
         // FIXME: better memory management
         return [...positions, positions[0]];
@@ -227,7 +220,8 @@ export class CesiumDraw extends EventTarget {
   }
 
   updateSketchPoint() {
-    const positions = this.type === 'rectangle' ? rectanglify(this.activePoints_) : this.activePoints_;
+    const activePoints = [...this.activePoints_, this.activePoint_];
+    const positions = this.type === 'rectangle' ? rectanglify(activePoints) : activePoints;
     const pointsLength = positions.length;
     if (pointsLength > 1) {
       let distance;
@@ -241,28 +235,22 @@ export class CesiumDraw extends EventTarget {
         distance = Cartesian3.distance(positions[pointsLength - 2], lastPoint);
         this.sketchPoint_.position.setValue(lastPoint);
       }
-      this.activeDistance_ = Number((distance / 1000).toFixed(2));
-      this.sketchPoint_.label.text.setValue(`${this.activeDistance_}km`);
+      this.activeDistance_ = distance / 1000;
+      this.sketchPoint_.label.text.setValue(`${this.activeDistance_.toFixed(3)}km`);
       return;
     }
     this.sketchPoint_.label.text.setValue('0km');
   }
 
   onLeftClick_(event) {
-    const position = this.viewer_.scene.pickPosition(event.position);
+    const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.position));
     if (position) {
       if (!this.sketchPoint_) {
         this.dispatchEvent(new CustomEvent('drawstart'));
         this.sketchPoint_ = this.drawSketchPoint_(position);
-        this.activePoints_.push(position);
+        this.activePoint_ = position;
 
-        if (this.type === 'polygon' || this.type === 'rectangle') {
-          this.sketchLine_ = this.drawSketchLine_(this.dynamicSketLinePositions());
-        }
-
-        if (this.type !== 'rectangle') { // disrupts work of size calculation for rectangle
-          this.activeEntity_ = this.drawShape_(this.dynamicShapePositions());
-        }
+        this.sketchLine_ = this.drawSketchLine_(this.dynamicSketLinePositions());
 
         if (this.type === 'point') {
           this.activePoints_.push(position);
@@ -272,7 +260,7 @@ export class CesiumDraw extends EventTarget {
       } else if (!this.activeDistances_.includes(this.activeDistance_)) {
         this.activeDistances_.push(this.activeDistance_);
       }
-      this.activePoints_.push(position);
+      this.activePoints_.push(Cartesian3.clone(this.activePoint_));
       if (this.type === 'rectangle' && this.activePoints_.length === 4) {
         this.finishDrawing();
       }
@@ -281,11 +269,10 @@ export class CesiumDraw extends EventTarget {
 
   onMouseMove_(event) {
     if (this.sketchPoint_) {
-      const position = this.viewer_.scene.pickPosition(event.endPosition);
+      const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
       if (position) {
+        this.activePoint_ = position;
         this.updateSketchPoint();
-        this.activePoints_.pop();
-        this.activePoints_.push(position);
       }
     }
   }
@@ -294,7 +281,6 @@ export class CesiumDraw extends EventTarget {
     if (!this.activeDistances_.includes(this.activeDistance_)) {
       this.activeDistances_.push(this.activeDistance_);
     }
-    this.activePoints_.pop();
     this.finishDrawing();
   }
 }

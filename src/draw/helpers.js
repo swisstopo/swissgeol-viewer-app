@@ -12,7 +12,7 @@ import i18next from 'i18next';
 export function getDimensionLabelText(type, distances) {
   let text;
   if (type === 'rectangle') {
-    text = `${distances[0]}km x ${distances[1]}km`;
+    text = `${Number(distances[0]).toFixed(3)}km x ${Number(distances[1]).toFixed(3)}km`;
   } else {
     const length = distances.reduce((a, b) => a + b, 0);
     text = `${i18next.t('Length')}: ${length}km`;
