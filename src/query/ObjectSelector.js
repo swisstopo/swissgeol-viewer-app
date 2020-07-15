@@ -5,7 +5,7 @@ import {
   DRILL_PICK_LIMIT,
   LAYER_TYPES,
   OBJECT_HIGHLIGHT_COLOR
-} from './constants';
+} from '../constants';
 import {extractEntitiesAttributes, extractPrimitiveAttributes, isPickable} from './objectInformation';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';

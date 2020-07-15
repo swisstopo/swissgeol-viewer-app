@@ -12,6 +12,7 @@ import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 import './ngm-map-configuration.js';
+import QueryManager from '../query/QueryManager.js';
 
 const WELCOME_PANEL = 'welcome-panel';
 const DRAW_TOOL_GST = 'draw-tool-gst';
@@ -34,6 +35,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
     if (!this.viewer) {
       return '';
     }
+
+    this.queryManager.activeLayers = this.activeLayers
+    .filter(config => config.visible)
+    .map(config => config.layer);
 
     return html`
       <div class="ui styled accordion" id="${WELCOME_PANEL}">
@@ -181,6 +186,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
   update(changedProperties) {
     if (this.viewer && !this.layerActions) {
       this.layerActions = new LayersActions(this.viewer);
+      // Handle queries (local and Swisstopo)
+      this.queryManager = new QueryManager(this.viewer);
     }
     if (!this.catalogLayers) {
       this.catalogLayers = [...defaultLayerTree];

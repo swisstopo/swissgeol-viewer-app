@@ -30,9 +30,10 @@ import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
 import './elements/ngm-full-screen-view.js';
 import {LocalStorageController} from './LocalStorageController.js';
-import ObjectSelector from './ObjectSelector.js';
+import ObjectSelector from './query/ObjectSelector.js';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import SwisstopoIdentify from './SwisstopoIdentify.js';
+import SwisstopoIdentify from './query/SwisstopoIdentify.js';
+import QueryManager from './query/QueryManager.js';
 
 
 initSentry();
@@ -135,45 +136,6 @@ const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
     });
   }
 });
-
-const objectSelector = new ObjectSelector(viewer);
-const swisstopoIndentify = new SwisstopoIdentify();
-const onclick = async (click) => {
-  const pickedPosition = scene.pickPosition(click.position);
-  let attributes = objectSelector.pickAttributes(click.position, pickedPosition);
-  const lang = i18next.language;
-  const layers = 'ch.swisstopo.geologie-geocover';
-  const identifyData = await swisstopoIndentify.identify(pickedPosition, layers, lang);
-  if (identifyData) {
-    const d = identifyData;
-    const {layerBodId, featureId} = identifyData;
-    let popupContent = await swisstopoIndentify.getPopupForFeature(layerBodId, featureId, lang);
-    if (popupContent) {
-      popupContent = popupContent.replace(/cell-left/g, 'key')
-      .replace(/<td>/g, '<td class="value">')
-      .replace(/<table>/g, '<table class="ui compact small very basic table">');
-    }
-    const onshow = () => {
-      console.log('showing', d.geometry);
-    };
-    const onhide = () => {
-      console.log('hiding', d.geometry);
-    };
-    attributes = {
-      popupContent,
-      onhide,
-      onshow
-    };
-  }
-
-  const objectInfo = document.querySelector('ngm-object-information');
-  objectInfo.info = attributes;
-  objectInfo.opened = !!attributes;
-
-  scene.requestRender();
-};
-viewer.screenSpaceEventHandler.setInputAction(click => onclick(click), ScreenSpaceEventType.LEFT_CLICK);
-
 
 const {destination, orientation} = getCameraView();
 viewer.camera.flyTo({
