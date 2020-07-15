@@ -31,6 +31,9 @@ import './elements/ngm-slow-loading.js';
 import './elements/ngm-full-screen-view.js';
 import {LocalStorageController} from './LocalStorageController.js';
 import ObjectSelector from './ObjectSelector.js';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import SwisstopoIdentify from './SwisstopoIdentify.js';
+
 
 initSentry();
 setupI18n();
@@ -61,7 +64,15 @@ async function zoomTo(config) {
 }
 
 // Temporarily increasing the maximum screen space error to load low LOD tiles.
-viewer.scene.globe.maximumScreenSpaceError = 10000;
+/**
+ * @type {import('cesium/Source/Scene/Scene.js').default}
+ */
+const scene = viewer.scene;
+/**
+ * @type {import('cesium/Source/Scene/Globe.js').default}
+ */
+const globe = scene.globe;
+globe.maximumScreenSpaceError = 10000;
 
 // setup auth component
 const auth = document.querySelector('ngm-auth');
@@ -73,8 +84,8 @@ const sideBar = document.querySelector('ngm-left-side-bar');
 sideBar.viewer = viewer;
 sideBar.zoomTo = zoomTo;
 
-const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
-  if (viewer.scene.globe.tilesLoaded) {
+const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
+  if (globe.tilesLoaded) {
     unlisten();
     let sse = 2;
     const searchParams = new URLSearchParams(document.location.search);
@@ -84,7 +95,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     if (searchParams.has('maximumScreenSpaceError')) {
       sse = parseFloat(searchParams.get('maximumScreenSpaceError'));
     }
-    viewer.scene.globe.maximumScreenSpaceError = sse;
+    globe.maximumScreenSpaceError = sse;
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
       setupSearch(viewer, document.querySelector('ga-search'), sideBar);
@@ -125,7 +136,44 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
   }
 });
 
-new ObjectSelector(viewer);
+const objectSelector = new ObjectSelector(viewer);
+const swisstopoIndentify = new SwisstopoIdentify();
+const onclick = async (click) => {
+  const pickedPosition = scene.pickPosition(click.position);
+  let attributes = objectSelector.pickAttributes(click.position, pickedPosition);
+  const lang = i18next.language;
+  const layers = 'ch.swisstopo.geologie-geocover';
+  const identifyData = await swisstopoIndentify.identify(pickedPosition, layers, lang);
+  if (identifyData) {
+    const d = identifyData;
+    const {layerBodId, featureId} = identifyData;
+    let popupContent = await swisstopoIndentify.getPopupForFeature(layerBodId, featureId, lang);
+    if (popupContent) {
+      popupContent = popupContent.replace(/cell-left/g, 'key')
+      .replace(/<td>/g, '<td class="value">')
+      .replace(/<table>/g, '<table class="ui compact small very basic table">');
+    }
+    const onshow = () => {
+      console.log('showing', d.geometry);
+    };
+    const onhide = () => {
+      console.log('hiding', d.geometry);
+    };
+    attributes = {
+      popupContent,
+      onhide,
+      onshow
+    };
+  }
+
+  const objectInfo = document.querySelector('ngm-object-information');
+  objectInfo.info = attributes;
+  objectInfo.opened = !!attributes;
+
+  scene.requestRender();
+};
+viewer.screenSpaceEventHandler.setInputAction(click => onclick(click), ScreenSpaceEventType.LEFT_CLICK);
+
 
 const {destination, orientation} = getCameraView();
 viewer.camera.flyTo({
