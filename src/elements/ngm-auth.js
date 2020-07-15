@@ -3,7 +3,6 @@ import Auth from '../auth.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 
-
 /**
  * Authentication component
  */
@@ -52,7 +51,7 @@ class NgmAuth extends I18nMixin(LitElement) {
   }
 
   logout() {
-    Auth.removeUser();
+    Auth.clear();
     this.user = Auth.getUser();
   }
 

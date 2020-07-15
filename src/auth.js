@@ -1,6 +1,7 @@
 
 const cognitoState = 'cognito_state';
-const cognitoUser = 'cognito_user';
+const cognitoAccessToken = 'cognito_access_token';
+const cognitoIdToken = 'cognito_id_token';
 
 // example: #access_token=header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature&token_type=Bearer&state=1234
 const isResponse = /^#[\w]+=[\w.=-]+(&[\w]+=[\w.=-]+)*$/;
@@ -16,8 +17,10 @@ export default class Auth {
         try {
             const response = this.parseResponse(window.location.hash);
             if (response.token_type === 'Bearer' && response.state === this.state()) {
-                const user = this.parseToken(response.access_token);
-                this.setUser(user);
+                this.parseToken(response.access_token);
+                this.parseToken(response.id_token)
+                this.setAccessToken(response.access_token);
+                this.setIdToken(response.id_token);
             }
         } catch (e) {
             // do nothing
@@ -57,22 +60,39 @@ export default class Auth {
         return localStorage.getItem(cognitoState);
     }
 
+    static getAccessToken() {
+        return localStorage.getItem(cognitoAccessToken);
+    }
+
+    static setAccessToken(token) {
+        localStorage.setItem(cognitoAccessToken, token);
+    }
+
+    static getIdToken() {
+        return localStorage.getItem(cognitoIdToken);
+    }
+
+    static setIdToken(token) {
+        localStorage.setItem(cognitoIdToken, token);
+    }
+
+    static clear() {
+        localStorage.removeItem(cognitoState);
+        localStorage.removeItem(cognitoAccessToken);
+        localStorage.removeItem(cognitoIdToken);
+    }
+
     static getUser() {
-        const value = localStorage.getItem(cognitoUser);
-        return JSON.parse(value);
-    }
-
-    static setUser(user) {
-        const value = JSON.stringify(user);
-        localStorage.setItem(cognitoUser, value);
-    }
-
-    static removeUser() {
-        localStorage.removeItem(cognitoUser);
+        try {
+            const token = this.getAccessToken();
+            return this.parseToken(token);
+        } catch (e) {
+            return null;
+        }
     }
 
     static async waitForAuthenticate() {
-        while (localStorage.getItem(cognitoUser) === null) {
+        while (this.getUser() === null) {
             await new Promise((resolve) => {
                 setTimeout(() => resolve(), 100);
             });
