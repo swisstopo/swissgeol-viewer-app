@@ -46,6 +46,14 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     this.depth = -1500;
 
     this.positions_ = null;
+
+    this.abortController = new AbortController();
+    document.addEventListener('keydown', event => {
+      if (event.code === 'Escape') {
+        this.abortController.abort();
+        this.abortController = new AbortController();
+      }
+    });
   }
 
   updated() {
@@ -100,11 +108,11 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
       const coordinates = this.positions_.map(degreesToLv95).map(round);
       let promise;
       if (this.tool === 'borehole') {
-        promise = borehole(coordinates);
+        promise = borehole(coordinates, this.abortController.signal);
       } else if (this.tool === 'crossSection') {
-        promise = verticalCrossSection(coordinates);
+        promise = verticalCrossSection(coordinates, this.abortController.signal);
       } else if (this.tool === 'horizontalCrossSection') {
-        promise = horizontalCrossSection(coordinates, this.depth);
+        promise = horizontalCrossSection(coordinates, this.abortController.signal, this.depth);
       }
       this.loading = true;
       promise

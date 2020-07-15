@@ -10,41 +10,45 @@ const horizontalSectionParams = 'boxWidth={width}&colorMapId=&csRootElement=0&cs
 
 /**
  * @param {Array<Array<number>>} coordinates
+ * @param {AbortSignal} signal
  * @param {number} [depth=5000] depth in meters
  * @param {string} [title=''] output title
  * @return {Promise}
  */
-export function borehole(coordinates, depth = 5000, title = '') {
+export function borehole(coordinates, signal, depth = 5000, title = '') {
   const url = `${boreholeBaseUrl}?${boreholeParams}`
     .replace('{coordinates}', coordinates.map(coordinate => coordinate.join(' ')).join(','))
     .replace('{depth}', depth)
     .replace('{title}', title);
 
-  return fetch(url).then(response => response.json());
+  return fetch(url, {signal}).then(response => response.json());
 }
 
 
 /**
  * @param {Array<Array<number>>} coordinates
+ * @param {AbortSignal} signal
  * @param {string} [title=''] output title
  * @return {Promise}
  */
-export function verticalCrossSection(coordinates, title = '') {
+export function verticalCrossSection(coordinates, signal, title = '') {
   const url = `${verticalCrossSectionBaseUrl}?${verticalCrossSectionParams}`
     .replace('{coordinates}', coordinates.map(coordinate => coordinate.join(' ')).join(','))
     .replace('{title}', title);
 
-  return fetch(url).then(response => response.json());
+
+  return fetch(url, {signal}).then(response => response.json());
 }
 
 
 /**
  * @param {Array<Array<number>>} coordinates
+ * @param {AbortSignal} signal
  * @param {number} [depth=-2500] depth in meters
  * @param {string} [title=''] output title
  * @return {Promise}
  */
-export function horizontalCrossSection(coordinates, depth = -2500, title = '') {
+export function horizontalCrossSection(coordinates, signal, depth = -2500, title = '') {
   // 'coordinates' parameter is the rectangle:
   // 0 ---------- 3
   // |            |
@@ -68,7 +72,7 @@ export function horizontalCrossSection(coordinates, depth = -2500, title = '') {
     .replace('{depth}', depth)
     .replace('{title}', title);
 
-  return fetch(url).then(response => response.json());
+  return fetch(url, {signal}).then(response => response.json());
 }
 
 
