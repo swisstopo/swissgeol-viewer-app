@@ -28,16 +28,9 @@ export default class QueryManager {
         .replace(/<td>/g, '<td class="value">')
         .replace(/<table>/g, '<table class="ui compact small very basic table">');
       }
-      const onshow = () => {
-        console.log('showing', d.geometry);
-      };
-      const onhide = () => {
-        console.log('hiding', d.geometry);
-      };
+
       return {
         popupContent,
-        onhide,
-        onshow
       };
     }
   }
@@ -49,7 +42,7 @@ export default class QueryManager {
     const layers = 'ch.swisstopo.geologie-geocover';
     // we only search the remote Swisstopo service when there was no result for the local search
     // and the geocover layer is enabled
-    if (!attributes && this.searchableLayers.includes(layers)) {
+    if (!attributes && pickedPosition && this.searchableLayers.includes(layers)) {
       const result = await this.querySwisstopo(pickedPosition, layers);
       attributes = result || attributes;
     }

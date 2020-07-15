@@ -59,13 +59,6 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
         content = unsafeHTML(this.info.popupContent);
       }
 
-      if (this.opened && this.info.onshow) {
-        this.info.onshow();
-      }
-      if (!this.opened && this.info.onhide) {
-        this.info.onhide();
-      }
-
       return html`
         <div class="ui segment" ?hidden="${!this.opened}">
           <div class="header">
