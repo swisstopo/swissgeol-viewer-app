@@ -30,10 +30,6 @@ import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
 import './elements/ngm-full-screen-view.js';
 import {LocalStorageController} from './LocalStorageController.js';
-import ObjectSelector from './query/ObjectSelector.js';
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import SwisstopoIdentify from './query/SwisstopoIdentify.js';
-import QueryManager from './query/QueryManager.js';
 
 
 initSentry();
