@@ -324,11 +324,13 @@ class LeftSideBar extends I18nMixin(LitElement) {
             aoiElement.setAreasClickable(true);
             const gstElement = this.querySelector('ngm-gst-interaction');
             gstElement.changeTool();
+            this.queryManager.enabled = true;
           },
           onOpening: () => {
             const aoiElement = this.querySelector('ngm-aoi-drawer');
             aoiElement.setAreasClickable(false);
             $(`#${DRAW_TOOL_AOI}`).accordion('close', 0);
+            this.queryManager.enabled = false;
           }
         });
         break;
@@ -338,8 +340,12 @@ class LeftSideBar extends I18nMixin(LitElement) {
           onClosing: () => {
             const aoiElement = this.querySelector('ngm-aoi-drawer');
             aoiElement.cancelDraw();
+            this.queryManager.enabled = true;
           },
-          onOpening: () => $(`#${DRAW_TOOL_GST}`).accordion('close', 0)
+          onOpening: () => {
+            $(`#${DRAW_TOOL_GST}`).accordion('close', 0);
+            this.queryManager.enabled = false;
+          }
         });
         break;
       }

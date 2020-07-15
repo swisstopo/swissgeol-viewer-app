@@ -9,6 +9,7 @@ export default class QueryManager {
     this.objectSelector = new ObjectSelector(viewer);
     this.swisstopoIndentify = new SwisstopoIdentify();
     this.scene = viewer.scene;
+    this.enabled = true;
     viewer.screenSpaceEventHandler.setInputAction(click => this.onclick(click), ScreenSpaceEventType.LEFT_CLICK);
   }
 
@@ -20,7 +21,6 @@ export default class QueryManager {
     const lang = i18next.language;
     const identifyData = await this.swisstopoIndentify.identify(pickedPosition, layers, lang);
     if (identifyData) {
-      const d = identifyData;
       const {layerBodId, featureId} = identifyData;
       let popupContent = await this.swisstopoIndentify.getPopupForFeature(layerBodId, featureId, lang);
       if (popupContent) {
@@ -36,6 +36,12 @@ export default class QueryManager {
   }
 
   async onclick(click) {
+    if (!this.enabled) {
+      const objectInfo = document.querySelector('ngm-object-information');
+      objectInfo.info = null;
+      objectInfo.opened = false;
+      return;
+    }
     const pickedPosition = this.scene.pickPosition(click.position);
     let attributes = this.objectSelector.pickAttributes(click.position, pickedPosition);
 
