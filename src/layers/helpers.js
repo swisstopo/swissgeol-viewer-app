@@ -1,4 +1,5 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
+import Resource from 'cesium/Source/Core/Resource';
 import IonResource from 'cesium/Source/Core/IonResource';
 import GeoJsonDataSource from 'cesium/Source/DataSources/GeoJsonDataSource';
 import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
@@ -14,6 +15,8 @@ import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 import Matrix3 from 'cesium/Source/Core/Matrix3';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cesium3DTileColorBlendMode from 'cesium/Source/Scene/Cesium3DTileColorBlendMode';
+import Auth from '../auth.js';
+
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -37,6 +40,16 @@ export function createIonGeoJSONFromConfig(viewer, config) {
 }
 
 export function create3DTilesetFromConfig(viewer, config) {
+
+  if (config.restricted) {
+    config.url = new Resource({
+      url: config.url,
+      headers: {
+        'Authorization': Auth.getIdToken()
+      }
+    })
+  }
+
   const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
