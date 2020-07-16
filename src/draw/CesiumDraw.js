@@ -96,7 +96,8 @@ export class CesiumDraw extends EventTarget {
       return;
     }
     if (this.type === 'point') {
-      this.entities_.push(this.drawShape_(this.activePoints_[0]));
+      positions.push(this.activePoint_);
+      this.entities_.push(this.drawShape_(this.activePoint_));
     } else if (this.type === 'rectangle') {
       positions = rectanglify(this.activePoints_);
       this.entities_.push(this.drawShape_(positions));
