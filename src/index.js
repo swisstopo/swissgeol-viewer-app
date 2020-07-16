@@ -30,7 +30,7 @@ import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
 import './elements/ngm-full-screen-view.js';
 import {LocalStorageController} from './LocalStorageController.js';
-import ObjectSelector from './ObjectSelector.js';
+
 
 initSentry();
 setupI18n();
@@ -61,7 +61,15 @@ async function zoomTo(config) {
 }
 
 // Temporarily increasing the maximum screen space error to load low LOD tiles.
-viewer.scene.globe.maximumScreenSpaceError = 10000;
+/**
+ * @type {import('cesium/Source/Scene/Scene.js').default}
+ */
+const scene = viewer.scene;
+/**
+ * @type {import('cesium/Source/Scene/Globe.js').default}
+ */
+const globe = scene.globe;
+globe.maximumScreenSpaceError = 10000;
 
 // setup auth component
 const auth = document.querySelector('ngm-auth');
@@ -73,8 +81,8 @@ const sideBar = document.querySelector('ngm-left-side-bar');
 sideBar.viewer = viewer;
 sideBar.zoomTo = zoomTo;
 
-const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() => {
-  if (viewer.scene.globe.tilesLoaded) {
+const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
+  if (globe.tilesLoaded) {
     unlisten();
     let sse = 2;
     const searchParams = new URLSearchParams(document.location.search);
@@ -84,7 +92,7 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     if (searchParams.has('maximumScreenSpaceError')) {
       sse = parseFloat(searchParams.get('maximumScreenSpaceError'));
     }
-    viewer.scene.globe.maximumScreenSpaceError = sse;
+    globe.maximumScreenSpaceError = sse;
     window.requestAnimationFrame(() => {
       addMantelEllipsoid(viewer);
       setupSearch(viewer, document.querySelector('ga-search'), sideBar);
@@ -124,8 +132,6 @@ const unlisten = viewer.scene.globe.tileLoadProgressEvent.addEventListener(() =>
     });
   }
 });
-
-new ObjectSelector(viewer);
 
 const {destination, orientation} = getCameraView();
 viewer.camera.flyTo({

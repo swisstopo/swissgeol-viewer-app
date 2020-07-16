@@ -6,7 +6,7 @@ import {escapeRegExp} from './utils.js';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import Math from 'cesium/Source/Core/Math';
-import {extractEntitiesAttributes} from './objectInformation.js';
+import {extractEntitiesAttributes} from './query/objectInformation.js';
 
 /**
  * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer

@@ -5,32 +5,38 @@ import {
   DRILL_PICK_LIMIT,
   LAYER_TYPES,
   OBJECT_HIGHLIGHT_COLOR
-} from './constants';
+} from '../constants';
 import {extractEntitiesAttributes, extractPrimitiveAttributes, isPickable} from './objectInformation';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 
 export default class ObjectSelector {
+  /**
+   *
+   * @param {import('cesium/Source/Widgets/Viewer/Viewer.js').default} viewer
+   */
   constructor(viewer) {
     this.viewer = viewer;
+
+    /**
+     * @type {import('cesium/Source/Scene/Scene.js').default}
+     */
+    this.scene = viewer.scene;
+
     this.selectedObj = null;
     this.savedColor = null;
 
     const objectInfo = document.querySelector('ngm-object-information');
     objectInfo.addEventListener('closed', () => {
       this.unhighlight();
-      viewer.scene.requestRender();
+      this.scene.requestRender();
     });
-
-    viewer.screenSpaceEventHandler.setInputAction(click => this.onClick(click), ScreenSpaceEventType.LEFT_CLICK);
   }
 
-  onClick(click) {
+
+  pickAttributes(clickPosition, pickedPosition) {
     this.unhighlight();
-    const objectInfo = document.querySelector('ngm-object-information');
-    const objects = this.viewer.scene.drillPick(click.position, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
-    const pickedPosition = this.viewer.scene.pickPosition(click.position);
+    const objects = this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
     let attributes = null;
 
     if (objects.length > 0) {
@@ -44,7 +50,7 @@ export default class ObjectSelector {
         attributes.zoom = () => {
           const boundingSphere = new BoundingSphere(pickedPosition, 500);
           const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
-          this.viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
+          this.scene.camera.flyToBoundingSphere(boundingSphere, {
             duration: 0,
             offset: zoomHeadingPitchRange
           });
@@ -56,10 +62,7 @@ export default class ObjectSelector {
       }
     }
 
-    objectInfo.info = attributes;
-    objectInfo.opened = !!attributes;
-
-    this.viewer.scene.requestRender();
+    return attributes;
   }
 
   handleEntitySelect(entity, attributes) {

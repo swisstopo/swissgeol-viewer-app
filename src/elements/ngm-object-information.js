@@ -2,6 +2,7 @@ import {LitElement, html} from 'lit-element';
 import draggable from './draggable.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
+import {unsafeHTML} from 'lit-html/directives/unsafe-html';
 
 class NgmObjectInformation extends I18nMixin(LitElement) {
 
@@ -42,6 +43,22 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
 
   render() {
     if (this.info) {
+      let content = html`
+        <table class="ui compact small very basic table">
+        <tbody>
+          ${Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => html`
+            <tr class="top aligned">
+              <td class="key">${key}</td>
+              <td class="val">${value}</td>
+            </tr>
+          `)}
+          </tbody>
+        </table>`;
+
+      if (this.info.popupContent) {
+        content = unsafeHTML(this.info.popupContent);
+      }
+
       return html`
         <div class="ui segment" ?hidden="${!this.opened}">
           <div class="header">
@@ -56,16 +73,7 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
           </div>
           <div class="ui divider"></div>
           <div class="content-container">
-            <table class="ui compact small very basic table">
-              <tbody>
-                ${Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => html`
-                  <tr class="top aligned">
-                    <td class="key">${key}</td>
-                    <td class="val">${value}</td>
-                  </tr>
-                `)}
-              </tbody>
-            </table>
+            ${content}
           </div>
         </div>
       `;
