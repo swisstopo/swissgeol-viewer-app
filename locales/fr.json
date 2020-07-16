@@ -1,4 +1,4 @@
-﻿{
+{
   "aare_valley_label": "Lithologie de la vallée de l'Aar",
   "add_polygon_area_btn_label": "Dessiner un polygone",
   "add_rect_area_btn_label": "Dessiner un rectangle",
@@ -93,6 +93,7 @@
   "Perimeter": "Périmètre",
   "remove_all_area_btn_label": "Effacer les zones",
   "remove_btn_tooltip": "Effacer",
+  "request_aborted": "",
   "reset_view_btn": "Réinitialiser la vue",
   "review_link": "Donnez votre avis",
   "review_window_text": "Bienvenue sur swissgeol.ch, le visualisateur du sous-sol en 3D ! Il s'agit d'une version bêta avec des fonctionnalités et des données limitées, des erreurs peuvent survenir.",

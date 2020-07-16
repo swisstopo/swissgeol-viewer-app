@@ -120,7 +120,13 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
           this.imageUrl = json.imageUrl;
           this.requestUpdate();
         })
-        .catch(err => showError(`${err.name}: ${err.message}`))
+        .catch(err => {
+          if (err.name === 'AbortError') {
+            showWarning(i18next.t('request_aborted'));
+          } else {
+            showError(`${err.name}: ${err.message}`);
+          }
+        })
         .finally(() => this.loading = false);
     } else {
       console.error('invalid params');
