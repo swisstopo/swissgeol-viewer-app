@@ -108,6 +108,11 @@ export const TUNNEL_STYLE = {
     }
 };
 
+export const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
+export const CENOZOIC_BEDROCK_ORDER = ['Name', 'Horizon', ...DOWNLOAD_PROP_ORDER];
+export const CONSOLIDATED_ORDER = ['Name', 'Horizon', 'HARMOS-ORIGINAL', ...DOWNLOAD_PROP_ORDER];
+export const FAULTS_ORDER = ['Name', 'Source', 'Status', 'Type', 'Version', ...DOWNLOAD_PROP_ORDER];
+
 const t = a => a;
 const geo_map_series = {
   label: t('geological_map_series_label'),
@@ -261,7 +266,8 @@ const subsurface = {
           label: t('top_bedrock_label'),
           layer: 'top_bedrock',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CENOZOIC_BEDROCK_ORDER
         },
       ]
     },
@@ -274,7 +280,8 @@ const subsurface = {
           label: t('top_omm_label'),
           layer: 'top_omm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -282,7 +289,8 @@ const subsurface = {
           label: t('top_usm_label'),
           layer: 'top_usm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -291,16 +299,7 @@ const subsurface = {
           layer: 'top_umm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: [
-            'Name',
-            'Horizon',
-            'HARMOS-ORIGINAL',
-            'Download Move',
-            'Download GoCad',
-            'Download DXF',
-            'Download ASCII',
-            'Download All data'
-          ]
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -308,7 +307,8 @@ const subsurface = {
           label: t('base_cenozoic_label'),
           layer: 'base_cenozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CENOZOIC_BEDROCK_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -316,7 +316,8 @@ const subsurface = {
           label: t('top_creatateus_label'),
           layer: 'top_creatateus',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -324,7 +325,8 @@ const subsurface = {
           label: t('top_upper_malm_label'),
           layer: 'top_upper_malm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -332,7 +334,8 @@ const subsurface = {
           label: t('top_lower_malm_label'),
           layer: 'top_lower_malm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -340,7 +343,8 @@ const subsurface = {
           label: t('top_dogger_label'),
           layer: 'top_dogger',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -348,7 +352,8 @@ const subsurface = {
           label: t('top_lias_label'),
           layer: 'top_lias',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -356,7 +361,8 @@ const subsurface = {
           label: t('top_keuper_label'),
           layer: 'top_keuper',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -364,7 +370,8 @@ const subsurface = {
           label: t('top_muschelkalk_label'),
           layer: 'top_muschelkalk',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -372,7 +379,8 @@ const subsurface = {
           label: t('base_mesozoic_label'),
           layer: 'base_mesozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CENOZOIC_BEDROCK_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -380,7 +388,8 @@ const subsurface = {
           label: t('base_cermocarboniferous'),
           layer: 'base_cermocarboniferous',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -388,7 +397,8 @@ const subsurface = {
           label: t('base_cermocarboniferous_supposed'),
           layer: 'base_cermocarboniferous_supposed',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER
         },
       ]
     },
@@ -401,7 +411,8 @@ const subsurface = {
           label: t('faults_geomol'),
           layer: 'faults_geomol',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true
+          pickable: true,
+          propsOrder: FAULTS_ORDER
         },
       ]
     },
