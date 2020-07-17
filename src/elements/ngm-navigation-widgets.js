@@ -6,6 +6,7 @@ import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';
 import './ngm-keyboard-info-popup.js';
 import './ngm-nadir-view.js';
+import './ngm-camera-information.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 import {SWITZERLAND_RECTANGLE} from '../constants.js';
