@@ -52,14 +52,12 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
 
   updateFromCamera() {
     const camera = this.scene.camera;
-    const altitude = this.scene.globe.getHeight(camera.positionCartographic);
-    if (altitude !== undefined) {
-      // globe is ready
-      this.elevation = camera.positionCartographic.height - altitude;
-      this.heading = CesiumMath.toDegrees(camera.heading);
-      this.pitch = CesiumMath.toDegrees(camera.pitch);
-      this.coordinates = formatCartographicAs2DLv95(camera.positionCartographic);
-    }
+    let altitude = this.scene.globe.getHeight(camera.positionCartographic);
+    altitude = altitude ? altitude : 0;
+    this.elevation = camera.positionCartographic.height - altitude;
+    this.heading = CesiumMath.toDegrees(camera.heading);
+    this.pitch = CesiumMath.toDegrees(camera.pitch);
+    this.coordinates = formatCartographicAs2DLv95(camera.positionCartographic);
   }
 
   render() {

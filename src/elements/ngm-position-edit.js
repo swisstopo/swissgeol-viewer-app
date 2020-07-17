@@ -84,7 +84,8 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
       this.xValue = Number(lon.toFixed(6));
       this.yValue = Number(lat.toFixed(6));
     }
-    const altitude = this.scene.globe.getHeight(position);
+    let altitude = this.scene.globe.getHeight(position);
+    altitude = altitude ? altitude : 0;
     this.heightValue = Math.round(position.height - altitude);
     this.angleValue = Math.round(CesiumMath.toDegrees(this.scene.camera.heading));
     this.tiltValue = Math.round(CesiumMath.toDegrees(this.scene.camera.pitch));
@@ -94,7 +95,8 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
     this.xValue = Number(this.querySelector('#ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('#ngm-coord-y-input').value);
     this.heightValue = Number(this.querySelector('#ngm-height-input').value);
-    const altitude = this.scene.globe.getHeight(this.scene.camera.positionCartographic);
+    let altitude = this.scene.globe.getHeight(this.scene.camera.positionCartographic);
+    altitude = altitude ? altitude : 0;
     let lon = this.xValue;
     let lat = this.yValue;
     const height = this.heightValue + altitude;

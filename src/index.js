@@ -22,7 +22,6 @@ Auth.initialize();
 import './elements/ngm-auth.js';
 import './elements/ngm-object-information.js';
 import './elements/ngm-navigation-widgets.js';
-import './elements/ngm-camera-information.js';
 import './elements/ngm-feature-height.js';
 import './elements/ngm-left-side-bar.js';
 import './elements/ngm-review-window.js';
