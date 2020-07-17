@@ -2,7 +2,7 @@ import {I18nMixin} from '../i18n';
 import i18next from 'i18next';
 import {LitElement, html} from 'lit-element';
 
-const ELEMENTS_TO_HIDE = ['.navigation-widgets', 'ngm-review-window'];
+const ELEMENTS_TO_HIDE = ['ngm-navigation-widgets', 'ngm-review-window'];
 
 class NgmFullScreenView extends I18nMixin(LitElement) {
 

@@ -319,8 +319,8 @@ h4.ui.horizontal.divider.ngm-background-divider {
 
 ngm-full-screen-view {
   position: absolute;
-  right: 38px;
-  top: 548px;
+  right: 35px;
+  top: 100%;
   z-index: 1;
 }
 
