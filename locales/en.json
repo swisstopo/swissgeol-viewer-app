@@ -1,4 +1,4 @@
-﻿{
+{
   "aare_valley_label": "Aare valley lithology",
   "add_polygon_area_btn_label": "Draw polygon",
   "add_rect_area_btn_label": "Draw rectangle",
@@ -93,6 +93,7 @@
   "Perimeter": "Perimeter",
   "remove_all_area_btn_label": "Clear Areas",
   "remove_btn_tooltip": "Remove",
+  "request_aborted": "Request aborted",
   "reset_view_btn": "Reset View",
   "review_link": "Review beta.swissgeol.ch",
   "review_window_text": "Welcome to swissgeol.ch, the 3D subsurface viewer! This is a beta-version with limited functionality and data, errors may occur.",
