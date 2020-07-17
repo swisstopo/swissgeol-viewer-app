@@ -50,6 +50,28 @@ export default class Auth {
         }
     }
 
+    // static refreshToken(token) {
+    //   fetch("https://cognito-idp.eu-central-1.amazonaws.com/", {
+    //       headers: {
+    //           "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
+    //           "Content-Type": "application/x-amz-json-1.1",
+    //       },
+    //       mode: 'cors',
+    //       cache: 'no-cache',
+    //       method: 'POST',
+    //       body: JSON.stringify({
+    //           ClientId: "eu-central-1_5wXXpcDt8",
+    //           AuthFlow: 'REFRESH_TOKEN_AUTH',
+    //           AuthParameters: {
+    //               REFRESH_TOKEN: "<cognito-refresh-toke>",
+    //               //SECRET_HASH: "your_secret", // In case you have configured client secret
+    //           }
+    //       }),
+    //   }).then((res) => {
+    //       return res.json(); // this will give jwt id and access tokens
+    //   });
+    // }
+
     static state(state) {
         if (state !== undefined) {
             localStorage.setItem(cognitoState, state);

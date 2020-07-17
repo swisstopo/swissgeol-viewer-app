@@ -1,3 +1,15 @@
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/proxy-worker.js', {scope: '/'}).then(function(registration) {
+    // registration worked
+    console.log('Registration succeeded.');
+      //registration.update();
+
+  }).catch(function(error) {
+    // registration failed
+    console.log('Registration failed with ' + error);
+  });
+};
+
 import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';
 import {
@@ -169,6 +181,11 @@ function showSlowLoadingWindow() {
 i18next.on('initialized', () => {
   showSlowLoadingWindow();
 });
+
+
+
+
+
 
 const origin = window.location.origin;
 const pathname = window.location.pathname;

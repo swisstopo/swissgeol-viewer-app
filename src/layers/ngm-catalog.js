@@ -12,6 +12,7 @@ class Catalog extends I18nMixin(LitElement) {
   }
 
   getCategoryOrLayerTemplate(c) {
+    //if c.authenticated
     if (c.children)
       return this.getCategoryTemplate(c);
     return this.getLayerTemplate(c);
