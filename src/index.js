@@ -1,14 +1,41 @@
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/proxy-worker.js', {scope: '/'}).then(function(registration) {
-    // registration worked
-    console.log('Registration succeeded.');
-      //registration.update();
 
-  }).catch(function(error) {
-    // registration failed
-    console.log('Registration failed with ' + error);
+function onStateChange(from) {
+  return function(e) {
+    console.log('statechange', from, 'to', e.target.state);
+  }
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./proxy-worker.js', {scope: './'}).then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      if (registration.waiting) {
+        console.log('ServiceWorker waiting');
+        registration.waiting.addEventListener('statechange', onStateChange('waiting'));
+      }
+      if (registration.installing) {
+        console.log('ServiceWorker installing');
+        registration.installing.addEventListener('statechange', onStateChange('installing'));
+      }
+      if (registration.active) {
+        console.log('ServiceWorker active');
+        registration.active.addEventListener('statechange', onStateChange('active'));
+      }
+    }).catch(function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+    // navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    //   console.log('Registrations: ', registrations);
+    // //   for(let registration of registrations) {
+    // //    registration.unregister()
+    // //  }
+    // })    });
   });
 };
+
+
 
 import {initSentry} from './sentry.js';
 import {setupI18n} from './i18n.js';

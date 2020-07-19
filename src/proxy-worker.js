@@ -26,7 +26,44 @@ function log(message) {
   console.log(VERSION, message);
 }
 
+function openIndexedDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("ngmdb", 1);
+    request.onsuccess = event => {
+      resolve(request.result);
+    };
+    request.onerror = () => {
+      reject(request.error);
+    };
+    request.onupgradeneeded = () => {
+      reject('Error, the indexedDB should exist');
+    };
+  });
+}
 
+function readFromIndexedDB(db, key) {
+  return new Promise((resolve, reject) => {
+    const dbRequest = db.transaction("responses").objectStore("auth").get(key);
+    dbRequest.onsuccess = function(dbEvent) {
+      const init = {"status" : 200 , "statusText" : "OK"};
+      const result = dbEvent.target.result;
+      if (result && result.content) {
+        let d = result.content
+        if (d.startsWith('data')) {
+          d = dataURItoBlob(d);
+        }
+        resolve(new Response(d, init));
+      } else {
+        console.log('no content!');
+        reject('Could not find url ' + url + ' in indexedDB');
+      }
+    };
+    dbRequest.onerror = function(dbEvent) {
+      console.error('sw db error', dbEvent.target.errorCode);
+      reject();
+    };
+  });
+}
 
 
 

@@ -1,3 +1,4 @@
+import AWS from 'aws-sdk';
 
 const cognitoState = 'cognito_state';
 const cognitoAccessToken = 'cognito_access_token';
@@ -8,6 +9,51 @@ const isResponse = /^#[\w]+=[\w.=-]+(&[\w]+=[\w.=-]+)*$/;
 
 // example: header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature
 const isToken = /^[\w=-]+.[\w=-]+.[\w=-]+$/;
+
+
+export class NgmAws {
+  constructor(idToken = null){
+    AWS.config.region = 'eu-central-1';
+    if (idToken) {
+      this.idToken = idToken;
+      this.getIamCredentialsFromToken();
+      this.setDbIamCredentials();
+    } else {
+      this.getDbIamCredentials();
+    }
+
+  }
+
+  getIamCredentialsFromToken(){
+    // get AWS credentials from token
+    this.AwsConfig = AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'eu-central-1:21355ebf-703b-44dd-8900-f8bc391b4bde',
+      Logins: {
+          'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_5wXXpcDt8': this.idToken
+      }
+    });
+    console.log(AWS.config.credentials);
+  }
+
+  setDbIamCredentials() {
+    // store IAM credentials in indexedDB
+    return null;
+  }
+
+  getDbIamCredentials() {
+    // get IAM credentials stored in indexedDB
+    this.AwsPublicKey = 'samere';
+    this.AwsSecretKey = '';
+    return null;
+  }
+
+  refreshIamCredentials() {
+    // refresh IAM credentials from token (needs a new token)
+    return null;
+  }
+
+
+}
 
 export default class Auth {
 
@@ -21,6 +67,10 @@ export default class Auth {
                 this.parseToken(response.id_token)
                 this.setAccessToken(response.access_token);
                 this.setIdToken(response.id_token);
+
+                // directly request IAM credentials too
+                console.log('NGM AWS config start');
+                this.aws = new NgmAws(response.id_token);
             }
         } catch (e) {
             // do nothing
