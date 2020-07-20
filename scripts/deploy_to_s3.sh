@@ -7,7 +7,7 @@ INT_BUCKET="ngmpub-int-bgdi-ch"
 PROD_BUCKET="ngmpub-prod-bgdi-ch"
 REVIEW_BUCKET="ngmpub-review-bgdi-ch"
 CACHE_CONTROL="${CACHE_CONTROL:-no-cache}"
-S3_CMD="${S3_CMD:-aws s3 --debug}"
+S3_CMD="${S3_CMD:-aws s3 --debug --profile ngmdeploy}"
 
 ENV="$1"
 
@@ -41,6 +41,22 @@ if [ -z "$DESTINATION" ]
 then
     echo "Unknown env $ENV"
     exit 1
+fi
+
+# if no AWS config exists, create it.
+if [[ ! -d ~/.aws ]] ; then
+  mkdir ~/.aws
+fi
+
+if [[  ! -r ~/.aws/config ]] || [ -z "$(grep ngmdeploy ~/.aws/config)" ] ; then
+set +x # do not output AWS credentials on a public github action!!!!
+  cat >> ~/.aws/config << EOF
+[profile ngmdeploy]
+aws_access_key_id=${AWS_ACCESS_KEY_ID}
+aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}
+region=eu-west-1
+EOF
+set -x
 fi
 
 $S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' --exclude 'Workers/*' dist/ $DESTINATION
