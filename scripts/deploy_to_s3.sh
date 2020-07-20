@@ -49,14 +49,14 @@ if [[ ! -d ~/.aws ]] ; then
 fi
 
 if [[  ! -r ~/.aws/config ]] || [ -z "$(grep ngmdeploy ~/.aws/config)" ] ; then
-set +x # do not output AWS credentials on a public github action!!!!
+  set +x # do not output AWS credentials on a public github action!!!!
   cat >> ~/.aws/config << EOF
 [profile ngmdeploy]
 aws_access_key_id=${AWS_ACCESS_KEY_ID}
 aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}
 region=eu-west-1
 EOF
-set -x
+  set -x
 fi
 
 $S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' --exclude 'Workers/*' dist/ $DESTINATION
