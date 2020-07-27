@@ -33,7 +33,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
     "@rollup/plugin-commonjs": "^14.0.0",
-    "autoprefixer": "^9.8.4",
+    "autoprefixer": "^9.8.5",
     "copy-webpack-plugin": "^6.0.3",
     "core-js": "^3.6.5",
     "css-loader": "^3.6.0",
