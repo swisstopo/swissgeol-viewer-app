@@ -17,8 +17,6 @@ export default class QueryManager {
     this.enabled = true;
     this.highlightEntity = null;
     viewer.screenSpaceEventHandler.setInputAction(click => this.onclick(click), ScreenSpaceEventType.LEFT_CLICK);
-    document.querySelector('ngm-object-information')
-      .addEventListener('closed', () => this.unhiglight());
   }
 
   set activeLayers(names) {
@@ -32,14 +30,22 @@ export default class QueryManager {
       const {layerBodId, featureId} = identifyData;
       let popupContent = await this.swisstopoIndentify.getPopupForFeature(layerBodId, featureId, lang);
       if (popupContent) {
-        this.highlightSelectedArea(identifyData.geometry);
         popupContent = popupContent.replace(/cell-left/g, 'key')
           .replace(/<td>/g, '<td class="value">')
           .replace(/<table>/g, '<table class="ui compact small very basic table">');
       }
 
+      const onshow = () => {
+        this.highlightSelectedArea(identifyData.geometry);
+      };
+      const onhide = () => {
+        this.unhighlight();
+      };
+
       return {
         popupContent,
+        onshow,
+        onhide
       };
     }
   }
@@ -70,7 +76,7 @@ export default class QueryManager {
   }
 
   highlightSelectedArea(geometry) {
-    this.unhiglight();
+    this.unhighlight();
     if (!geometry) return;
     const coordinates = geometry.coordinates;
     if (geometry.type === 'MultiPolygon') {
@@ -103,11 +109,13 @@ export default class QueryManager {
           material: OBJECT_HIGHLIGHT_COLOR
         }
       });
+    } else {
+      console.error(`Geometry "${geometry.type}" not handled`);
     }
     this.scene.requestRender();
   }
 
-  unhiglight() {
+  unhighlight() {
     if (this.highlightEntity) {
       this.viewer.entities.remove(this.highlightEntity);
       this.highlightEntity = null;

@@ -31,12 +31,6 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
     super.connectedCallback();
   }
 
-  updated() {
-    if (!this.opened) {
-      this.dispatchEvent(new CustomEvent('closed'));
-    }
-  }
-
   filterInfo([key, value]) {
     return !(value instanceof Function);
   }
@@ -57,6 +51,13 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
 
       if (this.info.popupContent) {
         content = unsafeHTML(this.info.popupContent);
+      }
+
+      if (this.opened && this.info.onshow) {
+        this.info.onshow();
+      }
+      if (!this.opened && this.info.onhide) {
+        this.info.onhide();
       }
 
       return html`
