@@ -42,10 +42,16 @@ export default class QueryManager {
         this.unhighlight();
       };
 
+      const zoom = () => {
+        if (!this.highlightEntity) return;
+        this.viewer.zoomTo(this.highlightEntity);
+      };
+
       return {
         popupContent,
         onshow,
-        onhide
+        onhide,
+        zoom
       };
     }
   }
