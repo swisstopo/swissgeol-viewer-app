@@ -161,7 +161,9 @@ const geo_base = {
           pickable: true,
           visible: false,
           displayed: true,
-          propsOrder: ['NAMEPUB', 'ORIGGEOL', 'ORIGNAME'] // all the other attributes will be sorted alphabetically
+          propsOrder: ['XCOORD', 'YCOORD', 'ZCOORDB', 'ORIGNAME', 'NAMEPUB', 'SHORTNAME', 'BOHRTYP', 'GRUND',
+            'RESTRICTIO', 'TIEFEMD', 'DEPTHFROM', 'DEPTHTO', 'LAYERDESC', 'ORIGGEOL', 'LITHOLOGY', 'LITHOSTRAT',
+            'CHRONOSTR', 'TECTO', 'USCS1', 'USCS2', 'USCS3']
         },
       ]
     },
