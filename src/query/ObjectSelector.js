@@ -25,12 +25,6 @@ export default class ObjectSelector {
 
     this.selectedObj = null;
     this.savedColor = null;
-
-    const objectInfo = document.querySelector('ngm-object-information');
-    objectInfo.addEventListener('closed', () => {
-      this.unhighlight();
-      this.scene.requestRender();
-    });
   }
 
 
@@ -60,6 +54,10 @@ export default class ObjectSelector {
       } else if (object.id && object.id.properties) {
         attributes = this.handleEntitySelect(object.id, attributes);
       }
+      const onhide = () => {
+        this.unhighlight();
+      };
+      attributes = {...attributes, onhide};
     }
 
     return attributes;
@@ -116,5 +114,6 @@ export default class ObjectSelector {
   unhighlight() {
     this.toggleTileHighlight(null);
     this.toggleEarthquakeHighlight(null);
+    this.scene.requestRender();
   }
 }
