@@ -33,7 +33,11 @@ if ('serviceWorker' in navigator) {
     // //  }
     // })    });
   });
+  navigator.serviceWorker.ready.then( registration => {
+    registration.active.postMessage("Hi service worker");
+  });
 };
+
 
 
 
@@ -208,11 +212,6 @@ function showSlowLoadingWindow() {
 i18next.on('initialized', () => {
   showSlowLoadingWindow();
 });
-
-
-
-
-
 
 const origin = window.location.origin;
 const pathname = window.location.pathname;
