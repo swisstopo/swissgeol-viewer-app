@@ -11,57 +11,6 @@ AWS.config.logger = console;
 function log(message) {
   console.log(VERSION, message);
 }
-// log(cognitoIdToken);
-
-// class NgmAwsS3 {
-//   constructor(idToken = null){
-//     AWS.config.region = 'eu-central-1';
-//     if (idToken) {
-//       this.bucketName = 'ngm-dev-authenticated-resources';
-//       this.idToken = idToken;
-//       this.getIamCredentialsFromToken();
-//       this.setDbIamCredentials();
-//       this.connectBucket();
-//     } else {
-//       this.getDbIamCredentials();
-//     }
-
-//   }
-
-//   getIamCredentialsFromToken(){
-//     // get AWS credentials from token
-//     AWS.config.region = 'eu-central-1';
-//     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-//       IdentityPoolId: 'eu-central-1:21355ebf-703b-44dd-8900-f8bc391b4bde',
-//       Logins: {
-//           'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_5wXXpcDt8': this.idToken
-//       }
-//     });
-//     log(AWS.config.credentials);
-//     log(AWS.config.region);
-//   }
-
-//   setDbIamCredentials() {
-//     // store IAM credentials in indexedDB
-//     return null;
-//   }
-
-//   connectBucket() {
-
-//   }
-//   getDbIamCredentials() {
-//     // get IAM credentials stored in indexedDB
-//     this.AwsPublicKey = 'awskey';
-//     this.AwsSecretKey = 'awssecret';
-//     return null;
-//   }
-
-//   refreshIamCredentials() {
-//     // refresh IAM credentials from token (needs a new token)
-//     return null;
-//   }
-
-// }
 
 function normalizeUrl(url) {
   if (url.startsWith('http')) {
