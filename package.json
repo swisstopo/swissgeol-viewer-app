@@ -16,7 +16,7 @@
     "@geoblocks/ga-search": "^0.0.18",
     "@sentry/browser": "^5.20.1",
     "@webcomponents/webcomponentsjs": "^2.4.3",
-    "cesium": "1.71.0",
+    "cesium": "1.72.0",
     "event-target-shim": "^5.0.1",
     "fomantic-ui-css": "^2.8.6",
     "i18next": "^19.6.3",
