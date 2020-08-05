@@ -17,6 +17,8 @@ import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
+import Color from 'cesium/Source/Core/Color';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -82,22 +84,19 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     // wgs84 to Cartesian3
     const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
     const measurements = event.detail.measurements;
+    const type = event.detail.type;
+    const attributes = {
+      positions: positions,
+      area: measurements.area,
+      perimeter: measurements.perimeter,
+      sidesLength: measurements.sidesLength,
+      numberOfSegments: measurements.numberOfSegments,
+      type: type
+    };
+    this.addAreaEntity(attributes);
 
     this.areasCounter_ += 1;
-    this.interestAreasDataSource.entities.add({
-      name: `Area ${this.areasCounter_}`,
-      polygon: {
-        hierarchy: positions,
-        material: DEFAULT_AOI_COLOR
-      },
-      properties: {
-        area: measurements.area,
-        perimeter: measurements.perimeter,
-        numberOfSegments: measurements.segmentsNumber,
-        sidesLength: measurements.sidesLength,
-        type: event.detail.type,
-      }
-    });
+
   }
 
   cancelDraw() {
@@ -145,20 +144,31 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         id: val.id,
         name: val.name,
         show: val.isShowing,
-        positions: val.polygon.hierarchy ? val.polygon.hierarchy.getValue().positions : undefined,
+        positions: this.getAreaPositions(val),
         selected: this.selectedArea_ && this.selectedArea_.id === val.id,
         area: val.properties.area ? val.properties.area.getValue() : undefined,
         perimeter: val.properties.perimeter ? val.properties.perimeter.getValue() : undefined,
         sidesLength: val.properties.sidesLength ? val.properties.sidesLength.getValue() : undefined,
         numberOfSegments: val.properties.numberOfSegments ? val.properties.numberOfSegments.getValue() : undefined,
-        type: val.properties.type ? val.properties.type.getValue() : undefined,
+        type: val.properties.type ? val.properties.type.getValue() : undefined
       };
     });
   }
 
-  onShowHideEntityClick_(id) {
+  getAreaPositions(area) {
+    if (area.polygon && area.polygon.hierarchy) {
+      return area.polygon.hierarchy.getValue().positions;
+    } else if (area.polyline && area.polyline.positions) {
+      return area.polyline.positions.getValue();
+    } else if (area.point && area.position) {
+      return [area.position.getValue(new Date())];
+    }
+    return undefined;
+  }
+
+  onShowHideEntityClick_(evt, id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
-    entity.show = !entity.isShowing;
+    entity.show = evt.target.checked;
   }
 
   onRemoveEntityClick_(id) {
@@ -256,21 +266,17 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       if (!isNaN(areaNumber) && areaNumber > this.areasCounter_) {
         this.areasCounter_ = areaNumber;
       }
-      const entity = this.interestAreasDataSource.entities.add({
+      const attributes = {
         name: area.name,
         show: area.show,
-        polygon: {
-          hierarchy: area.positions,
-          material: DEFAULT_AOI_COLOR
-        },
-        properties: {
-          area: area.area ? area.area : '-',
-          perimeter: area.perimeter ? area.perimeter : '-',
-          numberOfSegments: area.numberOfSegments ? area.numberOfSegments : '-',
-          sidesLength: area.sidesLength ? area.sidesLength : [],
-          type: area.type ? area.type : '-',
-        }
-      });
+        positions: area.positions,
+        area: area.area ? area.area : '-',
+        perimeter: area.perimeter ? area.perimeter : '-',
+        numberOfSegments: area.numberOfSegments ? area.numberOfSegments : '-',
+        sidesLength: area.sidesLength ? area.sidesLength : [],
+        type: area.type ? area.type : '-',
+      };
+      const entity = this.addAreaEntity(attributes);
       if (area.selected) {
         this.pickArea_(entity.id);
       }
@@ -284,6 +290,75 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       [i18next.t('Perimeter')]: `${props.perimeter}km`,
       [i18next.t('numberOfSegments')]: props.numberOfSegments
     };
+  }
+
+  getIconClass(id) {
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    const type = entity.properties.type ? entity.properties.type.getValue() : undefined;
+    switch (type) {
+      case 'polygon':
+        return 'draw polygon icon';
+      case 'rectangle':
+        return 'vector square icon';
+      case 'line':
+        return 'route icon';
+      case 'point':
+        return 'map marker alternate icon';
+      default:
+        return '';
+    }
+  }
+
+
+  /**
+   * Adds AOI entity to data source
+   * @param attributes:
+   * {
+       id: string,
+       name: (optional) string,
+       show: boolean,
+       positions: Array<Cartesian3>,
+       area: (optional) string | number,
+       perimeter: (optional) string | number,
+       sidesLength: (optional) Array<string | number>,
+       numberOfSegments: (optional) number,
+       type: string
+   * }
+   */
+  addAreaEntity(attributes) {
+    const type = attributes.type;
+    const entityAttrs = {
+      name: attributes.name || `Area ${this.areasCounter_}`,
+      show: typeof attributes.show === 'boolean' ? attributes.show : true,
+      properties: {
+        area: attributes.area,
+        perimeter: attributes.perimeter,
+        numberOfSegments: attributes.segmentsNumber,
+        sidesLength: attributes.sidesLength,
+        type: type,
+      }
+    };
+    if (type === 'rectangle' || type === 'polygon') {
+      entityAttrs.polygon = {
+        hierarchy: attributes.positions,
+        material: DEFAULT_AOI_COLOR
+      };
+    } else if (type === 'line') {
+      entityAttrs.polyline = {
+        positions: attributes.positions,
+        clampToGround: true,
+        width: 4,
+        material: DEFAULT_AOI_COLOR
+      };
+    } else if (type === 'point') {
+      entityAttrs.position = attributes.positions[0];
+      entityAttrs.point = {
+        color: DEFAULT_AOI_COLOR,
+        pixelSize: 6,
+        heightReference: HeightReference.CLAMP_TO_GROUND
+      };
+    }
+    return this.interestAreasDataSource.entities.add(entityAttrs);
   }
 
   render() {

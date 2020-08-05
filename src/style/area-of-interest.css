@@ -3,14 +3,6 @@
   padding: 0;
 }
 
-.ngm-aoi-segment.ui.segment {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .ngm-aoi-tooltip-container [data-tooltip]:after {
   width: 250px;
   text-align: center;
@@ -21,22 +13,25 @@
   max-width: 100px;
   text-overflow: ellipsis;
   overflow: hidden;
+  font-weight: normal;
 }
 
-.ngm-aoi-subtitle {
-  font-size: 10px;
+.ui.accordion.ngm-aoi-areas .title {
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
 }
 
-.ngm-aoi-buttons.ui.buttons {
-  display: flex;
+.ngm-aoi-content .ui.buttons {
+  width: 90%;
+  margin-bottom: 5px;
 }
 
 .ngm-aoi-buttons.ui.buttons > button {
   flex: 1
 }
-
-.ngm-aoi-title-container {
+.ngm-aoi-content {
   display: flex;
+  justify-content: center;
   flex-direction: column;
-  text-align: center;
+  align-items: center;
+  background-color: #f3f3f3;
 }
