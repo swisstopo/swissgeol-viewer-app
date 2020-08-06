@@ -35,3 +35,12 @@
   align-items: center;
   background-color: #f3f3f3;
 }
+
+ngm-gst-interaction {
+  width: 100%;
+}
+
+.ngm-gst-btns-container {
+  display: flex;
+  justify-content: center;
+}

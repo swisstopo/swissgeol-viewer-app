@@ -14,7 +14,6 @@ import './ngm-map-configuration.js';
 import QueryManager from '../query/QueryManager.js';
 
 const WELCOME_PANEL = 'welcome-panel';
-const DRAW_TOOL_GST = 'draw-tool-gst';
 const DRAW_TOOL_AOI = 'draw-tool-aoi';
 
 class LeftSideBar extends I18nMixin(LitElement) {
@@ -93,16 +92,6 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
         <div class="content">
           <ngm-aoi-drawer .viewer=${this.viewer}></ngm-aoi-drawer>
-        </div>
-      </div>
-
-      <div class="ui styled accordion" id="${DRAW_TOOL_GST}">
-        <div class="title ngmmidgrey">
-          <i class="dropdown icon"></i>
-          ${i18next.t('gst_accordion_title')}
-        </div>
-        <div class="content">
-          <ngm-gst-interaction .viewer=${this.viewer}></ngm-gst-interaction>
         </div>
       </div>
 
@@ -316,24 +305,6 @@ class LeftSideBar extends I18nMixin(LitElement) {
         });
         break;
       }
-      case DRAW_TOOL_GST: {
-        accordion(element, {
-          onClosing: () => {
-            const aoiElement = this.querySelector('ngm-aoi-drawer');
-            aoiElement.setAreasClickable(true);
-            const gstElement = this.querySelector('ngm-gst-interaction');
-            gstElement.changeTool();
-            this.queryManager.enabled = true;
-          },
-          onOpening: () => {
-            const aoiElement = this.querySelector('ngm-aoi-drawer');
-            aoiElement.setAreasClickable(false);
-            $(`#${DRAW_TOOL_AOI}`).accordion('close', 0);
-            this.queryManager.enabled = false;
-          }
-        });
-        break;
-      }
       case DRAW_TOOL_AOI: {
         accordion(element, {
           onClosing: () => {
@@ -342,7 +313,6 @@ class LeftSideBar extends I18nMixin(LitElement) {
             this.queryManager.enabled = true;
           },
           onOpening: () => {
-            $(`#${DRAW_TOOL_GST}`).accordion('close', 0);
             this.queryManager.enabled = false;
           }
         });

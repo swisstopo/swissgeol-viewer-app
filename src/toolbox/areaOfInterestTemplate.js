@@ -70,7 +70,7 @@ function aoiListTemplate() {
         <div class="title">
              <i class="dropdown icon"></i>
             <div class="ui checkbox">
-              <input type="checkbox" name="x-large" @input=${evt => this.onShowHideEntityClick_(evt, i.id)}>
+              <input type="checkbox" @input=${evt => this.onShowHideEntityClick_(evt, i.id)} .checked=${i.show}>
               <label class="ngm-aoi-title"><i class=${this.getIconClass.call(this, i.id)}></i>${i.name}</label>
             </div>
         </div>
@@ -78,7 +78,7 @@ function aoiListTemplate() {
             <div class="ui tiny fluid buttons ngm-aoi-buttons">
                 <button
                 class="ui button"
-                @click=${this.onShowHideEntityClick_.bind(this, i.id)}
+                @click=${this.showAreaInfo.bind(this, i)}
                 data-tooltip=${i18next.t('info_btn_tooltip')}
                 data-position="top center"
                 data-variation="tiny"

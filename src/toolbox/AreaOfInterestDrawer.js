@@ -367,6 +367,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.requestUpdate();
   }
 
+  showAreaInfo(areaAttrs) {
+    const objectInfo = document.querySelector('ngm-object-information');
+    objectInfo.info = this.getInfoProps(areaAttrs);
+    objectInfo.opened = !!areaAttrs;
+    this.pickArea_(areaAttrs.id);
+  }
+
   render() {
     if (!this.viewer) {
       return '';

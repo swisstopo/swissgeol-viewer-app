@@ -11,6 +11,12 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 
 import './ngm-gst-modal.js';
 import CesiumMath from 'cesium/Source/Core/Math';
+import $ from '../jquery';
+import 'fomantic-ui-css/components/popup.js';
+
+const configurePopupId = 'ngm-section-configuration';
+const formatSelectorId = 'ngm-section-format';
+const createBtnId = 'ngm-create-section';
 
 /**
  * @typedef {"point" | "line" | "rectangle"} GeometryType
@@ -45,6 +51,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     this.minDepth_ = -6000;
     this.maxDepth_ = 1000;
     this.depth = -1500;
+    this.outputFormat = 'pdf';
 
     this.positions = null;
 
@@ -57,29 +64,46 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     });
   }
 
-  // updated() {
-  //   if (!this.draw_ && this.viewer) {
-  //     this.draw_ = new CesiumDraw(this.viewer, 'line');
-  //     this.draw_.addEventListener('drawstart', () => this.clear());
-  //     this.draw_.addEventListener('drawend', (event) => {
-  //       this.positions = event.detail.positions;
-  //       this.getGST();
-  //     });
-  //     this.draw_.addEventListener('drawerror', evt => {
-  //       if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
-  //         showWarning(i18next.t('error_need_more_points'));
-  //       }
-  //     });
-  //   }
-  //   this.initExtent();
-  //
-  //   const depthField = this.querySelector('.form.depth .field');
-  //   if (this.hasValidDepth()) {
-  //     depthField.classList.remove('error');
-  //   } else {
-  //     depthField.classList.add('error');
-  //   }
-  // }
+  firstUpdated() {
+    $(this.querySelector(`#${createBtnId}`)).popup({
+      position: 'top center',
+      content: i18next.t('create_section_hint'),
+      variation: 'mini',
+      onShow: () => {
+        this.gstExtent.show = true;
+        this.viewer.scene.requestRender();
+      },
+      onHidden: () => {
+        this.gstExtent.show = false;
+        this.viewer.scene.requestRender();
+      }
+    });
+    $(this.querySelector('.ngm-tools-btn')).popup({
+      popup: $(this.querySelector(`#${configurePopupId}`)),
+      on: 'click',
+      position: 'right center'
+    });
+    $(this.querySelector(`#${formatSelectorId}`)).dropdown({
+      onChange: value => this.outputFormat = value,
+      values: [
+        {name: 'PDF', value: 'pdf', selected: this.outputFormat === 'pdf'},
+        {name: 'PNG', value: 'png', selected: this.outputFormat === 'png'}
+      ]
+    });
+  }
+
+  updated() {
+    this.initExtent();
+
+    const depthField = this.querySelector('.form.depth .field');
+    if (depthField) {
+      if (this.hasValidDepth()) {
+        depthField.classList.remove('error');
+      } else {
+        depthField.classList.add('error');
+      }
+    }
+  }
 
   async initExtent() {
     if (this.extentInited || !this.viewer) return;
@@ -99,11 +123,6 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
     }
   }
 
-  // clear() {
-  //   this.positions = null;
-  //   this.draw_.clear();
-  // }
-
   getGST() {
     if (this.hasValidParams()) {
       const coordinates = this.positions.map(position => {
@@ -114,11 +133,11 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
       }).map(round);
       let promise;
       if (this.geometryType === 'point') {
-        promise = borehole(coordinates, this.abortController.signal);
+        promise = borehole(coordinates, this.abortController.signal, this.outputFormat);
       } else if (this.geometryType === 'line') {
-        promise = verticalCrossSection(coordinates, this.abortController.signal);
+        promise = verticalCrossSection(coordinates, this.abortController.signal, this.outputFormat);
       } else if (this.geometryType === 'rectangle') {
-        promise = horizontalCrossSection(coordinates, this.abortController.signal, this.depth);
+        promise = horizontalCrossSection(coordinates, this.abortController.signal, this.depth, this.outputFormat);
       }
       this.loading = true;
       promise
@@ -176,61 +195,39 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
 
   render() {
     return html`
-        <div class="ui tiny buttons">
-            <button class="ui button" @click=${this.getGST}>Create section</button>
-            <button class="ui button"><i class="tools icon"></i></button>
-        </div>`;
-    // return html`
-    //   <div class="ui tiny icon buttons">
-    //     <button class="ui button" @click="${this.toggleBoreHole}"
-    //       data-tooltip=${i18next.t('Borehole')}
-    //       data-position="top center"
-    //       data-variation="mini"
-    //     >
-    //       <i class="ruler vertical icon"></i>
-    //     </button>
-    //     <button class="ui button" @click="${this.toggleCrossSection}"
-    //       data-tooltip=${i18next.t('Vertical cross sections')}
-    //       data-position="top center"
-    //       data-variation="mini"
-    //     >
-    //       <i class="map icon"></i>
-    //     </button>
-    //     <button class="ui button" @click="${this.toggleHorizontalCrossSection}"
-    //       data-tooltip=${i18next.t('Horizontal cross sections')}
-    //       data-position="top center"
-    //       data-variation="mini"
-    //     >
-    //       <i class="horizontal-layer svg-icon icon"></i>
-    //     </button>
-    //   </div>
-    //   <div class="ui segments" ?hidden="${this.tool !== 'horizontalCrossSection'}">
-    //     <div class="ui segment">
-    //       <div class="ui tiny form depth">
-    //         <div class="field">
-    //           <label>${i18next.t('cross_sections_depth')}</label>
-    //           <input type="number"
-    //             .value="${this.depth}"
-    //             @change="${this.onDepthChange}"
-    //             min="${this.minDepth_}"
-    //             max="${this.maxDepth_}"
-    //             step="100"
-    //           >
-    //           <div class="ui small error message">
-    //             <p>Depth must be between ${this.minDepth_}m and ${this.maxDepth_}m</p>
-    //           </div>
-    //         </div>
-    //         <div class="ui tiny submit button ${this.hasValidParams() ? '' : 'disabled'}" @click="${this.getGST}">
-    //           ${i18next.t('get_result')}
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
-    //   <div class="ui tertiary center aligned segment">
-    //         ${this.getHintText}
-    //   </div>
-    //   <ngm-gst-modal .imageUrl="${this.imageUrl}"></ngm-gst-modal>
-    // `;
+        <div class="ngm-gst-btns-container">
+            <div class="ui tiny buttons">
+                <button id="${createBtnId}"
+                        class="ui button ${this.hasValidParams() ? '' : 'disabled'}"
+                        @click=${this.getGST}>
+                    ${i18next.t('create_section')}
+                </button>
+                <button class="ui button ngm-tools-btn"><i class="tools icon"></i></button>
+            </div>
+        </div>
+        <div id=${configurePopupId} class="ui popup">
+        ${this.geometryType === 'rectangle' ?
+      html`<label>${i18next.t('cross_sections_depth')}</label>
+              <div class="ui tiny form depth">
+                  <div class="field">
+                    <input type="number"
+                      .value="${this.depth}"
+                      @change="${this.onDepthChange}"
+                      min="${this.minDepth_}"
+                      max="${this.maxDepth_}"
+                      step="100"
+                    >
+                    <div class="ui small error message">
+                      <p>Depth must be between ${this.minDepth_}m and ${this.maxDepth_}m</p>
+                    </div>
+                  </div>
+        </div>` : ''}
+        <label>${i18next.t('cross_sections_format')}</label>
+        <div id="${formatSelectorId}" class="ui fluid selection dropdown">
+            <div class="text"></div>
+            <i class="dropdown icon"></i>
+        </div>
+    `;
   }
 
   createRenderRoot() {

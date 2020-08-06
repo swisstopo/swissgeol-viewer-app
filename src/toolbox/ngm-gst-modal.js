@@ -27,6 +27,13 @@ class NgmGstModal extends I18nMixin(LitElement) {
     }
   }
 
+  get getOutputType() {
+    if (!this.imageUrl) return '';
+    const splitedUrl = this.imageUrl.split('.');
+    const extension = splitedUrl[splitedUrl.length - 1];
+    return extension.toLocaleLowerCase() === 'pdf' ? 'PDF' : 'PNG';
+  }
+
   render() {
     return html`
       <div class="ngm-gst-modal ui large modal">
@@ -40,7 +47,7 @@ class NgmGstModal extends I18nMixin(LitElement) {
           </div>
           <div class="ui ok green small labeled icon button">
             <i class="download icon"></i>
-            ${i18next.t('Download PDF')}
+            ${i18next.t('download_section_output')} ${this.getOutputType}
           </div>
         </div>
       </div>
