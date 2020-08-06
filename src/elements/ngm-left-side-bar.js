@@ -1,10 +1,9 @@
 import {LitElement, html} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
-import '../areaOfInterest/AreaOfInterestDrawer.js';
+import '../toolbox/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
-import './ngm-gst-interaction.js';
 import {LAYER_TYPES, DEFAULT_LAYER_TRANSPARENCY, defaultLayerTree} from '../constants.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';

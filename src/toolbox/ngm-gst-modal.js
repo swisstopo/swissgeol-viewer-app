@@ -16,12 +16,14 @@ class NgmGstModal extends I18nMixin(LitElement) {
 
   updated() {
     if (this.imageUrl) {
-      const element = $('.ngm-gst-modal.ui.modal').modal({
-        centered: false,
-        onHidden: () => this.imageUrl = null,
-        onApprove: () => window.open(this.imageUrl, '_blank')
-      });
-      element.modal('show');
+      if (!this.element) {
+        this.element = $('.ngm-gst-modal.ui.modal').modal({
+          centered: false,
+          onHidden: () => this.imageUrl = null,
+          onApprove: () => window.open(this.imageUrl, '_blank')
+        });
+      }
+      this.element.modal('show');
     }
   }
 

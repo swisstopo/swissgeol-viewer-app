@@ -17,7 +17,6 @@ import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import Color from 'cesium/Source/Core/Color';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
@@ -33,6 +32,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     if (!this.aoiInited && this.viewer) {
       this.initAoi();
     }
+
     super.update(changedProperties);
   }
 
@@ -73,6 +73,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         }
       }));
     });
+    this.sectionImageUrl = null;
 
     this.aoiInited = true;
   }
@@ -190,7 +191,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     if (!entity.isShowing) {
       entity.show = !entity.isShowing;
     }
-    const positions = entity.polygon.hierarchy.getValue().positions;
+    const positions = this.getAreaPositions(entity);
     const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
     let range = boundingSphere.radius > 1000 ? boundingSphere.radius * 2 : boundingSphere.radius * 5;
     if (range < 1000) range = 1000; // if less than 1000 it goes inside terrain
@@ -322,7 +323,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
        perimeter: (optional) string | number,
        sidesLength: (optional) Array<string | number>,
        numberOfSegments: (optional) number,
-       type: string
+       type: string<point | line | rectangle | polygon>
    * }
    */
   addAreaEntity(attributes) {
@@ -359,6 +360,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       };
     }
     return this.interestAreasDataSource.entities.add(entityAttrs);
+  }
+
+  showSectionModal(imageUrl) {
+    this.sectionImageUrl = imageUrl;
+    this.requestUpdate();
   }
 
   render() {

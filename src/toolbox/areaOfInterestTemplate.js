@@ -1,6 +1,7 @@
 import {html} from 'lit-element';
 import i18next from 'i18next';
 import {clickOnElement} from '../utils.js';
+import './ngm-gst-interaction.js';
 
 const areaUploadInputId = 'areaUpload';
 
@@ -58,6 +59,7 @@ export default function getTemplate() {
     <div ?hidden=${this.entitiesList_ && this.entitiesList_.length} class="ui tertiary center aligned segment">
         <span>${i18next.t('area_of_interest_empty_hint')}</span>
     </div>
+    <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
   `;
 }
 
@@ -97,10 +99,16 @@ function aoiListTemplate() {
                 ><i class="trash alternate outline icon"></i></button>
             </div>
             ${i.type !== 'polygon' ?
-                html`<div class="ui tiny buttons">
-                  <button class="ui button">Create section</button>
-                  <button class="ui button"><i class="tools icon"></i></button>
-                </div>` : ''}
+                html`
+                    <ngm-gst-interaction
+                        .viewer=${this.viewer}
+                        .positions=${i.positions}
+                        .geometryType=${i.type}
+                        .parentElement=${this}>
+                    </ngm-gst-interaction>
+                ` : ''}
         </div>
       </div>`);
 }
+
+

@@ -1,8 +1,8 @@
-import {HIGHLIGHTED_AOI_COLOR, DEFAULT_AOI_COLOR} from '../constants.js';
+import {HIGHLIGHTED_AOI_COLOR, DEFAULT_AOI_COLOR, HIGHLIGHTED_POINT_COLOR, DEFAULT_POINT_COLOR} from '../constants.js';
 
 export function updateColor(entity, selected) {
   if (entity.point) {
-    entity.point.color = selected ? HIGHLIGHTED_AOI_COLOR : DEFAULT_AOI_COLOR;
+    entity.point.color = selected ? DEFAULT_POINT_COLOR : HIGHLIGHTED_POINT_COLOR;
     return;
   }
   const entityType = entity.polygon ? 'polygon' : 'polyline';
