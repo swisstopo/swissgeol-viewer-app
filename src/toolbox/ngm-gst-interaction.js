@@ -158,19 +158,15 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
   }
 
   set loading(loading) {
-    // const buttons = this.querySelectorAll('.buttons button');
-    // const form = this.querySelector('.form.depth');
+    const buttons = this.querySelectorAll('.buttons button');
 
     if (loading) {
       this.viewer.canvas.style.cursor = 'wait';
-      // form.classList.add('loading');
-      // buttons.forEach(button => button.classList.add('disabled'));
+      buttons.forEach(button => button.classList.add('disabled'));
     } else {
       this.viewer.canvas.style.cursor = 'default';
-      // form.classList.remove('loading');
-      // buttons.forEach(button => button.classList.remove('disabled'));
+      buttons.forEach(button => button.classList.remove('disabled'));
     }
-    // this.draw_.active = !loading;
   }
 
   hasValidDepth() {
