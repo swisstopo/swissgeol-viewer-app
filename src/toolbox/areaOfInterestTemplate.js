@@ -7,6 +7,7 @@ const areaUploadInputId = 'areaUpload';
 
 export default function getTemplate() {
   return html`
+    <label>${i18next.t('drawing_tools_label')}</label>
     <div class="ui tiny fluid buttons ngm-aoi-buttons" ?hidden=${this.draw_.active}>
         <button class="ui button"
                 data-tooltip=${i18next.t('add_point_btn_label')}
@@ -53,6 +54,8 @@ export default function getTemplate() {
             <i class="question circle outline icon"></i>
         </button>
     </div>
+
+    <label>${i18next.t('analysis_tools_label')}</label>
     <div class="ui vertical accordion ngm-aoi-areas" ?hidden=${!this.entitiesList_ || !this.entitiesList_.length}>
      ${aoiListTemplate.call(this)}
     </div>
@@ -67,7 +70,7 @@ function aoiListTemplate() {
   return this.entitiesList_.map(i =>
     html`
       <div class="item">
-        <div class="title">
+        <div class="title" @click=${evt => this.onAreaClick(evt)}>
              <i class="dropdown icon"></i>
             <div class="ui checkbox">
               <input type="checkbox" @input=${evt => this.onShowHideEntityClick_(evt, i.id)} .checked=${i.show}>
@@ -75,28 +78,30 @@ function aoiListTemplate() {
             </div>
         </div>
         <div class="content ngm-aoi-content">
-            <div class="ui tiny fluid buttons ngm-aoi-buttons">
-                <button
-                class="ui button"
-                @click=${this.showAreaInfo.bind(this, i)}
-                data-tooltip=${i18next.t('info_btn_tooltip')}
-                data-position="top center"
-                data-variation="tiny"
-                ><i class="info circle icon"></i></button>
-                <button
-                class="ui button"
-                @click=${this.flyToArea.bind(this, i.id)}
-                data-tooltip=${i18next.t('fly_to_btn_tooltip')}
-                data-position="top center"
-                data-variation="tiny"
-                ><i class="search plus icon"></i></button>
-                <button
-                class="ui button"
-                @click=${this.onRemoveEntityClick_.bind(this, i.id)}
-                data-tooltip=${i18next.t('remove_btn_tooltip')}
-                data-position="top center"
-                data-variation="tiny"
-                ><i class="trash alternate outline icon"></i></button>
+            <div class="ngm-btns-field">
+                <div class="ui tiny fluid buttons ngm-aoi-buttons">
+                    <button
+                    class="ui button"
+                    @click=${this.showAreaInfo.bind(this, i)}
+                    data-tooltip=${i18next.t('info_btn_tooltip')}
+                    data-position="top center"
+                    data-variation="tiny"
+                    ><i class="info circle icon"></i></button>
+                    <button
+                    class="ui button"
+                    @click=${this.flyToArea.bind(this, i.id)}
+                    data-tooltip=${i18next.t('fly_to_btn_tooltip')}
+                    data-position="top center"
+                    data-variation="tiny"
+                    ><i class="search plus icon"></i></button>
+                    <button
+                    class="ui button"
+                    @click=${this.onRemoveEntityClick_.bind(this, i.id)}
+                    data-tooltip=${i18next.t('remove_btn_tooltip')}
+                    data-position="top center"
+                    data-variation="tiny"
+                    ><i class="trash alternate outline icon"></i></button>
+                </div>
             </div>
             ${i.type !== 'polygon' ?
                 html`

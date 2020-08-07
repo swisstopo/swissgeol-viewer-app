@@ -10,13 +10,16 @@
 }
 
 .ngm-aoi-title {
-  max-width: 100px;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  white-space: nowrap;
   font-weight: normal;
 }
 
+.ui.accordion.ngm-aoi-areas {
+  margin: 0;
+}
+
 .ui.accordion.ngm-aoi-areas .title {
+  display: flex;
   border-bottom: 1px solid rgba(34, 36, 38, 0.15);
 }
 
@@ -25,9 +28,14 @@
   margin-bottom: 5px;
 }
 
+.ngm-aoi-buttons.ui.buttons {
+  margin-bottom: 5px;
+}
+
 .ngm-aoi-buttons.ui.buttons > button {
   flex: 1
 }
+
 .ngm-aoi-content {
   display: flex;
   justify-content: center;
@@ -36,10 +44,12 @@
   background-color: #f3f3f3;
 }
 
+.ngm-btns-field,
 ngm-gst-interaction {
   width: 100%;
 }
 
+.ngm-btns-field,
 .ngm-gst-btns-container {
   display: flex;
   justify-content: center;

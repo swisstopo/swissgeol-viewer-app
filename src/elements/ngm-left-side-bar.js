@@ -307,13 +307,14 @@ class LeftSideBar extends I18nMixin(LitElement) {
       }
       case DRAW_TOOL_AOI: {
         accordion(element, {
+          animateChildren: false,
           onClosing: () => {
             const aoiElement = this.querySelector('ngm-aoi-drawer');
             aoiElement.cancelDraw();
-            this.queryManager.enabled = true;
           },
           onOpening: () => {
-            this.queryManager.enabled = false;
+            const aoiElement = this.querySelector('ngm-aoi-drawer');
+            aoiElement.cancelDraw();
           }
         });
         break;

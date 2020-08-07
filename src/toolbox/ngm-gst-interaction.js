@@ -66,7 +66,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
 
   firstUpdated() {
     $(this.querySelector(`#${createBtnId}`)).popup({
-      position: 'top center',
+      position: 'top left',
       content: i18next.t('create_section_hint'),
       variation: 'mini',
       onShow: () => {
@@ -200,7 +200,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
                 <button id="${createBtnId}"
                         class="ui button ${this.hasValidParams() ? '' : 'disabled'}"
                         @click=${this.getGST}>
-                    ${i18next.t('create_section')}
+                        ${i18next.t('create_section')}
                 </button>
                 <button class="ui button ngm-tools-btn"><i class="tools icon"></i></button>
             </div>

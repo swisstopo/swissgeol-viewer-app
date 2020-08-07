@@ -45,7 +45,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   initAoi() {
     this.selectedArea_ = null;
-    this.areasCounter_ = 0;
+    this.areasCounter_ = {
+      line: 0,
+      point: 0,
+      rectangle: 0,
+      polygon: 0
+    };
     this.areasClickable = true;
     this.draw_ = new CesiumDraw(this.viewer, 'polygon', {
       fillColor: DEFAULT_AOI_COLOR
@@ -91,12 +96,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       area: measurements.area,
       perimeter: measurements.perimeter,
       sidesLength: measurements.sidesLength,
-      numberOfSegments: measurements.numberOfSegments,
+      numberOfSegments: measurements.segmentsNumber,
       type: type
     };
+    this.areasCounter_[type] = this.areasCounter_[type] + 1;
     this.addAreaEntity(attributes);
-
-    this.areasCounter_ += 1;
 
   }
 
@@ -173,12 +177,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   onRemoveEntityClick_(id) {
-    if (id) {
-      this.interestAreasDataSource.entities.removeById(id);
-    } else {
-      this.interestAreasDataSource.entities.removeAll();
-      this.areasCounter_ = 0;
-    }
+    this.interestAreasDataSource.entities.removeById(id);
   }
 
   onAddAreaClick_(type) {
@@ -263,19 +262,20 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   addStoredAreas(areas) {
     areas.forEach(area => {
       if (!area.positions) return;
-      const areaNumber = Number(area.name.split(' ')[1]);
-      if (!isNaN(areaNumber) && areaNumber > this.areasCounter_) {
-        this.areasCounter_ = areaNumber;
+      const splittedName = area.name.split(' ');
+      const areaNumber = Number(splittedName[1]);
+      if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.areasCounter_[area.type]) {
+        this.areasCounter_[area.type] = areaNumber;
       }
       const attributes = {
         name: area.name,
         show: area.show,
         positions: area.positions,
-        area: area.area ? area.area : '-',
-        perimeter: area.perimeter ? area.perimeter : '-',
-        numberOfSegments: area.numberOfSegments ? area.numberOfSegments : '-',
+        area: area.area,
+        perimeter: area.perimeter,
+        numberOfSegments: area.numberOfSegments,
         sidesLength: area.sidesLength ? area.sidesLength : [],
-        type: area.type ? area.type : '-',
+        type: area.type,
       };
       const entity = this.addAreaEntity(attributes);
       if (area.selected) {
@@ -285,12 +285,18 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   getInfoProps(props) {
-    return {
+    const attributes = {
       [i18next.t('nameLabel')]: props.name,
-      [i18next.t('Area')]: `${props.area}km²`,
-      [i18next.t('Perimeter')]: `${props.perimeter}km`,
-      [i18next.t('numberOfSegments')]: props.numberOfSegments
+      zoom: () => this.flyToArea(props.id)
     };
+    if (props.type === 'rectangle' || props.type === 'polygon') {
+      attributes[i18next.t('Area')] = `${props.area}km²`;
+      attributes[i18next.t('Perimeter')] = `${props.perimeter}km`;
+      attributes[i18next.t('numberOfSegments')] = props.numberOfSegments;
+    } else if (props.type === 'line') {
+      attributes[i18next.t('Length')] = `${props.perimeter}km`;
+    }
+    return attributes;
   }
 
   getIconClass(id) {
@@ -328,13 +334,14 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
    */
   addAreaEntity(attributes) {
     const type = attributes.type;
+    const name = type.charAt(0).toUpperCase() + type.slice(1);
     const entityAttrs = {
-      name: attributes.name || `Area ${this.areasCounter_}`,
+      name: attributes.name || `${name} ${this.areasCounter_[type]}`,
       show: typeof attributes.show === 'boolean' ? attributes.show : true,
       properties: {
         area: attributes.area,
         perimeter: attributes.perimeter,
-        numberOfSegments: attributes.segmentsNumber,
+        numberOfSegments: attributes.numberOfSegments,
         sidesLength: attributes.sidesLength,
         type: type,
       }
@@ -372,6 +379,16 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     objectInfo.info = this.getInfoProps(areaAttrs);
     objectInfo.opened = !!areaAttrs;
     this.pickArea_(areaAttrs.id);
+  }
+
+  onAreaClick(event) {
+    if (event.target && event.target.type === 'checkbox') {
+      event.cancelBubble = true;
+    }
+  }
+
+  get getDrawState() {
+    return this.draw_.active;
   }
 
   render() {
