@@ -5,7 +5,7 @@
   "add_polygon_area_btn_label": "Polygon zeichnen",
   "add_rect_area_btn_label": "Rechteck zeichnen",
   "analysis_tools_label": "",
-  "aoi_section_title": "Untersuchungsgebiete",
+  "toolbox_title": "",
   "Area": "Fläche",
   "area_of_interest_add_hint": "Auf die Karte klicken, um zu zeichnen. Doppelt klicken, um Zeichnen zu beenden",
   "area_of_interest_empty_hint": "Modus auswählen und auf die Karte klicken, um zu zeichnen",

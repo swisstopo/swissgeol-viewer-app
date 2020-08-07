@@ -14,7 +14,7 @@ import './ngm-map-configuration.js';
 import QueryManager from '../query/QueryManager.js';
 
 const WELCOME_PANEL = 'welcome-panel';
-const DRAW_TOOL_AOI = 'draw-tool-aoi';
+const TOOLBOX = 'ngm-toolbox';
 
 class LeftSideBar extends I18nMixin(LitElement) {
 
@@ -85,10 +85,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
       </div>
 
-      <div class="ui styled accordion" id="${DRAW_TOOL_AOI}">
+      <div class="ui styled accordion" id="${TOOLBOX}">
         <div class="title ngmmidgrey">
           <i class="dropdown icon"></i>
-          ${i18next.t('aoi_section_title')}
+          ${i18next.t('toolbox_title')}
         </div>
         <div class="content">
           <ngm-aoi-drawer .viewer=${this.viewer}></ngm-aoi-drawer>
@@ -305,7 +305,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         });
         break;
       }
-      case DRAW_TOOL_AOI: {
+      case TOOLBOX: {
         accordion(element, {
           animateChildren: false,
           onClosing: () => {

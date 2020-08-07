@@ -5,7 +5,7 @@
   "add_polygon_area_btn_label": "Dessiner un polygone",
   "add_rect_area_btn_label": "Dessiner un rectangle",
   "analysis_tools_label": "",
-  "aoi_section_title": "Zones d'intérêt",
+  "toolbox_title": "",
   "Area": "Surface",
   "area_of_interest_add_hint": "Cliquez sur le visualisateur 3D pour dessiner. Double-cliquez pour terminer le dessin",
   "area_of_interest_empty_hint": "Choisissez le mode de dessin et cliquez sur le visualisateur 3D pour commencer à dessiner",
