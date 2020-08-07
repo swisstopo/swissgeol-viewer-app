@@ -14,7 +14,7 @@ importScripts('/src/aws-sdk-2.727.1.js');
 
 
 
-const VERSION = 'v54';
+const VERSION = 'v61';
 
 // for debug use aws builtin logger
 AWS.config.logger = console;
@@ -66,18 +66,31 @@ if (typeof self === 'object') {
   }
   function updateAwsCredentialsWithToken(idToken){
     AWS.config.region = 'eu-central-1'; // Region
-    self.s3 = new AWS.S3({
-      apiVersion: '2006-03-01',
-      params: {Bucket: 'ngm-dev-authenticated-resources'}
-    });
-
+    if (!self.s3) {
+      self.s3 = new AWS.S3({
+        apiVersion: '2006-03-01',
+        params: {Bucket: 'ngm-dev-authenticated-resources'}
+      });
+    }
+    if (AWS.config.credentials) {
+      delete AWS.config.credentials;
+    }
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: 'eu-central-1:21355ebf-703b-44dd-8900-f8bc391b4bde',
       Logins: {
           'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_5wXXpcDt8': idToken
       }
     });
-    AWS.config.credentials.get();
+    // AWS.config.credentials.get();
+    AWS.config.credentials.get((err) => {
+      if (err) {
+          console.error(err);
+      } else {
+          console.log(AWS.config.credentials.accessKeyId)
+          console.log(AWS.config.credentials.secretAccessKey)
+          console.log(AWS.config.credentials.sessionToken)
+      }
+    });
     log(`idToken = ${idToken}`);
     log(`AWS.config.credentials = ${AWS.config.credentials}`);
     log(`AWS.config.region = ${AWS.config.region}`);
