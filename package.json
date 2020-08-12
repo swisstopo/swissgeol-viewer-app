@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint src/ test/",
+    "extract-from-assets": "node scripts/get_assets_properties.js > src/assets_properties.js",
     "extract-i18n": "i18next",
     "start": "npm run webpack-start",
     "webpack-start": "node scripts/environment.js && node scripts/generateManuals.js && webpack-dev-server",
@@ -45,6 +46,7 @@
     "jsdom-global": "3.0.2",
     "mini-css-extract-plugin": "^0.10.0",
     "mocha": "^8.1.1",
+    "node-fetch": "^2.6.0",
     "postcss-import": "^12.0.1",
     "postcss-inline-svg": "^4.1.0",
     "postcss-url": "^8.0.0",
