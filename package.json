@@ -36,7 +36,7 @@
     "autoprefixer": "^9.8.5",
     "copy-webpack-plugin": "^6.0.3",
     "core-js": "^3.6.5",
-    "css-loader": "^3.6.0",
+    "css-loader": "^4.2.1",
     "eslint": "^7.6.0",
     "esm": "^3.2.25",
     "file-loader": "^6.0.0",
