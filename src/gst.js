@@ -1,24 +1,26 @@
 const boreholeBaseUrl = 'https://viewer.geomol.ch/webgui/createBoreholeWithOverviewMap.php';
-const boreholeParams = 'csRootElement=0&csRootScale=-1&intersectionGeometry=multipoint%20z%20(({coordinates}))&legendTemplateFile=&maxBoreDepth={depth}&outputType=PDF&projectZ=true&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=02-BH_swisstopo_Map_2019a.svg&title={title}&user=NGM&crs=EPSG:2056';
+const boreholeParams = 'csRootElement=0&csRootScale=-1&intersectionGeometry=multipoint%20z%20(({coordinates}))&legendTemplateFile=&maxBoreDepth={depth}&outputType={outputType}&projectZ=true&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=02-BH_swisstopo_Map_2019a.svg&title={title}&user=NGM&crs=EPSG:2056';
 
 const verticalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createCrossSectionWithOverviewMap.php';
-const verticalCrossSectionParams = 'csRootElement=0&csRootScale=-1&depthRangeMax=3.40282e%2B38&depthRangeMin=-3.40282e%2B38&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType=PDF&overviewMap=&pointProjectionDistance=0&propertySelection=&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=03-CS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056';
+const verticalCrossSectionParams = 'csRootElement=0&csRootScale=-1&depthRangeMax=3.40282e%2B38&depthRangeMin=-3.40282e%2B38&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType={outputType}&overviewMap=&pointProjectionDistance=0&propertySelection=&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=03-CS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056';
 
 const horizontalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createHorizontalSectionWithOverviewMap.php';
-const horizontalSectionParams = 'boxWidth={width}&colorMapId=&csRootElement=0&csRootScale=-1&depth={depth}&direction={direction}&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType=PDF&overviewMap=&propertySelection=&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=04-HS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056';
+const horizontalSectionParams = 'boxWidth={width}&colorMapId=&csRootElement=0&csRootScale=-1&depth={depth}&direction={direction}&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType={outputType}&overviewMap=&propertySelection=&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=04-HS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056';
 
 
 /**
  * @param {Array<Array<number>>} coordinates
  * @param {AbortSignal} signal
  * @param {number} [depth=5000] depth in meters
+ * @param {'PDF' | 'PNG'} outputType
  * @param {string} [title=''] output title
  * @return {Promise}
  */
-export function borehole(coordinates, signal, depth = 5000, title = '') {
+export function borehole(coordinates, signal, outputType = 'PDF', depth = 5000, title = '') {
   const url = `${boreholeBaseUrl}?${boreholeParams}`
     .replace('{coordinates}', coordinates.map(coordinate => coordinate.join(' ')).join(','))
     .replace('{depth}', depth)
+    .replace('{outputType}', outputType)
     .replace('{title}', title);
 
   return fetch(url, {signal}).then(response => response.json());
@@ -28,12 +30,14 @@ export function borehole(coordinates, signal, depth = 5000, title = '') {
 /**
  * @param {Array<Array<number>>} coordinates
  * @param {AbortSignal} signal
+ * @param {'PDF' | 'PNG'} outputType
  * @param {string} [title=''] output title
  * @return {Promise}
  */
-export function verticalCrossSection(coordinates, signal, title = '') {
+export function verticalCrossSection(coordinates, signal, outputType = 'PDF', title = '') {
   const url = `${verticalCrossSectionBaseUrl}?${verticalCrossSectionParams}`
     .replace('{coordinates}', coordinates.map(coordinate => coordinate.join(' ')).join(','))
+    .replace('{outputType}', outputType)
     .replace('{title}', title);
 
 
@@ -45,10 +49,11 @@ export function verticalCrossSection(coordinates, signal, title = '') {
  * @param {Array<Array<number>>} coordinates
  * @param {AbortSignal} signal
  * @param {number} [depth=-2500] depth in meters
+ * @param {'PDF' | 'PNG'} outputType
  * @param {string} [title=''] output title
  * @return {Promise}
  */
-export function horizontalCrossSection(coordinates, signal, depth = -2500, title = '') {
+export function horizontalCrossSection(coordinates, signal, depth = -2500, outputType = 'PDF', title = '') {
   // 'coordinates' parameter is the rectangle:
   // 0 ---------- 3
   // |            |
@@ -70,6 +75,7 @@ export function horizontalCrossSection(coordinates, signal, depth = -2500, title
     .replace('{direction}', direction)
     .replace('{width}', magnitude)
     .replace('{depth}', depth)
+    .replace('{outputType}', outputType)
     .replace('{title}', title);
 
   return fetch(url, {signal}).then(response => response.json());
