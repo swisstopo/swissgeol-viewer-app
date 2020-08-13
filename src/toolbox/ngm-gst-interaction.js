@@ -201,7 +201,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
                 <button class="ui button ngm-tools-btn"><i class="tools icon"></i></button>
             </div>
         </div>
-        <div id=${configurePopupId} class="ui popup">
+        <div id=${configurePopupId} class="ui mini popup">
         ${this.geometryType === 'rectangle' ?
       html`<label>${i18next.t('cross_sections_depth')}</label>
               <div class="ui tiny form depth">
@@ -219,7 +219,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
                   </div>
         </div>` : ''}
         <label>${i18next.t('cross_sections_format')}</label>
-        <div id="${formatSelectorId}" class="ui fluid selection dropdown">
+        <div id="${formatSelectorId}" class="ui fluid selection mini dropdown">
             <div class="text"></div>
             <i class="dropdown icon"></i>
         </div>

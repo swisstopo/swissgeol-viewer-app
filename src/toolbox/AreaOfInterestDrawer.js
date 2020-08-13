@@ -387,7 +387,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     }
   }
 
-  get getDrawState() {
+  get drawState() {
     return this.draw_.active;
   }
 

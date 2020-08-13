@@ -61,7 +61,7 @@ export default class QueryManager {
     this.unhighlight();
     const toolboxElement = document.querySelector('ngm-aoi-drawer');
     toolboxElement.deselectArea();
-    if (!this.enabled || toolboxElement.getDrawState) {
+    if (!this.enabled || toolboxElement.drawState) {
       const objectInfo = document.querySelector('ngm-object-information');
       objectInfo.info = null;
       objectInfo.opened = false;
