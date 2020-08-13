@@ -185,7 +185,7 @@ const geo_base = {
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 99332,
+          assetId: 124555,
           label: t('cross_section_geomol_label'),
           layer: 'cross_section_geomol',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
