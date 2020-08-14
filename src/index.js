@@ -28,6 +28,7 @@ import './elements/ngm-review-window.js';
 import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
 import './elements/ngm-full-screen-view.js';
+import './elements/ngm-object-position-popup.js';
 import {LocalStorageController} from './LocalStorageController.js';
 
 
