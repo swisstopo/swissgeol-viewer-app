@@ -391,6 +391,14 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     return this.draw_.active;
   }
 
+  editAreaPosition(id) {
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity.isShowing) {
+      entity.show = !entity.isShowing;
+    }
+    console.log(entity);
+  }
+
   render() {
     if (!this.viewer) {
       return '';

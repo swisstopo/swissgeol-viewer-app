@@ -96,6 +96,13 @@ function aoiListTemplate() {
                     ><i class="search plus icon"></i></button>
                     <button
                     class="ui button"
+                    @click=${this.editAreaPosition.bind(this, i.id)}
+                    data-tooltip=${i18next.t('edit_area_btn_tooltip')}
+                    data-position="top center"
+                    data-variation="tiny"
+                    ><i class="pen icon"></i></button>
+                    <button
+                    class="ui button"
                     @click=${this.onRemoveEntityClick_.bind(this, i.id)}
                     data-tooltip=${i18next.t('remove_btn_tooltip')}
                     data-position="top center"
