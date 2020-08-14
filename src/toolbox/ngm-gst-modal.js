@@ -31,7 +31,7 @@ class NgmGstModal extends I18nMixin(LitElement) {
     if (!this.imageUrl) return '';
     const splitedUrl = this.imageUrl.split('.');
     const extension = splitedUrl[splitedUrl.length - 1];
-    return extension.toLocaleLowerCase() === 'pdf' ? 'PDF' : 'PNG';
+    return extension.toUpperCase();
   }
 
   render() {
