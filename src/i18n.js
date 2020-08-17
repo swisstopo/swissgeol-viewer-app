@@ -51,6 +51,8 @@ LanguageDetector.type = 'languageDetector';
 
 export function setupI18n() {
   i18next.use(Backend).use(LanguageDetector).init({
+    ns: ['app', 'assets'],
+    defaultNS: 'app',
     whitelist: SUPPORTED_LANGUAGES,
     nonExplicitWhitelist: true,
     returnEmptyString: false,
@@ -58,7 +60,7 @@ export function setupI18n() {
     //load: 'languageOnly',
     debug: false,
     backend: {
-      loadPath: 'locales/{{lng}}.json'
+      loadPath: 'locales/{{ns}}.{{lng}}.json'
     }
   });
 

@@ -41,4 +41,16 @@ To add a new string to translate, use the `data-i18n` attribute in an html file,
 <div type="search" data-i18n="text_key"></div>
 ```
 
+To add a new string in a javascript file, use the `i18next.t` function:
+```js
+import i18next from 'i18next';
+
+i18next.t('text_key');
+```
+
+The properties from all the 3dtiles can be collected for translation using the `extract-from-assets` command:
+```bash
+npm run extract-from-assets
+```
+
 Then, run the `npm run extract-i18n` command to add this new key (`text_key`) to the files in the `locales` directory.
