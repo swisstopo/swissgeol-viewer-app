@@ -176,17 +176,17 @@ const geo_base = {
           restricted: true,
           url: 'http://localhost:5000/tiles/bh_all_g_4326/v1/tileset.json',
         },
-        {
-          type: LAYER_TYPES.tiles3d,
-          label: 'authenticated surfaces',
-          layer: 'surfaces_authenticated',
-          transparency: DEFAULT_LAYER_TRANSPARENCY,
-          pickable: true,
-          visible: false,
-          displayed: false,
-          restricted: true,
-          url: 'https://uf7qh0dq0a.execute-api.eu-central-1.amazonaws.com/dev/tiles/TIN_GeoMol_DXF/v1/tileset.json',
-        },
+        // {
+        //   type: LAYER_TYPES.tiles3d,
+        //   label: 'authenticated surfaces',
+        //   layer: 'surfaces_authenticated',
+        //   transparency: DEFAULT_LAYER_TRANSPARENCY,
+        //   pickable: true,
+        //   visible: false,
+        //   displayed: false,
+        //   restricted: true,
+        //   url: 'https://uf7qh0dq0a.execute-api.eu-central-1.amazonaws.com/dev/tiles/TIN_GeoMol_DXF/v1/tileset.json',
+        // },
       ]
     },
     {
