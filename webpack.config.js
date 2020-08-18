@@ -56,7 +56,6 @@ module.exports = smp.wrap({
         // FIXME: is there a less ugly way to write these rules?
         { from: 'index.html', to: './' },
         { from: 'src/', to: 'src/' },
-        { from: 'src/proxy-worker.js', to: './proxy-worker.js' },
         { from: 'locales/', to: './locales/' },
         { from: cesiumSource + '/' + cesiumWorkers, to: 'Workers/' },
         { from: cesiumSource + '/Assets/', to: 'Assets/' },
