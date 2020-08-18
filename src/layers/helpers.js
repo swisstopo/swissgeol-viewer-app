@@ -41,14 +41,14 @@ export function createIonGeoJSONFromConfig(viewer, config) {
 
 export function create3DTilesetFromConfig(viewer, config) {
 
-  // if (config.restricted) {
-  //   config.url = new Resource({
-  //     url: config.url,
-  //     headers: {
-  //       'Authorization': Auth.getIdToken()
-  //     }
-  //   })
-  // }
+  if (config.restricted) {
+    config.url = new Resource({
+      url: config.url,
+      headers: {
+        'Authorization': `basic ${Auth.getBasicAuth()}`
+      }
+    })
+  }
 
   const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
