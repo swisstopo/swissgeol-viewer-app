@@ -48,11 +48,10 @@ class NgmAuth extends I18nMixin(LitElement) {
     // exchange JWT with AWS temporary access keys
     Auth.updateAwsCredentialsWithToken(Auth.getIdToken());
 
-    this.dispatchEvent(new CustomEvent('refresh'));
-
     // close the authentication popup
     popup.close();
     // TODO: reload layer-tree here
+    this.dispatchEvent(new CustomEvent('refresh', {detail: {authenticated: true}}));
 
   }
 
@@ -60,7 +59,9 @@ class NgmAuth extends I18nMixin(LitElement) {
     Auth.clear();
     this.user = Auth.getUser();
     // just to be sure everything is whiped out
-    location.reload();
+    this.dispatchEvent(new CustomEvent('refresh', {detail: {authenticated: false}}));
+
+    //location.reload();
   }
 
   render() {

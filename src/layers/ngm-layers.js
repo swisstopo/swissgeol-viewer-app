@@ -5,11 +5,6 @@ import './ngm-layers-item.js';
 
 export default class LayerTree extends I18nMixin(LitElement) {
 
-  constructor(){
-    super();
-    this.addEventListener('refresh', this.requestUpdate());
-  }
-
   static get properties() {
     return {
       actions: {type: Object},

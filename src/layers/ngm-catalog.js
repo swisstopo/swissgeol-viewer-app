@@ -1,24 +1,21 @@
 import {LitElement, html} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
 import i18next from 'i18next';
-import Auth from '../auth.js';
 
 
 class Catalog extends I18nMixin(LitElement) {
 
-  constructor(){
-    super();
-    this.addEventListener('refresh', this.requestUpdate());
-  }
+
   static get properties() {
     return {
       layers: {type: Object},
+      authenticated: {type: Boolean},
     };
   }
 
   getCategoryOrLayerTemplate(c) {
     // if it is a restricted layer, the user must be logged in to see it
-    if (c.restricted && !Auth.getUser()) {
+    if (c.restricted && !this.authenticated) {
       return
     }
     if (c.children)

@@ -27,7 +27,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
       hideWelcome: {type: Boolean},
-      mapChooser: {type: Function}
+      mapChooser: {type: Function},
+      authenticated: {type: Boolean},
     };
   }
 
@@ -63,6 +64,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         <div class="content ngm-layer-content active">
           <ngm-catalog
             .layers=${this.catalogLayers}
+            .authenticated=${this.authenticated}
             @layerclick=${this.onCatalogLayerClicked}
           >
           </ngm-catalog>
@@ -78,6 +80,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
           <ngm-layers
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             @layerChanged=${this.onLayerChanged}
+            .authenticated=${this.authenticated}
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>
