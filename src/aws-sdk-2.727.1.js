@@ -9706,6 +9706,8 @@ _xamzrequire = function e(t, n, r) {
               emitter.statusCode = response.status;
               emitter.headers = self.parseHeaders(response.headers);
               emitter.emit('headers', emitter.statusCode, emitter.headers);
+              //console.log(`response: ${response}`)
+              //console.log(`emitter: ${emitter}`)
               response.text().then(function(res){
                  console.log(res);
                  self.finishRequest(res, emitter);

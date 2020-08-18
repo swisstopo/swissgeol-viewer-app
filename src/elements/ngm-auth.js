@@ -2,6 +2,8 @@ import {LitElement, html} from 'lit-element';
 import Auth from '../auth.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
+import AWS from 'aws-sdk';
+
 
 /**
  * Authentication component
@@ -46,6 +48,8 @@ class NgmAuth extends I18nMixin(LitElement) {
     await Auth.waitForAuthenticate();
     this.user = Auth.getUser();
 
+    // exchange JWT with AWS temporary access keys
+    Auth.updateAwsCredentialsWithToken(Auth.getIdToken());
     // close the authentication popup
     popup.close();
   }
