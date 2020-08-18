@@ -1,6 +1,7 @@
 import {LitElement, html} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
 import i18next from 'i18next';
+import Auth from '../auth.js';
 
 
 class Catalog extends I18nMixin(LitElement) {
@@ -12,7 +13,10 @@ class Catalog extends I18nMixin(LitElement) {
   }
 
   getCategoryOrLayerTemplate(c) {
-    //if c.authenticated
+    // if it is a restricted layer, the user must be logged in to see it
+    if (c.restricted && !Auth.getUser()) {
+      return
+    }
     if (c.children)
       return this.getCategoryTemplate(c);
     return this.getLayerTemplate(c);
