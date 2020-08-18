@@ -1,5 +1,6 @@
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartographic from 'cesium/Source/Core/Cartographic';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import Entity from 'cesium/Source/DataSources/Entity';
@@ -18,6 +19,7 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
+import {convertCartographicToScreenCoordinates} from '../utils';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -58,6 +60,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.active = false;
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
+    this.positionEditPopup = document.querySelector('ngm-object-position-popup');
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
     this.draw_.addEventListener('statechanged', () => this.requestUpdate());
@@ -65,6 +68,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
         showWarning(i18next.t('error_need_more_points'));
       }
+    });
+    this.draw_.addEventListener('leftdown', () => this.positionEditPopup.opened = false);
+    this.draw_.addEventListener('leftup', event => {
+      this.moveEditPositionPopup(event.detail.position);
+      this.positionEditPopup.opened = true;
     });
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
@@ -107,6 +115,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   cancelDraw() {
     this.draw_.active = false;
     this.draw_.clear();
+    this.positionEditPopup.opened = false;
   }
 
   onClick_(click) {
@@ -393,10 +402,27 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   editAreaPosition(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
+    this.draw_.entityForEdit = entity;
+    this.draw_.active = true;
     if (!entity.isShowing) {
       entity.show = !entity.isShowing;
     }
-    console.log(entity);
+    const position = entity.position.getValue(new Date());
+    this.moveEditPositionPopup(position);
+    this.positionEditPopup.opened = true;
+    this.positionEditPopup.addEventListener('positionChanged', event => {
+      entity.position = event.detail.position;
+      this.viewer.scene.requestRender();
+      this.moveEditPositionPopup(event.detail.position);
+    });
+  }
+
+  moveEditPositionPopup(position) {
+    const cartographicPosition = Cartographic.fromCartesian(position);
+    this.positionEditPopup.position = cartographicPosition;
+    const postion2d = convertCartographicToScreenCoordinates(this.viewer.scene, cartographicPosition);
+    this.positionEditPopup.style.left = `${postion2d.x}px`;
+    this.positionEditPopup.style.top = `${postion2d.y}px`;
   }
 
   render() {

@@ -1,10 +1,11 @@
 import {LitElement, html} from 'lit-element';
-import draggable from './draggable.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 import $ from '../jquery';
-import CesiumMath from "cesium/Source/Core/Math";
-import {degreesToLv95} from '../projection';
+import CesiumMath from 'cesium/Source/Core/Math';
+import {degreesToLv95, lv95ToDegrees} from '../projection';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartographic from 'cesium/Source/Core/Cartographic';
 
 class NgmObjectPositionPopup extends I18nMixin(LitElement) {
 
@@ -20,7 +21,8 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
     this.opened = false;
     this.xValue = 0;
     this.yValue = 0;
-    this.coordsStep = 1;
+    this.coordsStep = 0.001;
+    this.coordsType = 'wsg84';
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
@@ -29,26 +31,30 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
     });
   }
 
-  firstUpdated() {
-    $(this.querySelector('#ngm-coord-type-select')).dropdown({
-      onChange: value => {
-        this.coordsType = value;
-        this.coordsStep = value === 'lv95' ? 100 : 0.001;
-        this.updateInputValues();
-      },
-      values: [
-        {
-          name: 'LV95',
-          value: 'lv95',
-          selected: this.coordsType === 'lv95'
+  updated() {
+    if (this.position && !this.dropdownInited) {
+      $(this.querySelector('#ngm-coord-type-select')).dropdown({
+        onChange: value => {
+          this.coordsType = value;
+          this.coordsStep = value === 'lv95' ? 100 : 0.001;
+          this.updateInputValues();
+          this.requestUpdate();
         },
-        {
-          name: 'WSG84',
-          value: 'wsg84',
-          selected: this.coordsType === 'wsg84'
-        }
-      ]
-    });
+        values: [
+          {
+            name: 'LV95',
+            value: 'lv95',
+            selected: this.coordsType === 'lv95'
+          },
+          {
+            name: 'WSG84',
+            value: 'wsg84',
+            selected: this.coordsType === 'wsg84'
+          }
+        ]
+      });
+      this.dropdownInited = true;
+    }
   }
 
   updateInputValues() {
@@ -66,11 +72,32 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
   }
 
   onPositionChange() {
-
+    this.xValue = Number(this.querySelector('#ngm-coord-x-input').value);
+    this.yValue = Number(this.querySelector('#ngm-coord-y-input').value);
+    // this.heightValue = Number(this.querySelector('#ngm-height-input').value);
+    // let altitude = this.scene.globe.getHeight(this.position);
+    // altitude = altitude ? altitude : 0;
+    let lon = this.xValue;
+    let lat = this.yValue;
+    // const height = this.position.height + altitude;
+    if (this.coordsType === 'lv95') {
+      const radianCoords = lv95ToDegrees([this.xValue, this.yValue]);
+      lon = radianCoords[0];
+      lat = radianCoords[1];
+    }
+    const cartesianPosition = Cartesian3.fromDegrees(lon, lat, this.position.height);
+    this.position = Cartographic.fromCartesian(cartesianPosition);
+    this.updateInputValues();
+    this.dispatchEvent(new CustomEvent('positionChanged', {
+      detail: {
+        position: cartesianPosition
+      }
+    }));
   }
 
   render() {
     if (this.position) {
+      this.updateInputValues();
       return html`
         <div class="ui segment" ?hidden="${!this.opened}">
             <label>${i18next.t('coordinates')}:</label>

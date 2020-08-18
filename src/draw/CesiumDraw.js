@@ -48,6 +48,9 @@ export class CesiumDraw extends EventTarget {
     this.sketchLine_ = undefined;
     this.activeDistance_ = 0;
     this.activeDistances_ = [];
+    this.entityForEdit = undefined;
+    this.leftPressed = false;
+    this.moveEntity = false;
 
     this.entities_ = [];
 
@@ -68,9 +71,15 @@ export class CesiumDraw extends EventTarget {
     if (value) {
       if (!this.eventHandler_) {
         this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
-        this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
+        if (this.entityForEdit) {
+          this.eventHandler_.setInputAction(event => this.onLeftDown_(event), ScreenSpaceEventType.LEFT_DOWN);
+          this.eventHandler_.setInputAction(event => this.onLeftUp_(event), ScreenSpaceEventType.LEFT_UP);
+          console.log(this.viewer_.scene.screenSpaceCameraController);
+        } else {
+          this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
+          this.eventHandler_.setInputAction(this.onDoubleClick_.bind(this), ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+        }
         this.eventHandler_.setInputAction(this.onMouseMove_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
-        this.eventHandler_.setInputAction(this.onDoubleClick_.bind(this), ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
       }
     } else {
       if (this.eventHandler_) {
@@ -134,6 +143,9 @@ export class CesiumDraw extends EventTarget {
     this.sketchLine_ = undefined;
     this.activeDistance_ = 0;
     this.activeDistances_ = [];
+    this.entityForEdit = undefined;
+    this.leftPressed = false;
+    this.moveEntity = false;
   }
 
   /**
@@ -269,12 +281,20 @@ export class CesiumDraw extends EventTarget {
   }
 
   onMouseMove_(event) {
-    if (this.sketchPoint_) {
-      const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
-      if (position) {
-        this.activePoint_ = position;
-        this.updateSketchPoint();
+    const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
+    if (!position) return;
+    if (this.entityForEdit && this.leftPressed) {
+      const objects = this.viewer_.scene.drillPick(event.endPosition, 1);
+      if (objects.length && objects[0].id.id === this.entityForEdit.id) {
+        this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
+        this.moveEntity = true;
       }
+      if (this.moveEntity) {
+        this.entityForEdit.position = position; // For points only
+      }
+    } else if (this.sketchPoint_) {
+      this.activePoint_ = position;
+      this.updateSketchPoint();
     }
   }
 
@@ -283,6 +303,22 @@ export class CesiumDraw extends EventTarget {
       this.activeDistances_.push(this.activeDistance_);
     }
     this.finishDrawing();
+  }
+
+  onLeftDown_() {
+    this.leftPressed = true;
+    this.dispatchEvent(new CustomEvent('leftdown'));
+  }
+
+  onLeftUp_() {
+    this.viewer_.scene.screenSpaceCameraController.enableInputs = true;
+    this.moveEntity = false;
+    this.leftPressed = false;
+    this.dispatchEvent(new CustomEvent('leftup', {
+      detail: {
+        position: this.entityForEdit.position.getValue(new Date()) // point only solution
+      }
+    }));
   }
 }
 

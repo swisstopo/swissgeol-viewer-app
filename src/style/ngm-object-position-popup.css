@@ -1,6 +1,6 @@
 ngm-object-position-popup {
   position: absolute;
   z-index: 2;
-  margin: 6px;
-  right: 0;
+  width: 320px;
+  height: 75px;
 }

@@ -4,6 +4,7 @@ import CMath from 'cesium/Source/Core/Math';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline';
 import Transforms from 'cesium/Source/Core/Transforms';
+import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
 
 
 export async function readTextFile(url) {
@@ -155,4 +156,10 @@ export function getMeasurements(positions, distances, type) {
     result.area = getPolygonArea(positions).toFixed(3);
   }
   return result;
+}
+
+export function convertCartographicToScreenCoordinates(scene, cartographicPosition) {
+  const lon = CMath.toDegrees(cartographicPosition.longitude);
+  const lat = CMath.toDegrees(cartographicPosition.latitude);
+  return SceneTransforms.wgs84ToDrawingBufferCoordinates(scene, Cartesian3.fromDegrees(lon, lat));
 }
