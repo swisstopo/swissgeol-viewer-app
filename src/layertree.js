@@ -176,7 +176,7 @@ const geo_energy = {
         {
           type: LAYER_TYPES.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
-          assetId: 109931,
+          assetId: 139225,
           label: t('temperature_model_label'),
           layer: 'temperature_model',
           transparencyDisabled: true,
