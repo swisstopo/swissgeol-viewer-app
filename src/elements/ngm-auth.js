@@ -2,8 +2,6 @@ import {LitElement, html} from 'lit-element';
 import Auth from '../auth.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
-import AWS from 'aws-sdk';
-
 
 /**
  * Authentication component
@@ -26,7 +24,6 @@ class NgmAuth extends I18nMixin(LitElement) {
   constructor() {
     super();
     this.user = Auth.getUser();
-
     this.responseType = 'token';
     this.redirectUri = `${location.origin}${location.pathname}`;
     this.scope = 'openid+profile';
@@ -50,13 +47,20 @@ class NgmAuth extends I18nMixin(LitElement) {
 
     // exchange JWT with AWS temporary access keys
     Auth.updateAwsCredentialsWithToken(Auth.getIdToken());
+
+    this.dispatchEvent(new CustomEvent('refresh'));
+
     // close the authentication popup
     popup.close();
+    // TODO: reload layer-tree here
+
   }
 
   logout() {
     Auth.clear();
     this.user = Auth.getUser();
+    // just to be sure everything is whiped out
+    location.reload();
   }
 
   render() {

@@ -6,6 +6,10 @@ import Auth from '../auth.js';
 
 class Catalog extends I18nMixin(LitElement) {
 
+  constructor(){
+    super();
+    this.addEventListener('refresh', this.requestUpdate());
+  }
   static get properties() {
     return {
       layers: {type: Object},
