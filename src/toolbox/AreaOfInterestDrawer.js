@@ -61,6 +61,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
     this.positionEditPopup = document.querySelector('ngm-object-position-popup');
+    this.editedPositionBackup = undefined;
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
     this.draw_.addEventListener('statechanged', () => this.requestUpdate());
@@ -70,10 +71,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       }
     });
     this.draw_.addEventListener('leftdown', () => this.positionEditPopup.opened = false);
-    this.draw_.addEventListener('leftup', event => {
-      this.moveEditPositionPopup(event.detail.position);
-      this.positionEditPopup.opened = true;
-    });
+    this.draw_.addEventListener('leftup', () => this.positionEditPopup.opened = true);
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
     this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
@@ -109,13 +107,21 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     };
     this.areasCounter_[type] = this.areasCounter_[type] + 1;
     this.addAreaEntity(attributes);
-
+    this.enableToolButtons();
   }
 
   cancelDraw() {
+    if (this.editedPositionBackup) {
+      this.draw_.entityForEdit.position = this.editedPositionBackup;
+    }
+    this.editedPositionBackup = undefined;
     this.draw_.active = false;
     this.draw_.clear();
     this.positionEditPopup.opened = false;
+    if (this.unlistenEditPostRender) {
+      this.unlistenEditPostRender();
+    }
+    this.enableToolButtons();
   }
 
   onClick_(click) {
@@ -192,6 +198,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   onAddAreaClick_(type) {
     this.draw_.type = type;
     this.draw_.active = true;
+    this.disableToolButtons();
   }
 
   flyToArea(id) {
@@ -401,7 +408,10 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   editAreaPosition(id) {
+    this.disableToolButtons();
+    this.pickArea_(id);
     const entity = this.interestAreasDataSource.entities.getById(id);
+    this.editedPositionBackup = Cartesian3.clone(entity.position.getValue(new Date()));
     this.draw_.entityForEdit = entity;
     this.draw_.active = true;
     if (!entity.isShowing) {
@@ -415,6 +425,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       this.viewer.scene.requestRender();
       this.moveEditPositionPopup(event.detail.position);
     });
+    this.unlistenEditPostRender = this.viewer.scene.postRender.addEventListener(() => {
+      if (this.draw_.entityForEdit) {
+        this.moveEditPositionPopup(this.draw_.entityForEdit.position.getValue(new Date()));
+      }
+    });
   }
 
   moveEditPositionPopup(position) {
@@ -423,6 +438,19 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const postion2d = convertCartographicToScreenCoordinates(this.viewer.scene, cartographicPosition);
     this.positionEditPopup.style.left = `${postion2d.x}px`;
     this.positionEditPopup.style.top = `${postion2d.y}px`;
+  }
+
+  saveEditing() {
+    this.editedPositionBackup = undefined;
+    this.cancelDraw();
+  }
+
+  disableToolButtons() {
+    this.querySelectorAll('.ngm-aoi-areas .buttons button').forEach(button => button.classList.add('disabled'));
+  }
+
+  enableToolButtons() {
+    this.querySelectorAll('.ngm-aoi-areas .buttons button').forEach(button => button.classList.remove('disabled'));
   }
 
   render() {

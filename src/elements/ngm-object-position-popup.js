@@ -23,12 +23,6 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
     this.yValue = 0;
     this.coordsStep = 0.001;
     this.coordsType = 'wsg84';
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        this.opened = false;
-      }
-    });
   }
 
   updated() {
@@ -99,7 +93,7 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
     if (this.position) {
       this.updateInputValues();
       return html`
-        <div class="ui segment" ?hidden="${!this.opened}">
+        <div class="ui mini segment" ?hidden="${!this.opened}">
             <label>${i18next.t('coordinates')}:</label>
             <div class="ngm-coord-input">
                 <div class="ui mini right labeled input">

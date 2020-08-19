@@ -3,6 +3,10 @@
   padding: 0;
 }
 
+.ngm-help-btn.ui.button > i.icon {
+  margin: 0 !important;
+}
+
 .ngm-aoi-tooltip-container [data-tooltip]:after {
   width: 250px;
   text-align: center;

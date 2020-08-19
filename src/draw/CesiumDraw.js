@@ -74,7 +74,6 @@ export class CesiumDraw extends EventTarget {
         if (this.entityForEdit) {
           this.eventHandler_.setInputAction(event => this.onLeftDown_(event), ScreenSpaceEventType.LEFT_DOWN);
           this.eventHandler_.setInputAction(event => this.onLeftUp_(event), ScreenSpaceEventType.LEFT_UP);
-          console.log(this.viewer_.scene.screenSpaceCameraController);
         } else {
           this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
           this.eventHandler_.setInputAction(this.onDoubleClick_.bind(this), ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
@@ -314,11 +313,7 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.scene.screenSpaceCameraController.enableInputs = true;
     this.moveEntity = false;
     this.leftPressed = false;
-    this.dispatchEvent(new CustomEvent('leftup', {
-      detail: {
-        position: this.entityForEdit.position.getValue(new Date()) // point only solution
-      }
-    }));
+    this.dispatchEvent(new CustomEvent('leftup'));
   }
 }
 
