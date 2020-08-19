@@ -161,5 +161,5 @@ export function getMeasurements(positions, distances, type) {
 export function convertCartographicToScreenCoordinates(scene, cartographicPosition) {
   const lon = CMath.toDegrees(cartographicPosition.longitude);
   const lat = CMath.toDegrees(cartographicPosition.latitude);
-  return SceneTransforms.wgs84ToWindowCoordinates(scene, Cartesian3.fromDegrees(lon, lat));
+  return SceneTransforms.wgs84ToWindowCoordinates(scene, Cartesian3.fromDegrees(lon, lat, cartographicPosition.height));
 }
