@@ -18,7 +18,7 @@ import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
+import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
 import {convertCartographicToScreenCoordinates} from '../utils';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
@@ -28,6 +28,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       viewer: {type: Object},
       selectedArea_: {type: Object}
     };
+  }
+
+  constructor() {
+    super();
+    this.onPositionChangedFunction = this.onPositionChanged.bind(this);
   }
 
   update(changedProperties) {
@@ -61,6 +66,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
     this.positionEditPopup = document.querySelector('ngm-object-position-popup');
+    this.positionEditPopup.scene = this.viewer.scene;
     this.editedPositionBackup = undefined;
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
@@ -115,6 +121,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       this.draw_.entityForEdit.position = this.editedPositionBackup;
     }
     this.editedPositionBackup = undefined;
+    this.positionEditPopup.position = undefined;
+    this.positionEditPopup.removeEventListener('positionChanged', this.onPositionChangedFunction);
     this.draw_.active = false;
     this.draw_.clear();
     this.positionEditPopup.opened = false;
@@ -139,7 +147,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   deselectArea() {
-    if (this.selectedArea_) {
+    if (this.selectedArea_ && !this.draw_.entityForEdit) {
       updateColor(this.selectedArea_, false);
       this.selectedArea_ = null;
     }
@@ -378,8 +386,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       entityAttrs.position = attributes.positions[0];
       entityAttrs.point = {
         color: DEFAULT_AOI_COLOR,
-        pixelSize: 6,
-        heightReference: HeightReference.CLAMP_TO_GROUND
+        pixelSize: 8,
+        scaleByDistance: new NearFarScalar(0, 1, 1, 1)
       };
     }
     return this.interestAreasDataSource.entities.add(entityAttrs);
@@ -418,13 +426,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       entity.show = !entity.isShowing;
     }
     const position = entity.position.getValue(new Date());
-    this.moveEditPositionPopup(position);
     this.positionEditPopup.opened = true;
-    this.positionEditPopup.addEventListener('positionChanged', event => {
-      entity.position = event.detail.position;
-      this.viewer.scene.requestRender();
-      this.moveEditPositionPopup(event.detail.position);
-    });
+    this.moveEditPositionPopup(position);
+    this.positionEditPopup.addEventListener('positionChanged', this.onPositionChangedFunction);
     this.unlistenEditPostRender = this.viewer.scene.postRender.addEventListener(() => {
       if (this.draw_.entityForEdit) {
         this.moveEditPositionPopup(this.draw_.entityForEdit.position.getValue(new Date()));
@@ -436,8 +440,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const cartographicPosition = Cartographic.fromCartesian(position);
     this.positionEditPopup.position = cartographicPosition;
     const postion2d = convertCartographicToScreenCoordinates(this.viewer.scene, cartographicPosition);
-    this.positionEditPopup.style.left = `${postion2d.x}px`;
-    this.positionEditPopup.style.top = `${postion2d.y}px`;
+    const popupWidth = this.positionEditPopup.clientWidth;
+    if (postion2d) {
+      this.positionEditPopup.style.left = `${postion2d.x + popupWidth / 3 - 10}px`;
+      this.positionEditPopup.style.top = `${postion2d.y}px`;
+    }
   }
 
   saveEditing() {
@@ -451,6 +458,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   enableToolButtons() {
     this.querySelectorAll('.ngm-aoi-areas .buttons button').forEach(button => button.classList.remove('disabled'));
+  }
+
+  onPositionChanged(event) {
+    this.draw_.entityForEdit.position = event.detail.position;
+    this.viewer.scene.requestRender();
+    this.moveEditPositionPopup(event.detail.position);
   }
 
   render() {

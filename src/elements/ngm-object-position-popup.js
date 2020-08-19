@@ -11,6 +11,7 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
+      scene: {type: Object},
       position: {type: Object},
       opened: {type: Boolean}
     };
@@ -21,6 +22,7 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
     this.opened = false;
     this.xValue = 0;
     this.yValue = 0;
+    this.heightValue = 0;
     this.coordsStep = 0.001;
     this.coordsType = 'wsg84';
   }
@@ -63,23 +65,26 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
       this.xValue = Number(lon.toFixed(6));
       this.yValue = Number(lat.toFixed(6));
     }
+    let altitude = this.scene.globe.getHeight(position);
+    altitude = altitude ? altitude : 0;
+    this.heightValue = Math.round(position.height - altitude);
   }
 
   onPositionChange() {
     this.xValue = Number(this.querySelector('#ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('#ngm-coord-y-input').value);
-    // this.heightValue = Number(this.querySelector('#ngm-height-input').value);
-    // let altitude = this.scene.globe.getHeight(this.position);
-    // altitude = altitude ? altitude : 0;
+    this.heightValue = Number(this.querySelector('#ngm-height-input').value);
+    let altitude = this.scene.globe.getHeight(this.position);
+    altitude = altitude ? altitude : 0;
     let lon = this.xValue;
     let lat = this.yValue;
-    // const height = this.position.height + altitude;
+    const height = this.heightValue + altitude;
     if (this.coordsType === 'lv95') {
       const radianCoords = lv95ToDegrees([this.xValue, this.yValue]);
       lon = radianCoords[0];
       lat = radianCoords[1];
     }
-    const cartesianPosition = Cartesian3.fromDegrees(lon, lat, this.position.height);
+    const cartesianPosition = Cartesian3.fromDegrees(lon, lat, height);
     this.position = Cartographic.fromCartesian(cartesianPosition);
     this.updateInputValues();
     this.dispatchEvent(new CustomEvent('positionChanged', {
@@ -112,6 +117,11 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
                         .value="${this.yValue}"
                         @change="${this.onPositionChange}">
                 </div>
+            </div>
+            <label>${i18next.t('camera_height')}:</label></br>
+            <div class="ui mini input right labeled">
+                <input type="number" step="10" id="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
+                <label for="ngm-height-input" class="ui label">m</label>
             </div>
         </div>
       `;
