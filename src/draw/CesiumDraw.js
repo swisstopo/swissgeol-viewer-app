@@ -76,15 +76,19 @@ export class CesiumDraw extends EventTarget {
           this.eventHandler_.setInputAction(event => this.onLeftDown_(event), ScreenSpaceEventType.LEFT_DOWN);
           this.eventHandler_.setInputAction(event => this.onLeftUp_(event), ScreenSpaceEventType.LEFT_UP);
           if (this.type !== 'point') {
-            const positions = this.entityForEdit.polygon ?
+            let positions = this.entityForEdit.polygon ?
               this.entityForEdit.polygon.hierarchy.getValue().positions :
               this.entityForEdit.polyline.positions.getValue();
+            if (this.type === 'rectangle') {
+              positions = positions.slice(0, 3);
+            }
             positions.forEach((p, key) => {
               this.activePoints_.push(p);
               const sketchPoint = this.drawSketchPoint_(p, true);
               sketchPoint.properties.index = key;
               this.sketchPoints_.push(sketchPoint);
             });
+            this.viewer_.scene.requestRender();
           }
         } else {
           this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
@@ -315,7 +319,14 @@ export class CesiumDraw extends EventTarget {
             this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
             const hierarchy = this.entityForEdit.polygon.hierarchy.getValue();
-            this.entityForEdit.polygon.hierarchy = {...hierarchy, positions: this.activePoints_};
+            let positions = this.activePoints_;
+            if (this.type === 'rectangle') {
+              positions = rectanglify(this.activePoints_);
+              this.sketchPoints_.forEach((sp, key) => {
+                sp.position = positions[key];
+              });
+            }
+            this.entityForEdit.polygon.hierarchy = {...hierarchy, positions};
           }
         }
       }
