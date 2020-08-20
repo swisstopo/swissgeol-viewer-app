@@ -2,10 +2,10 @@ import {LitElement, html} from 'lit-element';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 import $ from '../jquery';
-import CesiumMath from 'cesium/Source/Core/Math';
-import {degreesToLv95, lv95ToDegrees} from '../projection';
+import {lv95ToDegrees} from '../projection';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
+import {prepareCoordinatesForUi} from '../utils';
 
 class NgmObjectPositionPopup extends I18nMixin(LitElement) {
 
@@ -54,20 +54,10 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
   }
 
   updateInputValues() {
-    const position = this.position;
-    const lon = CesiumMath.toDegrees(position.longitude);
-    const lat = CesiumMath.toDegrees(position.latitude);
-    if (this.coordsType === 'lv95') {
-      const coords = degreesToLv95([lon, lat]);
-      this.xValue = Math.round(coords[0]);
-      this.yValue = Math.round(coords[1]);
-    } else {
-      this.xValue = Number(lon.toFixed(6));
-      this.yValue = Number(lat.toFixed(6));
-    }
-    let altitude = this.scene.globe.getHeight(position);
-    altitude = altitude ? altitude : 0;
-    this.heightValue = Math.round(position.height - altitude);
+    const coordinates = prepareCoordinatesForUi(this.scene, this.position, this.coordsType);
+    this.xValue = coordinates.x;
+    this.yValue = coordinates.y;
+    this.heightValue = coordinates.height;
   }
 
   onPositionChange() {

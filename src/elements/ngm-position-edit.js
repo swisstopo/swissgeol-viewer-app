@@ -7,6 +7,7 @@ import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {I18nMixin} from '../i18n.js';
 import i18next from 'i18next';
+import {prepareCoordinatesForUi} from '../utils';
 
 class NgmPositionEdit extends I18nMixin(LitElement) {
 
@@ -73,20 +74,10 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
   }
 
   updateInputValues() {
-    const position = this.scene.camera.positionCartographic;
-    const lon = CesiumMath.toDegrees(position.longitude);
-    const lat = CesiumMath.toDegrees(position.latitude);
-    if (this.coordsType === 'lv95') {
-      const coords = degreesToLv95([lon, lat]);
-      this.xValue = Math.round(coords[0]);
-      this.yValue = Math.round(coords[1]);
-    } else {
-      this.xValue = Number(lon.toFixed(6));
-      this.yValue = Number(lat.toFixed(6));
-    }
-    let altitude = this.scene.globe.getHeight(position);
-    altitude = altitude ? altitude : 0;
-    this.heightValue = Math.round(position.height - altitude);
+    const coordinates = prepareCoordinatesForUi(this.scene, this.scene.camera.positionCartographic, this.coordsType);
+    this.xValue = coordinates.x;
+    this.yValue = coordinates.y;
+    this.heightValue = coordinates.height;
     this.angleValue = Math.round(CesiumMath.toDegrees(this.scene.camera.heading));
     this.tiltValue = Math.round(CesiumMath.toDegrees(this.scene.camera.pitch));
   }

@@ -5,6 +5,8 @@ import Matrix4 from 'cesium/Source/Core/Matrix4';
 import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline';
 import Transforms from 'cesium/Source/Core/Transforms';
 import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
+import CesiumMath from "cesium/Source/Core/Math";
+import {degreesToLv95} from './projection';
 
 
 export async function readTextFile(url) {
@@ -158,8 +160,39 @@ export function getMeasurements(positions, distances, type) {
   return result;
 }
 
+/**
+ * Returns window position of point on map
+ * @param scene
+ * @param cartographicPosition
+ * @return {Cartesian2}
+ */
 export function convertCartographicToScreenCoordinates(scene, cartographicPosition) {
   const lon = CMath.toDegrees(cartographicPosition.longitude);
   const lat = CMath.toDegrees(cartographicPosition.latitude);
   return SceneTransforms.wgs84ToWindowCoordinates(scene, Cartesian3.fromDegrees(lon, lat, cartographicPosition.height));
+}
+
+/**
+ * Returns x,y in lv95 or wsg84 and height relative to ground
+ * @param scene
+ * @param position: Cartographic
+ * @param coordinatesType: 'lv95' | 'wsg84'
+ * @return {{x: number, y: number, height: number}}
+ */
+export function prepareCoordinatesForUi(scene, position, coordinatesType) {
+  let x, y;
+  const lon = CesiumMath.toDegrees(position.longitude);
+  const lat = CesiumMath.toDegrees(position.latitude);
+  if (coordinatesType === 'lv95') {
+    const coords = degreesToLv95([lon, lat]);
+    x = Math.round(coords[0]);
+    y = Math.round(coords[1]);
+  } else {
+    x = Number(lon.toFixed(6));
+    y = Number(lat.toFixed(6));
+  }
+  let altitude = scene.globe.getHeight(position);
+  altitude = altitude ? altitude : 0;
+  const height = Math.round(position.height - altitude);
+  return {x, y, height};
 }
