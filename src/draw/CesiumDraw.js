@@ -321,7 +321,7 @@ export class CesiumDraw extends EventTarget {
             const hierarchy = this.entityForEdit.polygon.hierarchy.getValue();
             let positions = this.activePoints_;
             if (this.type === 'rectangle') {
-              positions = rectanglify(this.activePoints_);
+              positions = rectanglify(this.activePoints_).map(p => Cartesian3.clone(p));
               this.sketchPoints_.forEach((sp, key) => {
                 sp.position = positions[key];
               });
