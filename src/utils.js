@@ -5,7 +5,6 @@ import Matrix4 from 'cesium/Source/Core/Matrix4';
 import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline';
 import Transforms from 'cesium/Source/Core/Transforms';
 import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
-import CesiumMath from "cesium/Source/Core/Math";
 import {degreesToLv95} from './projection';
 
 
@@ -181,8 +180,8 @@ export function convertCartographicToScreenCoordinates(scene, cartographicPositi
  */
 export function prepareCoordinatesForUi(scene, position, coordinatesType) {
   let x, y;
-  const lon = CesiumMath.toDegrees(position.longitude);
-  const lat = CesiumMath.toDegrees(position.latitude);
+  const lon = CMath.toDegrees(position.longitude);
+  const lat = CMath.toDegrees(position.latitude);
   if (coordinatesType === 'lv95') {
     const coords = degreesToLv95([lon, lat]);
     x = Math.round(coords[0]);

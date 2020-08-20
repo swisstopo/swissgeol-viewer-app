@@ -2,7 +2,7 @@ import {LitElement, html} from 'lit-element';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/popup.js';
 import 'fomantic-ui-css/components/dropdown.js';
-import {degreesToLv95, lv95ToDegrees} from '../projection.js';
+import {lv95ToDegrees} from '../projection.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {I18nMixin} from '../i18n.js';
