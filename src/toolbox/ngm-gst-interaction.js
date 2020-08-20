@@ -87,6 +87,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
       onChange: value => this.outputFormat = value,
       values: [
         {name: 'PDF', value: 'pdf', selected: this.outputFormat === 'pdf'},
+        {name: 'SVG', value: 'svg', selected: this.outputFormat === 'svg'},
         {name: 'PNG', value: 'png', selected: this.outputFormat === 'png'}
       ]
     });
@@ -142,7 +143,11 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
       this.loading = true;
       promise
         .then(json => {
-          this.parentElement.showSectionModal(json.imageUrl);
+          if (json.error) {
+            showError(json.error);
+          } else {
+            this.parentElement.showSectionModal(json.imageUrl);
+          }
         })
         .catch(err => {
           if (err.name === 'AbortError') {
