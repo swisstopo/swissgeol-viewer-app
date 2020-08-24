@@ -41,7 +41,7 @@
     "eslint": "^7.7.0",
     "esm": "^3.2.25",
     "file-loader": "^6.0.0",
-    "i18next-parser": "^3.0.1",
+    "i18next-parser": "^3.3.0",
     "jsdom": "16.4.0",
     "jsdom-global": "3.0.2",
     "mini-css-extract-plugin": "^0.10.0",
