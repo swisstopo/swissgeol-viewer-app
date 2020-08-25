@@ -84,7 +84,7 @@ function aoiListTemplate() {
         </div>
         <div class="content ngm-aoi-content">
             <div class="ngm-btns-field">
-                <div class="ui tiny fluid buttons ngm-aoi-buttons">
+                <div class="ui tiny fluid compact buttons ngm-aoi-buttons">
                     <button
                     class="ui button"
                     @click=${this.showAreaInfo.bind(this, i)}
@@ -106,6 +106,22 @@ function aoiListTemplate() {
                     data-position="top center"
                     data-variation="tiny"
                     ><i class="pen icon"></i></button>
+                    <button
+                    class="ui button"
+                    @click=${this.convertRectangleToCube.bind(this, i.id)}
+                    ?hidden=${i.type !== 'rectangle' || i.volumeShowed}
+                    data-tooltip=${i18next.t('convert_to_cube_btn')}
+                    data-position="top center"
+                    data-variation="tiny"
+                    ><i class="cube icon"></i></button>
+                    <button
+                    class="ui button"
+                    @click=${this.convertCubeToRectangle.bind(this, i.id)}
+                    ?hidden=${i.type !== 'rectangle' || !i.volumeShowed}
+                    data-tooltip=${i18next.t('convert_to_rect_btn')}
+                    data-position="top center"
+                    data-variation="tiny"
+                    ><i class="vector square icon"></i></button>
                     <button
                     class="ui button"
                     @click=${this.onRemoveEntityClick_.bind(this, i.id)}

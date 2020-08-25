@@ -20,6 +20,11 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
 import {convertCartographicToScreenCoordinates} from '../utils';
+import Color from 'cesium/Source/Core/Color';
+import Rectangle from 'cesium/Source/Core/Rectangle';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
+import {getBoxFromRectangle} from '../layers/helpers';
+import CornerType from 'cesium/Source/Core/CornerType';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -77,7 +82,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       }
     });
     this.draw_.addEventListener('leftdown', () => this.positionEditPopup.opened = false);
-    this.draw_.addEventListener('leftup', () => this.positionEditPopup.opened = true);
+    this.draw_.addEventListener('leftup', () => {
+      if (this.draw_.type === 'point') {
+        this.positionEditPopup.opened = true;
+      } else if (this.draw_.entityForEdit.properties.volumeShowed && this.draw_.entityForEdit.properties.volumeShowed.getValue()) {
+        this.convertRectangleToCube(this.draw_.entityForEdit.id);
+      }
+    });
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
     this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
@@ -184,7 +195,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         perimeter: val.properties.perimeter ? val.properties.perimeter.getValue() : undefined,
         sidesLength: val.properties.sidesLength ? val.properties.sidesLength.getValue() : undefined,
         numberOfSegments: val.properties.numberOfSegments ? val.properties.numberOfSegments.getValue() : undefined,
-        type: val.properties.type ? val.properties.type.getValue() : undefined
+        type: val.properties.type ? val.properties.type.getValue() : undefined,
+        volumeShowed: val.properties.volumeShowed ? val.properties.volumeShowed.getValue() : undefined,
+        volumeHeightLimits: val.properties.volumeHeightLimits ? val.properties.volumeHeightLimits.getValue() : undefined,
       };
     });
   }
@@ -290,8 +303,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         numberOfSegments: area.numberOfSegments,
         sidesLength: area.sidesLength ? area.sidesLength : [],
         type: area.type,
+        volumeShowed: area.volumeShowed,
+        volumeHeightLimits: area.volumeHeightLimits
       };
       const entity = this.addAreaEntity(attributes);
+      if (area.volumeShowed) {
+        this.convertRectangleToCube(entity.id);
+      }
       if (area.selected) {
         this.pickArea_(entity.id);
       }
@@ -316,11 +334,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   getIconClass(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
     const type = entity.properties.type ? entity.properties.type.getValue() : undefined;
+    const volume = entity.properties.volumeShowed ? entity.properties.volumeShowed.getValue() : undefined;
     switch (type) {
       case 'polygon':
         return 'draw polygon icon';
       case 'rectangle':
-        return 'vector square icon';
+        return volume ? 'cube icon' : 'vector square icon';
       case 'line':
         return 'route icon';
       case 'point':
@@ -490,6 +509,53 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       sidesLength: measurements.sidesLength,
       type: type,
     };
+  }
+
+  convertRectangleToCube(id) {
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    const positions = entity.polygon.hierarchy.getValue().positions;
+    positions.push(positions[0]);
+    // const rectangle = Rectangle.fromCartesianArray(positions);
+    // const center = Rectangle.center(rectangle);
+    const volumeHeightLimits = {
+      lowerLimit: 0,
+      height: 5000
+    };
+    // let altitude = this.viewer.scene.globe.getHeight(center);
+    // altitude = altitude ? altitude : 0;
+    // center.height = volumeHeightLimits.height - volumeHeightLimits.lowerLimit - altitude;
+    // entity.position = Cartographic.toCartesian(center);
+    entity.polylineVolume = {
+      fill: false,
+      // dimensions: getBoxFromRectangle(rectangle, volumeHeightLimits.height),
+      positions: positions,
+      shape: [
+        new Cartesian2(0, 0),
+        new Cartesian2(0, 0),
+        new Cartesian2(1, 0),
+        new Cartesian2(0, volumeHeightLimits.height),
+      ],
+      cornerType: CornerType.MITERED,
+      outline: true,
+      outlineColor: Color.RED
+    };
+    entity.polygon.show = false;
+    entity.polylineVolume.show = true;
+    if (!entity.properties.hasProperty('volumeShowed')) {
+      entity.properties.addProperty('volumeHeightLimits', volumeHeightLimits);
+      entity.properties.addProperty('volumeShowed', true);
+    } else {
+      entity.properties.volumeHeightLimits = volumeHeightLimits;
+      entity.properties.volumeShowed = true;
+    }
+  }
+
+  convertCubeToRectangle(id) {
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    entity.polygon.show = true;
+    entity.polylineVolume.show = false;
+    // entity.box.show = false;
+    entity.properties.volumeShowed = false;
   }
 
   render() {
