@@ -525,7 +525,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     // center.height = volumeHeightLimits.height - volumeHeightLimits.lowerLimit - altitude;
     // entity.position = Cartographic.toCartesian(center);
     entity.polylineVolume = {
-      fill: false,
       // dimensions: getBoxFromRectangle(rectangle, volumeHeightLimits.height),
       positions: positions,
       shape: [
@@ -536,7 +535,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       ],
       cornerType: CornerType.MITERED,
       outline: true,
-      outlineColor: Color.RED
+      outlineColor: Color.RED,
+      material: DEFAULT_AOI_COLOR
     };
     entity.polygon.show = false;
     entity.polylineVolume.show = true;
