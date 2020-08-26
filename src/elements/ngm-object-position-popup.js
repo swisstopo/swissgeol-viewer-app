@@ -29,7 +29,7 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
 
   updated() {
     if (this.position && !this.dropdownInited) {
-      $(this.querySelector('#ngm-coord-type-select')).dropdown({
+      $(this.querySelector('.ngm-coord-type-select')).dropdown({
         onChange: value => {
           this.coordsType = value;
           this.coordsStep = value === 'lv95' ? 100 : 0.001;
@@ -61,11 +61,10 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
   }
 
   onPositionChange() {
-    this.xValue = Number(this.querySelector('#ngm-coord-x-input').value);
-    this.yValue = Number(this.querySelector('#ngm-coord-y-input').value);
-    this.heightValue = Number(this.querySelector('#ngm-height-input').value);
-    let altitude = this.scene.globe.getHeight(this.position);
-    altitude = altitude ? altitude : 0;
+    this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
+    this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
+    this.heightValue = Number(this.querySelector('.ngm-height-input').value);
+    const altitude = this.scene.globe.getHeight(this.position) || 0;
     let lon = this.xValue;
     let lat = this.yValue;
     const height = this.heightValue + altitude;
@@ -92,17 +91,17 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
             <label>${i18next.t('coordinates')}:</label>
             <div class="ngm-coord-input">
                 <div class="ui mini right labeled input">
-                    <div id="ngm-coord-type-select" class="ui mini dropdown label">
+                    <div class="ui mini dropdown label ngm-coord-type-select">
                           <div class="text"></div>
                           <i class="dropdown icon"></i>
                     </div>
-                    <input type="number" id="ngm-coord-x-input"
+                    <input type="number" class="ngm-coord-x-input"
                         .step="${this.coordsStep}"
                         .value="${this.xValue}"
                         @change="${this.onPositionChange}">
                 </div>
                 <div class="ui mini left action input">
-                    <input type="number" id="ngm-coord-y-input"
+                    <input type="number" class="ngm-coord-y-input"
                         .step="${this.coordsStep}"
                         .value="${this.yValue}"
                         @change="${this.onPositionChange}">
@@ -110,8 +109,8 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
             </div>
             <label>${i18next.t('camera_height')}:</label></br>
             <div class="ui mini input right labeled">
-                <input type="number" step="10" id="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
-                <label for="ngm-height-input" class="ui label">m</label>
+                <input type="number" step="10" class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
+                <label class="ui label">m</label>
             </div>
         </div>
       `;

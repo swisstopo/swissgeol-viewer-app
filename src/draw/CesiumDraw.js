@@ -82,10 +82,10 @@ export class CesiumDraw extends EventTarget {
             if (this.type === 'rectangle') {
               positions = positions.slice(0, 3);
             }
-            positions.forEach((p, key) => {
+            positions.forEach((p, idx) => {
               this.activePoints_.push(p);
               const sketchPoint = this.drawSketchPoint_(p, true);
-              sketchPoint.properties.index = key;
+              sketchPoint.properties.index = idx;
               this.sketchPoints_.push(sketchPoint);
             });
             this.viewer_.scene.requestRender();
@@ -185,10 +185,10 @@ export class CesiumDraw extends EventTarget {
       },
       properties: {}
     };
-    if (!edit) {
-      entity.label = getDimensionLabel(this.type, this.activeDistances_);
-    } else {
+    if (edit) {
       entity.point.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+    } else {
+      entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
     return this.viewer_.entities.add(entity);
   }
@@ -343,6 +343,11 @@ export class CesiumDraw extends EventTarget {
     this.finishDrawing();
   }
 
+  /**
+   * Enables moving of point geometry or one of the sketch points for other geometries if left mouse button pressed on it
+   * @param event
+   * @private
+   */
   onLeftDown_(event) {
     this.leftPressed = true;
     if (this.entityForEdit) {
@@ -353,7 +358,7 @@ export class CesiumDraw extends EventTarget {
         const selectedEntity = selectedPoint.id;
         this.sketchPoint_ = selectedEntity;
         this.moveEntity = selectedEntity.id === this.entityForEdit.id ||
-          this.sketchPoints_.some(sp => sp.id === selectedEntity.id);
+          this.sketchPoints_.some(sp => sp.id === selectedEntity.id); // checks if picked entity is point geometry or one of the sketch points for other geometries
       }
       if (this.moveEntity) {
         this.viewer_.scene.screenSpaceCameraController.enableInputs = false;

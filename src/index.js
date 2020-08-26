@@ -122,6 +122,10 @@ const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
       aoiElement.addEventListener('aoi_list_changed', evt =>
         localStorageController.setAoiInStorage(evt.detail.entities));
 
+      const positionEditPopup = document.querySelector('ngm-object-position-popup');
+      positionEditPopup.scene = viewer.scene;
+      aoiElement.positionEditPopup = positionEditPopup;
+
       const sideBarElement = document.querySelector('ngm-left-side-bar');
       sideBarElement.hideWelcome = localStorageController.hideWelcomeValue;
       sideBarElement.addEventListener('welcome_panel_changed', localStorageController.updateWelcomePanelState);
