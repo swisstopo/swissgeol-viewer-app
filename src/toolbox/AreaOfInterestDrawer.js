@@ -20,10 +20,7 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
 import {convertCartographicToScreenCoordinates} from '../utils';
-import Color from 'cesium/Source/Core/Color';
-import Rectangle from 'cesium/Source/Core/Rectangle';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import {getBoxFromRectangle} from '../layers/helpers';
 import CornerType from 'cesium/Source/Core/CornerType';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
@@ -535,7 +532,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       ],
       cornerType: CornerType.MITERED,
       outline: true,
-      outlineColor: Color.RED,
+      outlineColor: DEFAULT_AOI_COLOR,
       material: DEFAULT_AOI_COLOR
     };
     entity.polygon.show = false;
