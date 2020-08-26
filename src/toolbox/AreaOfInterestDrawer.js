@@ -31,7 +31,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   static get properties() {
     return {
       viewer: {type: Object},
-      selectedArea_: {type: Object}
+      selectedArea_: {type: Object},
+      positionEditPopup: {type: Object}
     };
   }
 
@@ -70,8 +71,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.active = false;
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
-    this.positionEditPopup = document.querySelector('ngm-object-position-popup');
-    this.positionEditPopup.scene = this.viewer.scene;
     this.editedPositionBackup = undefined;
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
@@ -231,7 +230,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   flyToArea(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
     if (!entity.isShowing) {
-      entity.show = !entity.isShowing;
+      entity.show = true;
     }
     const positions = this.getAreaPositions(entity);
     const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
