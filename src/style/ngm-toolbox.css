@@ -57,4 +57,15 @@ ngm-gst-interaction {
 .ngm-gst-btns-container {
   display: flex;
   justify-content: center;
+  margin: 5px 0;
 }
+
+.ngm-volume-limits-input {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+input.ngm-lower-limit-input, input.ngm-volume-height-input {
+  width: 95px;
+}
+

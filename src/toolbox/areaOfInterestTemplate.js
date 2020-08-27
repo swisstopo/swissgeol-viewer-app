@@ -60,6 +60,30 @@ export default function getTemplate() {
         </button>
     </div>
 
+    <div class="ngm-volume-limits-input"
+        ?hidden=${!this.draw_.entityForEdit
+                  || !(this.draw_.entityForEdit.properties.volumeShowed
+                  && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
+        <div>
+            <label>${i18next.t('volume_lower_limit')}:</label></br>
+            <div class="ui mini input right labeled">
+                 <input type="number" step="10" class="ngm-lower-limit-input"
+                    .value="${this.volumeHeightLimits.lowerLimit}"
+                    @change="${this.onVolumeHeightLimitsChange.bind(this)}">
+                <label class="ui label">m</label>
+            </div>
+        </div>
+        <div>
+            <label>${i18next.t('volume_height')}:</label></br>
+            <div class="ui mini input right labeled">
+                <input type="number" step="10" class="ngm-volume-height-input"
+                    .value="${this.volumeHeightLimits.height}"
+                    @change="${this.onVolumeHeightLimitsChange.bind(this)}">
+                <label class="ui label">m</label>
+            </div>
+        </div>
+    </div>
+
     <label>${i18next.t('analysis_tools_label')}</label>
     <div class="ui vertical accordion ngm-aoi-areas" ?hidden=${!this.entitiesList_ || !this.entitiesList_.length}>
      ${aoiListTemplate.call(this)}
@@ -108,7 +132,7 @@ function aoiListTemplate() {
                     ><i class="pen icon"></i></button>
                     <button
                     class="ui button"
-                    @click=${this.convertRectangleToCube.bind(this, i.id)}
+                    @click=${this.updateRectangleVolume.bind(this, i.id)}
                     ?hidden=${i.type !== 'rectangle' || i.volumeShowed}
                     data-tooltip=${i18next.t('convert_to_cube_btn')}
                     data-position="top center"
@@ -116,7 +140,7 @@ function aoiListTemplate() {
                     ><i class="cube icon"></i></button>
                     <button
                     class="ui button"
-                    @click=${this.convertCubeToRectangle.bind(this, i.id)}
+                    @click=${this.hideVolume.bind(this, i.id)}
                     ?hidden=${i.type !== 'rectangle' || !i.volumeShowed}
                     data-tooltip=${i18next.t('convert_to_rect_btn')}
                     data-position="top center"
