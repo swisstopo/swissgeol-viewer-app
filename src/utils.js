@@ -34,24 +34,28 @@ export function setCameraHeight(camera, height) {
  */
 export function aroundCenter(scene, useCamera, func) {
   const camera = scene.camera;
-  let center;
-  if (useCamera) {
-    center = camera.positionWC;
-  } else {
-    const windowPosition = new Cartesian2(
-      scene.canvas.clientWidth / 2,
-      scene.canvas.clientHeight / 2
-    );
-    const ray = camera.getPickRay(windowPosition);
-    center = scene.globe.pick(ray, scene);
-    center !== undefined ? center : camera.positionWC;
-  }
+  const center = useCamera ? camera.positionWC : pickCenter(scene);
   console.assert(center !== undefined);
   const transform = Transforms.eastNorthUpToFixedFrame(center);
   const oldTransform = Matrix4.clone(camera.transform);
   camera.lookAtTransform(transform);
   func(camera);
   camera.lookAtTransform(oldTransform);
+}
+
+/**
+ * @param {import('cesium/Source/Scene/Scene').default} scene
+ * @return {Cartesian3}
+ */
+export function pickCenter(scene) {
+  const camera = scene.camera;
+  const windowPosition = new Cartesian2(
+    scene.canvas.clientWidth / 2,
+    scene.canvas.clientHeight / 2
+  );
+  const ray = camera.getPickRay(windowPosition);
+  const center = scene.globe.pick(ray, scene);
+  return center !== undefined ? center : camera.positionWC;
 }
 
 /**
