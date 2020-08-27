@@ -73,23 +73,7 @@ export class CesiumDraw extends EventTarget {
       if (!this.eventHandler_) {
         this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
         if (this.entityForEdit) {
-          this.eventHandler_.setInputAction(event => this.onLeftDown_(event), ScreenSpaceEventType.LEFT_DOWN);
-          this.eventHandler_.setInputAction(event => this.onLeftUp_(event), ScreenSpaceEventType.LEFT_UP);
-          if (this.type !== 'point') {
-            let positions = this.entityForEdit.polygon ?
-              this.entityForEdit.polygon.hierarchy.getValue().positions :
-              this.entityForEdit.polyline.positions.getValue();
-            if (this.type === 'rectangle') {
-              positions = positions.slice(0, 3);
-            }
-            positions.forEach((p, idx) => {
-              this.activePoints_.push(p);
-              const sketchPoint = this.drawSketchPoint_(p, true);
-              sketchPoint.properties.index = idx;
-              this.sketchPoints_.push(sketchPoint);
-            });
-            this.viewer_.scene.requestRender();
-          }
+          this.activateEditing();
         } else {
           this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
           this.eventHandler_.setInputAction(this.onDoubleClick_.bind(this), ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
@@ -103,6 +87,33 @@ export class CesiumDraw extends EventTarget {
       this.eventHandler_ = undefined;
     }
     this.dispatchEvent(new CustomEvent('statechanged'));
+  }
+
+  activateEditing() {
+    this.eventHandler_.setInputAction(event => this.onLeftDown_(event), ScreenSpaceEventType.LEFT_DOWN);
+    this.eventHandler_.setInputAction(event => this.onLeftUp_(event), ScreenSpaceEventType.LEFT_UP);
+    let positions = [];
+    switch (this.type) {
+      case 'line':
+        positions = [...this.entityForEdit.polyline.positions.getValue()];
+        break;
+      case 'polygon':
+        positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
+        break;
+      case 'rectangle':
+        positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
+        positions.pop();
+        break;
+      default:
+        break;
+    }
+    positions.forEach((p, idx) => {
+      this.activePoints_.push(p);
+      const sketchPoint = this.drawSketchPoint_(p, true);
+      sketchPoint.properties.index = idx;
+      this.sketchPoints_.push(sketchPoint);
+    });
+    this.viewer_.scene.requestRender();
   }
 
   /**
@@ -318,15 +329,14 @@ export class CesiumDraw extends EventTarget {
           if (this.type === 'line') {
             this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
-            const hierarchy = this.entityForEdit.polygon.hierarchy.getValue();
             let positions = this.activePoints_;
             if (this.type === 'rectangle') {
-              positions = rectanglify(this.activePoints_).map(p => Cartesian3.clone(p));
+              positions = rectanglify(this.activePoints_);
               this.sketchPoints_.forEach((sp, key) => {
                 sp.position = positions[key];
               });
             }
-            this.entityForEdit.polygon.hierarchy = {...hierarchy, positions};
+            this.entityForEdit.polygon.hierarchy = {positions};
           }
         }
       }
@@ -405,8 +415,8 @@ function rectanglify(coordinates) {
 
     const AM = Cartesian3.projectVector(AC, AB, scratchAM);
 
-    const AP = Cartesian3.subtract(C, AM, scratchAP);
-    const BP = Cartesian3.add(AP, AB, scratchBP);
+    const AP = Cartesian3.subtract(C, AM, scratchAP).clone();
+    const BP = Cartesian3.add(AP, AB, scratchBP).clone();
 
     // FIXME: better memory management
     return [A, B, BP, AP];
