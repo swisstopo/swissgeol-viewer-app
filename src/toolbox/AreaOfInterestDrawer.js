@@ -1,5 +1,6 @@
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartographic from 'cesium/Source/Core/Cartographic';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import Entity from 'cesium/Source/DataSources/Entity';
@@ -17,15 +18,22 @@ import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
+import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
+import {convertCartographicToScreenCoordinates} from '../utils';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
       viewer: {type: Object},
-      selectedArea_: {type: Object}
+      selectedArea_: {type: Object},
+      positionEditPopup: {type: Object}
     };
+  }
+
+  constructor() {
+    super();
+    this.onPositionChangedFunction = this.onPositionChanged.bind(this);
   }
 
   update(changedProperties) {
@@ -58,6 +66,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.active = false;
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
+    this.editedPositionBackup = undefined;
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
     this.draw_.addEventListener('statechanged', () => this.requestUpdate());
@@ -66,6 +75,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         showWarning(i18next.t('error_need_more_points'));
       }
     });
+    this.draw_.addEventListener('leftdown', () => this.positionEditPopup.opened = false);
+    this.draw_.addEventListener('leftup', () => this.positionEditPopup.opened = true);
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
     this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
@@ -101,12 +112,29 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     };
     this.areasCounter_[type] = this.areasCounter_[type] + 1;
     this.addAreaEntity(attributes);
-
+    this.enableToolButtons();
   }
 
   cancelDraw() {
+    if (this.editedPositionBackup) {
+      if (this.draw_.type === 'point') {
+        this.draw_.entityForEdit.position = this.editedPositionBackup;
+      } else if (this.draw_.type === 'line') {
+        this.draw_.entityForEdit.polyline.positions = this.editedPositionBackup;
+      } else {
+        this.draw_.entityForEdit.polygon.hierarchy = this.editedPositionBackup;
+      }
+    }
+    this.editedPositionBackup = undefined;
+    this.positionEditPopup.position = undefined;
+    this.positionEditPopup.removeEventListener('positionChanged', this.onPositionChangedFunction);
     this.draw_.active = false;
     this.draw_.clear();
+    this.positionEditPopup.opened = false;
+    if (this.unlistenEditPostRender) {
+      this.unlistenEditPostRender();
+    }
+    this.enableToolButtons();
   }
 
   onClick_(click) {
@@ -124,7 +152,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   deselectArea() {
-    if (this.selectedArea_) {
+    if (this.selectedArea_ && !this.draw_.entityForEdit) {
       updateColor(this.selectedArea_, false);
       this.selectedArea_ = null;
     }
@@ -183,12 +211,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   onAddAreaClick_(type) {
     this.draw_.type = type;
     this.draw_.active = true;
+    this.disableToolButtons();
   }
 
   flyToArea(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
     if (!entity.isShowing) {
-      entity.show = !entity.isShowing;
+      entity.show = true;
     }
     const positions = this.getAreaPositions(entity);
     const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
@@ -228,23 +257,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         return;
       }
 
-      const positions = entity.polygon.hierarchy.getValue().positions;
-      const distances = [];
-      positions.forEach((p, key) => {
-        if (key > 0) {
-          distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
-        }
-      });
-
-      const measurements = getMeasurements(positions, distances, 'polygon');
-      entity.properties = {
-        area: measurements.area,
-        perimeter: measurements.perimeter,
-        numberOfSegments: measurements.segmentsNumber,
-        sidesLength: measurements.sidesLength,
-        type: 'polygon',
-      };
-
+      entity.properties = this.getAreaProperties(entity, 'polygon');
       entity.polygon.fill = true;
       entity.polygon.material = DEFAULT_AOI_COLOR;
       this.interestAreasDataSource.entities.add(entity);
@@ -362,8 +375,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       entityAttrs.position = attributes.positions[0];
       entityAttrs.point = {
         color: DEFAULT_AOI_COLOR,
-        pixelSize: 6,
-        heightReference: HeightReference.CLAMP_TO_GROUND
+        pixelSize: 8,
+        scaleByDistance: new NearFarScalar(0, 1, 1, 1)
       };
     }
     return this.interestAreasDataSource.entities.add(entityAttrs);
@@ -389,6 +402,93 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   get drawState() {
     return this.draw_.active;
+  }
+
+  editAreaPosition(id) {
+    this.disableToolButtons();
+    this.pickArea_(id);
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    const type = entity.properties.type.getValue();
+    if (!entity.isShowing) {
+      entity.show = !entity.isShowing;
+    }
+
+    this.draw_.entityForEdit = entity;
+    this.draw_.type = type;
+    this.draw_.active = true;
+
+    if (type === 'point') {
+      const position = entity.position.getValue(new Date());
+      this.editedPositionBackup = Cartesian3.clone(position);
+      this.positionEditPopup.opened = true;
+      this.moveEditPositionPopup(position);
+      this.positionEditPopup.addEventListener('positionChanged', this.onPositionChangedFunction);
+      this.unlistenEditPostRender = this.viewer.scene.postRender.addEventListener(() => {
+        if (this.draw_.entityForEdit) {
+          this.moveEditPositionPopup(this.draw_.entityForEdit.position.getValue(new Date()));
+        }
+      });
+    } else if (type === 'line') {
+      this.editedPositionBackup = entity.polyline.positions.getValue();
+    } else {
+      this.editedPositionBackup = entity.polygon.hierarchy.getValue();
+    }
+  }
+
+  moveEditPositionPopup(position) {
+    const cartographicPosition = Cartographic.fromCartesian(position);
+    this.positionEditPopup.position = cartographicPosition;
+    const postion2d = convertCartographicToScreenCoordinates(this.viewer.scene, cartographicPosition);
+    const popupWidth = this.positionEditPopup.clientWidth;
+    if (postion2d) {
+      this.positionEditPopup.style.left = `${postion2d.x + popupWidth / 3 - 10}px`;
+      this.positionEditPopup.style.top = `${postion2d.y}px`;
+    }
+  }
+
+  saveEditing() {
+    this.editedPositionBackup = undefined;
+    const type = this.draw_.entityForEdit.properties.type.getValue();
+    this.draw_.entityForEdit.properties = this.getAreaProperties(this.draw_.entityForEdit, type);
+    this.cancelDraw();
+  }
+
+  disableToolButtons() {
+    this.querySelectorAll('.ngm-aoi-areas .buttons button').forEach(button => button.classList.add('disabled'));
+  }
+
+  enableToolButtons() {
+    this.querySelectorAll('.ngm-aoi-areas .buttons button').forEach(button => button.classList.remove('disabled'));
+  }
+
+  onPositionChanged(event) {
+    this.draw_.entityForEdit.position = event.detail.position;
+    this.viewer.scene.requestRender();
+    this.moveEditPositionPopup(event.detail.position);
+  }
+
+  getAreaProperties(entity, type) {
+    if (type === 'point') {
+      return {
+        type: type
+      };
+    }
+    const positions = type === 'line' ? entity.polyline.positions.getValue() : entity.polygon.hierarchy.getValue().positions;
+    const distances = [];
+    positions.forEach((p, key) => {
+      if (key > 0) {
+        distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
+      }
+    });
+
+    const measurements = getMeasurements(positions, distances, type);
+    return {
+      area: measurements.area,
+      perimeter: measurements.perimeter,
+      numberOfSegments: measurements.segmentsNumber,
+      sidesLength: measurements.sidesLength,
+      type: type,
+    };
   }
 
   render() {

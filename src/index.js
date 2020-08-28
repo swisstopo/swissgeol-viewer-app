@@ -28,6 +28,7 @@ import './elements/ngm-review-window.js';
 import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
 import './elements/ngm-full-screen-view.js';
+import './elements/ngm-object-position-popup.js';
 import {LocalStorageController} from './LocalStorageController.js';
 
 
@@ -120,6 +121,10 @@ const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
       aoiElement.addStoredAreas(localStorageController.getStoredAoi());
       aoiElement.addEventListener('aoi_list_changed', evt =>
         localStorageController.setAoiInStorage(evt.detail.entities));
+
+      const positionEditPopup = document.querySelector('ngm-object-position-popup');
+      positionEditPopup.scene = viewer.scene;
+      aoiElement.positionEditPopup = positionEditPopup;
 
       const sideBarElement = document.querySelector('ngm-left-side-bar');
       sideBarElement.hideWelcome = localStorageController.hideWelcomeValue;

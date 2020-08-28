@@ -46,9 +46,14 @@ export default function getTemplate() {
     </div>
     <input id="${areaUploadInputId}" type='file' accept=".kml,.KML" hidden @change=${this.uploadArea_.bind(this)} />
     <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.draw_.active}>
+        <button class="ui button"
+                ?hidden=${!this.draw_.entityForEdit}
+                @click=${this.saveEditing.bind(this)}>${i18next.t('save_editing_btn_label')}</button>
         <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('cancel_area_btn_label')}</button>
         <button class="ui button ngm-help-btn"
-                data-tooltip=${i18next.t('area_of_interest_add_hint')}
+                data-tooltip=${!this.draw_.entityForEdit ?
+    i18next.t('area_of_interest_add_hint') :
+    i18next.t('area_of_interest_edit_hint')}
                 data-variation="tiny"
                 data-position="top right">
             <i class="question circle outline icon"></i>
@@ -96,6 +101,13 @@ function aoiListTemplate() {
                     ><i class="search plus icon"></i></button>
                     <button
                     class="ui button"
+                    @click=${this.editAreaPosition.bind(this, i.id)}
+                    data-tooltip=${i18next.t('edit_area_btn_tooltip')}
+                    data-position="top center"
+                    data-variation="tiny"
+                    ><i class="pen icon"></i></button>
+                    <button
+                    class="ui button"
                     @click=${this.onRemoveEntityClick_.bind(this, i.id)}
                     data-tooltip=${i18next.t('remove_btn_tooltip')}
                     data-position="top center"
@@ -104,7 +116,7 @@ function aoiListTemplate() {
                 </div>
             </div>
             ${i.type !== 'polygon' ?
-                html`
+      html`
                     <ngm-gst-interaction
                         .viewer=${this.viewer}
                         .positions=${i.positions}

@@ -30,7 +30,6 @@ export const MAP_TRANSPARENCY_URL_PARAM = 'map_transparency';
 
 export const DEFAULT_AOI_COLOR = Color.BLACK.withAlpha(0.3);
 export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);
-export const DEFAULT_POINT_COLOR = Color.BLACK;
 export const HIGHLIGHTED_POINT_COLOR = Color.YELLOW;
 
 // list of not graphics entity.propertyNames
