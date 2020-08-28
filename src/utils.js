@@ -1,5 +1,6 @@
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartographic from 'cesium/Source/Core/Cartographic';
 import CMath from 'cesium/Source/Core/Math';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline';
@@ -194,4 +195,37 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType) {
   altitude = altitude ? altitude : 0;
   const height = Math.round(position.height - altitude);
   return {x, y, height};
+}
+
+/**
+ * Sets height in meters for each cartesian3 position in array
+ * @param scene
+ * @param positions
+ * @param height
+ * @return {*}
+ */
+export function updateHeightForCartesianPositions(scene, positions, height) {
+  return positions.map(p => {
+    const cartographicPosition = Cartographic.fromCartesian(p);
+    const altitude = scene.globe.getHeight(cartographicPosition) || 0;
+    cartographicPosition.height = height + altitude;
+    return Cartographic.toCartesian(cartographicPosition);
+  });
+}
+
+/**
+ * Applies input min/max values and returns applied value
+ * @param element
+ * @param minValue
+ * @param maxValue
+ * @return {number}
+ */
+export function applyInputLimits(element, minValue, maxValue) {
+  let value = Number(element.value);
+  if (value < minValue || value > maxValue) {
+    value = Math.max(value, minValue);
+    value = Math.min(value, maxValue);
+    element.value = value;
+  }
+  return value;
 }

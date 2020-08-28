@@ -5,7 +5,7 @@ import $ from '../jquery';
 import {lv95ToDegrees} from '../projection';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {prepareCoordinatesForUi} from '../utils';
+import {applyInputLimits, prepareCoordinatesForUi} from '../utils';
 
 class NgmObjectPositionPopup extends I18nMixin(LitElement) {
 
@@ -25,6 +25,8 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
     this.heightValue = 0;
     this.coordsStep = 0.001;
     this.coordsType = 'wsg84';
+    this.minHeight = -30000;
+    this.maxHeight = 30000;
   }
 
   updated() {
@@ -63,17 +65,16 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
   onPositionChange() {
     this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
-    this.heightValue = Number(this.querySelector('.ngm-height-input').value);
+    this.heightValue = applyInputLimits(this.querySelector('.ngm-height-input'), this.minHeight, this.maxHeight);
     const altitude = this.scene.globe.getHeight(this.position) || 0;
     let lon = this.xValue;
     let lat = this.yValue;
-    const height = this.heightValue + altitude;
     if (this.coordsType === 'lv95') {
       const radianCoords = lv95ToDegrees([this.xValue, this.yValue]);
       lon = radianCoords[0];
       lat = radianCoords[1];
     }
-    const cartesianPosition = Cartesian3.fromDegrees(lon, lat, height);
+    const cartesianPosition = Cartesian3.fromDegrees(lon, lat, this.heightValue + altitude);
     this.position = Cartographic.fromCartesian(cartesianPosition);
     this.updateInputValues();
     this.dispatchEvent(new CustomEvent('positionChanged', {
@@ -109,7 +110,8 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
             </div>
             <label>${i18next.t('camera_height')}:</label></br>
             <div class="ui mini input right labeled">
-                <input type="number" step="10" class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
+                <input type="number" step="10" min="${this.minHeight}" max="${this.maxHeight}"
+                    class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
                 <label class="ui label">m</label>
             </div>
         </div>

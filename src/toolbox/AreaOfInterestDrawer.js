@@ -10,7 +10,13 @@ import {getMeasurements} from '../utils.js';
 
 import {LitElement} from 'lit-element';
 
-import {AOI_DATASOURCE_NAME, CESIUM_NOT_GRAPHICS_ENTITY_PROPS, DEFAULT_AOI_COLOR} from '../constants.js';
+import {
+  AOI_DATASOURCE_NAME,
+  CESIUM_NOT_GRAPHICS_ENTITY_PROPS,
+  DEFAULT_AOI_COLOR,
+  HIGHLIGHTED_AOI_COLOR,
+  DEFAULT_VOLUME_HEIGHT_LIMITS
+} from '../constants.js';
 import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
@@ -19,7 +25,10 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
-import {convertCartographicToScreenCoordinates} from '../utils';
+import {applyInputLimits, convertCartographicToScreenCoordinates, updateHeightForCartesianPositions} from '../utils';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
+import CornerType from 'cesium/Source/Core/CornerType';
+import {showMessage} from '../message';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -34,6 +43,10 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   constructor() {
     super();
     this.onPositionChangedFunction = this.onPositionChanged.bind(this);
+    this.minVolumeHeight = 1;
+    this.maxVolumeHeight = 30000;
+    this.minVolumeLowerLimit = -30000;
+    this.maxVolumeLowerLimit = 30000;
   }
 
   update(changedProperties) {
@@ -66,7 +79,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.active = false;
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
-    this.editedPositionBackup = undefined;
+    this.editedBackup = undefined;
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
     this.draw_.addEventListener('statechanged', () => this.requestUpdate());
@@ -75,8 +88,22 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         showWarning(i18next.t('error_need_more_points'));
       }
     });
-    this.draw_.addEventListener('leftdown', () => this.positionEditPopup.opened = false);
-    this.draw_.addEventListener('leftup', () => this.positionEditPopup.opened = true);
+    this.draw_.addEventListener('leftdown', () => {
+      const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
+      if (this.draw_.type === 'point') {
+        this.positionEditPopup.opened = false;
+      } else if (volumeShowedProp && volumeShowedProp.getValue()) {
+        this.draw_.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
+      }
+    });
+    this.draw_.addEventListener('leftup', () => {
+      const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
+      if (this.draw_.type === 'point') {
+        this.positionEditPopup.opened = true;
+      } else if (volumeShowedProp && volumeShowedProp.getValue()) {
+        this.updateEntityVolume(this.draw_.entityForEdit.id);
+      }
+    });
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
     this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
@@ -116,16 +143,20 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   cancelDraw() {
-    if (this.editedPositionBackup) {
+    if (this.editedBackup) {
+      this.draw_.entityForEdit.properties = this.editedBackup.properties;
       if (this.draw_.type === 'point') {
-        this.draw_.entityForEdit.position = this.editedPositionBackup;
+        this.draw_.entityForEdit.position = this.editedBackup.positions;
       } else if (this.draw_.type === 'line') {
-        this.draw_.entityForEdit.polyline.positions = this.editedPositionBackup;
+        this.draw_.entityForEdit.polyline.positions = this.editedBackup.positions;
       } else {
-        this.draw_.entityForEdit.polygon.hierarchy = this.editedPositionBackup;
+        this.draw_.entityForEdit.polygon.hierarchy = this.editedBackup.positions;
+      }
+      if (this.editedBackup.properties.volumeShowed) {
+        this.updateEntityVolume(this.draw_.entityForEdit.id);
       }
     }
-    this.editedPositionBackup = undefined;
+    this.editedBackup = undefined;
     this.positionEditPopup.position = undefined;
     this.positionEditPopup.removeEventListener('positionChanged', this.onPositionChangedFunction);
     this.draw_.active = false;
@@ -183,7 +214,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         perimeter: val.properties.perimeter ? val.properties.perimeter.getValue() : undefined,
         sidesLength: val.properties.sidesLength ? val.properties.sidesLength.getValue() : undefined,
         numberOfSegments: val.properties.numberOfSegments ? val.properties.numberOfSegments.getValue() : undefined,
-        type: val.properties.type ? val.properties.type.getValue() : undefined
+        type: val.properties.type ? val.properties.type.getValue() : undefined,
+        volumeShowed: val.properties.volumeShowed ? val.properties.volumeShowed.getValue() : undefined,
+        volumeHeightLimits: val.properties.volumeHeightLimits ? val.properties.volumeHeightLimits.getValue() : undefined,
       };
     });
   }
@@ -289,8 +322,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         numberOfSegments: area.numberOfSegments,
         sidesLength: area.sidesLength ? area.sidesLength : [],
         type: area.type,
+        volumeShowed: area.volumeShowed,
+        volumeHeightLimits: area.volumeHeightLimits
       };
       const entity = this.addAreaEntity(attributes);
+      if (area.volumeShowed) {
+        this.updateEntityVolume(entity.id);
+      }
       if (area.selected) {
         this.pickArea_(entity.id);
       }
@@ -312,16 +350,20 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     return attributes;
   }
 
-  getIconClass(id) {
+  getIconClass(id, inverted = false) {
     const entity = this.interestAreasDataSource.entities.getById(id);
     const type = entity.properties.type ? entity.properties.type.getValue() : undefined;
+    let volume = entity.properties.volumeShowed ? entity.properties.volumeShowed.getValue() : undefined;
+    if (inverted) {
+      volume = !volume;
+    }
     switch (type) {
       case 'polygon':
-        return 'draw polygon icon';
+        return volume ? 'cube icon' : 'draw polygon icon';
       case 'rectangle':
-        return 'vector square icon';
+        return volume ? 'cube icon' : 'vector square icon';
       case 'line':
-        return 'route icon';
+        return volume ? 'map outline icon' : 'route icon';
       case 'point':
         return 'map marker alternate icon';
       default:
@@ -357,6 +399,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         numberOfSegments: attributes.numberOfSegments,
         sidesLength: attributes.sidesLength,
         type: type,
+        volumeShowed: attributes.volumeShowed || false,
+        volumeHeightLimits: attributes.volumeHeightLimits || DEFAULT_VOLUME_HEIGHT_LIMITS
       }
     };
     if (type === 'rectangle' || type === 'polygon') {
@@ -417,9 +461,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.type = type;
     this.draw_.active = true;
 
+    this.editedBackup = {properties: {...this.getAreaProperties(entity, type)}};
+
     if (type === 'point') {
       const position = entity.position.getValue(new Date());
-      this.editedPositionBackup = Cartesian3.clone(position);
+      this.editedBackup.positions = Cartesian3.clone(position);
       this.positionEditPopup.opened = true;
       this.moveEditPositionPopup(position);
       this.positionEditPopup.addEventListener('positionChanged', this.onPositionChangedFunction);
@@ -429,9 +475,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         }
       });
     } else if (type === 'line') {
-      this.editedPositionBackup = entity.polyline.positions.getValue();
+      this.editedBackup.positions = entity.polyline.positions.getValue();
     } else {
-      this.editedPositionBackup = entity.polygon.hierarchy.getValue();
+      this.editedBackup.positions = entity.polygon.hierarchy.getValue();
     }
   }
 
@@ -447,7 +493,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   saveEditing() {
-    this.editedPositionBackup = undefined;
+    this.editedBackup = undefined;
     const type = this.draw_.entityForEdit.properties.type.getValue();
     this.draw_.entityForEdit.properties = this.getAreaProperties(this.draw_.entityForEdit, type);
     this.cancelDraw();
@@ -481,14 +527,97 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       }
     });
 
+    const props = {};
+    entity.properties.propertyNames.forEach(propName => {
+      const property = entity.properties[propName];
+      props[propName] = property ? property.getValue() : undefined;
+    });
+
     const measurements = getMeasurements(positions, distances, type);
     return {
+      ...props,
       area: measurements.area,
       perimeter: measurements.perimeter,
       numberOfSegments: measurements.segmentsNumber,
       sidesLength: measurements.sidesLength,
-      type: type,
     };
+  }
+
+  updateEntityVolume(id, showHint = false) {
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    const type = entity.properties.type.getValue();
+    let positions;
+    if (type === 'line') {
+      positions = [...entity.polyline.positions.getValue()];
+      entity.polyline.show = false;
+    } else {
+      positions = [...entity.polygon.hierarchy.getValue().positions];
+      positions.push(positions[0]);
+      entity.polygon.show = false;
+    }
+
+    if (!entity.properties.volumeShowed || !entity.properties.volumeHeightLimits) {
+      entity.properties.addProperty('volumeHeightLimits', DEFAULT_VOLUME_HEIGHT_LIMITS);
+      entity.properties.addProperty('volumeShowed', true);
+    } else {
+      entity.properties.volumeShowed = true;
+    }
+    entity.polylineVolume = {
+      cornerType: CornerType.MITERED,
+      outline: true,
+      outlineColor: HIGHLIGHTED_AOI_COLOR,
+      material: HIGHLIGHTED_AOI_COLOR
+    };
+    this.updateVolumePositions(entity, positions);
+    entity.polylineVolume.show = true;
+
+    if (showHint) {
+      showMessage(i18next.t('volume_hint_text'));
+    }
+  }
+
+  hideVolume(id) {
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    if (entity.polyline) {
+      entity.polyline.show = true;
+    } else {
+      entity.polygon.show = true;
+    }
+    entity.polylineVolume.show = false;
+    entity.properties.volumeShowed = false;
+  }
+
+  get volumeHeightLimits() {
+    const entity = this.draw_.entityForEdit;
+    if (!entity || !entity.properties.volumeHeightLimits) {
+      return DEFAULT_VOLUME_HEIGHT_LIMITS;
+    }
+    return entity.properties.volumeHeightLimits.getValue();
+  }
+
+  onVolumeHeightLimitsChange() {
+    if (!this.draw_.entityForEdit) {
+      return;
+    }
+    const entity = this.draw_.entityForEdit;
+    const limitInput = this.querySelector('.ngm-lower-limit-input');
+    const heightInput = this.querySelector('.ngm-volume-height-input');
+    const lowerLimit = applyInputLimits(limitInput, this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
+    const height = applyInputLimits(heightInput, this.minVolumeHeight, this.maxVolumeHeight);
+    entity.properties.volumeHeightLimits = {lowerLimit, height};
+    const positions = entity.polylineVolume.positions.getValue();
+    this.updateVolumePositions(entity, positions);
+  }
+
+  updateVolumePositions(entity, positions) {
+    const volumeHeightLimits = entity.properties.volumeHeightLimits.getValue();
+    entity.polylineVolume.positions = updateHeightForCartesianPositions(this.viewer.scene, positions, volumeHeightLimits.lowerLimit);
+    entity.polylineVolume.shape = [
+      new Cartesian2(0, 0),
+      new Cartesian2(0, 0),
+      new Cartesian2(1, 0),
+      new Cartesian2(0, volumeHeightLimits.height),
+    ];
   }
 
   render() {

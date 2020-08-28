@@ -60,6 +60,30 @@ export default function getTemplate() {
         </button>
     </div>
 
+    <div class="ngm-volume-limits-input"
+        ?hidden=${!this.draw_.entityForEdit
+                  || !(this.draw_.entityForEdit.properties.volumeShowed
+                  && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
+        <div>
+            <label>${i18next.t('volume_lower_limit')}:</label></br>
+            <div class="ui mini input right labeled">
+                 <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class="ngm-lower-limit-input"
+                    .value="${this.volumeHeightLimits.lowerLimit}"
+                    @change="${this.onVolumeHeightLimitsChange.bind(this)}">
+                <label class="ui label">m</label>
+            </div>
+        </div>
+        <div>
+            <label>${i18next.t('volume_height')}:</label></br>
+            <div class="ui mini input right labeled">
+                <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class="ngm-volume-height-input"
+                    .value="${this.volumeHeightLimits.height}"
+                    @change="${this.onVolumeHeightLimitsChange.bind(this)}">
+                <label class="ui label">m</label>
+            </div>
+        </div>
+    </div>
+
     <label>${i18next.t('analysis_tools_label')}</label>
     <div class="ui vertical accordion ngm-aoi-areas" ?hidden=${!this.entitiesList_ || !this.entitiesList_.length}>
      ${aoiListTemplate.call(this)}
@@ -84,7 +108,7 @@ function aoiListTemplate() {
         </div>
         <div class="content ngm-aoi-content">
             <div class="ngm-btns-field">
-                <div class="ui tiny fluid buttons ngm-aoi-buttons">
+                <div class="ui tiny fluid compact buttons ngm-aoi-buttons">
                     <button
                     class="ui button"
                     @click=${this.showAreaInfo.bind(this, i)}
@@ -106,6 +130,22 @@ function aoiListTemplate() {
                     data-position="top center"
                     data-variation="tiny"
                     ><i class="pen icon"></i></button>
+                    <button
+                    class="ui button"
+                    @click=${this.updateEntityVolume.bind(this, i.id, true)}
+                    ?hidden=${i.type === 'point' || i.volumeShowed}
+                    data-tooltip=${i18next.t('show_volume_btn')}
+                    data-position="top center"
+                    data-variation="tiny"
+                    ><i class="${this.getIconClass.call(this, i.id, true)}"></i></button>
+                    <button
+                    class="ui button"
+                    @click=${this.hideVolume.bind(this, i.id)}
+                    ?hidden=${i.type === 'point' || !i.volumeShowed}
+                    data-tooltip=${i18next.t('hide_volume_btn')}
+                    data-position="top center"
+                    data-variation="tiny"
+                    ><i class="${this.getIconClass.call(this, i.id, true)}"></i></button>
                     <button
                     class="ui button"
                     @click=${this.onRemoveEntityClick_.bind(this, i.id)}

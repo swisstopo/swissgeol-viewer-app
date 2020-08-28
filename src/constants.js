@@ -38,3 +38,8 @@ export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'des
 export const AOI_DATASOURCE_NAME = 'interestAreas';
 
 export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Color());
+
+export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
+  lowerLimit: 0,
+  height: 5000
+};
