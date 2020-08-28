@@ -14,7 +14,8 @@ import {
   AOI_DATASOURCE_NAME,
   CESIUM_NOT_GRAPHICS_ENTITY_PROPS,
   DEFAULT_AOI_COLOR,
-  HIGHLIGHTED_AOI_COLOR
+  HIGHLIGHTED_AOI_COLOR,
+  DEFAULT_VOLUME_HEIGHT_LIMITS
 } from '../constants.js';
 import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
@@ -28,11 +29,6 @@ import {convertCartographicToScreenCoordinates, updateHeightForCartesianPosition
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
 import {showMessage} from '../message';
-
-const DEFAULT_VOLUME_HEIGHT_LIMITS = {
-  lowerLimit: 0,
-  height: 5000
-};
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
