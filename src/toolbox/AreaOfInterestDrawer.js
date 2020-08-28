@@ -10,7 +10,12 @@ import {getMeasurements} from '../utils.js';
 
 import {LitElement} from 'lit-element';
 
-import {AOI_DATASOURCE_NAME, CESIUM_NOT_GRAPHICS_ENTITY_PROPS, DEFAULT_AOI_COLOR} from '../constants.js';
+import {
+  AOI_DATASOURCE_NAME,
+  CESIUM_NOT_GRAPHICS_ENTITY_PROPS,
+  DEFAULT_AOI_COLOR,
+  HIGHLIGHTED_AOI_COLOR
+} from '../constants.js';
 import {updateColor} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
@@ -22,6 +27,7 @@ import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
 import {convertCartographicToScreenCoordinates, updateHeightForCartesianPositions} from '../utils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
+import {showMessage} from '../message';
 
 const DEFAULT_VOLUME_HEIGHT_LIMITS = {
   lowerLimit: 0,
@@ -41,6 +47,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   constructor() {
     super();
     this.onPositionChangedFunction = this.onPositionChanged.bind(this);
+    this.minVolumeHeight = -30000;
+    this.maxVolumeHeight = 30000;
   }
 
   update(changedProperties) {
@@ -82,12 +90,20 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         showWarning(i18next.t('error_need_more_points'));
       }
     });
-    this.draw_.addEventListener('leftdown', () => this.positionEditPopup.opened = false);
+    this.draw_.addEventListener('leftdown', () => {
+      const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
+      if (this.draw_.type === 'point') {
+        this.positionEditPopup.opened = false;
+      } else if (volumeShowedProp && volumeShowedProp.getValue()) {
+        this.draw_.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
+      }
+    });
     this.draw_.addEventListener('leftup', () => {
+      const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
       if (this.draw_.type === 'point') {
         this.positionEditPopup.opened = true;
-      } else if (this.draw_.entityForEdit.properties.volumeShowed && this.draw_.entityForEdit.properties.volumeShowed.getValue()) {
-        this.updateRectangleVolume(this.draw_.entityForEdit.id);
+      } else if (volumeShowedProp && volumeShowedProp.getValue()) {
+        this.updateEntityVolume(this.draw_.entityForEdit.id);
       }
     });
 
@@ -139,7 +155,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         this.draw_.entityForEdit.polygon.hierarchy = this.editedBackup.positions;
       }
       if (this.editedBackup.properties.volumeShowed) {
-        this.updateRectangleVolume(this.draw_.entityForEdit.id);
+        this.updateEntityVolume(this.draw_.entityForEdit.id);
       }
     }
     this.editedBackup = undefined;
@@ -313,7 +329,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       };
       const entity = this.addAreaEntity(attributes);
       if (area.volumeShowed) {
-        this.updateRectangleVolume(entity.id);
+        this.updateEntityVolume(entity.id);
       }
       if (area.selected) {
         this.pickArea_(entity.id);
@@ -336,17 +352,20 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     return attributes;
   }
 
-  getIconClass(id) {
+  getIconClass(id, inverted = false) {
     const entity = this.interestAreasDataSource.entities.getById(id);
     const type = entity.properties.type ? entity.properties.type.getValue() : undefined;
-    const volume = entity.properties.volumeShowed ? entity.properties.volumeShowed.getValue() : undefined;
+    let volume = entity.properties.volumeShowed ? entity.properties.volumeShowed.getValue() : undefined;
+    if (inverted) {
+      volume = !volume;
+    }
     switch (type) {
       case 'polygon':
-        return 'draw polygon icon';
+        return volume ? 'cube icon' : 'draw polygon icon';
       case 'rectangle':
         return volume ? 'cube icon' : 'vector square icon';
       case 'line':
-        return 'route icon';
+        return volume ? 'map outline icon' : 'route icon';
       case 'point':
         return 'map marker alternate icon';
       default:
@@ -526,10 +545,18 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     };
   }
 
-  updateRectangleVolume(id) {
+  updateEntityVolume(id, showHint = false) {
     const entity = this.interestAreasDataSource.entities.getById(id);
-    const positions = entity.polygon.hierarchy.getValue().positions;
-    positions.push(positions[0]);
+    const type = entity.properties.type.getValue();
+    let positions;
+    if (type === 'line') {
+      positions = [...entity.polyline.positions.getValue()];
+      entity.polyline.show = false;
+    } else {
+      positions = [...entity.polygon.hierarchy.getValue().positions];
+      positions.push(positions[0]);
+      entity.polygon.show = false;
+    }
 
     if (!entity.properties.volumeShowed || !entity.properties.volumeHeightLimits) {
       entity.properties.addProperty('volumeHeightLimits', DEFAULT_VOLUME_HEIGHT_LIMITS);
@@ -537,37 +564,28 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     } else {
       entity.properties.volumeShowed = true;
     }
-    const volumeHeightLimits = entity.properties.volumeHeightLimits.getValue();
-    // const rectangle = Rectangle.fromCartesianArray(positions);
-    // const center = Rectangle.center(rectangle);
-
-    // let altitude = this.viewer.scene.globe.getHeight(center);
-    // altitude = altitude ? altitude : 0;
-    // center.height = volumeHeightLimits.height - volumeHeightLimits.lowerLimit - altitude;
-    // entity.position = Cartographic.toCartesian(center);
     entity.polylineVolume = {
-      // dimensions: getBoxFromRectangle(rectangle, volumeHeightLimits.height),
-      positions: updateHeightForCartesianPositions(this.viewer.scene, positions, volumeHeightLimits.lowerLimit),
-      shape: [
-        new Cartesian2(0, 0),
-        new Cartesian2(0, 0),
-        new Cartesian2(1, 0),
-        new Cartesian2(0, volumeHeightLimits.height),
-      ],
       cornerType: CornerType.MITERED,
       outline: true,
-      outlineColor: DEFAULT_AOI_COLOR,
-      material: DEFAULT_AOI_COLOR
+      outlineColor: HIGHLIGHTED_AOI_COLOR,
+      material: HIGHLIGHTED_AOI_COLOR
     };
-    entity.polygon.show = false;
+    this.updateVolumePositions(entity, positions);
     entity.polylineVolume.show = true;
+
+    if (showHint) {
+      showMessage(i18next.t('volume_hint_text'));
+    }
   }
 
   hideVolume(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
-    entity.polygon.show = true;
+    if (entity.polyline) {
+      entity.polyline.show = true;
+    } else {
+      entity.polygon.show = true;
+    }
     entity.polylineVolume.show = false;
-    // entity.box.show = false;
     entity.properties.volumeShowed = false;
   }
 
@@ -584,16 +602,33 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       return;
     }
     const entity = this.draw_.entityForEdit;
-    const lowerLimit = Number(this.querySelector('.ngm-lower-limit-input').value);
-    const height = Number(this.querySelector('.ngm-volume-height-input').value);
+    const limitInput = this.querySelector('.ngm-lower-limit-input');
+    const heightInput = this.querySelector('.ngm-volume-height-input');
+    let lowerLimit = Number(limitInput.value);
+    let height = Number(heightInput.value);
+    if (lowerLimit < this.minVolumeHeight || lowerLimit > this.minVolumeHeight) {
+      lowerLimit = Math.max(lowerLimit, this.minVolumeHeight);
+      lowerLimit = Math.min(lowerLimit, this.maxVolumeHeight);
+      limitInput.value = lowerLimit;
+    }
+    if (height < this.minVolumeHeight || height > this.minVolumeHeight) {
+      height = Math.max(height, this.minVolumeHeight);
+      height = Math.min(height, this.maxVolumeHeight);
+      heightInput.value = lowerLimit;
+    }
     entity.properties.volumeHeightLimits = {lowerLimit, height};
     const positions = entity.polylineVolume.positions.getValue();
-    entity.polylineVolume.positions = updateHeightForCartesianPositions(this.viewer.scene, positions, lowerLimit);
+    this.updateVolumePositions(entity, positions);
+  }
+
+  updateVolumePositions(entity, positions) {
+    const volumeHeightLimits = entity.properties.volumeHeightLimits.getValue();
+    entity.polylineVolume.positions = updateHeightForCartesianPositions(this.viewer.scene, positions, volumeHeightLimits.lowerLimit);
     entity.polylineVolume.shape = [
       new Cartesian2(0, 0),
       new Cartesian2(0, 0),
       new Cartesian2(1, 0),
-      new Cartesian2(0, height),
+      new Cartesian2(0, volumeHeightLimits.height),
     ];
   }
 

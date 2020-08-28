@@ -117,14 +117,16 @@ const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
         showMessage(i18next.t('sentry_message'), options);
       }
 
-      const aoiElement = document.querySelector('ngm-aoi-drawer');
-      aoiElement.addStoredAreas(localStorageController.getStoredAoi());
-      aoiElement.addEventListener('aoi_list_changed', evt =>
-        localStorageController.setAoiInStorage(evt.detail.entities));
+      setTimeout(() => {
+        const aoiElement = document.querySelector('ngm-aoi-drawer');
+        aoiElement.addStoredAreas(localStorageController.getStoredAoi());
+        aoiElement.addEventListener('aoi_list_changed', evt =>
+          localStorageController.setAoiInStorage(evt.detail.entities));
 
-      const positionEditPopup = document.querySelector('ngm-object-position-popup');
-      positionEditPopup.scene = viewer.scene;
-      aoiElement.positionEditPopup = positionEditPopup;
+        const positionEditPopup = document.querySelector('ngm-object-position-popup');
+        positionEditPopup.scene = viewer.scene;
+        aoiElement.positionEditPopup = positionEditPopup;
+      }, 1000); // hack. terrain not loaded exactly when globe.tilesLoaded = true
 
       const sideBarElement = document.querySelector('ngm-left-side-bar');
       sideBarElement.hideWelcome = localStorageController.hideWelcomeValue;

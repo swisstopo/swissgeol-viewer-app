@@ -67,7 +67,7 @@ export default function getTemplate() {
         <div>
             <label>${i18next.t('volume_lower_limit')}:</label></br>
             <div class="ui mini input right labeled">
-                 <input type="number" step="10" class="ngm-lower-limit-input"
+                 <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class="ngm-lower-limit-input"
                     .value="${this.volumeHeightLimits.lowerLimit}"
                     @change="${this.onVolumeHeightLimitsChange.bind(this)}">
                 <label class="ui label">m</label>
@@ -76,7 +76,7 @@ export default function getTemplate() {
         <div>
             <label>${i18next.t('volume_height')}:</label></br>
             <div class="ui mini input right labeled">
-                <input type="number" step="10" class="ngm-volume-height-input"
+                <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class="ngm-volume-height-input"
                     .value="${this.volumeHeightLimits.height}"
                     @change="${this.onVolumeHeightLimitsChange.bind(this)}">
                 <label class="ui label">m</label>
@@ -132,20 +132,20 @@ function aoiListTemplate() {
                     ><i class="pen icon"></i></button>
                     <button
                     class="ui button"
-                    @click=${this.updateRectangleVolume.bind(this, i.id)}
-                    ?hidden=${i.type !== 'rectangle' || i.volumeShowed}
-                    data-tooltip=${i18next.t('convert_to_cube_btn')}
+                    @click=${this.updateEntityVolume.bind(this, i.id, true)}
+                    ?hidden=${i.type === 'point' || i.volumeShowed}
+                    data-tooltip=${i18next.t('show_volume_btn')}
                     data-position="top center"
                     data-variation="tiny"
-                    ><i class="cube icon"></i></button>
+                    ><i class="${this.getIconClass.call(this, i.id, true)}"></i></button>
                     <button
                     class="ui button"
                     @click=${this.hideVolume.bind(this, i.id)}
-                    ?hidden=${i.type !== 'rectangle' || !i.volumeShowed}
-                    data-tooltip=${i18next.t('convert_to_rect_btn')}
+                    ?hidden=${i.type === 'point' || !i.volumeShowed}
+                    data-tooltip=${i18next.t('hide_volume_btn')}
                     data-position="top center"
                     data-variation="tiny"
-                    ><i class="vector square icon"></i></button>
+                    ><i class="${this.getIconClass.call(this, i.id, true)}"></i></button>
                     <button
                     class="ui button"
                     @click=${this.onRemoveEntityClick_.bind(this, i.id)}
