@@ -87,7 +87,8 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
   render() {
     if (this.position) {
       this.updateInputValues();
-      return html`
+    }
+    return html`
         <div class="ui mini segment" ?hidden="${!this.opened}">
             <label>${i18next.t('coordinates')}:</label>
             <div class="ngm-coord-input">
@@ -116,9 +117,6 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
             </div>
         </div>
       `;
-    } else {
-      return html``;
-    }
   }
 
   createRenderRoot() {
