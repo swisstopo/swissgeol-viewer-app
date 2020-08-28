@@ -211,5 +211,21 @@ export function updateHeightForCartesianPositions(scene, positions, height) {
     cartographicPosition.height = height + altitude;
     return Cartographic.toCartesian(cartographicPosition);
   });
+}
 
+/**
+ * Applies input min/max values and returns applied value
+ * @param element
+ * @param minValue
+ * @param maxValue
+ * @return {number}
+ */
+export function applyInputLimits(element, minValue, maxValue) {
+  let value = Number(element.value);
+  if (value < minValue || value > maxValue) {
+    value = Math.max(value, minValue);
+    value = Math.min(value, maxValue);
+    element.value = value;
+  }
+  return value;
 }

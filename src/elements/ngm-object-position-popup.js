@@ -5,7 +5,7 @@ import $ from '../jquery';
 import {lv95ToDegrees} from '../projection';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {prepareCoordinatesForUi} from '../utils';
+import {applyInputLimits, prepareCoordinatesForUi} from '../utils';
 
 class NgmObjectPositionPopup extends I18nMixin(LitElement) {
 
@@ -65,8 +65,7 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
   onPositionChange() {
     this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
-    const height = Number(this.querySelector('.ngm-height-input').value);
-    this.heightValue = this.applyHeightLimits(height);
+    this.heightValue = applyInputLimits(this.querySelector('.ngm-height-input'), this.minHeight, this.maxHeight);
     const altitude = this.scene.globe.getHeight(this.position) || 0;
     let lon = this.xValue;
     let lat = this.yValue;
@@ -83,15 +82,6 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
         position: cartesianPosition
       }
     }));
-  }
-
-  applyHeightLimits(height) {
-    if (height < this.minHeight || height > this.minHeight) {
-      height = Math.max(height, this.minHeight);
-      height = Math.min(height, this.maxHeight);
-      this.querySelector('.ngm-height-input').value = height;
-    }
-    return height;
   }
 
   render() {

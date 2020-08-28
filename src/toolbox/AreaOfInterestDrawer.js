@@ -25,7 +25,7 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
-import {convertCartographicToScreenCoordinates, updateHeightForCartesianPositions} from '../utils';
+import {applyInputLimits, convertCartographicToScreenCoordinates, updateHeightForCartesianPositions} from '../utils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
 import {showMessage} from '../message';
@@ -43,8 +43,10 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   constructor() {
     super();
     this.onPositionChangedFunction = this.onPositionChanged.bind(this);
-    this.minVolumeHeight = -30000;
+    this.minVolumeHeight = 1;
     this.maxVolumeHeight = 30000;
+    this.minVolumeLowerLimit = -30000;
+    this.maxVolumeLowerLimit = 30000;
   }
 
   update(changedProperties) {
@@ -600,18 +602,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const entity = this.draw_.entityForEdit;
     const limitInput = this.querySelector('.ngm-lower-limit-input');
     const heightInput = this.querySelector('.ngm-volume-height-input');
-    let lowerLimit = Number(limitInput.value);
-    let height = Number(heightInput.value);
-    if (lowerLimit < this.minVolumeHeight || lowerLimit > this.minVolumeHeight) {
-      lowerLimit = Math.max(lowerLimit, this.minVolumeHeight);
-      lowerLimit = Math.min(lowerLimit, this.maxVolumeHeight);
-      limitInput.value = lowerLimit;
-    }
-    if (height < this.minVolumeHeight || height > this.minVolumeHeight) {
-      height = Math.max(height, this.minVolumeHeight);
-      height = Math.min(height, this.maxVolumeHeight);
-      heightInput.value = lowerLimit;
-    }
+    const lowerLimit = applyInputLimits(limitInput, this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
+    const height = applyInputLimits(heightInput, this.minVolumeHeight, this.maxVolumeHeight);
     entity.properties.volumeHeightLimits = {lowerLimit, height};
     const positions = entity.polylineVolume.positions.getValue();
     this.updateVolumePositions(entity, positions);
