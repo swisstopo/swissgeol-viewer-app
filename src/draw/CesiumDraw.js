@@ -10,6 +10,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {EventTarget} from 'event-target-shim';
 import {getDimensionLabel} from './helpers.js';
 import {getMeasurements} from '../utils.js';
+import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 
 /**
  * @typedef {"point" | "line" | "polygon" | "rectangle"} ShapeType
@@ -33,6 +34,9 @@ export class CesiumDraw extends EventTarget {
     super();
     this.viewer_ = viewer;
     this.type = type;
+
+    this.drawingDataSource = new CustomDataSource('drawing');
+    this.viewer_.dataSources.add(this.drawingDataSource);
 
     this.strokeColor_ = options.strokeColor instanceof Color ?
       options.strokeColor : Color.fromCssColorString(options.strokeColor || 'rgba(0, 153, 255, 0.75)');
@@ -109,7 +113,7 @@ export class CesiumDraw extends EventTarget {
     }
     positions.forEach((p, idx) => {
       this.activePoints_.push(p);
-      const sketchPoint = this.drawSketchPoint_(p, true);
+      const sketchPoint = this.createSketchPoint_(p, {edit: true});
       sketchPoint.properties.index = idx;
       this.sketchPoints_.push(sketchPoint);
     });
@@ -158,9 +162,7 @@ export class CesiumDraw extends EventTarget {
   }
 
   removeSketches() {
-    this.viewer_.entities.remove(this.sketchPoint_);
-    this.viewer_.entities.remove(this.sketchLine_);
-    this.viewer_.entities.remove(this.activeEntity_);
+    this.drawingDataSource.entities.removeAll();
 
     this.activePoints_ = [];
     this.activePoint_ = undefined;
@@ -172,7 +174,6 @@ export class CesiumDraw extends EventTarget {
     this.entityForEdit = undefined;
     this.leftPressed = false;
     this.moveEntity = false;
-    this.sketchPoints_.forEach(sp => this.viewer_.entities.remove(sp));
     this.sketchPoints_ = [];
   }
 
@@ -181,31 +182,30 @@ export class CesiumDraw extends EventTarget {
    */
   clear() {
     this.removeSketches();
-    this.entities_.forEach(entity => this.viewer_.entities.remove(entity));
   }
 
-  drawSketchPoint_(position, edit = false) {
+  createSketchPoint_(position, options = {}) {
     const entity = {
       position: position,
       point: {
         color: Color.WHITE,
         outlineWidth: 1,
         outlineColor: Color.BLACK,
-        pixelSize: edit ? 7 : 5,
+        pixelSize: options.edit ? 7 : 5,
         heightReference: HeightReference.CLAMP_TO_GROUND
       },
       properties: {}
     };
-    if (edit) {
+    if (options.edit) {
       entity.point.disableDepthTestDistance = Number.POSITIVE_INFINITY;
     } else {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
-    return this.viewer_.entities.add(entity);
+    return this.drawingDataSource.entities.add(entity);
   }
 
-  drawSketchLine_(positions) {
-    return this.viewer_.entities.add({
+  createSketchLine_(positions) {
+    return this.drawingDataSource.entities.add({
       polyline: {
         positions: positions,
         clampToGround: true,
@@ -217,7 +217,7 @@ export class CesiumDraw extends EventTarget {
 
   drawShape_(positions) {
     if (this.type === 'point') {
-      return this.viewer_.entities.add({
+      return this.drawingDataSource.entities.add({
         position: positions,
         point: {
           color: this.fillColor_,
@@ -229,7 +229,7 @@ export class CesiumDraw extends EventTarget {
       });
 
     } else if (this.type === 'line') {
-      return this.viewer_.entities.add({
+      return this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polyline: {
           positions: positions,
@@ -240,7 +240,7 @@ export class CesiumDraw extends EventTarget {
         label: getDimensionLabel(this.type, this.activeDistances_)
       });
     } else if (this.type === 'polygon' || this.type === 'rectangle') {
-      return this.viewer_.entities.add({
+      return this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polygon: {
           hierarchy: positions,
@@ -296,10 +296,10 @@ export class CesiumDraw extends EventTarget {
     if (position) {
       if (!this.sketchPoint_) {
         this.dispatchEvent(new CustomEvent('drawstart'));
-        this.sketchPoint_ = this.drawSketchPoint_(position);
+        this.sketchPoint_ = this.createSketchPoint_(position);
         this.activePoint_ = position;
 
-        this.sketchLine_ = this.drawSketchLine_(this.dynamicSketLinePositions());
+        this.sketchLine_ = this.createSketchLine_(this.dynamicSketLinePositions());
 
         if (this.type === 'point') {
           this.activePoints_.push(position);
