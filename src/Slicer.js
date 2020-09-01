@@ -6,6 +6,7 @@ import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import {pickCenter} from './utils.js';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
 
 
 export default class Slicer {
@@ -40,13 +41,6 @@ export default class Slicer {
   set active(value) {
     const globe = this.viewer.scene.globe;
     if (value) {
-      if (!this.eventHandler) {
-        this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-        this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
-        this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
-        this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
-      }
-
       // initialize plane based on the camera's position and heading
       const center = pickCenter(this.viewer.scene);
       const hpr = new HeadingPitchRoll(this.viewer.scene.camera.heading, 0.0, 0.0);
@@ -75,6 +69,14 @@ export default class Slicer {
             Matrix4.inverse(primitive.root.computedTransform, new Matrix4())
           );
         }
+      }
+
+      if (!this.eventHandler) {
+        this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+        this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
+        this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
+        this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
+        this.eventHandler.setInputAction(this.onCameraMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE, KeyboardEventModifier.CTRL);
       }
     } else {
       // this.viewer.entities.remove(this.planeEntity);
@@ -118,7 +120,13 @@ export default class Slicer {
     return clippingPlanes;
   }
 
+  updateClippingPlanes(clippingPlanes) {
+    clippingPlanes.removeAll();
+    clippingPlanes.add(this.plane); // only one for now
+  }
+
   onLeftDown(movement) {
+    this.leftBtnPressed = true;
     const pickedObject = this.viewer.scene.pick(movement.position);
     if (pickedObject) {
       this.selectedPlane = pickedObject.id.plane;
@@ -127,6 +135,7 @@ export default class Slicer {
   }
 
   onLeftUp(movement) {
+    this.leftBtnPressed = false;
     if (this.selectedPlane) {
       this.selectedPlane = null;
       this.viewer.scene.screenSpaceCameraController.enableInputs = true;
@@ -136,6 +145,23 @@ export default class Slicer {
   onMouseMove(movement) {
     if (this.selectedPlane) {
       this.targetY += movement.endPosition.y - movement.startPosition.y;
+    }
+    if (this.leftBtnPressed) {
+      this.onCameraMove();
+    }
+  }
+
+  onCameraMove() {
+    const center = pickCenter(this.viewer.scene);
+    const hpr = new HeadingPitchRoll(this.viewer.scene.camera.heading, 0.0, 0.0);
+    this.plane = Plane.transform(Plane.ORIGIN_ZX_PLANE, Transforms.headingPitchRollToFixedFrame(center, hpr));
+    this.updateClippingPlanes(this.viewer.scene.globe.clippingPlanes);
+    const primitives = this.viewer.scene.primitives;
+    for (let i = 0; i < primitives.length; i++) {
+      const primitive = primitives.get(i);
+      if (primitive.clippingPlanes) {
+        this.updateClippingPlanes(primitive.clippingPlanes);
+      }
     }
   }
 
