@@ -1,12 +1,18 @@
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import Transforms from 'cesium/Source/Core/Transforms';
 import Plane from 'cesium/Source/Core/Plane';
-import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
 import {pickCenter} from './utils.js';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
+import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartographic from 'cesium/Source/Core/Cartographic';
+import Entity from 'cesium/Source/DataSources/Entity';
+import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
+import Color from 'cesium/Source/Core/Color';
+import CMath from 'cesium/Source/Core/Math';
+import {degreesToLv95} from './projection';
+import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 
 
 export default class Slicer {
@@ -16,6 +22,8 @@ export default class Slicer {
   constructor(viewer) {
 
     this.viewer = viewer;
+    this.slicerDataSource = new CustomDataSource('slicer');
+    this.viewer.dataSources.add(this.slicerDataSource);
 
     this.plane = null;
     this.planeEntity = null;
@@ -23,19 +31,9 @@ export default class Slicer {
     this.eventHandler = null;
     this.selectedPlane = null;
     this.targetY = 0.0;
+    this.targetX = 0.0;
 
-    // this.plane = new ClippingPlane(new Cartesian3(0.0, 1.0, 0.0), 0.0);
-
-    // this.planeEntity = new Entity({
-    //   position: yverdon,
-    //   plane: {
-    //     plane: new CallbackProperty(this.createPlaneUpdateFunction(this.plane), false),
-    //     dimensions: new Cartesian2(5000.0, 5000.0),
-    //     material: Color.WHITE.withAlpha(0.5),
-    //     outline: true,
-    //     outlineColor: Color.WHITE,
-    //   }
-    // });
+    this.offsets = {};
   }
 
   set active(value) {
@@ -43,43 +41,73 @@ export default class Slicer {
     if (value) {
       // initialize plane based on the camera's position and heading
       const center = pickCenter(this.viewer.scene);
-      const hpr = new HeadingPitchRoll(this.viewer.scene.camera.heading, 0.0, 0.0);
-      this.plane = Plane.transform(Plane.ORIGIN_ZX_PLANE, Transforms.headingPitchRollToFixedFrame(center, hpr));
+      this.planeHorizontal = new ClippingPlane(new Cartesian3(0.0, 1.0, 0.0), 0.0);
+      this.planeVertical = new ClippingPlane(new Cartesian3(1.0, 0.0, 0.0), 0.0);
 
-      // this.planeEntity = new Entity({
-      //   position: center,
-      //   plane: {
-      //     plane: new CallbackProperty(this.createPlaneUpdateFunction(this.plane), false),
-      //     dimensions: new Cartesian2(5000.0, 5000.0),
-      //     material: Color.WHITE.withAlpha(0.5),
-      //     outline: true,
-      //     outlineColor: Color.WHITE,
-      //   }
-      // });
-      // this.viewer.entities.add(this.planeEntity);
+      this.planeEntityHorizontal = new Entity({
+        position: center,
+        plane: {
+          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontal, 'horizontal'), false),
+          dimensions: new Cartesian2(500000.0, 50000.0),
+          material: Color.WHITE.withAlpha(0.5),
+          outline: true,
+          outlineColor: Color.WHITE,
+        },
+        properties: {
+          type: 'horizontal'
+        }
+      });
+      this.slicerDataSource.entities.add(this.planeEntityHorizontal);
 
-      globe.clippingPlanes = this.createClippingPlanes();
+      this.planeEntityVertical = new Entity({
+        position: center,
+        plane: {
+          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeVertical), false),
+          dimensions: new Cartesian2(500000.0, 50000.0),
+          material: Color.WHITE.withAlpha(0.5),
+          outline: true,
+          outlineColor: Color.WHITE,
+        },
+        properties: {
+          type: 'vertical'
+        }
+      });
+      this.slicerDataSource.entities.add(this.planeEntityVertical);
+      globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(new Date()));
 
       const primitives = this.viewer.scene.primitives;
       for (let i = 0, ii = primitives.length; i < ii; i++) {
         const primitive = primitives.get(i);
-        if (primitive.root && primitive.root.computedTransform) {
-          console.log(primitive.url, primitive.root.computedTransform);
-          primitive.clippingPlanes = this.createClippingPlanes(
-            Matrix4.inverse(primitive.root.computedTransform, new Matrix4())
-          );
+        if (primitive.root && primitive.boundingSphere) {
+          const cartCenter = Cartographic.fromCartesian(center);
+          const tileCenter = Cartographic.fromCartesian(primitive.boundingSphere.center);
+          const lat = CMath.toDegrees(cartCenter.latitude);
+          const lon = CMath.toDegrees(cartCenter.longitude);
+          const tileLat = CMath.toDegrees(tileCenter.latitude);
+          const tileLon = CMath.toDegrees(tileCenter.longitude);
+          const lv95Center = degreesToLv95([lon, lat]);
+          const lv95Tile = degreesToLv95([tileLon, tileLat]);
+          const offsetX = lv95Center[1] - lv95Tile[1];
+          const offsetY = lv95Center[0] - lv95Tile[0];
+          this.offsets[primitive.url] = {
+            offsetX: -offsetX,
+            offsetY: -offsetY
+          };
+
+          primitive.clippingPlanes = this.createClippingPlanes();
         }
       }
+      this.movePlane();
 
       if (!this.eventHandler) {
         this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
         this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
         this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
         this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
-        this.eventHandler.setInputAction(this.onCameraMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE, KeyboardEventModifier.CTRL);
       }
     } else {
-      // this.viewer.entities.remove(this.planeEntity);
+      this.slicerDataSource.entities.removeAll();
+      this.offsets = {};
 
       this.eventHandler.destroy();
       this.eventHandler = null;
@@ -103,9 +131,15 @@ export default class Slicer {
     return this.eventHandler !== null;
   }
 
-  movePlane(amount) {
-    this.plane.distance += amount;
-    this.viewer.scene.requestRender();
+  movePlane() {
+    this.updateClippingPlanes(this.viewer.scene.globe.clippingPlanes);
+    const primitives = this.viewer.scene.primitives;
+    for (let i = 0; i < primitives.length; i++) {
+      const primitive = primitives.get(i);
+      if (primitive.clippingPlanes) {
+        this.updateClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.url]);
+      }
+    }
   }
 
   /**
@@ -114,28 +148,37 @@ export default class Slicer {
   createClippingPlanes(modelMatrix) {
     const clippingPlanes = new ClippingPlaneCollection({
       modelMatrix: modelMatrix,
-      planes: [this.plane],
-      edgeWidth: 1.0
+      planes: [this.planeHorizontal, this.planeVertical],
+      edgeWidth: 1.0,
+      unionClippingRegions: true
     });
     return clippingPlanes;
   }
 
-  updateClippingPlanes(clippingPlanes) {
+  updateClippingPlanes(clippingPlanes, offset) {
     clippingPlanes.removeAll();
-    clippingPlanes.add(this.plane); // only one for now
+    if (offset) {
+      const planeHorizontal = Plane.clone(this.planeHorizontal);
+      planeHorizontal.distance = planeHorizontal.distance + offset.offsetX;
+      const planeVertical = Plane.clone(this.planeVertical);
+      planeVertical.distance = planeVertical.distance + offset.offsetY;
+      clippingPlanes.add(planeHorizontal);
+      clippingPlanes.add(planeVertical);
+    } else {
+      clippingPlanes.add(this.planeHorizontal);
+      clippingPlanes.add(this.planeVertical);
+    }
   }
 
   onLeftDown(movement) {
-    this.leftBtnPressed = true;
     const pickedObject = this.viewer.scene.pick(movement.position);
-    if (pickedObject) {
-      this.selectedPlane = pickedObject.id.plane;
+    if (pickedObject && pickedObject.id) {
+      this.selectedPlane = pickedObject.id;
       this.viewer.scene.screenSpaceCameraController.enableInputs = false;
     }
   }
 
   onLeftUp(movement) {
-    this.leftBtnPressed = false;
     if (this.selectedPlane) {
       this.selectedPlane = null;
       this.viewer.scene.screenSpaceCameraController.enableInputs = true;
@@ -144,33 +187,29 @@ export default class Slicer {
 
   onMouseMove(movement) {
     if (this.selectedPlane) {
-      this.targetY += movement.endPosition.y - movement.startPosition.y;
-    }
-    if (this.leftBtnPressed) {
-      this.onCameraMove();
-    }
-  }
-
-  onCameraMove() {
-    const center = pickCenter(this.viewer.scene);
-    const hpr = new HeadingPitchRoll(this.viewer.scene.camera.heading, 0.0, 0.0);
-    this.plane = Plane.transform(Plane.ORIGIN_ZX_PLANE, Transforms.headingPitchRollToFixedFrame(center, hpr));
-    this.updateClippingPlanes(this.viewer.scene.globe.clippingPlanes);
-    const primitives = this.viewer.scene.primitives;
-    for (let i = 0; i < primitives.length; i++) {
-      const primitive = primitives.get(i);
-      if (primitive.clippingPlanes) {
-        this.updateClippingPlanes(primitive.clippingPlanes);
+      const scale = this.viewer.scene.camera.positionCartographic.height / 1000;
+      if (this.selectedPlane.properties.type.getValue() === 'horizontal') {
+        const amount = (movement.endPosition.y - movement.startPosition.y) * scale;
+        this.targetY += amount;
+      } else {
+        const amount = (movement.startPosition.x - movement.endPosition.x) * scale;
+        this.targetX += amount;
       }
+      this.movePlane();
     }
   }
 
   /**
    * @param {Plane} plane
+   * @param {'horizontal' | 'vertical' }type
    */
-  createPlaneUpdateFunction(plane) {
+  createPlaneUpdateFunction(plane, type) {
     return () => {
-      plane.distance = this.targetY;
+      if (type === 'horizontal') {
+        plane.distance = this.targetY;
+      } else {
+        plane.distance = this.targetX;
+      }
       return plane;
     };
   }
