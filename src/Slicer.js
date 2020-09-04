@@ -13,11 +13,6 @@ import Color from 'cesium/Source/Core/Color';
 import CMath from 'cesium/Source/Core/Math';
 import {degreesToLv95} from './projection';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import Rectangle from 'cesium/Source/Core/Rectangle';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import Transforms from 'cesium/Source/Core/Transforms';
-import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
-import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
 
 
 export default class Slicer {
@@ -36,7 +31,7 @@ export default class Slicer {
     this.eventHandler = null;
     this.selectedPlane = null;
     this.targetY = 0.0;
-    // this.normal = new Cartesian3();
+    this.targetX = 0.0;
 
     this.offsets = {};
   }
@@ -44,36 +39,41 @@ export default class Slicer {
   set active(value) {
     const globe = this.viewer.scene.globe;
     if (value) {
-      const mapCenter = Rectangle.center(globe.cartographicLimitRectangle);
-      let center = pickCenter(this.viewer.scene);
-      // let cartCenter = Cartographic.fromCartesian(center);
-      // if (Cartesian3.equals(center, this.viewer.scene.camera.positionWC)) {
-      //   cartCenter = mapCenter;
-      // } else {
-      //   cartCenter.longitude = mapCenter.longitude;
-      // }
-      // center = Cartographic.toCartesian(cartCenter);
+      // initialize plane based on the camera's position and heading
+      const center = pickCenter(this.viewer.scene);
+      this.planeHorizontal = new ClippingPlane(new Cartesian3(0.0, 1.0, 0.0), 0.0);
+      this.planeVertical = new ClippingPlane(new Cartesian3(1.0, 0.0, 0.0), 0.0);
 
-      this.normal = Cartesian3.normalize(this.planePosition, new Cartesian3());
-      this.plane = new ClippingPlane(this.normal, 0.0);
-      const planeAttributes = {
-        dimensions: new Cartesian2(500000.0, 50000.0),
-        material: Color.WHITE.withAlpha(0.3),
-        outline: true,
-        outlineColor: Color.WHITE
-      };
-
-      this.planeEntity = new Entity({
+      this.planeEntityHorizontal = new Entity({
         position: center,
         plane: {
-          ...planeAttributes,
-          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.plane), false),
+          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontal, 'horizontal'), false),
+          dimensions: new Cartesian2(500000.0, 50000.0),
+          material: Color.WHITE.withAlpha(0.5),
+          outline: true,
+          outlineColor: Color.WHITE,
+        },
+        properties: {
+          type: 'horizontal'
         }
       });
-      this.slicerDataSource.entities.add(this.planeEntity);
+      this.slicerDataSource.entities.add(this.planeEntityHorizontal);
 
-      const modelMatrix = this.planeEntity.computeModelMatrix(new Date());
-      globe.clippingPlanes = this.createClippingPlanes(modelMatrix);
+      this.planeEntityVertical = new Entity({
+        position: center,
+        plane: {
+          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeVertical), false),
+          dimensions: new Cartesian2(500000.0, 50000.0),
+          material: Color.WHITE.withAlpha(0.5),
+          outline: true,
+          outlineColor: Color.WHITE,
+        },
+        properties: {
+          type: 'vertical'
+        }
+      });
+      this.slicerDataSource.entities.add(this.planeEntityVertical);
+      globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(new Date()));
 
       const primitives = this.viewer.scene.primitives;
       for (let i = 0, ii = primitives.length; i < ii; i++) {
@@ -89,14 +89,12 @@ export default class Slicer {
           const lv95Tile = degreesToLv95([tileLon, tileLat]);
           const offsetX = lv95Center[1] - lv95Tile[1];
           const offsetY = lv95Center[0] - lv95Tile[0];
-
-          Cartesian3.distance(center, primitive.boundingSphere.center);
           this.offsets[primitive.url] = {
             offsetX: -offsetX,
             offsetY: -offsetY
           };
 
-          primitive.clippingPlanes = this.createClippingPlanes(modelMatrix);
+          primitive.clippingPlanes = this.createClippingPlanes();
         }
       }
       this.movePlane();
@@ -106,8 +104,6 @@ export default class Slicer {
         this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
         this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
         this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
-        // this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.CTRL);
-        // this.eventHandler.setInputAction(this.onMouseCtrlMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE, KeyboardEventModifier.CTRL);
       }
     } else {
       this.slicerDataSource.entities.removeAll();
@@ -152,29 +148,25 @@ export default class Slicer {
   createClippingPlanes(modelMatrix) {
     const clippingPlanes = new ClippingPlaneCollection({
       modelMatrix: modelMatrix,
-      planes: [this.plane],
+      planes: [this.planeHorizontal, this.planeVertical],
       edgeWidth: 1.0,
       unionClippingRegions: true
     });
     return clippingPlanes;
   }
 
-  updateClippingPlanes(clippingPlanes, offsets) {
+  updateClippingPlanes(clippingPlanes, offset) {
     clippingPlanes.removeAll();
-    if (offsets) {
-      const plane = Plane.clone(this.plane);
-      // const coef = this.rotate < 0 ? -1 : 1;
-      // let offset = offsets.offsetX * coef;
-      // if (this.rotate === 90 || this.rotate === -90) {
-      //   offset = offsets.offsetY * coef;
-      // }
-      // if (this.rotate === 45 || this.rotate === -45) {
-      //   offset = (offsets.offsetX + offsets.offsetY) / 2;
-      // }
-      // plane.distance = plane.distance + offset;
-      clippingPlanes.add(plane);
+    if (offset) {
+      const planeHorizontal = Plane.clone(this.planeHorizontal);
+      planeHorizontal.distance = planeHorizontal.distance + offset.offsetX;
+      const planeVertical = Plane.clone(this.planeVertical);
+      planeVertical.distance = planeVertical.distance + offset.offsetY;
+      clippingPlanes.add(planeHorizontal);
+      clippingPlanes.add(planeVertical);
     } else {
-      clippingPlanes.add(this.plane);
+      clippingPlanes.add(this.planeHorizontal);
+      clippingPlanes.add(this.planeVertical);
     }
   }
 
@@ -196,58 +188,28 @@ export default class Slicer {
   onMouseMove(movement) {
     if (this.selectedPlane) {
       const scale = this.viewer.scene.camera.positionCartographic.height / 1000;
-      const amount = (movement.endPosition.y - movement.startPosition.y) * scale;
-      this.targetY += amount;
+      if (this.selectedPlane.properties.type.getValue() === 'horizontal') {
+        const amount = (movement.endPosition.y - movement.startPosition.y) * scale;
+        this.targetY += amount;
+      } else {
+        const amount = (movement.startPosition.x - movement.endPosition.x) * scale;
+        this.targetX += amount;
+      }
       this.movePlane();
     }
   }
 
-  // onMouseCtrlMove(movement) {
-  //   if (this.selectedPlane) {
-  //     const amount = (movement.endPosition.y - movement.startPosition.y) / 100;
-  //     const x = this.normal.x - amount;
-  //     const y = this.normal.y + amount;
-  //     Cartesian3.normalize(new Cartesian3(x, y, 0), this.normal);
-  //     this.movePlane();
-  //   }
-  // }
-
-  get planePosition() {
-    const heading = CMath.toDegrees(this.viewer.scene.camera.heading);
-    if ((heading >= 0 && heading <= 40) || (heading >= 320 && heading <= 360)) {
-      this.rotate = 360;
-      return new Cartesian3(0, 1, 0.0);
-    } else if (heading > 40 && heading <= 75) {
-      this.rotate = 45;
-      return new Cartesian3(0.5, 0.5, 0.0);
-    } else if (heading > 75 && heading <= 105) {
-      this.rotate = 90;
-      return new Cartesian3(1, 0, 0.0);
-    } else if (heading > 105 && heading <= 145) {
-      this.rotate = 45;
-      return new Cartesian3(0.5, -0.5, 0.0);
-    } else if (heading > 145 && heading <= 225) {
-      this.rotate = -360;
-      return new Cartesian3(0, -1, 0.0);
-    } else if (heading > 225 && heading <= 245) {
-      this.rotate = 45;
-      return new Cartesian3(-0.5, -0.5, 0.0);
-    } else if (heading > 245 && heading <= 275) {
-      this.rotate = -90;
-      return new Cartesian3(-1, 0.0, 0.0);
-    } else if (heading > 275 && heading < 320) {
-      this.rotate = 45;
-      return new Cartesian3(-0.5, 0.5, 0.0);
-    }
-    return new Cartesian3(0, 1, 0.0);
-  }
-
   /**
    * @param {Plane} plane
+   * @param {'horizontal' | 'vertical' }type
    */
-  createPlaneUpdateFunction(plane) {
+  createPlaneUpdateFunction(plane, type) {
     return () => {
-      plane.distance = this.targetY;
+      if (type === 'horizontal') {
+        plane.distance = this.targetY;
+      } else {
+        plane.distance = this.targetX;
+      }
       return plane;
     };
   }
