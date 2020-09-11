@@ -27,22 +27,22 @@ class NgmSlicer extends I18nMixin(LitElement) {
   updated() {
     if (!this.slicer) {
       this.slicer = new Slicer(this.viewer);
-      window.slicer = this.slicer;
     }
   }
 
   toggleSlicer() {
     this.slicer.active = !this.slicer.active;
+    this.requestUpdate();
   }
 
   render() {
-    if (this.viewer) {
+    if (this.viewer && this.slicer) {
       return html`
         <button
-          data-tooltip=${i18next.t('slice')}
+          data-tooltip=${i18next.t('Slice')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button"
+          class="ui compact mini icon button ${this.slicer.active ? 'grey' : ''}"
           @pointerdown="${this.toggleSlicer}">
             <i class="cut icon"></i>
         </button>
