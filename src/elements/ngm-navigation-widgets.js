@@ -7,6 +7,7 @@ import './ngm-elevator-buttons.js';
 import './ngm-keyboard-info-popup.js';
 import './ngm-nadir-view.js';
 import './ngm-camera-information.js';
+import './ngm-slicer.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 import {SWITZERLAND_RECTANGLE} from '../constants.js';
@@ -54,6 +55,7 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
           <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
           <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
           <ngm-nadir-view .scene="${this.viewer.scene}"></ngm-nadir-view>
+          <ngm-slicer .viewer="${this.viewer}"></ngm-slicer>
           <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
         </div>
       `;
