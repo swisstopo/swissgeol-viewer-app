@@ -293,7 +293,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       entity.properties = this.getAreaProperties(entity, 'polygon');
       entity.polygon.fill = true;
       entity.polygon.material = DEFAULT_AOI_COLOR;
-      this.interestAreasDataSource.entities.add(entity)
+      this.interestAreasDataSource.entities.add(entity);
       this.flyToArea(entity.id);
     }
   }
