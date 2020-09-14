@@ -293,7 +293,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       entity.properties = this.getAreaProperties(entity, 'polygon');
       entity.polygon.fill = true;
       entity.polygon.material = DEFAULT_AOI_COLOR;
-      this.interestAreasDataSource.entities.add(entity);
+      this.interestAreasDataSource.entities.add(entity)
       this.flyToArea(entity.id);
     }
   }
@@ -528,14 +528,17 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     });
 
     const props = {};
-    entity.properties.propertyNames.forEach(propName => {
-      const property = entity.properties[propName];
-      props[propName] = property ? property.getValue() : undefined;
-    });
+    if (entity.properties) {
+      entity.properties.propertyNames.forEach(propName => {
+        const property = entity.properties[propName];
+        props[propName] = property ? property.getValue() : undefined;
+      });
+    }
 
     const measurements = getMeasurements(positions, distances, type);
     return {
       ...props,
+      type: type,
       area: measurements.area,
       perimeter: measurements.perimeter,
       numberOfSegments: measurements.segmentsNumber,
