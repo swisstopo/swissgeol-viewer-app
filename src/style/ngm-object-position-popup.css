@@ -1,9 +1,0 @@
-ngm-object-position-popup {
-  position: absolute;
-  z-index: 2;
-  width: 228px; /* required for correct positioning */
-}
-
-ngm-object-position-popup  input {
-  width: 75px;
-}
