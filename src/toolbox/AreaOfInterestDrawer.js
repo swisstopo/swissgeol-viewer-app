@@ -500,11 +500,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   disableToolButtons() {
-    this.querySelectorAll('.ngm-aoi-areas .buttons button').forEach(button => button.classList.add('disabled'));
+    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button').forEach(button => button.classList.add('disabled'));
   }
 
   enableToolButtons() {
-    this.querySelectorAll('.ngm-aoi-areas .buttons button').forEach(button => button.classList.remove('disabled'));
+    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button').forEach(button => button.classList.remove('disabled'));
   }
 
   onPositionChanged(event) {
@@ -598,13 +598,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     return entity.properties.volumeHeightLimits.getValue();
   }
 
-  onVolumeHeightLimitsChange() {
+  onVolumeHeightLimitsChange(index) {
     if (!this.draw_.entityForEdit) {
       return;
     }
     const entity = this.draw_.entityForEdit;
-    const limitInput = this.querySelector('.ngm-lower-limit-input');
-    const heightInput = this.querySelector('.ngm-volume-height-input');
+    const limitInput = this.querySelector(`.ngm-lower-limit-input-${index}`);
+    const heightInput = this.querySelector(`.ngm-volume-height-input-${index}`);
     const lowerLimit = applyInputLimits(limitInput, this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
     const height = applyInputLimits(heightInput, this.minVolumeHeight, this.maxVolumeHeight);
     entity.properties.volumeHeightLimits = {lowerLimit, height};
