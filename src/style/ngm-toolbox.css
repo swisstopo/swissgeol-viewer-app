@@ -41,6 +41,7 @@
 }
 
 .ngm-aoi-content {
+  padding: 10px 0 0 0 !important;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -65,7 +66,16 @@ ngm-gst-interaction {
   justify-content: space-evenly;
 }
 
-input.ngm-lower-limit-input, input.ngm-volume-height-input {
-  width: 95px;
+.ngm-aoi-edit {
+  padding: 0 10px 10px 10px;
+  background-color: #f3f3f3;
+}
+
+.ngm-aoi-edit .ui.buttons button.ui.button {
+  background-color: white;
+}
+
+.ngm-aoi-edit input {
+  width: 85px;
 }
 

@@ -40,6 +40,6 @@ export const AOI_DATASOURCE_NAME = 'interestAreas';
 export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Color());
 
 export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
-  lowerLimit: 0,
-  height: 5000
+  lowerLimit: -5000,
+  height: 10000
 };

@@ -4,7 +4,10 @@ import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import Color from 'cesium/Source/Core/Color';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartographic from 'cesium/Source/Core/Cartographic';
+import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
+import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
@@ -113,7 +116,7 @@ export class CesiumDraw extends EventTarget {
     }
     positions.forEach((p, idx) => {
       this.activePoints_.push(p);
-      const sketchPoint = this.createSketchPoint_(p, {edit: true});
+      const sketchPoint = this.createSketchPoint_(p, {edit: true, positionIndex: idx});
       sketchPoint.properties.index = idx;
       this.sketchPoints_.push(sketchPoint);
     });
@@ -201,7 +204,24 @@ export class CesiumDraw extends EventTarget {
     } else {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
-    return this.drawingDataSource.entities.add(entity);
+    const pointEntity = this.drawingDataSource.entities.add(entity);
+    if (options.edit && this.type === 'rectangle') {
+      const isLastPoint = options.positionIndex === 2; // always 3 points for rectangle
+      const billboard = {
+        position: new CallbackProperty(() => pointEntity.position.getValue(new Date()), false),
+        billboard: {
+          image: isLastPoint ? '../images/move-edit-icon.svg' : '../images/edit-icons.svg',
+          scale: isLastPoint ? 0.06 : 0.2,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          horizontalOrigin: HorizontalOrigin.LEFT,
+          verticalOrigin: VerticalOrigin.BOTTOM,
+          pixelOffset: new Cartesian2(10, -10)
+        }
+      };
+      this.drawingDataSource.entities.add(billboard);
+    }
+
+    return pointEntity;
   }
 
   createSketchLine_(positions) {
