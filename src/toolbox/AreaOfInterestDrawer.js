@@ -3,7 +3,6 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
-import Entity from 'cesium/Source/DataSources/Entity';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {getMeasurements} from '../utils.js';
@@ -12,12 +11,11 @@ import {LitElement} from 'lit-element';
 
 import {
   AOI_DATASOURCE_NAME,
-  CESIUM_NOT_GRAPHICS_ENTITY_PROPS,
   DEFAULT_AOI_COLOR,
   HIGHLIGHTED_AOI_COLOR,
   DEFAULT_VOLUME_HEIGHT_LIMITS
 } from '../constants.js';
-import {updateColor} from './helpers.js';
+import {updateColor, cleanupUploadedEntity, getUploadedAreaType} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -280,21 +278,44 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         });
       evt.target.value = null;
 
-      const entity = new Entity();
-      kmlDataSource.entities.values.forEach(ent => entity.merge(ent));
+      const entities = kmlDataSource.entities.values;
+      let atLeastOneValid = false;
+      entities.forEach((ent, index) => {
+        const exists = this.interestAreasDataSource.entities.getById(ent.id);
+        if (!exists) {
+          const type = getUploadedAreaType(ent);
+          if (type) {
+            atLeastOneValid = true;
+            ent = cleanupUploadedEntity(ent);
+            if (type === 'point' && !ent.point) {
+              ent.point = {
+                pixelSize: 8,
+                scaleByDistance: new NearFarScalar(0, 1, 1, 1)
+              };
+            }
+            ent.name = ent.name ? ent.name : `${kmlDataSource.name} ${index + 1}`;
+            ent.properties = this.getAreaProperties(ent, type);
+            if (ent.polygon) {
+              ent.polygon.fill = true;
+            }
+            updateColor(ent, false);
+            try {
+              this.interestAreasDataSource.entities.add(ent);
+            } catch (e) {
+              console.log(ent);
+              console.error(e);
+            }
+          }
+        } else {
+          showWarning(i18next.t('tbx_kml_area_existing_warning'));
+        }
+      });
 
-      const notOnlyPolygon = entity.propertyNames.some(prop => !CESIUM_NOT_GRAPHICS_ENTITY_PROPS.includes(prop) && !!entity[prop]);
-
-      if (notOnlyPolygon) {
+      if (!atLeastOneValid) {
         showWarning(i18next.t('unsupported_kml_warning'));
-        return;
+      } else {
+        this.viewer.zoomTo(entities);
       }
-
-      entity.properties = this.getAreaProperties(entity, 'polygon');
-      entity.polygon.fill = true;
-      entity.polygon.material = DEFAULT_AOI_COLOR;
-      this.interestAreasDataSource.entities.add(entity);
-      this.flyToArea(entity.id);
     }
   }
 
@@ -513,6 +534,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.moveEditPositionPopup(event.detail.position);
   }
 
+  /**
+   * Returns properties for area of interes according to area type
+   * @param entity
+   * @param {'point' | 'line' | 'rectangle' | 'polygon'} type
+   * @return {{area: any, numberOfSegments: number, perimeter: any, sidesLength: any}|{type: *}}
+   */
   getAreaProperties(entity, type) {
     if (type === 'point') {
       return {
