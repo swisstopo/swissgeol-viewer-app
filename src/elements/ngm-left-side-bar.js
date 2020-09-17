@@ -57,7 +57,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       <div class="ui styled accordion">
         <div class="title ngmlightgrey active">
           <i class="dropdown icon"></i>
-          ${i18next.t('geocatalog_label')}
+          ${i18next.t('lyr_geocatalog_label')}
         </div>
         <div class="content ngm-layer-content active">
           <ngm-catalog
@@ -71,7 +71,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       <div class="ui styled accordion">
         <div class="title ngmverylightgrey active">
           <i class="dropdown icon"></i>
-          ${i18next.t('displayed_maps_label')}
+          ${i18next.t('dtd_displayed_data_label')}
         </div>
         <div class="content active">
           <ngm-layers
@@ -81,7 +81,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
             .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>
           </ngm-layers>
-          <h4 class="ui horizontal divider ngm-background-divider">${i18next.t('background_map_label')}</h4>
+          <h4 class="ui horizontal divider ngm-background-divider">${i18next.t('dtd_background_map_label')}</h4>
            <ngm-map-configuration .viewer=${this.viewer} .mapChooser=${this.mapChooser}></ngm-map-configuration>
         </div>
       </div>
@@ -89,7 +89,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       <div class="ui styled accordion" id="${TOOLBOX}">
         <div class="title ngmmidgrey">
           <i class="dropdown icon"></i>
-          ${i18next.t('toolbox_title')}
+          ${i18next.t('tbx_toolbox_label')}
         </div>
         <div class="content">
           <ngm-aoi-drawer .viewer=${this.viewer}></ngm-aoi-drawer>

@@ -58,9 +58,9 @@ class NgmAuth extends I18nMixin(LitElement) {
 
   render() {
     if (!this.user) {
-      return html`<a @click=${this.login}>${i18next.t('Login')}</a>`;
+      return html`<a @click=${this.login}>${i18next.t('header_login_label')}</a>`;
     } else {
-      return html`${this.user.username} <a @click=${this.logout}>${i18next.t('Logout')}</a>`;
+      return html`${this.user.username} <a @click=${this.logout}>${i18next.t('header_logout_label')}</a>`;
     }
   }
 

@@ -68,7 +68,7 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
             </div>
             <div ?hidden="${!this.info.zoom}">
               <button @click="${this.info.zoom}" class="ui right floated mini basic labeled icon button">
-                    <i class="search plus icon"></i>${i18next.t('zoom_to_object')}
+                    <i class="search plus icon"></i>${i18next.t('obj_info_zoom_to_object_btn_label')}
               </button>
             </div>
           </div>

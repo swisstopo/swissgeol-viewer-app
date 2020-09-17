@@ -43,7 +43,7 @@ class NgmMapConfiguration extends I18nMixin(LitElement) {
     return html`
       <ngm-map-chooser></ngm-map-chooser>
       <div class="ngm-displayed-container">
-        <label>${i18next.t('map_transparency_label')}</label>
+        <label>${i18next.t('dtd_transparency_label')}</label>
         <div class="ui grey small slider" id="ngm-transparency-slider"></div>
       </div>
       `;

@@ -11,28 +11,28 @@ const btnId = 'ngm-navigation-info-btn';
 const t = a => a;
 const infoConfig = [
   {
-    title: t('info_tilt_label'),
-    content: t('info_tilt')
+    title: t('nav_info_tilt_label'),
+    content: t('nav_info_tilt')
   },
   {
-    title: t('info_look_label'),
-    content: t('info_look_key')
+    title: t('nav_info_look_label'),
+    content: t('nav_info_look_key')
   },
   {
-    title: t('info_zoom_label'),
-    content: t('info_zoom_key')
+    title: t('nav_info_zoom_label'),
+    content: t('nav_info_zoom_key')
   },
   {
-    title: t('info_move_label'),
-    content: t('info_move')
+    title: t('nav_info_move_label'),
+    content: t('nav_info_move')
   },
   {
-    title: t('info_move_forward_label'),
-    content: t('info_move_forward')
+    title: t('nav_info_move_forward_label'),
+    content: t('nav_info_move_forward')
   },
   {
-    title: t('info_elevator_label'),
-    content: t('info_elevator')
+    title: t('nav_info_elevator_label'),
+    content: t('nav_info_elevator')
   }
 ];
 
@@ -42,7 +42,7 @@ class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
     if (!this.popupInited && i18next.language) {
       $(`#${btnId}`).popup({
         position: 'left center',
-        content: i18next.t('info_btn'),
+        content: i18next.t('nav_info_btn_hint'),
         variation: 'mini',
         onShow: () => {
           if (this.querySelector(`#${popupId}`).classList.contains('visible')) {
@@ -93,12 +93,12 @@ class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
       <i class="keyboard icon"></i>
     </button>
     <div id=${popupId} class="ui popup">
-      <h4>${i18next.t('info_popup_label')}</h4>
+      <h4>${i18next.t('nav_info_popup_label')}</h4>
       <div class="ngm-keyboard-info-content">
         <div class="ngm-keyboard-layout"></div>
         ${this.infoLineTemplate}
       </div>
-      <h4 class="ngm-keyboard-tip">${i18next.t('info_tip')}</h4>
+      <h4 class="ngm-keyboard-tip">${i18next.t('nav_info_tip')}</h4>
     </div>`;
   }
 

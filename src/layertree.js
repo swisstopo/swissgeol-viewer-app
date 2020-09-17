@@ -75,14 +75,14 @@ const FAULTS_ORDER = ['Name', 'Source', 'Status', 'Type', 'Version', ...DOWNLOAD
 
 const t = a => a;
 const geo_map_series = {
-  label: t('geological_map_series_label'),
+  label: t('lyr_geological_map_series_label'),
   children: [
     {
-      label: t('geological_maps_label'),
+      label: t('lyr_geological_maps_label'),
       children: [
         {
           type: LAYER_TYPES.swisstopoWMTS,
-          label: t('ch_swisstopo_geologie_geocover'),
+          label: t('lyr_swisstopo_geologie_geocover_label'),
           layer: 'ch.swisstopo.geologie-geocover',
           visible: true,
           displayed: true,
@@ -107,15 +107,15 @@ const geo_map_series = {
   ]
 };
 const geo_base = {
-  label: t('geological_bases_label'),
+  label: t('lyr_geological_bases_label'),
   children: [
     {
-      label: t('boreholes_label'),
+      label: t('lyr_boreholes_label'),
       children: [
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 105125,
-          label: t('boreholes_public_label'),
+          label: t('lyr_boreholes_public_label'),
           layer: 'boreholes',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -128,12 +128,12 @@ const geo_base = {
       ]
     },
     {
-      label: t('cross_section_label'),
+      label: t('lyr_cross_section_label'),
       children: [
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 68881,
-          label: t('cross_section_ga25_label'),
+          label: t('lyr_cross_section_ga25_label'),
           layer: 'cross_section',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           visible: false,
@@ -144,7 +144,7 @@ const geo_base = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 124555,
-          label: t('cross_section_geomol_label'),
+          label: t('lyr_cross_section_geomol_label'),
           layer: 'cross_section_geomol',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           visible: false,
@@ -154,7 +154,7 @@ const geo_base = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 99320,
-          label: t('cross_section_geoquat_label'),
+          label: t('lyr_cross_section_geoquat_label'),
           layer: 'cross_section_geoquat',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           visible: false,
@@ -168,16 +168,16 @@ const geo_base = {
 };
 
 const geo_energy = {
-  label: t('geo_energy_label'),
+  label: t('lyr_geo_energy_label'),
   children: [
     {
-      label: t('geothermal_energy_label'),
+      label: t('lyr_geothermal_energy_label'),
       children: [
         {
           type: LAYER_TYPES.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 139225,
-          label: t('temperature_model_label'),
+          label: t('lyr_temperature_model_label'),
           layer: 'temperature_model',
           transparencyDisabled: true,
           pickable: true
@@ -188,11 +188,11 @@ const geo_energy = {
 };
 
 const natural_hazard = {
-  label: t('natural_hazard_label'),
+  label: t('lyr_natural_hazard_label'),
   children: [
     {
       type: LAYER_TYPES.earthquakes,
-      label: t('earthquakes_label'),
+      label: t('lyr_earthquakes_label'),
       layer: 'earthquakes',
       visible: true,
       displayed: true,
@@ -202,16 +202,16 @@ const natural_hazard = {
 };
 
 const subsurface = {
-  label: t('subsurface_label'),
+  label: t('lyr_subsurface_label'),
   children: [
     {
-      label: t('unconsolidated_rocks_label'),
+      label: t('lyr_unconsolidated_rocks_label'),
       children: [
         {
           type: LAYER_TYPES.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 109954,
-          label: t('aare_valley_label'),
+          label: t('lyr_aare_valley_label'),
           layer: 'aare_valley',
           transparencyDisabled: true,
           pickable: true,
@@ -220,12 +220,12 @@ const subsurface = {
       ]
     },
     {
-      label: t('top_bedrock_surface_label'),
+      label: t('lyr_top_bedrock_surface_label'),
       children: [
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111882,
-          label: t('top_bedrock_label'),
+          label: t('lyr_top_bedrock_label'),
           layer: 'top_bedrock',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -234,12 +234,12 @@ const subsurface = {
       ]
     },
     {
-      label: t('consolidated_rocks_label'),
+      label: t('lyr_consolidated_rocks_label'),
       children: [
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111880,
-          label: t('top_omm_label'),
+          label: t('lyr_top_omm_label'),
           layer: 'top_omm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -248,7 +248,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111879,
-          label: t('top_usm_label'),
+          label: t('lyr_top_usm_label'),
           layer: 'top_usm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -257,7 +257,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111888,
-          label: t('top_umm_label'),
+          label: t('lyr_top_umm_label'),
           layer: 'top_umm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -266,7 +266,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111886,
-          label: t('base_cenozoic_label'),
+          label: t('lyr_base_cenozoic_label'),
           layer: 'base_cenozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -275,7 +275,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111881,
-          label: t('top_creatateus_label'),
+          label: t('lyr_top_creatateus_label'),
           layer: 'top_creatateus',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -284,7 +284,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111890,
-          label: t('top_upper_malm_label'),
+          label: t('lyr_top_upper_malm_label'),
           layer: 'top_upper_malm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -293,7 +293,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111889,
-          label: t('top_lower_malm_label'),
+          label: t('lyr_top_lower_malm_label'),
           layer: 'top_lower_malm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -302,7 +302,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111894,
-          label: t('top_dogger_label'),
+          label: t('lyr_top_dogger_label'),
           layer: 'top_dogger',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -311,7 +311,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111885,
-          label: t('top_lias_label'),
+          label: t('lyr_top_lias_label'),
           layer: 'top_lias',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -320,7 +320,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 117460,
-          label: t('top_keuper_label'),
+          label: t('lyr_top_keuper_label'),
           layer: 'top_keuper',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -329,7 +329,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111893,
-          label: t('top_muschelkalk_label'),
+          label: t('lyr_top_muschelkalk_label'),
           layer: 'top_muschelkalk',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -338,7 +338,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111883,
-          label: t('base_mesozoic_label'),
+          label: t('lyr_base_mesozoic_label'),
           layer: 'base_mesozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -347,7 +347,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111891,
-          label: t('base_cermocarboniferous'),
+          label: t('lyr_base_cermocarboniferous'),
           layer: 'base_cermocarboniferous',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -356,7 +356,7 @@ const subsurface = {
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 111892,
-          label: t('base_cermocarboniferous_supposed'),
+          label: t('lyr_base_cermocarboniferous_supposed'),
           layer: 'base_cermocarboniferous_supposed',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -365,12 +365,12 @@ const subsurface = {
       ]
     },
     {
-      label: t('fault_zones_label'),
+      label: t('lyr_fault_zones_label'),
       children: [
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 114815,
-          label: t('faults_geomol'),
+          label: t('lyr_faults_geomol_label'),
           layer: 'faults_geomol',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
@@ -382,13 +382,13 @@ const subsurface = {
 };
 
 const man_made_objects = {
-  label: t('man_made_objects_label'),
+  label: t('lyr_man_made_objects_label'),
   children: [
     {
       type: LAYER_TYPES.tiles3d,
       assetId: 96056,
       style: TUNNEL_STYLE,
-      label: t('tunnel_label'),
+      label: t('lyr_tunnel_label'),
       layer: 'tunnel',
       pickable: true,
       transparencyDisabled: true
@@ -396,7 +396,7 @@ const man_made_objects = {
     {
       type: LAYER_TYPES.tiles3d,
       url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20190924/tileset.json',
-      label: t('swiss_buildings'),
+      label: t('lyr_swiss_buildings_label'),
       layer: 'ch.swisstopo.swisstlm3d.3d',
       pickable: false,
       transparency: DEFAULT_LAYER_TRANSPARENCY
@@ -405,12 +405,12 @@ const man_made_objects = {
 };
 
 const background = {
-  label: t('background_label'),
+  label: t('lyr_background_label'),
   children: [
     {
       type: LAYER_TYPES.tiles3d,
       url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
-      label: t('swissnames_label'),
+      label: t('lyr_swissnames_label'),
       style: SWISSTOPO_LABEL_STYLE,
       layer: 'ch.swisstopo.swissnames3d.3d',
       transparencyDisabled: true // opacity not work with color conditions

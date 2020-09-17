@@ -72,7 +72,7 @@ class NgmCameraInformation extends I18nMixin(LitElement) {
       }
 
       return html`
-         ${unsafeHTML(i18next.t('camera_position', {coordinates, height, angle, pitch}))}
+         ${unsafeHTML(i18next.t('nav_camera_position_label', {coordinates, height, angle, pitch}))}
         <ngm-position-edit .scene="${this.scene}"></ngm-position-edit>
       `;
     } else {
