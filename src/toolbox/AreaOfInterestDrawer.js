@@ -278,7 +278,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         });
       evt.target.value = null;
 
-      const entities = kmlDataSource.entities.values;
+      let entities = kmlDataSource.entities.values;
+      if (entities.length > 10) {
+        showWarning(i18next.t('tbx_kml_large_warning'));
+        entities = entities.slice(0, 10);
+      }
       let atLeastOneValid = false;
       entities.forEach((ent, index) => {
         const exists = this.interestAreasDataSource.entities.getById(ent.id);
@@ -287,24 +291,19 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
           if (type) {
             atLeastOneValid = true;
             ent = cleanupUploadedEntity(ent);
-            if (type === 'point' && !ent.point) {
+            if (type === 'point') {
               ent.point = {
                 pixelSize: 8,
                 scaleByDistance: new NearFarScalar(0, 1, 1, 1)
               };
             }
-            ent.name = ent.name ? ent.name : `${kmlDataSource.name} ${index + 1}`;
+            ent.name = kmlDataSource.name ? `${kmlDataSource.name} ${index + 1}` : `${ent.name} ${index + 1}`;
             ent.properties = this.getAreaProperties(ent, type);
             if (ent.polygon) {
               ent.polygon.fill = true;
             }
             updateColor(ent, false);
-            try {
-              this.interestAreasDataSource.entities.add(ent);
-            } catch (e) {
-              console.log(ent);
-              console.error(e);
-            }
+            this.interestAreasDataSource.entities.add(ent);
           }
         } else {
           showWarning(i18next.t('tbx_kml_area_existing_warning'));

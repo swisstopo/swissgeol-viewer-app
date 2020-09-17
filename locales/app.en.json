@@ -109,6 +109,7 @@
   "swiss_buildings": "SwissBUILDINGS3D",
   "swissnames_label": "SwissNAMES3D",
   "tbx_kml_area_existing_warning": "One of the uploaded areas already exists",
+  "tbx_kml_large_warning": "KML is large. Will be added only 10 geometries to avoid performance issues.",
   "temperature_model_label": "Temperature model Swiss Plateau",
   "toolbox_title": "Toolbox",
   "top_bedrock_label": "Bedrock",
