@@ -24,11 +24,6 @@ import CesiumInspector from 'cesium/Source/Widgets/CesiumInspector/CesiumInspect
 import {getMapTransparencyParam} from './permalink.js';
 import Entity from 'cesium/Source/DataSources/Entity';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import CameraEventType from 'cesium/Source/Scene/CameraEventType';
-import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
-import Transforms from 'cesium/Source/Core/Transforms';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -138,7 +133,6 @@ export function setupViewer(container) {
 
   // remove the default behaviour of calling 'zoomTo' on the double clicked entity
   viewer.screenSpaceEventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-  enableCenterOfRotate(viewer);
 
   const scene = viewer.scene;
   const globe = scene.globe;
@@ -211,25 +205,6 @@ export function setupViewer(container) {
     new CesiumInspector('divinspector', scene);
   }
   return viewer;
-}
-
-function enableCenterOfRotate(viewer) {
-  const scene = viewer.scene;
-  const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
-  eventHandler.setInputAction(event => {
-    const pickedPosition = scene.pickPosition(event.position);
-    if (pickedPosition) {
-      const transform = Transforms.eastNorthUpToFixedFrame(pickedPosition);
-      scene.camera.lookAtTransform(transform);
-      scene.screenSpaceCameraController.rotateEventTypes = [CameraEventType.LEFT_DRAG, {
-        eventType: CameraEventType.LEFT_DRAG,
-        modifier: KeyboardEventModifier.CTRL
-      }];
-    }
-  }, ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.CTRL);
-  eventHandler.setInputAction(() => scene.camera.lookAtTransform(Matrix4.IDENTITY), ScreenSpaceEventType.LEFT_UP);
-  eventHandler.setInputAction(() =>
-    scene.camera.lookAtTransform(Matrix4.IDENTITY), ScreenSpaceEventType.LEFT_UP, KeyboardEventModifier.CTRL);
 }
 
 /**
