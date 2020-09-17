@@ -51,9 +51,9 @@ class NgmNadirView extends I18nMixin(LitElement) {
 
   tooltip() {
     if (this.active) {
-      return i18next.t('nav_nadir_deactivate_btn_label');
+      return i18next.t('nav_nadir_deactivate_hint');
     } else {
-      return i18next.t('nav_nadir_activate_btn_label');
+      return i18next.t('nav_nadir_activate_hint');
     }
   }
 
