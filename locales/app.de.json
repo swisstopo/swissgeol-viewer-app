@@ -16,7 +16,7 @@
   "header_logout_label": "Logout",
   "header_review_link": "Review beta.swissgeol.ch",
   "header_search_placeholder": "Suchen...",
-  "latest_stable_version": "Neueste stabile Version",
+  "slow_connection_latest_stable_version": "Neueste stabile Version",
   "loading_message": "Seite wird geladen, bitte warten",
   "lyr_aare_valley_label": "Aaretal",
   "lyr_background_label": "Hintergrunddaten",
