@@ -297,7 +297,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
                 scaleByDistance: new NearFarScalar(0, 1, 1, 1)
               };
             }
-            ent.name = kmlDataSource.name ? `${kmlDataSource.name} ${index + 1}` : `${ent.name} ${index + 1}`;
+            ent.name = ent.name ? `${ent.name}` : `${kmlDataSource.name}`;
             ent.properties = this.getAreaProperties(ent, type);
             if (ent.polygon) {
               ent.polygon.fill = true;
@@ -306,6 +306,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
             this.interestAreasDataSource.entities.add(ent);
           }
         } else {
+          atLeastOneValid = true;
           showWarning(i18next.t('tbx_kml_area_existing_warning'));
         }
       });
