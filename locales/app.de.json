@@ -101,6 +101,7 @@
   "search_placeholder": "Suchen...",
   "sentry_message": "Sentry wird genutzt, um die Anwendung zu überwachen und Fehler zu verfolgen. <br> Für weitere Informationen: datenschutz@swisstopo.ch",
   "show_volume_btn": "",
+  "Slice": "",
   "slow_connection_label": "Noch nicht geladen?",
   "slow_connection_text": "swissgeol.ch schein langsam zu laden.",
   "slow_connection_text_2": "swissgeol.ch funktioniert am besten mit einer guten Internetverbindung und den neusten Versionen der folgenden Browser:",

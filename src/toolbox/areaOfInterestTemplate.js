@@ -2,13 +2,14 @@ import {html} from 'lit-element';
 import i18next from 'i18next';
 import {clickOnElement} from '../utils.js';
 import './ngm-gst-interaction.js';
+import './ngm-point-position.js';
 
 const areaUploadInputId = 'areaUpload';
 
 export default function getTemplate() {
   return html`
     <label>${i18next.t('drawing_tools_label')}</label>
-    <div class="ui tiny fluid buttons ngm-aoi-buttons" ?hidden=${this.draw_.active}>
+    <div class="ui tiny fluid buttons ngm-aoi-buttons" ?hidden=${this.draw_.active && !this.draw_.entityForEdit}>
         <button class="ui button"
                 data-tooltip=${i18next.t('add_point_btn_label')}
                 data-variation="mini"
@@ -45,43 +46,14 @@ export default function getTemplate() {
         </button>
     </div>
     <input id="${areaUploadInputId}" type='file' accept=".kml,.KML" hidden @change=${this.uploadArea_.bind(this)} />
-    <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.draw_.active}>
-        <button class="ui button"
-                ?hidden=${!this.draw_.entityForEdit}
-                @click=${this.saveEditing.bind(this)}>${i18next.t('save_editing_btn_label')}</button>
+    <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.draw_.active || this.draw_.entityForEdit}>
         <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('cancel_area_btn_label')}</button>
         <button class="ui button ngm-help-btn"
-                data-tooltip=${!this.draw_.entityForEdit ?
-    i18next.t('area_of_interest_add_hint') :
-    i18next.t('area_of_interest_edit_hint')}
+                data-tooltip=${i18next.t('area_of_interest_add_hint')}
                 data-variation="tiny"
                 data-position="top right">
             <i class="question circle outline icon"></i>
         </button>
-    </div>
-
-    <div class="ngm-volume-limits-input"
-        ?hidden=${!this.draw_.entityForEdit
-                  || !(this.draw_.entityForEdit.properties.volumeShowed
-                  && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
-        <div>
-            <label>${i18next.t('volume_lower_limit')}:</label></br>
-            <div class="ui mini input right labeled">
-                 <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class="ngm-lower-limit-input"
-                    .value="${this.volumeHeightLimits.lowerLimit}"
-                    @change="${this.onVolumeHeightLimitsChange.bind(this)}">
-                <label class="ui label">m</label>
-            </div>
-        </div>
-        <div>
-            <label>${i18next.t('volume_height')}:</label></br>
-            <div class="ui mini input right labeled">
-                <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class="ngm-volume-height-input"
-                    .value="${this.volumeHeightLimits.height}"
-                    @change="${this.onVolumeHeightLimitsChange.bind(this)}">
-                <label class="ui label">m</label>
-            </div>
-        </div>
     </div>
 
     <label>${i18next.t('analysis_tools_label')}</label>
@@ -96,7 +68,7 @@ export default function getTemplate() {
 }
 
 function aoiListTemplate() {
-  return this.entitiesList_.map(i =>
+  return this.entitiesList_.map((i, index) =>
     html`
       <div class="item">
         <div class="title" @click=${evt => this.onAreaClick(evt)}>
@@ -164,6 +136,47 @@ function aoiListTemplate() {
                         .parentElement=${this}>
                     </ngm-gst-interaction>
                 ` : ''}
+        </div>
+        <div class="ngm-aoi-edit"  ?hidden=${!this.draw_.entityForEdit || this.draw_.entityForEdit.id !== i.id}>
+            <div class="ui mini basic fluid buttons ngm-aoi-tooltip-container">
+                <button class="ui button"
+                        @click=${this.saveEditing.bind(this)}>${i18next.t('save_editing_btn_label')}</button>
+                <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('cancel_area_btn_label')}</button>
+                <button class="ui button ngm-help-btn"
+                        data-tooltip=${i18next.t('area_of_interest_edit_hint')}
+                        data-variation="tiny"
+                        data-position="top right">
+                    <i class="question circle outline icon"></i>
+                </button>
+            </div>
+
+            <div class="ngm-volume-limits-input"
+                ?hidden=${!this.draw_.entityForEdit || !(this.draw_.entityForEdit.properties.volumeShowed && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
+                <div>
+                    <label>${i18next.t('volume_lower_limit')}:</label></br>
+                    <div class="ui mini input right labeled">
+                         <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class=${`ngm-lower-limit-input-${index}`}
+                            .value="${this.volumeHeightLimits.lowerLimit}"
+                            @input="${this.onVolumeHeightLimitsChange.bind(this, index)}">
+                        <label class="ui label">m</label>
+                    </div>
+                </div>
+                <div>
+                    <label>${i18next.t('volume_height')}:</label></br>
+                    <div class="ui mini input right labeled">
+                        <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class=${`ngm-volume-height-input-${index}`}
+                            .value="${this.volumeHeightLimits.height}"
+                            @change="${this.onVolumeHeightLimitsChange.bind(this, index)}">
+                        <label class="ui label">m</label>
+                    </div>
+                </div>
+            </div>
+           <ngm-point-position
+                ?hidden=${i.type !== 'point'}
+                .viewer=${this.viewer}
+                .position=${i.positions[0]}
+                .entity=${this.draw_.entityForEdit}>
+           </ngm-point-position>
         </div>
       </div>`);
 }

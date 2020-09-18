@@ -7,19 +7,18 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {applyInputLimits, prepareCoordinatesForUi} from '../utils';
 
-class NgmObjectPositionPopup extends I18nMixin(LitElement) {
+class NgmPointPosition extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      scene: {type: Object},
+      viewer: {type: Object},
       position: {type: Object},
-      opened: {type: Boolean}
+      entity: {type: Object}
     };
   }
 
   constructor() {
     super();
-    this.opened = false;
     this.xValue = 0;
     this.yValue = 0;
     this.heightValue = 0;
@@ -56,17 +55,19 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
   }
 
   updateInputValues() {
-    const coordinates = prepareCoordinatesForUi(this.scene, this.position, this.coordsType);
+    const cartographicPosition = Cartographic.fromCartesian(this.position);
+    const coordinates = prepareCoordinatesForUi(this.viewer.scene, cartographicPosition, this.coordsType);
     this.xValue = coordinates.x;
     this.yValue = coordinates.y;
     this.heightValue = coordinates.height;
   }
 
   onPositionChange() {
+    const cartographicPosition = Cartographic.fromCartesian(this.position);
     this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
     this.heightValue = applyInputLimits(this.querySelector('.ngm-height-input'), this.minHeight, this.maxHeight);
-    const altitude = this.scene.globe.getHeight(this.position) || 0;
+    const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
     let lon = this.xValue;
     let lat = this.yValue;
     if (this.coordsType === 'lv95') {
@@ -75,13 +76,10 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
       lat = radianCoords[1];
     }
     const cartesianPosition = Cartesian3.fromDegrees(lon, lat, this.heightValue + altitude);
-    this.position = Cartographic.fromCartesian(cartesianPosition);
+    this.position = cartesianPosition;
     this.updateInputValues();
-    this.dispatchEvent(new CustomEvent('positionChanged', {
-      detail: {
-        position: cartesianPosition
-      }
-    }));
+    this.entity.position = cartesianPosition;
+    this.viewer.scene.requestRender();
   }
 
   render() {
@@ -89,7 +87,7 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
       this.updateInputValues();
     }
     return html`
-        <div class="ui mini segment" ?hidden="${!this.opened}">
+        <div>
             <label>${i18next.t('coordinates')}:</label>
             <div class="ngm-coord-input">
                 <div class="ui mini right labeled input">
@@ -125,4 +123,4 @@ class NgmObjectPositionPopup extends I18nMixin(LitElement) {
   }
 }
 
-customElements.define('ngm-object-position-popup', NgmObjectPositionPopup);
+customElements.define('ngm-point-position', NgmPointPosition);
