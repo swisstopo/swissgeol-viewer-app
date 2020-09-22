@@ -87,7 +87,7 @@ export default class Slicer {
       for (let i = 0, ii = primitives.length; i < ii; i++) {
         const primitive = primitives.get(i);
         if (primitive.root && primitive.boundingSphere) {
-          const tileCenter = Cartographic.fromCartesian(primitive.root.contentBoundingVolume.boundingSphere.center);
+          const tileCenter = Cartographic.fromCartesian(primitive.boundingSphere.center);
           const lat = CMath.toDegrees(cartCenter.latitude);
           const lon = CMath.toDegrees(cartCenter.longitude);
           const tileLat = CMath.toDegrees(tileCenter.latitude);
