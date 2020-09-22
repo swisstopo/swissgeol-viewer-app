@@ -105,7 +105,7 @@
   },
   {
     "tag": "navigation_topic_text",
-    "text": "<p>The navigation can be done in three different ways:</p>\n <p>With Mouse / Trackpad the view can be moved (Drag&amp;Drop), zoomed (mouse wheel) and tilted (hold CTRL key while Drag&amp;Drop). To use an object as center of rotation - move the mouse over the object and drag with pressed CTRL.</p>\n <p>The buttons on the upper right side of the viewer can be used to change the orientation in horizontal and vertical axis (Drag&amp;Drop on the outer and inner ring of the compass rose), the view can be zoomed in and zoomed out (&quot;+&quot; and &quot;-&quot; buttons) and can be moved up / down as with an elevator (arrow buttons).</p>\n<p>Using the keyboard, the combinations &quot;WASD&quot;, &quot;IJKL&quot;, &quot;+-&quot; as well as the arrow keys can also be used to navigate.</p>"
+    "text": "<p>The navigation can be done in three different ways:</p>\n <p>With Mouse / Trackpad the view can be moved (Drag&amp;Drop), zoomed (mouse wheel) and tilted (hold CTRL key while Drag&amp;Drop).</p>\n <p>The buttons on the upper right side of the viewer can be used to change the orientation in horizontal and vertical axis (Drag&amp;Drop on the outer and inner ring of the compass rose), the view can be zoomed in and zoomed out (&quot;+&quot; and &quot;-&quot; buttons) and can be moved up / down as with an elevator (arrow buttons).</p>\n<p>Using the keyboard, the combinations &quot;WASD&quot;, &quot;IJKL&quot;, &quot;+-&quot; as well as the arrow keys can also be used to navigate.</p>"
   },
   {
     "tag": "reset_topic_text",
