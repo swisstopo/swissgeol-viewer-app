@@ -17,6 +17,7 @@
   "base_cermocarboniferous_supposed": "Base Permo-Carboniferous supposed",
   "base_mesozoic_label": "Base Mesozoic",
   "boreholes_label": "Boreholes",
+  "boreholes_private_label": "Boreholes private",
   "boreholes_public_label": "Boreholes public",
   "camera_height": "Camera Height",
   "camera_position": "Coords: {{coordinates}}<br/>H: {{height}} m / Dir: {{angle}}° / Tilt: {{pitch}}°",

@@ -80,7 +80,7 @@ const sideBar = document.querySelector('ngm-left-side-bar');
 sideBar.viewer = viewer;
 sideBar.zoomTo = zoomTo;
 sideBar.authenticated = !!auth.user;
-auth.addEventListener('refresh', (evt) => sideBar.authenticated = evt.detail.authenticated );
+auth.addEventListener('refresh', (evt) => sideBar.authenticated = evt.detail.authenticated);
 
 
 const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {

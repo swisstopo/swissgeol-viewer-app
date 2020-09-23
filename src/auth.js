@@ -3,7 +3,7 @@ import AWS from 'aws-sdk';
 const cognitoState = 'cognito_state';
 const cognitoAccessToken = 'cognito_access_token';
 const cognitoIdToken = 'cognito_id_token';
-const awsBasicAuth = 'aws_basic_auth'
+const awsBasicAuth = 'aws_basic_auth';
 
 // example: #access_token=header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature&token_type=Bearer&state=1234
 const isResponse = /^#[\w]+=[\w.=-]+(&[\w]+=[\w.=-]+)*$/;
@@ -21,7 +21,7 @@ export default class Auth {
       const response = this.parseResponse(window.location.hash);
       if (response.token_type === 'Bearer' && response.state === this.state()) {
         this.parseToken(response.access_token);
-        this.parseToken(response.id_token)
+        this.parseToken(response.id_token);
         this.setAccessToken(response.access_token);
         this.setIdToken(response.id_token);
       }
@@ -102,7 +102,7 @@ export default class Auth {
     localStorage.setItem(cognitoIdToken, token);
   }
 
-  static getBasicAuth(){
+  static getBasicAuth() {
     return localStorage.getItem(awsBasicAuth);
   }
 
@@ -130,11 +130,7 @@ export default class Auth {
     }
   }
 
-  static getAwsBasicAuthHash() {
-    return localStorage.getItem(awsBasicAuth);
-  }
-
-  static updateAwsCredentialsWithToken(idToken){
+  static updateAwsCredentialsWithToken(idToken) {
     AWS.config.region = 'eu-central-1';
     if (AWS.config.credentials) {
       delete AWS.config.credentials;
@@ -149,13 +145,14 @@ export default class Auth {
       if (err) {
         console.error(err);
       } else {
-        console.log(AWS.config.credentials.accessKeyId);
-        console.log(AWS.config.credentials.secretAccessKey);
-        console.log(AWS.config.credentials.sessionToken);
+        const credentials = AWS.config.credentials;
+        console.log(credentials.accessKeyId);
+        console.log(credentials.secretAccessKey);
+        console.log(credentials.sessionToken);
         // we build a 'fake' http basic-auth header, we use accessKeyId:secretAccessKey.sessionToken
         // the backend will extract these 3 infos to construct the AWS request
         // only accessKeyId is in username placeholder, so any webserver in the middle might log it
-        localStorage.setItem(awsBasicAuth, btoa(`${AWS.config.credentials.accessKeyId}:${AWS.config.credentials.secretAccessKey}.${AWS.config.credentials.sessionToken}`));
+        localStorage.setItem(awsBasicAuth, btoa(`${credentials.accessKeyId}:${credentials.secretAccessKey}.${credentials.sessionToken}`));
       }
     });
   }

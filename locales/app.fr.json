@@ -17,6 +17,7 @@
   "base_cermocarboniferous_supposed": "Base supposée du Permo-Carbonifère",
   "base_mesozoic_label": "Base du Mésozoïque",
   "boreholes_label": "Forages",
+  "boreholes_private_label": "",
   "boreholes_public_label": "Forages publics",
   "camera_height": "Altitude de la caméra",
   "camera_position": "Coord. : {{coordinates}}<br/>Alt: {{height}} m / Dir: {{angle}}° / Incl: {{pitch}}°",

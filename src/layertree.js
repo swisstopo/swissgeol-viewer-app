@@ -127,14 +127,14 @@ const geo_base = {
         },
         {
           type: LAYER_TYPES.tiles3d,
-          label: 'authenticated',
+          label: t('boreholes_private_label'),
           layer: 'boreholes_authenticated',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           visible: false,
           displayed: false,
           restricted: true,
-          url: 'http://localhost:5000/tiles/bh_all_g_4326/v1/tileset.json',
+          url: 'https://u8p88903eh.execute-api.eu-central-1.amazonaws.com/dev/tiles/bh_all_g_4326/v1/tileset.json',
         },
         // {
         //   type: LAYER_TYPES.tiles3d,

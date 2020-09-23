@@ -17,6 +17,7 @@
   "base_cermocarboniferous_supposed": "Basis Permokarbon (vermutet)",
   "base_mesozoic_label": "Basis Mesozoikum",
   "boreholes_label": "Bohrungen",
+  "boreholes_private_label": "",
   "boreholes_public_label": "Bohrungen öffentlich",
   "camera_height": "Kamerahöhe",
   "camera_position": "Koord.: {{coordinates}}<br/>H: {{height}} m / Richt: {{angle}}° / Neig: {{pitch}}°",

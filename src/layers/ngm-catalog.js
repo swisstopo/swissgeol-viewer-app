@@ -16,10 +16,11 @@ class Catalog extends I18nMixin(LitElement) {
   getCategoryOrLayerTemplate(c) {
     // if it is a restricted layer, the user must be logged in to see it
     if (c.restricted && !this.authenticated) {
-      return
+      return;
     }
-    if (c.children)
+    if (c.children) {
       return this.getCategoryTemplate(c);
+    }
     return this.getLayerTemplate(c);
   }
 

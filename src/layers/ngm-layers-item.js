@@ -98,7 +98,9 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
           <input class="ngm-layer-checkbox" type="checkbox"
             .checked=${this.config.visible}
             @change=${this.changeVisibility}>
-          <label @click=${this.onLabelClicked}>${i18next.t(this.config.label)}</label>
+          <label @click=${this.onLabelClicked}>
+            <i class=${this.config.restricted ? 'lock icon' : ''}></i>${i18next.t(this.config.label)}
+          </label>
         </div>
         ${this.buttons}
       </div>
