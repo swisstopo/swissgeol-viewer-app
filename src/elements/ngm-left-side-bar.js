@@ -6,7 +6,7 @@ import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
 import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants.js';
 import defaultLayerTree from '../layertree.js';
-import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
+import {getLayerParams, syncLayersParam, getAssetIds, getAttribute} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
@@ -36,8 +36,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
     }
 
     this.queryManager.activeLayers = this.activeLayers
-    .filter(config => config.visible)
-    .map(config => config.layer);
+      .filter(config => config.visible)
+      .map(config => config.layer);
 
     return html`
       <div class="ui styled accordion" id="${WELCOME_PANEL}">
@@ -122,7 +122,11 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   initializeActiveLayers() {
-    const flatLayers = this.getFlatLayers(this.catalogLayers);
+    const attributeParams = getAttribute();
+    const callback = attributeParams ?
+      this.getTileLoadCallback(attributeParams.attributeKey, attributeParams.attributeValue) :
+      undefined;
+    const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
 
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
@@ -172,15 +176,34 @@ class LeftSideBar extends I18nMixin(LitElement) {
     syncLayersParam(this.activeLayers);
   }
 
+  getTileLoadCallback(attributeKey, attributeValue) {
+    return (tile, removeTileLoadListener) => {
+      const content = tile.content;
+      const featuresLength = content.featuresLength;
+      for (let i = 0; i < featuresLength; i++) {
+        const feature = content.getFeature(i);
+        if (feature.getProperty(attributeKey) === attributeValue) {
+          removeTileLoadListener();
+          this.searchedFeature = feature;
+          return;
+        }
+      }
+    };
+  }
+
   update(changedProperties) {
     if (this.viewer && !this.layerActions) {
       this.layerActions = new LayersActions(this.viewer);
       // Handle queries (local and Swisstopo)
       this.queryManager = new QueryManager(this.viewer);
+      if (!this.catalogLayers) {
+        this.catalogLayers = [...defaultLayerTree];
+        this.initializeActiveLayers();
+      }
     }
-    if (!this.catalogLayers) {
-      this.catalogLayers = [...defaultLayerTree];
-      this.initializeActiveLayers();
+    if (this.searchedFeature) {
+      this.queryManager.selectTile(this.searchedFeature);
+      this.searchedFeature = undefined;
     }
     super.update(changedProperties);
   }
@@ -242,19 +265,19 @@ class LeftSideBar extends I18nMixin(LitElement) {
     this.requestUpdate();
   }
 
-  getFlatLayers(tree) {
+  getFlatLayers(tree, tileLoadCallback) {
     const flat = [];
     for (const layer of tree) {
       if (layer.children) {
-        flat.push(...this.getFlatLayers(layer.children));
+        flat.push(...this.getFlatLayers(layer.children, tileLoadCallback));
       } else {
-        layer.load = () => layer.promise = createCesiumObject(this.viewer, layer);
+        layer.load = () =>
+          layer.promise = createCesiumObject(this.viewer, layer, tileLoadCallback);
         flat.push(layer);
       }
     }
     return flat;
   }
-
 
   // adds layer from search to 'Displayed Layers'
   addLayerFromSearch(searchLayer) {

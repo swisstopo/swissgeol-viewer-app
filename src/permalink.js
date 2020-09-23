@@ -8,7 +8,8 @@ import {
   LAYERS_VISIBILITY_URL_PARAM,
   ASSET_IDS_URL_PARAM,
   MAP_URL_PARAM,
-  MAP_TRANSPARENCY_URL_PARAM
+  MAP_TRANSPARENCY_URL_PARAM,
+  ATTRIBUTE_KEY_PARAM, ATTRIBUTE_VALUE_PARAM
 } from './constants.js';
 
 export function getCameraView() {
@@ -136,4 +137,14 @@ export function syncMapTransparencyParam(transparency) {
 export function getMapTransparencyParam() {
   const params = getURLSearchParams();
   return Number(params.get(MAP_TRANSPARENCY_URL_PARAM));
+}
+
+export function getAttribute() {
+  const params = getURLSearchParams();
+  const attributeKey = params.get(ATTRIBUTE_KEY_PARAM);
+  const attributeValue = params.get(ATTRIBUTE_VALUE_PARAM);
+  if (!attributeKey || !attributeValue) {
+    return undefined;
+  }
+  return {attributeKey, attributeValue};
 }

@@ -36,11 +36,12 @@ export function createIonGeoJSONFromConfig(viewer, config) {
     });
 }
 
-export function create3DTilesetFromConfig(viewer, config) {
+export function create3DTilesetFromConfig(viewer, config, tileLoadCallback) {
   const tileset = new Cesium3DTileset({
     url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
     show: !!config.visible,
     backFaceCulling: false,
+    maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16 // 16 - default value
   });
 
   if (config.style) {
@@ -72,6 +73,9 @@ export function create3DTilesetFromConfig(viewer, config) {
     config.setTransparency(!isNaN(config.transparency) ? config.transparency : 0);
   }
 
+  if (tileLoadCallback) {
+    const removeTileLoadListener = tileset.tileLoad.addEventListener(tile => tileLoadCallback(tile, removeTileLoadListener));
+  }
 
   tileset.readyPromise.then(() => {
     if (config.propsOrder) {
@@ -116,14 +120,14 @@ export function createSwisstopoWMTSImageryLayer(viewer, config) {
 }
 
 
-export function createCesiumObject(viewer, config) {
+export function createCesiumObject(viewer, config, tileLoadCallback) {
   const factories = {
     [LAYER_TYPES.ionGeoJSON]: createIonGeoJSONFromConfig,
     [LAYER_TYPES.tiles3d]: create3DTilesetFromConfig,
     [LAYER_TYPES.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
     [LAYER_TYPES.earthquakes]: createEarthquakeFromConfig,
   };
-  return factories[config.type](viewer, config);
+  return factories[config.type](viewer, config, tileLoadCallback);
 }
 
 function styleColorParser(style) {
