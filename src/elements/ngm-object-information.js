@@ -42,7 +42,7 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
         <tbody>
           ${Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => html`
             <tr class="top aligned">
-              <td class="key">${key}</td>
+              <td class="key">${i18next.t(`assets:${key}`)}</td>
               <td class="val">${value}</td>
             </tr>
           `)}

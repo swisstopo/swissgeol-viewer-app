@@ -16,13 +16,22 @@ class NgmGstModal extends I18nMixin(LitElement) {
 
   updated() {
     if (this.imageUrl) {
-      const element = $('.ngm-gst-modal.ui.modal').modal({
-        centered: false,
-        onHidden: () => this.imageUrl = null,
-        onApprove: () => window.open(this.imageUrl, '_blank')
-      });
-      element.modal('show');
+      if (!this.element) {
+        this.element = $('.ngm-gst-modal.ui.modal').modal({
+          centered: false,
+          onHidden: () => this.imageUrl = null,
+          onApprove: () => window.open(this.imageUrl, '_blank')
+        });
+      }
+      this.element.modal('show');
     }
+  }
+
+  get getOutputType() {
+    if (!this.imageUrl) return '';
+    const splitedUrl = this.imageUrl.split('.');
+    const extension = splitedUrl[splitedUrl.length - 1];
+    return extension.toUpperCase();
   }
 
   render() {
@@ -38,7 +47,7 @@ class NgmGstModal extends I18nMixin(LitElement) {
           </div>
           <div class="ui ok green small labeled icon button">
             <i class="download icon"></i>
-            ${i18next.t('Download PDF')}
+            ${i18next.t('download_section_output')} ${this.getOutputType}
           </div>
         </div>
       </div>

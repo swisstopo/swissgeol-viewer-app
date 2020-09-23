@@ -1,11 +1,11 @@
 import {LitElement, html} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
-import '../areaOfInterest/AreaOfInterestDrawer.js';
+import '../toolbox/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
-import './ngm-gst-interaction.js';
-import {LAYER_TYPES, DEFAULT_LAYER_TRANSPARENCY, defaultLayerTree} from '../constants.js';
+import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants.js';
+import defaultLayerTree from '../layertree.js';
 import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
@@ -15,8 +15,7 @@ import './ngm-map-configuration.js';
 import QueryManager from '../query/QueryManager.js';
 
 const WELCOME_PANEL = 'welcome-panel';
-const DRAW_TOOL_GST = 'draw-tool-gst';
-const DRAW_TOOL_AOI = 'draw-tool-aoi';
+const TOOLBOX = 'ngm-toolbox';
 
 class LeftSideBar extends I18nMixin(LitElement) {
 
@@ -90,23 +89,13 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
       </div>
 
-      <div class="ui styled accordion" id="${DRAW_TOOL_AOI}">
+      <div class="ui styled accordion" id="${TOOLBOX}">
         <div class="title ngmmidgrey">
           <i class="dropdown icon"></i>
-          ${i18next.t('aoi_section_title')}
+          ${i18next.t('toolbox_title')}
         </div>
         <div class="content">
           <ngm-aoi-drawer .viewer=${this.viewer}></ngm-aoi-drawer>
-        </div>
-      </div>
-
-      <div class="ui styled accordion" id="${DRAW_TOOL_GST}">
-        <div class="title ngmmidgrey">
-          <i class="dropdown icon"></i>
-          ${i18next.t('gst_accordion_title')}
-        </div>
-        <div class="content">
-          <ngm-gst-interaction .viewer=${this.viewer}></ngm-gst-interaction>
         </div>
       </div>
 
@@ -320,34 +309,16 @@ class LeftSideBar extends I18nMixin(LitElement) {
         });
         break;
       }
-      case DRAW_TOOL_GST: {
+      case TOOLBOX: {
         accordion(element, {
-          onClosing: () => {
-            const aoiElement = this.querySelector('ngm-aoi-drawer');
-            aoiElement.setAreasClickable(true);
-            const gstElement = this.querySelector('ngm-gst-interaction');
-            gstElement.changeTool();
-            this.queryManager.enabled = true;
-          },
-          onOpening: () => {
-            const aoiElement = this.querySelector('ngm-aoi-drawer');
-            aoiElement.setAreasClickable(false);
-            $(`#${DRAW_TOOL_AOI}`).accordion('close', 0);
-            this.queryManager.enabled = false;
-          }
-        });
-        break;
-      }
-      case DRAW_TOOL_AOI: {
-        accordion(element, {
+          animateChildren: false,
           onClosing: () => {
             const aoiElement = this.querySelector('ngm-aoi-drawer');
             aoiElement.cancelDraw();
-            this.queryManager.enabled = true;
           },
           onOpening: () => {
-            $(`#${DRAW_TOOL_GST}`).accordion('close', 0);
-            this.queryManager.enabled = false;
+            const aoiElement = this.querySelector('ngm-aoi-drawer');
+            aoiElement.cancelDraw();
           }
         });
         break;

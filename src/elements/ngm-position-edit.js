@@ -2,11 +2,12 @@ import {LitElement, html} from 'lit-element';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/popup.js';
 import 'fomantic-ui-css/components/dropdown.js';
-import {degreesToLv95, lv95ToDegrees} from '../projection.js';
+import {lv95ToDegrees} from '../projection.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {I18nMixin} from '../i18n.js';
 import i18next from 'i18next';
+import {prepareCoordinatesForUi} from '../utils';
 
 class NgmPositionEdit extends I18nMixin(LitElement) {
 
@@ -34,7 +35,7 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
   }
 
   firstUpdated() {
-    $(this.querySelector('#ngm-coord-type-select')).dropdown({
+    $(this.querySelector('.ngm-coord-type-select')).dropdown({
       onChange: value => {
         this.coordsType = value;
         this.coordsStep = value === 'lv95' ? 100 : 0.001;
@@ -73,28 +74,18 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
   }
 
   updateInputValues() {
-    const position = this.scene.camera.positionCartographic;
-    const lon = CesiumMath.toDegrees(position.longitude);
-    const lat = CesiumMath.toDegrees(position.latitude);
-    if (this.coordsType === 'lv95') {
-      const coords = degreesToLv95([lon, lat]);
-      this.xValue = Math.round(coords[0]);
-      this.yValue = Math.round(coords[1]);
-    } else {
-      this.xValue = Number(lon.toFixed(6));
-      this.yValue = Number(lat.toFixed(6));
-    }
-    let altitude = this.scene.globe.getHeight(position);
-    altitude = altitude ? altitude : 0;
-    this.heightValue = Math.round(position.height - altitude);
+    const coordinates = prepareCoordinatesForUi(this.scene, this.scene.camera.positionCartographic, this.coordsType);
+    this.xValue = coordinates.x;
+    this.yValue = coordinates.y;
+    this.heightValue = coordinates.height;
     this.angleValue = Math.round(CesiumMath.toDegrees(this.scene.camera.heading));
     this.tiltValue = Math.round(CesiumMath.toDegrees(this.scene.camera.pitch));
   }
 
   onPositionChange() {
-    this.xValue = Number(this.querySelector('#ngm-coord-x-input').value);
-    this.yValue = Number(this.querySelector('#ngm-coord-y-input').value);
-    this.heightValue = Number(this.querySelector('#ngm-height-input').value);
+    this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
+    this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
+    this.heightValue = Number(this.querySelector('.ngm-height-input').value);
     let altitude = this.scene.globe.getHeight(this.scene.camera.positionCartographic);
     altitude = altitude ? altitude : 0;
     let lon = this.xValue;
@@ -110,7 +101,7 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
   }
 
   onViewChange(event) {
-    if (event.target.id === 'ngm-angle-input') {
+    if (event.target.classList.contains('ngm-angle-input')) {
       this.angleValue = Number(event.target.value);
     } else {
       this.tiltValue = Number(event.target.value);
@@ -131,17 +122,17 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
             <label>${i18next.t('coordinates')}:</label>
             <div class="ngm-coord-input">
                 <div class="ui mini right labeled input">
-                    <div id="ngm-coord-type-select" class="ui mini dropdown label">
+                    <div class="ui mini dropdown label ngm-coord-type-select">
                           <div class="text"></div>
                           <i class="dropdown icon"></i>
                     </div>
-                    <input type="number" id="ngm-coord-x-input"
+                    <input type="number" class="ngm-coord-x-input"
                         .step="${this.coordsStep}"
                         .value="${this.xValue}"
                         @change="${this.onPositionChange}">
                 </div>
                 <div class="ui mini left action input">
-                    <input type="number" id="ngm-coord-y-input"
+                    <input type="number" class="ngm-coord-y-input"
                         .step="${this.coordsStep}"
                         .value="${this.yValue}"
                         @change="${this.onPositionChange}">
@@ -152,22 +143,22 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
             <div>
                 <label>${i18next.t('camera_height')}:</label>
                 <div class="ui mini input right labeled">
-                    <input type="number" step="10" id="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
-                    <label for="ngm-height-input" class="ui label">m</label>
+                    <input type="number" step="10" class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
+                    <label class="ui label">m</label>
                 </div>
             </div>
             <div>
                 <label>${i18next.t('view_angle')}:</label>
                 <div class="ui mini input right labeled">
-                    <input type="number" id="ngm-angle-input" .value="${this.angleValue}" @change="${this.onViewChange}">
-                    <label for="ngm-angle-input" class="ui label">°</label>
+                    <input type="number" class="ngm-angle-input" .value="${this.angleValue}" @change="${this.onViewChange}">
+                    <label class="ui label">°</label>
                 </div>
             </div>
             <div>
                 <label>${i18next.t('view_tilt')}:</label>
                 <div class="ui mini input right labeled">
-                    <input type="number" id="ngm-tilt-input" .value="${this.tiltValue}" @change="${this.onViewChange}">
-                    <label for="ngm-tilt-input" class="ui label">°</label>
+                    <input type="number" class="ngm-tilt-input" .value="${this.tiltValue}" @change="${this.onViewChange}">
+                    <label class="ui label">°</label>
                 </div>
             </div>
         </div>

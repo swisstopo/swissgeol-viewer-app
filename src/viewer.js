@@ -93,7 +93,7 @@ export function setupViewer(container) {
   let terrainUrl;
   const ownTerrain = searchParams.get('ownterrain') !== 'false';
   if (ownTerrain) {
-    terrainUrl = 'https://terrain100.geo.admin.ch/1.0.0/ch.swisstopo.terrain.3d';
+    terrainUrl = 'https://3d.geo.admin.ch/1.0.0/ch.swisstopo.terrain.3d/default/20200520/4326/';
   } else {
     terrainUrl = IonResource.fromAssetId(1);
   }

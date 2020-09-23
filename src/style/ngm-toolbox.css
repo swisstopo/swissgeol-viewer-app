@@ -1,0 +1,81 @@
+.ngm-help-btn.ui.button {
+  width: 0;
+  padding: 0;
+}
+
+.ngm-help-btn.ui.button > i.icon {
+  margin: 0 !important;
+}
+
+.ngm-aoi-tooltip-container [data-tooltip]:after {
+  width: 250px;
+  text-align: center;
+  white-space: normal;
+}
+
+.ngm-aoi-title {
+  white-space: nowrap;
+  font-weight: normal;
+}
+
+.ui.accordion.ngm-aoi-areas {
+  margin: 0;
+}
+
+.ui.accordion.ngm-aoi-areas .title {
+  display: flex;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+}
+
+.ngm-aoi-content .ui.buttons {
+  width: 90%;
+  margin-bottom: 5px;
+}
+
+.ngm-aoi-buttons.ui.buttons {
+  margin-bottom: 5px;
+}
+
+.ngm-aoi-buttons.ui.buttons > button {
+  flex: 1
+}
+
+.ngm-aoi-content {
+  padding: 10px 0 0 0 !important;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f3f3f3;
+}
+
+.ngm-btns-field,
+ngm-gst-interaction {
+  width: 100%;
+}
+
+.ngm-btns-field,
+.ngm-gst-btns-container {
+  display: flex;
+  justify-content: center;
+  margin: 5px 0;
+}
+
+.ngm-volume-limits-input {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.ngm-aoi-edit {
+  padding: 0 10px 10px 10px;
+  background-color: #f3f3f3;
+}
+
+.ngm-aoi-edit .ui.buttons button.ui.button {
+  background-color: white;
+}
+
+.ngm-aoi-edit input {
+  width: 85px;
+}
+

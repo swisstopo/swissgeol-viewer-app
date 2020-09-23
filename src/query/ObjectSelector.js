@@ -75,7 +75,6 @@ export default class ObjectSelector {
       attributes = {...attributes, name: entity.name};
       const aoiElement = document.querySelector('ngm-aoi-drawer');
       attributes = aoiElement.getInfoProps(attributes);
-      attributes.zoom = () => aoiElement.flyToArea(entity.id);
     } else if (earthquakesDataSource.entities.contains(entity)) {
       this.toggleEarthquakeHighlight(entity);
     }

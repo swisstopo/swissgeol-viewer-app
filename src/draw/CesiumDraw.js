@@ -4,12 +4,16 @@ import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import Color from 'cesium/Source/Core/Color';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartographic from 'cesium/Source/Core/Cartographic';
+import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
+import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
 import {getDimensionLabel} from './helpers.js';
 import {getMeasurements} from '../utils.js';
+import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 
 /**
  * @typedef {"point" | "line" | "polygon" | "rectangle"} ShapeType
@@ -34,6 +38,9 @@ export class CesiumDraw extends EventTarget {
     this.viewer_ = viewer;
     this.type = type;
 
+    this.drawingDataSource = new CustomDataSource('drawing');
+    this.viewer_.dataSources.add(this.drawingDataSource);
+
     this.strokeColor_ = options.strokeColor instanceof Color ?
       options.strokeColor : Color.fromCssColorString(options.strokeColor || 'rgba(0, 153, 255, 0.75)');
     this.strokeWidth_ = options.strokeWidth !== undefined ? options.strokeWidth : 4;
@@ -48,6 +55,10 @@ export class CesiumDraw extends EventTarget {
     this.sketchLine_ = undefined;
     this.activeDistance_ = 0;
     this.activeDistances_ = [];
+    this.entityForEdit = undefined;
+    this.leftPressed = false;
+    this.moveEntity = false;
+    this.sketchPoints_ = [];
 
     this.entities_ = [];
 
@@ -68,9 +79,13 @@ export class CesiumDraw extends EventTarget {
     if (value) {
       if (!this.eventHandler_) {
         this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
-        this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
+        if (this.entityForEdit) {
+          this.activateEditing();
+        } else {
+          this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
+          this.eventHandler_.setInputAction(this.onDoubleClick_.bind(this), ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+        }
         this.eventHandler_.setInputAction(this.onMouseMove_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
-        this.eventHandler_.setInputAction(this.onDoubleClick_.bind(this), ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
       }
     } else {
       if (this.eventHandler_) {
@@ -79,6 +94,33 @@ export class CesiumDraw extends EventTarget {
       this.eventHandler_ = undefined;
     }
     this.dispatchEvent(new CustomEvent('statechanged'));
+  }
+
+  activateEditing() {
+    this.eventHandler_.setInputAction(event => this.onLeftDown_(event), ScreenSpaceEventType.LEFT_DOWN);
+    this.eventHandler_.setInputAction(event => this.onLeftUp_(event), ScreenSpaceEventType.LEFT_UP);
+    let positions = [];
+    switch (this.type) {
+      case 'line':
+        positions = [...this.entityForEdit.polyline.positions.getValue()];
+        break;
+      case 'polygon':
+        positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
+        break;
+      case 'rectangle':
+        positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
+        positions.pop();
+        break;
+      default:
+        break;
+    }
+    positions.forEach((p, idx) => {
+      this.activePoints_.push(p);
+      const sketchPoint = this.createSketchPoint_(p, {edit: true, positionIndex: idx});
+      sketchPoint.properties.index = idx;
+      this.sketchPoints_.push(sketchPoint);
+    });
+    this.viewer_.scene.requestRender();
   }
 
   /**
@@ -123,9 +165,7 @@ export class CesiumDraw extends EventTarget {
   }
 
   removeSketches() {
-    this.viewer_.entities.remove(this.sketchPoint_);
-    this.viewer_.entities.remove(this.sketchLine_);
-    this.viewer_.entities.remove(this.activeEntity_);
+    this.drawingDataSource.entities.removeAll();
 
     this.activePoints_ = [];
     this.activePoint_ = undefined;
@@ -134,6 +174,10 @@ export class CesiumDraw extends EventTarget {
     this.sketchLine_ = undefined;
     this.activeDistance_ = 0;
     this.activeDistances_ = [];
+    this.entityForEdit = undefined;
+    this.leftPressed = false;
+    this.moveEntity = false;
+    this.sketchPoints_ = [];
   }
 
   /**
@@ -141,23 +185,47 @@ export class CesiumDraw extends EventTarget {
    */
   clear() {
     this.removeSketches();
-    this.entities_.forEach(entity => this.viewer_.entities.remove(entity));
   }
 
-  drawSketchPoint_(position) {
-    return this.viewer_.entities.add({
+  createSketchPoint_(position, options = {}) {
+    const entity = {
       position: position,
       point: {
         color: Color.WHITE,
-        pixelSize: 6,
+        outlineWidth: 1,
+        outlineColor: Color.BLACK,
+        pixelSize: options.edit ? 7 : 5,
         heightReference: HeightReference.CLAMP_TO_GROUND
       },
-      label: getDimensionLabel(this.type, this.activeDistances_)
-    });
+      properties: {}
+    };
+    if (options.edit) {
+      entity.point.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+    } else {
+      entity.label = getDimensionLabel(this.type, this.activeDistances_);
+    }
+    const pointEntity = this.drawingDataSource.entities.add(entity);
+    if (options.edit && this.type === 'rectangle') {
+      const isLastPoint = options.positionIndex === 2; // always 3 points for rectangle
+      const billboard = {
+        position: new CallbackProperty(() => pointEntity.position.getValue(new Date()), false),
+        billboard: {
+          image: isLastPoint ? '../images/move-edit-icon.svg' : '../images/edit-icons.svg',
+          scale: isLastPoint ? 0.06 : 0.2,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          horizontalOrigin: HorizontalOrigin.LEFT,
+          verticalOrigin: VerticalOrigin.BOTTOM,
+          pixelOffset: new Cartesian2(10, -10)
+        }
+      };
+      this.drawingDataSource.entities.add(billboard);
+    }
+
+    return pointEntity;
   }
 
-  drawSketchLine_(positions) {
-    return this.viewer_.entities.add({
+  createSketchLine_(positions) {
+    return this.drawingDataSource.entities.add({
       polyline: {
         positions: positions,
         clampToGround: true,
@@ -169,7 +237,7 @@ export class CesiumDraw extends EventTarget {
 
   drawShape_(positions) {
     if (this.type === 'point') {
-      return this.viewer_.entities.add({
+      return this.drawingDataSource.entities.add({
         position: positions,
         point: {
           color: this.fillColor_,
@@ -181,7 +249,7 @@ export class CesiumDraw extends EventTarget {
       });
 
     } else if (this.type === 'line') {
-      return this.viewer_.entities.add({
+      return this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polyline: {
           positions: positions,
@@ -192,7 +260,7 @@ export class CesiumDraw extends EventTarget {
         label: getDimensionLabel(this.type, this.activeDistances_)
       });
     } else if (this.type === 'polygon' || this.type === 'rectangle') {
-      return this.viewer_.entities.add({
+      return this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polygon: {
           hierarchy: positions,
@@ -248,10 +316,10 @@ export class CesiumDraw extends EventTarget {
     if (position) {
       if (!this.sketchPoint_) {
         this.dispatchEvent(new CustomEvent('drawstart'));
-        this.sketchPoint_ = this.drawSketchPoint_(position);
+        this.sketchPoint_ = this.createSketchPoint_(position);
         this.activePoint_ = position;
 
-        this.sketchLine_ = this.drawSketchLine_(this.dynamicSketLinePositions());
+        this.sketchLine_ = this.createSketchLine_(this.dynamicSketLinePositions());
 
         if (this.type === 'point') {
           this.activePoints_.push(position);
@@ -269,12 +337,32 @@ export class CesiumDraw extends EventTarget {
   }
 
   onMouseMove_(event) {
-    if (this.sketchPoint_) {
-      const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
-      if (position) {
-        this.activePoint_ = position;
-        this.updateSketchPoint();
+    const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
+    if (!position) return;
+    if (this.entityForEdit && this.leftPressed) {
+      if (this.moveEntity) {
+        if (this.type === 'point') {
+          this.entityForEdit.position = position;
+        } else {
+          this.sketchPoint_.position = position;
+          this.activePoints_[this.sketchPoint_.properties.index] = position;
+          if (this.type === 'line') {
+            this.entityForEdit.polyline.positions = this.activePoints_;
+          } else {
+            let positions = this.activePoints_;
+            if (this.type === 'rectangle') {
+              positions = rectanglify(this.activePoints_);
+              this.sketchPoints_.forEach((sp, key) => {
+                sp.position = positions[key];
+              });
+            }
+            this.entityForEdit.polygon.hierarchy = {positions};
+          }
+        }
       }
+    } else if (this.sketchPoint_) {
+      this.activePoint_ = position;
+      this.updateSketchPoint();
     }
   }
 
@@ -283,6 +371,38 @@ export class CesiumDraw extends EventTarget {
       this.activeDistances_.push(this.activeDistance_);
     }
     this.finishDrawing();
+  }
+
+  /**
+   * Enables moving of point geometry or one of the sketch points for other geometries if left mouse button pressed on it
+   * @param event
+   * @private
+   */
+  onLeftDown_(event) {
+    this.leftPressed = true;
+    if (this.entityForEdit) {
+      const objects = this.viewer_.scene.drillPick(event.position, 5, 5, 5);
+      if (objects.length) {
+        const selectedPoint = objects.find(obj => !!obj.id.point);
+        if (!selectedPoint) return;
+        const selectedEntity = selectedPoint.id;
+        this.sketchPoint_ = selectedEntity;
+        this.moveEntity = selectedEntity.id === this.entityForEdit.id ||
+          this.sketchPoints_.some(sp => sp.id === selectedEntity.id); // checks if picked entity is point geometry or one of the sketch points for other geometries
+      }
+      if (this.moveEntity) {
+        this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
+      }
+    }
+    this.dispatchEvent(new CustomEvent('leftdown'));
+  }
+
+  onLeftUp_() {
+    this.viewer_.scene.screenSpaceCameraController.enableInputs = true;
+    this.moveEntity = false;
+    this.leftPressed = false;
+    this.sketchPoint_ = undefined;
+    this.dispatchEvent(new CustomEvent('leftup'));
   }
 }
 
@@ -315,8 +435,8 @@ function rectanglify(coordinates) {
 
     const AM = Cartesian3.projectVector(AC, AB, scratchAM);
 
-    const AP = Cartesian3.subtract(C, AM, scratchAP);
-    const BP = Cartesian3.add(AP, AB, scratchBP);
+    const AP = Cartesian3.subtract(C, AM, scratchAP).clone();
+    const BP = Cartesian3.add(AP, AB, scratchBP).clone();
 
     // FIXME: better memory management
     return [A, B, BP, AP];

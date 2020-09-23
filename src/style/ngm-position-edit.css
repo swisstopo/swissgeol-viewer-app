@@ -10,19 +10,19 @@
   margin-right: 2px;
 }
 
-#ngm-position-edit-popup {
+.ngm-position-edit-popup {
   min-width: 310px;
 }
 
-#ngm-position-edit-popup input {
+.ngm-position-edit-popup input {
   width: 110px;
 }
 
-input#ngm-height-input {
+input.ngm-height-input {
   width: 80px;
 }
 
-input#ngm-angle-input, input#ngm-tilt-input {
+input.ngm-angle-input, input.ngm-tilt-input {
   width: 60px;
 }
 
