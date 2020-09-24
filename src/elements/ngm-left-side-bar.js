@@ -396,7 +396,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
             } else {
               eventHandler.destroy();
               if (triesCounter > maxTries) {
-                showWarning(i18next.t('dtd_layer_on_coordinates_not_found_warning'));
+                showWarning(i18next.t('dtd_object_on_coordinates_not_found_warning'));
               }
             }
           }, 500);
