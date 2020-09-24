@@ -31,7 +31,6 @@ import './elements/ngm-slow-loading.js';
 import './elements/ngm-full-screen-view.js';
 import {LocalStorageController} from './LocalStorageController.js';
 import {getZoomToPosition} from './permalink';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
 
 initSentry();
