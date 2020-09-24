@@ -17,7 +17,7 @@ import {getZoomToPosition} from '../permalink';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import BoundingSphere from "cesium/Source/Core/BoundingSphere";
+import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 
 const WELCOME_PANEL = 'welcome-panel';
 const TOOLBOX = 'ngm-toolbox';
