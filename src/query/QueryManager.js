@@ -68,8 +68,12 @@ export default class QueryManager {
       objectInfo.opened = false;
       return;
     }
-    const pickedPosition = this.scene.pickPosition(click.position);
-    let attributes = this.objectSelector.pickAttributes(click.position, pickedPosition);
+    await this.pickObject(click.position);
+  }
+
+  async pickObject(position) {
+    const pickedPosition = this.scene.pickPosition(position);
+    let attributes = this.objectSelector.pickAttributes(position, pickedPosition);
 
     const layers = 'ch.swisstopo.geologie-geocover';
     // we only search the remote Swisstopo service when there was no result for the local search
@@ -167,6 +171,7 @@ export default class QueryManager {
     const x = feature.getProperty('XCOORD');
     const y = feature.getProperty('YCOORD');
     const z = feature.getProperty('ZCOORDB');
+    if (!x || !y || !z) return; // boreholes only solution for now
     const coords = lv95ToDegrees([x, y]);
     const cartographicCoords = Cartographic.fromDegrees(coords[0], coords[1], z);
     const position = Cartographic.toCartesian(cartographicCoords);

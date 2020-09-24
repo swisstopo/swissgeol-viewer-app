@@ -9,7 +9,7 @@ import {
   ASSET_IDS_URL_PARAM,
   MAP_URL_PARAM,
   MAP_TRANSPARENCY_URL_PARAM,
-  ATTRIBUTE_KEY_PARAM, ATTRIBUTE_VALUE_PARAM
+  ATTRIBUTE_KEY_PARAM, ATTRIBUTE_VALUE_PARAM, ZOOM_TO_PARAM
 } from './constants.js';
 
 export function getCameraView() {
@@ -147,4 +147,14 @@ export function getAttribute() {
     return undefined;
   }
   return {attributeKey, attributeValue};
+}
+
+export function getZoomToPosition() {
+  const params = getURLSearchParams();
+  const tilePosition = params.get(ZOOM_TO_PARAM);
+  const position = safeSplit(tilePosition);
+  if (!position || position.length < 3) {
+    return undefined;
+  }
+  return {longitude: Number(position[0]), latitude: Number(position[1]), height: Number(position[2])};
 }

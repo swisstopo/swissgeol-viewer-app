@@ -4,7 +4,7 @@ import '../toolbox/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
-import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants.js';
+import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES, OBJECT_ZOOMTO_RADIUS} from '../constants.js';
 import defaultLayerTree from '../layertree.js';
 import {getLayerParams, syncLayersParam, getAssetIds, getAttribute} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
@@ -13,6 +13,11 @@ import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 import './ngm-map-configuration.js';
 import QueryManager from '../query/QueryManager.js';
+import {getZoomToPosition} from '../permalink';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
+import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
+import BoundingSphere from "cesium/Source/Core/BoundingSphere";
 
 const WELCOME_PANEL = 'welcome-panel';
 const TOOLBOX = 'ngm-toolbox';
@@ -359,6 +364,23 @@ class LeftSideBar extends I18nMixin(LitElement) {
     }
 
     this.accordionInited = true;
+  }
+
+  zoomToPermalinkObject() {
+    const zoomToPosition = getZoomToPosition();
+    if (zoomToPosition) {
+      const cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height);
+      const windowPosition = SceneTransforms.wgs84ToWindowCoordinates(this.viewer.scene, cartesianPosition);
+      const boundingSphere = new BoundingSphere(cartesianPosition, OBJECT_ZOOMTO_RADIUS);
+      const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
+      this.viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
+        duration: 0,
+        offset: zoomHeadingPitchRange
+      });
+      if (windowPosition) {
+        this.queryManager.pickObject(windowPosition);
+      }
+    }
   }
 
   createRenderRoot() {

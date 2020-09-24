@@ -30,11 +30,13 @@ export default class ObjectSelector {
 
   pickAttributes(clickPosition, pickedPosition, object) {
     this.unhighlight();
-    const objects = object ? [object] : this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
     let attributes = null;
+    if (!object) {
+      const objects = this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
+      object = objects[0];
+    }
 
-    if (objects.length > 0) {
-      const object = objects[0];
+    if (object) {
       if (!isPickable(object)) {
         return;
       }

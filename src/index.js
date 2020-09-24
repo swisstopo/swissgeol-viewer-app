@@ -128,6 +128,8 @@ const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
       const reviewWindowElement = document.querySelector('ngm-review-window');
       reviewWindowElement.hideReviewWindow = localStorageController.hideReviewWindowValue;
       reviewWindowElement.addEventListener('review_window_changed', localStorageController.updateReviewWindowState);
+
+      sideBar.zoomToPermalinkObject();
     });
   }
 });
