@@ -47,14 +47,11 @@ class CesiumMinimap extends LitElement {
     super();
     this.unlistenPostRender = null;
     this.expanded = true;
+
+    this.moveMarker = false;
   }
 
-  updated() {
-    if (this.scene && !this.unlistenPostRender) {
-      this.unlistenPostRender = this.scene.postRender.addEventListener(() => {
-        this.updateFromCamera();
-      });
-    }
+  firstUpdated() {
     this.addEventListener('mousemove', (evt) => {
       if (this.moveMarker) {
         this.moveCamera(evt.x, evt.y);
@@ -69,6 +66,14 @@ class CesiumMinimap extends LitElement {
     });
     this.addEventListener('mouseup', () => this.moveMarker = false);
     this.addEventListener('mouseout', () => this.moveMarker = false);
+  }
+
+  updated() {
+    if (this.scene && !this.unlistenPostRender) {
+      this.unlistenPostRender = this.scene.postRender.addEventListener(() => {
+        this.updateFromCamera();
+      });
+    }
   }
 
   disconnectedCallback() {
