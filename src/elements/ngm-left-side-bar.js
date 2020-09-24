@@ -4,7 +4,7 @@ import '../toolbox/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
-import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES, OBJECT_ZOOMTO_RADIUS} from '../constants.js';
+import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants.js';
 import defaultLayerTree from '../layertree.js';
 import {getLayerParams, syncLayersParam, getAssetIds, getAttribute} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
@@ -18,6 +18,9 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
+import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import {showWarning} from '../message';
 
 const WELCOME_PANEL = 'welcome-panel';
 const TOOLBOX = 'ngm-toolbox';
@@ -369,18 +372,50 @@ class LeftSideBar extends I18nMixin(LitElement) {
   zoomToPermalinkObject() {
     const zoomToPosition = getZoomToPosition();
     if (zoomToPosition) {
-      const cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height);
-      const windowPosition = SceneTransforms.wgs84ToWindowCoordinates(this.viewer.scene, cartesianPosition);
-      const boundingSphere = new BoundingSphere(cartesianPosition, OBJECT_ZOOMTO_RADIUS);
-      const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
-      this.viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
-        duration: 0,
-        offset: zoomHeadingPitchRange
-      });
-      if (windowPosition) {
-        this.queryManager.pickObject(windowPosition);
-      }
+      let altitude = this.viewer.scene.globe.getHeight(this.viewer.scene.camera.positionCartographic) || 0;
+      const cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height + altitude);
+      const completeCallback = () => {
+        const windowPosition = SceneTransforms.wgs84ToWindowCoordinates(this.viewer.scene, cartesianPosition);
+        if (windowPosition) {
+          let maxTries = 25;
+          let triesCounter = 0;
+          const eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+          eventHandler.setInputAction(event => maxTries = 0, ScreenSpaceEventType.LEFT_DOWN);
+          // Waits while will be possible to select an object
+          const tryToSelect = () => setTimeout(() => {
+            const currentAltitude = this.viewer.scene.globe.getHeight(this.viewer.scene.camera.positionCartographic) || 0;
+            if (altitude !== currentAltitude) {
+              altitude = currentAltitude;
+              const cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height + altitude);
+              this.zoomToObjectCoordinates(cartesianPosition);
+            }
+            triesCounter += 1;
+            this.queryManager.pickObject(windowPosition);
+            if (!this.queryManager.objectSelector.selectedObj && triesCounter <= maxTries) {
+              tryToSelect();
+            } else {
+              eventHandler.destroy();
+              if (triesCounter > maxTries) {
+                showWarning(i18next.t('dtd_layer_on_coordinates_not_found_warning'));
+              }
+            }
+          }, 500);
+          tryToSelect();
+        }
+
+      };
+      this.zoomToObjectCoordinates(cartesianPosition, completeCallback);
     }
+  }
+
+  zoomToObjectCoordinates(center, complete) {
+    const boundingSphere = new BoundingSphere(center, 1000);
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
+    this.viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
+      duration: 0,
+      offset: zoomHeadingPitchRange,
+      complete: complete
+    });
   }
 
   createRenderRoot() {

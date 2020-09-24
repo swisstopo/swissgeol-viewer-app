@@ -17,6 +17,7 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 
 import Auth from './auth.js';
+
 Auth.initialize();
 
 import './elements/ngm-auth.js';
@@ -29,6 +30,8 @@ import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
 import './elements/ngm-full-screen-view.js';
 import {LocalStorageController} from './LocalStorageController.js';
+import {getZoomToPosition} from './permalink';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
 
 initSentry();
@@ -135,11 +138,14 @@ const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
 });
 
 const {destination, orientation} = getCameraView();
-viewer.camera.flyTo({
-  destination: destination || DEFAULT_VIEW.destination,
-  orientation: orientation || DEFAULT_VIEW.orientation,
-  duration: 0
-});
+const zoomToPosition = getZoomToPosition();
+if (!zoomToPosition) {
+  viewer.camera.flyTo({
+    destination: destination || DEFAULT_VIEW.destination,
+    orientation: orientation || DEFAULT_VIEW.orientation,
+    duration: 0
+  });
+}
 
 viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
