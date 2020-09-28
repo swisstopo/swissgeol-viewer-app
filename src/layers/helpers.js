@@ -15,7 +15,7 @@ import Matrix3 from 'cesium/Source/Core/Matrix3';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cesium3DTileColorBlendMode from 'cesium/Source/Scene/Cesium3DTileColorBlendMode';
 import Auth from '../auth.js';
-import CognitoResource from '../CognitoResource.js';
+import AmazonS3Resource from '../AmazonS3Resource.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -40,11 +40,10 @@ export function createIonGeoJSONFromConfig(viewer, config) {
 
 export function create3DTilesetFromConfig(viewer, config) {
   let resource;
-  if (config.restricted) {
-      // FIXME: getIdToken is probably not the one to use
-      resource = new CognitoResource({
-      url: config.url,
-      token: Auth.getIdToken(),
+  if (config.aws_s3_bucket && config.aws_s3_key) {
+    resource = new AmazonS3Resource({
+      bucket: config.aws_s3_bucket,
+      url: config.aws_s3_key,
     });
   } else if (config.url) {
     resource = config.url;
