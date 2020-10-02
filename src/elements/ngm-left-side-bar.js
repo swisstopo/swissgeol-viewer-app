@@ -6,13 +6,21 @@ import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
 import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants.js';
 import defaultLayerTree from '../layertree.js';
-import {getLayerParams, syncLayersParam, getAssetIds} from '../permalink.js';
+import {getLayerParams, syncLayersParam, getAssetIds, getAttribute} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 import './ngm-map-configuration.js';
 import QueryManager from '../query/QueryManager.js';
+import {getZoomToPosition} from '../permalink';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
+import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
+import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
+import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
+import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import {showWarning} from '../message';
 
 const WELCOME_PANEL = 'welcome-panel';
 const TOOLBOX = 'ngm-toolbox';
@@ -36,8 +44,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
     }
 
     this.queryManager.activeLayers = this.activeLayers
-    .filter(config => config.visible)
-    .map(config => config.layer);
+      .filter(config => config.visible)
+      .map(config => config.layer);
 
     return html`
       <div class="ui styled accordion" id="${WELCOME_PANEL}">
@@ -122,7 +130,11 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   initializeActiveLayers() {
-    const flatLayers = this.getFlatLayers(this.catalogLayers);
+    const attributeParams = getAttribute();
+    const callback = attributeParams ?
+      this.getTileLoadCallback(attributeParams.attributeKey, attributeParams.attributeValue) :
+      undefined;
+    const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
 
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
@@ -172,15 +184,34 @@ class LeftSideBar extends I18nMixin(LitElement) {
     syncLayersParam(this.activeLayers);
   }
 
+  getTileLoadCallback(attributeKey, attributeValue) {
+    return (tile, removeTileLoadListener) => {
+      const content = tile.content;
+      const featuresLength = content.featuresLength;
+      for (let i = 0; i < featuresLength; i++) {
+        const feature = content.getFeature(i);
+        if (feature.getProperty(attributeKey) === attributeValue) {
+          removeTileLoadListener();
+          this.searchedFeature = feature;
+          return;
+        }
+      }
+    };
+  }
+
   update(changedProperties) {
     if (this.viewer && !this.layerActions) {
       this.layerActions = new LayersActions(this.viewer);
       // Handle queries (local and Swisstopo)
       this.queryManager = new QueryManager(this.viewer);
+      if (!this.catalogLayers) {
+        this.catalogLayers = [...defaultLayerTree];
+        this.initializeActiveLayers();
+      }
     }
-    if (!this.catalogLayers) {
-      this.catalogLayers = [...defaultLayerTree];
-      this.initializeActiveLayers();
+    if (this.searchedFeature) {
+      this.queryManager.selectTile(this.searchedFeature);
+      this.searchedFeature = undefined;
     }
     super.update(changedProperties);
   }
@@ -242,19 +273,19 @@ class LeftSideBar extends I18nMixin(LitElement) {
     this.requestUpdate();
   }
 
-  getFlatLayers(tree) {
+  getFlatLayers(tree, tileLoadCallback) {
     const flat = [];
     for (const layer of tree) {
       if (layer.children) {
-        flat.push(...this.getFlatLayers(layer.children));
+        flat.push(...this.getFlatLayers(layer.children, tileLoadCallback));
       } else {
-        layer.load = () => layer.promise = createCesiumObject(this.viewer, layer);
+        layer.load = () =>
+          layer.promise = createCesiumObject(this.viewer, layer, tileLoadCallback);
         flat.push(layer);
       }
     }
     return flat;
   }
-
 
   // adds layer from search to 'Displayed Layers'
   addLayerFromSearch(searchLayer) {
@@ -336,6 +367,55 @@ class LeftSideBar extends I18nMixin(LitElement) {
     }
 
     this.accordionInited = true;
+  }
+
+  zoomToPermalinkObject() {
+    const zoomToPosition = getZoomToPosition();
+    if (zoomToPosition) {
+      let altitude = this.viewer.scene.globe.getHeight(this.viewer.scene.camera.positionCartographic) || 0;
+      const cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height + altitude);
+      const completeCallback = () => {
+        const windowPosition = SceneTransforms.wgs84ToWindowCoordinates(this.viewer.scene, cartesianPosition);
+        if (windowPosition) {
+          let maxTries = 25;
+          let triesCounter = 0;
+          const eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+          eventHandler.setInputAction(event => maxTries = 0, ScreenSpaceEventType.LEFT_DOWN);
+          // Waits while will be possible to select an object
+          const tryToSelect = () => setTimeout(() => {
+            const currentAltitude = this.viewer.scene.globe.getHeight(this.viewer.scene.camera.positionCartographic) || 0;
+            if (altitude !== currentAltitude) {
+              altitude = currentAltitude;
+              const cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height + altitude);
+              this.zoomToObjectCoordinates(cartesianPosition);
+            }
+            triesCounter += 1;
+            this.queryManager.pickObject(windowPosition);
+            if (!this.queryManager.objectSelector.selectedObj && triesCounter <= maxTries) {
+              tryToSelect();
+            } else {
+              eventHandler.destroy();
+              if (triesCounter > maxTries) {
+                showWarning(i18next.t('dtd_object_on_coordinates_not_found_warning'));
+              }
+            }
+          }, 500);
+          tryToSelect();
+        }
+
+      };
+      this.zoomToObjectCoordinates(cartesianPosition, completeCallback);
+    }
+  }
+
+  zoomToObjectCoordinates(center, complete) {
+    const boundingSphere = new BoundingSphere(center, 1000);
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
+    this.viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
+      duration: 0,
+      offset: zoomHeadingPitchRange,
+      complete: complete
+    });
   }
 
   createRenderRoot() {

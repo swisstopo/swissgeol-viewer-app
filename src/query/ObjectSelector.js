@@ -4,7 +4,7 @@ import {
   DRILL_PICK_LENGTH,
   DRILL_PICK_LIMIT,
   LAYER_TYPES,
-  OBJECT_HIGHLIGHT_COLOR
+  OBJECT_HIGHLIGHT_COLOR, OBJECT_ZOOMTO_RADIUS
 } from '../constants';
 import {extractEntitiesAttributes, extractPrimitiveAttributes, isPickable} from './objectInformation';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
@@ -28,13 +28,15 @@ export default class ObjectSelector {
   }
 
 
-  pickAttributes(clickPosition, pickedPosition) {
+  pickAttributes(clickPosition, pickedPosition, object) {
     this.unhighlight();
-    const objects = this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
     let attributes = null;
+    if (!object) {
+      const objects = this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
+      object = objects[0];
+    }
 
-    if (objects.length > 0) {
-      const object = objects[0];
+    if (object) {
       if (!isPickable(object)) {
         return;
       }
@@ -42,7 +44,7 @@ export default class ObjectSelector {
       if (object.getPropertyNames) {
         attributes = extractPrimitiveAttributes(object);
         attributes.zoom = () => {
-          const boundingSphere = new BoundingSphere(pickedPosition, 500);
+          const boundingSphere = new BoundingSphere(pickedPosition, OBJECT_ZOOMTO_RADIUS);
           const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
           this.scene.camera.flyToBoundingSphere(boundingSphere, {
             duration: 0,
