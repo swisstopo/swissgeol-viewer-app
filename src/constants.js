@@ -33,7 +33,8 @@ export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);
 export const HIGHLIGHTED_POINT_COLOR = Color.YELLOW;
 
 // list of not graphics entity.propertyNames
-export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'description', 'properties', 'viewForm', 'kml', 'polygon'];
+export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'description', 'properties', 'viewForm', 'kml'];
+export const CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD = ['polygon', 'polyline', 'point'];
 
 export const AOI_DATASOURCE_NAME = 'interestAreas';
 

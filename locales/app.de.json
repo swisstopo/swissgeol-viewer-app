@@ -108,6 +108,8 @@
   "subsurface_label": "Geometrie des Untergrundes",
   "swiss_buildings": "SwissBUILDINGS3D",
   "swissnames_label": "SwissNAMES3D",
+  "tbx_kml_area_existing_warning": "",
+  "tbx_kml_large_warning": "",
   "temperature_model_label": "Temperaturmodell Mittelland",
   "toolbox_title": "Werkzeuge",
   "top_bedrock_label": "Felsoberfläche",

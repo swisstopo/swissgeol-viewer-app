@@ -108,6 +108,8 @@
   "subsurface_label": "Géométrie du sous-sol",
   "swiss_buildings": "SwissBUILDINGS3D",
   "swissnames_label": "SwissNAMES3D",
+  "tbx_kml_area_existing_warning": "",
+  "tbx_kml_large_warning": "",
   "temperature_model_label": "Modèle de température du Plateau suisse",
   "toolbox_title": "Boîte à outils",
   "top_bedrock_label": "Toit du rocher",
