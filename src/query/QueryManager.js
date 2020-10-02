@@ -61,8 +61,9 @@ export default class QueryManager {
   async onclick(click) {
     this.unhighlight();
     const toolboxElement = document.querySelector('ngm-aoi-drawer');
+    const slicerElement = document.querySelector('ngm-slicer');
     toolboxElement.deselectArea();
-    if (!this.enabled || toolboxElement.drawState) {
+    if (!this.enabled || toolboxElement.drawState || slicerElement.slicer.active) {
       const objectInfo = document.querySelector('ngm-object-information');
       objectInfo.info = null;
       objectInfo.opened = false;
