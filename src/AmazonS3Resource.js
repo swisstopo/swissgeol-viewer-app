@@ -1,5 +1,8 @@
 import AWS from 'aws-sdk';
 import Resource from 'cesium/Source/Core/Resource';
+import RequestScheduler from 'cesium/Source/Core/RequestScheduler';
+import RequestState from 'cesium/Source/Core/RequestState';
+
 import Auth from './auth.js';
 
 
@@ -13,12 +16,26 @@ function keyFromUrl(val) {
   }
 }
 
+function checkAndResetRequest(request) {
+  if (request.state === RequestState.ISSUED || request.state === RequestState.ACTIVE) {
+    throw new Error("The Resource is already being fetched.");
+  }
+
+  request.state = RequestState.UNISSUED;
+  request.deferred = undefined;
+}
+
+
 export default class AmazonS3Resource extends Resource {
 
   constructor(options) {
     super(options);
 
     this.bucket = options.bucket;
+  }
+
+  get credits() {
+    return "hello world";
   }
 
   clone(result) {
@@ -42,37 +59,44 @@ export default class AmazonS3Resource extends Resource {
     return s3.getObject(options).promise();
   }
 
+  getSignedUrl(credentials) {
+    const options = {
+      Bucket: this.bucket,
+      Key: keyFromUrl(this.url),
+    };
+    const s3 = new AWS.S3({
+      credentials: credentials
+    });
+    return s3.getSignedUrl('getObject', options);
+  }
+
   _makeRequest(options) {
     Auth.updateAwsCredentialsWithToken(Auth.getIdToken());
     return new Promise((resolve, reject) => {
       AWS.config.credentials.get(err => {
-        return this.getObject(AWS.config.credentials)
-          .catch(err => reject(err))
-          .then(data => {
-            if (options.responseType === 'text') {
-              resolve(data.Body.toString());
-            } else if (options.responseType === 'arraybuffer') {
-              resolve(data.Body.buffer);
-            } else {
-              reject('Unknown responseType')
-            }
+        if (err) {
+          reject(err);
+        } else {
+          this.url = this.getSignedUrl(AWS.config.credentials);
+          super._makeRequest(options).then((value) => {
+            resolve(value);
           });
-        // const s3 = new AWS.S3({
-        //   credentials: AWS.config.credentials
-        // });
-        // // var url = s3.getSignedUrl('getObject', options);
-        // s3.getObject(options, (err, data) => {
-        //   if (err) {
-        //     reject(err);
-        //   } else {
-        //     console.log(this.url);
-        //     console.log(data.ContentType);
-        //     resolve(data.Body.toString());
-        //   }
-        // });
-
+          // resolve()
+          // return super._makeRequest(options);
+          // return this.getObject(AWS.config.credentials)
+          // .catch(err => reject(err))
+          // .then(data => {
+          //   const array = data.Body;
+          //   if (options.responseType === 'text') {
+          //     resolve(array.toString());
+          //   } else if (options.responseType === 'arraybuffer') {
+          //     resolve(array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset));
+          //   } else {
+          //     reject('Unknown responseType')
+          //   }
+          // });
+        }
       });
-
     });
   }
 }
