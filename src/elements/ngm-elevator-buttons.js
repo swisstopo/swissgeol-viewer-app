@@ -84,7 +84,7 @@ class NgmElevatorButtons extends I18nMixin(LitElement) {
       return html`
         <div class="ui vertical compact mini icon buttons">
           <button
-          data-tooltip=${i18next.t('up_btn')}
+          data-tooltip=${i18next.t('nav_up_btn_hint')}
           data-position="left center"
           data-variation="mini"
           class="ui button"
@@ -92,7 +92,7 @@ class NgmElevatorButtons extends I18nMixin(LitElement) {
             <i class="angle up icon"></i>
           </button>
           <button
-          data-tooltip=${i18next.t('down_btn')}
+          data-tooltip=${i18next.t('nav_down_btn_hint')}
           data-position="left center"
           data-variation="mini"
           class="ui button"

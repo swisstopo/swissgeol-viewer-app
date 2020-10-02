@@ -80,7 +80,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.addEventListener('statechanged', () => this.requestUpdate());
     this.draw_.addEventListener('drawerror', evt => {
       if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
-        showWarning(i18next.t('error_need_more_points'));
+        showWarning(i18next.t('tbx_error_need_more_points_warning'));
       }
     });
     this.draw_.addEventListener('leftdown', () => {
@@ -256,7 +256,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const file = evt.target ? evt.target.files[0] : null;
     if (file) {
       if (!file.name.toLowerCase().includes('.kml')) {
-        showWarning(i18next.t('unsupported_file_warning'));
+        showWarning(i18next.t('tbx_unsupported_file_warning'));
         evt.target.value = null;
         return;
       }
@@ -302,7 +302,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       });
 
       if (!atLeastOneValid) {
-        showWarning(i18next.t('unsupported_kml_warning'));
+        showWarning(i18next.t('tbx_unsupported_kml_warning'));
       } else {
         this.viewer.zoomTo(entities);
       }
@@ -348,15 +348,15 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   getInfoProps(props) {
     const attributes = {
-      [i18next.t('nameLabel')]: props.name,
+      [i18next.t('obj_info_name_label')]: props.name,
       zoom: () => this.flyToArea(props.id)
     };
     if (props.type === 'rectangle' || props.type === 'polygon') {
-      attributes[i18next.t('Area')] = `${props.area}km²`;
-      attributes[i18next.t('Perimeter')] = `${props.perimeter}km`;
-      attributes[i18next.t('numberOfSegments')] = props.numberOfSegments;
+      attributes[i18next.t('obj_info_area_label')] = `${props.area}km²`;
+      attributes[i18next.t('obj_info_perimeter_label')] = `${props.perimeter}km`;
+      attributes[i18next.t('obj_info_number_segments_label')] = props.obj_info_number_segments_label;
     } else if (props.type === 'line') {
-      attributes[i18next.t('Length')] = `${props.perimeter}km`;
+      attributes[i18next.t('obj_info_length_label')] = `${props.perimeter}km`;
     }
     return attributes;
   }
@@ -567,7 +567,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     entity.polylineVolume.show = true;
 
     if (showHint) {
-      showMessage(i18next.t('volume_hint_text'));
+      showMessage(i18next.t('tbx_volume_hint'));
     }
   }
 

@@ -84,7 +84,7 @@ class NgmFeatureHeight extends I18nMixin(LitElement) {
   render() {
     if (this.height !== undefined) {
       return html`
-        ${i18next.t('Object height')}: ${this.integerFormat.format(this.height)} m
+        ${i18next.t('nav_object_height_label')}: ${this.integerFormat.format(this.height)} m
       `;
     } else {
       return html``;

@@ -111,7 +111,7 @@ const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
           position: 'bottom right',
           classActions: 'basic left',
           actions: [{
-            text: i18next.t('ok_btn_label'),
+            text: i18next.t('sentry_ok_btn_label'),
             click: localStorageController.saveSentryConfirmation
           }]
         };

@@ -25,11 +25,11 @@ class NgmReviewWindow extends I18nMixin(LitElement) {
         <div class="ui inverted accordion">
           <div class="title ${!this.hideReviewWindow ? 'active' : ''}">
             <i class="dropdown icon"></i>
-            ${i18next.t('review_link')}
+            ${i18next.t('header_review_link')}
           </div>
           <div class="content ${!this.hideReviewWindow ? 'active' : ''}">
             <p>${i18next.t('review_window_text')}</p>
-            <a href="https://findmind.ch/c/XmNb9jKz2w" target="_blank">${i18next.t('review_link')}</a>
+            <a href="https://findmind.ch/c/XmNb9jKz2w" target="_blank">${i18next.t('header_review_link')}</a>
           </div>
         </div>
       </div>

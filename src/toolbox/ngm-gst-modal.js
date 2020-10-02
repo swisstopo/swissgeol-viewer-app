@@ -43,11 +43,11 @@ class NgmGstModal extends I18nMixin(LitElement) {
         <div class="actions">
           <div class="ui cancel small labeled icon button">
             <i class="remove icon"></i>
-            ${i18next.t('Close')}
+            ${i18next.t('tbx_gst_close_label')}
           </div>
           <div class="ui ok green small labeled icon button">
             <i class="download icon"></i>
-            ${i18next.t('download_section_output')} ${this.getOutputType}
+            ${i18next.t('tbx_download_section_output_label')} ${this.getOutputType}
           </div>
         </div>
       </div>

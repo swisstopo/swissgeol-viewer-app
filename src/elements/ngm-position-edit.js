@@ -119,7 +119,7 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
     return html`
     <div id="ngm-position-edit-popup" class="ui custom popup">
         <div>
-            <label>${i18next.t('coordinates')}:</label>
+            <label>${i18next.t('nav_coordinates_label')}:</label>
             <div class="ngm-coord-input">
                 <div class="ui mini right labeled input">
                     <div class="ui mini dropdown label ngm-coord-type-select">
@@ -141,21 +141,21 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
         </div>
         <div class="ngm-angle-height-input">
             <div>
-                <label>${i18next.t('camera_height')}:</label>
+                <label>${i18next.t('nav_camera_height_label')}:</label>
                 <div class="ui mini input right labeled">
                     <input type="number" step="10" class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
                     <label class="ui label">m</label>
                 </div>
             </div>
             <div>
-                <label>${i18next.t('view_angle')}:</label>
+                <label>${i18next.t('nav_view_angle_label')}:</label>
                 <div class="ui mini input right labeled">
                     <input type="number" class="ngm-angle-input" .value="${this.angleValue}" @change="${this.onViewChange}">
                     <label class="ui label">°</label>
                 </div>
             </div>
             <div>
-                <label>${i18next.t('view_tilt')}:</label>
+                <label>${i18next.t('nav_view_tilt_label')}:</label>
                 <div class="ui mini input right labeled">
                     <input type="number" class="ngm-tilt-input" .value="${this.tiltValue}" @change="${this.onViewChange}">
                     <label class="ui label">°</label>

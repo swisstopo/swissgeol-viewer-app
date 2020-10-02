@@ -48,7 +48,7 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
           <div id="compass-info-popup"></div>
           <cesium-view-cube .scene="${this.viewer.scene}"></cesium-view-cube>
           <cesium-compass .scene="${this.viewer.scene}" .clock="${this.viewer.clock}"
-          data-tooltip=${i18next.t('cesium_compass_tooltip')}
+          data-tooltip=${i18next.t('nav_cesium_compass_hint')}
           data-position="left center"
           data-variation="mini"
           ></cesium-compass>

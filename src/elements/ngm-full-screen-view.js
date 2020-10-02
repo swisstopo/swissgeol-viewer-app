@@ -28,9 +28,9 @@ class NgmFullScreenView extends I18nMixin(LitElement) {
 
   get tooltip() {
     if (this.fullScreenActive) {
-      return i18next.t('not_full_screen_view');
+      return i18next.t('nav_not_full_screen_view_hint');
     } else {
-      return i18next.t('full_screen_view');
+      return i18next.t('nav_full_screen_view_hint');
     }
   }
 

@@ -67,7 +67,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
   firstUpdated() {
     $(this.querySelector(`#${createBtnId}`)).popup({
       position: 'top left',
-      content: i18next.t('create_section_hint'),
+      content: i18next.t('tbx_create_section_hint'),
       variation: 'mini',
       onShow: () => {
         this.gstExtent.show = true;
@@ -151,7 +151,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
         })
         .catch(err => {
           if (err.name === 'AbortError') {
-            showWarning(i18next.t('request_aborted'));
+            showWarning(i18next.t('tbx_request_aborted_warning'));
           } else {
             showError(`${err.name}: ${err.message}`);
           }
@@ -201,14 +201,14 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
                 <button id="${createBtnId}"
                         class="ui button ${this.hasValidParams() ? '' : 'disabled'}"
                         @click=${this.getGST}>
-                        ${i18next.t('create_section')}
+                        ${i18next.t('tbx_create_section_label')}
                 </button>
                 <button class="ui button ngm-tools-btn"><i class="tools icon"></i></button>
             </div>
         </div>
         <div id=${configurePopupId} class="ui mini popup">
         ${this.geometryType === 'rectangle' ?
-      html`<label>${i18next.t('cross_sections_depth')}</label>
+      html`<label>${i18next.t('tbx_cross_sections_depth_label')}</label>
               <div class="ui tiny form depth">
                   <div class="field">
                     <input type="number"
@@ -223,7 +223,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
                     </div>
                   </div>
         </div>` : ''}
-        <label>${i18next.t('cross_sections_format')}</label>
+        <label>${i18next.t('tbx_cross_sections_format_label')}</label>
         <div id="${formatSelectorId}" class="ui fluid selection mini dropdown">
             <div class="text"></div>
             <i class="dropdown icon"></i>

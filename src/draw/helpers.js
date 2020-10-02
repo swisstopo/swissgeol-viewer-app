@@ -15,7 +15,7 @@ export function getDimensionLabelText(type, distances) {
     text = `${Number(distances[0]).toFixed(3)}km x ${Number(distances[1]).toFixed(3)}km`;
   } else {
     const length = distances.reduce((a, b) => a + b, 0);
-    text = `${i18next.t('Length')}: ${length}km`;
+    text = `${i18next.t('obj_info_length_label')}: ${length}km`;
   }
   return text.includes('undefined') ? '' : text;
 }

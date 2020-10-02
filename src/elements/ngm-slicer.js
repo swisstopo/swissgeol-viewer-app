@@ -39,7 +39,7 @@ class NgmSlicer extends I18nMixin(LitElement) {
     if (this.viewer && this.slicer) {
       return html`
         <button
-          data-tooltip=${i18next.t('Slice')}
+          data-tooltip=${i18next.t('nav_slice_hint')}
           data-position="left center"
           data-variation="mini"
           class="ui compact mini icon button ${this.slicer.active ? 'grey' : ''}"

@@ -248,19 +248,19 @@ export function setupBaseLayers(viewer) {
   const mapsConfig = [
     {
       id: arealLayer,
-      labelKey: t('areal_map_label'),
+      labelKey: t('dtd_areal_map_label'),
       backgroundImgSrc: '../images/arealimage.png', //relative to ngm-map-chooser
       layer: addSwisstopoLayer(viewer, arealLayer, 'jpeg', false)
     },
     {
       id: greyLayer,
-      labelKey: t('grey_map_label'),
+      labelKey: t('dtd_grey_map_label'),
       backgroundImgSrc: '../images/grey.png',
       layer: addSwisstopoLayer(viewer, greyLayer, 'jpeg')
     },
     {
       id: 'empty_map',
-      labelKey: t('empty_map_label'),
+      labelKey: t('dtd_empty_map_label'),
       backgroundImgSrc: '../images/empty.png',
       layer: emptyLayer
     }];
