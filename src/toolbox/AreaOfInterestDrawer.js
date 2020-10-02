@@ -2,7 +2,6 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
-import Entity from 'cesium/Source/DataSources/Entity';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {getMeasurements} from '../utils.js';
@@ -11,12 +10,11 @@ import {LitElement} from 'lit-element';
 
 import {
   AOI_DATASOURCE_NAME,
-  CESIUM_NOT_GRAPHICS_ENTITY_PROPS,
   DEFAULT_AOI_COLOR,
   HIGHLIGHTED_AOI_COLOR,
   DEFAULT_VOLUME_HEIGHT_LIMITS
 } from '../constants.js';
-import {updateColor} from './helpers.js';
+import {updateColor, cleanupUploadedEntity, getUploadedAreaType} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -82,7 +80,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.addEventListener('statechanged', () => this.requestUpdate());
     this.draw_.addEventListener('drawerror', evt => {
       if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
-        showWarning(i18next.t('error_need_more_points'));
+        showWarning(i18next.t('tbx_error_need_more_points_warning'));
       }
     });
     this.draw_.addEventListener('leftdown', () => {
@@ -258,7 +256,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const file = evt.target ? evt.target.files[0] : null;
     if (file) {
       if (!file.name.toLowerCase().includes('.kml')) {
-        showWarning(i18next.t('unsupported_file_warning'));
+        showWarning(i18next.t('tbx_unsupported_file_warning'));
         evt.target.value = null;
         return;
       }
@@ -270,21 +268,44 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         });
       evt.target.value = null;
 
-      const entity = new Entity();
-      kmlDataSource.entities.values.forEach(ent => entity.merge(ent));
-
-      const notOnlyPolygon = entity.propertyNames.some(prop => !CESIUM_NOT_GRAPHICS_ENTITY_PROPS.includes(prop) && !!entity[prop]);
-
-      if (notOnlyPolygon) {
-        showWarning(i18next.t('unsupported_kml_warning'));
-        return;
+      let entities = kmlDataSource.entities.values;
+      if (entities.length > 10) {
+        showWarning(i18next.t('tbx_kml_large_warning'));
+        entities = entities.slice(0, 10);
       }
+      let atLeastOneValid = false;
+      entities.forEach((ent, index) => {
+        const exists = this.interestAreasDataSource.entities.getById(ent.id);
+        if (!exists) {
+          const type = getUploadedAreaType(ent);
+          if (type) {
+            atLeastOneValid = true;
+            ent = cleanupUploadedEntity(ent);
+            if (type === 'point') {
+              ent.point = {
+                pixelSize: 8,
+                scaleByDistance: new NearFarScalar(0, 1, 1, 1)
+              };
+            }
+            ent.name = ent.name ? `${ent.name}` : `${kmlDataSource.name}`;
+            ent.properties = this.getAreaProperties(ent, type);
+            if (ent.polygon) {
+              ent.polygon.fill = true;
+            }
+            updateColor(ent, false);
+            this.interestAreasDataSource.entities.add(ent);
+          }
+        } else {
+          atLeastOneValid = true;
+          showWarning(i18next.t('tbx_kml_area_existing_warning'));
+        }
+      });
 
-      entity.properties = this.getAreaProperties(entity, 'polygon');
-      entity.polygon.fill = true;
-      entity.polygon.material = DEFAULT_AOI_COLOR;
-      this.interestAreasDataSource.entities.add(entity);
-      this.flyToArea(entity.id);
+      if (!atLeastOneValid) {
+        showWarning(i18next.t('tbx_unsupported_kml_warning'));
+      } else {
+        this.viewer.zoomTo(entities);
+      }
     }
   }
 
@@ -327,15 +348,15 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   getInfoProps(props) {
     const attributes = {
-      [i18next.t('nameLabel')]: props.name,
+      [i18next.t('obj_info_name_label')]: props.name,
       zoom: () => this.flyToArea(props.id)
     };
     if (props.type === 'rectangle' || props.type === 'polygon') {
-      attributes[i18next.t('Area')] = `${props.area}km²`;
-      attributes[i18next.t('Perimeter')] = `${props.perimeter}km`;
-      attributes[i18next.t('numberOfSegments')] = props.numberOfSegments;
+      attributes[i18next.t('obj_info_area_label')] = `${props.area}km²`;
+      attributes[i18next.t('obj_info_perimeter_label')] = `${props.perimeter}km`;
+      attributes[i18next.t('obj_info_number_segments_label')] = props.obj_info_number_segments_label;
     } else if (props.type === 'line') {
-      attributes[i18next.t('Length')] = `${props.perimeter}km`;
+      attributes[i18next.t('obj_info_length_label')] = `${props.perimeter}km`;
     }
     return attributes;
   }
@@ -478,6 +499,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button').forEach(button => button.classList.remove('disabled'));
   }
 
+  /**
+   * Returns properties for area of interes according to area type
+   * @param entity
+   * @param {'point' | 'line' | 'rectangle' | 'polygon'} type
+   * @return {{area: any, numberOfSegments: number, perimeter: any, sidesLength: any}|{type: *}}
+   */
   getAreaProperties(entity, type) {
     if (type === 'point') {
       return {
@@ -540,7 +567,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     entity.polylineVolume.show = true;
 
     if (showHint) {
-      showMessage(i18next.t('volume_hint_text'));
+      showMessage(i18next.t('tbx_volume_hint'));
     }
   }
 

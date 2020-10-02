@@ -27,17 +27,22 @@ export const LAYERS_TRANSPARENCY_URL_PARAM = 'layers_transparency';
 export const ASSET_IDS_URL_PARAM = 'assetIds';
 export const MAP_URL_PARAM = 'map';
 export const MAP_TRANSPARENCY_URL_PARAM = 'map_transparency';
+export const ATTRIBUTE_KEY_PARAM = 'attribute_key';
+export const ATTRIBUTE_VALUE_PARAM = 'attribute_value';
+export const ZOOM_TO_PARAM = 'zoom_to';
 
 export const DEFAULT_AOI_COLOR = Color.BLACK.withAlpha(0.3);
 export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);
 export const HIGHLIGHTED_POINT_COLOR = Color.YELLOW;
 
 // list of not graphics entity.propertyNames
-export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'description', 'properties', 'viewForm', 'kml', 'polygon'];
+export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'description', 'properties', 'viewForm', 'kml'];
+export const CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD = ['polygon', 'polyline', 'point'];
 
 export const AOI_DATASOURCE_NAME = 'interestAreas';
 
 export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Color());
+export const OBJECT_ZOOMTO_RADIUS = 500;
 
 export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
   lowerLimit: -5000,
