@@ -6,6 +6,7 @@ import {OBJECT_HIGHLIGHT_COLOR} from '../constants';
 import {lv95ToDegrees} from '../projection.js';
 import Entity from 'cesium/Source/DataSources/Entity';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Cartographic from 'cesium/Source/Core/Cartographic';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 
@@ -68,8 +69,12 @@ export default class QueryManager {
       objectInfo.opened = false;
       return;
     }
-    const pickedPosition = this.scene.pickPosition(click.position);
-    let attributes = this.objectSelector.pickAttributes(click.position, pickedPosition);
+    await this.pickObject(click.position);
+  }
+
+  async pickObject(position) {
+    const pickedPosition = this.scene.pickPosition(position);
+    let attributes = this.objectSelector.pickAttributes(position, pickedPosition);
 
     const layers = 'ch.swisstopo.geologie-geocover';
     // we only search the remote Swisstopo service when there was no result for the local search
@@ -161,5 +166,23 @@ export default class QueryManager {
       this.highlightEntity = null;
       this.scene.requestRender();
     }
+  }
+
+  async selectTile(feature) {
+    const x = feature.getProperty('XCOORD');
+    const y = feature.getProperty('YCOORD');
+    const z = feature.getProperty('ZCOORDB');
+    if (!x || !y || !z) return; // boreholes only solution for now
+    const coords = lv95ToDegrees([x, y]);
+    const cartographicCoords = Cartographic.fromDegrees(coords[0], coords[1], z);
+    const position = Cartographic.toCartesian(cartographicCoords);
+    const attributes = this.objectSelector.pickAttributes(null, position, feature);
+
+    const objectInfo = document.querySelector('ngm-object-information');
+    objectInfo.info = attributes;
+    objectInfo.opened = !!attributes;
+    attributes.zoom();
+
+    this.scene.requestRender();
   }
 }

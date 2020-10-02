@@ -40,6 +40,7 @@
   "down_btn": "Move Down",
   "download_section_output": "Download",
   "drawing_tools_label": "Drawing and measuring:",
+  "dtd_object_on_coordinates_not_found_warning": "Object not founded or you moved camera from initial position",
   "earthquakes_label": "Earthquakes",
   "edit_area_btn_tooltip": "Edit",
   "empty_map_label": "No background",
