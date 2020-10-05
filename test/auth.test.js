@@ -33,18 +33,18 @@ describe('Auth', () => {
 
   describe('getUser, setUser and removeUser', () => {
     it('should get, set and remove the user', () => {
-      Auth.removeUser();
+      Auth.clear();
       assert.deepEqual(Auth.getUser(), null);
       Auth.setUser(user);
       assert.deepEqual(Auth.getUser(), user);
-      Auth.removeUser();
+      Auth.clear();
       assert.deepEqual(Auth.getUser(), null);
     });
   });
 
   describe('waitForAuthenticate', () => {
     it('should wait until the user authenticates', async () => {
-      Auth.removeUser();
+      Auth.clear();
       setInterval(() => Auth.setUser(user), 120);
       await Auth.waitForAuthenticate();
       assert.deepEqual(Auth.getUser(), user);
@@ -80,7 +80,7 @@ describe('Auth', () => {
   describe('initialize', () => {
     it('should extract the user from the hash in the response URL', () => {
       Auth.state('test');
-      Auth.removeUser();
+      Auth.clear();
       Auth.initialize();
       assert.deepEqual(Auth.getUser(), user);
     });
