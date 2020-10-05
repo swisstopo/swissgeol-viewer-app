@@ -1,7 +1,5 @@
 import AWS from 'aws-sdk';
 import Resource from 'cesium/Source/Core/Resource';
-import RequestScheduler from 'cesium/Source/Core/RequestScheduler';
-import RequestState from 'cesium/Source/Core/RequestState';
 
 import Auth from './auth.js';
 
@@ -11,18 +9,9 @@ function keyFromUrl(val) {
     const url = new URL(val);
     // remove the first '/' from the path
     return url.pathname.slice(1);
-  } catch {
+  } catch (err) {
     return val;
   }
-}
-
-function checkAndResetRequest(request) {
-  if (request.state === RequestState.ISSUED || request.state === RequestState.ACTIVE) {
-    throw new Error("The Resource is already being fetched.");
-  }
-
-  request.state = RequestState.UNISSUED;
-  request.deferred = undefined;
 }
 
 
@@ -32,10 +21,6 @@ export default class AmazonS3Resource extends Resource {
     super(options);
 
     this.bucket = options.bucket;
-  }
-
-  get credits() {
-    return "hello world";
   }
 
   clone(result) {
