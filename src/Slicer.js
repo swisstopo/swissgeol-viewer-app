@@ -35,6 +35,8 @@ export default class Slicer {
     this.selectedPlane = null;
     this.targetY = 0.0;
     this.targetX = 0.0;
+    this.targetYNegate = 0.0;
+    this.targetXNegate = 0.0;
 
     this.offsets = {};
   }
@@ -49,13 +51,21 @@ export default class Slicer {
         cartCenter = Rectangle.center(globe.cartographicLimitRectangle);
         center = Cartographic.toCartesian(cartCenter);
       }
-      this.planeHorizontal = new ClippingPlane(new Cartesian3(0.0, 1.0, 0.0), 0.0);
-      this.planeVertical = new ClippingPlane(new Cartesian3(1.0, 0.0, 0.0), 0.0);
+      // const negateCartCenter = Cartographic.clone(cartCenter);
+      // console.log(negateCartCenter);
+      // negateCartCenter.longitude = cartCenter.longitude + 0.005;
+      // negateCartCenter.latitude = cartCenter.latitude + 0.005;
+      const negateCenter = new Cartesian3(4272749.8326208955, 681701.4345894414, 4670586.868911202);
 
-      this.planeEntityHorizontal = new Entity({
+      this.planeHorizontalDown = new ClippingPlane(new Cartesian3(0.0, 1.0, 0.0), 0.0);
+      this.planeHorizontalUp = new ClippingPlane(new Cartesian3(0.0, -1.0, 0.0), 0.0);
+      this.planeVerticalLeft = new ClippingPlane(new Cartesian3(1.0, 0.0, 0.0), 0.0);
+      this.planeVerticalRight = new ClippingPlane(new Cartesian3(-1.0, 0.0, 0.0), 0.0);
+
+      const horizontalEntityTemplate = {
         position: center,
         plane: {
-          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontal, 'horizontal'), false),
+          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontalDown, 'horizontal'), false),
           dimensions: new Cartesian2(700000.0, PLANE_HEIGHT),
           material: Color.WHITE.withAlpha(0.1),
           outline: true,
@@ -64,13 +74,13 @@ export default class Slicer {
         properties: {
           type: 'horizontal'
         }
-      });
-      this.slicerDataSource.entities.add(this.planeEntityHorizontal);
+      };
 
-      this.planeEntityVertical = new Entity({
+
+      const verticalEntityTemplate = {
         position: center,
         plane: {
-          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeVertical), false),
+          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeVerticalLeft, 'vertical'), false),
           dimensions: new Cartesian2(440000.0, PLANE_HEIGHT),
           material: Color.WHITE.withAlpha(0.1),
           outline: true,
@@ -79,8 +89,29 @@ export default class Slicer {
         properties: {
           type: 'vertical'
         }
-      });
+      };
+
+      this.planeEntityHorizontal = new Entity(horizontalEntityTemplate);
+      this.slicerDataSource.entities.add(this.planeEntityHorizontal);
+
+      horizontalEntityTemplate.plane.plane = new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontalUp, 'horizontal-negate'), false);
+      horizontalEntityTemplate.properties.type = 'horizontal-negate';
+      horizontalEntityTemplate.position = negateCenter;
+      this.planeEntityHorizontalUp = new Entity(horizontalEntityTemplate);
+      this.slicerDataSource.entities.add(this.planeEntityHorizontalUp);
+
+      this.planeEntityVertical = new Entity(verticalEntityTemplate);
       this.slicerDataSource.entities.add(this.planeEntityVertical);
+
+      verticalEntityTemplate.plane.plane = new CallbackProperty(this.createPlaneUpdateFunction(this.planeVerticalRight, 'vertical-negate'), false);
+      verticalEntityTemplate.properties.type = 'vertical-negate';
+      verticalEntityTemplate.position = negateCenter;
+      this.planeEntityVerticalRight = new Entity(verticalEntityTemplate);
+      this.slicerDataSource.entities.add(this.planeEntityVerticalRight);
+
+      console.log(this.viewer);
+      console.log(this.slicerDataSource);
+
       globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(new Date()));
 
       const primitives = this.viewer.scene.primitives;
@@ -97,8 +128,8 @@ export default class Slicer {
           const offsetX = lv95Center[1] - lv95Tile[1];
           const offsetY = lv95Center[0] - lv95Tile[0];
           this.offsets[primitive.url] = {
-            offsetX: -offsetX,
-            offsetY: -offsetY
+            offsetX: offsetX,
+            offsetY: offsetY
           };
 
           primitive.clippingPlanes = this.createClippingPlanes();
@@ -116,8 +147,10 @@ export default class Slicer {
     } else {
       this.slicerDataSource.entities.removeAll();
       this.offsets = {};
-      this.planeHorizontal = null;
-      this.planeVertical = null;
+      this.planeHorizontalDown = null;
+      this.planeHorizontalUp = null;
+      this.planeVerticalLeft = null;
+      this.planeVerticalRight = null;
 
       this.eventHandler.destroy();
       this.eventHandler = null;
@@ -128,6 +161,8 @@ export default class Slicer {
 
       this.targetY = 0.0;
       this.targetX = 0.0;
+      this.targetYNegate = 0.0;
+      this.targetXNegate = 0.0;
 
       const primitives = this.viewer.scene.primitives;
       for (let i = 0, ii = primitives.length; i < ii; i++) {
@@ -162,7 +197,7 @@ export default class Slicer {
   createClippingPlanes(modelMatrix) {
     const clippingPlanes = new ClippingPlaneCollection({
       modelMatrix: modelMatrix,
-      planes: [this.planeHorizontal, this.planeVertical],
+      planes: [this.planeHorizontalDown, this.planeVerticalLeft, this.planeHorizontalUp, this.planeVerticalRight],
       edgeWidth: 1.0,
       unionClippingRegions: true
     });
@@ -172,15 +207,27 @@ export default class Slicer {
   updateClippingPlanes(clippingPlanes, offset) {
     clippingPlanes.removeAll();
     if (offset) {
-      const planeHorizontal = Plane.clone(this.planeHorizontal);
-      planeHorizontal.distance = planeHorizontal.distance + offset.offsetX;
-      const planeVertical = Plane.clone(this.planeVertical);
-      planeVertical.distance = planeVertical.distance + offset.offsetY;
+      const planeHorizontal = Plane.clone(this.planeHorizontalDown);
+      planeHorizontal.distance = planeHorizontal.distance - offset.offsetX;
+
+      const planeHorizontalUp = Plane.clone(this.planeHorizontalUp);
+      planeHorizontalUp.distance = planeHorizontalUp.distance - offset.offsetX;
+
+      const planeVertical = Plane.clone(this.planeVerticalLeft);
+      planeVertical.distance = planeVertical.distance - offset.offsetY;
+
+      const planeVerticalRight = Plane.clone(this.planeVerticalRight);
+      planeVertical.distance = planeVerticalRight.distance - offset.offsetY;
+
       clippingPlanes.add(planeHorizontal);
+      clippingPlanes.add(planeHorizontalUp);
       clippingPlanes.add(planeVertical);
+      clippingPlanes.add(planeVerticalRight);
     } else {
-      clippingPlanes.add(this.planeHorizontal);
-      clippingPlanes.add(this.planeVertical);
+      clippingPlanes.add(this.planeHorizontalDown);
+      clippingPlanes.add(this.planeVerticalLeft);
+      clippingPlanes.add(this.planeHorizontalUp);
+      clippingPlanes.add(this.planeVerticalRight);
     }
   }
 
@@ -210,26 +257,53 @@ export default class Slicer {
       if (!intersectionStart || !intersectionEnd) return;
       const distance = Cartesian3.distance(intersectionStart, intersectionEnd);
       const diff = Cartesian3.subtract(intersectionEnd, intersectionStart, new Cartesian3());
-      if (this.selectedPlane.properties.type.getValue() === 'horizontal') {
-        const negative = (diff.x + diff.y) > 0 ? 1 : -1;
-        this.targetY += distance * negative;
-      } else {
-        const negative = (diff.x + diff.y) < 0 ? 1 : -1;
-        this.targetX += distance * negative;
+      const type = this.selectedPlane.properties.type.getValue();
+      try {
+        if (type.includes('horizontal')) {
+          if (type.includes('negate')) {
+            const negative = (diff.x + diff.y) > 0 ? -1 : 1;
+            this.targetYNegate += distance * negative;
+          } else {
+            const negative = (diff.x + diff.y) > 0 ? 1 : -1;
+            this.targetY += distance * negative;
+          }
+        } else {
+          if (type.includes('negate')) {
+            const negative = (diff.x + diff.y) < 0 ? -1 : 1;
+            this.targetXNegate += distance * negative;
+          } else {
+            const negative = (diff.x + diff.y) < 0 ? 1 : -1;
+            this.targetX += distance * negative;
+          }
+        }
+      } catch (e) {
+        console.error(e);
       }
     }
   }
 
   /**
    * @param {Plane} plane
-   * @param {'horizontal' | 'vertical' }type
+   * @param {string}type
    */
   createPlaneUpdateFunction(plane, type) {
     return () => {
-      if (type === 'horizontal') {
-        plane.distance = this.targetY;
-      } else {
-        plane.distance = this.targetX;
+      try {
+        if (type.includes('horizontal')) {
+          if (type.includes('negate')) {
+            plane.distance = this.targetYNegate;
+          } else {
+            plane.distance = this.targetY;
+          }
+        } else {
+          if (type.includes('negate')) {
+            plane.distance = this.targetXNegate;
+          } else {
+            plane.distance = this.targetX;
+          }
+        }
+      } catch (e) {
+        console.error(e);
       }
       return plane;
     };
