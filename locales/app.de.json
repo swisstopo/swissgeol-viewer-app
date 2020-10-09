@@ -114,6 +114,7 @@
   "tbx_area_of_interest_add_hint": "Auf die Karte klicken, um zu zeichnen. Doppelt klicken, um Zeichnen zu beenden",
   "tbx_area_of_interest_edit_hint": "Die Geometrie kann in der 3D-Szene oder über die Kontrollfelder verändert werden",
   "tbx_area_of_interest_empty_hint": "Modus auswählen und auf die Karte klicken, um zu zeichnen",
+  "tbx_camera_height_label": "",
   "tbx_cancel_area_btn_label": "Zeichnen abbrechen",
   "tbx_create_section_hint": "Bitte prüfen, ob die Geometrie in dem markierten Gebiet liegt",
   "tbx_create_section_label": "Schnitte erstellen",

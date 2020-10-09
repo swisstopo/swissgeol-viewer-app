@@ -114,6 +114,7 @@
   "tbx_area_of_interest_add_hint": "Cliquez sur le visualisateur 3D pour dessiner. Double-cliquez pour terminer le dessin",
   "tbx_area_of_interest_edit_hint": "Modifier la géométrie dans la scène 3D ou utiliser les commandes à l'écran",
   "tbx_area_of_interest_empty_hint": "Choisissez le mode de dessin et cliquez sur le visualisateur 3D pour commencer à dessiner",
+  "tbx_camera_height_label": "",
   "tbx_cancel_area_btn_label": "Annuler le dessin",
   "tbx_create_section_hint": "Vérifiez si la géométrie est placée dans la zone en surbrillance",
   "tbx_create_section_label": "Créer des coupes",
