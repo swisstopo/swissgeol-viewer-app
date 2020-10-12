@@ -24,6 +24,11 @@ import CesiumInspector from 'cesium/Source/Widgets/CesiumInspector/CesiumInspect
 import {getMapTransparencyParam} from './permalink.js';
 import Entity from 'cesium/Source/DataSources/Entity';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
+import CameraEventType from 'cesium/Source/Scene/CameraEventType';
+import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
+import Transforms from 'cesium/Source/Core/Transforms';
+import Matrix4 from 'cesium/Source/Core/Matrix4';
+import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -35,7 +40,7 @@ Object.assign(RequestScheduler.requestsByServer, {
   'vectortiles0.geo.admin.ch:443': 18
 });
 
-let noLimit;
+let noLimit = true;
 
 const FOG_FRAGMENT_SHADER_SOURCE = `
   float getDistance(sampler2D depthTexture, vec2 texCoords) {
@@ -85,7 +90,6 @@ export function setupViewer(container) {
   const searchParams = new URLSearchParams(location.search);
 
   const terrainExaggeration = parseFloat(searchParams.get('terrainExaggeration') || '1');
-  noLimit = document.location.hostname === 'localhost' || searchParams.has('noLimit');
   if (searchParams.get('noLimit') === 'false') {
     noLimit = false;
   }
@@ -133,6 +137,7 @@ export function setupViewer(container) {
 
   // remove the default behaviour of calling 'zoomTo' on the double clicked entity
   viewer.screenSpaceEventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+  enableCenterOfRotate(viewer);
 
   const scene = viewer.scene;
   const globe = scene.globe;
@@ -205,6 +210,34 @@ export function setupViewer(container) {
     new CesiumInspector('divinspector', scene);
   }
   return viewer;
+}
+
+function enableCenterOfRotate(viewer) {
+  const scene = viewer.scene;
+  const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
+  scene.camera.constrainedAxis = new Cartesian3(0, 0, 1);
+  eventHandler.setInputAction(event => {
+    const pickedPosition = scene.pickPosition(event.position);
+    const objects = scene.drillPick(event.position, 5, 5, 5);
+    if (pickedPosition && objects && objects.length) {
+      const transform = Transforms.eastNorthUpToFixedFrame(pickedPosition);
+      scene.camera.lookAtTransform(transform);
+      scene.screenSpaceCameraController.rotateEventTypes = [CameraEventType.LEFT_DRAG, {
+        eventType: CameraEventType.LEFT_DRAG,
+        modifier: KeyboardEventModifier.CTRL
+      }];
+    }
+  }, ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.CTRL);
+  eventHandler.setInputAction(() => scene.camera.lookAtTransform(Matrix4.IDENTITY), ScreenSpaceEventType.LEFT_UP);
+  eventHandler.setInputAction(() => {
+    scene.camera.lookAtTransform(Matrix4.IDENTITY);
+    // scene.camera.setView({
+    //   orientation: {
+    //     heading: scene.camera.heading,
+    //     pitch: scene.camera.pitch
+    //   }
+    // });
+  }, ScreenSpaceEventType.LEFT_UP, KeyboardEventModifier.CTRL);
 }
 
 /**
