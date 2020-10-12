@@ -20,7 +20,7 @@
     "cesium": "1.74.0",
     "event-target-shim": "^5.0.1",
     "fomantic-ui-css": "^2.8.7",
-    "i18next": "^19.8.1",
+    "i18next": "^19.8.2",
     "i18next-xhr-backend": "^3.2.2",
     "interactjs": "^1.10.0",
     "jquery": "^3.5.1",
