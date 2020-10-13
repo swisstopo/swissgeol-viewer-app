@@ -149,7 +149,24 @@ function aoiListTemplate() {
                     <i class="question circle outline icon"></i>
                 </button>
             </div>
-
+            <div class="ngm-aoi-input-container">
+                <label>${i18next.t('tbx_name_label')}:</label>
+                <div class="ui mini input">
+                  <input
+                    class=${`ngm-aoi-name-input-${index}`}
+                    type="text" .value="${i.name}"
+                    @input="${() => this.onNameInputChange(index)}">
+                </div>
+            </div>
+            <div class="ngm-aoi-input-container">
+                <label>${i18next.t('tbx_description_label')}:</label>
+                <div class="ui mini input">
+                  <textarea
+                    class=${`ngm-aoi-description-${index}`}
+                    type="text" .value="${i.description}"
+                    @input="${() => this.onDescriptionChange(index)}"></textarea>
+                </div>
+            </div>
             <div class="ngm-volume-limits-input"
                 ?hidden=${!this.draw_.entityForEdit || !(this.draw_.entityForEdit.properties.volumeShowed && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
                 <div>

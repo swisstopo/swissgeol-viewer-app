@@ -48,3 +48,16 @@ export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
   lowerLimit: -5000,
   height: 10000
 };
+
+export const AOI_POINT_COLORS = [
+  {color: 'black', value: Color.BLACK},
+  {color: 'blue', value: Color.BLUE},
+  {color: 'gray', value: Color.GRAY},
+  {color: 'green', value: Color.GREEN},
+  {color: 'orange', value: Color.ORANGE},
+  {color: 'red', value: Color.RED},
+  {color: 'white', value: Color.WHITE},
+  {color: 'yellow', value: Color.YELLOW},
+];
+
+export const AOI_POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];

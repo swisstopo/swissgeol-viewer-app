@@ -6,8 +6,8 @@ import {
 } from '../constants.js';
 
 export function updateColor(entity, selected) {
-  if (entity.point) {
-    entity.point.color = selected ? HIGHLIGHTED_POINT_COLOR : DEFAULT_AOI_COLOR;
+  if (entity.billboard) {
+    entity.billboard.color = selected ? HIGHLIGHTED_POINT_COLOR : DEFAULT_AOI_COLOR;
     return;
   }
   const entityType = entity.polygon ? 'polygon' : 'polyline';
