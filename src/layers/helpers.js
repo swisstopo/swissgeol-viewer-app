@@ -14,6 +14,7 @@ import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 import Matrix3 from 'cesium/Source/Core/Matrix3';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cesium3DTileColorBlendMode from 'cesium/Source/Scene/Cesium3DTileColorBlendMode';
+import AmazonS3Resource from '../AmazonS3Resource.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
@@ -37,8 +38,20 @@ export function createIonGeoJSONFromConfig(viewer, config) {
 }
 
 export function create3DTilesetFromConfig(viewer, config, tileLoadCallback) {
+  let resource;
+  if (config.aws_s3_bucket && config.aws_s3_key) {
+    resource = new AmazonS3Resource({
+      bucket: config.aws_s3_bucket,
+      url: config.aws_s3_key,
+    });
+  } else if (config.url) {
+    resource = config.url;
+  } else {
+    resource = IonResource.fromAssetId(config.assetId);
+  }
+
   const tileset = new Cesium3DTileset({
-    url: config.url ? config.url : IonResource.fromAssetId(config.assetId),
+    url: resource,
     show: !!config.visible,
     backFaceCulling: false,
     maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16 // 16 - default value

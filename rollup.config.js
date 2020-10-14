@@ -17,6 +17,7 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 
 const config = {
   input: 'src/index.js',
+  external: ['aws-sdk'],
   output: [{
     file: 'dist/bundle.debug.js',
     sourcemap: true,

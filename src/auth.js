@@ -1,6 +1,8 @@
+import AWS from 'aws-sdk';
 
 const cognitoState = 'cognito_state';
 const cognitoUser = 'cognito_user';
+const cognitoAccessToken = 'cognito_access_token';
 
 // example: #access_token=header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature&token_type=Bearer&state=1234
 const isResponse = /^#[\w]+=[\w.=-]+(&[\w]+=[\w.=-]+)*$/;
@@ -16,11 +18,22 @@ export default class Auth {
     try {
       const response = this.parseResponse(window.location.hash);
       if (response.token_type === 'Bearer' && response.state === this.state()) {
-        const user = this.parseToken(response.access_token);
-        this.setUser(user);
+        this.setUser(this.parseToken(response.access_token));
+        this.setAccessToken(response.id_token);
       }
     } catch (e) {
       // do nothing
+    }
+
+    const accessToken = this.getAccessToken();
+    if (accessToken) {
+      AWS.config.region = 'eu-central-1';
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'eu-central-1:21355ebf-703b-44dd-8900-f8bc391b4bde',
+        Logins: {
+          'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_5wXXpcDt8': accessToken
+        }
+      });
     }
   }
 
@@ -70,6 +83,18 @@ export default class Auth {
   static logout() {
     localStorage.removeItem(cognitoUser);
     localStorage.removeItem(cognitoState);
+    localStorage.removeItem(cognitoAccessToken);
+    if (AWS.config.credentials) {
+      AWS.config.credentials.clearCachedId();
+    }
+  }
+
+  static getAccessToken() {
+    return localStorage.getItem(cognitoAccessToken);
+  }
+
+  static setAccessToken(token) {
+    localStorage.setItem(cognitoAccessToken, token);
   }
 
   static async waitForAuthenticate() {

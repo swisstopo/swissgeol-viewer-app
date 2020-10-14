@@ -81,6 +81,9 @@ auth.clientId = '5k1mgef7ggiremt415eecn95ki';
 const sideBar = document.querySelector('ngm-left-side-bar');
 sideBar.viewer = viewer;
 sideBar.zoomTo = zoomTo;
+sideBar.authenticated = !!auth.user;
+auth.addEventListener('refresh', (evt) => sideBar.authenticated = evt.detail.authenticated);
+
 
 const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
   if (globe.tilesLoaded) {
