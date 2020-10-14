@@ -25,7 +25,7 @@ export default class Auth {
   }
 
   static parseResponse(response) {
-    if (response === undefined || !isResponse.test(response)) {
+    if (!isResponse.test(response)) {
       throw new Error('Malformed response');
     }
     const entries = response.substring(1).split('&')
@@ -35,7 +35,7 @@ export default class Auth {
   }
 
   static parseToken(token) {
-    if (token === undefined || !isToken.test(token)) {
+    if (!isToken.test(token)) {
       throw new Error('Malformed token');
     }
     try {
