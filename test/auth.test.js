@@ -31,20 +31,20 @@ describe('Auth', () => {
     });
   });
 
-  describe('getUser, setUser and removeUser', () => {
+  describe('getUser, setUser and logout', () => {
     it('should get, set and remove the user', () => {
-      Auth.removeUser();
+      Auth.logout();
       assert.ok(Auth.getUser() === null);
       Auth.setUser(user);
       assert.deepStrictEqual(Auth.getUser(), user);
-      Auth.removeUser();
+      Auth.logout();
       assert.ok(Auth.getUser() === null);
     });
   });
 
   describe('waitForAuthenticate', () => {
     it('should wait until the user authenticates', async () => {
-      Auth.removeUser();
+      Auth.logout();
       setInterval(() => Auth.setUser(user), 120);
       await Auth.waitForAuthenticate();
       assert.deepStrictEqual(Auth.getUser(), user);
@@ -79,8 +79,8 @@ describe('Auth', () => {
 
   describe('initialize', () => {
     it('should extract the user from the hash in the response URL', () => {
+      Auth.logout();
       Auth.state('test');
-      Auth.removeUser();
       Auth.initialize();
       assert.deepStrictEqual(Auth.getUser(), user);
     });

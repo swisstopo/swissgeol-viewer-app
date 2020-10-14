@@ -67,8 +67,9 @@ export default class Auth {
     localStorage.setItem(cognitoUser, value);
   }
 
-  static removeUser() {
+  static logout() {
     localStorage.removeItem(cognitoUser);
+    localStorage.removeItem(cognitoState);
   }
 
   static async waitForAuthenticate() {
