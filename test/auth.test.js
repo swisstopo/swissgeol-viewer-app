@@ -25,20 +25,20 @@ describe('Auth', () => {
     it('should initialize the state', () => {
       const state = Auth.state();
       assert.ok(state.length > 0);
-      assert.equal(Auth.state(), state);
+      assert.ok(Auth.state() === state);
       Auth.state('test');
-      assert.equal(Auth.state(), 'test');
+      assert.ok(Auth.state() === 'test');
     });
   });
 
   describe('getUser, setUser and removeUser', () => {
     it('should get, set and remove the user', () => {
       Auth.removeUser();
-      assert.deepEqual(Auth.getUser(), null);
+      assert.ok(Auth.getUser() === null);
       Auth.setUser(user);
-      assert.deepEqual(Auth.getUser(), user);
+      assert.deepStrictEqual(Auth.getUser(), user);
       Auth.removeUser();
-      assert.deepEqual(Auth.getUser(), null);
+      assert.ok(Auth.getUser() === null);
     });
   });
 
@@ -47,7 +47,7 @@ describe('Auth', () => {
       Auth.removeUser();
       setInterval(() => Auth.setUser(user), 120);
       await Auth.waitForAuthenticate();
-      assert.deepEqual(Auth.getUser(), user);
+      assert.deepStrictEqual(Auth.getUser(), user);
     });
   });
 
@@ -60,10 +60,10 @@ describe('Auth', () => {
       assert.throws(() => Auth.parseResponse('#=1'), Error);
     });
     it('should parse a well formed input', () => {
-      assert.deepEqual(Auth.parseResponse('#a=1'), {a: 1});
-      assert.deepEqual(Auth.parseResponse('#a=1'), {a: 1});
-      assert.deepEqual(Auth.parseResponse('#a=1&b=2'), {a: 1, b: 2});
-      assert.deepEqual(Auth.parseResponse(token), {access_token: jwt});
+      assert.deepStrictEqual(Auth.parseResponse('#a=1'), {a: '1'});
+      assert.deepStrictEqual(Auth.parseResponse('#a=1'), {a: '1'});
+      assert.deepStrictEqual(Auth.parseResponse('#a=1&b=2'), {a: '1', b: '2'});
+      assert.deepStrictEqual(Auth.parseResponse(token), {access_token: jwt});
     });
   });
 
@@ -73,7 +73,7 @@ describe('Auth', () => {
       assert.throws(() => Auth.parseToken(undefined), Error);
     });
     it('should parse a well formed input', () => {
-      assert.deepEqual(Auth.parseToken(jwt), user);
+      assert.deepStrictEqual(Auth.parseToken(jwt), user);
     });
   });
 
@@ -82,7 +82,7 @@ describe('Auth', () => {
       Auth.state('test');
       Auth.removeUser();
       Auth.initialize();
-      assert.deepEqual(Auth.getUser(), user);
+      assert.deepStrictEqual(Auth.getUser(), user);
     });
   });
 
