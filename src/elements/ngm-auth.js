@@ -52,7 +52,7 @@ class NgmAuth extends I18nMixin(LitElement) {
   }
 
   logout() {
-    Auth.removeUser();
+    Auth.logout();
     this.user = Auth.getUser();
   }
 
