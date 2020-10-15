@@ -383,7 +383,7 @@ export class CesiumDraw extends EventTarget {
     if (this.entityForEdit) {
       const objects = this.viewer_.scene.drillPick(event.position, 5, 5, 5);
       if (objects.length) {
-        const selectedPoint = objects.find(obj => !!obj.id.point);
+        const selectedPoint = objects.find(obj => !!obj.id.point || !!obj.id.billboard);
         if (!selectedPoint) return;
         const selectedEntity = selectedPoint.id;
         this.sketchPoint_ = selectedEntity;

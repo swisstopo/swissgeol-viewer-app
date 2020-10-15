@@ -1,13 +1,11 @@
 import {
   HIGHLIGHTED_AOI_COLOR,
   DEFAULT_AOI_COLOR,
-  HIGHLIGHTED_POINT_COLOR,
   CESIUM_NOT_GRAPHICS_ENTITY_PROPS, CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD
 } from '../constants.js';
 
 export function updateColor(entity, selected) {
   if (entity.billboard) {
-    entity.billboard.color = selected ? HIGHLIGHTED_POINT_COLOR : DEFAULT_AOI_COLOR;
     return;
   }
   const entityType = entity.polygon ? 'polygon' : 'polyline';

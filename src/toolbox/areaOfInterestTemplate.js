@@ -2,7 +2,7 @@ import {html} from 'lit-element';
 import i18next from 'i18next';
 import {clickOnElement} from '../utils.js';
 import './ngm-gst-interaction.js';
-import './ngm-point-position.js';
+import './ngm-point-edit.js';
 
 const areaUploadInputId = 'areaUpload';
 
@@ -188,12 +188,12 @@ function aoiListTemplate() {
                     </div>
                 </div>
             </div>
-           <ngm-point-position
+           <ngm-point-edit
                 ?hidden=${i.type !== 'point'}
                 .viewer=${this.viewer}
                 .position=${i.positions[0]}
                 .entity=${this.draw_.entityForEdit}>
-           </ngm-point-position>
+           </ngm-point-edit>
         </div>
       </div>`);
 }

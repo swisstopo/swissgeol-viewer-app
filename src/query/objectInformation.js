@@ -21,7 +21,7 @@ export function isPickable(object) {
   if (object.tileset) {
     return object.tileset.pickable;
   } else if (object.primitive) {
-    return object.primitive.allowPicking;
+    return object.primitive.allowPicking !== false;
   } else {
     return false;
   }

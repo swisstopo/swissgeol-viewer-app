@@ -8,7 +8,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {applyInputLimits, prepareCoordinatesForUi} from '../utils';
 import {AOI_POINT_COLORS, AOI_POINT_SYMBOLS} from '../constants';
 
-class NgmPointPosition extends I18nMixin(LitElement) {
+class NgmPointEdit extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
@@ -161,4 +161,4 @@ class NgmPointPosition extends I18nMixin(LitElement) {
   }
 }
 
-customElements.define('ngm-point-position', NgmPointPosition);
+customElements.define('ngm-point-edit', NgmPointEdit);

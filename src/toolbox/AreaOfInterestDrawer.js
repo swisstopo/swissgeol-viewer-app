@@ -12,7 +12,8 @@ import {
   AOI_DATASOURCE_NAME,
   DEFAULT_AOI_COLOR,
   HIGHLIGHTED_AOI_COLOR,
-  DEFAULT_VOLUME_HEIGHT_LIMITS
+  DEFAULT_VOLUME_HEIGHT_LIMITS,
+  AOI_POINT_SYMBOLS
 } from '../constants.js';
 import {updateColor, cleanupUploadedEntity, getUploadedAreaType} from './helpers.js';
 import {showWarning} from '../message.js';
@@ -26,7 +27,8 @@ import {applyInputLimits, updateHeightForCartesianPositions} from '../utils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
 import {showMessage} from '../message';
-import {AOI_POINT_SYMBOLS, HIGHLIGHTED_POINT_COLOR} from '../constants';
+import Color from 'cesium/Source/Core/Color';
+import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -139,6 +141,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       this.draw_.entityForEdit.properties = this.editedBackup.properties;
       if (this.draw_.type === 'point') {
         this.draw_.entityForEdit.position = this.editedBackup.positions;
+        this.draw_.entityForEdit.billboard.color = this.editedBackup.color;
+        this.draw_.entityForEdit.billboard.image = this.editedBackup.image;
       } else if (this.draw_.type === 'line') {
         this.draw_.entityForEdit.polyline.positions = this.editedBackup.positions;
       } else {
@@ -194,7 +198,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   get entitiesList_() {
     return this.interestAreasDataSource.entities.values.map(val => {
-      return {
+      const item = {
         id: val.id,
         name: val.name,
         show: val.isShowing,
@@ -209,6 +213,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         volumeHeightLimits: val.properties.volumeHeightLimits ? val.properties.volumeHeightLimits.getValue() : undefined,
         description: val.properties.description ? val.properties.description.getValue() : '',
       };
+      if (val.billboard) {
+        item.pointColor = val.billboard.color.getValue(new Date());
+        item.pointSymbol = val.billboard.image.getValue(new Date());
+      }
+      return item;
     });
   }
 
@@ -327,6 +336,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.areasCounter_[area.type]) {
         this.areasCounter_[area.type] = areaNumber;
       }
+      console.log(area);
       const entity = this.addAreaEntity(area);
       if (area.volumeShowed) {
         this.updateEntityVolume(entity.id);
@@ -390,7 +400,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
        sidesLength: (optional) Array<string | number>,
        numberOfSegments: (optional) number,
        type: string<point | line | rectangle | polygon>
-       description: string
+       description: string,
+       pointSymbol: (optional) string,
+       pointColor: (optional) Color,
    * }
    */
   addAreaEntity(attributes) {
@@ -425,9 +437,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     } else if (type === 'point') {
       entityAttrs.position = attributes.positions[0];
       entityAttrs.billboard = {
-        image: `../images/${AOI_POINT_SYMBOLS[0]}`,
-        color: DEFAULT_AOI_COLOR,
-        scale: 0.5
+        image: attributes.pointSymbol || `../images/${AOI_POINT_SYMBOLS[0]}`,
+        color: attributes.pointColor || Color.GRAY,
+        scale: 0.5,
+        verticalOrigin: VerticalOrigin.BOTTOM,
+        disableDepthTestDistance: 0
       };
     }
     return this.interestAreasDataSource.entities.add(entityAttrs);
@@ -476,6 +490,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     if (type === 'point') {
       const position = entity.position.getValue(new Date());
       this.editedBackup.positions = Cartesian3.clone(position);
+      this.editedBackup.color = entity.billboard.color.getValue(new Date());
+      this.editedBackup.image = entity.billboard.image.getValue(new Date());
     } else if (type === 'line') {
       this.editedBackup.positions = entity.polyline.positions.getValue();
     } else {
