@@ -521,8 +521,16 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
    * @return {{area: any, numberOfSegments: number, perimeter: any, sidesLength: any}|{type: *}}
    */
   getAreaProperties(entity, type) {
+    const props = {};
+    if (entity.properties) {
+      entity.properties.propertyNames.forEach(propName => {
+        const property = entity.properties[propName];
+        props[propName] = property ? property.getValue() : undefined;
+      });
+    }
     if (type === 'point') {
       return {
+        ...props,
         type: type
       };
     }
@@ -533,14 +541,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
       }
     });
-
-    const props = {};
-    if (entity.properties) {
-      entity.properties.propertyNames.forEach(propName => {
-        const property = entity.properties[propName];
-        props[propName] = property ? property.getValue() : undefined;
-      });
-    }
 
     const measurements = getMeasurements(positions, distances, type);
     return {
