@@ -10,6 +10,7 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 const smp = new SpeedMeasurePlugin();
 
 module.exports = smp.wrap({
+  mode: 'development',
   resolve: {
     alias: {
       cesium: path.resolve(__dirname, 'node_modules/cesium'),
