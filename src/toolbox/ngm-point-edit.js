@@ -121,7 +121,7 @@ class NgmPointEdit extends I18nMixin(LitElement) {
                         @change="${this.onPositionChange}">
                 </div>
             </div>
-            <label>${i18next.t('nav_camera_height_label')}:</label></br>
+            <label>${i18next.t('tbx_camera_height_label')}:</label></br>
             <div class="ui mini input right labeled">
                 <input type="number" step="10" min="${this.minHeight}" max="${this.maxHeight}"
                     class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">

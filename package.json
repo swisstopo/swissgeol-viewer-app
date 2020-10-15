@@ -6,7 +6,7 @@
     "extract-from-assets": "node -r esm scripts/get_assets_properties.js > src/assets_properties.js",
     "extract-i18n": "i18next",
     "start": "npm run webpack-start",
-    "webpack-start": "node scripts/environment.js && node scripts/generateManuals.js && webpack-dev-server",
+    "webpack-start": "node scripts/environment.js && node scripts/generateManuals.js && webpack serve",
     "rollup-start": "node scripts/environment.js && node scripts/generateManuals.js && rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && rm -rf dist/* && rollup --environment mode:production -c && scripts/create_versions.sh",
     "test": "mocha --exit"
@@ -20,7 +20,7 @@
     "cesium": "1.74.0",
     "event-target-shim": "^5.0.1",
     "fomantic-ui-css": "^2.8.7",
-    "i18next": "^19.8.1",
+    "i18next": "^19.8.2",
     "i18next-xhr-backend": "^3.2.2",
     "interactjs": "^1.10.0",
     "jquery": "^3.5.1",
@@ -61,7 +61,7 @@
     "source-map-loader": "^1.1.0",
     "speed-measure-webpack-plugin": "^1.3.3",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12",
+    "webpack-cli": "^4.0.0",
     "webpack-dev-server": "^3.11.0"
   }
 }
