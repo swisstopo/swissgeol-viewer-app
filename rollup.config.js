@@ -2,6 +2,7 @@ import path from 'path';
 
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 import {terser} from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy';
 import babel from 'rollup-plugin-babel';
@@ -17,7 +18,6 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 
 const config = {
   input: 'src/index.js',
-  external: ['aws-sdk'],
   output: [{
     file: 'dist/bundle.debug.js',
     sourcemap: true,
@@ -40,6 +40,7 @@ const config = {
         autoprefixer()
       ]
     }),
+    json(),
     // {
     //   transform ( code, id ) {
     //     console.log( id );
@@ -51,7 +52,9 @@ const config = {
     // rollupStripPragma({
     //   pragmas: ['debug']
     // }),
-    resolve(),
+    resolve({
+      browser: true,
+    }),
     commonjs(),
     copy({
       targets: [

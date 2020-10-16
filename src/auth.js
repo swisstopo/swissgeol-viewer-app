@@ -1,5 +1,5 @@
-import AWS from 'aws-sdk';
-
+import {fromCognitoIdentityPool} from "@aws-sdk/credential-provider-cognito-identity";
+import {CognitoIdentityClient} from "@aws-sdk/client-cognito-identity";
 const cognitoState = 'cognito_state';
 const cognitoUser = 'cognito_user';
 const cognitoAccessToken = 'cognito_access_token';
@@ -9,6 +9,8 @@ const isResponse = /^#[\w]+=[\w.=-]+(&[\w]+=[\w.=-]+)*$/;
 
 // example: header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature
 const isToken = /^[\w=-]+.[\w=-]+.[\w=-]+$/;
+
+let _AWSCredentials = null;
 
 export default class Auth {
 
@@ -27,13 +29,21 @@ export default class Auth {
 
     const accessToken = this.getAccessToken();
     if (accessToken) {
-      AWS.config.region = 'eu-central-1';
-      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'eu-central-1:21355ebf-703b-44dd-8900-f8bc391b4bde',
-        Logins: {
+      _AWSCredentials = fromCognitoIdentityPool({
+        client: new CognitoIdentityClient({
+          region: 'eu-central-1'
+        }),
+        identityPoolId: 'eu-central-1:21355ebf-703b-44dd-8900-f8bc391b4bde',
+        logins: {
           'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_5wXXpcDt8': accessToken
         }
       });
+    }
+  }
+
+  static getCredentialsPromise() {
+    if (_AWSCredentials) {
+      return _AWSCredentials();
     }
   }
 
@@ -84,9 +94,7 @@ export default class Auth {
     localStorage.removeItem(cognitoUser);
     localStorage.removeItem(cognitoState);
     localStorage.removeItem(cognitoAccessToken);
-    if (AWS.config.credentials) {
-      AWS.config.credentials.clearCachedId();
-    }
+    _AWSCredentials = null;
   }
 
   static getAccessToken() {

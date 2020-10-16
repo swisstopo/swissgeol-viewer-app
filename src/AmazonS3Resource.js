@@ -1,4 +1,6 @@
-import AWS from 'aws-sdk';
+import Auth from './auth.js';
+import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
+import {S3Client, GetObjectCommand} from "@aws-sdk/client-s3";
 import Resource from 'cesium/Source/Core/Resource';
 import when from 'cesium/Source/ThirdParty/when';
 
@@ -20,6 +22,7 @@ export default class AmazonS3Resource extends Resource {
     super(options);
 
     this.bucket = options.bucket;
+    this.region = options.region !== undefined ? options.region : 'eu-central-1';
   }
 
   clone(result) {
@@ -33,29 +36,30 @@ export default class AmazonS3Resource extends Resource {
   }
 
   getSignedUrl(credentials) {
+    const client = new S3Client({
+      region: this.region,
+      credentials: credentials,
+    });
     const options = {
       Bucket: this.bucket,
       Key: keyFromUrl(this.url),
     };
-    const s3 = new AWS.S3({
-      credentials: credentials
-    });
-    return s3.getSignedUrl('getObject', options);
+    const command = new GetObjectCommand(options);
+    return getSignedUrl(client, command);
   }
 
   _makeRequest(options) {
-    if (AWS.config.credentials) {
+    const credentialsPromise = Auth.getCredentialsPromise();
+    if (credentialsPromise) {
       const defer = when.defer();
-      AWS.config.credentials.get(err => {
-        if (err) {
-          defer.reject(err);
-        } else {
-          this.url = this.getSignedUrl(AWS.config.credentials);
+      credentialsPromise.then(credentials => {
+        this.getSignedUrl(credentials).then(url => {
+          this.url = url;
           const request = super._makeRequest(options);
           if (request) {
             request.then(value => defer.resolve(value));
           }
-        }
+        });
       });
       return defer.promise;
     }
