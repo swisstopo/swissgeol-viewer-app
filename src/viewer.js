@@ -219,7 +219,7 @@ function enableCenterOfRotate(viewer) {
   scene.camera.constrainedAxis = new Cartesian3(0, 0, 1);
   eventHandler.setInputAction(event => {
     const pickedPosition = scene.pickPosition(event.position);
-    const objects = scene.drillPick(event.position, 5, 5, 5);
+    // const objects = scene.drillPick(event.position, 5, 5, 5);
     if (pickedPosition/* && objects && objects.length*/) {
       const transform = Transforms.eastNorthUpToFixedFrame(pickedPosition);
       scene.camera.lookAtTransform(transform);
