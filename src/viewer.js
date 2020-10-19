@@ -157,7 +157,6 @@ export function setupViewer(container) {
 
 
   // Limit the volume inside which the user can navigate
-  console.log(noLimit);
   if (!noLimit) {
     new NavigableVolumeLimiter(scene, SWITZERLAND_RECTANGLE, 193, height => (height > 3000 ? 9 : 3));
   }
@@ -219,8 +218,7 @@ function enableCenterOfRotate(viewer) {
   scene.camera.constrainedAxis = new Cartesian3(0, 0, 1);
   eventHandler.setInputAction(event => {
     const pickedPosition = scene.pickPosition(event.position);
-    // const objects = scene.drillPick(event.position, 5, 5, 5);
-    if (pickedPosition/* && objects && objects.length*/) {
+    if (pickedPosition) {
       const transform = Transforms.eastNorthUpToFixedFrame(pickedPosition);
       scene.camera.lookAtTransform(transform);
       scene.screenSpaceCameraController.rotateEventTypes = [CameraEventType.LEFT_DRAG, {
@@ -231,13 +229,15 @@ function enableCenterOfRotate(viewer) {
   }, ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.CTRL);
   eventHandler.setInputAction(() => scene.camera.lookAtTransform(Matrix4.IDENTITY), ScreenSpaceEventType.LEFT_UP);
   eventHandler.setInputAction(() => {
+    scene.camera.setView({
+      orientation: {
+        heading: scene.camera.heading,
+        pitch: scene.camera.pitch
+      }
+    });
+  }, ScreenSpaceEventType.MOUSE_MOVE, KeyboardEventModifier.CTRL);
+  eventHandler.setInputAction(() => {
     scene.camera.lookAtTransform(Matrix4.IDENTITY);
-    // scene.camera.setView({
-    //   orientation: {
-    //     heading: scene.camera.heading,
-    //     pitch: scene.camera.pitch
-    //   }
-    // });
   }, ScreenSpaceEventType.LEFT_UP, KeyboardEventModifier.CTRL);
 }
 
