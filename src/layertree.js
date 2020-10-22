@@ -69,7 +69,7 @@ const TUNNEL_STYLE = {
 };
 
 const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
-const DOWNLOAD_ROOT = 'https://ngm-public-download.s3.amazonaws.com/';
+const DOWNLOAD_ROOT = 'https://download.swissgeol.ch/';
 const CENOZOIC_BEDROCK_ORDER = ['Name', 'Horizon', ...DOWNLOAD_PROP_ORDER];
 const CONSOLIDATED_ORDER = ['Name', 'Horizon', 'HARMOS-ORIGINAL', ...DOWNLOAD_PROP_ORDER];
 const FAULTS_ORDER = ['Name', 'Source', 'Status', 'Type', 'Version', ...DOWNLOAD_PROP_ORDER];
