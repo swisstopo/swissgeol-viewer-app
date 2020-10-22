@@ -310,34 +310,24 @@ export default class Slicer {
       viewRect = mapRect;
     }
     const mapRectNortheast = Rectangle.northeast(mapRect);
-    const mapRectSouthwest = Rectangle.southwest(mapRect);
-    const lon = viewCenter.longitude + (3 / 4 * viewRect.width);
-    const lat = viewCenter.latitude + (3 / 4 * viewRect.height);
+    const lon = viewCenter.longitude + (1 / 3 * viewRect.width);
+    const lat = viewCenter.latitude + (1 / 3 * viewRect.height);
     const lv95SecondPosition = degreesToLv95([CMath.toDegrees(lon), CMath.toDegrees(lat)]);
     const lv95Center = degreesToLv95([CMath.toDegrees(viewCenter.longitude), CMath.toDegrees(viewCenter.latitude)]);
     const lv95Northeast = degreesToLv95([CMath.toDegrees(mapRectNortheast.longitude), CMath.toDegrees(mapRectNortheast.latitude)]);
-    const lv95Southwest = degreesToLv95([CMath.toDegrees(mapRectSouthwest.longitude), CMath.toDegrees(mapRectSouthwest.latitude)]);
 
-    let xDiffNortheast = (lv95SecondPosition[0] - lv95Center[0]) / 2;
-    let xDiffSouthwest = xDiffNortheast;
-    let yDiffNortheast = (lv95SecondPosition[1] - lv95Center[1]) / 2;
-    let yDiffSouthwest = yDiffNortheast;
+    let xDiffNortheast = lv95SecondPosition[0] - lv95Center[0];
+    let yDiffNortheast = lv95SecondPosition[1] - lv95Center[1];
+
     if (lv95Center[0] + xDiffNortheast > lv95Northeast[0]) {
       xDiffNortheast = lv95Northeast[0] - lv95Center[0];
     }
     if (lv95Center[1] + yDiffNortheast > lv95Northeast[1]) {
       yDiffNortheast = lv95Northeast[1] - lv95Center[1];
     }
-
-    if (lv95Center[0] - xDiffSouthwest < lv95Southwest[0]) {
-      xDiffSouthwest = lv95Center[0] - lv95Southwest[0];
-    }
-    if (lv95Center[1] - yDiffSouthwest < lv95Southwest[1]) {
-      yDiffSouthwest = lv95Center[1] - lv95Southwest[1];
-    }
     this.targetYNortheast = yDiffNortheast;
     this.targetXNortheast = xDiffNortheast;
-    this.targetYSouthwest = yDiffSouthwest;
-    this.targetXSouthwest = xDiffSouthwest;
+    this.targetYSouthwest = 0;
+    this.targetXSouthwest = 0;
   }
 }
