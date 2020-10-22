@@ -245,9 +245,6 @@ function enableCenterOfRotate(viewer) {
  * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  */
 export function addMantelEllipsoid(viewer) {
-  if (noLimit) {
-    return;
-  }
   // Add Mantel ellipsoid
   const radii = Ellipsoid.WGS84.radii.clone();
   const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
@@ -263,7 +260,9 @@ export function addMantelEllipsoid(viewer) {
   });
   entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
 
-  new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
+  if (!noLimit) {
+    new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
+  }
 }
 
 /**
