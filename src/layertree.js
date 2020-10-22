@@ -69,6 +69,7 @@ const TUNNEL_STYLE = {
 };
 
 const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
+const DOWNLOAD_ROOT = 'https://ngm-public-download.s3.amazonaws.com/';
 const CENOZOIC_BEDROCK_ORDER = ['Name', 'Horizon', ...DOWNLOAD_PROP_ORDER];
 const CONSOLIDATED_ORDER = ['Name', 'Horizon', 'HARMOS-ORIGINAL', ...DOWNLOAD_PROP_ORDER];
 const FAULTS_ORDER = ['Name', 'Source', 'Status', 'Type', 'Version', ...DOWNLOAD_PROP_ORDER];
@@ -229,7 +230,8 @@ const subsurface = {
           layer: 'top_bedrock',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CENOZOIC_BEDROCK_ORDER
+          propsOrder: CENOZOIC_BEDROCK_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Bedrock.zip'
         },
       ]
     },
@@ -243,7 +245,8 @@ const subsurface = {
           layer: 'top_omm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-UpperMarineMolasse.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -252,7 +255,8 @@ const subsurface = {
           layer: 'top_usm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-LowerFreshwaterMolasse.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -261,7 +265,8 @@ const subsurface = {
           layer: 'top_umm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-LowerFreshwaterMolasse.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -270,7 +275,8 @@ const subsurface = {
           layer: 'base_cenozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CENOZOIC_BEDROCK_ORDER
+          propsOrder: CENOZOIC_BEDROCK_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Base-Cenozoic.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -279,7 +285,8 @@ const subsurface = {
           layer: 'top_creatateus',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Cretaceous.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -288,7 +295,8 @@ const subsurface = {
           layer: 'top_upper_malm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-UpperMalm.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -297,7 +305,8 @@ const subsurface = {
           layer: 'top_lower_malm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-LowerMalm.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -306,7 +315,8 @@ const subsurface = {
           layer: 'top_dogger',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Dogger.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -315,7 +325,8 @@ const subsurface = {
           layer: 'top_lias',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Lias.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -324,7 +335,8 @@ const subsurface = {
           layer: 'top_keuper',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Keuper.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -333,7 +345,8 @@ const subsurface = {
           layer: 'top_muschelkalk',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Muschelkalk.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -342,7 +355,8 @@ const subsurface = {
           layer: 'base_mesozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CENOZOIC_BEDROCK_ORDER
+          propsOrder: CENOZOIC_BEDROCK_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Base-Mesozoic.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -351,7 +365,8 @@ const subsurface = {
           layer: 'base_cermocarboniferous',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Base-Permocarboniferous.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -360,7 +375,8 @@ const subsurface = {
           layer: 'base_cermocarboniferous_supposed',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: CONSOLIDATED_ORDER
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Base-Permocarboniferous-assumed.zip'
         },
       ]
     },
@@ -374,7 +390,8 @@ const subsurface = {
           layer: 'faults_geomol',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
-          propsOrder: FAULTS_ORDER
+          propsOrder: FAULTS_ORDER,
+          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Faults.zip'
         },
       ]
     },
