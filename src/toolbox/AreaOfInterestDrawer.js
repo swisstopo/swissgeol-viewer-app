@@ -336,7 +336,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.areasCounter_[area.type]) {
         this.areasCounter_[area.type] = areaNumber;
       }
-      console.log(area);
       const entity = this.addAreaEntity(area);
       if (area.volumeShowed) {
         this.updateEntityVolume(entity.id);

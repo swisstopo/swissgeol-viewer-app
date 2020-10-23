@@ -229,5 +229,5 @@ const notEditableTypes = ['checkbox', 'range'];
  * @return {boolean}
  */
 function targetNotEditable(target) {
-  return target.tagName !== 'INPUT' || notEditableTypes.includes(target.type);
+  return (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') || notEditableTypes.includes(target.type);
 }
