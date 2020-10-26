@@ -139,10 +139,10 @@ function aoiListTemplate() {
         </div>
         <div class="ngm-aoi-edit"  ?hidden=${!this.draw_.entityForEdit || this.draw_.entityForEdit.id !== i.id}>
             <div class="ui mini basic fluid buttons ngm-aoi-tooltip-container">
-                <button class="ui button"
+                <button class="ui button basic primary"
                         @click=${this.saveEditing.bind(this)}>${i18next.t('tbx_save_editing_btn_label')}</button>
-                <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}</button>
-                <button class="ui button ngm-help-btn"
+                <button class="ui button basic grey" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}</button>
+                <button class="ui button basic grey ngm-help-btn"
                         data-tooltip=${i18next.t('tbx_area_of_interest_edit_hint')}
                         data-variation="tiny"
                         data-position="top right">
