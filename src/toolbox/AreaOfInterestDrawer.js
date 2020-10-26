@@ -5,6 +5,7 @@ import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {getMeasurements} from '../utils.js';
+import JulianDate from 'cesium/Source/Core/JulianDate';
 
 import {LitElement} from 'lit-element';
 
@@ -45,6 +46,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.maxVolumeHeight = 30000;
     this.minVolumeLowerLimit = -30000;
     this.maxVolumeLowerLimit = 30000;
+    this.julianDate = new JulianDate();
   }
 
   update(changedProperties) {
@@ -214,8 +216,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         description: val.properties.description ? val.properties.description.getValue() : '',
       };
       if (val.billboard) {
-        item.pointColor = val.billboard.color.getValue(Date.now());
-        item.pointSymbol = val.billboard.image.getValue(Date.now());
+        item.pointColor = val.billboard.color.getValue(this.julianDate);
+        item.pointSymbol = val.billboard.image.getValue(this.julianDate);
       }
       return item;
     });
@@ -227,7 +229,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     } else if (area.polyline && area.polyline.positions) {
       return area.polyline.positions.getValue();
     } else if (area.billboard && area.position) {
-      return [area.position.getValue(Date.now())];
+      return [area.position.getValue(this.julianDate)];
     }
     return undefined;
   }
@@ -487,10 +489,10 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     };
 
     if (type === 'point') {
-      const position = entity.position.getValue(Date.now());
+      const position = entity.position.getValue(this.julianDate);
       this.editedBackup.positions = Cartesian3.clone(position);
-      this.editedBackup.color = entity.billboard.color.getValue(Date.now());
-      this.editedBackup.image = entity.billboard.image.getValue(Date.now());
+      this.editedBackup.color = entity.billboard.color.getValue(this.julianDate);
+      this.editedBackup.image = entity.billboard.image.getValue(this.julianDate);
     } else if (type === 'line') {
       this.editedBackup.positions = entity.polyline.positions.getValue();
     } else {
