@@ -282,19 +282,19 @@ export function setupBaseLayers(viewer) {
     {
       id: arealLayer,
       labelKey: t('dtd_areal_map_label'),
-      backgroundImgSrc: '../images/arealimage.png', //relative to ngm-map-chooser
+      backgroundImgSrc: './images/arealimage.png',
       layer: addSwisstopoLayer(viewer, arealLayer, 'jpeg', false)
     },
     {
       id: greyLayer,
       labelKey: t('dtd_grey_map_label'),
-      backgroundImgSrc: '../images/grey.png',
+      backgroundImgSrc: './images/grey.png',
       layer: addSwisstopoLayer(viewer, greyLayer, 'jpeg')
     },
     {
       id: 'empty_map',
       labelKey: t('dtd_empty_map_label'),
-      backgroundImgSrc: '../images/empty.png',
+      backgroundImgSrc: './images/empty.png',
       layer: emptyLayer
     }];
 

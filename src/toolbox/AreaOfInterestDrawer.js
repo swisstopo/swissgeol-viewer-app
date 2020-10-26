@@ -5,6 +5,7 @@ import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {getMeasurements} from '../utils.js';
+import JulianDate from 'cesium/Source/Core/JulianDate';
 
 import {LitElement} from 'lit-element';
 
@@ -12,7 +13,8 @@ import {
   AOI_DATASOURCE_NAME,
   DEFAULT_AOI_COLOR,
   HIGHLIGHTED_AOI_COLOR,
-  DEFAULT_VOLUME_HEIGHT_LIMITS
+  DEFAULT_VOLUME_HEIGHT_LIMITS,
+  AOI_POINT_SYMBOLS
 } from '../constants.js';
 import {updateColor, cleanupUploadedEntity, getUploadedAreaType} from './helpers.js';
 import {showWarning} from '../message.js';
@@ -26,6 +28,8 @@ import {applyInputLimits, updateHeightForCartesianPositions} from '../utils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
 import {showMessage} from '../message';
+import Color from 'cesium/Source/Core/Color';
+import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -42,6 +46,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.maxVolumeHeight = 30000;
     this.minVolumeLowerLimit = -30000;
     this.maxVolumeLowerLimit = 30000;
+    this.julianDate = new JulianDate();
   }
 
   update(changedProperties) {
@@ -138,6 +143,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       this.draw_.entityForEdit.properties = this.editedBackup.properties;
       if (this.draw_.type === 'point') {
         this.draw_.entityForEdit.position = this.editedBackup.positions;
+        this.draw_.entityForEdit.billboard.color = this.editedBackup.color;
+        this.draw_.entityForEdit.billboard.image = this.editedBackup.image;
       } else if (this.draw_.type === 'line') {
         this.draw_.entityForEdit.polyline.positions = this.editedBackup.positions;
       } else {
@@ -146,6 +153,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       if (this.editedBackup.properties.volumeShowed) {
         this.updateEntityVolume(this.draw_.entityForEdit.id);
       }
+      this.draw_.entityForEdit.name = this.editedBackup.name;
     }
     this.editedBackup = undefined;
     this.draw_.active = false;
@@ -192,7 +200,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
   get entitiesList_() {
     return this.interestAreasDataSource.entities.values.map(val => {
-      return {
+      const item = {
         id: val.id,
         name: val.name,
         show: val.isShowing,
@@ -205,7 +213,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         type: val.properties.type ? val.properties.type.getValue() : undefined,
         volumeShowed: val.properties.volumeShowed ? val.properties.volumeShowed.getValue() : undefined,
         volumeHeightLimits: val.properties.volumeHeightLimits ? val.properties.volumeHeightLimits.getValue() : undefined,
+        description: val.properties.description ? val.properties.description.getValue() : '',
       };
+      if (val.billboard) {
+        item.pointColor = val.billboard.color.getValue(this.julianDate);
+        item.pointSymbol = val.billboard.image.getValue(this.julianDate);
+      }
+      return item;
     });
   }
 
@@ -214,8 +228,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       return area.polygon.hierarchy.getValue().positions;
     } else if (area.polyline && area.polyline.positions) {
       return area.polyline.positions.getValue();
-    } else if (area.point && area.position) {
-      return [area.position.getValue(new Date())];
+    } else if (area.billboard && area.position) {
+      return [area.position.getValue(this.julianDate)];
     }
     return undefined;
   }
@@ -324,19 +338,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.areasCounter_[area.type]) {
         this.areasCounter_[area.type] = areaNumber;
       }
-      const attributes = {
-        name: area.name,
-        show: area.show,
-        positions: area.positions,
-        area: area.area,
-        perimeter: area.perimeter,
-        numberOfSegments: area.numberOfSegments,
-        sidesLength: area.sidesLength ? area.sidesLength : [],
-        type: area.type,
-        volumeShowed: area.volumeShowed,
-        volumeHeightLimits: area.volumeHeightLimits
-      };
-      const entity = this.addAreaEntity(attributes);
+      const entity = this.addAreaEntity(area);
       if (area.volumeShowed) {
         this.updateEntityVolume(entity.id);
       }
@@ -354,9 +356,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     if (props.type === 'rectangle' || props.type === 'polygon') {
       attributes[i18next.t('obj_info_area_label')] = `${props.area}km²`;
       attributes[i18next.t('obj_info_perimeter_label')] = `${props.perimeter}km`;
-      attributes[i18next.t('obj_info_number_segments_label')] = props.obj_info_number_segments_label;
+      attributes[i18next.t('obj_info_number_segments_label')] = props.numberOfSegments;
     } else if (props.type === 'line') {
       attributes[i18next.t('obj_info_length_label')] = `${props.perimeter}km`;
+    }
+    if (props.description && props.description.length) {
+      attributes[i18next.t('obj_info_description_label')] = props.description;
     }
     return attributes;
   }
@@ -396,6 +401,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
        sidesLength: (optional) Array<string | number>,
        numberOfSegments: (optional) number,
        type: string<point | line | rectangle | polygon>
+       description: string,
+       pointSymbol: (optional) string,
+       pointColor: (optional) Color,
    * }
    */
   addAreaEntity(attributes) {
@@ -408,10 +416,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         area: attributes.area,
         perimeter: attributes.perimeter,
         numberOfSegments: attributes.numberOfSegments,
-        sidesLength: attributes.sidesLength,
+        sidesLength: attributes.sidesLength || [],
         type: type,
         volumeShowed: attributes.volumeShowed || false,
-        volumeHeightLimits: attributes.volumeHeightLimits || DEFAULT_VOLUME_HEIGHT_LIMITS
+        volumeHeightLimits: attributes.volumeHeightLimits || DEFAULT_VOLUME_HEIGHT_LIMITS,
+        description: attributes.description || ''
       }
     };
     if (type === 'rectangle' || type === 'polygon') {
@@ -428,10 +437,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       };
     } else if (type === 'point') {
       entityAttrs.position = attributes.positions[0];
-      entityAttrs.point = {
-        color: DEFAULT_AOI_COLOR,
-        pixelSize: 8,
-        scaleByDistance: new NearFarScalar(0, 1, 1, 1)
+      entityAttrs.billboard = {
+        image: attributes.pointSymbol || `./images/${AOI_POINT_SYMBOLS[0]}`,
+        color: attributes.pointColor || Color.GRAY,
+        scale: 0.5,
+        verticalOrigin: VerticalOrigin.BOTTOM,
+        disableDepthTestDistance: 0
       };
     }
     return this.interestAreasDataSource.entities.add(entityAttrs);
@@ -472,11 +483,16 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.type = type;
     this.draw_.active = true;
 
-    this.editedBackup = {properties: {...this.getAreaProperties(entity, type)}};
+    this.editedBackup = {
+      name: entity.name,
+      properties: {...this.getAreaProperties(entity, type)}
+    };
 
     if (type === 'point') {
-      const position = entity.position.getValue(new Date());
+      const position = entity.position.getValue(this.julianDate);
       this.editedBackup.positions = Cartesian3.clone(position);
+      this.editedBackup.color = entity.billboard.color.getValue(this.julianDate);
+      this.editedBackup.image = entity.billboard.image.getValue(this.julianDate);
     } else if (type === 'line') {
       this.editedBackup.positions = entity.polyline.positions.getValue();
     } else {
@@ -506,8 +522,16 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
    * @return {{area: any, numberOfSegments: number, perimeter: any, sidesLength: any}|{type: *}}
    */
   getAreaProperties(entity, type) {
+    const props = {};
+    if (entity.properties) {
+      entity.properties.propertyNames.forEach(propName => {
+        const property = entity.properties[propName];
+        props[propName] = property ? property.getValue() : undefined;
+      });
+    }
     if (type === 'point') {
       return {
+        ...props,
         type: type
       };
     }
@@ -518,14 +542,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
       }
     });
-
-    const props = {};
-    if (entity.properties) {
-      entity.properties.propertyNames.forEach(propName => {
-        const property = entity.properties[propName];
-        props[propName] = property ? property.getValue() : undefined;
-      });
-    }
 
     const measurements = getMeasurements(positions, distances, type);
     return {
@@ -613,6 +629,22 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       new Cartesian2(1, 0),
       new Cartesian2(0, volumeHeightLimits.height),
     ];
+  }
+
+  onNameInputChange(index) {
+    const nameElem = this.querySelector(`.ngm-aoi-name-input-${index}`);
+    const entity = this.draw_.entityForEdit;
+    entity.name = nameElem.value;
+  }
+
+  onDescriptionChange(index) {
+    const descriptionElem = this.querySelector(`.ngm-aoi-description-${index}`);
+    const entity = this.draw_.entityForEdit;
+    if (entity.properties.description) {
+      entity.properties.description = descriptionElem.value;
+    } else {
+      entity.properties.addProperty('description', descriptionElem.value);
+    }
   }
 
   render() {

@@ -79,3 +79,39 @@ ngm-gst-interaction {
   width: 85px;
 }
 
+.ngm-aoi-input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.ngm-aoi-input-container textarea {
+  width: 100%;
+}
+
+.ngm-aoi-symbol-selector,
+.ngm-aoi-color-selector {
+  display: flex;
+  border-radius: 5px;
+  padding: 2px;
+  background-color: #e0e1e2;
+  margin-bottom: 2px;
+}
+
+.ngm-aoi-color-container {
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  border: 1px solid #80808040;
+  margin: 1px;
+}
+
+.ngm-aoi-symbol-selector img {
+  width: 32px;
+  height: 32px;
+}
+
+.ui.button.ngm-aoi-point-style-btn {
+  margin-left: 84px;
+  margin-right: 0;
+}
+

@@ -2,7 +2,7 @@ import {html} from 'lit-element';
 import i18next from 'i18next';
 import {clickOnElement} from '../utils.js';
 import './ngm-gst-interaction.js';
-import './ngm-point-position.js';
+import './ngm-point-edit.js';
 
 const areaUploadInputId = 'areaUpload';
 
@@ -139,17 +139,34 @@ function aoiListTemplate() {
         </div>
         <div class="ngm-aoi-edit"  ?hidden=${!this.draw_.entityForEdit || this.draw_.entityForEdit.id !== i.id}>
             <div class="ui mini basic fluid buttons ngm-aoi-tooltip-container">
-                <button class="ui button"
+                <button class="ui button basic primary"
                         @click=${this.saveEditing.bind(this)}>${i18next.t('tbx_save_editing_btn_label')}</button>
-                <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}</button>
-                <button class="ui button ngm-help-btn"
+                <button class="ui button basic grey" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}</button>
+                <button class="ui button basic grey ngm-help-btn"
                         data-tooltip=${i18next.t('tbx_area_of_interest_edit_hint')}
                         data-variation="tiny"
                         data-position="top right">
                     <i class="question circle outline icon"></i>
                 </button>
             </div>
-
+            <div class="ngm-aoi-input-container">
+                <label>${i18next.t('tbx_name_label')}:</label>
+                <div class="ui mini input">
+                  <input
+                    class=${`ngm-aoi-name-input-${index}`}
+                    type="text" .value="${i.name}"
+                    @input="${() => this.onNameInputChange(index)}">
+                </div>
+            </div>
+            <div class="ngm-aoi-input-container">
+                <label>${i18next.t('tbx_description_label')}:</label>
+                <div class="ui mini input">
+                  <textarea
+                    class=${`ngm-aoi-description-${index}`}
+                    type="text" .value="${i.description}"
+                    @input="${() => this.onDescriptionChange(index)}"></textarea>
+                </div>
+            </div>
             <div class="ngm-volume-limits-input"
                 ?hidden=${!this.draw_.entityForEdit || !(this.draw_.entityForEdit.properties.volumeShowed && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
                 <div>
@@ -171,12 +188,12 @@ function aoiListTemplate() {
                     </div>
                 </div>
             </div>
-           <ngm-point-position
+           <ngm-point-edit
                 ?hidden=${i.type !== 'point'}
                 .viewer=${this.viewer}
                 .position=${i.positions[0]}
                 .entity=${this.draw_.entityForEdit}>
-           </ngm-point-position>
+           </ngm-point-edit>
         </div>
       </div>`);
 }

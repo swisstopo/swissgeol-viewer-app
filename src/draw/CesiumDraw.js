@@ -8,6 +8,7 @@ import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
+import JulianDate from 'cesium/Source/Core/JulianDate';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
@@ -37,6 +38,7 @@ export class CesiumDraw extends EventTarget {
     super();
     this.viewer_ = viewer;
     this.type = type;
+    this.julianDate = new JulianDate();
 
     this.drawingDataSource = new CustomDataSource('drawing');
     this.viewer_.dataSources.add(this.drawingDataSource);
@@ -208,9 +210,9 @@ export class CesiumDraw extends EventTarget {
     if (options.edit && this.type === 'rectangle') {
       const isLastPoint = options.positionIndex === 2; // always 3 points for rectangle
       const billboard = {
-        position: new CallbackProperty(() => pointEntity.position.getValue(new Date()), false),
+        position: new CallbackProperty(() => pointEntity.position.getValue(this.julianDate), false),
         billboard: {
-          image: isLastPoint ? '../images/move-edit-icon.svg' : '../images/edit-icons.svg',
+          image: isLastPoint ? './images/move-edit-icon.svg' : './images/edit-icons.svg',
           scale: isLastPoint ? 0.06 : 0.2,
           disableDepthTestDistance: Number.POSITIVE_INFINITY,
           horizontalOrigin: HorizontalOrigin.LEFT,
@@ -383,7 +385,7 @@ export class CesiumDraw extends EventTarget {
     if (this.entityForEdit) {
       const objects = this.viewer_.scene.drillPick(event.position, 5, 5, 5);
       if (objects.length) {
-        const selectedPoint = objects.find(obj => !!obj.id.point);
+        const selectedPoint = objects.find(obj => !!obj.id.point || !!obj.id.billboard);
         if (!selectedPoint) return;
         const selectedEntity = selectedPoint.id;
         this.sketchPoint_ = selectedEntity;

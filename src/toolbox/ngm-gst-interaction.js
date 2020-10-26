@@ -207,26 +207,27 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
             </div>
         </div>
         <div id=${configurePopupId} class="ui mini popup">
-        ${this.geometryType === 'rectangle' ?
-      html`<label>${i18next.t('tbx_cross_sections_depth_label')}</label>
-              <div class="ui tiny form depth">
-                  <div class="field">
-                    <input type="number"
-                      .value="${this.depth}"
-                      @change="${this.onDepthChange}"
-                      min="${this.minDepth_}"
-                      max="${this.maxDepth_}"
-                      step="100"
-                    >
-                    <div class="ui small error message">
-                      <p>Depth must be between ${this.minDepth_}m and ${this.maxDepth_}m</p>
-                    </div>
-                  </div>
-        </div>` : ''}
-        <label>${i18next.t('tbx_cross_sections_format_label')}</label>
-        <div id="${formatSelectorId}" class="ui fluid selection mini dropdown">
-            <div class="text"></div>
-            <i class="dropdown icon"></i>
+            ${this.geometryType === 'rectangle' ?
+            html`<label>${i18next.t('tbx_cross_sections_depth_label')}</label>
+                  <div class="ui tiny form depth">
+                      <div class="field">
+                        <input type="number"
+                          .value="${this.depth}"
+                          @change="${this.onDepthChange}"
+                          min="${this.minDepth_}"
+                          max="${this.maxDepth_}"
+                          step="100"
+                        >
+                        <div class="ui small error message">
+                          <p>${i18next.t('tbx_depth_warning', {minDepth: this.minDepth_, maxDepth: this.maxDepth_})}</p>
+                        </div>
+                      </div>
+                  </div>` : ''}
+            <label>${i18next.t('tbx_cross_sections_format_label')}</label>
+            <div id="${formatSelectorId}" class="ui fluid selection mini dropdown">
+                <div class="text"></div>
+                <i class="dropdown icon"></i>
+            </div>
         </div>
     `;
   }

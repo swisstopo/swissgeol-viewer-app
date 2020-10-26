@@ -6,8 +6,9 @@ import {lv95ToDegrees} from '../projection';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {applyInputLimits, prepareCoordinatesForUi} from '../utils';
+import {AOI_POINT_COLORS, AOI_POINT_SYMBOLS} from '../constants';
 
-class NgmPointPosition extends I18nMixin(LitElement) {
+class NgmPointEdit extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
@@ -50,6 +51,11 @@ class NgmPointPosition extends I18nMixin(LitElement) {
           }
         ]
       });
+      $(this.querySelector('.ngm-aoi-point-style-btn')).popup({
+        popup: $(this.querySelector('.ngm-aoi-point-style')),
+        on: 'click',
+        position: 'right center'
+      });
       this.dropdownInited = true;
     }
   }
@@ -80,6 +86,14 @@ class NgmPointPosition extends I18nMixin(LitElement) {
     this.updateInputValues();
     this.entity.position = cartesianPosition;
     this.viewer.scene.requestRender();
+  }
+
+  onColorChange(color) {
+    this.entity.billboard.color = color;
+  }
+
+  onSymbolChange(image) {
+    this.entity.billboard.image = `./images/${image}`;
   }
 
   render() {
@@ -113,6 +127,30 @@ class NgmPointPosition extends I18nMixin(LitElement) {
                     class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
                 <label class="ui label">m</label>
             </div>
+            <button class="ui icon button ngm-aoi-point-style-btn">
+                <i class="map marker alternate icon"></i>
+            </button>
+        </div>
+        <div class="ui mini popup ngm-aoi-point-style">
+            <label>${i18next.t('tbx_point_color_label')}</label>
+            <div class="ngm-aoi-color-selector">
+            ${AOI_POINT_COLORS.map(pointColor => {
+      return html`<div
+                      style="background-color: ${pointColor.color};"
+                      @click=${this.onColorChange.bind(this, pointColor.value)}
+                      class="ngm-aoi-color-container"></div>`;
+    })}
+            </div>
+
+            <label>${i18next.t('tbx_point_symbol_label')}</label>
+            <div class="ngm-aoi-symbol-selector">
+            ${AOI_POINT_SYMBOLS.map(image => {
+      return html`<img
+                      class="ui mini image"
+                      src="./images/${image}"
+                      @click=${this.onSymbolChange.bind(this, image)}>`;
+    })}
+            </div>
         </div>
       `;
   }
@@ -123,4 +161,4 @@ class NgmPointPosition extends I18nMixin(LitElement) {
   }
 }
 
-customElements.define('ngm-point-position', NgmPointPosition);
+customElements.define('ngm-point-edit', NgmPointEdit);
