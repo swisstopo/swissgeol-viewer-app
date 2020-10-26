@@ -121,6 +121,7 @@
   "tbx_create_section_label": "Create section",
   "tbx_cross_sections_depth_label": "Cross sections depth",
   "tbx_cross_sections_format_label": "Result format",
+  "tbx_depth_warning": "Depth must be between {{minDepth}}m and {{maxDepth}}m",
   "tbx_description_label": "Description",
   "tbx_download_section_output_label": "Download",
   "tbx_drawing_tools_label": "Drawing and measuring:",

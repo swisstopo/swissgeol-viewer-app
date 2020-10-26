@@ -208,9 +208,9 @@ export class CesiumDraw extends EventTarget {
     if (options.edit && this.type === 'rectangle') {
       const isLastPoint = options.positionIndex === 2; // always 3 points for rectangle
       const billboard = {
-        position: new CallbackProperty(() => pointEntity.position.getValue(new Date()), false),
+        position: new CallbackProperty(() => pointEntity.position.getValue(Date.now()), false),
         billboard: {
-          image: isLastPoint ? '../images/move-edit-icon.svg' : '../images/edit-icons.svg',
+          image: isLastPoint ? './images/move-edit-icon.svg' : './images/edit-icons.svg',
           scale: isLastPoint ? 0.06 : 0.2,
           disableDepthTestDistance: Number.POSITIVE_INFINITY,
           horizontalOrigin: HorizontalOrigin.LEFT,

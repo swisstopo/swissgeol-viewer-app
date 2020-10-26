@@ -214,8 +214,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         description: val.properties.description ? val.properties.description.getValue() : '',
       };
       if (val.billboard) {
-        item.pointColor = val.billboard.color.getValue(new Date());
-        item.pointSymbol = val.billboard.image.getValue(new Date());
+        item.pointColor = val.billboard.color.getValue(Date.now());
+        item.pointSymbol = val.billboard.image.getValue(Date.now());
       }
       return item;
     });
@@ -227,7 +227,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     } else if (area.polyline && area.polyline.positions) {
       return area.polyline.positions.getValue();
     } else if (area.billboard && area.position) {
-      return [area.position.getValue(new Date())];
+      return [area.position.getValue(Date.now())];
     }
     return undefined;
   }
@@ -436,7 +436,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     } else if (type === 'point') {
       entityAttrs.position = attributes.positions[0];
       entityAttrs.billboard = {
-        image: attributes.pointSymbol || `../images/${AOI_POINT_SYMBOLS[0]}`,
+        image: attributes.pointSymbol || `./images/${AOI_POINT_SYMBOLS[0]}`,
         color: attributes.pointColor || Color.GRAY,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
@@ -487,10 +487,10 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     };
 
     if (type === 'point') {
-      const position = entity.position.getValue(new Date());
+      const position = entity.position.getValue(Date.now());
       this.editedBackup.positions = Cartesian3.clone(position);
-      this.editedBackup.color = entity.billboard.color.getValue(new Date());
-      this.editedBackup.image = entity.billboard.image.getValue(new Date());
+      this.editedBackup.color = entity.billboard.color.getValue(Date.now());
+      this.editedBackup.image = entity.billboard.image.getValue(Date.now());
     } else if (type === 'line') {
       this.editedBackup.positions = entity.polyline.positions.getValue();
     } else {

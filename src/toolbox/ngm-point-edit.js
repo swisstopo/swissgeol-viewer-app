@@ -93,7 +93,7 @@ class NgmPointEdit extends I18nMixin(LitElement) {
   }
 
   onSymbolChange(image) {
-    this.entity.billboard.image = `../images/${image}`;
+    this.entity.billboard.image = `./images/${image}`;
   }
 
   render() {
@@ -127,7 +127,7 @@ class NgmPointEdit extends I18nMixin(LitElement) {
                     class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
                 <label class="ui label">m</label>
             </div>
-            <button class="ui icon button ngm-aoi-point-style-btn" style="margin-left: 84px;margin-right: 0;">
+            <button class="ui icon button ngm-aoi-point-style-btn">
                 <i class="map marker alternate icon"></i>
             </button>
         </div>
@@ -147,7 +147,7 @@ class NgmPointEdit extends I18nMixin(LitElement) {
             ${AOI_POINT_SYMBOLS.map(image => {
       return html`<img
                       class="ui mini image"
-                      src="../images/${image}"
+                      src="./images/${image}"
                       @click=${this.onSymbolChange.bind(this, image)}>`;
     })}
             </div>

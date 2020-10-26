@@ -121,6 +121,7 @@
   "tbx_create_section_label": "Schnitte erstellen",
   "tbx_cross_sections_depth_label": "Schnitttiefe",
   "tbx_cross_sections_format_label": "Format des Schnitts",
+  "tbx_depth_warning": "",
   "tbx_description_label": "",
   "tbx_download_section_output_label": "Download",
   "tbx_drawing_tools_label": "Zeichnen und Messen:",

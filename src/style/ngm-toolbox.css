@@ -110,3 +110,8 @@ ngm-gst-interaction {
   height: 32px;
 }
 
+.ui.button.ngm-aoi-point-style-btn {
+  margin-left: 84px;
+  margin-right: 0;
+}
+

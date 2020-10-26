@@ -219,7 +219,7 @@ class NgmGstInteraction extends I18nMixin(LitElement) {
                           step="100"
                         >
                         <div class="ui small error message">
-                          <p>Depth must be between ${this.minDepth_}m and ${this.maxDepth_}m</p>
+                          <p>${i18next.t('tbx_depth_warning', {minDepth: this.minDepth_, maxDepth: this.maxDepth_})}</p>
                         </div>
                       </div>
                   </div>` : ''}
