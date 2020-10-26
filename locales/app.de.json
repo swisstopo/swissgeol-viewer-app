@@ -4,6 +4,7 @@
   "dtd_areal_map_label": "Luftbild",
   "dtd_background_map_label": "Hintergrundkarte",
   "dtd_displayed_data_label": "Angezeigte Daten",
+  "dtd_download_hint": "",
   "dtd_empty_map_label": "Kein Hintergrund",
   "dtd_grey_map_label": "Karte Grau",
   "dtd_layer_down_label": "Nach unten",
