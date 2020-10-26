@@ -12,10 +12,10 @@ You are welcome to use and adapt this software for your own uses; see See [LICEN
 
 git clone https://github.com/swissgeol/ngm.git
 cd ngm; npm i; npm start
-open http://localhost:8080
+open http://localhost:8000
 
 
-## Developping the Swisstopo version
+## Developing the Swisstopo version
 
 See [DEVELOPING.md](./DEVELOPING.md).
 
