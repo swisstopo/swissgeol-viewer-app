@@ -22,7 +22,7 @@ export default class AmazonS3Resource extends Resource {
     super(options);
 
     this.bucket = options.bucket;
-    this.region = options.region !== undefined ? options.region : 'eu-central-1';
+    this.region = options.region || 'eu-central-1';
   }
 
   clone(result) {
