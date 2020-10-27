@@ -34,7 +34,8 @@ class LeftSideBar extends I18nMixin(LitElement) {
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
       hideWelcome: {type: Boolean},
-      mapChooser: {type: Function}
+      mapChooser: {type: Function},
+      authenticated: {type: Boolean},
     };
   }
 
@@ -70,6 +71,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         <div class="content ngm-layer-content active">
           <ngm-catalog
             .layers=${this.catalogLayers}
+            .authenticated=${this.authenticated}
             @layerclick=${this.onCatalogLayerClicked}
           >
           </ngm-catalog>
@@ -85,6 +87,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
           <ngm-layers
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             @layerChanged=${this.onLayerChanged}
+            .authenticated=${this.authenticated}
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>
@@ -221,6 +224,16 @@ class LeftSideBar extends I18nMixin(LitElement) {
       this.initBarAccordions();
     }
 
+    if (changedProperties.has('authenticated') && !this.authenticated) {
+      // user logged out, remove restricted layers.
+      const restricted = this.activeLayers.filter(config => config.restricted);
+      restricted.forEach(config => {
+        const idx = this.activeLayers.indexOf(config);
+        this.activeLayers.splice(idx, 1);
+        this.removeLayer(config);
+      });
+    }
+
     super.updated(changedProperties);
   }
 
@@ -260,6 +273,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
   onRemoveDisplayedLayer(evt) {
     const {config, idx} = evt.detail;
     this.activeLayers.splice(idx, 1);
+    this.removeLayer(config);
+  }
+
+  removeLayer(config) {
     config.setVisibility(false);
     config.visible = false;
     config.displayed = false;

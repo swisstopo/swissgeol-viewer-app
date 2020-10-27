@@ -8,12 +8,18 @@ class Catalog extends I18nMixin(LitElement) {
   static get properties() {
     return {
       layers: {type: Object},
+      authenticated: {type: Boolean},
     };
   }
 
   getCategoryOrLayerTemplate(c) {
-    if (c.children)
+    // if it is a restricted layer, the user must be logged in to see it
+    if (c.restricted && !this.authenticated) {
+      return;
+    }
+    if (c.children) {
       return this.getCategoryTemplate(c);
+    }
     return this.getLayerTemplate(c);
   }
 
@@ -43,7 +49,9 @@ class Catalog extends I18nMixin(LitElement) {
           class="ngm-layer-checkbox"
           type="checkbox"
           .checked=${layer.visible}>
-        <label class=${layer.displayed ? 'displayed' : ''}>${i18next.t(layer.label)}</label>
+        <label class=${layer.displayed ? 'displayed' : ''}>
+          <i class=${layer.restricted ? 'lock icon' : ''}></i>${i18next.t(layer.label)}
+        </label>
       </div>`;
   }
 

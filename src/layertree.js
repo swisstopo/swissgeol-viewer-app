@@ -126,6 +126,18 @@ const geo_base = {
             'RESTRICTIO', 'TIEFEMD', 'DEPTHFROM', 'DEPTHTO', 'LAYERDESC', 'ORIGGEOL', 'LITHOLOGY', 'LITHOSTRAT',
             'CHRONOSTR', 'TECTO', 'USCS1', 'USCS2', 'USCS3']
         },
+        {
+          type: LAYER_TYPES.tiles3d,
+          label: t('lyr_boreholes_private_label'),
+          layer: 'boreholes_authenticated',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true,
+          visible: false,
+          displayed: false,
+          restricted: true,
+          aws_s3_bucket: 'ngm-dev-authenticated-resources',
+          aws_s3_key: 'tiles/bh_all_g_4326/v1/tileset.json',
+        },
       ]
     },
     {

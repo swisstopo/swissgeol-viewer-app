@@ -1,12 +1,16 @@
-
+import {fromCognitoIdentityPool} from '@aws-sdk/credential-provider-cognito-identity';
+import {CognitoIdentityClient} from '@aws-sdk/client-cognito-identity';
 const cognitoState = 'cognito_state';
 const cognitoUser = 'cognito_user';
+const cognitoAccessToken = 'cognito_access_token';
 
 // example: #access_token=header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature&token_type=Bearer&state=1234
 const isResponse = /^#[\w]+=[\w.=-]+(&[\w]+=[\w.=-]+)*$/;
 
 // example: header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature
 const isToken = /^[\w=-]+.[\w=-]+.[\w=-]+$/;
+
+let _AWSCredentials = null;
 
 export default class Auth {
 
@@ -16,11 +20,30 @@ export default class Auth {
     try {
       const response = this.parseResponse(window.location.hash);
       if (response.token_type === 'Bearer' && response.state === this.state()) {
-        const user = this.parseToken(response.access_token);
-        this.setUser(user);
+        this.setUser(this.parseToken(response.access_token));
+        this.setAccessToken(response.id_token);
       }
     } catch (e) {
       // do nothing
+    }
+
+    const accessToken = this.getAccessToken();
+    if (accessToken) {
+      _AWSCredentials = fromCognitoIdentityPool({
+        client: new CognitoIdentityClient({
+          region: 'eu-central-1'
+        }),
+        identityPoolId: 'eu-central-1:21355ebf-703b-44dd-8900-f8bc391b4bde',
+        logins: {
+          'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_5wXXpcDt8': accessToken
+        }
+      });
+    }
+  }
+
+  static getCredentialsPromise() {
+    if (_AWSCredentials) {
+      return _AWSCredentials();
     }
   }
 
@@ -70,6 +93,16 @@ export default class Auth {
   static logout() {
     localStorage.removeItem(cognitoUser);
     localStorage.removeItem(cognitoState);
+    localStorage.removeItem(cognitoAccessToken);
+    _AWSCredentials = null;
+  }
+
+  static getAccessToken() {
+    return localStorage.getItem(cognitoAccessToken);
+  }
+
+  static setAccessToken(token) {
+    localStorage.setItem(cognitoAccessToken, token);
   }
 
   static async waitForAuthenticate() {
