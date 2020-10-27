@@ -10,8 +10,13 @@ You are welcome to use and adapt this software for your own uses; see See [LICEN
 
 ## Your own version: getting started
 
+```bash
 git clone https://github.com/swissgeol/ngm.git
-cd ngm; npm i; npm start
+cd ngm
+npm i
+npm start
+```
+
 open http://localhost:8000
 
 
