@@ -251,6 +251,8 @@ export default class Slicer {
       const diff = Cartesian3.subtract(intersectionEnd, intersectionStart, new Cartesian3());
       const type = this.selectedPlane.properties.type.getValue();
 
+      // depends on selected plane type calculates plane distance
+      // also updates plane entities center and dimensions (depends on type) to show planes as a box
       if (type.includes('horizontal')) {
         const cartCenter = Cartographic.fromCartesian(this.planesCenterV);
         const lv95Center = degreesToLv95([CMath.toDegrees(cartCenter.longitude), CMath.toDegrees(cartCenter.latitude)]);
@@ -325,10 +327,11 @@ export default class Slicer {
   setInitialTargets() {
     const globe = this.viewer.scene.globe;
     this.planesCenter = pickCenter(this.viewer.scene);
-    let viewCenter = Cartographic.fromCartesian(this.planesCenter);
-    viewCenter.height = 0;
-    if (!Rectangle.contains(globe.cartographicLimitRectangle, viewCenter)) {
-      viewCenter = Rectangle.center(globe.cartographicLimitRectangle);
+    let planesCenter = Cartographic.fromCartesian(this.planesCenter);
+    planesCenter.height = 0;
+    // check is slicing center placed on map otherwise use map center
+    if (!Rectangle.contains(globe.cartographicLimitRectangle, planesCenter)) {
+      planesCenter = Rectangle.center(globe.cartographicLimitRectangle);
     }
 
     let viewRect = this.viewer.scene.camera.computeViewRectangle();
@@ -336,19 +339,24 @@ export default class Slicer {
     if (viewRect.width > mapRect.width || viewRect.height > mapRect.height) {
       viewRect = mapRect;
     }
+    // get extreme points of the map
     const mapRectNortheast = Rectangle.northeast(mapRect);
     const mapRectSouthwest = Rectangle.southwest(mapRect);
+    // calculate slicing rect sizes (1/3 of view)
     const sliceRectWidth = 1 / 3 * viewRect.width;
     const sliceRectHeight = 1 / 3 * viewRect.height;
-    const lon = viewCenter.longitude + sliceRectWidth;
-    const lat = viewCenter.latitude + sliceRectHeight;
-    viewCenter.longitude = sliceRectWidth / 2 + viewCenter.longitude;
-    viewCenter.latitude = sliceRectHeight / 2 + viewCenter.latitude;
+    const lon = planesCenter.longitude + sliceRectWidth;
+    const lat = planesCenter.latitude + sliceRectHeight;
+    // moves the center of slicing. Left down corner should be placed in the view center
+    planesCenter.longitude = sliceRectWidth / 2 + planesCenter.longitude;
+    planesCenter.latitude = sliceRectHeight / 2 + planesCenter.latitude;
+    // converts coordinates to lv95 to calculate initial planes distance in meters
     const lv95SecondPosition = degreesToLv95([CMath.toDegrees(lon), CMath.toDegrees(lat)]);
-    const lv95Center = degreesToLv95([CMath.toDegrees(viewCenter.longitude), CMath.toDegrees(viewCenter.latitude)]);
+    const lv95Center = degreesToLv95([CMath.toDegrees(planesCenter.longitude), CMath.toDegrees(planesCenter.latitude)]);
     const lv95Northeast = degreesToLv95([CMath.toDegrees(mapRectNortheast.longitude), CMath.toDegrees(mapRectNortheast.latitude)]);
     const lv95Southwest = degreesToLv95([CMath.toDegrees(mapRectSouthwest.longitude), CMath.toDegrees(mapRectSouthwest.latitude)]);
 
+    // calculates initial planes distance in meters
     let xDiffNortheast = lv95SecondPosition[0] - lv95Center[0];
     let xDiffSouthwest = xDiffNortheast;
     let yDiffNortheast = lv95SecondPosition[1] - lv95Center[1];
@@ -356,6 +364,7 @@ export default class Slicer {
     this.planesWidth = xDiffNortheast * 2;
     this.planesHeight = yDiffNortheast * 2;
 
+    // checks if all planes placed on the map
     if (lv95Center[0] + xDiffNortheast > lv95Northeast[0]) {
       xDiffNortheast = lv95Northeast[0] - lv95Center[0];
     }
@@ -374,7 +383,7 @@ export default class Slicer {
     this.targetXNortheast = xDiffNortheast;
     this.targetYSouthwest = yDiffSouthwest;
     this.targetXSouthwest = xDiffSouthwest;
-    this.planesCenter = Cartographic.toCartesian(viewCenter);
+    this.planesCenter = Cartographic.toCartesian(planesCenter);
     this.planesCenterH = this.planesCenter;
     this.planesCenterV = this.planesCenter;
   }
