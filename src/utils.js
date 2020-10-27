@@ -166,8 +166,8 @@ export function getMeasurements(positions, distances, type) {
 
 /**
  * Returns window position of point on map
- * @param scene
- * @param cartographicPosition
+ * @param {import('cesium/Source/Scene/Scene.js').default} scene
+ * @param {Cartographic} cartographicPosition
  * @return {Cartesian2}
  */
 export function convertCartographicToScreenCoordinates(scene, cartographicPosition) {
@@ -178,9 +178,9 @@ export function convertCartographicToScreenCoordinates(scene, cartographicPositi
 
 /**
  * Returns x,y in lv95 or wsg84 and height relative to ground
- * @param scene
- * @param position: Cartographic
- * @param coordinatesType: 'lv95' | 'wsg84'
+ * @param {import('cesium/Source/Scene/Scene.js').default} scene
+ * @param {Cartographic} position
+ * @param {'lv95' | 'wsg84'} coordinatesType
  * @return {{x: number, y: number, height: number}}
  */
 export function prepareCoordinatesForUi(scene, position, coordinatesType) {
@@ -203,10 +203,10 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType) {
 
 /**
  * Sets height in meters for each cartesian3 position in array
- * @param scene
- * @param positions
- * @param height
- * @return {*}
+ * @param {import('cesium/Source/Scene/Scene.js').default} scene
+ * @param {Array<Cartesian3>} positions
+ * @param {number} height
+ * @return {Array<Cartesian3>}
  */
 export function updateHeightForCartesianPositions(scene, positions, height) {
   return positions.map(p => {
@@ -219,9 +219,9 @@ export function updateHeightForCartesianPositions(scene, positions, height) {
 
 /**
  * Applies input min/max values and returns applied value
- * @param element
- * @param minValue
- * @param maxValue
+ * @param {HTMLInputElement} element
+ * @param {number} minValue
+ * @param {number} maxValue
  * @return {number}
  */
 export function applyInputLimits(element, minValue, maxValue) {
