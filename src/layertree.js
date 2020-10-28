@@ -207,7 +207,7 @@ const natural_hazard = {
       type: LAYER_TYPES.earthquakes,
       label: t('lyr_earthquakes_label'),
       layer: 'earthquakes',
-      visible: true,
+      visible: false,
       displayed: true,
       transparency: DEFAULT_LAYER_TRANSPARENCY
     },
