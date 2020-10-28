@@ -67,6 +67,14 @@ export class CesiumDraw extends EventTarget {
     this.ERROR_TYPES = {needMorePoints: 'need_more_points'};
   }
 
+  renderSceneIfTranslucent() {
+    // because calling render decreases performance, only call it when needed.
+    // see https://cesium.com/docs/cesiumjs-ref-doc/Scene.html#pickTranslucentDepth
+    if (this.viewer_.scene.globe.translucency.enabled) {
+      this.viewer_.scene.render();
+    }
+  }
+
   /**
    *
    */
@@ -314,6 +322,7 @@ export class CesiumDraw extends EventTarget {
   }
 
   onLeftClick_(event) {
+    this.renderSceneIfTranslucent();
     const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.position));
     if (position) {
       if (!this.sketchPoint_) {
@@ -339,6 +348,7 @@ export class CesiumDraw extends EventTarget {
   }
 
   onMouseMove_(event) {
+    this.renderSceneIfTranslucent();
     const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
     if (!position) return;
     if (this.entityForEdit && this.leftPressed) {
