@@ -70,7 +70,9 @@ const scene = viewer.scene;
  * @type {import('cesium/Source/Scene/Globe.js').default}
  */
 const globe = scene.globe;
-globe.maximumScreenSpaceError = 10000;
+
+const searchParams = new URLSearchParams(document.location.search);
+globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') || '10000');
 
 // setup auth component
 const auth = document.querySelector('ngm-auth');
@@ -89,7 +91,6 @@ const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
   if (globe.tilesLoaded) {
     unlisten();
     let sse = 2;
-    const searchParams = new URLSearchParams(document.location.search);
     if (document.location.hostname === 'localhost') {
       sse = 20;
     }
