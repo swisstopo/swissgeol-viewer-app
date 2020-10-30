@@ -75,7 +75,7 @@ globe.maximumScreenSpaceError = 10000;
 // setup auth component
 const auth = document.querySelector('ngm-auth');
 auth.endpoint = 'https://mysecurelogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize';
-auth.clientId = '16osqbbqrstpo8tjf94st0nrpg';
+auth.clientId = '24i75eafptdk4okkqlgnjng9q8';
 
 // setup web components
 const sideBar = document.querySelector('ngm-left-side-bar');

@@ -23,15 +23,17 @@ export default class Auth {
       const state = params.get('state');
       localStorage.setItem('mycode', window.location.search);
       const endpoint = 'https://mysecurelogin.auth.eu-central-1.amazoncognito.com/oauth2/token';
-      const clientId = '16osqbbqrstpo8tjf94st0nrpg';
+      const clientId = '24i75eafptdk4okkqlgnjng9q8';
       const data = new URLSearchParams();
       data.append('grant_type', 'authorization_code');
-      data.append('code', code);
-      //data.append('client_id', clientId);
-      data.append('redirect_url', 'http://localhost:8000/');
-      // const headers = new Headers({
-      //   'Authorization': `Basic ${btoa(clientId + ':' + clientSecret)}`
-      // });
+      data.append('code', btoa(code));
+      data.append('client_id', clientId);
+      //data.append('client_secret', clientSecret);
+      data.append('redirect_url', location.origin + location.pathname);
+      const headers = new Headers({
+        // 'Authorization': `Basic ${btoa(clientId + ':' + clientSecret)}`
+        'Content-Type': 'application/x-www-form-urlencoded'
+      });
 
       fetch(endpoint, {
         method: 'post',
@@ -55,7 +57,7 @@ export default class Auth {
         client: new CognitoIdentityClient({
           region: 'eu-central-1'
         }),
-        identityPoolId: 'eu-central-1:440fc434-fd3d-4120-a80e-98ff7f288cf0',
+        identityPoolId: 'eu-central-1:94778b93-bbc5-4b61-99dc-ab266f8c57f8',
         logins: {
           'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_hHRkaliqh': accessToken
         }
