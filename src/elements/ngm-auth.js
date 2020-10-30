@@ -26,7 +26,7 @@ class NgmAuth extends I18nMixin(LitElement) {
     super();
     this.user = Auth.getUser();
 
-    this.responseType = 'token';
+    this.responseType = 'code';
     this.redirectUri = `${location.origin}${location.pathname}`;
     this.scope = 'openid+profile';
   }

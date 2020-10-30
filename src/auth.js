@@ -17,6 +17,28 @@ export default class Auth {
   static initialize() {
     // try parse and store the cognito response
     // and fail silently otherwise
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('code')) {
+      const code = params.get('code');
+      const state = params.get('state');
+      localStorage.setItem('mycode', window.location.search);
+      const endpoint = 'https://mysecurelogin.auth.eu-central-1.amazoncognito.com/oauth2/token';
+      const clientId = '16osqbbqrstpo8tjf94st0nrpg';
+      const data = new URLSearchParams();
+      data.append('grant_type', 'authorization_code');
+      data.append('code', code);
+      //data.append('client_id', clientId);
+      data.append('redirect_url', 'http://localhost:8000/');
+      // const headers = new Headers({
+      //   'Authorization': `Basic ${btoa(clientId + ':' + clientSecret)}`
+      // });
+
+      fetch(endpoint, {
+        method: 'post',
+        headers: headers,
+        body: data
+      }).then(response => window.resp = response, error => alert(error));
+    }
     try {
       const response = this.parseResponse(window.location.hash);
       if (response.token_type === 'Bearer' && response.state === this.state()) {
@@ -29,13 +51,13 @@ export default class Auth {
 
     const accessToken = this.getAccessToken();
     if (accessToken) {
-      _AWSCredentials = fromCognitoIdentityPool({
+      window.AWSCred = _AWSCredentials = fromCognitoIdentityPool({
         client: new CognitoIdentityClient({
           region: 'eu-central-1'
         }),
-        identityPoolId: 'eu-central-1:21355ebf-703b-44dd-8900-f8bc391b4bde',
+        identityPoolId: 'eu-central-1:440fc434-fd3d-4120-a80e-98ff7f288cf0',
         logins: {
-          'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_5wXXpcDt8': accessToken
+          'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_hHRkaliqh': accessToken
         }
       });
     }
@@ -51,6 +73,7 @@ export default class Auth {
     if (!isResponse.test(response)) {
       throw new Error('Malformed response');
     }
+    localStorage.setItem('coco', response);
     const entries = response.substring(1).split('&')
       .filter(entry => entry !== '')
       .map(entry => entry.split('='));
