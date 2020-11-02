@@ -68,8 +68,7 @@ export function pickCenterOnEllipsoid(scene) {
     scene.canvas.clientWidth / 2,
     scene.canvas.clientHeight / 2
   );
-  const ray = camera.getPickRay(windowPosition);
-  return scene.camera.pickEllipsoid(ray);
+  return camera.pickEllipsoid(windowPosition);
 }
 
 /**
@@ -232,18 +231,16 @@ export function updateHeightForCartesianPositions(scene, positions, height) {
 }
 
 /**
- * Applies input min/max values and returns applied value
- * @param {HTMLInputElement} element
+ * Applies min/max values and returns value
+ * @param {number} value
  * @param {number} minValue
  * @param {number} maxValue
  * @return {number}
  */
-export function applyInputLimits(element, minValue, maxValue) {
-  let value = Number(element.value);
+export function applyLimits(value, minValue, maxValue) {
   if (value < minValue || value > maxValue) {
     value = Math.max(value, minValue);
     value = Math.min(value, maxValue);
-    element.value = value;
   }
   return value;
 }

@@ -24,7 +24,7 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
-import {applyInputLimits, updateHeightForCartesianPositions} from '../utils';
+import {applyLimits, updateHeightForCartesianPositions} from '../utils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
 import {showMessage} from '../message';
@@ -613,8 +613,10 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const entity = this.draw_.entityForEdit;
     const limitInput = this.querySelector(`.ngm-lower-limit-input-${index}`);
     const heightInput = this.querySelector(`.ngm-volume-height-input-${index}`);
-    const lowerLimit = applyInputLimits(limitInput, this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
-    const height = applyInputLimits(heightInput, this.minVolumeHeight, this.maxVolumeHeight);
+    const lowerLimit = applyLimits(Number(limitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
+    const height = applyLimits(Number(heightInput.value), this.minVolumeHeight, this.maxVolumeHeight);
+    limitInput.value = lowerLimit;
+    heightInput.value = height;
     entity.properties.volumeHeightLimits = {lowerLimit, height};
     const positions = entity.polylineVolume.positions.getValue();
     this.updateVolumePositions(entity, positions);

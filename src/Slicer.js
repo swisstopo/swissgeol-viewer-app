@@ -15,7 +15,7 @@ import ShadowMode from 'cesium/Source/Scene/ShadowMode';
 import {lv95ToDegrees, radiansToLv95} from './projection';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
-import {pickCenterOnEllipsoid} from './utils';
+import {applyLimits, pickCenterOnEllipsoid} from './utils';
 
 
 const PLANE_HEIGHT = 15000;
@@ -228,6 +228,7 @@ export default class Slicer {
       this.selectedPlane = null;
       this.viewer.scene.screenSpaceCameraController.enableInputs = true;
     }
+    this.unhighlightArrow();
   }
 
   onMouseMove(movement) {
@@ -280,6 +281,8 @@ export default class Slicer {
         const degCenter = lv95ToDegrees(lv95Center);
         this.planesCenterH = Cartesian3.fromDegrees(degCenter[0], degCenter[1]);
       }
+    } else {
+      this.highlightArrow(movement.endPosition);
     }
   }
 
@@ -392,31 +395,33 @@ export default class Slicer {
       const cartCenterH = Cartographic.fromCartesian(this.planesCenterH);
       const cartCenterV = Cartographic.fromCartesian(this.planesCenterV);
       const lv95Center = radiansToLv95([cartCenterH.longitude, cartCenterV.latitude]);
+
+      let viewCenterLv95 = lv95Center;
+      const viewCenter = pickCenterOnEllipsoid(this.viewer.scene);
+      if (viewCenter) {
+        const viewCenterCart = Cartographic.fromCartesian(viewCenter);
+        viewCenterLv95 = radiansToLv95([viewCenterCart.longitude, viewCenterCart.latitude]);
+      }
+
       let height = PLANE_HEIGHT / 2;
       if (this.viewer.scene.cameraUnderground) {
-        height *= -1;
+        height = -height;
       }
+      const negate = type.includes('northeast') ? 1 : -1;
+      let lon, lat;
       if (type.includes('horizontal')) {
-        if (type.includes('northeast')) {
-          const northArrowCenter = [lv95Center[0], lv95Center[1] + this.planesHeight / 2];
-          const degCenter = lv95ToDegrees(northArrowCenter);
-          return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
-        } else {
-          const southArrowCenter = [lv95Center[0], lv95Center[1] - this.planesHeight / 2];
-          const degCenter = lv95ToDegrees(southArrowCenter);
-          return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
-        }
+        const horizontalMin = lv95Center[0] - this.planesWidth / 2;
+        const horizontalMax = lv95Center[0] + this.planesWidth / 2;
+        lon = applyLimits(viewCenterLv95[0], horizontalMin, horizontalMax);
+        lat = lv95Center[1] + this.planesHeight / 2 * negate;
       } else {
-        if (type.includes('northeast')) {
-          const eastArrowCenter = [lv95Center[0] + this.planesWidth / 2, lv95Center[1]];
-          const degCenter = lv95ToDegrees(eastArrowCenter);
-          return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
-        } else {
-          const westArrowCenter = [lv95Center[0] - this.planesWidth / 2, lv95Center[1]];
-          const degCenter = lv95ToDegrees(westArrowCenter);
-          return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
-        }
+        const verticalMin = lv95Center[1] - this.planesHeight / 2;
+        const varticalMax = lv95Center[1] + this.planesHeight / 2;
+        lat = applyLimits(viewCenterLv95[1], verticalMin, varticalMax);
+        lon = lv95Center[0] + this.planesWidth / 2 * negate;
       }
+      const degCenter = lv95ToDegrees([lon, lat]);
+      return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
     };
   }
 
@@ -451,5 +456,25 @@ export default class Slicer {
     navigationIconHU.properties.type = 'horizontal-northeast';
     navigationIconHU.model.uri = './images/arrowH.glb';
     this.slicerDataSource.entities.add(new Entity(navigationIconHU));
+  }
+
+  highlightArrow(position) {
+    const pickedObject = this.viewer.scene.pick(position);
+    const isModelPicked = pickedObject && pickedObject.id && pickedObject.id.model;
+    if (isModelPicked && pickedObject.id.properties && pickedObject.id.properties.type) {
+      this.highlightedArrow = pickedObject.id;
+      document.querySelector('.cesium-widget').style.cursor = 'pointer';
+      this.highlightedArrow.model.color = Color.YELLOW;
+    } else {
+      this.unhighlightArrow();
+    }
+  }
+
+  unhighlightArrow() {
+    if (this.highlightedArrow) {
+      this.highlightedArrow.model.color = Color.GREY;
+      this.highlightedArrow = undefined;
+      document.querySelector('.cesium-widget').style.cursor = '';
+    }
   }
 }
