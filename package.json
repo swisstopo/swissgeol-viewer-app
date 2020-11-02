@@ -37,7 +37,7 @@
     "@babel/core": "^7.12.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
-    "@rollup/plugin-commonjs": "^15.1.0",
+    "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "autoprefixer": "^9.8.6",
     "copy-webpack-plugin": "^6.2.1",
