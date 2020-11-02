@@ -214,6 +214,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         volumeShowed: val.properties.volumeShowed ? val.properties.volumeShowed.getValue() : undefined,
         volumeHeightLimits: val.properties.volumeHeightLimits ? val.properties.volumeHeightLimits.getValue() : undefined,
         description: val.properties.description ? val.properties.description.getValue() : '',
+        image: val.properties.image ? val.properties.image.getValue() : '',
+        website: val.properties.website ? val.properties.website.getValue() : '',
       };
       if (val.billboard) {
         item.pointColor = val.billboard.color.getValue(this.julianDate);
@@ -363,6 +365,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     if (props.description && props.description.length) {
       attributes[i18next.t('obj_info_description_label')] = props.description;
     }
+    if (props.image && props.image.length) {
+      attributes['obj_info_image_label'] = props.image;
+    }
+    if (props.website && props.website.length) {
+      attributes['obj_info_website_label'] = props.website;
+    }
     return attributes;
   }
 
@@ -402,6 +410,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
        numberOfSegments: (optional) number,
        type: string<point | line | rectangle | polygon>
        description: string,
+       image: string,
+       website: string,
        pointSymbol: (optional) string,
        pointColor: (optional) Color,
    * }
@@ -420,7 +430,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         type: type,
         volumeShowed: attributes.volumeShowed || false,
         volumeHeightLimits: attributes.volumeHeightLimits || DEFAULT_VOLUME_HEIGHT_LIMITS,
-        description: attributes.description || ''
+        description: attributes.description || '',
+        image: attributes.image || '',
+        website: attributes.website || ''
       }
     };
     if (type === 'rectangle' || type === 'polygon') {
@@ -644,6 +656,26 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       entity.properties.description = descriptionElem.value;
     } else {
       entity.properties.addProperty('description', descriptionElem.value);
+    }
+  }
+
+  onImageChange(index) {
+    const imageElem = this.querySelector(`.ngm-aoi-image-${index}`);
+    const entity = this.draw_.entityForEdit;
+    if (entity.properties.image) {
+      entity.properties.image = imageElem.value;
+    } else {
+      entity.properties.addProperty('image', imageElem.value);
+    }
+  }
+
+  onWebsiteChange(index) {
+    const websiteElem = this.querySelector(`.ngm-aoi-website-${index}`);
+    const entity = this.draw_.entityForEdit;
+    if (entity.properties.website) {
+      entity.properties.website = websiteElem.value;
+    } else {
+      entity.properties.addProperty('website', websiteElem.value);
     }
   }
 
