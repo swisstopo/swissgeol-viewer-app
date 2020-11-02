@@ -1,4 +1,5 @@
 import proj4 from 'proj4';
+import CMath from 'cesium/Source/Core/Math';
 
 proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs');
 
@@ -8,6 +9,15 @@ proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.43958333
  */
 export function degreesToLv95(coordinates) {
   return proj4('EPSG:4326', 'EPSG:2056', coordinates.slice());
+}
+
+/**
+ * @param {Array<number>} coordinates
+ * @return {Array<number>}
+ */
+export function radiansToLv95(coordinates) {
+  const coordinatesInDegrees = coordinates.map(coord => CMath.toDegrees(coord));
+  return proj4('EPSG:4326', 'EPSG:2056', coordinatesInDegrees.slice());
 }
 
 /**

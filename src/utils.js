@@ -59,6 +59,20 @@ export function pickCenter(scene) {
 }
 
 /**
+ * @param {import('cesium/Source/Scene/Scene').default} scene
+ * @return {Cartesian3 | undefined}
+ */
+export function pickCenterOnEllipsoid(scene) {
+  const camera = scene.camera;
+  const windowPosition = new Cartesian2(
+    scene.canvas.clientWidth / 2,
+    scene.canvas.clientHeight / 2
+  );
+  const ray = camera.getPickRay(windowPosition);
+  return scene.camera.pickEllipsoid(ray);
+}
+
+/**
  * @return {URLSearchParams}
  */
 export function getURLSearchParams() {

@@ -11,9 +11,11 @@ import Entity from 'cesium/Source/DataSources/Entity';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Color from 'cesium/Source/Core/Color';
-import CMath from 'cesium/Source/Core/Math';
-import {degreesToLv95, lv95ToDegrees} from './projection';
+import ShadowMode from 'cesium/Source/Scene/ShadowMode';
+import {lv95ToDegrees, radiansToLv95} from './projection';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
+import {pickCenterOnEllipsoid} from './utils';
 
 
 const PLANE_HEIGHT = 15000;
@@ -64,13 +66,9 @@ export default class Slicer {
           dimensions: new CallbackProperty(() => new Cartesian2(this.planesWidth, PLANE_HEIGHT), false),
           material: Color.WHITE.withAlpha(0.1),
           outline: true,
-          outlineColor: Color.WHITE,
-        },
-        properties: {
-          type: 'horizontal'
+          outlineColor: Color.GREY,
         }
       };
-
 
       const verticalEntityTemplate = {
         position: new CallbackProperty(this.centerUpdateFunction('vertical'), false),
@@ -79,10 +77,7 @@ export default class Slicer {
           dimensions: new CallbackProperty(() => new Cartesian2(this.planesHeight, PLANE_HEIGHT), false),
           material: Color.WHITE.withAlpha(0.1),
           outline: true,
-          outlineColor: Color.WHITE,
-        },
-        properties: {
-          type: 'vertical'
+          outlineColor: Color.GREY,
         }
       };
 
@@ -91,7 +86,6 @@ export default class Slicer {
 
       horizontalEntityTemplate.plane.plane =
         new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontalUp, 'horizontal-northeast'), false);
-      horizontalEntityTemplate.properties.type = 'horizontal-northeast';
       this.planeEntityHorizontalUp = new Entity(horizontalEntityTemplate);
       this.slicerDataSource.entities.add(this.planeEntityHorizontalUp);
 
@@ -100,9 +94,10 @@ export default class Slicer {
 
       verticalEntityTemplate.plane.plane =
         new CallbackProperty(this.createPlaneUpdateFunction(this.planeVerticalRight, 'vertical-northeast'), false);
-      verticalEntityTemplate.properties.type = 'vertical-northeast';
       this.planeEntityVerticalRight = new Entity(verticalEntityTemplate);
       this.slicerDataSource.entities.add(this.planeEntityVerticalRight);
+
+      this.createMoveArrows();
 
       globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(new Date()));
 
@@ -112,12 +107,8 @@ export default class Slicer {
         const primitive = primitives.get(i);
         if (primitive.root && primitive.boundingSphere) {
           const tileCenter = Cartographic.fromCartesian(primitive.boundingSphere.center);
-          const lat = CMath.toDegrees(cartCenter.latitude);
-          const lon = CMath.toDegrees(cartCenter.longitude);
-          const tileLat = CMath.toDegrees(tileCenter.latitude);
-          const tileLon = CMath.toDegrees(tileCenter.longitude);
-          const lv95Center = degreesToLv95([lon, lat]);
-          const lv95Tile = degreesToLv95([tileLon, tileLat]);
+          const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
+          const lv95Tile = radiansToLv95([tileCenter.longitude, tileCenter.latitude]);
           const offsetX = lv95Center[1] - lv95Tile[1];
           const offsetY = lv95Center[0] - lv95Tile[0];
           this.offsets[primitive.url] = {
@@ -225,7 +216,7 @@ export default class Slicer {
 
   onLeftDown(event) {
     const pickedObject = this.viewer.scene.pick(event.position);
-    if (pickedObject && pickedObject.id) {
+    if (pickedObject && pickedObject.id && pickedObject.id.properties) {
       this.selectedPlane = pickedObject.id;
       this.viewer.scene.screenSpaceCameraController.enableInputs = false;
     }
@@ -240,22 +231,20 @@ export default class Slicer {
 
   onMouseMove(movement) {
     if (this.selectedPlane) {
-      const rayStart = this.viewer.camera.getPickRay(movement.startPosition);
-      const intersectionStart = this.viewer.scene.globe.pick(rayStart, this.viewer.scene);
-
-      const rayEnd = this.viewer.camera.getPickRay(movement.endPosition);
-      const intersectionEnd = this.viewer.scene.globe.pick(rayEnd, this.viewer.scene);
+      const intersectionStart = this.viewer.camera.pickEllipsoid(movement.startPosition);
+      const intersectionEnd = this.viewer.camera.pickEllipsoid(movement.endPosition);
 
       if (!intersectionStart || !intersectionEnd) return;
       let distance = Cartesian3.distance(intersectionStart, intersectionEnd);
       const diff = Cartesian3.subtract(intersectionEnd, intersectionStart, new Cartesian3());
+
       const type = this.selectedPlane.properties.type.getValue();
 
       // depends on selected plane type calculates plane distance
       // also updates plane entities center and dimensions (depends on type) to show planes as a box
       if (type.includes('horizontal')) {
         const cartCenter = Cartographic.fromCartesian(this.planesCenterV);
-        const lv95Center = degreesToLv95([CMath.toDegrees(cartCenter.longitude), CMath.toDegrees(cartCenter.latitude)]);
+        const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
         if (type.includes('northeast')) {
           const negative = (diff.x + diff.y) > 0 ? -1 : 1;
           distance = distance * negative;
@@ -273,7 +262,7 @@ export default class Slicer {
         this.planesCenterV = Cartesian3.fromDegrees(degCenter[0], degCenter[1]);
       } else {
         const cartCenter = Cartographic.fromCartesian(this.planesCenterH);
-        const lv95Center = degreesToLv95([CMath.toDegrees(cartCenter.longitude), CMath.toDegrees(cartCenter.latitude)]);
+        const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
         if (type.includes('northeast')) {
           const negative = (diff.x + diff.y) < 0 ? -1 : 1;
           distance = distance * negative;
@@ -340,8 +329,8 @@ export default class Slicer {
       viewRect = mapRect;
     }
     // get extreme points of the map
-    const mapRectNortheast = Rectangle.northeast(mapRect);
-    const mapRectSouthwest = Rectangle.southwest(mapRect);
+    // const mapRectNortheast = Rectangle.northeast(mapRect);
+    // const mapRectSouthwest = Rectangle.southwest(mapRect);
     // calculate slicing rect sizes (1/3 of view)
     const sliceRectWidth = 1 / 3 * viewRect.width;
     const sliceRectHeight = 1 / 3 * viewRect.height;
@@ -351,33 +340,33 @@ export default class Slicer {
     planesCenter.longitude = sliceRectWidth / 2 + planesCenter.longitude;
     planesCenter.latitude = sliceRectHeight / 2 + planesCenter.latitude;
     // converts coordinates to lv95 to calculate initial planes distance in meters
-    const lv95SecondPosition = degreesToLv95([CMath.toDegrees(lon), CMath.toDegrees(lat)]);
-    const lv95Center = degreesToLv95([CMath.toDegrees(planesCenter.longitude), CMath.toDegrees(planesCenter.latitude)]);
-    const lv95Northeast = degreesToLv95([CMath.toDegrees(mapRectNortheast.longitude), CMath.toDegrees(mapRectNortheast.latitude)]);
-    const lv95Southwest = degreesToLv95([CMath.toDegrees(mapRectSouthwest.longitude), CMath.toDegrees(mapRectSouthwest.latitude)]);
+    const lv95SecondPosition = radiansToLv95([lon, lat]);
+    const lv95Center = radiansToLv95([planesCenter.longitude, planesCenter.latitude]);
+    // const lv95Northeast = degreesToLv95([CMath.toDegrees(mapRectNortheast.longitude), CMath.toDegrees(mapRectNortheast.latitude)]);
+    // const lv95Southwest = degreesToLv95([CMath.toDegrees(mapRectSouthwest.longitude), CMath.toDegrees(mapRectSouthwest.latitude)]);
 
     // calculates initial planes distance in meters
-    let xDiffNortheast = lv95SecondPosition[0] - lv95Center[0];
-    let xDiffSouthwest = xDiffNortheast;
-    let yDiffNortheast = lv95SecondPosition[1] - lv95Center[1];
-    let yDiffSouthwest = yDiffNortheast;
+    const xDiffNortheast = lv95SecondPosition[0] - lv95Center[0];
+    const xDiffSouthwest = xDiffNortheast;
+    const yDiffNortheast = lv95SecondPosition[1] - lv95Center[1];
+    const yDiffSouthwest = yDiffNortheast;
     this.planesWidth = xDiffNortheast * 2;
     this.planesHeight = yDiffNortheast * 2;
 
-    // checks if all planes placed on the map
-    if (lv95Center[0] + xDiffNortheast > lv95Northeast[0]) {
-      xDiffNortheast = lv95Northeast[0] - lv95Center[0];
-    }
-    if (lv95Center[1] + yDiffNortheast > lv95Northeast[1]) {
-      yDiffNortheast = lv95Northeast[1] - lv95Center[1];
-    }
-
-    if (lv95Center[0] - xDiffSouthwest < lv95Southwest[0]) {
-      xDiffSouthwest = lv95Center[0] - lv95Southwest[0];
-    }
-    if (lv95Center[1] - yDiffSouthwest < lv95Southwest[1]) {
-      yDiffSouthwest = lv95Center[1] - lv95Southwest[1];
-    }
+    // checks if all planes placed on the map TODO should be improved
+    // if (lv95Center[0] + xDiffNortheast > lv95Northeast[0]) {
+    //   xDiffNortheast = lv95Northeast[0] - lv95Center[0];
+    // }
+    // if (lv95Center[1] + yDiffNortheast > lv95Northeast[1]) {
+    //   yDiffNortheast = lv95Northeast[1] - lv95Center[1];
+    // }
+    //
+    // if (lv95Center[0] - xDiffSouthwest < lv95Southwest[0]) {
+    //   xDiffSouthwest = lv95Center[0] - lv95Southwest[0];
+    // }
+    // if (lv95Center[1] - yDiffSouthwest < lv95Southwest[1]) {
+    //   yDiffSouthwest = lv95Center[1] - lv95Southwest[1];
+    // }
 
     this.targetYNortheast = yDiffNortheast;
     this.targetXNortheast = xDiffNortheast;
@@ -395,5 +384,71 @@ export default class Slicer {
       else
         return this.planesCenterV;
     };
+  }
+
+  arrowCenterUpdateFunction(type) {
+    return () => {
+      const cartCenterH = Cartographic.fromCartesian(this.planesCenterH);
+      const cartCenterV = Cartographic.fromCartesian(this.planesCenterV);
+      const lv95Center = radiansToLv95([cartCenterH.longitude, cartCenterV.latitude]);
+      let height = PLANE_HEIGHT / 2;
+      if (this.viewer.scene.cameraUnderground) {
+        height *= -1;
+      }
+      if (type.includes('horizontal')) {
+        if (type.includes('northeast')) {
+          const northArrowCenter = [lv95Center[0], lv95Center[1] + this.planesHeight / 2];
+          const degCenter = lv95ToDegrees(northArrowCenter);
+          return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
+        } else {
+          const southArrowCenter = [lv95Center[0], lv95Center[1] - this.planesHeight / 2];
+          const degCenter = lv95ToDegrees(southArrowCenter);
+          return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
+        }
+      } else {
+        if (type.includes('northeast')) {
+          const eastArrowCenter = [lv95Center[0] + this.planesWidth / 2, lv95Center[1]];
+          const degCenter = lv95ToDegrees(eastArrowCenter);
+          return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
+        } else {
+          const westArrowCenter = [lv95Center[0] - this.planesWidth / 2, lv95Center[1]];
+          const degCenter = lv95ToDegrees(westArrowCenter);
+          return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
+        }
+      }
+    };
+  }
+
+  createMoveArrows() {
+    const navigationIconTemplate = {
+      model: {
+        minimumPixelSize: 64,
+        maximumScale: 25000,
+        shadowMode: ShadowMode.DISABLED,
+        colorBlendMode: ColorBlendMode.MIX,
+        color: Color.GREY
+      },
+      properties: {}
+    };
+    const navigationIconVL = navigationIconTemplate;
+    navigationIconVL.position = new CallbackProperty(this.arrowCenterUpdateFunction('vertical'), false);
+    navigationIconVL.properties.type = 'vertical';
+    navigationIconVL.model.uri = './images/arrowV.glb';
+    this.slicerDataSource.entities.add(new Entity(navigationIconVL));
+    const navigationIconVR = navigationIconTemplate;
+    navigationIconVR.position = new CallbackProperty(this.arrowCenterUpdateFunction('vertical-northeast'), false);
+    navigationIconVR.properties.type = 'vertical-northeast';
+    navigationIconVR.model.uri = './images/arrowV.glb';
+    this.slicerDataSource.entities.add(new Entity(navigationIconVR));
+    const navigationIconHD = navigationIconTemplate;
+    navigationIconHD.position = new CallbackProperty(this.arrowCenterUpdateFunction('horizontal'), false);
+    navigationIconHD.properties.type = 'horizontal';
+    navigationIconHD.model.uri = './images/arrowH.glb';
+    this.slicerDataSource.entities.add(new Entity(navigationIconHD));
+    const navigationIconHU = navigationIconTemplate;
+    navigationIconHU.position = new CallbackProperty(this.arrowCenterUpdateFunction('horizontal-northeast'), false);
+    navigationIconHU.properties.type = 'horizontal-northeast';
+    navigationIconHU.model.uri = './images/arrowH.glb';
+    this.slicerDataSource.entities.add(new Entity(navigationIconHU));
   }
 }
