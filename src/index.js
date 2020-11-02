@@ -18,8 +18,6 @@ import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 
 import Auth from './auth.js';
 
-Auth.initialize();
-
 import './elements/ngm-auth.js';
 import './elements/ngm-object-information.js';
 import './elements/ngm-navigation-widgets.js';
@@ -32,6 +30,9 @@ import './elements/ngm-full-screen-view.js';
 import {LocalStorageController} from './LocalStorageController.js';
 import {getZoomToPosition} from './permalink';
 
+const SKIP_STEP2_TIMEOUT = 5000;
+
+Auth.initialize();
 
 initSentry();
 setupI18n();
@@ -87,56 +88,76 @@ sideBar.authenticated = !!auth.user;
 auth.addEventListener('refresh', (evt) => sideBar.authenticated = evt.detail.authenticated);
 
 
+const onStep1Finished = () => {
+  let sse = 2;
+  if (document.location.hostname === 'localhost') {
+    sse = 20;
+  }
+  if (searchParams.has('maximumScreenSpaceError')) {
+    sse = parseFloat(searchParams.get('maximumScreenSpaceError'));
+  }
+  globe.maximumScreenSpaceError = sse;
+};
+
+const onStep2Finished = () => {
+  addMantelEllipsoid(viewer);
+  setupSearch(viewer, document.querySelector('ga-search'), sideBar);
+  document.getElementById('loader').style.display = 'none';
+  const loadingTime = performance.now() / 1000;
+  console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
+  document.querySelector('ngm-slow-loading').style.display = 'none';
+
+  const localStorageController = new LocalStorageController();
+
+  const sentryConfirmed = localStorageController.isSentryConfirmed;
+  if (!sentryConfirmed) {
+    const options = {
+      displayTime: 0,
+      position: 'bottom right',
+      classActions: 'basic left',
+      actions: [{
+        text: i18next.t('sentry_ok_btn_label'),
+        click: localStorageController.saveSentryConfirmation
+      }]
+    };
+    showMessage(i18next.t('sentry_message'), options);
+  }
+
+  const aoiElement = document.querySelector('ngm-aoi-drawer');
+  aoiElement.addStoredAreas(localStorageController.getStoredAoi());
+  aoiElement.addEventListener('aoi_list_changed', evt =>
+    localStorageController.setAoiInStorage(evt.detail.entities));
+
+  const sideBarElement = document.querySelector('ngm-left-side-bar');
+  sideBarElement.hideWelcome = localStorageController.hideWelcomeValue;
+  sideBarElement.addEventListener('welcome_panel_changed', localStorageController.updateWelcomePanelState);
+
+  const reviewWindowElement = document.querySelector('ngm-review-window');
+  reviewWindowElement.hideReviewWindow = localStorageController.hideReviewWindowValue;
+  reviewWindowElement.addEventListener('review_window_changed', localStorageController.updateReviewWindowState);
+
+  sideBar.zoomToPermalinkObject();
+};
+
+let currentStep = 1;
 const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
-  if (globe.tilesLoaded) {
-    unlisten();
-    let sse = 2;
-    if (document.location.hostname === 'localhost') {
-      sse = 20;
-    }
-    if (searchParams.has('maximumScreenSpaceError')) {
-      sse = parseFloat(searchParams.get('maximumScreenSpaceError'));
-    }
-    globe.maximumScreenSpaceError = sse;
-    window.requestAnimationFrame(() => {
-      addMantelEllipsoid(viewer);
-      setupSearch(viewer, document.querySelector('ga-search'), sideBar);
-      document.getElementById('loader').style.display = 'none';
-      const loadingTime = performance.now() / 1000;
-      console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
-      document.querySelector('ngm-slow-loading').style.display = 'none';
-
-      const localStorageController = new LocalStorageController();
-
-      const sentryConfirmed = localStorageController.isSentryConfirmed;
-      if (!sentryConfirmed) {
-        const options = {
-          displayTime: 0,
-          position: 'bottom right',
-          classActions: 'basic left',
-          actions: [{
-            text: i18next.t('sentry_ok_btn_label'),
-            click: localStorageController.saveSentryConfirmation
-          }]
-        };
-        showMessage(i18next.t('sentry_message'), options);
+  if (currentStep === 1 && globe.tilesLoaded) {
+    currentStep = 2;
+    console.log('Step 1 finished');
+    onStep1Finished();
+    setTimeout(() => {
+      if (currentStep === 2) {
+        console.log('Too long: going straight to step 3');
+        currentStep = 3;
+        onStep2Finished();
+        unlisten();
       }
-
-      const aoiElement = document.querySelector('ngm-aoi-drawer');
-      aoiElement.addStoredAreas(localStorageController.getStoredAoi());
-      aoiElement.addEventListener('aoi_list_changed', evt =>
-        localStorageController.setAoiInStorage(evt.detail.entities));
-
-      const sideBarElement = document.querySelector('ngm-left-side-bar');
-      sideBarElement.hideWelcome = localStorageController.hideWelcomeValue;
-      sideBarElement.addEventListener('welcome_panel_changed', localStorageController.updateWelcomePanelState);
-
-      const reviewWindowElement = document.querySelector('ngm-review-window');
-      reviewWindowElement.hideReviewWindow = localStorageController.hideReviewWindowValue;
-      reviewWindowElement.addEventListener('review_window_changed', localStorageController.updateReviewWindowState);
-
-      sideBar.zoomToPermalinkObject();
-    });
+    }, SKIP_STEP2_TIMEOUT);
+  } else if (currentStep === 2 && globe.tilesLoaded) {
+    currentStep = 3;
+    console.log('Step 2 finished');
+    onStep2Finished();
+    unlisten();
   }
 });
 
