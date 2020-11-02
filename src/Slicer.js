@@ -216,7 +216,8 @@ export default class Slicer {
 
   onLeftDown(event) {
     const pickedObject = this.viewer.scene.pick(event.position);
-    if (pickedObject && pickedObject.id && pickedObject.id.properties) {
+    const isModelPicked = pickedObject && pickedObject.id && pickedObject.id.model;
+    if (isModelPicked && pickedObject.id.properties && pickedObject.id.properties.type) {
       this.selectedPlane = pickedObject.id;
       this.viewer.scene.screenSpaceCameraController.enableInputs = false;
     }
