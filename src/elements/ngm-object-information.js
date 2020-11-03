@@ -40,12 +40,31 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
       let content = html`
         <table class="ui compact small very basic table">
         <tbody>
-          ${Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => html`
-            <tr class="top aligned">
+          ${Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => {
+        switch (key) {
+          case 'obj_info_website_label':
+            return html`
+          <tr class="top aligned">
+            <td class="key">${i18next.t(key)}</td>
+            <td class="val"><a href="${value}">${value}</a></td>
+          </tr>
+          `;
+          case 'obj_info_image_label':
+            return html`
+          <tr class="top aligned">
+            <td class="key">${i18next.t(key)}</td>
+            <td class="val"><img src="${value}" alt="${value}"></td>
+          </tr>
+          `;
+          default:
+            return html`
+          <tr class="top aligned">
               <td class="key">${i18next.t(`assets:${key}`)}</td>
               <td class="val">${value}</td>
             </tr>
-          `)}
+          `;
+        }
+      })}
           </tbody>
         </table>`;
 
