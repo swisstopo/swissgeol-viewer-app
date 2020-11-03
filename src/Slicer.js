@@ -19,6 +19,7 @@ import {applyLimits, pickCenterOnEllipsoid} from './utils';
 
 
 const PLANE_HEIGHT = 15000;
+const PLANE_COLOR = Color.WHITE;
 
 export default class Slicer {
   /**
@@ -66,7 +67,7 @@ export default class Slicer {
           dimensions: new CallbackProperty(() => new Cartesian2(this.planesWidth, PLANE_HEIGHT), false),
           material: Color.WHITE.withAlpha(0.1),
           outline: true,
-          outlineColor: Color.GREY,
+          outlineColor: PLANE_COLOR,
         }
       };
 
@@ -77,7 +78,7 @@ export default class Slicer {
           dimensions: new CallbackProperty(() => new Cartesian2(this.planesHeight, PLANE_HEIGHT), false),
           material: Color.WHITE.withAlpha(0.1),
           outline: true,
-          outlineColor: Color.GREY,
+          outlineColor: PLANE_COLOR,
         }
       };
 
@@ -432,7 +433,7 @@ export default class Slicer {
         maximumScale: 25000,
         shadowMode: ShadowMode.DISABLED,
         colorBlendMode: ColorBlendMode.MIX,
-        color: Color.GREY
+        color: PLANE_COLOR
       },
       properties: {}
     };
@@ -472,7 +473,7 @@ export default class Slicer {
 
   unhighlightArrow() {
     if (this.highlightedArrow) {
-      this.highlightedArrow.model.color = Color.GREY;
+      this.highlightedArrow.model.color = PLANE_COLOR;
       this.highlightedArrow = undefined;
       document.querySelector('.cesium-widget').style.cursor = '';
     }
