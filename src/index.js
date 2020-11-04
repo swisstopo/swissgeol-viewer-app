@@ -27,6 +27,7 @@ import './elements/ngm-review-window.js';
 import './elements/ngm-position-edit.js';
 import './elements/ngm-slow-loading.js';
 import './elements/ngm-full-screen-view.js';
+import './elements/ngm-loading-mask.js';
 import {LocalStorageController} from './LocalStorageController.js';
 import {getZoomToPosition} from './permalink';
 
@@ -39,6 +40,8 @@ setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
 const mapChooser = setupBaseLayers(viewer);
+
+const loadingMask = document.querySelector('ngm-loading-mask');
 
 async function zoomTo(config) {
   const p = await config.promise;
@@ -102,7 +105,7 @@ const onStep1Finished = () => {
 const onStep2Finished = () => {
   addMantelEllipsoid(viewer);
   setupSearch(viewer, document.querySelector('ga-search'), sideBar);
-  document.getElementById('loader').style.display = 'none';
+  loadingMask.active = false;
   const loadingTime = performance.now() / 1000;
   console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
   document.querySelector('ngm-slow-loading').style.display = 'none';
@@ -143,6 +146,7 @@ let currentStep = 1;
 const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
   if (currentStep === 1 && globe.tilesLoaded) {
     currentStep = 2;
+    loadingMask.step = currentStep;
     console.log('Step 1 finished');
     onStep1Finished();
     setTimeout(() => {
@@ -186,12 +190,11 @@ i18next.on('languageChanged', (lang) => {
 
 function showSlowLoadingWindow() {
   const timeout = 10000;
-  const loaderDisplayed = () => document.querySelector('#loader').style.display !== 'none';
-  if (loaderDisplayed() && performance.now() > timeout) {
+  if (loadingMask.active && performance.now() > timeout) {
     document.querySelector('ngm-slow-loading').style.display = 'block';
   } else {
     setTimeout(() => {
-      if (loaderDisplayed()) {
+      if (loadingMask.active) {
         document.querySelector('ngm-slow-loading').style.display = 'block';
       }
     }, timeout - performance.now());

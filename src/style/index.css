@@ -23,6 +23,7 @@
 @import 'fomantic-ui-css/components/slider.css';
 @import 'fomantic-ui-css/components/dropdown.css';
 @import 'fomantic-ui-css/components/label.css';
+@import 'fomantic-ui-css/components/progress.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
@@ -284,7 +285,7 @@ ngm-review-window > .ui.inverted.segment {
   background-color: rgba(0, 0, 0, 0.6);
   width: 250px;
   text-align: center;
-  top: 6px;
+  margin: 6px;
 }
 
 ngm-slow-loading .ui.inverted.accordion > .title,
@@ -327,4 +328,8 @@ ngm-full-screen-view {
 ngm-full-screen-view.full-active {
   right: 10px;
   top: 10px;
+}
+
+ngm-loading-mask .progress {
+  width: 18%;
 }
