@@ -430,6 +430,7 @@ export default class Slicer {
     const navigationIconTemplate = {
       model: {
         minimumPixelSize: 64,
+        scale: 5000,
         maximumScale: 25000,
         shadowMode: ShadowMode.DISABLED,
         colorBlendMode: ColorBlendMode.MIX,
