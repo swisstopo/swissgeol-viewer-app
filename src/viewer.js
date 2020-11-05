@@ -103,6 +103,9 @@ export function setupViewer(container) {
   }
 
   const requestRenderMode = !searchParams.has('norequestrendermode');
+  const terrainProvider = searchParams.has('noterrain') ? undefined : new CesiumTerrainProvider({
+    url: terrainUrl
+  });
 
   const viewer = new Viewer(container, {
     contextOptions: {
@@ -127,9 +130,7 @@ export function setupViewer(container) {
     imageryProvider: firstImageryProvider,
     showRenderLoopErrors: false,
     useBrowserRecommendedResolution: true,
-    terrainProvider: new CesiumTerrainProvider({
-      url: terrainUrl
-    }),
+    terrainProvider: terrainProvider,
     terrainExaggeration: terrainExaggeration,
     requestRenderMode: requestRenderMode,
     // maximumRenderTimeChange: 10,
