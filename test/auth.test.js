@@ -9,11 +9,12 @@ const user = {name: 'John Doe'};
 const payload = Buffer.from(JSON.stringify(user)).toString('base64').replace(/=/g, '');
 const jwt = `header.${payload}.signature`;
 const token = `#access_token=${jwt}`;
+const idToken = '&id_token=bidon';
 const type = '&token_type=Bearer';
 const state = '&state=test';
 
 // initialize the window, document and localStorage objects
-jsdom('', {url: url + token + type + state});
+jsdom('', {url: url + token + type + state + idToken});
 global.localStorage = window.localStorage;
 
 // load the component
@@ -23,9 +24,9 @@ describe('Auth', () => {
 
   describe('state', () => {
     it('should initialize the state', () => {
-      const state = Auth.state();
-      assert.ok(state.length > 0);
-      assert.ok(Auth.state() === state);
+      const theState = Auth.state();
+      assert.ok(theState.length > 0);
+      assert.ok(Auth.state() === theState);
       Auth.state('test');
       assert.ok(Auth.state() === 'test');
     });
@@ -51,32 +52,6 @@ describe('Auth', () => {
     });
   });
 
-  describe('parseResponse', () => {
-    it('should throw an error when the input is input', () => {
-      assert.throws(() => Auth.parseResponse(undefined), Error);
-      assert.throws(() => Auth.parseResponse(''), Error);
-      assert.throws(() => Auth.parseResponse('#'), Error);
-      assert.throws(() => Auth.parseResponse('#a='), Error);
-      assert.throws(() => Auth.parseResponse('#=1'), Error);
-    });
-    it('should parse a well formed input', () => {
-      assert.deepStrictEqual(Auth.parseResponse('#a=1'), {a: '1'});
-      assert.deepStrictEqual(Auth.parseResponse('#a=1'), {a: '1'});
-      assert.deepStrictEqual(Auth.parseResponse('#a=1&b=2'), {a: '1', b: '2'});
-      assert.deepStrictEqual(Auth.parseResponse(token), {access_token: jwt});
-    });
-  });
-
-  describe('parseToken', () => {
-    it('should throw an error when the input is input', () => {
-      assert.throws(() => Auth.parseToken(undefined), Error);
-      assert.throws(() => Auth.parseToken(undefined), Error);
-    });
-    it('should parse a well formed input', () => {
-      assert.deepStrictEqual(Auth.parseToken(jwt), user);
-    });
-  });
-
   describe('initialize', () => {
     it('should extract the user from the hash in the response URL', () => {
       Auth.logout();
@@ -85,5 +60,4 @@ describe('Auth', () => {
       assert.deepStrictEqual(Auth.getUser(), user);
     });
   });
-
 });
