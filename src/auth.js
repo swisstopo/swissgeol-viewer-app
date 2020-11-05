@@ -68,6 +68,7 @@ export default class Auth {
     localStorage.removeItem(cognitoUser);
     localStorage.removeItem(cognitoState);
     localStorage.removeItem(cognitoAccessToken);
+    localStorage.removeItem('rawCognitoResponse');
     _AWSCredentials = null;
   }
 

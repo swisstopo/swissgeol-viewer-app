@@ -38,6 +38,7 @@ class NgmAuth extends I18nMixin(LitElement) {
   updateLogoutTimeout_(claims) {
     if (this.expireTimer_) {
       clearTimeout(this.expireTimer_);
+      this.expireTimer_ = null;
     }
     if (claims) {
       const expiresIn = 1000 * claims.exp - Date.now();
