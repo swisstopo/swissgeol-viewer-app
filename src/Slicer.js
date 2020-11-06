@@ -334,44 +334,30 @@ export default class Slicer {
       viewRect = mapRect;
     }
     // get extreme points of the map
-    // const mapRectNortheast = Rectangle.northeast(mapRect);
-    // const mapRectSouthwest = Rectangle.southwest(mapRect);
+    const mapRectNortheast = Rectangle.northeast(mapRect);
     // calculate slicing rect sizes (1/3 of view)
     const sliceRectWidth = 1 / 3 * viewRect.width;
     const sliceRectHeight = 1 / 3 * viewRect.height;
-    const lon = planesCenter.longitude + sliceRectWidth;
-    const lat = planesCenter.latitude + sliceRectHeight;
+    let lon = planesCenter.longitude + sliceRectWidth;
+    let lat = planesCenter.latitude + sliceRectHeight;
+    if (!Rectangle.contains(globe.cartographicLimitRectangle, Cartographic.fromRadians(lon, lat))) {
+      lon = mapRectNortheast.longitude;
+      lat = mapRectNortheast.latitude;
+    }
     // moves the center of slicing. Left down corner should be placed in the view center
     planesCenter.longitude = sliceRectWidth / 2 + planesCenter.longitude;
     planesCenter.latitude = sliceRectHeight / 2 + planesCenter.latitude;
     // converts coordinates to lv95 to calculate initial planes distance in meters
     const lv95SecondPosition = radiansToLv95([lon, lat]);
     const lv95Center = radiansToLv95([planesCenter.longitude, planesCenter.latitude]);
-    // const lv95Northeast = degreesToLv95([CMath.toDegrees(mapRectNortheast.longitude), CMath.toDegrees(mapRectNortheast.latitude)]);
-    // const lv95Southwest = degreesToLv95([CMath.toDegrees(mapRectSouthwest.longitude), CMath.toDegrees(mapRectSouthwest.latitude)]);
 
     // calculates initial planes distance in meters
     const xDiffNortheast = lv95SecondPosition[0] - lv95Center[0];
     const xDiffSouthwest = xDiffNortheast;
     const yDiffNortheast = lv95SecondPosition[1] - lv95Center[1];
     const yDiffSouthwest = yDiffNortheast;
-    this.planesWidth = xDiffNortheast * 2;
-    this.planesHeight = yDiffNortheast * 2;
-
-    // checks if all planes placed on the map TODO should be improved
-    // if (lv95Center[0] + xDiffNortheast > lv95Northeast[0]) {
-    //   xDiffNortheast = lv95Northeast[0] - lv95Center[0];
-    // }
-    // if (lv95Center[1] + yDiffNortheast > lv95Northeast[1]) {
-    //   yDiffNortheast = lv95Northeast[1] - lv95Center[1];
-    // }
-    //
-    // if (lv95Center[0] - xDiffSouthwest < lv95Southwest[0]) {
-    //   xDiffSouthwest = lv95Center[0] - lv95Southwest[0];
-    // }
-    // if (lv95Center[1] - yDiffSouthwest < lv95Southwest[1]) {
-    //   yDiffSouthwest = lv95Center[1] - lv95Southwest[1];
-    // }
+    this.planesWidth = xDiffNortheast + xDiffSouthwest;
+    this.planesHeight = yDiffNortheast + yDiffSouthwest;
 
     this.targetYNortheast = yDiffNortheast;
     this.targetXNortheast = xDiffNortheast;
