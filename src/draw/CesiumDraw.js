@@ -110,12 +110,15 @@ export class CesiumDraw extends EventTarget {
     this.eventHandler_.setInputAction(event => this.onLeftDown_(event), ScreenSpaceEventType.LEFT_DOWN);
     this.eventHandler_.setInputAction(event => this.onLeftUp_(event), ScreenSpaceEventType.LEFT_UP);
     let positions = [];
+    let createVirtualSPs = false;
     switch (this.type) {
       case 'line':
         positions = [...this.entityForEdit.polyline.positions.getValue()];
+        createVirtualSPs = true;
         break;
       case 'polygon':
         positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
+        createVirtualSPs = true;
         break;
       case 'rectangle':
         positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
@@ -124,11 +127,19 @@ export class CesiumDraw extends EventTarget {
       default:
         break;
     }
+
     positions.forEach((p, idx) => {
       this.activePoints_.push(p);
       const sketchPoint = this.createSketchPoint_(p, {edit: true, positionIndex: idx});
       sketchPoint.properties.index = idx;
       this.sketchPoints_.push(sketchPoint);
+      if (createVirtualSPs && (idx + 1) < positions.length) {
+        const p2 = Cartesian3.add(p, positions[idx + 1], new Cartesian3());
+        Cartesian3.divideByScalar(p2, 2, p2);
+        const virtualSketchPoint = this.createSketchPoint_(p2, {edit: true, virtual: true});
+        virtualSketchPoint.properties.index = idx;
+        this.sketchPoints_.push(virtualSketchPoint);
+      }
     });
     this.viewer_.scene.requestRender();
   }
@@ -201,10 +212,10 @@ export class CesiumDraw extends EventTarget {
     const entity = {
       position: position,
       point: {
-        color: Color.WHITE,
+        color: options.virtual ? Color.GREY : Color.WHITE,
         outlineWidth: 1,
         outlineColor: Color.BLACK,
-        pixelSize: options.edit ? 7 : 5,
+        pixelSize: options.edit ? 9 : 5,
         heightReference: HeightReference.CLAMP_TO_GROUND
       },
       properties: {}
@@ -231,6 +242,7 @@ export class CesiumDraw extends EventTarget {
       this.drawingDataSource.entities.add(billboard);
     }
 
+    pointEntity.properties.virtual = options.virtual;
     return pointEntity;
   }
 
@@ -358,6 +370,28 @@ export class CesiumDraw extends EventTarget {
         } else {
           this.sketchPoint_.position = position;
           this.activePoints_[this.sketchPoint_.properties.index] = position;
+          if (this.type === 'line' || this.type === 'polygon') {
+            // move virtual SPs
+            const idx = this.sketchPoint_.properties.index;
+            if (idx > 0) {
+              const prevRealSP = this.sketchPoints_[(idx - 1) * 2];
+              const prevVirtualPosition = Cartesian3.add(
+                prevRealSP.position.getValue(this.julianDate),
+                this.sketchPoint_.position.getValue(this.julianDate),
+                new Cartesian3());
+              Cartesian3.divideByScalar(prevVirtualPosition, 2, prevVirtualPosition);
+              this.sketchPoints_[(idx - 1) * 2 + 1].position = prevVirtualPosition;
+            }
+            if (idx < (this.activePoints_.length - 1)) {
+              const nextRealSP = this.sketchPoints_[(idx + 1) * 2];
+              const nextVirtualPosition = Cartesian3.add(
+                nextRealSP.position.getValue(this.julianDate),
+                this.sketchPoint_.position.getValue(this.julianDate),
+                new Cartesian3());
+              Cartesian3.divideByScalar(nextVirtualPosition, 2, nextVirtualPosition);
+              this.sketchPoints_[(idx + 1) * 2 - 1].position = nextVirtualPosition;
+            }
+          }
           if (this.type === 'line') {
             this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
@@ -401,12 +435,64 @@ export class CesiumDraw extends EventTarget {
         this.sketchPoint_ = selectedEntity;
         this.moveEntity = selectedEntity.id === this.entityForEdit.id ||
           this.sketchPoints_.some(sp => sp.id === selectedEntity.id); // checks if picked entity is point geometry or one of the sketch points for other geometries
+          if (this.moveEntity && this.sketchPoint_.properties.virtual) {
+            this.splitLineOrPolygonPositions_();
+          }
       }
       if (this.moveEntity) {
         this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
       }
     }
     this.dispatchEvent(new CustomEvent('leftdown'));
+  }
+
+  splitLineOrPolygonPositions_() {
+    // Add new line vertex
+    // Create SPs, reuse the pressed virtual SP for first segment
+    const pressedSP = this.sketchPoint_;
+    const pressedPosition = Cartesian3.clone(pressedSP.position.getValue(this.julianDate));
+    const pressedIdx = pressedSP.properties.index;
+    const realSP0 = this.sketchPoints_[pressedIdx * 2];
+    const realSP2 = this.sketchPoints_[(pressedIdx + 1) * 2];
+    const virtualPosition0 = Cartesian3.add(
+      realSP0.position.getValue(this.julianDate),
+      pressedPosition,
+      new Cartesian3());
+    Cartesian3.divideByScalar(virtualPosition0, 2, virtualPosition0);
+    const virtualPosition1 = Cartesian3.add(
+      pressedPosition,
+      realSP2.position.getValue(this.julianDate),
+      new Cartesian3());
+    Cartesian3.divideByScalar(virtualPosition1, 2, virtualPosition1);
+    const realSP1 = this.createSketchPoint_(pressedPosition, {edit: true});
+    const virtualSP1 = this.createSketchPoint_(virtualPosition1, {edit: true, virtual: true});
+    const virtualSP0 = pressedSP; // the pressed SP is reused
+    virtualSP0.position = virtualPosition0; // but its position is changed
+
+    this.insertVertexToPolylineOrPolygon_(pressedIdx + 1, pressedPosition.clone());
+    this.sketchPoints_.splice((pressedIdx + 1) * 2, 0, realSP1, virtualSP1);
+    this.sketchPoints_.forEach((sp, idx) => sp.properties.index = Math.floor(idx / 2));
+    this.sketchPoint_ = realSP1;
+    this.viewer_.scene.requestRender();
+  }
+
+  insertVertexToPolylineOrPolygon_(idx, coordinates) {
+    const e = this.entityForEdit;
+    this.activePoints_.splice(idx, 0, coordinates);
+    switch (this.type) {
+      case 'polygon': {
+        const hierarchy = e.polygon.hierarchy.getValue();
+        hierarchy.positions = this.activePoint_;
+        e.polygon.hierarchy.setValue({...hierarchy});
+        break;
+      }
+      case 'line': {
+        e.polyline.positions = this.activePoints_;
+        break;
+      }
+      default:
+        break;
+    }
   }
 
   /**
@@ -429,7 +515,9 @@ export class CesiumDraw extends EventTarget {
    */
   onLeftDownThenUp_(event) {
     const e = this.entityForEdit;
-    if (this.sketchPoint_ && this.sketchPoint_.properties.index !== undefined) {
+    const sp = this.sketchPoint_;
+    if (sp && sp.properties.index !== undefined && !sp.properties.virtual) {
+      let divider = 1;
       switch (this.type) {
         case 'polygon': {
           const hierarchy = e.polygon.hierarchy.getValue();
@@ -438,6 +526,7 @@ export class CesiumDraw extends EventTarget {
           }
           hierarchy.positions.splice(this.sketchPoint_.properties.index, 1);
           e.polygon.hierarchy.setValue({...hierarchy});
+          divider = 2;
           break;
         }
         case 'line': {
@@ -447,14 +536,15 @@ export class CesiumDraw extends EventTarget {
           }
           pPositions.splice(this.sketchPoint_.properties.index, 1);
           e.polyline.positions = pPositions;
+          divider = 2;
           break;
         }
         default:
           break;
-        }
+      }
       // a sketch point was clicked => remove it
       this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
-      this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
+      this.sketchPoints_.forEach((sp, idx) => sp.properties.index = Math.floor(idx / divider));
       this.drawingDataSource.entities.remove(this.sketchPoint_);
       this.viewer_.scene.requestRender();
     }
