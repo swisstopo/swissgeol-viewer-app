@@ -51,3 +51,13 @@
 .ngm-displayed-container label.displayed {
   color: red;
 }
+
+
+ngm-layers-item.sortable-ghost {
+  visibility: hidden;
+}
+
+
+ngm-layers-item.sortable-drag {
+  background-color: white;
+}

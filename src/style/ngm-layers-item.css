@@ -1,0 +1,7 @@
+ngm-layers-item .ngm-displayed-container .grip {
+  cursor: grabbing;
+}
+
+ngm-layers-item .ngm-displayed-container .ui.checkbox {
+  flex: 1;
+}

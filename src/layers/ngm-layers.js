@@ -1,5 +1,6 @@
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
+import Sortable from 'sortablejs';
 
 import './ngm-layers-item.js';
 
@@ -22,14 +23,13 @@ export default class LayerTree extends I18nMixin(LitElement) {
       if (!config.promise) {
         config.promise = config.load();
       }
-      const downClassMap = {disabled: idx === 0};
-      const upClassMap = {disabled: (idx === this.layers.length - 1)};
       const detail = {
         config,
         idx
       };
       return html`
       <ngm-layers-item
+        class="item"
          .actions=${this.actions}
          .config=${config}
          @removeDisplayedLayer=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}))}
@@ -38,9 +38,6 @@ export default class LayerTree extends I18nMixin(LitElement) {
            this.dispatchEvent(new CustomEvent('layerChanged'));
            this.requestUpdate(); // force update to render visiblity changes
          }}
-         @moveLayer=${evt => this.moveLayer(config, evt.detail)}
-         .upClassMap=${upClassMap}
-         .downClassMap=${downClassMap}
         >
       </ngm-layers-item>`;
     });
@@ -49,10 +46,18 @@ export default class LayerTree extends I18nMixin(LitElement) {
     return html`${layerTemplates}`;
   }
 
-  // changes layer position in 'Displayed Layers'
-  moveLayer(config, delta) {
-    this.actions.moveLayer(this.layers, config, delta);
-    this.requestUpdate();
+  firstUpdated() {
+    new Sortable(this, {
+      handle: '.grip',
+      animation: 100,
+      forceFallback: false,
+      onEnd: (event) => {
+        const oldIndex = this.layers.length - 1 - event.oldIndex;
+        const newIndex = this.layers.length - 1 - event.newIndex;
+        this.actions.moveLayer(this.layers, this.layers[oldIndex], newIndex - oldIndex);
+        this.requestUpdate();
+      }
+    });
   }
 }
 

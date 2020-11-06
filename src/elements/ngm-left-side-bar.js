@@ -85,6 +85,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
         <div class="content active">
           <ngm-layers
+            class="ui celled list"
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             @layerChanged=${this.onLayerChanged}
             .authenticated=${this.authenticated}
