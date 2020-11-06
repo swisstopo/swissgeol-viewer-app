@@ -1,4 +1,5 @@
 import {LitElement, html} from 'lit-element';
+import {classMap} from 'lit-html/directives/class-map';
 import 'fomantic-ui-css/components/progress.js';
 import $ from '../jquery.js';
 
@@ -36,8 +37,8 @@ class NgmLoadingMask extends LitElement {
 
   render() {
     return html`
-      <div class="ui ${this.active ? 'active' : ''} inverted dimmer">
-        <div class="ui blue tiny progress ${this.step === 0 ? 'sliding indeterminate' : ''}">
+      <div class="ui ${classMap({active: this.active})} inverted dimmer">
+        <div class="ui blue tiny progress sliding ${classMap({indeterminate: this.step === 0})}">
           <div class="bar"></div>
         </div>
       </div>
