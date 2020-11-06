@@ -42,7 +42,7 @@
     "autoprefixer": "^9.8.6",
     "copy-webpack-plugin": "^6.2.1",
     "core-js": "^3.6.5",
-    "css-loader": "^5.0.0",
+    "css-loader": "^5.0.1",
     "eslint": "^7.12.1",
     "esm": "^3.2.25",
     "file-loader": "^6.2.0",
