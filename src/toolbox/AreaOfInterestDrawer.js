@@ -506,9 +506,14 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       this.editedBackup.color = entity.billboard.color.getValue(this.julianDate);
       this.editedBackup.image = entity.billboard.image.getValue(this.julianDate);
     } else if (type === 'line') {
-      this.editedBackup.positions = entity.polyline.positions.getValue();
+      this.editedBackup.positions = entity.polyline.positions.getValue().map(p => Cartesian3.clone(p));
     } else {
-      this.editedBackup.positions = entity.polygon.hierarchy.getValue();
+      const hierarchy = entity.polygon.hierarchy.getValue();
+      // this is hackish: the hierarchy should not be stored as a positions.
+      this.editedBackup.positions = {
+        positions: hierarchy.positions.map(p => Cartesian3.clone(p)),
+        holes: hierarchy.holes.map(p => Cartesian3.clone(p))
+      };
     }
   }
 
