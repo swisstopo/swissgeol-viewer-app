@@ -395,15 +395,16 @@ export default class Slicer {
         height = -height;
       }
       const negate = type.includes('northeast') ? 1 : -1;
+      const offset = 5000;
       let lon, lat;
       if (type.includes('horizontal')) {
-        const horizontalMin = lv95Center[0] - this.planesWidth / 2;
-        const horizontalMax = lv95Center[0] + this.planesWidth / 2;
+        const horizontalMin = lv95Center[0] - this.planesWidth / 2 + offset;
+        const horizontalMax = lv95Center[0] + this.planesWidth / 2 - offset;
         lon = applyLimits(viewCenterLv95[0], horizontalMin, horizontalMax);
         lat = lv95Center[1] + this.planesHeight / 2 * negate;
       } else {
-        const verticalMin = lv95Center[1] - this.planesHeight / 2;
-        const varticalMax = lv95Center[1] + this.planesHeight / 2;
+        const verticalMin = lv95Center[1] - this.planesHeight / 2 + offset;
+        const varticalMax = lv95Center[1] + this.planesHeight / 2 - offset;
         lat = applyLimits(viewCenterLv95[1], verticalMin, varticalMax);
         lon = lv95Center[0] + this.planesWidth / 2 * negate;
       }
