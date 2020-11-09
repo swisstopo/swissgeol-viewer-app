@@ -41,7 +41,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "autoprefixer": "^9.8.6",
     "copy-webpack-plugin": "^6.3.0",
-    "core-js": "^3.6.5",
+    "core-js": "^3.7.0",
     "css-loader": "^5.0.1",
     "eslint": "^7.12.1",
     "esm": "^3.2.25",
