@@ -543,9 +543,35 @@ export class CesiumDraw extends EventTarget {
           break;
       }
       // a sketch point was clicked => remove it
-      this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
-      this.sketchPoints_.forEach((sp, idx) => sp.properties.index = Math.floor(idx / divider));
-      this.drawingDataSource.entities.remove(this.sketchPoint_);
+      if (divider === 2) {
+        const idx2 = this.sketchPoint_.properties.index * 2;
+        const firstPointClicked = idx2 === 0;
+        const lastPointClicked = idx2 === this.sketchPoints_.length - 1;
+        let removedSPs;
+        if (lastPointClicked) {
+          removedSPs = this.sketchPoints_.splice(idx2 - 1, 2);
+        } else {
+          removedSPs = this.sketchPoints_.splice(idx2, 2);
+        }
+        this.sketchPoints_.forEach((s, index) => s.properties.index = Math.floor(index / divider));
+        removedSPs.forEach(sp => this.drawingDataSource.entities.remove(sp));
+        if (!firstPointClicked && !lastPointClicked) {
+          // Move previous virtual SP in the middle of preRealSP and nextRealSP
+          const prevRealSP = this.sketchPoints_[idx2 - 2];
+          const prevVirtualSP = this.sketchPoints_[idx2 - 1];
+          const nextRealSP = this.sketchPoints_[idx2];
+          const newPosition = Cartesian3.add(
+            prevRealSP.position.getValue(this.julianDate),
+            nextRealSP.position.getValue(this.julianDate),
+            new Cartesian3());
+          Cartesian3.divideByScalar(newPosition, 2, newPosition);
+          prevVirtualSP.position = newPosition;
+        }
+      } else {
+        this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
+        this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
+        this.drawingDataSource.entities.remove(this.sketchPoint_);
+      }
       this.viewer_.scene.requestRender();
     }
   }
