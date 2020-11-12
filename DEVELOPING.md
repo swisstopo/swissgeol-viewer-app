@@ -16,6 +16,8 @@ git tag $VERSION
 git push origin $VERSION
 ```
 
+* Check the site is upgraded: https://int.swissgeol.ch/versions.json
+
 ## Deploy to production (from local machine)
 ```bash
 RELEASE_NAME="RELEASE_NAME_FOR_SENTRY" npm run build
@@ -30,6 +32,8 @@ export AWS_SECRET_ACCESS_KEY=$(gopass ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
 scripts/deploy_to_prod.sh
 [ $? -eq 0 ] && echo OK || echo failed
 ```
+
+* Check the site is upgraded: https://beta.swissgeol.ch/versions.json
 
 ## i18n: add new string to translate
 
