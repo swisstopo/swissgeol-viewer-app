@@ -134,8 +134,7 @@ export class CesiumDraw extends EventTarget {
       sketchPoint.properties.index = idx;
       this.sketchPoints_.push(sketchPoint);
       if (createVirtualSPs && (idx + 1) < positions.length) {
-        const p2 = Cartesian3.add(p, positions[idx + 1], new Cartesian3());
-        Cartesian3.divideByScalar(p2, 2, p2);
+        const p2 = this.halfwayPosition_(p, positions[idx + 1]);
         const virtualSketchPoint = this.createSketchPoint_(p2, {edit: true, virtual: true});
         virtualSketchPoint.properties.index = idx;
         this.sketchPoints_.push(virtualSketchPoint);
@@ -375,20 +374,12 @@ export class CesiumDraw extends EventTarget {
             const idx = this.sketchPoint_.properties.index;
             if (idx > 0) {
               const prevRealSP = this.sketchPoints_[(idx - 1) * 2];
-              const prevVirtualPosition = Cartesian3.add(
-                prevRealSP.position.getValue(this.julianDate),
-                this.sketchPoint_.position.getValue(this.julianDate),
-                new Cartesian3());
-              Cartesian3.divideByScalar(prevVirtualPosition, 2, prevVirtualPosition);
+              const prevVirtualPosition = this.halfwayPosition_(prevRealSP, this.sketchPoint_);
               this.sketchPoints_[(idx - 1) * 2 + 1].position = prevVirtualPosition;
             }
             if (idx < (this.activePoints_.length - 1)) {
               const nextRealSP = this.sketchPoints_[(idx + 1) * 2];
-              const nextVirtualPosition = Cartesian3.add(
-                nextRealSP.position.getValue(this.julianDate),
-                this.sketchPoint_.position.getValue(this.julianDate),
-                new Cartesian3());
-              Cartesian3.divideByScalar(nextVirtualPosition, 2, nextVirtualPosition);
+              const nextVirtualPosition = this.halfwayPosition_(nextRealSP, this.sketchPoint_);
               this.sketchPoints_[(idx + 1) * 2 - 1].position = nextVirtualPosition;
             }
           }
@@ -446,6 +437,22 @@ export class CesiumDraw extends EventTarget {
     this.dispatchEvent(new CustomEvent('leftdown'));
   }
 
+  /**
+   *
+   * @param {*} a
+   * @param {*} b
+   * @return {Cartesian3}
+   */
+  halfwayPosition_(a, b) {
+    a = a.position || a;
+    b = b.position || b;
+    a = a.getValue ? a.getValue(this.julianDate) : a;
+    b = b.getValue ? b.getValue(this.julianDate) : b;
+    const position = Cartesian3.add(a, b, new Cartesian3());
+    Cartesian3.divideByScalar(position, 2, position);
+    return position;
+  }
+
   splitLineOrPolygonPositions_() {
     // Add new line vertex
     // Create SPs, reuse the pressed virtual SP for first segment
@@ -454,16 +461,8 @@ export class CesiumDraw extends EventTarget {
     const pressedIdx = pressedSP.properties.index;
     const realSP0 = this.sketchPoints_[pressedIdx * 2];
     const realSP2 = this.sketchPoints_[(pressedIdx + 1) * 2];
-    const virtualPosition0 = Cartesian3.add(
-      realSP0.position.getValue(this.julianDate),
-      pressedPosition,
-      new Cartesian3());
-    Cartesian3.divideByScalar(virtualPosition0, 2, virtualPosition0);
-    const virtualPosition1 = Cartesian3.add(
-      pressedPosition,
-      realSP2.position.getValue(this.julianDate),
-      new Cartesian3());
-    Cartesian3.divideByScalar(virtualPosition1, 2, virtualPosition1);
+    const virtualPosition0 = this.halfwayPosition_(realSP0, pressedPosition);
+    const virtualPosition1 = this.halfwayPosition_(pressedPosition, realSP2);
     const realSP1 = this.createSketchPoint_(pressedPosition, {edit: true});
     const virtualSP1 = this.createSketchPoint_(virtualPosition1, {edit: true, virtual: true});
     const virtualSP0 = pressedSP; // the pressed SP is reused
@@ -560,11 +559,7 @@ export class CesiumDraw extends EventTarget {
           const prevRealSP = this.sketchPoints_[idx2 - 2];
           const prevVirtualSP = this.sketchPoints_[idx2 - 1];
           const nextRealSP = this.sketchPoints_[idx2];
-          const newPosition = Cartesian3.add(
-            prevRealSP.position.getValue(this.julianDate),
-            nextRealSP.position.getValue(this.julianDate),
-            new Cartesian3());
-          Cartesian3.divideByScalar(newPosition, 2, newPosition);
+          const newPosition = this.halfwayPosition_(prevRealSP, nextRealSP);
           prevVirtualSP.position = newPosition;
         }
       } else {
