@@ -119,7 +119,7 @@ export class CesiumDraw extends EventTarget {
         break;
       case 'rectangle':
         positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
-        positions.pop();
+        // positions.pop();
         break;
       default:
         break;
@@ -215,21 +215,21 @@ export class CesiumDraw extends EventTarget {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
     const pointEntity = this.drawingDataSource.entities.add(entity);
-    if (options.edit && this.type === 'rectangle') {
-      const isLastPoint = options.positionIndex === 2; // always 3 points for rectangle
-      const billboard = {
-        position: new CallbackProperty(() => pointEntity.position.getValue(this.julianDate), false),
-        billboard: {
-          image: isLastPoint ? './images/move-edit-icon.svg' : './images/edit-icons.svg',
-          scale: isLastPoint ? 0.06 : 0.2,
-          disableDepthTestDistance: Number.POSITIVE_INFINITY,
-          horizontalOrigin: HorizontalOrigin.LEFT,
-          verticalOrigin: VerticalOrigin.BOTTOM,
-          pixelOffset: new Cartesian2(10, -10)
-        }
-      };
-      this.drawingDataSource.entities.add(billboard);
-    }
+    // if (options.edit && this.type === 'rectangle') {
+    //   const isLastPoint = options.positionIndex === 2; // always 3 points for rectangle
+    //   const billboard = {
+    //     position: new CallbackProperty(() => pointEntity.position.getValue(this.julianDate), false),
+    //     billboard: {
+    //       image: isLastPoint ? './images/move-edit-icon.svg' : './images/edit-icons.svg',
+    //       scale: isLastPoint ? 0.06 : 0.2,
+    //       disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    //       horizontalOrigin: HorizontalOrigin.LEFT,
+    //       verticalOrigin: VerticalOrigin.BOTTOM,
+    //       pixelOffset: new Cartesian2(10, -10)
+    //     }
+    //   };
+    //   this.drawingDataSource.entities.add(billboard);
+    // }
 
     return pointEntity;
   }
@@ -357,13 +357,61 @@ export class CesiumDraw extends EventTarget {
           this.entityForEdit.position = position;
         } else {
           this.sketchPoint_.position = position;
+          const prevPosition = Cartesian3.clone(this.activePoints_[this.sketchPoint_.properties.index]);
           this.activePoints_[this.sketchPoint_.properties.index] = position;
           if (this.type === 'line') {
             this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
             let positions = this.activePoints_;
             if (this.type === 'rectangle') {
-              positions = rectanglify(this.activePoints_);
+              // positions = rectanglify(this.activePoints_);
+              if (this.sketchPoint_.properties.index === 0) {
+                // const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
+                // const a = Cartographic.fromCartesian(positions[0]);
+                // const c = Cartographic.fromCartesian(center);
+                // const xDiff = c.longitude - a.longitude;
+                // const yDiff = c.latitude - a.latitude;
+                // const angle = 90 * Math.PI / 180;
+                // const y = yDiff * Math.cos(angle) - xDiff * Math.sin(angle);
+                // const x = yDiff * Math.sin(angle) + xDiff * Math.cos(angle);
+                // const angle2 = 270 * Math.PI / 180;
+                // const y2 = yDiff * Math.cos(angle2) - xDiff * Math.sin(angle2);
+                // const x2 = yDiff * Math.sin(angle2) + xDiff * Math.cos(angle2);
+
+                // positions[1] = Cartographic.toCartesian(new Cartographic(c.longitude + x, c.latitude + y));
+                // positions[3] = Cartographic.toCartesian(new Cartographic(c.longitude + x2, c.latitude + y2));
+                let diff4 = Cartesian3.subtract(positions[2], positions[3], new Cartesian3());
+                let diff5 = Cartesian3.subtract(positions[2], positions[1], new Cartesian3());
+                let angle = Cartesian3.angleBetween(diff4, diff5) * 180 / Math.PI;
+                console.log('1', angle);
+
+
+                const diff = Cartesian3.subtract(positions[0], prevPosition, new Cartesian3());
+
+                const pos1 = Cartesian3.add(positions[1], diff, new Cartesian3());
+                const diff2 = Cartesian3.subtract(positions[1], positions[0], new Cartesian3());
+                const diff3 = Cartesian3.subtract(pos1, positions[2], new Cartesian3());
+                const project = Cartesian3.projectVector(diff3, diff2, new Cartesian3());
+                const pos2 = Cartesian3.subtract(pos1, project, new Cartesian3());
+
+                const pos3 = Cartesian3.add(positions[3], diff, new Cartesian3());
+                const diff6 = Cartesian3.subtract(positions[3], positions[0], new Cartesian3());
+                const diff7 = Cartesian3.subtract(pos3, positions[2], new Cartesian3());
+                const project2 = Cartesian3.projectVector(diff7, diff6, new Cartesian3());
+                const pos4 = Cartesian3.subtract(pos3, project2, new Cartesian3());
+
+                diff4 = Cartesian3.subtract(positions[2], pos4, new Cartesian3());
+                diff5 = Cartesian3.subtract(positions[2], pos2, new Cartesian3());
+                angle = Cartesian3.angleBetween(diff4, diff5) * 180 / Math.PI;
+                console.log('2', angle);
+                positions[1] = pos2;
+                positions[3] = pos4;
+                // if (angle > 87 && angle < 93) {
+                //
+                // } else {
+                //   positions[0] = prevPosition;
+                // }
+              }
               this.sketchPoints_.forEach((sp, key) => {
                 sp.position = positions[key];
               });
@@ -424,7 +472,7 @@ export class CesiumDraw extends EventTarget {
     this.dispatchEvent(new CustomEvent('leftup'));
   }
 
-    /**
+  /**
    * @param event
    */
   onLeftDownThenUp_(event) {
@@ -451,7 +499,7 @@ export class CesiumDraw extends EventTarget {
         }
         default:
           break;
-        }
+      }
       // a sketch point was clicked => remove it
       this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
       this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
