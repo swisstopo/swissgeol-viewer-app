@@ -25,10 +25,31 @@ class NgmAuth extends I18nMixin(LitElement) {
   constructor() {
     super();
     this.user = Auth.getUser();
-
+    this.updateLogoutTimeout_(this.user);
     this.responseType = 'token';
     this.redirectUri = `${location.origin}${location.pathname}`;
     this.scope = 'openid+profile';
+  }
+
+  /**
+   * Set or clear auto logout timer.
+   * @param claims
+   */
+  updateLogoutTimeout_(claims) {
+    if (this.expireTimer_) {
+      clearTimeout(this.expireTimer_);
+      this.expireTimer_ = null;
+    }
+    if (claims) {
+      const expiresIn = 1000 * claims.exp - Date.now();
+      if (expiresIn > 0) {
+        console.log('setting logout timeout in', expiresIn, 'milliseconds');
+        this.expireTimer_ = setTimeout(() => {
+          console.log('The token has expired, triggering logout');
+          this.logout();
+        }, expiresIn);
+      }
+    }
   }
 
   async login() {
@@ -48,6 +69,7 @@ class NgmAuth extends I18nMixin(LitElement) {
     Auth.initialize();
     this.user = Auth.getUser();
     console.assert(this.user);
+    this.updateLogoutTimeout_(this.user);
 
     // close the authentication popup
     popup.close();
@@ -58,6 +80,7 @@ class NgmAuth extends I18nMixin(LitElement) {
   logout() {
     Auth.logout();
     this.user = null;
+    this.updateLogoutTimeout_();
 
     this.dispatchEvent(new CustomEvent('refresh', {detail: {authenticated: false}}));
   }

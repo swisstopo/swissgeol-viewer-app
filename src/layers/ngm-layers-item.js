@@ -17,7 +17,7 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
   }
 
   firstUpdated() {
-    $(`#${this.config.label}-transparency`).slider({
+    $(this.querySelector('.ui.slider')).slider({
       min: 0,
       max: 1,
       start: !isNaN(this.config.transparency) ? this.config.transparency : 0,
@@ -114,7 +114,7 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
       </div>
       <div class="ngm-displayed-container" ?hidden=${!this.config.setTransparency}>
         <label>${i18next.t('dtd_transparency_label')} </label>
-        <div class="ui grey small slider" id="${this.config.label}-transparency"></div>
+        <div class="ui grey small slider"></div>
       </div>
     `;
   }

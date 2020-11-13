@@ -58,13 +58,21 @@ export class CesiumDraw extends EventTarget {
     this.activeDistance_ = 0;
     this.activeDistances_ = [];
     this.entityForEdit = undefined;
-    this.leftPressed = false;
+    this.leftPressedPixel_ = undefined;
     this.moveEntity = false;
     this.sketchPoints_ = [];
 
     this.entities_ = [];
 
     this.ERROR_TYPES = {needMorePoints: 'need_more_points'};
+  }
+
+  renderSceneIfTranslucent() {
+    // because calling render decreases performance, only call it when needed.
+    // see https://cesium.com/docs/cesiumjs-ref-doc/Scene.html#pickTranslucentDepth
+    if (this.viewer_.scene.globe.translucency.enabled) {
+      this.viewer_.scene.render();
+    }
   }
 
   /**
@@ -177,7 +185,7 @@ export class CesiumDraw extends EventTarget {
     this.activeDistance_ = 0;
     this.activeDistances_ = [];
     this.entityForEdit = undefined;
-    this.leftPressed = false;
+    this.leftPressedPixel_ = undefined;
     this.moveEntity = false;
     this.sketchPoints_ = [];
   }
@@ -314,6 +322,7 @@ export class CesiumDraw extends EventTarget {
   }
 
   onLeftClick_(event) {
+    this.renderSceneIfTranslucent();
     const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.position));
     if (position) {
       if (!this.sketchPoint_) {
@@ -339,9 +348,10 @@ export class CesiumDraw extends EventTarget {
   }
 
   onMouseMove_(event) {
+    this.renderSceneIfTranslucent();
     const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
     if (!position) return;
-    if (this.entityForEdit && this.leftPressed) {
+    if (this.entityForEdit && !!this.leftPressedPixel_) {
       if (this.moveEntity) {
         if (this.type === 'point') {
           this.entityForEdit.position = position;
@@ -381,7 +391,7 @@ export class CesiumDraw extends EventTarget {
    * @private
    */
   onLeftDown_(event) {
-    this.leftPressed = true;
+    this.leftPressedPixel_ = Cartesian2.clone(event.position);
     if (this.entityForEdit) {
       const objects = this.viewer_.scene.drillPick(event.position, 5, 5, 5);
       if (objects.length) {
@@ -399,12 +409,55 @@ export class CesiumDraw extends EventTarget {
     this.dispatchEvent(new CustomEvent('leftdown'));
   }
 
-  onLeftUp_() {
+  /**
+   * @param event
+   */
+  onLeftUp_(event) {
     this.viewer_.scene.screenSpaceCameraController.enableInputs = true;
+    const wasAClick = Cartesian2.equalsEpsilon(event.position, this.leftPressedPixel_, 0, 2);
+    if (wasAClick) {
+      this.onLeftDownThenUp_(event);
+    }
     this.moveEntity = false;
-    this.leftPressed = false;
+    this.leftPressedPixel_ = undefined;
     this.sketchPoint_ = undefined;
     this.dispatchEvent(new CustomEvent('leftup'));
+  }
+
+    /**
+   * @param event
+   */
+  onLeftDownThenUp_(event) {
+    const e = this.entityForEdit;
+    if (this.sketchPoint_ && this.sketchPoint_.properties.index !== undefined) {
+      switch (this.type) {
+        case 'polygon': {
+          const hierarchy = e.polygon.hierarchy.getValue();
+          if (hierarchy.positions.length <= 3) {
+            return;
+          }
+          hierarchy.positions.splice(this.sketchPoint_.properties.index, 1);
+          e.polygon.hierarchy.setValue({...hierarchy});
+          break;
+        }
+        case 'line': {
+          const pPositions = e.polyline.positions.getValue();
+          if (pPositions.length <= 2) {
+            return;
+          }
+          pPositions.splice(this.sketchPoint_.properties.index, 1);
+          e.polyline.positions = pPositions;
+          break;
+        }
+        default:
+          break;
+        }
+      // a sketch point was clicked => remove it
+      this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
+      this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
+      this.drawingDataSource.entities.remove(this.sketchPoint_);
+      this.viewer_.scene.requestRender();
+    }
   }
 }
 

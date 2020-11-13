@@ -167,6 +167,24 @@ function aoiListTemplate() {
                     @input="${() => this.onDescriptionChange(index)}"></textarea>
                 </div>
             </div>
+            <div class="ngm-aoi-input-container">
+                <label>${i18next.t('tbx_image_label')}:</label>
+                <div class="ui mini input">
+                  <textarea
+                    class=${`ngm-aoi-image-${index}`}
+                    type="text" .value="${i.image}"
+                    @input="${() => this.onImageChange(index)}"></textarea>
+                </div>
+            </div>
+            <div class="ngm-aoi-input-container">
+                <label>${i18next.t('tbx_website_label')}:</label>
+                <div class="ui mini input">
+                  <textarea
+                    class=${`ngm-aoi-website-${index}`}
+                    type="text" .value="${i.website}"
+                    @input="${() => this.onWebsiteChange(index)}"></textarea>
+                </div>
+            </div>
             <div class="ngm-volume-limits-input"
                 ?hidden=${!this.draw_.entityForEdit || !(this.draw_.entityForEdit.properties.volumeShowed && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
                 <div>

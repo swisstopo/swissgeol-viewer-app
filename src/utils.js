@@ -59,6 +59,19 @@ export function pickCenter(scene) {
 }
 
 /**
+ * @param {import('cesium/Source/Scene/Scene').default} scene
+ * @return {Cartesian3 | undefined}
+ */
+export function pickCenterOnEllipsoid(scene) {
+  const camera = scene.camera;
+  const windowPosition = new Cartesian2(
+    scene.canvas.clientWidth / 2,
+    scene.canvas.clientHeight / 2
+  );
+  return camera.pickEllipsoid(windowPosition);
+}
+
+/**
  * @return {URLSearchParams}
  */
 export function getURLSearchParams() {
@@ -218,18 +231,16 @@ export function updateHeightForCartesianPositions(scene, positions, height) {
 }
 
 /**
- * Applies input min/max values and returns applied value
- * @param {HTMLInputElement} element
+ * Applies min/max values and returns value
+ * @param {number} value
  * @param {number} minValue
  * @param {number} maxValue
  * @return {number}
  */
-export function applyInputLimits(element, minValue, maxValue) {
-  let value = Number(element.value);
+export function applyLimits(value, minValue, maxValue) {
   if (value < minValue || value > maxValue) {
     value = Math.max(value, minValue);
     value = Math.min(value, maxValue);
-    element.value = value;
   }
   return value;
 }

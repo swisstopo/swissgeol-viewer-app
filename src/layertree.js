@@ -136,7 +136,7 @@ const geo_base = {
           displayed: false,
           restricted: true,
           aws_s3_bucket: 'ngm-dev-authenticated-resources',
-          aws_s3_key: 'tiles/bh_all_g_4326/v1/tileset.json',
+          aws_s3_key: 'tiles/to_define/v1/tileset.json',
         },
       ]
     },

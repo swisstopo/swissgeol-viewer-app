@@ -64,7 +64,9 @@ export default class EarthquakeVisualizer {
     if (entities && entities.length) {
       this.earthquakeDataSource.show = visible;
     } else {
-      await this.showEarthquakes();
+      if (visible) {
+        await this.showEarthquakes();
+      }
     }
   }
 

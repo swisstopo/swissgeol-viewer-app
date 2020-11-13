@@ -11,7 +11,7 @@ Small parts prefixes:
 * header... = page header content
 * obj_info... = object info window
 * sentry... = sentry popup
-* slow_connection... = slow contction popup
+* slow_connection... = slow connection popup
 * welcome... = left side bar welcome part
 
 Suffixes:

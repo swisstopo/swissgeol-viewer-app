@@ -4,32 +4,29 @@ const cognitoState = 'cognito_state';
 const cognitoUser = 'cognito_user';
 const cognitoAccessToken = 'cognito_access_token';
 
-// example: #access_token=header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature&token_type=Bearer&state=1234
-const isResponse = /^#[\w]+=[\w.=-]+(&[\w]+=[\w.=-]+)*$/;
-
-// example: header.eyJuYW1lIjoiSm9obiBEb2UifQ.signature
-const isToken = /^[\w=-]+.[\w=-]+.[\w=-]+$/;
-
 let _AWSCredentials = null;
 
 export default class Auth {
 
   static initialize() {
-    // try parse and store the cognito response
-    // and fail silently otherwise
-    try {
-      const response = this.parseResponse(window.location.hash);
-      if (response.token_type === 'Bearer' && response.state === this.state()) {
-        this.setUser(this.parseToken(response.access_token));
-        this.setAccessToken(response.id_token);
+    if (window.location.hash.startsWith('#')) {
+      // https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
+      const response = window.location.hash.substring(1);
+      const params = new URLSearchParams(response);
+      if (params.has('access_token') && params.has('id_token') &&
+          params.get('token_type') === 'Bearer' && params.get('state') === this.state()) {
+        localStorage.setItem('rawCognitoResponse', response);
+        const token = params.get('access_token');
+        const payload = atob(token.split('.')[1]);
+        const claims = JSON.parse(payload);
+        this.setUser(claims);
+        this.setAccessToken(params.get('id_token'));
       }
-    } catch (e) {
-      // do nothing
     }
 
     const accessToken = this.getAccessToken();
     if (accessToken) {
-      _AWSCredentials = fromCognitoIdentityPool({
+      window['AWSCred'] = _AWSCredentials = fromCognitoIdentityPool({
         client: new CognitoIdentityClient({
           region: 'eu-central-1'
         }),
@@ -44,29 +41,6 @@ export default class Auth {
   static getCredentialsPromise() {
     if (_AWSCredentials) {
       return _AWSCredentials();
-    }
-  }
-
-  static parseResponse(response) {
-    if (!isResponse.test(response)) {
-      throw new Error('Malformed response');
-    }
-    const entries = response.substring(1).split('&')
-      .filter(entry => entry !== '')
-      .map(entry => entry.split('='));
-    return Object.fromEntries(entries);
-  }
-
-  static parseToken(token) {
-    if (!isToken.test(token)) {
-      throw new Error('Malformed token');
-    }
-    try {
-      const arr = token.split('.');
-      const payload = atob(arr[1]);
-      return JSON.parse(payload);
-    } catch (e) {
-      throw new Error('Malformed token');
     }
   }
 
@@ -94,6 +68,7 @@ export default class Auth {
     localStorage.removeItem(cognitoUser);
     localStorage.removeItem(cognitoState);
     localStorage.removeItem(cognitoAccessToken);
+    localStorage.removeItem('rawCognitoResponse');
     _AWSCredentials = null;
   }
 
