@@ -247,16 +247,18 @@ function enableCenterOfRotate(viewer) {
  */
 export function addMantelEllipsoid(viewer) {
   // Add Mantel ellipsoid
-  const radii = Ellipsoid.WGS84.radii.clone();
+  const earthRadii = Ellipsoid.WGS84.radii.clone();
   const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
-  radii.x -= mantelDepth;
-  radii.y -= mantelDepth;
-  radii.z -= mantelDepth;
+  const mantelRadii = earthRadii.clone();
+  mantelRadii.x -= mantelDepth;
+  mantelRadii.y -= mantelDepth;
+  mantelRadii.z -= mantelDepth;
+
   const entity = viewer.entities.add({
     position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
     ellipsoid: {
-      radii: radii,
-      material: 'images/temp_lava.jpg',
+      radii: mantelRadii,
+      material: 'images/temp_lava.jpg'
     }
   });
   entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
@@ -264,6 +266,25 @@ export function addMantelEllipsoid(viewer) {
   if (!noLimit) {
     new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
   }
+
+  // hacky way to show mantel also above the terrain.
+  // for some reason object placed below 21km doesn't show when the camera above the terrain. distanceDisplayCondition doesn't resolve the issue.
+  const mantelDepthAboveTerrain = 21000;
+  const mantelRadiiAboveTerrain = earthRadii.clone();
+  mantelRadiiAboveTerrain.x -= mantelDepthAboveTerrain;
+  mantelRadiiAboveTerrain.y -= mantelDepthAboveTerrain;
+  mantelRadiiAboveTerrain.z -= mantelDepthAboveTerrain;
+
+  let usedUndergroundValue = !viewer.scene.cameraUnderground;
+  viewer.scene.postRender.addEventListener((scene) => {
+    if (scene.cameraUnderground && !usedUndergroundValue) {
+      entity.ellipsoid.radii = mantelRadii;
+      usedUndergroundValue = true;
+    } else if (!scene.cameraUnderground && usedUndergroundValue) {
+      entity.ellipsoid.radii = mantelRadiiAboveTerrain;
+      usedUndergroundValue = false;
+    }
+  });
 }
 
 /**
