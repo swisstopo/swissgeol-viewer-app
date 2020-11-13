@@ -10,6 +10,7 @@ class NgmSlicer extends I18nMixin(LitElement) {
       viewer: {type: Object},
     };
   }
+
   constructor() {
     super();
 
@@ -27,12 +28,17 @@ class NgmSlicer extends I18nMixin(LitElement) {
   updated() {
     if (!this.slicer) {
       this.slicer = new Slicer(this.viewer);
+      this.applyClippingPlanesToTileset = (tileset) => this.slicer.applyClippingPlanesToTileset(tileset);
     }
   }
 
   toggleSlicer() {
     this.slicer.active = !this.slicer.active;
     this.requestUpdate();
+  }
+
+  get active() {
+    return this.slicer.active;
   }
 
   render() {

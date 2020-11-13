@@ -179,6 +179,14 @@ viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
 const widgets = document.querySelector('ngm-navigation-widgets');
 widgets.viewer = viewer;
+sideBar.addEventListener('layeradded', (evt) => {
+  if (widgets.slicer && widgets.slicer.active) {
+    const layer = evt.detail.layer;
+    if (layer && layer.promise) {
+      widgets.slicer.applyClippingPlanesToTileset(layer.promise);
+    }
+  }
+});
 
 document.querySelector('ngm-feature-height').viewer = viewer;
 document.querySelector('ngm-left-side-bar').mapChooser = mapChooser;

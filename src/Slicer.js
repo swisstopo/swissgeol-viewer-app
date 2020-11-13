@@ -103,20 +103,10 @@ export default class Slicer {
       globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(new Date()));
 
       const primitives = this.viewer.scene.primitives;
-      const cartCenter = Cartographic.fromCartesian(this.planesCenter);
       for (let i = 0, ii = primitives.length; i < ii; i++) {
         const primitive = primitives.get(i);
         if (primitive.root && primitive.boundingSphere) {
-          const tileCenter = Cartographic.fromCartesian(primitive.boundingSphere.center);
-          const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
-          const lv95Tile = radiansToLv95([tileCenter.longitude, tileCenter.latitude]);
-          const offsetX = lv95Center[1] - lv95Tile[1];
-          const offsetY = lv95Center[0] - lv95Tile[0];
-          this.offsets[primitive.url] = {
-            offsetX: offsetX,
-            offsetY: offsetY
-          };
-
+          this.offsets[primitive.url] = this.getTilesetOffset(primitive.boundingSphere.center, this.planesCenter);
           primitive.clippingPlanes = this.createClippingPlanes();
         }
       }
@@ -366,6 +356,30 @@ export default class Slicer {
     this.planesCenter = Cartographic.toCartesian(planesCenter);
     this.planesCenterH = this.planesCenter;
     this.planesCenterV = this.planesCenter;
+  }
+
+  getTilesetOffset(tilesetCenter, mapCenter) {
+    const tileCenter = Cartographic.fromCartesian(tilesetCenter);
+    const cartCenter = Cartographic.fromCartesian(mapCenter);
+    const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
+    const lv95Tile = radiansToLv95([tileCenter.longitude, tileCenter.latitude]);
+    const offsetX = lv95Center[1] - lv95Tile[1];
+    const offsetY = lv95Center[0] - lv95Tile[0];
+    return {
+      offsetX: offsetX,
+      offsetY: offsetY
+    };
+  }
+
+  applyClippingPlanesToTileset(tileset) {
+    if (tileset.readyPromise) {
+      tileset.readyPromise.then(primitive => {
+        if (primitive.root && primitive.boundingSphere && !primitive.clippingPlanes) {
+          this.offsets[primitive.url] = this.getTilesetOffset(primitive.boundingSphere.center, this.planesCenter);
+          primitive.clippingPlanes = this.createClippingPlanes();
+        }
+      });
+    }
   }
 
   centerUpdateFunction(type) {

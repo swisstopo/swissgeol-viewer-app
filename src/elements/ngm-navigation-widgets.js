@@ -17,13 +17,18 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
   static get properties() {
     return {
       viewer: {type: Object},
-      minimapExpanded: {type: Boolean}
+      minimapExpanded: {type: Boolean},
+      slicer: {type: Object}
     };
   }
 
   constructor() {
     super();
     this.minimapExpanded = true;
+  }
+
+  firstUpdated() {
+    this.slicer = this.querySelector('ngm-slicer');
   }
 
   render() {
