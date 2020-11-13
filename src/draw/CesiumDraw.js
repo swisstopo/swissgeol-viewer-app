@@ -9,6 +9,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
 import JulianDate from 'cesium/Source/Core/JulianDate';
+import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
@@ -347,7 +348,21 @@ export class CesiumDraw extends EventTarget {
     }
   }
 
+  updateRectCorner(pos1, pos2, mid, midPrev, scale) {
+    let diff1 = Cartesian3.subtract(pos1, midPrev, new Cartesian3());
+    diff1 = Cartesian3.multiplyByScalar(diff1, scale, new Cartesian3());
+    const pos = Cartesian3.add(mid, diff1, new Cartesian3());
+
+    const distPrev1 = Cartesian3.distance(pos1, pos2);
+    const dist1 = Cartesian3.distance(pos, pos2);
+    const distScale = dist1 / distPrev1;
+    let diffDist1 = Cartesian3.subtract(pos1, pos2, new Cartesian3());
+    diffDist1 = Cartesian3.multiplyByScalar(diffDist1, distScale, new Cartesian3());
+    return Cartesian3.add(pos2, diffDist1, new Cartesian3());
+  }
+
   onMouseMove_(event) {
+    this.updateFinish = false;
     this.renderSceneIfTranslucent();
     const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
     if (!position) return;
@@ -357,61 +372,88 @@ export class CesiumDraw extends EventTarget {
           this.entityForEdit.position = position;
         } else {
           this.sketchPoint_.position = position;
-          const prevPosition = Cartesian3.clone(this.activePoints_[this.sketchPoint_.properties.index]);
-          this.activePoints_[this.sketchPoint_.properties.index] = position;
+          const index = this.sketchPoint_.properties.index;
+          const prevPosition = Cartesian3.clone(this.activePoints_[index]);
+          this.activePoints_[index] = position;
           if (this.type === 'line') {
             this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
-            let positions = this.activePoints_;
+            const positions = this.activePoints_;
             if (this.type === 'rectangle') {
-              // positions = rectanglify(this.activePoints_);
-              if (this.sketchPoint_.properties.index === 0) {
-                // const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
-                // const a = Cartographic.fromCartesian(positions[0]);
-                // const c = Cartographic.fromCartesian(center);
-                // const xDiff = c.longitude - a.longitude;
-                // const yDiff = c.latitude - a.latitude;
-                // const angle = 90 * Math.PI / 180;
-                // const y = yDiff * Math.cos(angle) - xDiff * Math.sin(angle);
-                // const x = yDiff * Math.sin(angle) + xDiff * Math.cos(angle);
-                // const angle2 = 270 * Math.PI / 180;
-                // const y2 = yDiff * Math.cos(angle2) - xDiff * Math.sin(angle2);
-                // const x2 = yDiff * Math.sin(angle2) + xDiff * Math.cos(angle2);
+              const oppositeIndex = index > 1 ? index - 2 : index + 2;
+              const leftIndex = index - 1 < 0 ? 3 : index - 1;
+              const rightIndex = index + 1 > 3 ? 0 : index + 1;
+              // const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
+              // const a = Cartographic.fromCartesian(positions[0]);
+              // const c = Cartographic.fromCartesian(center);
+              // const xDiff = c.longitude - a.longitude;
+              // const yDiff = c.latitude - a.latitude;
+              // const angle = 90 * Math.PI / 180;
+              // const y = yDiff * Math.cos(angle) - xDiff * Math.sin(angle);
+              // const x = yDiff * Math.sin(angle) + xDiff * Math.cos(angle);
+              // const angle2 = 270 * Math.PI / 180;
+              // const y2 = yDiff * Math.cos(angle2) - xDiff * Math.sin(angle2);
+              // const x2 = yDiff * Math.sin(angle2) + xDiff * Math.cos(angle2);
 
-                // positions[1] = Cartographic.toCartesian(new Cartographic(c.longitude + x, c.latitude + y));
-                // positions[3] = Cartographic.toCartesian(new Cartographic(c.longitude + x2, c.latitude + y2));
-                let diff4 = Cartesian3.subtract(positions[2], positions[3], new Cartesian3());
-                let diff5 = Cartesian3.subtract(positions[2], positions[1], new Cartesian3());
-                let angle = Cartesian3.angleBetween(diff4, diff5) * 180 / Math.PI;
-                console.log('1', angle);
+              // positions[1] = Cartographic.toCartesian(new Cartographic(c.longitude + x, c.latitude + y));
+              // positions[rightIndex] = Cartographic.toCartesian(new Cartographic(c.longitude + x2, c.latitude + y2));
+
+              const mid = Cartesian3.midpoint(positions[index], positions[oppositeIndex], new Cartesian3());
+              const midPrev = Cartesian3.midpoint(prevPosition, positions[oppositeIndex], new Cartesian3());
+              const midDist = Cartesian3.distance(positions[index], mid);
+              const midDistPrev = Cartesian3.distance(prevPosition, midPrev);
+              const scale = midDist / midDistPrev;
+
+              positions[leftIndex] = this.updateRectCorner(positions[leftIndex], positions[oppositeIndex], mid, midPrev, scale);
+              positions[rightIndex] = this.updateRectCorner(positions[rightIndex], positions[oppositeIndex], mid, midPrev, scale);
+
+              const w = Cartesian3.distance(positions[leftIndex], positions[oppositeIndex]);
+              const wC = Cartesian3.distance(positions[index], positions[rightIndex]);
+              const wScale = w / wC;
+              let wDiff = Cartesian3.subtract(positions[index], positions[rightIndex], new Cartesian3());
+              wDiff = Cartesian3.multiplyByScalar(wDiff, wScale, new Cartesian3());
+              positions[index] = Cartesian3.add(positions[rightIndex], wDiff, new Cartesian3());
 
 
-                const diff = Cartesian3.subtract(positions[0], prevPosition, new Cartesian3());
+              const h = Cartesian3.distance(positions[rightIndex], positions[oppositeIndex]);
+              const hC = Cartesian3.distance(positions[index], positions[leftIndex]);
+              const hScale = h / hC;
+              let hDiff = Cartesian3.subtract(positions[index], positions[leftIndex], new Cartesian3());
+              hDiff = Cartesian3.multiplyByScalar(hDiff, hScale, new Cartesian3());
+              positions[index] = Cartesian3.add(positions[leftIndex], hDiff, new Cartesian3());
 
-                const pos1 = Cartesian3.add(positions[1], diff, new Cartesian3());
-                const diff2 = Cartesian3.subtract(positions[1], positions[0], new Cartesian3());
-                const diff3 = Cartesian3.subtract(pos1, positions[2], new Cartesian3());
-                const project = Cartesian3.projectVector(diff3, diff2, new Cartesian3());
-                const pos2 = Cartesian3.subtract(pos1, project, new Cartesian3());
 
-                const pos3 = Cartesian3.add(positions[3], diff, new Cartesian3());
-                const diff6 = Cartesian3.subtract(positions[3], positions[0], new Cartesian3());
-                const diff7 = Cartesian3.subtract(pos3, positions[2], new Cartesian3());
-                const project2 = Cartesian3.projectVector(diff7, diff6, new Cartesian3());
-                const pos4 = Cartesian3.subtract(pos3, project2, new Cartesian3());
+              // const diag1Dist = Cartesian3.distance(positions[3], positions[1]);
+              // const diag2Dist = Cartesian3.distance(positions[0], positions[2]);
+              // console.log(diag1Dist, diag2Dist);
+              // const distScale3 = diag1Dist / diag2Dist;
+              // let diffDiag = Cartesian3.subtract(positions[0], positions[2], new Cartesian3());
+              // diffDiag = Cartesian3.multiplyByScalar(diffDiag, distScale3, new Cartesian3());
+              // positions[0] = Cartesian3.add(positions[2], diffDiag, new Cartesian3());
 
-                diff4 = Cartesian3.subtract(positions[2], pos4, new Cartesian3());
-                diff5 = Cartesian3.subtract(positions[2], pos2, new Cartesian3());
-                angle = Cartesian3.angleBetween(diff4, diff5) * 180 / Math.PI;
-                console.log('2', angle);
-                positions[1] = pos2;
-                positions[3] = pos4;
-                // if (angle > 87 && angle < 93) {
-                //
-                // } else {
-                //   positions[0] = prevPosition;
-                // }
-              }
+
+              // const midDiff2 = Cartesian3.subtract(positions[2], mid, new Cartesian3());
+
+              // const diff = Cartesian3.subtract(positions[0], prevPosition, new Cartesian3());
+              //
+              // const pos1 = Cartesian3.add(positions[1], diff, new Cartesian3());
+              // const diff2 = Cartesian3.subtract(positions[1], positions[0], new Cartesian3());
+              // const diff3 = Cartesian3.subtract(pos1, positions[2], new Cartesian3());
+              // const project = Cartesian3.projectVector(diff3, diff2, new Cartesian3());
+              // const pos2 = Cartesian3.subtract(pos1, project, new Cartesian3());
+              //
+              // const pos3 = Cartesian3.add(positions[3], diff, new Cartesian3());
+              // const diff6 = Cartesian3.subtract(positions[3], positions[0], new Cartesian3());
+              // const diff7 = Cartesian3.subtract(pos3, positions[2], new Cartesian3());
+              // const project2 = Cartesian3.projectVector(diff7, diff6, new Cartesian3());
+              // const pos4 = Cartesian3.subtract(pos3, project2, new Cartesian3());
+              //
+              // diff4 = Cartesian3.subtract(positions[2], pos4, new Cartesian3());
+              // diff5 = Cartesian3.subtract(positions[2], pos2, new Cartesian3());
+              // angle = Cartesian3.angleBetween(diff4, diff5) * 180 / Math.PI;
+              // console.log('2', angle);
+              // positions[1] = pos2;
+              // positions[3] = pos4;
               this.sketchPoints_.forEach((sp, key) => {
                 sp.position = positions[key];
               });
