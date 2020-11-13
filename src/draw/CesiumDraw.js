@@ -501,7 +501,7 @@ export class CesiumDraw extends EventTarget {
     switch (this.type) {
       case 'polygon': {
         const hierarchy = e.polygon.hierarchy.getValue();
-        hierarchy.positions = this.activePoint_;
+        hierarchy.positions = this.activePoints_;
         e.polygon.hierarchy.setValue({...hierarchy});
         break;
       }
