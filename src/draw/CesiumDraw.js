@@ -6,10 +6,7 @@ import HeightReference from 'cesium/Source/Scene/HeightReference';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
-import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
 import JulianDate from 'cesium/Source/Core/JulianDate';
-import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
@@ -348,21 +345,30 @@ export class CesiumDraw extends EventTarget {
     }
   }
 
-  updateRectCorner(pos1, pos2, mid, midPrev, scale) {
-    let diff1 = Cartesian3.subtract(pos1, midPrev, new Cartesian3());
+  updateRectCorner(oppositePosition, posToUpdate, mid, midPrev, scale) {
+    let diff1 = Cartesian3.subtract(oppositePosition, midPrev, new Cartesian3());
     diff1 = Cartesian3.multiplyByScalar(diff1, scale, new Cartesian3());
     const pos = Cartesian3.add(mid, diff1, new Cartesian3());
 
-    const distPrev1 = Cartesian3.distance(pos1, pos2);
-    const dist1 = Cartesian3.distance(pos, pos2);
+    const distPrev1 = Cartesian3.distance(oppositePosition, posToUpdate);
+    const dist1 = Cartesian3.distance(pos, posToUpdate);
     const distScale = dist1 / distPrev1;
-    let diffDist1 = Cartesian3.subtract(pos1, pos2, new Cartesian3());
+    let diffDist1 = Cartesian3.subtract(oppositePosition, posToUpdate, new Cartesian3());
     diffDist1 = Cartesian3.multiplyByScalar(diffDist1, distScale, new Cartesian3());
-    return Cartesian3.add(pos2, diffDist1, new Cartesian3());
+    return Cartesian3.add(posToUpdate, diffDist1, new Cartesian3());
+  }
+
+  checkForNegativeMove(positionToCompare, position, prevPosition) {
+    const diff = Cartesian3.subtract(positionToCompare, position, new Cartesian3());
+    const prevDiff = Cartesian3.subtract(positionToCompare, prevPosition, new Cartesian3());
+    const check = (value, prevValue) => (value > 0 && prevValue > 0) || (value < 0 && prevValue < 0);
+    const xCorrect = check(diff.x, prevDiff.x);
+    const yCorrect = check(diff.y, prevDiff.y);
+    const zCorrect = check(diff.z, prevDiff.z);
+    return xCorrect && yCorrect && zCorrect;
   }
 
   onMouseMove_(event) {
-    this.updateFinish = false;
     this.renderSceneIfTranslucent();
     const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
     if (!position) return;
@@ -380,9 +386,19 @@ export class CesiumDraw extends EventTarget {
           } else {
             const positions = this.activePoints_;
             if (this.type === 'rectangle') {
+              // if (Cartesian3.distance(positions[index], prevPosition) > 5000) {
+              //   positions[index] = prevPosition;
+              //   this.activePoints_[index] = prevPosition;
+              //   this.sketchPoint_.position = prevPosition;
+              //   return;
+              // }
               const oppositeIndex = index > 1 ? index - 2 : index + 2;
               const leftIndex = index - 1 < 0 ? 3 : index - 1;
               const rightIndex = index + 1 > 3 ? 0 : index + 1;
+              let draggedPoint = positions[index];
+              const oppositePoint = positions[oppositeIndex];
+              let leftPoint = positions[leftIndex];
+              let rightPoint = positions[rightIndex];
               // const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
               // const a = Cartographic.fromCartesian(positions[0]);
               // const c = Cartographic.fromCartesian(center);
@@ -398,29 +414,42 @@ export class CesiumDraw extends EventTarget {
               // positions[1] = Cartographic.toCartesian(new Cartographic(c.longitude + x, c.latitude + y));
               // positions[rightIndex] = Cartographic.toCartesian(new Cartographic(c.longitude + x2, c.latitude + y2));
 
-              const mid = Cartesian3.midpoint(positions[index], positions[oppositeIndex], new Cartesian3());
-              const midPrev = Cartesian3.midpoint(prevPosition, positions[oppositeIndex], new Cartesian3());
-              const midDist = Cartesian3.distance(positions[index], mid);
+              const mid = Cartesian3.midpoint(draggedPoint, oppositePoint, new Cartesian3());
+              const midPrev = Cartesian3.midpoint(prevPosition, oppositePoint, new Cartesian3());
+              const midDist = Cartesian3.distance(draggedPoint, mid);
               const midDistPrev = Cartesian3.distance(prevPosition, midPrev);
               const scale = midDist / midDistPrev;
 
-              positions[leftIndex] = this.updateRectCorner(positions[leftIndex], positions[oppositeIndex], mid, midPrev, scale);
-              positions[rightIndex] = this.updateRectCorner(positions[rightIndex], positions[oppositeIndex], mid, midPrev, scale);
+              leftPoint = this.updateRectCorner(leftPoint, oppositePoint, mid, midPrev, scale);
+              rightPoint = this.updateRectCorner(rightPoint, oppositePoint, mid, midPrev, scale);
 
-              const w = Cartesian3.distance(positions[leftIndex], positions[oppositeIndex]);
-              const wC = Cartesian3.distance(positions[index], positions[rightIndex]);
+              const leftCorrect = this.checkForNegativeMove(leftPoint, draggedPoint, prevPosition);
+              const rightCorrect = this.checkForNegativeMove(rightPoint, draggedPoint, prevPosition);
+              if (!leftCorrect || !rightCorrect) {
+                positions[index] = prevPosition;
+                this.activePoints_[index] = prevPosition;
+                this.sketchPoint_.position = prevPosition;
+                this.moveEntity = false;
+                return;
+              }
+
+              const w = Cartesian3.distance(leftPoint, oppositePoint);
+              const wC = Cartesian3.distance(draggedPoint, rightPoint);
               const wScale = w / wC;
-              let wDiff = Cartesian3.subtract(positions[index], positions[rightIndex], new Cartesian3());
+              let wDiff = Cartesian3.subtract(draggedPoint, rightPoint, new Cartesian3());
               wDiff = Cartesian3.multiplyByScalar(wDiff, wScale, new Cartesian3());
-              positions[index] = Cartesian3.add(positions[rightIndex], wDiff, new Cartesian3());
+              draggedPoint = Cartesian3.add(rightPoint, wDiff, new Cartesian3());
 
-
-              const h = Cartesian3.distance(positions[rightIndex], positions[oppositeIndex]);
-              const hC = Cartesian3.distance(positions[index], positions[leftIndex]);
+              const h = Cartesian3.distance(rightPoint, oppositePoint);
+              const hC = Cartesian3.distance(draggedPoint, leftPoint);
               const hScale = h / hC;
-              let hDiff = Cartesian3.subtract(positions[index], positions[leftIndex], new Cartesian3());
+              let hDiff = Cartesian3.subtract(draggedPoint, leftPoint, new Cartesian3());
               hDiff = Cartesian3.multiplyByScalar(hDiff, hScale, new Cartesian3());
-              positions[index] = Cartesian3.add(positions[leftIndex], hDiff, new Cartesian3());
+              draggedPoint = Cartesian3.add(leftPoint, hDiff, new Cartesian3());
+
+              positions[index] = draggedPoint;
+              positions[leftIndex] = leftPoint;
+              positions[rightIndex] = rightPoint;
 
 
               // const diag1Dist = Cartesian3.distance(positions[3], positions[1]);
