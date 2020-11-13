@@ -536,6 +536,7 @@ export class CesiumDraw extends EventTarget {
     const e = this.entityForEdit;
     const sp = this.sketchPoint_;
     if (sp && sp.properties.index !== undefined && !sp.properties.virtual) {
+      // remove clicked position from the edited geometry
       let divider = 1;
       switch (this.type) {
         case 'polygon': {
@@ -543,7 +544,8 @@ export class CesiumDraw extends EventTarget {
           if (hierarchy.positions.length <= 3) {
             return;
           }
-          hierarchy.positions.splice(this.sketchPoint_.properties.index, 1);
+          this.activePoints_.splice(this.sketchPoint_.properties.index, 1);
+          hierarchy.positions = this.activePoints_;
           e.polygon.hierarchy.setValue({...hierarchy});
           divider = 2;
           break;
@@ -553,8 +555,8 @@ export class CesiumDraw extends EventTarget {
           if (pPositions.length <= 2) {
             return;
           }
-          pPositions.splice(this.sketchPoint_.properties.index, 1);
-          e.polyline.positions = pPositions;
+          this.activePoints_.splice(this.sketchPoint_.properties.index, 1);
+          e.polyline.positions = this.activePoints_;
           divider = 2;
           break;
         }
@@ -567,7 +569,7 @@ export class CesiumDraw extends EventTarget {
         const pressedIdx2 = pressedIdx * 2;
         const isLine = this.type === 'line';
         const firstPointClicked = isLine && pressedIdx === 0;
-        const lastPointClicked = isLine && (pressedIdx === this.activePoints_.length - 1);
+        const lastPointClicked = isLine && (pressedIdx2 === this.sketchPoints_.length - 1);
 
         if (!firstPointClicked && !lastPointClicked) {
           // Move previous virtual SP in the middle of preRealSP and nextRealSP
