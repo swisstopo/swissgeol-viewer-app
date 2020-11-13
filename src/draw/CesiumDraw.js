@@ -140,6 +140,14 @@ export class CesiumDraw extends EventTarget {
         this.sketchPoints_.push(virtualSketchPoint);
       }
     });
+    if (this.type === 'polygon' && positions.length > 2) {
+      // We need one more virtual sketchpoint for polygons
+      const lastIdx = positions.length - 1;
+      const p2 = this.halfwayPosition_(positions[lastIdx], positions[0]);
+      const virtualSketchPoint = this.createSketchPoint_(p2, {edit: true, virtual: true});
+      virtualSketchPoint.properties.index = lastIdx;
+      this.sketchPoints_.push(virtualSketchPoint);
+    }
     this.viewer_.scene.requestRender();
   }
 
@@ -369,7 +377,21 @@ export class CesiumDraw extends EventTarget {
         } else {
           this.sketchPoint_.position = position;
           this.activePoints_[this.sketchPoint_.properties.index] = position;
-          if (this.type === 'line' || this.type === 'polygon') {
+          if (this.type === 'polygon') {
+            // move virtual SPs
+            const idx = this.sketchPoint_.properties.index;
+            const spLen = this.sketchPoints_.length;
+            const prevRealSPIndex = ((spLen + idx - 1) * 2) % spLen;
+            const prevRealSP = this.sketchPoints_[prevRealSPIndex];
+            const prevVirtualPosition = this.halfwayPosition_(prevRealSP, this.sketchPoint_);
+            this.sketchPoints_[prevRealSPIndex + 1].position = prevVirtualPosition;
+
+            const nextRealSPIndex = ((spLen + idx + 1) * 2) % spLen;
+            const nextRealSP = this.sketchPoints_[nextRealSPIndex];
+            const nextVirtualPosition = this.halfwayPosition_(nextRealSP, this.sketchPoint_);
+            this.sketchPoints_[idx * 2 + 1].position = nextVirtualPosition;
+          }
+          if (this.type === 'line') {
             // move virtual SPs
             const idx = this.sketchPoint_.properties.index;
             if (idx > 0) {
@@ -382,8 +404,6 @@ export class CesiumDraw extends EventTarget {
               const nextVirtualPosition = this.halfwayPosition_(nextRealSP, this.sketchPoint_);
               this.sketchPoints_[(idx + 1) * 2 - 1].position = nextVirtualPosition;
             }
-          }
-          if (this.type === 'line') {
             this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
             let positions = this.activePoints_;
@@ -427,7 +447,7 @@ export class CesiumDraw extends EventTarget {
         this.moveEntity = selectedEntity.id === this.entityForEdit.id ||
           this.sketchPoints_.some(sp => sp.id === selectedEntity.id); // checks if picked entity is point geometry or one of the sketch points for other geometries
           if (this.moveEntity && this.sketchPoint_.properties.virtual) {
-            this.splitLineOrPolygonPositions_();
+            this.extendOrSplitLineOrPolygonPositions_();
           }
       }
       if (this.moveEntity) {
@@ -453,19 +473,19 @@ export class CesiumDraw extends EventTarget {
     return position;
   }
 
-  splitLineOrPolygonPositions_() {
+  extendOrSplitLineOrPolygonPositions_() {
     // Add new line vertex
     // Create SPs, reuse the pressed virtual SP for first segment
-    const pressedSP = this.sketchPoint_;
-    const pressedPosition = Cartesian3.clone(pressedSP.position.getValue(this.julianDate));
-    const pressedIdx = pressedSP.properties.index;
+    const pressedVirtualSP = this.sketchPoint_;
+    const pressedPosition = Cartesian3.clone(pressedVirtualSP.position.getValue(this.julianDate));
+    const pressedIdx = pressedVirtualSP.properties.index;
     const realSP0 = this.sketchPoints_[pressedIdx * 2];
-    const realSP2 = this.sketchPoints_[(pressedIdx + 1) * 2];
+    const realSP2 = this.sketchPoints_[((pressedIdx + 1) * 2) % (this.sketchPoints_.length)];
     const virtualPosition0 = this.halfwayPosition_(realSP0, pressedPosition);
     const virtualPosition1 = this.halfwayPosition_(pressedPosition, realSP2);
     const realSP1 = this.createSketchPoint_(pressedPosition, {edit: true});
     const virtualSP1 = this.createSketchPoint_(virtualPosition1, {edit: true, virtual: true});
-    const virtualSP0 = pressedSP; // the pressed SP is reused
+    const virtualSP0 = pressedVirtualSP; // the pressed SP is reused
     virtualSP0.position = virtualPosition0; // but its position is changed
 
     this.insertVertexToPolylineOrPolygon_(pressedIdx + 1, pressedPosition.clone());
@@ -541,27 +561,35 @@ export class CesiumDraw extends EventTarget {
         default:
           break;
       }
-      // a sketch point was clicked => remove it
+      // a real sketch point was clicked => remove it
       if (divider === 2) {
-        const idx2 = this.sketchPoint_.properties.index * 2;
-        const firstPointClicked = idx2 === 0;
-        const lastPointClicked = idx2 === this.sketchPoints_.length - 1;
-        let removedSPs;
-        if (lastPointClicked) {
-          removedSPs = this.sketchPoints_.splice(idx2 - 1, 2);
-        } else {
-          removedSPs = this.sketchPoints_.splice(idx2, 2);
-        }
-        this.sketchPoints_.forEach((s, index) => s.properties.index = Math.floor(index / divider));
-        removedSPs.forEach(sp => this.drawingDataSource.entities.remove(sp));
+        const pressedIdx = this.sketchPoint_.properties.index;
+        const pressedIdx2 = pressedIdx * 2;
+        const isLine = this.type === 'line';
+        const firstPointClicked = isLine && pressedIdx === 0;
+        const lastPointClicked = isLine && (pressedIdx === this.activePoints_.length - 1);
+
         if (!firstPointClicked && !lastPointClicked) {
           // Move previous virtual SP in the middle of preRealSP and nextRealSP
-          const prevRealSP = this.sketchPoints_[idx2 - 2];
-          const prevVirtualSP = this.sketchPoints_[idx2 - 1];
-          const nextRealSP = this.sketchPoints_[idx2];
+          const prevRealSPIndex2 = (this.sketchPoints_.length + pressedIdx2 - 2) % (this.sketchPoints_.length);
+          const nextRealSPIndex2 = (pressedIdx2 + 2) % (this.sketchPoints_.length);
+          const prevRealSP = this.sketchPoints_[prevRealSPIndex2];
+          const prevVirtualSP = this.sketchPoints_[prevRealSPIndex2 + 1];
+          const nextRealSP = this.sketchPoints_[nextRealSPIndex2];
           const newPosition = this.halfwayPosition_(prevRealSP, nextRealSP);
           prevVirtualSP.position = newPosition;
         }
+
+        let removedSPs;
+        if (lastPointClicked) {
+          // remove 2 SPs backward
+          removedSPs = this.sketchPoints_.splice(pressedIdx2 - 1, 2);
+        } else {
+          // remove 2 SP forward
+          removedSPs = this.sketchPoints_.splice(pressedIdx2, 2);
+        }
+        this.sketchPoints_.forEach((s, index) => s.properties.index = Math.floor(index / divider));
+        removedSPs.forEach(s => this.drawingDataSource.entities.remove(s));
       } else {
         this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
         this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
