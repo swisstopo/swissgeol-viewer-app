@@ -699,12 +699,11 @@ export class CesiumDraw extends EventTarget {
     return Cartesian3.add(checkPoint2, dDiff, new Cartesian3());
   }
 
-  checkForNegateMove(draggedPoint, oppositePoint, leftPoint, rightPoint, prevPosition) {
+  checkForNegateMove(draggedPoint, oppositePoint, leftPoint, rightPoint) {
     const draggedPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(draggedPoint);
     const rightPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(rightPoint);
     const leftPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(leftPoint);
     const oppositePoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(oppositePoint);
-    const prevPosition2D = this.viewer_.scene.cartesianToCanvasCoordinates(prevPosition);
     if (!draggedPoint2D || !rightPoint2D || !leftPoint2D || !oppositePoint2D) {
       return {
         right: false,
