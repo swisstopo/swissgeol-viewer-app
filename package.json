@@ -15,7 +15,7 @@
     "@aws-sdk/client-cognito-identity": "^1.0.0-rc.4",
     "@aws-sdk/client-s3": "^1.0.0-rc.4",
     "@aws-sdk/credential-provider-cognito-identity": "^1.0.0-rc.4",
-    "@aws-sdk/s3-request-presigner": "^1.0.0-rc.4",
+    "@aws-sdk/s3-request-presigner": "^1.0.0-rc.6",
     "@geoblocks/cesium-compass": "0.3.0",
     "@geoblocks/cesium-view-cube": "0.0.1",
     "@geoblocks/ga-search": "^0.0.18",
