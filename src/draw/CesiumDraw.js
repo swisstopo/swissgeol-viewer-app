@@ -13,6 +13,7 @@ import {EventTarget} from 'event-target-shim';
 import {getDimensionLabel} from './helpers.js';
 import {getMeasurements} from '../utils.js';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import {getLinesIntersection} from '../utils';
 
 /**
  * @typedef {"point" | "line" | "polygon" | "rectangle"} ShapeType
@@ -117,7 +118,20 @@ export class CesiumDraw extends EventTarget {
         break;
       case 'rectangle':
         positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
-        // positions.pop();
+        this.drawingDataSource.entities.add({
+          position: new CallbackProperty(() => {
+            positions = this.activePoints_.length ? this.activePoints_ : positions;
+            return Cartesian3.midpoint(positions[0], positions[1], new Cartesian3());
+          }, false),
+          billboard: {
+            image: './images/rotate-icon.svg',
+            scale: 0.15,
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          },
+          properties: {
+            type: 'rotate'
+          }
+        });
         break;
       default:
         break;
@@ -212,24 +226,7 @@ export class CesiumDraw extends EventTarget {
     } else {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
-    const pointEntity = this.drawingDataSource.entities.add(entity);
-    // if (options.edit && this.type === 'rectangle') {
-    //   const isLastPoint = options.positionIndex === 2; // always 3 points for rectangle
-    //   const billboard = {
-    //     position: new CallbackProperty(() => pointEntity.position.getValue(this.julianDate), false),
-    //     billboard: {
-    //       image: isLastPoint ? './images/move-edit-icon.svg' : './images/edit-icons.svg',
-    //       scale: isLastPoint ? 0.06 : 0.2,
-    //       disableDepthTestDistance: Number.POSITIVE_INFINITY,
-    //       horizontalOrigin: HorizontalOrigin.LEFT,
-    //       verticalOrigin: VerticalOrigin.BOTTOM,
-    //       pixelOffset: new Cartesian2(10, -10)
-    //     }
-    //   };
-    //   this.drawingDataSource.entities.add(billboard);
-    // }
-
-    return pointEntity;
+    return this.drawingDataSource.entities.add(entity);
   }
 
   createSketchLine_(positions) {
@@ -345,27 +342,55 @@ export class CesiumDraw extends EventTarget {
     }
   }
 
-  updateRectCorner(oppositePosition, posToUpdate, mid, midPrev, scale) {
-    let diff1 = Cartesian3.subtract(oppositePosition, midPrev, new Cartesian3());
-    diff1 = Cartesian3.multiplyByScalar(diff1, scale, new Cartesian3());
-    const pos = Cartesian3.add(mid, diff1, new Cartesian3());
+  updateRectCorner(corner, oppositePoint, midPoint, midPointPrev, midScale, negate) {
+    let midDiff = Cartesian3.subtract(corner, midPointPrev, new Cartesian3());
+    midDiff = Cartesian3.multiplyByScalar(midDiff, midScale, new Cartesian3());
+    const positionFromMid = Cartesian3.add(midPoint, midDiff, new Cartesian3());
 
-    const distPrev1 = Cartesian3.distance(oppositePosition, posToUpdate);
-    const dist1 = Cartesian3.distance(pos, posToUpdate);
-    const distScale = dist1 / distPrev1;
-    let diffDist1 = Cartesian3.subtract(oppositePosition, posToUpdate, new Cartesian3());
-    diffDist1 = Cartesian3.multiplyByScalar(diffDist1, distScale, new Cartesian3());
-    return Cartesian3.add(posToUpdate, diffDist1, new Cartesian3());
+    const distancePrev = Cartesian3.distance(corner, oppositePoint);
+    const distanceCurrent = Cartesian3.distance(positionFromMid, oppositePoint);
+    const distanceScale = distanceCurrent / distancePrev;
+    let distanceDiff = Cartesian3.subtract(corner, oppositePoint, new Cartesian3());
+
+    distanceDiff = Cartesian3.multiplyByScalar(distanceDiff, distanceScale, new Cartesian3());
+    let newCornerPosition = Cartesian3.add(oppositePoint, distanceDiff, new Cartesian3());
+    if (negate) {
+      distanceDiff = Cartesian3.negate(distanceDiff, new Cartesian3());
+      newCornerPosition = Cartesian3.add(oppositePoint, distanceDiff, new Cartesian3());
+    }
+    return newCornerPosition;
   }
 
-  checkForNegativeMove(positionToCompare, position, prevPosition) {
-    const diff = Cartesian3.subtract(positionToCompare, position, new Cartesian3());
-    const prevDiff = Cartesian3.subtract(positionToCompare, prevPosition, new Cartesian3());
-    const check = (value, prevValue) => (value > 0 && prevValue > 0) || (value < 0 && prevValue < 0);
-    const xCorrect = check(diff.x, prevDiff.x);
-    const yCorrect = check(diff.y, prevDiff.y);
-    const zCorrect = check(diff.z, prevDiff.z);
-    return xCorrect && yCorrect && zCorrect;
+  rotateRectangle(angle) {
+    const positions = [...this.activePoints_];
+    const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
+    let skipUpdate = false;
+
+    positions.forEach((pos, indx) => {
+      const position2d = this.viewer_.scene.cartesianToCanvasCoordinates(pos);
+      const center2d = this.viewer_.scene.cartesianToCanvasCoordinates(center);
+      const xDiff = position2d.x - center2d.x;
+      const yDiff = position2d.y - center2d.y;
+
+      const x = Math.cos(angle) * xDiff - Math.sin(angle) * yDiff + center2d.x;
+      const y = Math.sin(angle) * xDiff + Math.cos(angle) * yDiff + center2d.y;
+      const rotatedPoint = this.viewer_.scene.pickPosition(new Cartesian2(x, y));
+      if (rotatedPoint) {
+        positions[indx] = rotatedPoint;
+      } else {
+        skipUpdate = true;
+      }
+    });
+    positions[0] = this.getCorrectRectCorner(positions[0], positions[2], positions[1], positions[3]);
+    positions[0] = this.getCorrectRectCorner(positions[0], positions[2], positions[3], positions[1]);
+
+    if (!skipUpdate) {
+      this.sketchPoints_.forEach((sp, key) => {
+        sp.position = positions[key];
+        this.activePoints_[key] = positions[key];
+      });
+      this.entityForEdit.polygon.hierarchy = {positions};
+    }
   }
 
   onMouseMove_(event) {
@@ -377,15 +402,32 @@ export class CesiumDraw extends EventTarget {
         if (this.type === 'point') {
           this.entityForEdit.position = position;
         } else {
-          this.sketchPoint_.position = position;
-          const index = this.sketchPoint_.properties.index;
-          const prevPosition = Cartesian3.clone(this.activePoints_[index]);
-          this.activePoints_[index] = position;
+          const pointProperties = this.sketchPoint_.properties;
+          const index = pointProperties.index;
+          let prevPosition = new Cartesian3();
+          if (typeof index === 'number') {
+            this.sketchPoint_.position = position;
+            prevPosition = Cartesian3.clone(this.activePoints_[index]);
+            this.activePoints_[index] = position;
+          }
           if (this.type === 'line') {
             this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
             const positions = this.activePoints_;
             if (this.type === 'rectangle') {
+              if (pointProperties.type && pointProperties.type.getValue() === 'rotate') {
+                const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
+                const oldPosition = this.sketchPoint_.position.getValue();
+                const vect1 = Cartesian3.subtract(center, oldPosition, new Cartesian3());
+                const vect2 = Cartesian3.subtract(center, position, new Cartesian3());
+                const dist0 = Cartesian3.distance(positions[0], position);
+                const dist1 = Cartesian3.distance(positions[1], position);
+                const negate = dist0 > dist1;
+                let angle = Cartesian3.angleBetween(vect1, vect2);
+                angle = negate ? -angle : angle;
+                this.rotateRectangle(angle);
+                return;
+              }
               const oppositeIndex = index > 1 ? index - 2 : index + 2;
               const leftIndex = index - 1 < 0 ? 3 : index - 1;
               const rightIndex = index + 1 > 3 ? 0 : index + 1;
@@ -394,44 +436,29 @@ export class CesiumDraw extends EventTarget {
               let leftPoint = positions[leftIndex];
               let rightPoint = positions[rightIndex];
 
-              const mid = Cartesian3.midpoint(draggedPoint, oppositePoint, new Cartesian3());
-              const midPrev = Cartesian3.midpoint(prevPosition, oppositePoint, new Cartesian3());
-              const midDist = Cartesian3.distance(draggedPoint, mid);
-              const midDistPrev = Cartesian3.distance(prevPosition, midPrev);
-              const scale = midDist / midDistPrev;
+              const midPoint = Cartesian3.midpoint(draggedPoint, oppositePoint, new Cartesian3());
+              const midPointPrev = Cartesian3.midpoint(prevPosition, oppositePoint, new Cartesian3());
+              const midDist = Cartesian3.distance(draggedPoint, midPoint);
+              const midDistPrev = Cartesian3.distance(prevPosition, midPointPrev);
+              const midScale = midDist / midDistPrev;
 
-              leftPoint = this.updateRectCorner(leftPoint, oppositePoint, mid, midPrev, scale);
-              rightPoint = this.updateRectCorner(rightPoint, oppositePoint, mid, midPrev, scale);
+              const draggedPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(draggedPoint);
+              const rightPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(rightPoint);
+              const leftPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(leftPoint);
+              const oppositePoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(oppositePoint);
 
-              const leftCorrect = this.checkForNegativeMove(leftPoint, draggedPoint, prevPosition);
-              const rightCorrect = this.checkForNegativeMove(rightPoint, draggedPoint, prevPosition);
-              if (!leftCorrect || !rightCorrect) {
-                positions[index] = prevPosition;
-                this.activePoints_[index] = prevPosition;
-                this.sketchPoint_.position = prevPosition;
-                this.moveEntity = false;
-                return;
-              }
+              const negateRight = !!getLinesIntersection(draggedPoint2D, rightPoint2D, leftPoint2D, oppositePoint2D);
+              const negateLeft = !!getLinesIntersection(draggedPoint2D, leftPoint2D, rightPoint2D, oppositePoint2D);
+              leftPoint = this.updateRectCorner(leftPoint, oppositePoint, midPoint, midPointPrev, midScale, negateLeft);
+              rightPoint = this.updateRectCorner(rightPoint, oppositePoint, midPoint, midPointPrev, midScale, negateRight);
 
-              const w = Cartesian3.distance(leftPoint, oppositePoint);
-              const wC = Cartesian3.distance(draggedPoint, rightPoint);
-              const wScale = w / wC;
-              let wDiff = Cartesian3.subtract(draggedPoint, rightPoint, new Cartesian3());
-              wDiff = Cartesian3.multiplyByScalar(wDiff, wScale, new Cartesian3());
-              draggedPoint = Cartesian3.add(rightPoint, wDiff, new Cartesian3());
-
-              const h = Cartesian3.distance(rightPoint, oppositePoint);
-              const hC = Cartesian3.distance(draggedPoint, leftPoint);
-              const hScale = h / hC;
-              let hDiff = Cartesian3.subtract(draggedPoint, leftPoint, new Cartesian3());
-              hDiff = Cartesian3.multiplyByScalar(hDiff, hScale, new Cartesian3());
-              draggedPoint = Cartesian3.add(leftPoint, hDiff, new Cartesian3());
+              draggedPoint = this.getCorrectRectCorner(draggedPoint, oppositePoint, leftPoint, rightPoint);
+              draggedPoint = this.getCorrectRectCorner(draggedPoint, oppositePoint, rightPoint, leftPoint);
 
               positions[index] = draggedPoint;
+              this.activePoints_[index] = draggedPoint;
               positions[leftIndex] = leftPoint;
               positions[rightIndex] = rightPoint;
-              this.activePoints_[index] = draggedPoint;
-
               this.sketchPoints_.forEach((sp, key) => {
                 sp.position = positions[key];
               });
@@ -467,8 +494,11 @@ export class CesiumDraw extends EventTarget {
         if (!selectedPoint) return;
         const selectedEntity = selectedPoint.id;
         this.sketchPoint_ = selectedEntity;
+        const properties = selectedEntity.properties;
+        // checks if picked entity is point geometry or one of the sketch points for other geometries
         this.moveEntity = selectedEntity.id === this.entityForEdit.id ||
-          this.sketchPoints_.some(sp => sp.id === selectedEntity.id); // checks if picked entity is point geometry or one of the sketch points for other geometries
+          !!this.sketchPoints_.some(sp => sp.id === selectedEntity.id) ||
+          (properties && properties.type && properties.type.getValue() === 'rotate');
       }
       if (this.moveEntity) {
         this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
@@ -520,12 +550,23 @@ export class CesiumDraw extends EventTarget {
         default:
           break;
       }
-      // a sketch point was clicked => remove it
-      this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
-      this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
-      this.drawingDataSource.entities.remove(this.sketchPoint_);
-      this.viewer_.scene.requestRender();
+      if (this.type !== 'rectangle') {
+        // a sketch point was clicked => remove it
+        this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
+        this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
+        this.drawingDataSource.entities.remove(this.sketchPoint_);
+        this.viewer_.scene.requestRender();
+      }
     }
+  }
+
+  getCorrectRectCorner(corner, oppositePoint, checkPoint1, checkPoint2) {
+    const distance = Cartesian3.distance(checkPoint1, oppositePoint);
+    const newDistance = Cartesian3.distance(corner, checkPoint2);
+    const dScale = distance / newDistance;
+    let dDiff = Cartesian3.subtract(corner, checkPoint2, new Cartesian3());
+    dDiff = Cartesian3.multiplyByScalar(dDiff, dScale, new Cartesian3());
+    return Cartesian3.add(checkPoint2, dDiff, new Cartesian3());
   }
 }
 
