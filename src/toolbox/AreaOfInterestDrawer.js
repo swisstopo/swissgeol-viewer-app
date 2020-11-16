@@ -512,7 +512,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       // this is hackish: the hierarchy should not be stored as a positions.
       this.editedBackup.positions = {
         positions: hierarchy.positions.map(p => Cartesian3.clone(p)),
-        holes: hierarchy.holes.map(p => Cartesian3.clone(p))
+        holes: hierarchy.holes ? hierarchy.holes.map(p => Cartesian3.clone(p)) : []
       };
     }
   }

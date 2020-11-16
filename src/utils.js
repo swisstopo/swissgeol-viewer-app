@@ -244,38 +244,3 @@ export function applyLimits(value, minValue, maxValue) {
   }
   return value;
 }
-
-/**
- * Returns point of lines intersection or null
- * @param {Cartesian2} start1
- * @param {Cartesian2} end1
- * @param {Cartesian2} start2
- * @param {Cartesian2} end2
- * @return {Cartesian2|null}
- */
-export function getLinesIntersection(start1, end1, start2, end2) {
-  const delta1x = end1.x - start1.x;
-  const delta1y = end1.y - start1.y;
-  const delta2x = end2.x - start2.x;
-  const delta2y = end2.y - start2.y;
-
-  const determinant = delta1x * delta2y - delta2x * delta1y;
-
-  if (Math.abs(determinant) < 0.0001) {
-    return null;
-  }
-
-  const ab = ((start1.y - start2.y) * delta2x - (start1.x - start2.x) * delta2y) / determinant;
-
-  if (ab > 0 && ab < 1) {
-    const cd = ((start1.y - start2.y) * delta1x - (start1.x - start2.x) * delta1y) / determinant;
-
-    if (cd > 0 && cd < 1) {
-      const x = start1.x + ab * delta1x;
-      const y = start1.y + ab * delta1y;
-      return new Cartesian2(x, y);
-    }
-  }
-
-  return null;
-}

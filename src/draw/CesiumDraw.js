@@ -7,13 +7,13 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import JulianDate from 'cesium/Source/Core/JulianDate';
+import Intersections2D from 'cesium/Source/Core/Intersections2D';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
 import {getDimensionLabel} from './helpers.js';
 import {getMeasurements} from '../utils.js';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {getLinesIntersection} from '../utils';
 
 /**
  * @typedef {"point" | "line" | "polygon" | "rectangle"} ShapeType
@@ -381,19 +381,24 @@ export class CesiumDraw extends EventTarget {
     return newCornerPosition;
   }
 
-  rotateRectangle(angle) {
-    const positions = [...this.activePoints_];
+  rotateRectangle(startPosition, endPosition) {
+    let positions = [...this.activePoints_];
     const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
+    const center2d = this.viewer_.scene.cartesianToCanvasCoordinates(center);
     let skipUpdate = false;
+    const endPosition2d = this.viewer_.scene.cartesianToCanvasCoordinates(endPosition);
+    const startPosition2d = this.viewer_.scene.cartesianToCanvasCoordinates(startPosition);
+    const angleStart = Math.PI + Math.atan2(endPosition2d.x - center2d.x, endPosition2d.y - center2d.y);
+    const angleEnd = Math.PI + Math.atan2(startPosition2d.x - center2d.x, startPosition2d.y - center2d.y);
+    const angleDiff = angleEnd - angleStart;
 
     positions.forEach((pos, indx) => {
       const position2d = this.viewer_.scene.cartesianToCanvasCoordinates(pos);
-      const center2d = this.viewer_.scene.cartesianToCanvasCoordinates(center);
       const xDiff = position2d.x - center2d.x;
       const yDiff = position2d.y - center2d.y;
 
-      const x = Math.cos(angle) * xDiff - Math.sin(angle) * yDiff + center2d.x;
-      const y = Math.sin(angle) * xDiff + Math.cos(angle) * yDiff + center2d.y;
+      const x = Math.cos(angleDiff) * xDiff - Math.sin(angleDiff) * yDiff + center2d.x;
+      const y = Math.sin(angleDiff) * xDiff + Math.cos(angleDiff) * yDiff + center2d.y;
       const rotatedPoint = this.viewer_.scene.pickPosition(new Cartesian2(x, y));
       if (rotatedPoint) {
         positions[indx] = rotatedPoint;
@@ -401,9 +406,8 @@ export class CesiumDraw extends EventTarget {
         skipUpdate = true;
       }
     });
-    positions[0] = this.getCorrectRectCorner(positions[0], positions[2], positions[1], positions[3]);
-    positions[0] = this.getCorrectRectCorner(positions[0], positions[2], positions[3], positions[1]);
-
+    positions.pop();
+    positions = rectanglify(positions);
     if (!skipUpdate) {
       this.sketchPoints_.forEach((sp, key) => {
         sp.position = positions[key];
@@ -462,16 +466,8 @@ export class CesiumDraw extends EventTarget {
             const positions = this.activePoints_;
             if (this.type === 'rectangle') {
               if (pointProperties.type && pointProperties.type.getValue() === 'rotate') {
-                const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
                 const oldPosition = this.sketchPoint_.position.getValue();
-                const vect1 = Cartesian3.subtract(center, oldPosition, new Cartesian3());
-                const vect2 = Cartesian3.subtract(center, position, new Cartesian3());
-                const dist0 = Cartesian3.distance(positions[0], position);
-                const dist1 = Cartesian3.distance(positions[1], position);
-                const negate = dist0 > dist1;
-                let angle = Cartesian3.angleBetween(vect1, vect2);
-                angle = negate ? -angle : angle;
-                this.rotateRectangle(angle);
+                this.rotateRectangle(oldPosition, position);
                 return;
               }
               const oppositeIndex = index > 1 ? index - 2 : index + 2;
@@ -488,15 +484,9 @@ export class CesiumDraw extends EventTarget {
               const midDistPrev = Cartesian3.distance(prevPosition, midPointPrev);
               const midScale = midDist / midDistPrev;
 
-              const draggedPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(draggedPoint);
-              const rightPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(rightPoint);
-              const leftPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(leftPoint);
-              const oppositePoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(oppositePoint);
-
-              const negateRight = !!getLinesIntersection(draggedPoint2D, rightPoint2D, leftPoint2D, oppositePoint2D);
-              const negateLeft = !!getLinesIntersection(draggedPoint2D, leftPoint2D, rightPoint2D, oppositePoint2D);
-              leftPoint = this.updateRectCorner(leftPoint, oppositePoint, midPoint, midPointPrev, midScale, negateLeft);
-              rightPoint = this.updateRectCorner(rightPoint, oppositePoint, midPoint, midPointPrev, midScale, negateRight);
+              const negate = this.checkForNegateMove(draggedPoint, oppositePoint, leftPoint, rightPoint, prevPosition);
+              leftPoint = this.updateRectCorner(leftPoint, oppositePoint, midPoint, midPointPrev, midScale, negate.left);
+              rightPoint = this.updateRectCorner(rightPoint, oppositePoint, midPoint, midPointPrev, midScale, negate.right);
 
               draggedPoint = this.getCorrectRectCorner(draggedPoint, oppositePoint, leftPoint, rightPoint);
               draggedPoint = this.getCorrectRectCorner(draggedPoint, oppositePoint, rightPoint, leftPoint);
@@ -545,9 +535,9 @@ export class CesiumDraw extends EventTarget {
         this.moveEntity = selectedEntity.id === this.entityForEdit.id ||
           !!this.sketchPoints_.some(sp => sp.id === selectedEntity.id) ||
           (properties && properties.type && properties.type.getValue() === 'rotate');
-          if (this.moveEntity && this.sketchPoint_.properties.virtual) {
-            this.extendOrSplitLineOrPolygonPositions_();
-          }
+        if (this.moveEntity && this.sketchPoint_.properties.virtual) {
+          this.extendOrSplitLineOrPolygonPositions_();
+        }
       }
       if (this.moveEntity) {
         this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
@@ -691,7 +681,7 @@ export class CesiumDraw extends EventTarget {
         }
         this.sketchPoints_.forEach((s, index) => s.properties.index = Math.floor(index / divider));
         removedSPs.forEach(s => this.drawingDataSource.entities.remove(s));
-      } else {
+      } else if (this.type === 'polygon' || this.type === 'line') {
         this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
         this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
         this.drawingDataSource.entities.remove(this.sketchPoint_);
@@ -707,6 +697,42 @@ export class CesiumDraw extends EventTarget {
     let dDiff = Cartesian3.subtract(corner, checkPoint2, new Cartesian3());
     dDiff = Cartesian3.multiplyByScalar(dDiff, dScale, new Cartesian3());
     return Cartesian3.add(checkPoint2, dDiff, new Cartesian3());
+  }
+
+  checkForNegateMove(draggedPoint, oppositePoint, leftPoint, rightPoint, prevPosition) {
+    const draggedPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(draggedPoint);
+    const rightPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(rightPoint);
+    const leftPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(leftPoint);
+    const oppositePoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(oppositePoint);
+    const prevPosition2D = this.viewer_.scene.cartesianToCanvasCoordinates(prevPosition);
+    if (!draggedPoint2D || !rightPoint2D || !leftPoint2D || !oppositePoint2D) {
+      return {
+        right: false,
+        left: false
+      };
+    }
+    const intersectionArgsR = [
+      draggedPoint2D.x,
+      draggedPoint2D.y,
+      rightPoint2D.x,
+      rightPoint2D.y,
+      leftPoint2D.x,
+      leftPoint2D.y,
+      oppositePoint2D.x,
+      oppositePoint2D.y];
+    const intersectionArgsL = [
+      draggedPoint2D.x,
+      draggedPoint2D.y,
+      leftPoint2D.x,
+      leftPoint2D.y,
+      rightPoint2D.x,
+      rightPoint2D.y,
+      oppositePoint2D.x,
+      oppositePoint2D.y];
+    return {
+      right: !!Intersections2D.computeLineSegmentLineSegmentIntersection(...intersectionArgsR),
+      left: !!Intersections2D.computeLineSegmentLineSegmentIntersection(...intersectionArgsL)
+    };
   }
 }
 
