@@ -256,6 +256,11 @@ class LeftSideBar extends I18nMixin(LitElement) {
       layer.visible = true;
       layer.displayed = true;
       this.activeLayers.push(layer);
+      this.dispatchEvent(new CustomEvent('layeradded', {
+        detail: {
+          layer
+        }
+      }));
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
 

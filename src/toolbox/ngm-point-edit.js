@@ -5,7 +5,7 @@ import $ from '../jquery';
 import {lv95ToDegrees} from '../projection';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {applyInputLimits, prepareCoordinatesForUi} from '../utils';
+import {applyLimits, prepareCoordinatesForUi} from '../utils';
 import {AOI_POINT_COLORS, AOI_POINT_SYMBOLS} from '../constants';
 
 class NgmPointEdit extends I18nMixin(LitElement) {
@@ -72,7 +72,8 @@ class NgmPointEdit extends I18nMixin(LitElement) {
     const cartographicPosition = Cartographic.fromCartesian(this.position);
     this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
-    this.heightValue = applyInputLimits(this.querySelector('.ngm-height-input'), this.minHeight, this.maxHeight);
+    const heightInput = this.querySelector('.ngm-height-input');
+    this.heightValue = applyLimits(heightInput.value, this.minHeight, this.maxHeight);
     const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
     let lon = this.xValue;
     let lat = this.yValue;
