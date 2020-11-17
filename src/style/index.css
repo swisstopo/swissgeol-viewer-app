@@ -333,3 +333,8 @@ ngm-full-screen-view.full-active {
 ngm-loading-mask .progress {
   width: 18%;
 }
+
+ngm-slicer {
+  display: flex;
+  flex-direction: column;
+}

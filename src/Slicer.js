@@ -16,6 +16,9 @@ import {lv95ToDegrees, radiansToLv95} from './projection';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
 import {applyLimits, pickCenterOnEllipsoid} from './utils';
+import Matrix4 from 'cesium/Source/Core/Matrix4';
+import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
+import Transforms from 'cesium/Source/Core/Transforms';
 
 
 const PLANE_HEIGHT = 15000;
@@ -30,8 +33,9 @@ export default class Slicer {
     this.viewer = viewer;
     this.slicerDataSource = new CustomDataSource('slicer');
     this.viewer.dataSources.add(this.slicerDataSource);
+    this.boxSlicing = false;
+    this.sliceActive = false;
 
-    this.plane = null;
     this.planeEntity = null;
     this.planesCenter = null;
     this.planesCenterH = null;
@@ -52,84 +56,39 @@ export default class Slicer {
   set active(value) {
     const globe = this.viewer.scene.globe;
     if (value) {
-      // initialize plane based on the camera's position
-      this.setInitialTargets();
+      this.sliceActive = true;
+      if (this.boxSlicing) {
+        this.activateBoxSlicing();
+      } else {
+        const center = pickCenter(this.viewer.scene);
+        const hpr = new HeadingPitchRoll(this.viewer.scene.camera.heading, 0.0, 0.0);
+        this.plane = Plane.transform(Plane.ORIGIN_ZX_PLANE, Transforms.headingPitchRollToFixedFrame(center, hpr));
+        globe.clippingPlanes = this.createClippingPlanes();
 
-      this.planeHorizontalDown = new ClippingPlane(new Cartesian3(0.0, 1.0, 0.0), 0.0);
-      this.planeHorizontalUp = new ClippingPlane(new Cartesian3(0.0, -1.0, 0.0), 0.0);
-      this.planeVerticalLeft = new ClippingPlane(new Cartesian3(1.0, 0.0, 0.0), 0.0);
-      this.planeVerticalRight = new ClippingPlane(new Cartesian3(-1.0, 0.0, 0.0), 0.0);
-
-      const horizontalEntityTemplate = {
-        position: new CallbackProperty(this.centerUpdateFunction('horizontal'), false),
-        plane: {
-          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontalDown, 'horizontal'), false),
-          dimensions: new CallbackProperty(() => new Cartesian2(this.planesWidth, PLANE_HEIGHT), false),
-          material: Color.WHITE.withAlpha(0.1),
-          outline: true,
-          outlineColor: PLANE_COLOR,
+        const primitives = this.viewer.scene.primitives;
+        for (let i = 0, ii = primitives.length; i < ii; i++) {
+          const primitive = primitives.get(i);
+          if (primitive.root && primitive.root.computedTransform) {
+            primitive.clippingPlanes = this.createClippingPlanes(Matrix4.inverse(primitive.root.computedTransform, new Matrix4()));
+          }
         }
-      };
-
-      const verticalEntityTemplate = {
-        position: new CallbackProperty(this.centerUpdateFunction('vertical'), false),
-        plane: {
-          plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeVerticalLeft, 'vertical'), false),
-          dimensions: new CallbackProperty(() => new Cartesian2(this.planesHeight, PLANE_HEIGHT), false),
-          material: Color.WHITE.withAlpha(0.1),
-          outline: true,
-          outlineColor: PLANE_COLOR,
-        }
-      };
-
-      this.planeEntityHorizontal = new Entity(horizontalEntityTemplate);
-      this.slicerDataSource.entities.add(this.planeEntityHorizontal);
-
-      horizontalEntityTemplate.plane.plane =
-        new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontalUp, 'horizontal-northeast'), false);
-      this.planeEntityHorizontalUp = new Entity(horizontalEntityTemplate);
-      this.slicerDataSource.entities.add(this.planeEntityHorizontalUp);
-
-      this.planeEntityVertical = new Entity(verticalEntityTemplate);
-      this.slicerDataSource.entities.add(this.planeEntityVertical);
-
-      verticalEntityTemplate.plane.plane =
-        new CallbackProperty(this.createPlaneUpdateFunction(this.planeVerticalRight, 'vertical-northeast'), false);
-      this.planeEntityVerticalRight = new Entity(verticalEntityTemplate);
-      this.slicerDataSource.entities.add(this.planeEntityVerticalRight);
-
-      this.createMoveArrows();
-
-      globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(new Date()));
-
-      const primitives = this.viewer.scene.primitives;
-      for (let i = 0, ii = primitives.length; i < ii; i++) {
-        const primitive = primitives.get(i);
-        if (primitive.root && primitive.boundingSphere) {
-          this.offsets[primitive.url] = this.getTilesetOffset(primitive.boundingSphere.center, this.planesCenter);
-          primitive.clippingPlanes = this.createClippingPlanes();
-        }
-      }
-
-      if (!this.eventHandler) {
-        this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-        this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
-        this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
-        this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
-        const syncPlanes = this.movePlane.bind(this);
-        this.onTickRemove = this.viewer.scene.postRender.addEventListener(syncPlanes);
       }
     } else {
+      this.sliceActive = false;
+      this.boxSlicing = false;
       this.slicerDataSource.entities.removeAll();
       this.offsets = {};
       this.planeHorizontalDown = null;
       this.planeHorizontalUp = null;
       this.planeVerticalLeft = null;
       this.planeVerticalRight = null;
+      this.plane = null;
 
-      this.eventHandler.destroy();
-      this.eventHandler = null;
-      this.onTickRemove();
+      if (this.eventHandler) {
+        this.eventHandler.destroy();
+        this.eventHandler = null;
+        this.onTickRemove();
+      }
 
       globe.clippingPlanes.enabled = false;
       globe.clippingPlanes = undefined;
@@ -151,8 +110,86 @@ export default class Slicer {
     this.viewer.scene.requestRender();
   }
 
+  activateBoxSlicing() {
+    // initialize plane based on the camera's position
+    this.setInitialTargets();
+
+    this.planeHorizontalDown = new ClippingPlane(new Cartesian3(0.0, 1.0, 0.0), 0.0);
+    this.planeHorizontalUp = new ClippingPlane(new Cartesian3(0.0, -1.0, 0.0), 0.0);
+    this.planeVerticalLeft = new ClippingPlane(new Cartesian3(1.0, 0.0, 0.0), 0.0);
+    this.planeVerticalRight = new ClippingPlane(new Cartesian3(-1.0, 0.0, 0.0), 0.0);
+
+    const horizontalEntityTemplate = {
+      position: new CallbackProperty(this.centerUpdateFunction('horizontal'), false),
+      plane: {
+        plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontalDown, 'horizontal'), false),
+        dimensions: new CallbackProperty(() => new Cartesian2(this.planesWidth, PLANE_HEIGHT), false),
+        material: Color.WHITE.withAlpha(0.1),
+        outline: true,
+        outlineColor: PLANE_COLOR,
+      }
+    };
+
+    const verticalEntityTemplate = {
+      position: new CallbackProperty(this.centerUpdateFunction('vertical'), false),
+      plane: {
+        plane: new CallbackProperty(this.createPlaneUpdateFunction(this.planeVerticalLeft, 'vertical'), false),
+        dimensions: new CallbackProperty(() => new Cartesian2(this.planesHeight, PLANE_HEIGHT), false),
+        material: Color.WHITE.withAlpha(0.1),
+        outline: true,
+        outlineColor: PLANE_COLOR,
+      }
+    };
+
+    this.planeEntityHorizontal = new Entity(horizontalEntityTemplate);
+    this.slicerDataSource.entities.add(this.planeEntityHorizontal);
+
+    horizontalEntityTemplate.plane.plane =
+      new CallbackProperty(this.createPlaneUpdateFunction(this.planeHorizontalUp, 'horizontal-northeast'), false);
+    this.planeEntityHorizontalUp = new Entity(horizontalEntityTemplate);
+    this.slicerDataSource.entities.add(this.planeEntityHorizontalUp);
+
+    this.planeEntityVertical = new Entity(verticalEntityTemplate);
+    this.slicerDataSource.entities.add(this.planeEntityVertical);
+
+    verticalEntityTemplate.plane.plane =
+      new CallbackProperty(this.createPlaneUpdateFunction(this.planeVerticalRight, 'vertical-northeast'), false);
+    this.planeEntityVerticalRight = new Entity(verticalEntityTemplate);
+    this.slicerDataSource.entities.add(this.planeEntityVerticalRight);
+
+    this.createMoveArrows();
+
+    this.viewer.scene.globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(new Date()));
+
+    const primitives = this.viewer.scene.primitives;
+    for (let i = 0, ii = primitives.length; i < ii; i++) {
+      const primitive = primitives.get(i);
+      if (primitive.root && primitive.boundingSphere) {
+        this.offsets[primitive.url] = this.getTilesetOffset(primitive.boundingSphere.center, this.planesCenter);
+        primitive.clippingPlanes = this.createClippingPlanes();
+      }
+    }
+
+    if (!this.eventHandler) {
+      this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+      this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
+      this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
+      this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
+      const syncPlanes = this.movePlane.bind(this);
+      this.onTickRemove = this.viewer.scene.postRender.addEventListener(syncPlanes);
+    }
+  }
+
+  set box(value) {
+    this.boxSlicing = value;
+  }
+
   get active() {
-    return this.eventHandler !== null;
+    return this.sliceActive;
+  }
+
+  get box() {
+    return this.boxSlicing;
   }
 
   movePlane() {
@@ -168,11 +205,16 @@ export default class Slicer {
 
   /**
    * @param {Matrix4=} modelMatrix
+   * @param planes
    */
   createClippingPlanes(modelMatrix) {
+    let planes = [this.plane];
+    if (this.boxSlicing) {
+      planes = [this.planeHorizontalDown, this.planeVerticalLeft, this.planeHorizontalUp, this.planeVerticalRight];
+    }
     return new ClippingPlaneCollection({
       modelMatrix: modelMatrix,
-      planes: [this.planeHorizontalDown, this.planeVerticalLeft, this.planeHorizontalUp, this.planeVerticalRight],
+      planes: planes,
       edgeWidth: 1.0,
       unionClippingRegions: true
     });
