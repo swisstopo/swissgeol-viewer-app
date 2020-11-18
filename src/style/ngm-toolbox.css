@@ -50,15 +50,26 @@
 }
 
 .ngm-btns-field,
-ngm-gst-interaction {
+ngm-gst-interaction,
+ngm-toolbox-slicer {
   width: 100%;
 }
 
 .ngm-btns-field,
+.ngm-slice-btns-container,
 .ngm-gst-btns-container {
   display: flex;
   justify-content: center;
   margin: 5px 0;
+}
+
+.ngm-slice-btns-container > .tiny.buttons > button:first-child,
+.ngm-gst-btns-container > .tiny.buttons > button:first-child {
+  flex: 3;
+}
+
+.ngm-slice-btns-container .ui.buttons .ui.button > i.icon.ngm-slice-warn {
+  margin-left: 15px;
 }
 
 .ngm-volume-limits-input {

@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import {clickOnElement} from '../utils.js';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
+import '../elements/slicer/ngm-toolbox-slicer.js';
 
 const areaUploadInputId = 'areaUpload';
 
@@ -136,6 +137,8 @@ function aoiListTemplate() {
                         .parentElement=${this}>
                     </ngm-gst-interaction>
                 ` : ''}
+            ${i.type === 'line' ?
+      html`<ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>` : ''}
         </div>
         <div class="ngm-aoi-edit"  ?hidden=${!this.draw_.entityForEdit || this.draw_.entityForEdit.id !== i.id}>
             <div class="ui mini basic fluid buttons ngm-aoi-tooltip-container">

@@ -23,6 +23,12 @@ import Transforms from 'cesium/Source/Core/Transforms';
 
 const PLANE_HEIGHT = 15000;
 const PLANE_COLOR = Color.WHITE;
+const DEFAULT_SLICE_OPTIONS = {
+  box: false,
+  slicePoints: [],
+  negate: false,
+  deactivationCallback: undefined
+};
 
 export default class Slicer {
   /**
@@ -33,8 +39,9 @@ export default class Slicer {
     this.viewer = viewer;
     this.slicerDataSource = new CustomDataSource('slicer');
     this.viewer.dataSources.add(this.slicerDataSource);
-    this.boxSlicing = false;
     this.sliceActive = false;
+    this.slicePoints = [];
+    this.sliceOptions = {...DEFAULT_SLICE_OPTIONS};
 
     this.planeEntity = null;
     this.planesCenter = null;
@@ -57,14 +64,27 @@ export default class Slicer {
     const globe = this.viewer.scene.globe;
     if (value) {
       this.sliceActive = true;
-      if (this.boxSlicing) {
+      if (this.sliceOptions.box) {
         this.activateBoxSlicing();
       } else {
-        const center = pickCenter(this.viewer.scene);
-        const hpr = new HeadingPitchRoll(this.viewer.scene.camera.heading, 0.0, 0.0);
-        this.plane = Plane.transform(Plane.ORIGIN_ZX_PLANE, Transforms.headingPitchRollToFixedFrame(center, hpr));
-        globe.clippingPlanes = this.createClippingPlanes();
+        const slicePoints = this.sliceOptions.slicePoints;
+        if (!slicePoints || slicePoints.length !== 2) {
+          const center = pickCenter(this.viewer.scene);
+          const hpr = new HeadingPitchRoll(this.viewer.scene.camera.heading, 0.0, 0.0);
+          this.plane = Plane.transform(Plane.ORIGIN_ZX_PLANE, Transforms.headingPitchRollToFixedFrame(center, hpr));
+        } else {
+          const normal = new Cartesian3(
+            -(slicePoints[1].y - slicePoints[0].y),
+            (slicePoints[1].x - slicePoints[0].x),
+            0);
+          if (this.sliceOptions.negate) {
+            Cartesian3.negate(normal, normal);
+          }
+          const center = Cartesian3.midpoint(slicePoints[0], slicePoints[1], new Cartesian3());
+          this.plane = Plane.fromPointNormal(center, Cartesian3.normalize(normal, new Cartesian3()));
+        }
 
+        globe.clippingPlanes = this.createClippingPlanes();
         const primitives = this.viewer.scene.primitives;
         for (let i = 0, ii = primitives.length; i < ii; i++) {
           const primitive = primitives.get(i);
@@ -75,7 +95,10 @@ export default class Slicer {
       }
     } else {
       this.sliceActive = false;
-      this.boxSlicing = false;
+      if (this.sliceOptions.deactivationCallback) {
+        this.sliceOptions.deactivationCallback();
+      }
+      this.sliceOptions = {...DEFAULT_SLICE_OPTIONS};
       this.slicerDataSource.entities.removeAll();
       this.offsets = {};
       this.planeHorizontalDown = null;
@@ -90,8 +113,10 @@ export default class Slicer {
         this.onTickRemove();
       }
 
-      globe.clippingPlanes.enabled = false;
-      globe.clippingPlanes = undefined;
+      if (globe.clippingPlanes) {
+        globe.clippingPlanes.enabled = false;
+        globe.clippingPlanes = undefined;
+      }
 
       this.targetYSouthwest = 0.0;
       this.targetXSouthwest = 0.0;
@@ -180,16 +205,16 @@ export default class Slicer {
     }
   }
 
-  set box(value) {
-    this.boxSlicing = value;
+  set options(options) {
+    this.sliceOptions = options;
   }
 
   get active() {
     return this.sliceActive;
   }
 
-  get box() {
-    return this.boxSlicing;
+  get options() {
+    return this.sliceOptions;
   }
 
   movePlane() {
@@ -209,7 +234,7 @@ export default class Slicer {
    */
   createClippingPlanes(modelMatrix) {
     let planes = [this.plane];
-    if (this.boxSlicing) {
+    if (this.sliceOptions.box) {
       planes = [this.planeHorizontalDown, this.planeVerticalLeft, this.planeHorizontalUp, this.planeVerticalRight];
     }
     return new ClippingPlaneCollection({
@@ -417,7 +442,9 @@ export default class Slicer {
     if (tileset.readyPromise) {
       tileset.readyPromise.then(primitive => {
         if (primitive.root && primitive.boundingSphere && !primitive.clippingPlanes) {
-          this.offsets[primitive.url] = this.getTilesetOffset(primitive.boundingSphere.center, this.planesCenter);
+          if (this.sliceOptions.box) {
+            this.offsets[primitive.url] = this.getTilesetOffset(primitive.boundingSphere.center, this.planesCenter);
+          }
           primitive.clippingPlanes = this.createClippingPlanes();
         }
       });
