@@ -32,8 +32,17 @@ class NgmSlicer extends I18nMixin(LitElement) {
     }
   }
 
-  toggleSlicer() {
-    this.slicer.active = !this.slicer.active;
+  toggleSlicer(box) {
+    if (!this.slicer.active) {
+      this.slicer.box = box;
+      this.slicer.active = !this.slicer.active;
+    } else if (this.slicer.box !== box) {
+      this.slicer.active = false;
+      this.slicer.box = box;
+      this.slicer.active = true;
+    } else {
+      this.slicer.active = !this.slicer.active;
+    }
     this.requestUpdate();
   }
 
@@ -48,9 +57,17 @@ class NgmSlicer extends I18nMixin(LitElement) {
           data-tooltip=${i18next.t('nav_slice_hint')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button ${this.slicer.active ? 'grey' : ''}"
-          @pointerdown="${this.toggleSlicer}">
+          class="ui compact mini icon button ${this.slicer.active && !this.slicer.box ? 'grey' : ''}"
+          @pointerdown="${() => this.toggleSlicer(false)}">
             <i class="cut icon"></i>
+        </button>
+        <button
+          data-tooltip=${i18next.t('nav_box_slice_hint')}
+          data-position="left center"
+          data-variation="mini"
+          class="ui compact mini icon button ${this.slicer.active && this.slicer.box ? 'grey' : ''}"
+          @pointerdown="${() => this.toggleSlicer(true)}">
+            <i class="cube icon"></i>
         </button>
       `;
     } else {
