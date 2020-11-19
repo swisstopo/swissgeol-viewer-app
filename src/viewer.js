@@ -22,8 +22,6 @@ import PostProcessStage from 'cesium/Source/Scene/PostProcessStage';
 import Cartesian4 from 'cesium/Source/Core/Cartesian4';
 import CesiumInspector from 'cesium/Source/Widgets/CesiumInspector/CesiumInspector';
 import {getMapTransparencyParam} from './permalink.js';
-import Entity from 'cesium/Source/DataSources/Entity';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
 import CameraEventType from 'cesium/Source/Scene/CameraEventType';
 import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
 import Transforms from 'cesium/Source/Core/Transforms';
@@ -187,21 +185,10 @@ export function setupViewer(container) {
     },
     name: 'fog'
   });
-  const fogShield = new Entity({
-    rectangle: {
-      material: Color.WHITE,
-      coordinates: scene.globe.cartographicLimitRectangle,
-      heightReference: HeightReference.RELATIVE_TO_GROUND,
-      height: 5000
-    },
-    name: 'fogShield'
-  });
-  viewer.entities.add(fogShield); // hack to avoid black terrain/tilesets when transparency applied
 
   viewer.scene.postProcessStages.add(fog);
   scene.postRender.addEventListener((scene) => {
     fog.enabled = scene.cameraUnderground;
-    fogShield.show = scene.cameraUnderground;
   });
 
   if (searchParams.has('inspector')) {
