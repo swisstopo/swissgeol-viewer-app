@@ -189,15 +189,22 @@ export default class Slicer {
       const hpr = new HeadingPitchRoll(this.viewer.scene.camera.heading, 0.0, 0.0);
       this.plane = Plane.transform(Plane.ORIGIN_ZX_PLANE, Transforms.headingPitchRollToFixedFrame(center, hpr));
     } else {
-      const normal = new Cartesian3(
-        -(slicePoints[1].y - slicePoints[0].y),
-        (slicePoints[1].x - slicePoints[0].x),
-        0);
+      const center = Cartesian3.midpoint(slicePoints[0], slicePoints[1], new Cartesian3());
+      const cartographicPoint1 = Cartographic.fromCartesian(slicePoints[0]);
+      const cartographicPoint2 = Cartographic.fromCartesian(slicePoints[1]);
+      // for correct tilt
+      cartographicPoint1.height = cartographicPoint1.height + 10000;
+      cartographicPoint2.height = cartographicPoint2.height - 10000;
+      const point1 = Cartographic.toCartesian(cartographicPoint1);
+      const point2 = Cartographic.toCartesian(cartographicPoint2);
+      const vector1 = Cartesian3.subtract(center, point1, new Cartesian3());
+      const vector2 = Cartesian3.subtract(point2, point1, new Cartesian3());
+      const cross = Cartesian3.cross(vector1, vector2, new Cartesian3());
+      const normal = Cartesian3.normalize(cross, new Cartesian3());
       if (this.sliceOptions.negate) {
         Cartesian3.negate(normal, normal);
       }
-      const center = Cartesian3.midpoint(slicePoints[0], slicePoints[1], new Cartesian3());
-      this.plane = Plane.fromPointNormal(center, Cartesian3.normalize(normal, new Cartesian3()));
+      this.plane = Plane.fromPointNormal(center, normal);
     }
 
     this.viewer.scene.globe.clippingPlanes = this.createClippingPlanes();
