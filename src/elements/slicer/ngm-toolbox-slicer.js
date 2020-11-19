@@ -72,7 +72,6 @@ class NgmToolboxSlicer extends I18nMixin(LitElement) {
 
   render() {
     if (this.slicer && this.positions.length) {
-      console.log(this.positions);
       return html`
         <div class="ngm-slice-btns-container">
             <div class="ui tiny buttons">
