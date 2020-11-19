@@ -19,6 +19,7 @@ import {applyLimits, pickCenterOnEllipsoid} from './utils';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
 import Transforms from 'cesium/Source/Core/Transforms';
+import {SLICE_ARROW_ICONS} from './constants';
 
 
 const PLANE_HEIGHT = 15000;
@@ -515,26 +516,13 @@ export default class Slicer {
       },
       properties: {}
     };
-    const navigationIconVL = navigationIconTemplate;
-    navigationIconVL.position = new CallbackProperty(this.arrowCenterUpdateFunction('vertical'), false);
-    navigationIconVL.properties.type = 'vertical';
-    navigationIconVL.model.uri = './images/arrowV.glb';
-    this.slicerDataSource.entities.add(new Entity(navigationIconVL));
-    const navigationIconVR = navigationIconTemplate;
-    navigationIconVR.position = new CallbackProperty(this.arrowCenterUpdateFunction('vertical-northeast'), false);
-    navigationIconVR.properties.type = 'vertical-northeast';
-    navigationIconVR.model.uri = './images/arrowV.glb';
-    this.slicerDataSource.entities.add(new Entity(navigationIconVR));
-    const navigationIconHD = navigationIconTemplate;
-    navigationIconHD.position = new CallbackProperty(this.arrowCenterUpdateFunction('horizontal'), false);
-    navigationIconHD.properties.type = 'horizontal';
-    navigationIconHD.model.uri = './images/arrowH.glb';
-    this.slicerDataSource.entities.add(new Entity(navigationIconHD));
-    const navigationIconHU = navigationIconTemplate;
-    navigationIconHU.position = new CallbackProperty(this.arrowCenterUpdateFunction('horizontal-northeast'), false);
-    navigationIconHU.properties.type = 'horizontal-northeast';
-    navigationIconHU.model.uri = './images/arrowH.glb';
-    this.slicerDataSource.entities.add(new Entity(navigationIconHU));
+    SLICE_ARROW_ICONS.forEach(icon => {
+      const navigationIcon = navigationIconTemplate;
+      navigationIcon.position = new CallbackProperty(this.arrowCenterUpdateFunction(icon.type), false);
+      navigationIcon.properties.type = icon.type;
+      navigationIcon.model.uri = icon.uri;
+      this.slicerDataSource.entities.add(new Entity(navigationIcon));
+    });
   }
 
   highlightArrow(position) {
