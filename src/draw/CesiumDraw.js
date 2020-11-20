@@ -382,39 +382,31 @@ export class CesiumDraw extends EventTarget {
   }
 
   rotateRectangle(startPosition, endPosition) {
-    let positions = [...this.activePoints_];
+    const positions = [...this.activePoints_];
     const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
-    const center2d = this.viewer_.scene.cartesianToCanvasCoordinates(center);
-    let skipUpdate = false;
-    const endPosition2d = this.viewer_.scene.cartesianToCanvasCoordinates(endPosition);
-    const startPosition2d = this.viewer_.scene.cartesianToCanvasCoordinates(startPosition);
-    const angleStart = Math.PI + Math.atan2(endPosition2d.x - center2d.x, endPosition2d.y - center2d.y);
-    const angleEnd = Math.PI + Math.atan2(startPosition2d.x - center2d.x, startPosition2d.y - center2d.y);
+    const centerCart = Cartographic.fromCartesian(center);
+    const endCart = Cartographic.fromCartesian(endPosition);
+    const startCart = Cartographic.fromCartesian(startPosition);
+    const angleStart = Math.PI + Math.atan2(endCart.longitude - centerCart.longitude, endCart.latitude - centerCart.latitude);
+    const angleEnd = Math.PI + Math.atan2(startCart.longitude - centerCart.longitude, startCart.latitude - centerCart.latitude);
     const angleDiff = angleEnd - angleStart;
 
     positions.forEach((pos, indx) => {
-      const position2d = this.viewer_.scene.cartesianToCanvasCoordinates(pos);
-      const xDiff = position2d.x - center2d.x;
-      const yDiff = position2d.y - center2d.y;
+      const point = Cartographic.fromCartesian(pos);
+      const cosTheta = Math.cos(angleDiff);
+      const sinTheta = Math.sin(angleDiff);
+      const vLon = (cosTheta * (point.longitude - centerCart.longitude) - sinTheta * (point.latitude - centerCart.latitude) / Math.abs(Math.cos(centerCart.latitude)));
+      const vLat = (sinTheta * (point.longitude - centerCart.longitude) * Math.abs(Math.cos(centerCart.latitude)) + cosTheta * (point.latitude - centerCart.latitude));
+      const lon = centerCart.longitude + vLon;
+      const lat = centerCart.latitude + vLat;
 
-      const x = Math.cos(angleDiff) * xDiff - Math.sin(angleDiff) * yDiff + center2d.x;
-      const y = Math.sin(angleDiff) * xDiff + Math.cos(angleDiff) * yDiff + center2d.y;
-      const rotatedPoint = this.viewer_.scene.pickPosition(new Cartesian2(x, y));
-      if (rotatedPoint) {
-        positions[indx] = rotatedPoint;
-      } else {
-        skipUpdate = true;
-      }
+      positions[indx] = Cartographic.toCartesian(new Cartographic(lon, lat));
     });
-    positions.pop();
-    positions = rectanglify(positions);
-    if (!skipUpdate) {
-      this.sketchPoints_.forEach((sp, key) => {
-        sp.position = positions[key];
-        this.activePoints_[key] = positions[key];
-      });
-      this.entityForEdit.polygon.hierarchy = {positions};
-    }
+    this.sketchPoints_.forEach((sp, key) => {
+      sp.position = positions[key];
+      this.activePoints_[key] = positions[key];
+    });
+    this.entityForEdit.polygon.hierarchy = {positions};
   }
 
   onMouseMove_(event) {
