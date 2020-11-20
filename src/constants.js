@@ -2,6 +2,7 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import Color from 'cesium/Source/Core/Color';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CMath from 'cesium/Source/Core/Math';
+
 export {LAYER_TYPES, DEFAULT_LAYER_TRANSPARENCY} from './layertree.js';
 
 export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
@@ -65,5 +66,6 @@ export const SLICE_ARROW_ICONS = [
   {type: 'vertical', uri: './images/arrowV.glb'},
   {type: 'vertical-northeast', uri: './images/arrowV.glb'},
   {type: 'horizontal', uri: './images/arrowH.glb'},
-  {type: 'horizontal-northeast', uri: './images/arrowH.glb'}
+  {type: 'horizontal-northeast', uri: './images/arrowH.glb'},
+  {type: 'altitude', uri: './images/arrowH.glb'}
 ];
