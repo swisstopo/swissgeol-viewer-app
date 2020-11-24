@@ -36,7 +36,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   static get properties() {
     return {
       viewer: {type: Object},
-      selectedArea_: {type: Object}
+      selectedArea_: {type: Object},
+      slicer: {type: Object}
     };
   }
 

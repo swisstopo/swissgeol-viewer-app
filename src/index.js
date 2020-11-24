@@ -30,6 +30,7 @@ import './elements/ngm-full-screen-view.js';
 import './elements/ngm-loading-mask.js';
 import {LocalStorageController} from './LocalStorageController.js';
 import {getZoomToPosition} from './permalink';
+import Slicer from './Slicer.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -83,6 +84,9 @@ const auth = document.querySelector('ngm-auth');
 auth.endpoint = 'https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize';
 auth.clientId = '5k1mgef7ggiremt415eecn95ki';
 
+
+const slicer = new Slicer(viewer);
+
 // setup web components
 const sideBar = document.querySelector('ngm-left-side-bar');
 sideBar.viewer = viewer;
@@ -127,6 +131,7 @@ const onStep2Finished = () => {
   }
 
   const aoiElement = document.querySelector('ngm-aoi-drawer');
+  aoiElement.slicer = slicer;
   aoiElement.addStoredAreas(localStorageController.getStoredAoi());
   aoiElement.addEventListener('aoi_list_changed', evt =>
     localStorageController.setAoiInStorage(evt.detail.entities));
@@ -179,11 +184,12 @@ viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
 const widgets = document.querySelector('ngm-navigation-widgets');
 widgets.viewer = viewer;
+widgets.slicer = slicer;
 sideBar.addEventListener('layeradded', (evt) => {
-  if (widgets.slicer && widgets.slicer.active) {
+  if (slicer && slicer.active) {
     const layer = evt.detail.layer;
     if (layer && layer.promise) {
-      widgets.slicer.applyClippingPlanesToTileset(layer.promise);
+      slicer.applyClippingPlanesToTileset(layer.promise);
     }
   }
 });

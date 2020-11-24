@@ -61,3 +61,10 @@ export const AOI_POINT_COLORS = [
 ];
 
 export const AOI_POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
+
+export const SLICE_ARROW_ICONS = [
+  {type: 'vertical', uri: './images/arrowV.glb'},
+  {type: 'vertical-northeast', uri: './images/arrowV.glb'},
+  {type: 'horizontal', uri: './images/arrowH.glb'},
+  {type: 'horizontal-northeast', uri: './images/arrowH.glb'}
+];

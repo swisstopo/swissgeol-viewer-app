@@ -1,13 +1,12 @@
 import {LitElement, html} from 'lit-element';
 import i18next from 'i18next';
-import Slicer from '../Slicer.js';
-import {I18nMixin} from '../i18n.js';
+import {I18nMixin} from '../../i18n.js';
 
 class NgmSlicer extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      viewer: {type: Object},
+      slicer: {type: Object},
     };
   }
 
@@ -15,49 +14,39 @@ class NgmSlicer extends I18nMixin(LitElement) {
     super();
 
     /**
-     * @type {import('cesium/Source/Widgets/Viewer/Viewer').default}
-     */
-    this.viewer;
-
-    /**
      * @type {Slicer}
      */
     this.slicer;
   }
 
-  updated() {
-    if (!this.slicer) {
-      this.slicer = new Slicer(this.viewer);
-      this.applyClippingPlanesToTileset = (tileset) => this.slicer.applyClippingPlanesToTileset(tileset);
-    }
-  }
-
   toggleSlicer(box) {
-    if (!this.slicer.active) {
-      this.slicer.box = box;
-      this.slicer.active = !this.slicer.active;
-    } else if (this.slicer.box !== box) {
-      this.slicer.active = false;
-      this.slicer.box = box;
+    const active = this.slicer.active;
+    const boxOptionChanged = this.slicer.sliceOptions.box !== box;
+    this.slicer.active = false;
+    if (!active || boxOptionChanged) {
+      this.slicer.sliceOptions = {
+        box: box,
+        deactivationCallback: () => this.onDeactivation()
+      };
       this.slicer.active = true;
-    } else {
-      this.slicer.active = !this.slicer.active;
     }
+    this.sliceEnabled = this.slicer.active;
     this.requestUpdate();
   }
 
-  get active() {
-    return this.slicer.active;
+  onDeactivation() {
+    this.sliceEnabled = false;
+    this.requestUpdate();
   }
 
   render() {
-    if (this.viewer && this.slicer) {
+    if (this.slicer) {
       return html`
         <button
           data-tooltip=${i18next.t('nav_slice_hint')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button ${this.slicer.active && !this.slicer.box ? 'grey' : ''}"
+          class="ui compact mini icon button ${this.sliceEnabled && !this.slicer.sliceOptions.box ? 'grey' : ''}"
           @pointerdown="${() => this.toggleSlicer(false)}">
             <i class="cut icon"></i>
         </button>
@@ -65,7 +54,7 @@ class NgmSlicer extends I18nMixin(LitElement) {
           data-tooltip=${i18next.t('nav_box_slice_hint')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button ${this.slicer.active && this.slicer.box ? 'grey' : ''}"
+          class="ui compact mini icon button ${this.sliceEnabled && this.slicer.sliceOptions.box ? 'grey' : ''}"
           @pointerdown="${() => this.toggleSlicer(true)}">
             <i class="cube icon"></i>
         </button>

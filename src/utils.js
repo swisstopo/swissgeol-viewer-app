@@ -7,6 +7,7 @@ import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline';
 import Transforms from 'cesium/Source/Core/Transforms';
 import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
 import {degreesToLv95} from './projection';
+import Plane from 'cesium/Source/Core/Plane';
 
 
 export async function readTextFile(url) {
@@ -243,4 +244,42 @@ export function applyLimits(value, minValue, maxValue) {
     value = Math.min(value, maxValue);
   }
   return value;
+}
+
+/**
+ * Creates a straight plane that troughs two provided points
+ * @param {Cartesian3} point1
+ * @param {Cartesian3} point2
+ * @param {boolean} negate - if true changes direction from left on the right
+ * @return {Plane}
+ */
+export function planeFromTwoPoints(point1, point2, negate = false) {
+  const center = Cartesian3.midpoint(point1, point2, new Cartesian3());
+  const cartographicPoint1 = Cartographic.fromCartesian(point1);
+  const cartographicPoint2 = Cartographic.fromCartesian(point2);
+  // for correct tilt
+  cartographicPoint1.height = cartographicPoint1.height + 10000;
+  cartographicPoint2.height = cartographicPoint2.height - 10000;
+  const cartPoint1 = Cartographic.toCartesian(cartographicPoint1);
+  const cartPoint2 = Cartographic.toCartesian(cartographicPoint2);
+  const vector1 = Cartesian3.subtract(center, cartPoint1, new Cartesian3());
+  const vector2 = Cartesian3.subtract(cartPoint2, cartPoint1, new Cartesian3());
+  const cross = Cartesian3.cross(vector1, vector2, new Cartesian3());
+  const normal = Cartesian3.normalize(cross, new Cartesian3());
+  if (negate) {
+    Cartesian3.negate(normal, normal);
+  }
+  return Plane.fromPointNormal(center, normal);
+}
+
+/**
+ * @param viewer
+ * @param {function} functionToExecute - executes for each primitive on scene. Gets primitive as the first argument
+ */
+export function executeForAllPrimitives(viewer, functionToExecute) {
+  const primitives = viewer.scene.primitives;
+  for (let i = 0, ii = primitives.length; i < ii; i++) {
+    const primitive = primitives.get(i);
+    functionToExecute(primitive);
+  }
 }
