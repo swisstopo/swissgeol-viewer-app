@@ -6,7 +6,7 @@ class NgmSlicer extends I18nMixin(LitElement) {
 
   static get properties() {
     return {
-      slicer: {type: Object}
+      slicer: {type: Object},
     };
   }
 

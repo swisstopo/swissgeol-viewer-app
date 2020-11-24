@@ -1,12 +1,17 @@
 import {
   HIGHLIGHTED_AOI_COLOR,
   DEFAULT_AOI_COLOR,
-  CESIUM_NOT_GRAPHICS_ENTITY_PROPS, CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD
+  CESIUM_NOT_GRAPHICS_ENTITY_PROPS, CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_AOI_VOLUME_COLOR
 } from '../constants.js';
 
 export function updateColor(entity, selected) {
   if (entity.billboard) {
     return;
+  }
+  if (entity.polylineVolume && entity.polylineVolume.show) {
+    const color = selected ? HIGHLIGHTED_AOI_COLOR : DEFAULT_AOI_VOLUME_COLOR;
+    entity.polylineVolume.material = color;
+    entity.polylineVolume.outlineColor = color;
   }
   const entityType = entity.polygon ? 'polygon' : 'polyline';
   entity[entityType].material = selected ? HIGHLIGHTED_AOI_COLOR : DEFAULT_AOI_COLOR;

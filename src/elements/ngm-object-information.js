@@ -46,7 +46,7 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
             return html`
           <tr class="top aligned">
             <td class="key">${i18next.t(key)}</td>
-            <td class="val"><a href="${value}">${value}</a></td>
+            <td class="val"><a href="${value}" target="_blank" rel="noopener">${value}</a></td>
           </tr>
           `;
           case 'obj_info_image_label':

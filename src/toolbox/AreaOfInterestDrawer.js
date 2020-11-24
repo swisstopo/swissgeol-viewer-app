@@ -12,9 +12,8 @@ import {LitElement} from 'lit-element';
 import {
   AOI_DATASOURCE_NAME,
   DEFAULT_AOI_COLOR,
-  HIGHLIGHTED_AOI_COLOR,
   DEFAULT_VOLUME_HEIGHT_LIMITS,
-  AOI_POINT_SYMBOLS
+  AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR
 } from '../constants.js';
 import {updateColor, cleanupUploadedEntity, getUploadedAreaType} from './helpers.js';
 import {showWarning} from '../message.js';
@@ -30,6 +29,7 @@ import CornerType from 'cesium/Source/Core/CornerType';
 import {showMessage} from '../message';
 import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
+import {DEFAULT_AOI_VOLUME_COLOR} from '../constants';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -591,11 +591,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     } else {
       entity.properties.volumeShowed = true;
     }
+    const color = this.selectedArea_ && this.selectedArea_.id === id ?
+      HIGHLIGHTED_AOI_COLOR : DEFAULT_AOI_VOLUME_COLOR;
     entity.polylineVolume = {
       cornerType: CornerType.MITERED,
       outline: true,
-      outlineColor: HIGHLIGHTED_AOI_COLOR,
-      material: HIGHLIGHTED_AOI_COLOR
+      outlineColor: color,
+      material: color
     };
     this.updateVolumePositions(entity, positions);
     entity.polylineVolume.show = true;
