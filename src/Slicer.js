@@ -256,7 +256,7 @@ export default class Slicer {
       planeVerticalRight.distance = planeVerticalRight.distance + offset.offsetY;
 
       const planeDown = Plane.clone(this.planeDown);
-      planeDown.distance = planeDown.distance - PLANE_HEIGHT / 2;
+      planeDown.distance = planeDown.distance + offset.offsetZ;
 
       clippingPlanes.add(planeHorizontalDown);
       clippingPlanes.add(planeHorizontalUp);
@@ -430,14 +430,21 @@ export default class Slicer {
     this.planesCenterV = this.planesCenter;
   }
 
-  getTilesetOffset(tilesetCenter, mapCenter) {
-    const tileCenter = Cartographic.fromCartesian(tilesetCenter);
-    const cartCenter = Cartographic.fromCartesian(mapCenter);
+  getTilesetOffset(primitive) {
+    const tileCenter = Cartographic.fromCartesian(primitive.boundingSphere.center);
+    const cartCenter = Cartographic.fromCartesian(this.planesCenter);
     const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
     const lv95Tile = radiansToLv95([tileCenter.longitude, tileCenter.latitude]);
     const offsetX = lv95Center[1] - lv95Tile[1];
     const offsetY = lv95Center[0] - lv95Tile[0];
-    const offsetZ = cartCenter.height - tileCenter.height;
+
+    const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
+    const transformCartographic = Cartographic.fromCartesian(transformCenter);
+    const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
+    let offsetZ = boundingSphereCartographic.height;
+    if (transformCartographic) {
+      offsetZ = transformCartographic.height;
+    }
     return {
       offsetX: offsetX,
       offsetY: offsetY,
@@ -448,14 +455,8 @@ export default class Slicer {
   applyClippingPlanesToTileset(tileset) {
     if (tileset.readyPromise) {
       tileset.readyPromise.then(primitive => {
-        if (primitive.root && primitive.boundingSphere && !primitive.clippingPlanes) {
-          if (this.sliceOptions.box) {
-            this.offsets[primitive.url] = this.getTilesetOffset(primitive.boundingSphere.center, this.planesCenter);
-            primitive.clippingPlanes = this.createClippingPlanes();
-          } else {
-            const modelMatrix = Matrix4.inverse(primitive.root.computedTransform, new Matrix4());
-            primitive.clippingPlanes = this.createClippingPlanes(modelMatrix);
-          }
+        if (!primitive.clippingPlanes) {
+          this.sliceOptions.box ? this.addBoxClippingPlanes(primitive) : this.addLineClippingPlane(primitive);
         }
       });
     }
@@ -561,7 +562,7 @@ export default class Slicer {
 
   addBoxClippingPlanes(primitive) {
     if (!primitive.root || !primitive.boundingSphere) return;
-    this.offsets[primitive.url] = this.getTilesetOffset(primitive.boundingSphere.center, this.planesCenter);
+    this.offsets[primitive.url] = this.getTilesetOffset(primitive);
     primitive.clippingPlanes = this.createClippingPlanes();
   }
 }
