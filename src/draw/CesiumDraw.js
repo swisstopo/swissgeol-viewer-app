@@ -128,7 +128,6 @@ export class CesiumDraw extends EventTarget {
           }, false),
           billboard: {
             image: './images/rotate-icon.svg',
-            scale: 0.15,
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
           },
           properties: {
