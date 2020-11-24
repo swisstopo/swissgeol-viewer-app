@@ -468,8 +468,12 @@ export default class Slicer {
         return this.planesCenterH;
       else if (type === 'vertical')
         return this.planesCenterV;
-      else
-        return this.planesCenter;
+      else {
+        const centerHCart = Cartographic.fromCartesian(this.planesCenterH);
+        const centerVCart = Cartographic.fromCartesian(this.planesCenterV);
+        const center = new Cartographic(centerHCart.longitude, centerVCart.latitude);
+        return Cartographic.toCartesian(center);
+      }
     };
   }
 
