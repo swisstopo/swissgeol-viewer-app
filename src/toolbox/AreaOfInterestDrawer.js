@@ -269,7 +269,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.pickArea_(id);
   }
 
-  async uploadArea_(evt) {
+  async uploadKml_(evt) {
     const file = evt.target ? evt.target.files[0] : null;
     if (file) {
       if (!file.name.toLowerCase().includes('.kml')) {

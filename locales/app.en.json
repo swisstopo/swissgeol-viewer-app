@@ -152,7 +152,7 @@
   "tbx_toolbox_label": "Toolbox",
   "tbx_unsupported_file_warning": "Unsupported file extension. Please upload KML",
   "tbx_unsupported_kml_warning": "Uploaded unsupported KML",
-  "tbx_upload_btn_label": "Upload KML",
+  "tbx_upload_kml_btn_label": "Upload KML",
   "tbx_volume_height_label": "Height",
   "tbx_volume_hint": "Press 'Edit' button to change height or position of volume",
   "tbx_volume_lower_limit_label": "Lower limit",
