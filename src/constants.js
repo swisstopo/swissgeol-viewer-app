@@ -68,5 +68,6 @@ export const SLICE_ARROW_ICONS = [
   {type: 'vertical-northeast', uri: './images/arrowV.glb'},
   {type: 'horizontal', uri: './images/arrowH.glb'},
   {type: 'horizontal-northeast', uri: './images/arrowH.glb'},
-  {type: 'altitude', uri: './images/arrowH.glb'}
+  {type: 'altitude-down', uri: './images/arrowH.glb'},
+  {type: 'altitude-up', uri: './images/arrowH.glb'}
 ];
