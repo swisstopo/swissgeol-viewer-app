@@ -6,9 +6,8 @@ import HeightReference from 'cesium/Source/Scene/HeightReference';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
-import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
 import JulianDate from 'cesium/Source/Core/JulianDate';
+import Intersections2D from 'cesium/Source/Core/Intersections2D';
 
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
@@ -122,7 +121,20 @@ export class CesiumDraw extends EventTarget {
         break;
       case 'rectangle':
         positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
-        positions.pop();
+        this.drawingDataSource.entities.add({
+          position: new CallbackProperty(() => {
+            positions = this.activePoints_.length ? this.activePoints_ : positions;
+            return Cartesian3.midpoint(positions[0], positions[1], new Cartesian3());
+          }, false),
+          billboard: {
+            image: './images/rotate-icon.svg',
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            heightReference: HeightReference.CLAMP_TO_GROUND
+          },
+          properties: {
+            type: 'rotate'
+          }
+        });
         break;
       default:
         break;
@@ -233,22 +245,6 @@ export class CesiumDraw extends EventTarget {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
     const pointEntity = this.drawingDataSource.entities.add(entity);
-    if (options.edit && this.type === 'rectangle') {
-      const isLastPoint = options.positionIndex === 2; // always 3 points for rectangle
-      const billboard = {
-        position: new CallbackProperty(() => pointEntity.position.getValue(this.julianDate), false),
-        billboard: {
-          image: isLastPoint ? './images/move-edit-icon.svg' : './images/edit-icons.svg',
-          scale: isLastPoint ? 0.06 : 0.2,
-          disableDepthTestDistance: Number.POSITIVE_INFINITY,
-          horizontalOrigin: HorizontalOrigin.LEFT,
-          verticalOrigin: VerticalOrigin.BOTTOM,
-          pixelOffset: new Cartesian2(10, -10)
-        }
-      };
-      this.drawingDataSource.entities.add(billboard);
-    }
-
     pointEntity.properties.virtual = options.virtual;
     return pointEntity;
   }
@@ -366,6 +362,53 @@ export class CesiumDraw extends EventTarget {
     }
   }
 
+  updateRectCorner(corner, oppositePoint, midPoint, midPointPrev, midScale, negate) {
+    let midDiff = Cartesian3.subtract(corner, midPointPrev, new Cartesian3());
+    midDiff = Cartesian3.multiplyByScalar(midDiff, midScale, new Cartesian3());
+    const positionFromMid = Cartesian3.add(midPoint, midDiff, new Cartesian3());
+
+    const distancePrev = Cartesian3.distance(corner, oppositePoint);
+    const distanceCurrent = Cartesian3.distance(positionFromMid, oppositePoint);
+    const distanceScale = distanceCurrent / distancePrev;
+    let distanceDiff = Cartesian3.subtract(corner, oppositePoint, new Cartesian3());
+
+    distanceDiff = Cartesian3.multiplyByScalar(distanceDiff, distanceScale, new Cartesian3());
+    let newCornerPosition = Cartesian3.add(oppositePoint, distanceDiff, new Cartesian3());
+    if (negate) {
+      distanceDiff = Cartesian3.negate(distanceDiff, new Cartesian3());
+      newCornerPosition = Cartesian3.add(oppositePoint, distanceDiff, new Cartesian3());
+    }
+    return newCornerPosition;
+  }
+
+  rotateRectangle(startPosition, endPosition) {
+    const positions = [...this.activePoints_];
+    const center = Cartesian3.midpoint(positions[0], positions[2], new Cartesian3());
+    const centerCart = Cartographic.fromCartesian(center);
+    const endCart = Cartographic.fromCartesian(endPosition);
+    const startCart = Cartographic.fromCartesian(startPosition);
+    const angleStart = Math.PI + Math.atan2(endCart.longitude - centerCart.longitude, endCart.latitude - centerCart.latitude);
+    const angleEnd = Math.PI + Math.atan2(startCart.longitude - centerCart.longitude, startCart.latitude - centerCart.latitude);
+    const angleDiff = angleEnd - angleStart;
+
+    positions.forEach((pos, indx) => {
+      const point = Cartographic.fromCartesian(pos);
+      const cosTheta = Math.cos(angleDiff);
+      const sinTheta = Math.sin(angleDiff);
+      const vLon = (cosTheta * (point.longitude - centerCart.longitude) - sinTheta * (point.latitude - centerCart.latitude) / Math.abs(Math.cos(centerCart.latitude)));
+      const vLat = (sinTheta * (point.longitude - centerCart.longitude) * Math.abs(Math.cos(centerCart.latitude)) + cosTheta * (point.latitude - centerCart.latitude));
+      const lon = centerCart.longitude + vLon;
+      const lat = centerCart.latitude + vLat;
+
+      positions[indx] = Cartographic.toCartesian(new Cartographic(lon, lat));
+    });
+    this.sketchPoints_.forEach((sp, key) => {
+      sp.position = positions[key];
+      this.activePoints_[key] = positions[key];
+    });
+    this.entityForEdit.polygon.hierarchy = {positions};
+  }
+
   onMouseMove_(event) {
     this.renderSceneIfTranslucent();
     const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
@@ -375,8 +418,14 @@ export class CesiumDraw extends EventTarget {
         if (this.type === 'point') {
           this.entityForEdit.position = position;
         } else {
-          this.sketchPoint_.position = position;
-          this.activePoints_[this.sketchPoint_.properties.index] = position;
+          const pointProperties = this.sketchPoint_.properties;
+          const index = pointProperties.index;
+          let prevPosition = new Cartesian3();
+          if (typeof index === 'number') {
+            this.sketchPoint_.position = position;
+            prevPosition = Cartesian3.clone(this.activePoints_[index]);
+            this.activePoints_[index] = position;
+          }
           if (this.type === 'polygon') {
             // move virtual SPs
             const idx = this.sketchPoint_.properties.index;
@@ -406,9 +455,38 @@ export class CesiumDraw extends EventTarget {
             }
             this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
-            let positions = this.activePoints_;
+            const positions = this.activePoints_;
             if (this.type === 'rectangle') {
-              positions = rectanglify(this.activePoints_);
+              if (pointProperties.type && pointProperties.type.getValue() === 'rotate') {
+                const oldPosition = this.sketchPoint_.position.getValue();
+                this.rotateRectangle(oldPosition, position);
+                return;
+              }
+              const oppositeIndex = index > 1 ? index - 2 : index + 2;
+              const leftIndex = index - 1 < 0 ? 3 : index - 1;
+              const rightIndex = index + 1 > 3 ? 0 : index + 1;
+              let draggedPoint = positions[index];
+              const oppositePoint = positions[oppositeIndex];
+              let leftPoint = positions[leftIndex];
+              let rightPoint = positions[rightIndex];
+
+              const midPoint = Cartesian3.midpoint(draggedPoint, oppositePoint, new Cartesian3());
+              const midPointPrev = Cartesian3.midpoint(prevPosition, oppositePoint, new Cartesian3());
+              const midDist = Cartesian3.distance(draggedPoint, midPoint);
+              const midDistPrev = Cartesian3.distance(prevPosition, midPointPrev);
+              const midScale = midDist / midDistPrev;
+
+              const negate = this.checkForNegateMove(draggedPoint, oppositePoint, leftPoint, rightPoint, prevPosition);
+              leftPoint = this.updateRectCorner(leftPoint, oppositePoint, midPoint, midPointPrev, midScale, negate.left);
+              rightPoint = this.updateRectCorner(rightPoint, oppositePoint, midPoint, midPointPrev, midScale, negate.right);
+
+              draggedPoint = this.getCorrectRectCorner(draggedPoint, oppositePoint, leftPoint, rightPoint);
+              draggedPoint = this.getCorrectRectCorner(draggedPoint, oppositePoint, rightPoint, leftPoint);
+
+              positions[index] = draggedPoint;
+              this.activePoints_[index] = draggedPoint;
+              positions[leftIndex] = leftPoint;
+              positions[rightIndex] = rightPoint;
               this.sketchPoints_.forEach((sp, key) => {
                 sp.position = positions[key];
               });
@@ -444,11 +522,14 @@ export class CesiumDraw extends EventTarget {
         if (!selectedPoint) return;
         const selectedEntity = selectedPoint.id;
         this.sketchPoint_ = selectedEntity;
+        const properties = selectedEntity.properties;
+        // checks if picked entity is point geometry or one of the sketch points for other geometries
         this.moveEntity = selectedEntity.id === this.entityForEdit.id ||
-          this.sketchPoints_.some(sp => sp.id === selectedEntity.id); // checks if picked entity is point geometry or one of the sketch points for other geometries
-          if (this.moveEntity && this.sketchPoint_.properties.virtual) {
-            this.extendOrSplitLineOrPolygonPositions_();
-          }
+          !!this.sketchPoints_.some(sp => sp.id === selectedEntity.id) ||
+          (properties && properties.type && properties.type.getValue() === 'rotate');
+        if (this.moveEntity && this.sketchPoint_.properties.virtual) {
+          this.extendOrSplitLineOrPolygonPositions_();
+        }
       }
       if (this.moveEntity) {
         this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
@@ -529,7 +610,7 @@ export class CesiumDraw extends EventTarget {
     this.dispatchEvent(new CustomEvent('leftup'));
   }
 
-    /**
+  /**
    * @param event
    */
   onLeftDownThenUp_(event) {
@@ -592,13 +673,57 @@ export class CesiumDraw extends EventTarget {
         }
         this.sketchPoints_.forEach((s, index) => s.properties.index = Math.floor(index / divider));
         removedSPs.forEach(s => this.drawingDataSource.entities.remove(s));
-      } else {
+      } else if (this.type === 'polygon' || this.type === 'line') {
         this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
         this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
         this.drawingDataSource.entities.remove(this.sketchPoint_);
       }
       this.viewer_.scene.requestRender();
     }
+  }
+
+  getCorrectRectCorner(corner, oppositePoint, checkPoint1, checkPoint2) {
+    const distance = Cartesian3.distance(checkPoint1, oppositePoint);
+    const newDistance = Cartesian3.distance(corner, checkPoint2);
+    const dScale = distance / newDistance;
+    let dDiff = Cartesian3.subtract(corner, checkPoint2, new Cartesian3());
+    dDiff = Cartesian3.multiplyByScalar(dDiff, dScale, new Cartesian3());
+    return Cartesian3.add(checkPoint2, dDiff, new Cartesian3());
+  }
+
+  checkForNegateMove(draggedPoint, oppositePoint, leftPoint, rightPoint) {
+    const draggedPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(draggedPoint);
+    const rightPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(rightPoint);
+    const leftPoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(leftPoint);
+    const oppositePoint2D = this.viewer_.scene.cartesianToCanvasCoordinates(oppositePoint);
+    if (!draggedPoint2D || !rightPoint2D || !leftPoint2D || !oppositePoint2D) {
+      return {
+        right: false,
+        left: false
+      };
+    }
+    const intersectionArgsR = [
+      draggedPoint2D.x,
+      draggedPoint2D.y,
+      rightPoint2D.x,
+      rightPoint2D.y,
+      leftPoint2D.x,
+      leftPoint2D.y,
+      oppositePoint2D.x,
+      oppositePoint2D.y];
+    const intersectionArgsL = [
+      draggedPoint2D.x,
+      draggedPoint2D.y,
+      leftPoint2D.x,
+      leftPoint2D.y,
+      rightPoint2D.x,
+      rightPoint2D.y,
+      oppositePoint2D.x,
+      oppositePoint2D.y];
+    return {
+      right: !!Intersections2D.computeLineSegmentLineSegmentIntersection(...intersectionArgsR),
+      left: !!Intersections2D.computeLineSegmentLineSegmentIntersection(...intersectionArgsL)
+    };
   }
 }
 
