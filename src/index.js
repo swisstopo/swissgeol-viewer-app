@@ -148,7 +148,8 @@ const onStep2Finished = () => {
 };
 
 let currentStep = 1;
-const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
+const unlisten = globe.tileLoadProgressEvent.addEventListener(queueLength => {
+  loadingMask.message = queueLength;
   if (currentStep === 1 && globe.tilesLoaded) {
     currentStep = 2;
     loadingMask.step = currentStep;
