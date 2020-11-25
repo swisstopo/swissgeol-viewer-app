@@ -338,3 +338,8 @@ ngm-slicer {
   display: flex;
   flex-direction: column;
 }
+
+.small_load_counter {
+  font-size: 0.5rem;
+  vertical-align: bottom;
+}

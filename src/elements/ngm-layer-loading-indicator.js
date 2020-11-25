@@ -26,7 +26,8 @@ class NgmLayerLoadingIndicator extends LitElement {
   }
 
   render() {
-    return html`<div class="ui ${this.loading > 0 ? 'active' : ''} inline mini loader">${this.loading}</div>`;
+    return html`<div class="ui ${this.loading > 0 ? 'active' : ''} inline mini loader">
+      <span class="small_load_counter">${this.loading}</span></div>`;
   }
 
   createRenderRoot() {
