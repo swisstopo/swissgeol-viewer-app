@@ -36,6 +36,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       hideWelcome: {type: Boolean},
       mapChooser: {type: Function},
       authenticated: {type: Boolean},
+      globeQueueLength_: {type: Number},
     };
   }
 
@@ -82,6 +83,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         <div class="title ngmverylightgrey active">
           <i class="dropdown icon"></i>
           ${i18next.t('dtd_displayed_data_label')}
+          <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">${this.globeQueueLength_}</div>
         </div>
         <div class="content active">
           <ngm-layers
@@ -211,6 +213,9 @@ class LeftSideBar extends I18nMixin(LitElement) {
         this.catalogLayers = [...defaultLayerTree];
         this.initializeActiveLayers();
       }
+      this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(queueLength => {
+        this.globeQueueLength_ = queueLength;
+      });
     }
     if (this.searchedFeature) {
       this.queryManager.selectTile(this.searchedFeature);

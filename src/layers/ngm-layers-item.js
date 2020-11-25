@@ -1,7 +1,8 @@
 import i18next from 'i18next';
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
-import {classMap} from 'lit-html/directives/class-map';
+import {classMap} from 'lit-html/directives/class-map.js';
+import '../elements/ngm-layer-loading-indicator.js';
 import $ from '../jquery';
 
 
@@ -108,6 +109,7 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
             @change=${this.changeVisibility}>
           <label @click=${this.onLabelClicked}>
             <i class=${this.config.restricted ? 'lock icon' : ''}></i>${i18next.t(this.config.label)}
+            <ngm-layer-loading-indicator .actions=${this.actions} .config=${this.config}></ngm-layer-loading-indicator>
           </label>
         </div>
         ${this.buttons}
