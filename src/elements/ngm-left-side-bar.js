@@ -229,7 +229,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   updated(changedProperties) {
-    if (!this.accordionInited) {
+    if (this.viewer && !this.accordionInited) {
       this.initBarAccordions();
     }
 

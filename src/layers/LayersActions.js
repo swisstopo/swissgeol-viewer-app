@@ -107,7 +107,7 @@ export default class LayersAction {
   listenForEvent(config, eventName, callback) {
     const stuff = config.promise; // yes, this is not a promise !
     if (stuff[eventName]) {
-      console.debug('Adding event', eventName, 'on', config.layer, stuff);
+      console.debug('Adding event', eventName, 'on', config.layer);
       stuff[eventName].addEventListener(callback);
     }
   }
