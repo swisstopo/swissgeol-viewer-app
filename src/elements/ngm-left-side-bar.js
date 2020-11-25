@@ -95,12 +95,12 @@ class LeftSideBar extends I18nMixin(LitElement) {
             .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>
           </ngm-layers>
-          <h4 class="ui horizontal divider ngm-background-divider">
+          <h5 class="ui horizontal divider header">
             ${i18next.t('dtd_background_map_label')}
             <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
               <span class="small_load_counter">${this.globeQueueLength_}</span>
             </div>
-          </h4>
+          </h5>
            <ngm-map-configuration .viewer=${this.viewer} .mapChooser=${this.mapChooser}></ngm-map-configuration>
         </div>
       </div>

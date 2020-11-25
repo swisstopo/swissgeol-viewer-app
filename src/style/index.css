@@ -24,6 +24,7 @@
 @import 'fomantic-ui-css/components/dropdown.css';
 @import 'fomantic-ui-css/components/label.css';
 @import 'fomantic-ui-css/components/progress.css';
+@import 'fomantic-ui-css/components/header.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
@@ -246,7 +247,7 @@ body:after { /* Beta label */
   justify-content: space-between;
 }
 
-.ngm-header-links > a {
+.ngm-header-links a {
   color: #ff0000;
 }
 
@@ -260,7 +261,6 @@ body:after { /* Beta label */
 }
 
 ngm-auth > a {
-  color: #ff0000;
   cursor: pointer;
 }
 
@@ -311,11 +311,6 @@ ngm-review-window .ui.inverted.accordion > .content {
 
 ngm-review-window a {
   color: #ff0000;
-}
-
-h4.ui.horizontal.divider.ngm-background-divider {
-  font-weight: normal;
-  text-transform: none;
 }
 
 ngm-full-screen-view {
