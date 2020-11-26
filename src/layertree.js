@@ -122,9 +122,9 @@ const geo_base = {
           pickable: true,
           visible: false,
           displayed: true,
-          propsOrder: ['XCOORD', 'YCOORD', 'ZCOORDB', 'ORIGNAME', 'NAMEPUB', 'SHORTNAME', 'BOHRTYP', 'GRUND',
-            'RESTRICTIO', 'TIEFEMD', 'DEPTHFROM', 'DEPTHTO', 'LAYERDESC', 'ORIGGEOL', 'LITHOLOGY', 'LITHOSTRAT',
-            'CHRONOSTR', 'TECTO', 'USCS1', 'USCS2', 'USCS3']
+          propsOrder: ['XCOORD', 'YCOORD', 'ZCOORDB', 'ORIGNAME', 'NAMEPUB', 'SHORTNAME', 'BOHREDAT', 'BOHRTYP',
+            'GRUND', 'RESTRICTIO', 'TIEFEMD', 'DEPTHFROM', 'DEPTHTO', 'LAYERDESC', 'ORIGGEOL', 'LITHOLOGY',
+            'LITHOSTRAT', 'CHRONOSTR', 'TECTO', 'USCS1', 'USCS2', 'USCS3']
         },
         {
           type: LAYER_TYPES.tiles3d,
