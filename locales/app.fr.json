@@ -154,6 +154,7 @@
   "tbx_toolbox_label": "Boîte à outils",
   "tbx_unsupported_file_warning": "Extension de fichier non supportée. Veuillez télécharger un fichier KML",
   "tbx_unsupported_kml_warning": "Chargement du KML non supporté",
+  "tbx_upload_gpx_btn_label": "",
   "tbx_upload_kml_btn_label": "Zone du KML",
   "tbx_volume_height_label": "Hauteur",
   "tbx_volume_hint": "Appuyez sur le bouton 'Modifier' pour changer la hauteur ou la position du volume",

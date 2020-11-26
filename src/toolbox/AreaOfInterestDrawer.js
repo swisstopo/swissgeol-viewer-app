@@ -2,6 +2,7 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
+import GpxDataSource from '../GpxDataSource.js';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {getMeasurements} from '../utils.js';
@@ -15,7 +16,7 @@ import {
   DEFAULT_VOLUME_HEIGHT_LIMITS,
   AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR
 } from '../constants.js';
-import {updateColor, cleanupUploadedEntity, getUploadedAreaType} from './helpers.js';
+import {updateColor, cleanupUploadedEntity, getUploadedEntityType} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -30,6 +31,7 @@ import {showMessage} from '../message';
 import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {DEFAULT_AOI_VOLUME_COLOR} from '../constants';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -294,7 +296,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       entities.forEach((ent, index) => {
         const exists = this.interestAreasDataSource.entities.getById(ent.id);
         if (!exists) {
-          const type = getUploadedAreaType(ent);
+          const type = getUploadedEntityType(ent);
           if (type) {
             atLeastOneValid = true;
             ent = cleanupUploadedEntity(ent);
@@ -323,6 +325,37 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       } else {
         this.viewer.zoomTo(entities);
       }
+    }
+  }
+
+  async uploadGpx_(evt) {
+    const file = evt.target ? evt.target.files[0] : null;
+    if (file) {
+      const gpxDataSource = await GpxDataSource.load(file, {
+        clampToGround: true
+      });
+      const entities = gpxDataSource.entities.values;
+      entities.forEach(entity => {
+        if (!this.interestAreasDataSource.entities.getById(entity.id)) {
+          const type = getUploadedEntityType(entity);
+          entity = cleanupUploadedEntity(entity);
+
+          if (type === 'point') {
+            entity.billboard = {
+              heightReference: HeightReference.CLAMP_TO_GROUND,
+              image: `./images/${AOI_POINT_SYMBOLS[0]}`,
+              color: Color.GRAY,
+              scale: 0.5,
+              verticalOrigin: VerticalOrigin.BOTTOM,
+              disableDepthTestDistance: 0
+            };
+          }
+          entity.name = entity.name ? `${entity.name}` : `${gpxDataSource.name}`;
+          entity.properties = this.getAreaProperties(entity, type);
+          updateColor(entity, false);
+          this.interestAreasDataSource.entities.add(entity);
+        }
+      });
     }
   }
 
