@@ -23,6 +23,7 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import {showWarning} from '../message';
 
 const WELCOME_PANEL = 'welcome-panel';
+const CATALOG_PANEL = 'catalog-panel';
 const TOOLBOX = 'ngm-toolbox';
 
 class LeftSideBar extends I18nMixin(LitElement) {
@@ -34,6 +35,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
       hideWelcome: {type: Boolean},
+      hideCatalog: {type: Boolean},
       mapChooser: {type: Function},
       authenticated: {type: Boolean},
       globeQueueLength_: {type: Number},
@@ -64,12 +66,12 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
       </div>
 
-      <div class="ui styled accordion">
-        <div class="title ngmlightgrey active">
+      <div class="ui styled accordion" id="${CATALOG_PANEL}">
+        <div class="title ngmlightgrey ${!this.hideCatalog ? 'active' : ''}">
           <i class="dropdown icon"></i>
           ${i18next.t('lyr_geocatalog_label')}
         </div>
-        <div class="content ngm-layer-content active">
+        <div class="content ngm-layer-content ${!this.hideCatalog ? 'active' : ''}">
           <ngm-catalog
             .layers=${this.catalogLayers}
             .authenticated=${this.authenticated}
@@ -361,10 +363,17 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   accordionFactory(element) {
+    console.log(element, element.id);
     switch (element.id) {
       case WELCOME_PANEL: {
         accordion(element, {
           onChange: () => this.dispatchEvent(new CustomEvent('welcome_panel_changed'))
+        });
+        break;
+      }
+      case CATALOG_PANEL: {
+        accordion(element, {
+          onChange: () => this.dispatchEvent(new CustomEvent('catalog_panel_changed'))
         });
         break;
       }

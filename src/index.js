@@ -158,6 +158,9 @@ const onStep2Finished = () => {
   sideBar.hideWelcome = localStorageController.hideWelcomeValue;
   sideBar.addEventListener('welcome_panel_changed', localStorageController.updateWelcomePanelState);
 
+  sideBar.hideCatalog = localStorageController.hideCatalogValue;
+  sideBar.addEventListener('catalog_panel_changed', localStorageController.toggleCatalogState);
+
   const reviewWindowElement = document.querySelector('ngm-review-window');
   reviewWindowElement.hideReviewWindow = localStorageController.hideReviewWindowValue;
   reviewWindowElement.addEventListener('review_window_changed', localStorageController.updateReviewWindowState);
