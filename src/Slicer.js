@@ -24,6 +24,7 @@ import {SLICE_ARROW_ICONS} from './constants';
 
 
 const PLANE_HEIGHT = 15000;
+const HALF_PLANE_HEIGHT = PLANE_HEIGHT / 2;
 const PLANE_COLOR = Color.WHITE;
 const DEFAULT_SLICE_OPTIONS = {
   box: false,
@@ -52,6 +53,7 @@ export default class Slicer {
     this.planesCenterV = null;
     this.planesWidth = 0;
     this.planesHeight = 0;
+    this.planesAltitude = PLANE_HEIGHT;
 
     this.eventHandler = null;
     this.selectedPlane = null;
@@ -127,7 +129,7 @@ export default class Slicer {
       position: new CallbackProperty(this.centerUpdateFunction('horizontal'), false),
       plane: {
         plane: new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeHorizontalDown, 'horizontal'), false),
-        dimensions: new CallbackProperty(() => new Cartesian2(this.planesWidth, PLANE_HEIGHT), false),
+        dimensions: new CallbackProperty(() => new Cartesian2(this.planesWidth, this.planesAltitude), false),
         material: Color.WHITE.withAlpha(0.1),
         outline: true,
         outlineColor: PLANE_COLOR,
@@ -138,7 +140,7 @@ export default class Slicer {
       position: new CallbackProperty(this.centerUpdateFunction('vertical'), false),
       plane: {
         plane: new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeVerticalLeft, 'vertical'), false),
-        dimensions: new CallbackProperty(() => new Cartesian2(this.planesHeight, PLANE_HEIGHT), false),
+        dimensions: new CallbackProperty(() => new Cartesian2(this.planesHeight, this.planesAltitude), false),
         material: Color.WHITE.withAlpha(0.1),
         outline: true,
         outlineColor: PLANE_COLOR,
@@ -358,6 +360,13 @@ export default class Slicer {
         const distanceY = movement.endPosition.y - movement.startPosition.y;
         const target = distanceY * pixelSize;
         type.includes('down') ? this.targetDown += target : this.targetUp -= target;
+        this.planesAltitude = this.targetDown + this.targetUp;
+        const cartH = Cartographic.fromCartesian(this.planesCenterH);
+        const cartV = Cartographic.fromCartesian(this.planesCenterV);
+        const height = -this.targetDown + this.planesAltitude / 2;
+        cartH.height = cartV.height = height;
+        this.planesCenterH = Cartographic.toCartesian(cartH);
+        this.planesCenterV = Cartographic.toCartesian(cartV);
       }
     } else {
       this.highlightArrow(movement.endPosition);
@@ -435,12 +444,13 @@ export default class Slicer {
     const yDiffSouthwest = yDiffNortheast;
     this.planesWidth = xDiffNortheast + xDiffSouthwest;
     this.planesHeight = yDiffNortheast + yDiffSouthwest;
+    this.planesAltitude = PLANE_HEIGHT;
 
     this.targetYNortheast = yDiffNortheast;
     this.targetXNortheast = xDiffNortheast;
     this.targetYSouthwest = yDiffSouthwest;
     this.targetXSouthwest = xDiffSouthwest;
-    this.targetDown = planesCenter.height + PLANE_HEIGHT / 2;
+    this.targetDown = planesCenter.height + this.planesAltitude / 2;
     this.targetUp = this.targetDown;
     this.planesCenter = Cartographic.toCartesian(planesCenter);
     this.planesCenterH = this.planesCenter;
@@ -507,27 +517,24 @@ export default class Slicer {
         viewCenterLv95 = radiansToLv95([viewCenterCart.longitude, viewCenterCart.latitude]);
       }
 
-      let height = PLANE_HEIGHT / 2;
-      if (this.viewer.scene.cameraUnderground) {
-        height = -height;
-      }
+      let height = this.viewer.scene.cameraUnderground ? -this.targetDown : this.targetUp;
       const negate = type.includes('northeast') ? 1 : -1;
       const offset = 5000;
+      const horizontalMin = lv95Center[0] - this.planesWidth / 2 + offset;
+      const horizontalMax = lv95Center[0] + this.planesWidth / 2 - offset;
+      const verticalMin = lv95Center[1] - this.planesHeight / 2 + offset;
+      const verticalMax = lv95Center[1] + this.planesHeight / 2 - offset;
       let lon, lat;
       if (type.includes('horizontal')) {
-        const horizontalMin = lv95Center[0] - this.planesWidth / 2 + offset;
-        const horizontalMax = lv95Center[0] + this.planesWidth / 2 - offset;
         lon = applyLimits(viewCenterLv95[0], horizontalMin, horizontalMax);
         lat = lv95Center[1] + this.planesHeight / 2 * negate;
       } else if (type.includes('vertical')) {
-        const verticalMin = lv95Center[1] - this.planesHeight / 2 + offset;
-        const varticalMax = lv95Center[1] + this.planesHeight / 2 - offset;
-        lat = applyLimits(viewCenterLv95[1], verticalMin, varticalMax);
+        lat = applyLimits(viewCenterLv95[1], verticalMin, verticalMax);
         lon = lv95Center[0] + this.planesWidth / 2 * negate;
       } else {
         lon = lv95Center[0] - this.planesWidth / 2;
         lat = lv95Center[1] - this.planesHeight / 2;
-        type.includes('down') ? height -= this.targetDown + PLANE_HEIGHT / 2 : height += this.targetUp - PLANE_HEIGHT / 2;
+        type.includes('down') ? height = -this.targetDown : height = this.targetUp;
       }
       const degCenter = lv95ToDegrees([lon, lat]);
       return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
@@ -538,8 +545,8 @@ export default class Slicer {
     const navigationIconTemplate = {
       model: {
         minimumPixelSize: 64,
-        scale: 5000,
-        maximumScale: 25000,
+        scale: 3000,
+        maximumScale: 10000,
         shadowMode: ShadowMode.DISABLED,
         colorBlendMode: ColorBlendMode.MIX,
         color: PLANE_COLOR
