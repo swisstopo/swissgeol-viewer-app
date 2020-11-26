@@ -115,7 +115,7 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 105125,
+          assetId: 198337,
           label: t('lyr_boreholes_public_label'),
           layer: 'boreholes',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
