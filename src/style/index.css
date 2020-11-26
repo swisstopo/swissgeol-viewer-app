@@ -339,6 +339,10 @@ ngm-slicer {
   flex-direction: column;
 }
 
+.layerloader {
+  line-height: 1rem;
+}
+
 .small_load_counter {
   font-size: 0.5rem;
   vertical-align: bottom;
