@@ -4,20 +4,6 @@ ngm-map-configuration {
   align-items: center;
 }
 
-ngm-map-configuration > .ui.segment {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 5px;
-  padding: 2px;
-  border: 1px solid lightgrey;
-}
-
-ngm-map-configuration > .ui.segment .ui.slider {
-  padding: 2px;
-  margin-left: 5px;
-}
-
 ngm-map-configuration > div {
   width: 253px;
 }
