@@ -23,6 +23,7 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import {showWarning} from '../message';
 
 const WELCOME_PANEL = 'welcome-panel';
+const CATALOG_PANEL = 'catalog-panel';
 const TOOLBOX = 'ngm-toolbox';
 
 class LeftSideBar extends I18nMixin(LitElement) {
@@ -34,8 +35,10 @@ class LeftSideBar extends I18nMixin(LitElement) {
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
       hideWelcome: {type: Boolean},
+      hideCatalog: {type: Boolean},
       mapChooser: {type: Function},
       authenticated: {type: Boolean},
+      globeQueueLength_: {type: Number},
     };
   }
 
@@ -63,12 +66,12 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
       </div>
 
-      <div class="ui styled accordion">
-        <div class="title ngmlightgrey active">
+      <div class="ui styled accordion" id="${CATALOG_PANEL}">
+        <div class="title ngmlightgrey ${!this.hideCatalog ? 'active' : ''}">
           <i class="dropdown icon"></i>
           ${i18next.t('lyr_geocatalog_label')}
         </div>
-        <div class="content ngm-layer-content active">
+        <div class="content ngm-layer-content ${!this.hideCatalog ? 'active' : ''}">
           <ngm-catalog
             .layers=${this.catalogLayers}
             .authenticated=${this.authenticated}
@@ -92,7 +95,12 @@ class LeftSideBar extends I18nMixin(LitElement) {
             .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(evt.detail)}>
           </ngm-layers>
-          <h4 class="ui horizontal divider ngm-background-divider">${i18next.t('dtd_background_map_label')}</h4>
+          <h4 class="ui horizontal divider ngm-background-divider">
+            ${i18next.t('dtd_background_map_label')}
+            <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
+              <span class="small_load_counter">${this.globeQueueLength_}</span>
+            </div>
+          </h4>
            <ngm-map-configuration .viewer=${this.viewer} .mapChooser=${this.mapChooser}></ngm-map-configuration>
         </div>
       </div>
@@ -211,6 +219,9 @@ class LeftSideBar extends I18nMixin(LitElement) {
         this.catalogLayers = [...defaultLayerTree];
         this.initializeActiveLayers();
       }
+      this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(queueLength => {
+        this.globeQueueLength_ = queueLength;
+      });
     }
     if (this.searchedFeature) {
       this.queryManager.selectTile(this.searchedFeature);
@@ -220,7 +231,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   updated(changedProperties) {
-    if (!this.accordionInited) {
+    if (this.viewer && !this.accordionInited) {
       this.initBarAccordions();
     }
 
@@ -352,10 +363,17 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   accordionFactory(element) {
+    console.log(element, element.id);
     switch (element.id) {
       case WELCOME_PANEL: {
         accordion(element, {
           onChange: () => this.dispatchEvent(new CustomEvent('welcome_panel_changed'))
+        });
+        break;
+      }
+      case CATALOG_PANEL: {
+        accordion(element, {
+          onChange: () => this.dispatchEvent(new CustomEvent('catalog_panel_changed'))
         });
         break;
       }

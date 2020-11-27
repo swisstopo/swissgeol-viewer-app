@@ -11,6 +11,7 @@ class NgmLoadingMask extends LitElement {
       active: {type: Boolean},
       step: {type: Number},
       total: {type: Number},
+      message: {type: String},
     };
   }
 
@@ -20,7 +21,7 @@ class NgmLoadingMask extends LitElement {
     this.active = true;
     this.step = 0;
     this.total = 3;
-
+    this.message = '';
     this.progress = null;
   }
 
@@ -40,6 +41,7 @@ class NgmLoadingMask extends LitElement {
       <div class="ui ${classMap({active: this.active})} inverted dimmer">
         <div class="ui blue tiny progress sliding ${classMap({indeterminate: this.step === 0})}">
           <div class="bar"></div>
+          <div class="label">${this.message}</div>
         </div>
       </div>
     `;

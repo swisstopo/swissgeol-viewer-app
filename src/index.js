@@ -40,7 +40,6 @@ initSentry();
 setupI18n();
 
 const viewer = setupViewer(document.querySelector('#cesium'));
-const mapChooser = setupBaseLayers(viewer);
 
 const loadingMask = document.querySelector('ngm-loading-mask');
 
@@ -66,34 +65,24 @@ async function zoomTo(config) {
   }
 }
 
-// Temporarily increasing the maximum screen space error to load low LOD tiles.
 /**
  * @type {import('cesium/Source/Scene/Scene.js').default}
  */
 const scene = viewer.scene;
+
 /**
  * @type {import('cesium/Source/Scene/Globe.js').default}
  */
 const globe = scene.globe;
 
+// Temporarily increasing the maximum screen space error to load low LOD tiles.
 const searchParams = new URLSearchParams(document.location.search);
-globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') || '10000');
+globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') || '2000');
 
 // setup auth component
 const auth = document.querySelector('ngm-auth');
 auth.endpoint = 'https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize';
 auth.clientId = '5k1mgef7ggiremt415eecn95ki';
-
-
-const slicer = new Slicer(viewer);
-
-// setup web components
-const sideBar = document.querySelector('ngm-left-side-bar');
-sideBar.viewer = viewer;
-sideBar.zoomTo = zoomTo;
-sideBar.authenticated = !!auth.user;
-auth.addEventListener('refresh', (evt) => sideBar.authenticated = evt.detail.authenticated);
-
 
 const onStep1Finished = () => {
   let sse = 2;
@@ -107,12 +96,39 @@ const onStep1Finished = () => {
 };
 
 const onStep2Finished = () => {
-  addMantelEllipsoid(viewer);
-  setupSearch(viewer, document.querySelector('ga-search'), sideBar);
   loadingMask.active = false;
   const loadingTime = performance.now() / 1000;
   console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
   document.querySelector('ngm-slow-loading').style.display = 'none';
+
+  const slicer = new Slicer(viewer);
+
+  // setup web components
+  const sideBar = document.querySelector('ngm-left-side-bar');
+  sideBar.zoomTo = zoomTo;
+
+  const mapChooser = setupBaseLayers(viewer);
+
+  sideBar.viewer = viewer;
+  sideBar.mapChooser = mapChooser;
+  sideBar.addEventListener('layeradded', (evt) => {
+    if (slicer && slicer.active) {
+      const layer = evt.detail.layer;
+      if (layer && layer.promise) {
+        slicer.applyClippingPlanesToTileset(layer.promise);
+      }
+    }
+  });
+
+  const widgets = document.querySelector('ngm-navigation-widgets');
+  widgets.viewer = viewer;
+  widgets.slicer = slicer;
+
+  sideBar.authenticated = !!auth.user;
+  auth.addEventListener('refresh', (evt) => sideBar.authenticated = evt.detail.authenticated);
+
+  addMantelEllipsoid(viewer);
+  setupSearch(viewer, document.querySelector('ga-search'), sideBar);
 
   const localStorageController = new LocalStorageController();
 
@@ -130,15 +146,20 @@ const onStep2Finished = () => {
     showMessage(i18next.t('sentry_message'), options);
   }
 
-  const aoiElement = document.querySelector('ngm-aoi-drawer');
-  aoiElement.slicer = slicer;
-  aoiElement.addStoredAreas(localStorageController.getStoredAoi());
-  aoiElement.addEventListener('aoi_list_changed', evt =>
-    localStorageController.setAoiInStorage(evt.detail.entities));
+  // Ugly hack: wait for the ngm-left-bar to be initialized
+  setTimeout(() => {
+    const aoiElement = document.querySelector('ngm-aoi-drawer');
+    aoiElement.slicer = slicer;
+    aoiElement.addStoredAreas(localStorageController.getStoredAoi());
+    aoiElement.addEventListener('aoi_list_changed', evt =>
+      localStorageController.setAoiInStorage(evt.detail.entities));
+  });
 
-  const sideBarElement = document.querySelector('ngm-left-side-bar');
-  sideBarElement.hideWelcome = localStorageController.hideWelcomeValue;
-  sideBarElement.addEventListener('welcome_panel_changed', localStorageController.updateWelcomePanelState);
+  sideBar.hideWelcome = localStorageController.hideWelcomeValue;
+  sideBar.addEventListener('welcome_panel_changed', localStorageController.updateWelcomePanelState);
+
+  sideBar.hideCatalog = localStorageController.hideCatalogValue;
+  sideBar.addEventListener('catalog_panel_changed', localStorageController.toggleCatalogState);
 
   const reviewWindowElement = document.querySelector('ngm-review-window');
   reviewWindowElement.hideReviewWindow = localStorageController.hideReviewWindowValue;
@@ -148,7 +169,8 @@ const onStep2Finished = () => {
 };
 
 let currentStep = 1;
-const unlisten = globe.tileLoadProgressEvent.addEventListener(() => {
+const unlisten = globe.tileLoadProgressEvent.addEventListener(queueLength => {
+  loadingMask.message = queueLength;
   if (currentStep === 1 && globe.tilesLoaded) {
     currentStep = 2;
     loadingMask.step = currentStep;
@@ -182,20 +204,8 @@ if (!zoomToPosition) {
 
 viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
-const widgets = document.querySelector('ngm-navigation-widgets');
-widgets.viewer = viewer;
-widgets.slicer = slicer;
-sideBar.addEventListener('layeradded', (evt) => {
-  if (slicer && slicer.active) {
-    const layer = evt.detail.layer;
-    if (layer && layer.promise) {
-      slicer.applyClippingPlanesToTileset(layer.promise);
-    }
-  }
-});
 
 document.querySelector('ngm-feature-height').viewer = viewer;
-document.querySelector('ngm-left-side-bar').mapChooser = mapChooser;
 
 i18next.on('languageChanged', (lang) => {
   document.querySelector('#ngm-help-btn').href =

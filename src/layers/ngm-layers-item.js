@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import {html, LitElement} from 'lit-element';
 import {I18nMixin} from '../i18n.js';
-import {classMap} from 'lit-html/directives/class-map';
+import {classMap} from 'lit-html/directives/class-map.js';
 import $ from '../jquery';
 
 
@@ -11,6 +11,8 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
     return {
       actions: {type: Object},
       config: {type: Object},
+      label: {type: String},
+      loading: {type: Number},
       upClassMap: {type: Object},
       downClassMap: {type: Object},
     };
@@ -24,6 +26,23 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
       step: 0.05,
       onMove: (val) => this.changeTransparency(val)
     });
+  }
+
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.loading = 0;
+    const callback = (pending, processing) => {
+      this.loading = pending + processing;
+    };
+    this.loadProgressRemover_ = this.actions.listenForEvent(this.config, 'loadProgress', callback);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.loadProgressRemover_) {
+      this.loadProgressRemover_();
+    }
   }
 
   createRenderRoot() {
@@ -107,7 +126,10 @@ export class LayerTreeItem extends I18nMixin(LitElement) {
             .checked=${this.config.visible}
             @change=${this.changeVisibility}>
           <label @click=${this.onLabelClicked}>
-            <i class=${this.config.restricted ? 'lock icon' : ''}></i>${i18next.t(this.config.label)}
+            <i class=${this.config.restricted ? 'lock icon' : ''}></i>${i18next.t(this.label)}
+            <div class="ui ${this.loading > 0 ? 'active' : ''} inline mini loader layerloader">
+              <span class="small_load_counter">${this.loading}</span>
+            </div>
           </label>
         </div>
         ${this.buttons}
