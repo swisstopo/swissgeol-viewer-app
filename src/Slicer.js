@@ -21,10 +21,10 @@ import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
 import Transforms from 'cesium/Source/Core/Transforms';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import {SLICE_ARROW_ICONS} from './constants';
+import JulianDate from 'cesium/Source/Core/JulianDate';
 
 
-const PLANE_HEIGHT = 15000;
-const HALF_PLANE_HEIGHT = PLANE_HEIGHT / 2;
+const DEFAULT_BOX_HEIGHT = 15000;
 const PLANE_COLOR = Color.WHITE;
 const DEFAULT_SLICE_OPTIONS = {
   box: false,
@@ -51,9 +51,9 @@ export default class Slicer {
     this.planesCenter = null;
     this.planesCenterH = null;
     this.planesCenterV = null;
-    this.planesWidth = 0;
-    this.planesHeight = 0;
-    this.planesAltitude = PLANE_HEIGHT;
+    this.planesHorizontalLength = 0;
+    this.planesVerticalLength = 0;
+    this.boxHeight = DEFAULT_BOX_HEIGHT;
 
     this.eventHandler = null;
     this.selectedPlane = null;
@@ -63,6 +63,7 @@ export default class Slicer {
     this.targetXNortheast = 0.0;
 
     this.offsets = {};
+    this.julianDate = new JulianDate();
   }
 
   set active(value) {
@@ -124,15 +125,18 @@ export default class Slicer {
     this.planeVerticalRight = new ClippingPlane(new Cartesian3(-1.0, 0.0, 0.0), 0.0);
     this.planeDown = new ClippingPlane(new Cartesian3(0.0, 0, 1.0), 0.0);
     this.planeUp = new ClippingPlane(new Cartesian3(0.0, 0, -1.0), 0.0);
+    const planeStyle = {
+      material: Color.WHITE.withAlpha(0.1),
+      outline: true,
+      outlineColor: PLANE_COLOR,
+    };
 
     const horizontalEntityTemplate = {
       position: new CallbackProperty(this.centerUpdateFunction('horizontal'), false),
       plane: {
         plane: new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeHorizontalDown, 'horizontal'), false),
-        dimensions: new CallbackProperty(() => new Cartesian2(this.planesWidth, this.planesAltitude), false),
-        material: Color.WHITE.withAlpha(0.1),
-        outline: true,
-        outlineColor: PLANE_COLOR,
+        dimensions: new CallbackProperty(() => new Cartesian2(this.planesHorizontalLength, this.boxHeight), false),
+        ...planeStyle
       }
     };
 
@@ -140,10 +144,8 @@ export default class Slicer {
       position: new CallbackProperty(this.centerUpdateFunction('vertical'), false),
       plane: {
         plane: new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeVerticalLeft, 'vertical'), false),
-        dimensions: new CallbackProperty(() => new Cartesian2(this.planesHeight, this.planesAltitude), false),
-        material: Color.WHITE.withAlpha(0.1),
-        outline: true,
-        outlineColor: PLANE_COLOR,
+        dimensions: new CallbackProperty(() => new Cartesian2(this.planesVerticalLength, this.boxHeight), false),
+        ...planeStyle
       }
     };
 
@@ -151,10 +153,8 @@ export default class Slicer {
       position: new CallbackProperty(this.centerUpdateFunction('altitude'), false),
       plane: {
         plane: new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeDown, 'altitude-down'), false),
-        dimensions: new CallbackProperty(() => new Cartesian2(this.planesWidth, this.planesHeight), false),
-        material: Color.WHITE.withAlpha(0.1),
-        outline: true,
-        outlineColor: PLANE_COLOR,
+        dimensions: new CallbackProperty(() => new Cartesian2(this.planesHorizontalLength, this.planesVerticalLength), false),
+        ...planeStyle
       }
     };
     this.planeEntitDown = new Entity(zEntityTemplate);
@@ -183,7 +183,7 @@ export default class Slicer {
 
     this.createMoveArrows();
 
-    this.viewer.scene.globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(new Date()));
+    this.viewer.scene.globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(this.julianDate));
 
     executeForAllPrimitives(this.viewer, (primitive) => this.addBoxClippingPlanes(primitive));
 
@@ -306,67 +306,65 @@ export default class Slicer {
   onMouseMove(movement) {
     if (this.selectedPlane) {
       const scene = this.viewer.scene;
-      const intersectionStart = scene.camera.pickEllipsoid(movement.startPosition);
-      const intersectionEnd = scene.camera.pickEllipsoid(movement.endPosition);
-
-      if (!intersectionStart || !intersectionEnd) return;
-      let distance = Cartesian3.distance(intersectionStart, intersectionEnd);
-      const diff = Cartesian3.subtract(intersectionEnd, intersectionStart, new Cartesian3());
-
       const type = this.selectedPlane.properties.type.getValue();
+      const centerHCartographic = Cartographic.fromCartesian(this.planesCenterH);
+      const centerVCartographic = Cartographic.fromCartesian(this.planesCenterV);
 
       // depends on selected plane type calculates plane distance
       // also updates plane entities center and dimensions (depends on type) to show planes as a box
+      if (type.includes('altitude')) {
+        const entity = type.includes('down') ? this.planeEntitDown : this.planeEntitUp;
+        const boundingSphere = new BoundingSphere(entity.position.getValue(this.julianDate));
+        const pixelSize = scene.camera.getPixelSize(boundingSphere, scene.drawingBufferWidth, scene.drawingBufferHeight);
+        const target = (movement.endPosition.y - movement.startPosition.y) * pixelSize;
+        type.includes('down') ? this.targetDown += target : this.targetUp -= target;
+        this.boxHeight = this.targetDown + this.targetUp;
+        const height = -this.targetDown + this.boxHeight / 2;
+        centerHCartographic.height = centerVCartographic.height = height;
+        this.planesCenterH = Cartographic.toCartesian(centerHCartographic);
+        this.planesCenterV = Cartographic.toCartesian(centerVCartographic);
+        return;
+      }
+
+      const intersectionStart = scene.camera.pickEllipsoid(movement.startPosition);
+      const intersectionEnd = scene.camera.pickEllipsoid(movement.endPosition);
+      if (!intersectionStart || !intersectionEnd) return;
+      let distance = Cartesian3.distance(intersectionStart, intersectionEnd);
+      const diff = Cartesian3.subtract(intersectionEnd, intersectionStart, new Cartesian3());
       if (type.includes('horizontal')) {
-        const cartCenter = Cartographic.fromCartesian(this.planesCenterV);
-        const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
+        const lv95Center = radiansToLv95([centerVCartographic.longitude, centerVCartographic.latitude]);
         if (type.includes('northeast')) {
           const negative = (diff.x + diff.y) > 0 ? -1 : 1;
           distance = distance * negative;
           lv95Center[1] = lv95Center[1] + distance / 2;
           this.targetYNortheast += distance;
-          this.planesHeight = this.planeHorizontalDown.distance + this.targetYNortheast;
+          this.planesVerticalLength = this.planeHorizontalDown.distance + this.targetYNortheast;
         } else {
           const negative = (diff.x + diff.y) > 0 ? 1 : -1;
           distance = distance * negative;
           lv95Center[1] = lv95Center[1] - distance / 2;
           this.targetYSouthwest += distance;
-          this.planesHeight = this.planeHorizontalUp.distance + this.targetYSouthwest;
+          this.planesVerticalLength = this.planeHorizontalUp.distance + this.targetYSouthwest;
         }
         const degCenter = lv95ToDegrees(lv95Center);
         this.planesCenterV = Cartesian3.fromDegrees(degCenter[0], degCenter[1]);
       } else if (type.includes('vertical')) {
-        const cartCenter = Cartographic.fromCartesian(this.planesCenterH);
-        const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
+        const lv95Center = radiansToLv95([centerHCartographic.longitude, centerHCartographic.latitude]);
         if (type.includes('northeast')) {
           const negative = (diff.x + diff.y) < 0 ? -1 : 1;
           distance = distance * negative;
           lv95Center[0] = lv95Center[0] + distance / 2;
           this.targetXNortheast += distance;
-          this.planesWidth = this.planeVerticalLeft.distance + this.targetXNortheast;
+          this.planesHorizontalLength = this.planeVerticalLeft.distance + this.targetXNortheast;
         } else {
           const negative = (diff.x + diff.y) < 0 ? 1 : -1;
           distance = distance * negative;
           lv95Center[0] = lv95Center[0] - distance / 2;
           this.targetXSouthwest += distance;
-          this.planesWidth = this.planeVerticalRight.distance + this.targetXSouthwest;
+          this.planesHorizontalLength = this.planeVerticalRight.distance + this.targetXSouthwest;
         }
         const degCenter = lv95ToDegrees(lv95Center);
         this.planesCenterH = Cartesian3.fromDegrees(degCenter[0], degCenter[1]);
-      } else {
-        const entity = type.includes('down') ? this.planeEntitDown : this.planeEntitUp;
-        const bs = new BoundingSphere(entity.position.getValue(new Date()));
-        const pixelSize = scene.camera.getPixelSize(bs, scene.drawingBufferWidth, scene.drawingBufferHeight);
-        const distanceY = movement.endPosition.y - movement.startPosition.y;
-        const target = distanceY * pixelSize;
-        type.includes('down') ? this.targetDown += target : this.targetUp -= target;
-        this.planesAltitude = this.targetDown + this.targetUp;
-        const cartH = Cartographic.fromCartesian(this.planesCenterH);
-        const cartV = Cartographic.fromCartesian(this.planesCenterV);
-        const height = -this.targetDown + this.planesAltitude / 2;
-        cartH.height = cartV.height = height;
-        this.planesCenterH = Cartographic.toCartesian(cartH);
-        this.planesCenterV = Cartographic.toCartesian(cartV);
       }
     } else {
       this.highlightArrow(movement.endPosition);
@@ -381,20 +379,10 @@ export default class Slicer {
     return () => {
       if (type.includes('altitude')) {
         plane.distance = type.includes('down') ? this.targetDown : this.targetUp;
-        return plane;
-      }
-      if (type.includes('horizontal')) {
-        if (type.includes('northeast')) {
-          plane.distance = this.targetYNortheast;
-        } else {
-          plane.distance = this.targetYSouthwest;
-        }
-      } else {
-        if (type.includes('northeast')) {
-          plane.distance = this.targetXNortheast;
-        } else {
-          plane.distance = this.targetXSouthwest;
-        }
+      } else if (type.includes('horizontal')) {
+        plane.distance = type.includes('northeast') ? this.targetYNortheast : this.targetYSouthwest;
+      } else if (type.includes('vertical')) {
+        plane.distance = type.includes('northeast') ? this.targetXNortheast : this.targetXSouthwest;
       }
       return plane;
     };
@@ -442,15 +430,15 @@ export default class Slicer {
     const xDiffSouthwest = xDiffNortheast;
     const yDiffNortheast = lv95SecondPosition[1] - lv95Center[1];
     const yDiffSouthwest = yDiffNortheast;
-    this.planesWidth = xDiffNortheast + xDiffSouthwest;
-    this.planesHeight = yDiffNortheast + yDiffSouthwest;
-    this.planesAltitude = PLANE_HEIGHT;
+    this.planesHorizontalLength = xDiffNortheast + xDiffSouthwest;
+    this.planesVerticalLength = yDiffNortheast + yDiffSouthwest;
+    this.boxHeight = DEFAULT_BOX_HEIGHT;
 
     this.targetYNortheast = yDiffNortheast;
     this.targetXNortheast = xDiffNortheast;
     this.targetYSouthwest = yDiffSouthwest;
     this.targetXSouthwest = xDiffSouthwest;
-    this.targetDown = planesCenter.height + this.planesAltitude / 2;
+    this.targetDown = planesCenter.height + this.boxHeight / 2;
     this.targetUp = this.targetDown;
     this.planesCenter = Cartographic.toCartesian(planesCenter);
     this.planesCenterH = this.planesCenter;
@@ -510,31 +498,34 @@ export default class Slicer {
       const cartCenterV = Cartographic.fromCartesian(this.planesCenterV);
       const lv95Center = radiansToLv95([cartCenterH.longitude, cartCenterV.latitude]);
 
-      let viewCenterLv95 = lv95Center;
-      const viewCenter = pickCenterOnEllipsoid(this.viewer.scene);
-      if (viewCenter) {
-        const viewCenterCart = Cartographic.fromCartesian(viewCenter);
-        viewCenterLv95 = radiansToLv95([viewCenterCart.longitude, viewCenterCart.latitude]);
-      }
-
-      let height = this.viewer.scene.cameraUnderground ? -this.targetDown : this.targetUp;
-      const negate = type.includes('northeast') ? 1 : -1;
-      const offset = 5000;
-      const horizontalMin = lv95Center[0] - this.planesWidth / 2 + offset;
-      const horizontalMax = lv95Center[0] + this.planesWidth / 2 - offset;
-      const verticalMin = lv95Center[1] - this.planesHeight / 2 + offset;
-      const verticalMax = lv95Center[1] + this.planesHeight / 2 - offset;
-      let lon, lat;
-      if (type.includes('horizontal')) {
-        lon = applyLimits(viewCenterLv95[0], horizontalMin, horizontalMax);
-        lat = lv95Center[1] + this.planesHeight / 2 * negate;
-      } else if (type.includes('vertical')) {
-        lat = applyLimits(viewCenterLv95[1], verticalMin, verticalMax);
-        lon = lv95Center[0] + this.planesWidth / 2 * negate;
-      } else {
-        lon = lv95Center[0] - this.planesWidth / 2;
-        lat = lv95Center[1] - this.planesHeight / 2;
+      let lon, lat, height;
+      const halfWidth = this.planesHorizontalLength / 2;
+      const halfHeight = this.planesVerticalLength / 2;
+      if (type.includes('altitude')) {
+        lon = lv95Center[0] - halfWidth;
+        lat = lv95Center[1] - halfHeight;
         type.includes('down') ? height = -this.targetDown : height = this.targetUp;
+      } else {
+        let viewCenterLv95 = lv95Center;
+        const viewCenter = pickCenterOnEllipsoid(this.viewer.scene);
+        if (viewCenter) {
+          const viewCenterCart = Cartographic.fromCartesian(viewCenter);
+          viewCenterLv95 = radiansToLv95([viewCenterCart.longitude, viewCenterCart.latitude]);
+        }
+        height = this.viewer.scene.cameraUnderground ? -this.targetDown : this.targetUp;
+        const negate = type.includes('northeast') ? 1 : -1;
+        const offset = 5000;
+        if (type.includes('horizontal')) {
+          const horizontalMin = lv95Center[0] - halfWidth + offset;
+          const horizontalMax = lv95Center[0] + halfWidth - offset;
+          lon = applyLimits(viewCenterLv95[0], horizontalMin, horizontalMax);
+          lat = lv95Center[1] + halfHeight * negate;
+        } else if (type.includes('vertical')) {
+          const verticalMin = lv95Center[1] - halfHeight + offset;
+          const verticalMax = lv95Center[1] + halfHeight - offset;
+          lat = applyLimits(viewCenterLv95[1], verticalMin, verticalMax);
+          lon = lv95Center[0] + halfWidth * negate;
+        }
       }
       const degCenter = lv95ToDegrees([lon, lat]);
       return Cartesian3.fromDegrees(degCenter[0], degCenter[1], height);
