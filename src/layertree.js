@@ -115,16 +115,16 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 105125,
+          assetId: 198337,
           label: t('lyr_boreholes_public_label'),
           layer: 'boreholes',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           visible: false,
           displayed: true,
-          propsOrder: ['XCOORD', 'YCOORD', 'ZCOORDB', 'ORIGNAME', 'NAMEPUB', 'SHORTNAME', 'BOHRTYP', 'GRUND',
-            'RESTRICTIO', 'TIEFEMD', 'DEPTHFROM', 'DEPTHTO', 'LAYERDESC', 'ORIGGEOL', 'LITHOLOGY', 'LITHOSTRAT',
-            'CHRONOSTR', 'TECTO', 'USCS1', 'USCS2', 'USCS3']
+          propsOrder: ['XCOORD', 'YCOORD', 'ZCOORDB', 'ORIGNAME', 'NAMEPUB', 'SHORTNAME', 'BOHREDAT', 'BOHRTYP',
+            'GRUND', 'RESTRICTIO', 'TIEFEMD', 'DEPTHFROM', 'DEPTHTO', 'LAYERDESC', 'ORIGGEOL', 'LITHOLOGY',
+            'LITHOSTRAT', 'CHRONOSTR', 'TECTO', 'USCS1', 'USCS2', 'USCS3']
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -136,7 +136,7 @@ const geo_base = {
           displayed: false,
           restricted: true,
           aws_s3_bucket: 'ngm-dev-authenticated-resources',
-          aws_s3_key: 'tiles/to_define/v1/tileset.json',
+          aws_s3_key: 'tiles/bh_private_20201117_00/tileset.json',
         },
       ]
     },
