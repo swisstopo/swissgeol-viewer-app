@@ -2,6 +2,7 @@ const LOCALSTORAGE_AOI_KEY = 'aoi';
 const LOCALSTORAGE_WELCOME_KEY = 'hideWelcome';
 const LOCALSTORAGE_SENTRY_KEY = 'sentryConfirmed';
 const LOCALSTORAGE_REVIEW_KEY = 'hideReviewWindow';
+const LOCALSTORAGE_CATALOG_KEY = 'hideCatalogWindow';
 
 export class LocalStorageController {
   get isSentryConfirmed() {
@@ -16,13 +17,22 @@ export class LocalStorageController {
     return localStorage.getItem(LOCALSTORAGE_REVIEW_KEY) === 'true';
   }
 
+  get hideCatalogValue() {
+    return localStorage.getItem(LOCALSTORAGE_CATALOG_KEY) === 'true';
+  }
+
   saveSentryConfirmation() {
     localStorage.setItem(LOCALSTORAGE_SENTRY_KEY, 'true');
   }
 
   updateWelcomePanelState() {
-    const newValue = !(localStorage.getItem(LOCALSTORAGE_WELCOME_KEY) === 'true');
+    const newValue = localStorage.getItem(LOCALSTORAGE_WELCOME_KEY) !== 'true';
     localStorage.setItem(LOCALSTORAGE_WELCOME_KEY, newValue);
+  }
+
+  toggleCatalogState() {
+    const newValue = localStorage.getItem(LOCALSTORAGE_CATALOG_KEY) !== 'true';
+    localStorage.setItem(LOCALSTORAGE_CATALOG_KEY, newValue);
   }
 
   getStoredAoi() {
@@ -38,7 +48,7 @@ export class LocalStorageController {
   }
 
   updateReviewWindowState() {
-    const newValue = !(localStorage.getItem(LOCALSTORAGE_REVIEW_KEY) === 'true');
+    const newValue = localStorage.getItem(LOCALSTORAGE_REVIEW_KEY) !== 'true';
     localStorage.setItem(LOCALSTORAGE_REVIEW_KEY, newValue);
   }
 }

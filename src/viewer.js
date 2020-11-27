@@ -199,7 +199,7 @@ export function setupViewer(container) {
   viewer.entities.add(fogShield); // hack to avoid black terrain/tilesets when transparency applied
 
   viewer.scene.postProcessStages.add(fog);
-  scene.postRender.addEventListener((scene) => {
+  scene.postRender.addEventListener(scene => {
     fog.enabled = scene.cameraUnderground;
     fogShield.show = scene.cameraUnderground;
   });
