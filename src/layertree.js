@@ -145,6 +145,18 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
+          assetId: 206085,
+          label: t('lyr_cross_section_ga25_pixel_label'),
+          layer: 'cross_section_ga25_pixel',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          visible: false,
+          displayed: true,
+          pickable: true,
+          zoomToBbox: true,
+          propsOrder: ['GA25_Nr', 'GA25_Blatt', 'Autoren', 'Massstab', 'Datei', 'PDF_Link']
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
           assetId: 68881,
           label: t('lyr_cross_section_ga25_label'),
           layer: 'cross_section',
