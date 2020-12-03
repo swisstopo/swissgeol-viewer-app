@@ -199,11 +199,16 @@ export function setupViewer(container) {
     fog.enabled = scene.cameraUnderground;
   });
 
-  if (searchParams.has('inspector')) {
+  const enableWireframe = searchParams.has('inspector_wireframe');
+  if (searchParams.has('inspector') || enableWireframe) {
     const div = document.createElement('div');
     div.id = 'divinspector';
     document.body.appendChild(div);
-    new CesiumInspector('divinspector', scene);
+    const inspector = new CesiumInspector('divinspector', scene);
+    window['cesiumInspector'] = inspector;
+    if (enableWireframe) {
+      inspector.viewModel.wireframe = true;
+    }
   }
   return viewer;
 }

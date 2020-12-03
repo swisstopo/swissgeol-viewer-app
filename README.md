@@ -39,6 +39,7 @@ A few URL parameters will modify the behaviour of the viewer:
 - `swissrectangle=false` do not restrict rendering to the Swiss rectangle
 - `norequestrendermode` disable the resource optimizations (will use 100% CPU)
 - `inspector` display the Cesium Inspector widget
+- `inspector_wireframe` enable the wireframe mode
 
 
 ## Notes
