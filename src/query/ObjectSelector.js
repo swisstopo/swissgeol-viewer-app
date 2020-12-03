@@ -30,7 +30,7 @@ export default class ObjectSelector {
 
   pickAttributes(clickPosition, pickedPosition, object) {
     this.unhighlight();
-    let attributes = null;
+    let attributes = {};
     if (!object) {
       const objects = this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
       object = objects[0];
@@ -42,7 +42,7 @@ export default class ObjectSelector {
       }
 
       if (object.getPropertyNames) {
-        attributes = extractPrimitiveAttributes(object);
+        attributes.properties = extractPrimitiveAttributes(object);
         attributes.zoom = () => {
           const boundingSphere = new BoundingSphere(pickedPosition, OBJECT_ZOOMTO_RADIUS);
           const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
