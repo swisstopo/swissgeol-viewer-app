@@ -43,6 +43,7 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
           ${Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => {
         switch (key) {
           case 'obj_info_website_label':
+          case 'PDF_Link':
             return html`
           <tr class="top aligned">
             <td class="key">${i18next.t(key)}</td>
