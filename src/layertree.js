@@ -150,10 +150,10 @@ const geo_base = {
           layer: 'cross_section_ga25_pixel',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           visible: false,
-          displayed: true,
+          displayed: false,
           pickable: true,
           zoomToBbox: true,
-          propsOrder: ['GA25_Nr', 'GA25_Blatt', 'Autoren', 'Massstab', 'Datei', 'PDF_Link']
+          propsOrder: ['ORIG_FID', 'GA25_Nr', 'GA25_Name', 'Autoren', 'Massstab', 'Datei', 'PDF_Link']
         },
         {
           type: LAYER_TYPES.tiles3d,
