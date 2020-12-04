@@ -26,7 +26,7 @@ export function cleanupUploadedEntity(entity) {
   return entity;
 }
 
-export function getUploadedAreaType(entity) {
+export function getUploadedEntityType(entity) {
   for (const geometry of CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD) {
     if (entity[geometry] !== undefined) {
       return geometry === 'polyline' ? 'line' : geometry;

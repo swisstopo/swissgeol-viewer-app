@@ -5,12 +5,13 @@ import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';
 
-const areaUploadInputId = 'areaUpload';
+const kmlUploadInputId = 'kmlUpload';
+const gpxUploadInputId = 'gpxUpload';
 
 export default function getTemplate() {
   return html`
     <label>${i18next.t('tbx_drawing_tools_label')}</label>
-    <div class="ui tiny fluid buttons ngm-aoi-buttons" ?hidden=${this.draw_.active && !this.draw_.entityForEdit}>
+    <div class="ui compact tiny buttons ngm-aoi-buttons" ?hidden=${this.draw_.active && !this.draw_.entityForEdit}>
         <button class="ui button"
                 data-tooltip=${i18next.t('tbx_add_point_btn_label')}
                 data-variation="mini"
@@ -39,14 +40,21 @@ export default function getTemplate() {
             <i class="vector square icon"></i>
         </button>
         <button class="ui button"
-                data-tooltip=${i18next.t('tbx_upload_btn_label')}
+                data-tooltip=${i18next.t('tbx_upload_kml_btn_label')}
+                data-variation="mini"
+                data-position="top center"
+                @click=${clickOnElement.bind(null, kmlUploadInputId)}>
+            <i class="file upload icon"></i>
+            <button class="ui button"
+                data-tooltip=${i18next.t('tbx_upload_gpx_btn_label')}
                 data-variation="mini"
                 data-position="top right"
-                @click=${clickOnElement.bind(null, areaUploadInputId)}>
+                @click=${clickOnElement.bind(null, gpxUploadInputId)}>
             <i class="file upload icon"></i>
         </button>
     </div>
-    <input id="${areaUploadInputId}" type='file' accept=".kml,.KML" hidden @change=${this.uploadArea_.bind(this)} />
+    <input id="${kmlUploadInputId}" type='file' accept=".kml,.KML" hidden @change=${this.uploadKml_.bind(this)} />
+    <input id="${gpxUploadInputId}" type='file' accept=".gpx,.GPX" hidden @change=${this.uploadGpx_.bind(this)} />
     <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.draw_.active || this.draw_.entityForEdit}>
         <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}</button>
         <button class="ui button ngm-help-btn"
