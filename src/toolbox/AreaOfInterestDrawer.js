@@ -350,7 +350,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
               disableDepthTestDistance: 0
             };
           }
-          entity.name = entity.name ? `${entity.name}` : `${gpxDataSource.name}`;
+          entity.name = entity.name || gpxDataSource.name;
           entity.properties = this.getAreaProperties(entity, type);
           updateColor(entity, false);
           this.interestAreasDataSource.entities.add(entity);
