@@ -8,7 +8,7 @@ import i18next from 'i18next';
 import {getMeasurements} from '../utils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 
-import {LitElement} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 
 import {
   AOI_DATASOURCE_NAME,
@@ -400,10 +400,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       attributes[i18next.t('obj_info_description_label')] = props.description;
     }
     if (props.image && props.image.length) {
-      attributes['obj_info_image_label'] = props.image;
+      attributes[i18next.t('obj_info_image_label')] = html`<img src="${props.image}" alt="${props.image}">`;
     }
     if (props.website && props.website.length) {
-      attributes['obj_info_website_label'] = props.website;
+      attributes[i18next.t('obj_info_website_label')] =
+        html`<a href="${props.website}" target="_blank" rel="noopener">${props.website}</a`;
     }
     return attributes;
   }
