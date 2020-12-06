@@ -331,6 +331,7 @@ export default class Slicer {
       if (!intersectionStart || !intersectionEnd) return;
       let distance = Cartesian3.distance(intersectionStart, intersectionEnd);
       const diff = Cartesian3.subtract(intersectionEnd, intersectionStart, new Cartesian3());
+      const height = -this.targetDown + this.boxHeight / 2;
       if (type.includes('horizontal')) {
         const lv95Center = radiansToLv95([centerVCartographic.longitude, centerVCartographic.latitude]);
         if (type.includes('northeast')) {
@@ -347,7 +348,8 @@ export default class Slicer {
           this.planesVerticalLength = this.planeHorizontalUp.distance + this.targetYSouthwest;
         }
         const degCenter = lv95ToDegrees(lv95Center);
-        this.planesCenterV = Cartesian3.fromDegrees(degCenter[0], degCenter[1]);
+        Cartographic.fromDegrees(degCenter[0], degCenter[1], height, centerVCartographic);
+        this.planesCenterV = Cartographic.toCartesian(centerVCartographic);
       } else if (type.includes('vertical')) {
         const lv95Center = radiansToLv95([centerHCartographic.longitude, centerHCartographic.latitude]);
         if (type.includes('northeast')) {
@@ -364,7 +366,8 @@ export default class Slicer {
           this.planesHorizontalLength = this.planeVerticalRight.distance + this.targetXSouthwest;
         }
         const degCenter = lv95ToDegrees(lv95Center);
-        this.planesCenterH = Cartesian3.fromDegrees(degCenter[0], degCenter[1]);
+        Cartographic.fromDegrees(degCenter[0], degCenter[1], height, centerHCartographic);
+        this.planesCenterH = Cartographic.toCartesian(centerHCartographic);
       }
     } else {
       this.highlightArrow(movement.endPosition);
