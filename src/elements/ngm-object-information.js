@@ -42,19 +42,11 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
         <tbody>
           ${Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => {
         switch (key) {
-          case 'obj_info_website_label':
           case 'PDF_Link':
             return html`
           <tr class="top aligned">
-            <td class="key">${i18next.t(key)}</td>
+            <td class="key">${i18next.t(`assets:${key}`)}</td>
             <td class="val"><a href="${value}" target="_blank" rel="noopener">${value}</a></td>
-          </tr>
-          `;
-          case 'obj_info_image_label':
-            return html`
-          <tr class="top aligned">
-            <td class="key">${i18next.t(key)}</td>
-            <td class="val"><img src="${value}" alt="${value}"></td>
           </tr>
           `;
           default:
