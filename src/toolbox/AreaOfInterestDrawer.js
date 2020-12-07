@@ -277,7 +277,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       evt.target.value = null;
       if (file.name.toLowerCase().endsWith('.kml')) {
         return this.uploadKml_(file);
-      } else if (file.name.toLowerCase().includes('.gpx')) {
+      } else if (file.name.toLowerCase().endsWith('.gpx')) {
         return this.uploadGpx_(file);
       } else {
         showWarning(i18next.t('tbx_unsupported_file_warning'));
