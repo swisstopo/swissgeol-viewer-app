@@ -271,92 +271,94 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.pickArea_(id);
   }
 
-  async uploadKml_(evt) {
+  async uploadFile_(evt) {
     const file = evt.target ? evt.target.files[0] : null;
     if (file) {
-      if (!file.name.toLowerCase().includes('.kml')) {
-        showWarning(i18next.t('tbx_unsupported_file_warning'));
-        evt.target.value = null;
-        return;
-      }
-      const kmlDataSource = await KmlDataSource.load(file,
-        {
-          camera: this.viewer.scene.camera,
-          canvas: this.viewer.scene.canvas,
-          clampToGround: true
-        });
       evt.target.value = null;
-
-      let entities = kmlDataSource.entities.values;
-      if (entities.length > 10) {
-        showWarning(i18next.t('tbx_kml_large_warning'));
-        entities = entities.slice(0, 10);
-      }
-      let atLeastOneValid = false;
-      entities.forEach((ent, index) => {
-        const exists = this.interestAreasDataSource.entities.getById(ent.id);
-        if (!exists) {
-          const type = getUploadedEntityType(ent);
-          if (type) {
-            atLeastOneValid = true;
-            ent = cleanupUploadedEntity(ent);
-            if (type === 'point') {
-              ent.point = {
-                pixelSize: 8,
-                scaleByDistance: new NearFarScalar(0, 1, 1, 1)
-              };
-            }
-            ent.name = ent.name ? `${ent.name}` : `${kmlDataSource.name}`;
-            ent.properties = this.getAreaProperties(ent, type);
-            if (ent.polygon) {
-              ent.polygon.fill = true;
-            }
-            updateColor(ent, false);
-            this.interestAreasDataSource.entities.add(ent);
-          }
-        } else {
-          atLeastOneValid = true;
-          showWarning(i18next.t('tbx_kml_area_existing_warning'));
-        }
-      });
-
-      if (!atLeastOneValid) {
-        showWarning(i18next.t('tbx_unsupported_kml_warning'));
+      if (file.name.toLowerCase().includes('.kml')) {
+        return this.uploadKml_(file);
+      } else if (file.name.toLowerCase().includes('.gpx')) {
+        return this.uploadGpx_(file);
       } else {
-        this.viewer.zoomTo(entities);
+        showWarning(i18next.t('tbx_unsupported_file_warning'));
+        return;
       }
     }
   }
 
-  async uploadGpx_(evt) {
-    const file = evt.target ? evt.target.files[0] : null;
-    if (file) {
-      const gpxDataSource = await GpxDataSource.load(file, {
-        clampToGround: true
-      });
-      const entities = gpxDataSource.entities.values;
-      entities.forEach(entity => {
-        if (!this.interestAreasDataSource.entities.getById(entity.id)) {
-          const type = getUploadedEntityType(entity);
-          entity = cleanupUploadedEntity(entity);
+  async uploadKml_(file) {
+    const kmlDataSource = await KmlDataSource.load(file, {
+      camera: this.viewer.scene.camera,
+      canvas: this.viewer.scene.canvas,
+      clampToGround: true
+    });
 
+    let entities = kmlDataSource.entities.values;
+    if (entities.length > 10) {
+      showWarning(i18next.t('tbx_kml_large_warning'));
+      entities = entities.slice(0, 10);
+    }
+    let atLeastOneValid = false;
+    entities.forEach((ent, index) => {
+      const exists = this.interestAreasDataSource.entities.getById(ent.id);
+      if (!exists) {
+        const type = getUploadedEntityType(ent);
+        if (type) {
+          atLeastOneValid = true;
+          ent = cleanupUploadedEntity(ent);
           if (type === 'point') {
-            entity.billboard = {
-              heightReference: HeightReference.CLAMP_TO_GROUND,
-              image: `./images/${AOI_POINT_SYMBOLS[0]}`,
-              color: Color.GRAY,
-              scale: 0.5,
-              verticalOrigin: VerticalOrigin.BOTTOM,
-              disableDepthTestDistance: 0
+            ent.point = {
+              pixelSize: 8,
+              scaleByDistance: new NearFarScalar(0, 1, 1, 1)
             };
           }
-          entity.name = entity.name || gpxDataSource.name;
-          entity.properties = this.getAreaProperties(entity, type);
-          updateColor(entity, false);
-          this.interestAreasDataSource.entities.add(entity);
+          ent.name = ent.name ? `${ent.name}` : `${kmlDataSource.name}`;
+          ent.properties = this.getAreaProperties(ent, type);
+          if (ent.polygon) {
+            ent.polygon.fill = true;
+          }
+          updateColor(ent, false);
+          this.interestAreasDataSource.entities.add(ent);
         }
-      });
+      } else {
+        atLeastOneValid = true;
+        showWarning(i18next.t('tbx_kml_area_existing_warning'));
+      }
+    });
+
+    if (!atLeastOneValid) {
+      showWarning(i18next.t('tbx_unsupported_kml_warning'));
+    } else {
+      this.viewer.zoomTo(entities);
     }
+  }
+
+  async uploadGpx_(file) {
+    const gpxDataSource = await GpxDataSource.load(file, {
+      clampToGround: true
+    });
+    const entities = gpxDataSource.entities.values;
+    entities.forEach(entity => {
+      if (!this.interestAreasDataSource.entities.getById(entity.id)) {
+        const type = getUploadedEntityType(entity);
+        entity = cleanupUploadedEntity(entity);
+
+        if (type === 'point') {
+          entity.billboard = {
+            heightReference: HeightReference.CLAMP_TO_GROUND,
+            image: `./images/${AOI_POINT_SYMBOLS[0]}`,
+            color: Color.GRAY,
+            scale: 0.5,
+            verticalOrigin: VerticalOrigin.BOTTOM,
+            disableDepthTestDistance: 0
+          };
+        }
+        entity.name = entity.name || gpxDataSource.name;
+        entity.properties = this.getAreaProperties(entity, type);
+        updateColor(entity, false);
+        this.interestAreasDataSource.entities.add(entity);
+      }
+    });
   }
 
   setAreasClickable(areasClickable) {
