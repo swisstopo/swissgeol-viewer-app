@@ -275,7 +275,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const file = evt.target ? evt.target.files[0] : null;
     if (file) {
       evt.target.value = null;
-      if (file.name.toLowerCase().includes('.kml')) {
+      if (file.name.toLowerCase().endsWith('.kml')) {
         return this.uploadKml_(file);
       } else if (file.name.toLowerCase().includes('.gpx')) {
         return this.uploadGpx_(file);
