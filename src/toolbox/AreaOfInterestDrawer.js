@@ -32,6 +32,7 @@ import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {DEFAULT_AOI_VOLUME_COLOR} from '../constants';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
+import {SwissforagesService} from './SwissforagesService';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -50,6 +51,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.minVolumeLowerLimit = -30000;
     this.maxVolumeLowerLimit = 30000;
     this.julianDate = new JulianDate();
+    const service = new SwissforagesService();
+    console.log(service);
   }
 
   update(changedProperties) {
