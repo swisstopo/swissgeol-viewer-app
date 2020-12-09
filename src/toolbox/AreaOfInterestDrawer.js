@@ -2,12 +2,13 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
+import GpxDataSource from '../GpxDataSource.js';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {getMeasurements} from '../utils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 
-import {LitElement} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 
 import {
   AOI_DATASOURCE_NAME,
@@ -15,7 +16,7 @@ import {
   DEFAULT_VOLUME_HEIGHT_LIMITS,
   AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR
 } from '../constants.js';
-import {updateColor, cleanupUploadedEntity, getUploadedAreaType} from './helpers.js';
+import {updateColor, cleanupUploadedEntity, getUploadedEntityType} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -30,6 +31,7 @@ import {showMessage} from '../message';
 import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {DEFAULT_AOI_VOLUME_COLOR} from '../constants';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -269,61 +271,94 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.pickArea_(id);
   }
 
-  async uploadArea_(evt) {
+  async uploadFile_(evt) {
     const file = evt.target ? evt.target.files[0] : null;
     if (file) {
-      if (!file.name.toLowerCase().includes('.kml')) {
+      evt.target.value = null;
+      if (file.name.toLowerCase().endsWith('.kml')) {
+        return this.uploadKml_(file);
+      } else if (file.name.toLowerCase().endsWith('.gpx')) {
+        return this.uploadGpx_(file);
+      } else {
         showWarning(i18next.t('tbx_unsupported_file_warning'));
-        evt.target.value = null;
         return;
       }
-      const kmlDataSource = await KmlDataSource.load(file,
-        {
-          camera: this.viewer.scene.camera,
-          canvas: this.viewer.scene.canvas,
-          clampToGround: true
-        });
-      evt.target.value = null;
-
-      let entities = kmlDataSource.entities.values;
-      if (entities.length > 10) {
-        showWarning(i18next.t('tbx_kml_large_warning'));
-        entities = entities.slice(0, 10);
-      }
-      let atLeastOneValid = false;
-      entities.forEach((ent, index) => {
-        const exists = this.interestAreasDataSource.entities.getById(ent.id);
-        if (!exists) {
-          const type = getUploadedAreaType(ent);
-          if (type) {
-            atLeastOneValid = true;
-            ent = cleanupUploadedEntity(ent);
-            if (type === 'point') {
-              ent.point = {
-                pixelSize: 8,
-                scaleByDistance: new NearFarScalar(0, 1, 1, 1)
-              };
-            }
-            ent.name = ent.name ? `${ent.name}` : `${kmlDataSource.name}`;
-            ent.properties = this.getAreaProperties(ent, type);
-            if (ent.polygon) {
-              ent.polygon.fill = true;
-            }
-            updateColor(ent, false);
-            this.interestAreasDataSource.entities.add(ent);
-          }
-        } else {
-          atLeastOneValid = true;
-          showWarning(i18next.t('tbx_kml_area_existing_warning'));
-        }
-      });
-
-      if (!atLeastOneValid) {
-        showWarning(i18next.t('tbx_unsupported_kml_warning'));
-      } else {
-        this.viewer.zoomTo(entities);
-      }
     }
+  }
+
+  async uploadKml_(file) {
+    const kmlDataSource = await KmlDataSource.load(file, {
+      camera: this.viewer.scene.camera,
+      canvas: this.viewer.scene.canvas,
+      clampToGround: true
+    });
+
+    let entities = kmlDataSource.entities.values;
+    if (entities.length > 10) {
+      showWarning(i18next.t('tbx_kml_large_warning'));
+      entities = entities.slice(0, 10);
+    }
+    let atLeastOneValid = false;
+    entities.forEach((ent, index) => {
+      const exists = this.interestAreasDataSource.entities.getById(ent.id);
+      if (!exists) {
+        const type = getUploadedEntityType(ent);
+        if (type) {
+          atLeastOneValid = true;
+          ent = cleanupUploadedEntity(ent);
+          if (type === 'point') {
+            ent.point = {
+              pixelSize: 8,
+              scaleByDistance: new NearFarScalar(0, 1, 1, 1)
+            };
+          }
+          ent.name = ent.name ? `${ent.name}` : `${kmlDataSource.name}`;
+          ent.properties = this.getAreaProperties(ent, type);
+          if (ent.polygon) {
+            ent.polygon.fill = true;
+          }
+          updateColor(ent, false);
+          this.interestAreasDataSource.entities.add(ent);
+        }
+      } else {
+        atLeastOneValid = true;
+        showWarning(i18next.t('tbx_kml_area_existing_warning'));
+      }
+    });
+
+    if (!atLeastOneValid) {
+      showWarning(i18next.t('tbx_unsupported_kml_warning'));
+    } else {
+      this.viewer.zoomTo(entities);
+    }
+  }
+
+  async uploadGpx_(file) {
+    const gpxDataSource = await GpxDataSource.load(file, {
+      clampToGround: true
+    });
+    const entities = gpxDataSource.entities.values;
+    entities.forEach(entity => {
+      if (!this.interestAreasDataSource.entities.getById(entity.id)) {
+        const type = getUploadedEntityType(entity);
+        entity = cleanupUploadedEntity(entity);
+
+        if (type === 'point') {
+          entity.billboard = {
+            heightReference: HeightReference.CLAMP_TO_GROUND,
+            image: `./images/${AOI_POINT_SYMBOLS[0]}`,
+            color: Color.GRAY,
+            scale: 0.5,
+            verticalOrigin: VerticalOrigin.BOTTOM,
+            disableDepthTestDistance: 0
+          };
+        }
+        entity.name = entity.name || gpxDataSource.name;
+        entity.properties = this.getAreaProperties(entity, type);
+        updateColor(entity, false);
+        this.interestAreasDataSource.entities.add(entity);
+      }
+    });
   }
 
   setAreasClickable(areasClickable) {
@@ -367,10 +402,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       attributes[i18next.t('obj_info_description_label')] = props.description;
     }
     if (props.image && props.image.length) {
-      attributes['obj_info_image_label'] = props.image;
+      attributes[i18next.t('obj_info_image_label')] = html`<img src="${props.image}" alt="${props.image}">`;
     }
     if (props.website && props.website.length) {
-      attributes['obj_info_website_label'] = props.website;
+      attributes[i18next.t('obj_info_website_label')] =
+        html`<a href="${props.website}" target="_blank" rel="noopener">${props.website}</a`;
     }
     return attributes;
   }
