@@ -71,3 +71,5 @@ export const SLICE_ARROW_ICONS = [
   {type: 'altitude-down', uri: './images/arrowA.glb'},
   {type: 'altitude-up', uri: './images/arrowA.glb'}
 ];
+
+export const SWISSFORAGES_API_URL = 'https://swissforages.ch/api/v1';
