@@ -3,3 +3,5 @@
 /.cache
 src/environment.js
 manuals/dist
+
+scripts/proxy/node_modules/
