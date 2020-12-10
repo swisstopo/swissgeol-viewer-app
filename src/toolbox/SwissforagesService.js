@@ -1,7 +1,8 @@
 import {SWISSFORAGES_API_URL} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {radiansToLv95} from '../projection';
+
+const byteSize = str => new Blob([str]).size;
 
 export class SwissforagesService {
   constructor() {
@@ -10,28 +11,48 @@ export class SwissforagesService {
     this.headers = new Headers({
       'bdms-authorization': 'bdms-v1',
       'Content-Type': 'application/json;charset=UTF-8',
+      // 'Content-Length': '0',
+      'Authorization': '',
     });
   }
 
   get requestOptions() {
     return {
       method: 'POST',
-      credentials: 'include',
       headers: this.headers
     };
   }
 
+  /**
+   * Gets swissforages user credentials and returns user workgroups list or error
+   * @param username
+   * @param password
+   * @return {Promise<string|array>}
+   */
   async login(username, password) {
-    this.userToken = `Basic ${btoa(`${username}:${password}`)}`;
-    this.headers.append('Authorization', this.userToken);
-    const response = await fetch(`${SWISSFORAGES_API_URL}/user`, {
+    const token = `Basic ${btoa(`${username}:${password}`)}`;
+    const data = JSON.stringify({action: 'GET'});
+
+    this.headers.set('Authorization', token);
+    this.headers.set('Content-Length', `${byteSize(data)}`); // todo check if needed \ remove
+
+    const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/user`, {
       ...this.requestOptions,
-      body: JSON.stringify({
-        action: 'GET'
-      })
+      body: data
     });
-    // todo check workgroup
-    // todo handle response
+    const response = await fetchResult.json();
+
+    if (response && response.success) {
+      const workgroups = response.data.workgroups.filter(group => group.roles.includes('EDIT'));
+      if (workgroups.length) {
+        this.userToken = token;
+        return workgroups;
+      } else {
+        return 'No write permisions'; // TODO translation
+      }
+    } else {
+      return 'User not found'; // TODO translation
+    }
   }
 
   async createBorehole(position, name) {

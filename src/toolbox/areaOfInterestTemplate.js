@@ -4,6 +4,7 @@ import {clickOnElement} from '../utils.js';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';
+import './ngm-swissforages-modal.js';
 
 const fileUploadInputId = 'fileUpload';
 
@@ -65,6 +66,10 @@ export default function getTemplate() {
         <span>${i18next.t('tbx_area_of_interest_empty_hint')}</span>
     </div>
     <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
+    <ngm-swissforages-modal
+      .service="${this.swissforagesService}"
+      .position="${this.swissforagesPosition}">
+    </ngm-swissforages-modal>
   `;
 }
 
@@ -137,6 +142,15 @@ function aoiListTemplate() {
                         .parentElement=${this}>
                     </ngm-gst-interaction>
                 ` : ''}
+          ${i.type === 'point' ?
+            html`
+              <div class="ui tiny buttons">
+                <button
+                  class="ui button"
+                  @click=${this.createSwissforagesBorehole.bind(this, i.positions)}>
+                  ${i18next.t('tbx_create_swissforages_btn_label')}
+                </button>
+              </div>` : ''}
             ${i.type === 'line' ?
       html`<ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>` : ''}
         </div>

@@ -51,8 +51,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.minVolumeLowerLimit = -30000;
     this.maxVolumeLowerLimit = 30000;
     this.julianDate = new JulianDate();
-    const service = new SwissforagesService();
-    console.log(service);
+    this.swissforagesService = new SwissforagesService();
   }
 
   update(changedProperties) {
@@ -119,6 +118,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       }));
     });
     this.sectionImageUrl = null;
+    this.swissforagesPosition = undefined;
 
     this.aoiInited = true;
   }
@@ -726,6 +726,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     } else {
       entity.properties.addProperty('website', websiteElem.value);
     }
+  }
+
+  createSwissforagesBorehole(position) {
+    this.swissforagesPosition = position[0];
+    this.requestUpdate();
   }
 
   render() {
