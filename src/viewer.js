@@ -99,10 +99,10 @@ export function setupViewer(container) {
       terrainUrl = IonResource.fromAssetId(1);
       break;
     case 'cli_2m':
-      terrainUrl = 'https://s3-eu-west-1.amazonaws.com/ngmpub-download-bgdi-ch/cli_terrain/ch-2m/';
+      terrainUrl = 'https://download.swissgeol.ch/cli_terrain/ch-2m/';
       break;
     case 'cli_ticino_0.5m':
-      terrainUrl = 'https://s3-eu-west-1.amazonaws.com/ngmpub-download-bgdi-ch/cli_terrain/ticino-0.5m/';
+      terrainUrl = 'https://download.swissgeol.ch/cli_terrain/ticino-0.5m/';
       break;
     default:
       terrainUrl = 'https://3d.geo.admin.ch/1.0.0/ch.swisstopo.terrain.3d/default/20200520/4326/';
