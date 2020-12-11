@@ -56,7 +56,7 @@ class NgmToolboxSlicer extends I18nMixin(LitElement) {
     if (value) {
       this.slicer.sliceOptions = {
         slicePoints: [this.positions[0], this.positions[this.positions.length - 1]],
-        negate: this.sliceSide === 'right',
+        negate: this.sliceSide === 'left',
         deactivationCallback: () => this.onDeactivation()
       };
       this.slicer.active = true;
