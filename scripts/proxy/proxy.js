@@ -7,8 +7,8 @@ const resHeaders = {
 };
 const requestListener = function (req, res) {
   const headers = req.headers;
-  headers.Host = 'swissforages.ch';
-  headers.Referer = `http://swissforages.ch${req.url}`;
+  headers.Host = 'swisstopo.supsi.ch';
+  headers.Referer = `https://swisstopo.supsi.ch/bdms${req.url}`;
 
   if (req.method === 'POST') {
     let data = '';
@@ -17,7 +17,7 @@ const requestListener = function (req, res) {
     });
     req.on('end', () => {
       axios
-        .post(`http://swissforages.ch${req.url}`, data, {
+        .post(`https://swisstopo.supsi.ch/bdms${req.url}`, data, {
           headers: req.headers
         })
         .then(res2 => {

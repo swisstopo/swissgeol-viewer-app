@@ -147,7 +147,7 @@ function aoiListTemplate() {
               <div class="ui tiny buttons">
                 <button
                   class="ui button"
-                  @click=${this.createSwissforagesBorehole.bind(this, i.positions, i.name)}>
+                  @click=${this.createSwissforagesBorehole.bind(this, i)}>
                   ${i18next.t('tbx_create_swissforages_btn_label')}
                 </button>
               </div>` : ''}

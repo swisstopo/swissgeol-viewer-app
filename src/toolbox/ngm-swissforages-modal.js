@@ -6,6 +6,7 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';
 import 'fomantic-ui-css/components/dropdown.js';
+import {SWISSFORAGES_VIEWER_URL} from '../constants';
 
 class NgmSwissforagesModal extends I18nMixin(LitElement) {
 
@@ -33,9 +34,11 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
           },
           onApprove: () => {
             if (this.service.userToken) {
-              this.service.createBorehole(this.options.position, this.options.name).then(res => {
-                console.log(res)
-              });
+              this.service.createBorehole(this.options.position, this.options.name)
+                .then(boreholeId => {
+                  this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId)
+                  this.requestUpdate();
+                });
             } else {
               this.login().then(() => {
                 this.initWorkgroupSelector();
@@ -63,7 +66,7 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
           };
         }),
         onChange: (value) => {
-          this.service.workGroupId = value;
+          this.service.workGroupId = Number(value);
         }
       });
     this.groupsSelectorInited = true;
@@ -87,33 +90,37 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
 
   render() {
     return html`
-      <div class="ngm-swissforages-modal ui mini modal">
-        <div class="content">
-          <div class="ui input" ?hidden="${this.service.userToken}">
+      <div class="ngm-swissforages-modal ui modal ${this.options.swissforagesId ? 'large' : 'mini'}">
+        <div class="content" style="height: ${this.options.swissforagesId ? '80vh' : 'auto'}">
+          <div class="ui input" ?hidden="${this.service.userToken || this.options.swissforagesId}">
             <input
               class="ngm-swissforages-login-input"
               type="text"
               placeholder="Username"
               @input="${evt => this.username = evt.target.value}">
           </div>
-          <div class="ui input" ?hidden="${this.service.userToken}">
+          <div class="ui input" ?hidden="${this.service.userToken || this.options.swissforagesId}">
             <input
               class="ngm-swissforages-password-input"
               type="password"
               placeholder="Password"
               @input="${evt => this.password = evt.target.value}">
           </div>
-          <div ?hidden="${!this.service.userToken}"
+          <div ?hidden="${!this.service.userToken || this.options.swissforagesId}"
                class="ui dropdown ngm-swissforages-workgroup-selector ${this.userWorkgroups.length === 1 ? 'disabled' : ''}">
             <div class="text"></div>
             <i class="dropdown icon"></i>
           </div>
+          <iframe
+            ?hidden="${!this.options.swissforagesId}"
+            src="${`${SWISSFORAGES_VIEWER_URL}${this.options.swissforagesId}`}" width="100%" height="100%" style="border:none;">
+          </iframe>
         </div>
         <div class="actions">
           <div class="ui cancel small button">
             ${i18next.t('tbx_gst_close_label')}
           </div>
-          <div class="ui ok green small button">
+          <div class="ui ok green small button" ?hidden="${this.options.swissforagesId}">
             ${!this.service.userToken ?
               i18next.t('tbx_login_swissforages_btn_label') :
               i18next.t('tbx_create_swissforages_modal_btn_label')}

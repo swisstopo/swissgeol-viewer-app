@@ -121,4 +121,21 @@ export class SwissforagesService {
       return position;
     }
   }
+
+  async getBoreholeById(boreholeId) {
+    const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/borehole`, {
+      ...this.requestOptions,
+      body: JSON.stringify({
+        action: 'GET',
+        id: boreholeId
+      }),
+    });
+    const response = await fetchResult.json();
+
+    if (response && response.success) {
+      return response.data;
+    } else {
+      return 'Error';
+    }
+  }
 }

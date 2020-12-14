@@ -120,6 +120,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.sectionImageUrl = null;
     this.swissforagesModalOptions = {
       name: undefined,
+      id: undefined,
       position: undefined,
       show: false
     };
@@ -226,6 +227,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         description: val.properties.description ? val.properties.description.getValue() : '',
         image: val.properties.image ? val.properties.image.getValue() : '',
         website: val.properties.website ? val.properties.website.getValue() : '',
+        swissforagesId: val.properties.swissforagesId ? val.properties.swissforagesId.getValue() : undefined,
       };
       if (val.billboard) {
         item.pointColor = val.billboard.color.getValue(this.julianDate);
@@ -500,6 +502,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         verticalOrigin: VerticalOrigin.BOTTOM,
         disableDepthTestDistance: 0
       };
+      entityAttrs.properties.swissforagesId = attributes.swissforagesId;
     }
     return this.interestAreasDataSource.entities.add(entityAttrs);
   }
@@ -732,13 +735,21 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     }
   }
 
-  createSwissforagesBorehole(positions, name) {
+  createSwissforagesBorehole(item) {
     this.swissforagesModalOptions = {
-      name: name,
-      position: positions[0],
-      show: true
+      id: item.id,
+      name: item.name,
+      position: item.positions[0],
+      swissforagesId: item.swissforagesId,
+      show: true,
+      onSwissforagesBoreholeCreated: (pointId, boreholeId) => this.onSwissforagesBoreholeCreated(pointId, boreholeId)
     };
     this.requestUpdate();
+  }
+
+  onSwissforagesBoreholeCreated(pointId, boreholeId) {
+    const entity = this.interestAreasDataSource.entities.getById(pointId);
+    entity.properties.swissforagesId = boreholeId;
   }
 
   render() {
