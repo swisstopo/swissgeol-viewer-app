@@ -34,7 +34,7 @@ export class SwissforagesService {
     const data = JSON.stringify({action: 'GET'});
 
     this.headers.set('Authorization', token);
-    this.headers.set('Content-Length', `${byteSize(data)}`); // todo check if needed \ remove
+    // this.headers.set('Content-Length', `${byteSize(data)}`); // todo check if needed \ remove
 
     const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/user`, {
       ...this.requestOptions,
@@ -56,40 +56,54 @@ export class SwissforagesService {
   }
 
   async createBorehole(position, name) {
+    if (!this.workGroupId) return;
     const cartographicPosition = Cartographic.fromCartesian(position);
     const lv95Position = radiansToLv95([cartographicPosition.longitude, cartographicPosition.latitude]);
     const location = await this.getLocation(lv95Position);
     location[4] = cartographicPosition.height;
-    let boreholeId = 0; // todo take from create response
-    const createResponse = await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
+
+    let boreholeId = 0;
+    const createResult = await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
       ...this.requestOptions,
       body: JSON.stringify({'action': 'CREATE', 'id': this.workGroupId}),
     });
-    // todo handle response
-    const updLocationResponse = await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
-      ...this.requestOptions,
-      body: JSON.stringify({
-        'action': 'PATCH',
-        'id': boreholeId,
-        'field': 'location',
-        'value': location
-      }),
-    });
-    const updNameResponse = await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
-      ...this.requestOptions,
-      body: JSON.stringify({
-        'action': 'PATCH',
-        'id': boreholeId,
-        'field': 'custom.public_name',
-        'value': name
-      }),
-    });
-    // todo handle response
+    const response = await createResult.json();
+
+    if (response && response.success) {
+      boreholeId = response.id;
+    } else {
+      return 'Error during borehole creation'; // todo translation
+    }
+
+    // todo handle errors
+    if (location) {
+      await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
+        ...this.requestOptions,
+        body: JSON.stringify({
+          'action': 'PATCH',
+          'id': boreholeId,
+          'field': 'location',
+          'value': location
+        }),
+      });
+    }
+
+    if (name) {
+      await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
+        ...this.requestOptions,
+        body: JSON.stringify({
+          'action': 'PATCH',
+          'id': boreholeId,
+          'field': 'custom.public_name',
+          'value': name
+        }),
+      });
+    }
     return boreholeId;
   }
 
   async getLocation(position) {
-    const response = await fetch(`${SWISSFORAGES_API_URL}/geoapi/location`, {
+    const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/geoapi/location`, {
       ...this.requestOptions,
       body: JSON.stringify({
         action: 'LOCATION',
@@ -97,6 +111,14 @@ export class SwissforagesService {
         northing: position[1]
       }),
     });
-    // todo handle response
+    const response = await fetchResult.json();
+
+    if (response && response.success) {
+      const cid = response.data.cid;
+      const mid = response.data.mid;
+      return [...position, cid, mid];
+    } else {
+      return position;
+    }
   }
 }

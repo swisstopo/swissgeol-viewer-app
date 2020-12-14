@@ -118,7 +118,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       }));
     });
     this.sectionImageUrl = null;
-    this.swissforagesPosition = undefined;
+    this.swissforagesModalOptions = {
+      name: undefined,
+      position: undefined,
+      show: false
+    };
 
     this.aoiInited = true;
   }
@@ -728,8 +732,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     }
   }
 
-  createSwissforagesBorehole(position) {
-    this.swissforagesPosition = position[0];
+  createSwissforagesBorehole(positions, name) {
+    this.swissforagesModalOptions = {
+      name: name,
+      position: positions[0],
+      show: true
+    };
     this.requestUpdate();
   }
 

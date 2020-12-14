@@ -68,7 +68,7 @@ export default function getTemplate() {
     <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
     <ngm-swissforages-modal
       .service="${this.swissforagesService}"
-      .position="${this.swissforagesPosition}">
+      .options="${this.swissforagesModalOptions}">
     </ngm-swissforages-modal>
   `;
 }
@@ -147,7 +147,7 @@ function aoiListTemplate() {
               <div class="ui tiny buttons">
                 <button
                   class="ui button"
-                  @click=${this.createSwissforagesBorehole.bind(this, i.positions)}>
+                  @click=${this.createSwissforagesBorehole.bind(this, i.positions, i.name)}>
                   ${i18next.t('tbx_create_swissforages_btn_label')}
                 </button>
               </div>` : ''}

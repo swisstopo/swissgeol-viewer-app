@@ -19,19 +19,23 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
   static get properties() {
     return {
       service: {type: Object},
-      position: {type: Object}
+      options: {type: Object}
     };
   }
 
   updated() {
-    if (this.position) {
+    if (this.options.show) {
       if (!this.element) {
         this.element = $('.ngm-swissforages-modal.ui.modal').modal({
           centered: false,
-          onHidden: () => this.position = undefined,
+          onHidden: () => {
+            this.options.show = false;
+          },
           onApprove: () => {
             if (this.service.userToken) {
-
+              this.service.createBorehole(this.options.position, this.options.name).then(res => {
+                console.log(res)
+              });
             } else {
               this.login().then(() => {
                 this.initWorkgroupSelector();
@@ -48,6 +52,7 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
 
   initWorkgroupSelector() {
     if (!this.userWorkgroups) return;
+    this.service.workGroupId = this.userWorkgroups[0].id;
     $('.ui.dropdown.ngm-swissforages-workgroup-selector')
       .dropdown({
         values: this.userWorkgroups.map((group, indx) => {
