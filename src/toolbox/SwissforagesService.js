@@ -11,9 +11,10 @@ export class SwissforagesService {
     this.headers = new Headers({
       'bdms-authorization': 'bdms-v1',
       'Content-Type': 'application/json;charset=UTF-8',
-      // 'Content-Length': '0',
+      'content-length': '',
       'Authorization': '',
     });
+    console.log(() => this.logout());
   }
 
   get requestOptions() {
@@ -34,7 +35,8 @@ export class SwissforagesService {
     const data = JSON.stringify({action: 'GET'});
 
     this.headers.set('Authorization', token);
-    this.headers.set('Content-Length', `${byteSize(data)}`); // todo check if needed \ remove
+    console.log(byteSize(data));
+    this.headers.set('content-length', `${byteSize(data)}`); // todo check if needed \ remove
 
     const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/user`, {
       ...this.requestOptions,
@@ -55,7 +57,11 @@ export class SwissforagesService {
     }
   }
 
-  async createBorehole(position, name) {
+  logout() {
+    this.userToken = undefined;
+  }
+
+  async createBorehole(position, depth, name) {
     if (!this.workGroupId) return;
     const cartographicPosition = Cartographic.fromCartesian(position);
     const lv95Position = radiansToLv95([cartographicPosition.longitude, cartographicPosition.latitude]);
@@ -84,6 +90,18 @@ export class SwissforagesService {
           'id': boreholeId,
           'field': 'location',
           'value': location
+        }),
+      });
+    }
+
+    if (depth) {
+      await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
+        ...this.requestOptions,
+        body: JSON.stringify({
+          'action': 'PATCH',
+          'id': boreholeId,
+          'field': 'length',
+          'value': depth
         }),
       });
     }

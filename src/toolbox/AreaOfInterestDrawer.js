@@ -16,7 +16,7 @@ import {
   DEFAULT_VOLUME_HEIGHT_LIMITS,
   AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR
 } from '../constants.js';
-import {updateColor, cleanupUploadedEntity, getUploadedEntityType} from './helpers.js';
+import {updateColor, cleanupUploadedEntity, getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -31,8 +31,9 @@ import {showMessage} from '../message';
 import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {DEFAULT_AOI_VOLUME_COLOR} from '../constants';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
 import {SwissforagesService} from './SwissforagesService';
+import Cartographic from 'cesium/Source/Core/Cartographic';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -104,6 +105,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       if (volumeShowedProp && volumeShowedProp.getValue()) {
         this.updateEntityVolume(this.draw_.entityForEdit.id);
       }
+      updateBoreholeHeights(this.draw_.entityForEdit, this.julianDate);
     });
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
@@ -228,6 +230,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         image: val.properties.image ? val.properties.image.getValue() : '',
         website: val.properties.website ? val.properties.website.getValue() : '',
         swissforagesId: val.properties.swissforagesId ? val.properties.swissforagesId.getValue() : undefined,
+        depth: val.properties.depth ? val.properties.depth.getValue() : undefined,
       };
       if (val.billboard) {
         item.pointColor = val.billboard.color.getValue(this.julianDate);
@@ -354,7 +357,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
         if (type === 'point') {
           entity.billboard = {
-            heightReference: HeightReference.CLAMP_TO_GROUND,
             image: `./images/${AOI_POINT_SYMBOLS[0]}`,
             color: Color.GRAY,
             scale: 0.5,
@@ -503,6 +505,16 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         disableDepthTestDistance: 0
       };
       entityAttrs.properties.swissforagesId = attributes.swissforagesId;
+      entityAttrs.properties.depth = attributes.depth;
+      const height = Cartographic.fromCartesian(entityAttrs.position).height;
+      entityAttrs.ellipse = {
+        show: !!attributes.swissforagesId,
+        material: Color.GREY,
+        semiMinorAxis: 500.0,
+        semiMajorAxis: 500.0,
+        extrudedHeight: height,
+        height: height - attributes.depth
+      };
     }
     return this.interestAreasDataSource.entities.add(entityAttrs);
   }
@@ -735,21 +747,30 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     }
   }
 
-  createSwissforagesBorehole(item) {
+  showSwissforagesModal(item) {
     this.swissforagesModalOptions = {
       id: item.id,
       name: item.name,
       position: item.positions[0],
       swissforagesId: item.swissforagesId,
       show: true,
-      onSwissforagesBoreholeCreated: (pointId, boreholeId) => this.onSwissforagesBoreholeCreated(pointId, boreholeId)
+      onSwissforagesBoreholeCreated: (pointId, boreholeId, depth) => this.onSwissforagesBoreholeCreated(pointId, boreholeId, depth)
     };
     this.requestUpdate();
   }
 
-  onSwissforagesBoreholeCreated(pointId, boreholeId) {
+  onSwissforagesBoreholeCreated(pointId, boreholeId, depth) {
     const entity = this.interestAreasDataSource.entities.getById(pointId);
     entity.properties.swissforagesId = boreholeId;
+    entity.properties.depth = depth;
+    updateBoreholeHeights(entity, this.julianDate);
+    entity.ellipse.show = true;
+    this.viewer.scene.requestRender();
+    this.swissforagesModalOptions = {
+      swissforagesId: boreholeId,
+      show: true
+    };
+    this.requestUpdate();
   }
 
   render() {

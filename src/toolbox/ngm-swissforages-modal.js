@@ -15,6 +15,7 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
     this.userWorkgroups = [];
     this.username = '';
     this.password = '';
+    this.depth = 0;
   }
 
   static get properties() {
@@ -34,10 +35,9 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
           },
           onApprove: () => {
             if (this.service.userToken) {
-              this.service.createBorehole(this.options.position, this.options.name)
+              this.service.createBorehole(this.options.position, this.depth, this.options.name)
                 .then(boreholeId => {
-                  this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId);
-                  this.requestUpdate();
+                  this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.depth);
                 });
             } else {
               this.login().then(() => {
@@ -84,32 +84,46 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
     }
   }
 
-  createBorehole() {
-
-  }
-
   render() {
     return html`
       <div class="ngm-swissforages-modal ui modal ${this.options.swissforagesId ? 'large' : 'mini'}">
         <div class="content" style="height: ${this.options.swissforagesId ? '80vh' : 'auto'}">
-          <div class="ui input" ?hidden="${this.service.userToken || this.options.swissforagesId}">
-            <input
-              class="ngm-swissforages-login-input"
-              type="text"
-              placeholder="Username"
-              @input="${evt => this.username = evt.target.value}">
+          <div ?hidden="${this.service.userToken || this.options.swissforagesId}">
+            <div class="ui input">
+              <input
+                class="ngm-swissforages-login-input"
+                type="text"
+                placeholder="Username"
+                @input="${evt => this.username = evt.target.value}">
+            </div>
+            <div class="ui input">
+              <input
+                class="ngm-swissforages-password-input"
+                type="password"
+                placeholder="Password"
+                @input="${evt => this.password = evt.target.value}">
+            </div>
           </div>
-          <div class="ui input" ?hidden="${this.service.userToken || this.options.swissforagesId}">
-            <input
-              class="ngm-swissforages-password-input"
-              type="password"
-              placeholder="Password"
-              @input="${evt => this.password = evt.target.value}">
-          </div>
-          <div ?hidden="${!this.service.userToken || this.options.swissforagesId}"
-               class="ui dropdown ngm-swissforages-workgroup-selector ${this.userWorkgroups.length === 1 ? 'disabled' : ''}">
-            <div class="text"></div>
-            <i class="dropdown icon"></i>
+          <div
+            ?hidden="${!this.service.userToken || this.options.swissforagesId}"
+            class="ngm-swissforages-configuration">
+            <div>
+              <label>Workgroup: </label>
+              <div
+                class="ui dropdown ngm-swissforages-workgroup-selector ${this.userWorkgroups.length === 1 ? 'disabled' : ''}">
+                <div class="text"></div>
+                <i class="dropdown icon"></i>
+              </div>
+            </div>
+            <div>
+              <label>Depth: </label>
+              <div class="ui input tiny">
+                <input
+                  class="ngm-swissforages-depth-input"
+                  type="number"
+                  @input="${evt => this.depth = Number(evt.target.value)}">
+              </div>
+            </div>
           </div>
           <iframe
             ?hidden="${!this.options.swissforagesId}"

@@ -126,3 +126,16 @@ ngm-toolbox-slicer {
   margin-right: 0;
 }
 
+.ngm-swissforages-configuration {
+  display: flex;
+  justify-content: space-around;
+}
+
+.ngm-swissforages-configuration label {
+  margin-bottom: 5px;
+}
+
+.ngm-swissforages-configuration > div {
+  display: flex;
+  flex-direction: column;
+}

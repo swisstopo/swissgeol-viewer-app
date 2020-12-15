@@ -147,8 +147,10 @@ function aoiListTemplate() {
               <div class="ui tiny buttons">
                 <button
                   class="ui button"
-                  @click=${this.createSwissforagesBorehole.bind(this, i)}>
-                  ${i18next.t('tbx_create_swissforages_btn_label')}
+                  @click=${this.showSwissforagesModal.bind(this, i)}>
+                  ${i.swissforagesId ?
+                    i18next.t('tbx_show_swissforages_btn_label') :
+                    i18next.t('tbx_create_swissforages_btn_label')}
                 </button>
               </div>` : ''}
             ${i.type === 'line' ?
