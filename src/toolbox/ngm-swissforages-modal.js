@@ -7,6 +7,7 @@ import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';
 import 'fomantic-ui-css/components/dropdown.js';
 import {SWISSFORAGES_VIEWER_URL} from '../constants';
+import {showWarning} from '../message';
 
 class NgmSwissforagesModal extends I18nMixin(LitElement) {
 
@@ -21,7 +22,8 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
   static get properties() {
     return {
       service: {type: Object},
-      options: {type: Object}
+      options: {type: Object},
+      loading: {type: Boolean}
     };
   }
 
@@ -35,25 +37,7 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
             this.options.onSwissforagesBoreholeCreated = undefined;
             this.options.onLoggedIn = undefined;
           },
-          onApprove: () => {
-            if (this.service.userToken) {
-              this.service.createBorehole(this.options.position, this.depth, this.options.name)
-                .then(boreholeId => {
-                  this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.depth);
-                });
-            } else {
-              this.login().then(() => {
-                this.initWorkgroupSelector();
-                this.requestUpdate();
-                if (this.options.onLoggedIn) {
-                  this.options.onLoggedIn();
-                  this.options.show = false;
-                  this.element.modal('hide');
-                }
-              });
-            }
-            return false;
-          }
+          onHide: () => !this.loading
         });
       }
       this.element.modal('show');
@@ -81,19 +65,44 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
   }
 
   async login() {
-    if (this.username.length && this.password.length) {
-      const res = await this.service.login(this.username, this.password);
-      if (typeof res === 'string') {
-        console.error(res);
-        return;
-      }
-      this.userWorkgroups = res;
+    if (!this.username.length || !this.password.length) {
+      showWarning(i18next.t('tbx_swissforages_incorrect_creds_warning'));
+      return;
     }
+    this.toggleLoading();
+    const res = await this.service.login(this.username, this.password);
+    if (typeof res === 'string') {
+      console.error(res);
+      return;
+    }
+    this.userWorkgroups = res;
+    this.initWorkgroupSelector();
+    // this.requestUpdate();
+    if (this.options.onLoggedIn) {
+      this.options.onLoggedIn();
+      this.options.show = false;
+      this.element.modal('hide');
+    }
+    this.toggleLoading();
+  }
+
+  toggleLoading() {
+    this.loading = !this.loading;
+  }
+
+  async createBorehole() {
+    this.toggleLoading();
+    const boreholeId = await this.service.createBorehole(this.options.position, this.depth, this.options.name);
+    this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.depth);
+    this.toggleLoading();
   }
 
   render() {
     return html`
-      <div class="ngm-swissforages-modal ui modal ${this.options.swissforagesId ? 'large' : 'mini'}">
+      <div class="ngm-swissforages-modal ui dimmable dimmed modal ${this.options.swissforagesId ? 'large' : 'mini'}">
+        <div class="ui inverted dimmer ${this.loading ? 'active' : ''}">
+          <div class="ui loader"></div>
+        </div>
         <div class="content" style="height: ${this.options.swissforagesId ? '80vh' : 'auto'}">
           <div ?hidden="${this.service.userToken || this.options.swissforagesId}">
             <div class="ui input">
@@ -142,10 +151,17 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
           <div class="ui cancel small button">
             ${i18next.t('tbx_gst_close_label')}
           </div>
-          <div class="ui ok green small button" ?hidden="${this.options.swissforagesId}">
-            ${!this.service.userToken ?
-              i18next.t('tbx_login_swissforages_btn_label') :
-              i18next.t('tbx_create_swissforages_modal_btn_label')}
+          <div
+            class="ui green small button"
+            ?hidden="${this.options.swissforagesId || this.service.userToken}"
+            @click="${() => this.login()}">
+            ${i18next.t('tbx_login_swissforages_btn_label')}
+          </div>
+          <div
+            class="ui green small button"
+            ?hidden="${this.options.swissforagesId || !this.service.userToken}"
+            @click="${() => this.createBorehole()}">
+            ${i18next.t('tbx_create_swissforages_modal_btn_label')}
           </div>
         </div>
       </div>
