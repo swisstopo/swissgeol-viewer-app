@@ -34,7 +34,7 @@ export class SwissforagesService {
     const data = JSON.stringify({action: 'GET'});
 
     this.headers.set('Authorization', token);
-    // this.headers.set('Content-Length', `${byteSize(data)}`); // todo check if needed \ remove
+    this.headers.set('Content-Length', `${byteSize(data)}`); // todo check if needed \ remove
 
     const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/user`, {
       ...this.requestOptions,

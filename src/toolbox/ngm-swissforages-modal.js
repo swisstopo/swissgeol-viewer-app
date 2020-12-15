@@ -36,7 +36,7 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
             if (this.service.userToken) {
               this.service.createBorehole(this.options.position, this.options.name)
                 .then(boreholeId => {
-                  this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId)
+                  this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId);
                   this.requestUpdate();
                 });
             } else {
@@ -113,7 +113,8 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
           </div>
           <iframe
             ?hidden="${!this.options.swissforagesId}"
-            src="${`${SWISSFORAGES_VIEWER_URL}${this.options.swissforagesId}`}" width="100%" height="100%" style="border:none;">
+            src="${`${SWISSFORAGES_VIEWER_URL}${this.options.swissforagesId}`}" width="100%" height="100%"
+            style="border:none;">
           </iframe>
         </div>
         <div class="actions">
