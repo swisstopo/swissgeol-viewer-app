@@ -11,10 +11,8 @@ export class SwissforagesService {
     this.headers = new Headers({
       'bdms-authorization': 'bdms-v1',
       'Content-Type': 'application/json;charset=UTF-8',
-      'content-length': '',
       'Authorization': '',
     });
-    console.log(() => this.logout());
   }
 
   get requestOptions() {
@@ -35,9 +33,6 @@ export class SwissforagesService {
     const data = JSON.stringify({action: 'GET'});
 
     this.headers.set('Authorization', token);
-    console.log(byteSize(data));
-    this.headers.set('content-length', `${byteSize(data)}`); // todo check if needed \ remove
-
     const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/user`, {
       ...this.requestOptions,
       body: data
@@ -57,13 +52,8 @@ export class SwissforagesService {
     }
   }
 
-  logout() {
-    this.userToken = undefined;
-  }
-
-  async createBorehole(position, depth, name) {
+  async createBorehole(cartographicPosition, depth, name) {
     if (!this.workGroupId) return;
-    const cartographicPosition = Cartographic.fromCartesian(position);
     const lv95Position = radiansToLv95([cartographicPosition.longitude, cartographicPosition.latitude]);
     const location = await this.getLocation(lv95Position);
     location[4] = cartographicPosition.height;

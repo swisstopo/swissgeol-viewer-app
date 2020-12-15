@@ -102,11 +102,20 @@ function aoiListTemplate() {
                     data-variation="tiny"
                     ><i class="search plus icon"></i></button>
                     <button
-                    class="ui button"
-                    @click=${this.editAreaPosition.bind(this, i.id)}
-                    data-tooltip=${i18next.t('tbx_edit_area_hint')}
-                    data-position="top center"
-                    data-variation="tiny"
+                      ?hidden="${!i.swissforagesId}"
+                      class="ui button"
+                      @click=${this.syncPointWithSwissforages.bind(this, i.id, i.swissforagesId)}
+                      data-tooltip=${i18next.t('tbx_sync_swissforages_hint')}
+                      data-position="top center"
+                      data-variation="tiny"
+                    ><i class="sync icon"></i></button>
+                    <button
+                      ?hidden="${i.swissforagesId}"
+                      class="ui button"
+                      @click=${this.editAreaPosition.bind(this, i.id)}
+                      data-tooltip=${i18next.t('tbx_edit_area_hint')}
+                      data-position="top center"
+                      data-variation="tiny"
                     ><i class="pen icon"></i></button>
                     <button
                     class="ui button"

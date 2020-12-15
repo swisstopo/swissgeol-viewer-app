@@ -32,6 +32,8 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
           centered: false,
           onHidden: () => {
             this.options.show = false;
+            this.options.onSwissforagesBoreholeCreated = undefined;
+            this.options.onLoggedIn = undefined;
           },
           onApprove: () => {
             if (this.service.userToken) {
@@ -43,6 +45,11 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
               this.login().then(() => {
                 this.initWorkgroupSelector();
                 this.requestUpdate();
+                if (this.options.onLoggedIn) {
+                  this.options.onLoggedIn();
+                  this.options.show = false;
+                  this.element.modal('hide');
+                }
               });
             }
             return false;

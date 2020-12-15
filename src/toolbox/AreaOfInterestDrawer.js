@@ -34,6 +34,7 @@ import {DEFAULT_AOI_VOLUME_COLOR} from '../constants';
 import {SwissforagesService} from './SwissforagesService';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
+import {lv95ToDegrees} from '../projection';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -124,6 +125,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       name: undefined,
       id: undefined,
       position: undefined,
+      onLoggedIn: undefined,
+      onSwissforagesBoreholeCreated: undefined,
       show: false
     };
 
@@ -426,6 +429,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const entity = this.interestAreasDataSource.entities.getById(id);
     const type = entity.properties.type ? entity.properties.type.getValue() : undefined;
     let volume = entity.properties.volumeShowed ? entity.properties.volumeShowed.getValue() : undefined;
+    const swissforagesId = entity.properties.swissforagesId ? entity.properties.swissforagesId.getValue() : undefined;
     if (inverted) {
       volume = !volume;
     }
@@ -437,7 +441,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       case 'line':
         return volume ? 'map outline icon' : 'route icon';
       case 'point':
-        return 'map marker alternate icon';
+        return swissforagesId ? 'ruler vertical icon' : 'map marker alternate icon';
       default:
         return '';
     }
@@ -748,10 +752,14 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   showSwissforagesModal(item) {
+    const cartographicPosition = Cartographic.fromCartesian(item.positions[0]);
+    const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
+    cartographicPosition.height -= altitude;
+    cartographicPosition.height;
     this.swissforagesModalOptions = {
       id: item.id,
       name: item.name,
-      position: item.positions[0],
+      position: cartographicPosition,
       swissforagesId: item.swissforagesId,
       show: true,
       onSwissforagesBoreholeCreated: (pointId, boreholeId, depth) => this.onSwissforagesBoreholeCreated(pointId, boreholeId, depth)
@@ -771,6 +779,39 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       show: true
     };
     this.requestUpdate();
+  }
+
+  async syncPointWithSwissforages(id, swissforagesId) {
+    if (!this.swissforagesService.userToken) {
+      this.swissforagesModalOptions = {
+        onLoggedIn: () => this.syncPointWithSwissforages(id, swissforagesId),
+        show: true
+      };
+      this.requestUpdate();
+      return;
+    }
+    const boreholeData = await this.swissforagesService.getBoreholeById(swissforagesId);
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    if (boreholeData) {
+      if (boreholeData.location_x && boreholeData.location_y) {
+        const height = boreholeData.elevation_z || 0;
+        const positionlv95 = lv95ToDegrees([boreholeData.location_x, boreholeData.location_y]);
+        const cartographicPosition = Cartographic.fromDegrees(positionlv95[0], positionlv95[1]);
+        const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
+        cartographicPosition.height = height + altitude;
+        entity.position = Cartographic.toCartesian(cartographicPosition);
+        updateBoreholeHeights(entity, this.julianDate);
+      }
+      entity.properties.depth = boreholeData.length || entity.properties.depth;
+      if (boreholeData.custom && boreholeData.custom.public_name) {
+        entity.properties.name = boreholeData.custom.public_name;
+        entity.name = boreholeData.custom.public_name;
+      }
+    } else {
+      showWarning(i18next.t('tbx_swissforages_borehole_not_exists_warning'));
+      entity.ellipse.show = false;
+      entity.properties.swissforagesId = undefined;
+    }
   }
 
   render() {
