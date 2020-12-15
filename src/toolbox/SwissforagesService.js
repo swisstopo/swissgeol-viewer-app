@@ -48,7 +48,7 @@ export class SwissforagesService {
         this.userToken = token;
         return workgroups;
       } else {
-        return 'No write permisions'; // TODO translation
+        return 'No write permisions';
       }
     } else {
       return 'User not found'; // TODO translation
