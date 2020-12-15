@@ -72,8 +72,6 @@ export const SLICE_ARROW_ICONS = [
   {type: 'altitude-up', uri: './images/arrowA.glb'}
 ];
 
-
 // export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/';
 export const SWISSFORAGES_VIEWER_URL = 'https://swisstopo.supsi.ch/bdms/';
 export const SWISSFORAGES_API_URL = `${SWISSFORAGES_VIEWER_URL}api/v1`;
-// export const SWISSFORAGES_API_URL = 'http://localhost:9000/api/v1';
