@@ -33,7 +33,6 @@ import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {DEFAULT_AOI_VOLUME_COLOR} from '../constants';
 import {SwissforagesService} from './SwissforagesService';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
 import {lv95ToDegrees} from '../projection';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
