@@ -83,7 +83,7 @@ export default class Auth {
   static async waitForAuthenticate() {
     while (localStorage.getItem(cognitoUser) === null) {
       await new Promise((resolve) => {
-        setTimeout(() => resolve(), 100);
+        setTimeout(() => resolve(), 20);
       });
     }
   }
