@@ -46,7 +46,7 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
             return html`
           <tr class="top aligned">
             <td class="key">${i18next.t(`assets:${key}`)}</td>
-            <td class="val"><a href="${value}" target="_blank" rel="noopener">${value}</a></td>
+            <td class="val"><a href="${value}" target="_blank" rel="noopener">${value.split('/').pop()}</a></td>
           </tr>
           `;
           default:
