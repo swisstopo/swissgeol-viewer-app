@@ -44,7 +44,7 @@
     "copy-webpack-plugin": "6.3.2",
     "core-js": "3.8.0",
     "css-loader": "^5.0.1",
-    "eslint": "7.14.0",
+    "eslint": "7.15.0",
     "esm": "^3.2.25",
     "file-loader": "^6.2.0",
     "i18next-parser": "^3.3.0",
