@@ -5,9 +5,9 @@ import {assert as chaiAssert} from 'chai';
 import {filterCsvString, containsXY, createZipFromData, createDataGenerator} from '../src/download.js';
 
 // see https://stackoverflow.com/questions/58668361/how-can-i-convert-an-async-iterator-to-an-array
-async function toArray(asyncIterator){
-  const arr=[];
-  for await(const i of asyncIterator) arr.push(i);
+async function toArray(asyncIterator) {
+  const arr = [];
+  for await (const i of asyncIterator) arr.push(i);
   return arr;
 }
 
@@ -52,17 +52,19 @@ describe('Download', () => {
     });
   });
 
-  // describe('createZipFromData', () => {
-  //   it('should be able to create a good-looking zip file', async () => {
-  //     const zip = createZipFromData('root', [{layerName: 'the_layer', fileName: 'file1.csv', content: 'coco'}]);
-  //     const keys = Object.keys(zip.files).join('|');
-  //     // CSV files are stored in a subdirectory of the layer
-  //     chaiAssert.include(keys, 'the_layer/file1.csv');
+  describe('createZipFromData', () => {
+    it('should be able to create a good-looking zip file', async () => {
+      const zip = createZipFromData([
+        {layer: 'the_layer', filename: 'file1.csv', content: 'coco'}
+      ]);
+      const keys = Object.keys(zip.files).join('|');
+      // CSV files are stored in a subdirectory of the layer
+      chaiAssert.include(keys, 'the_layer/file1.csv');
 
-  //     const result = await zip.generateAsync({type: 'arraybuffer'});
-  //     chaiAssert.isAtLeast(result.byteLength, 300);
-  //   });
-  // });
+      const result = await zip.generateAsync({type: 'arraybuffer'});
+      chaiAssert.isAtLeast(result.byteLength, 300);
+    });
+  });
 
   describe('createDataGenerator', () => {
     it('empty specs', async () => {

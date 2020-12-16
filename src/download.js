@@ -1,5 +1,26 @@
 import JSZip from 'jszip';
 
+
+/**
+ * @typedef {Object} DataPiece
+ * @property {string} layer
+ * @property {string} filename
+ * @property {string|ArrayBuffer} content
+ */
+
+/**
+ * @typedef {Object} DataSpec
+ * @property {string} layer
+ * @property {string} url
+ * @property {('csv'|'indexed_download')} type
+ */
+
+/**
+ * @typedef {Object} IndexEntry
+ * @property {string} filename
+ * @property {number[]} extent
+ */
+
 /**
  * @param {number[]} extent [xmin, ymin, xmax, ymax]
  * @param {number} x
@@ -10,6 +31,12 @@ export function containsXY(extent, x, y) {
   return extent[0] <= x && x <= extent[2] && extent[1] <= y && y <= extent[3];
 }
 
+/**
+ *
+ * @param {string} str
+ * @param {number[]} bbox4326
+ * @return {string}
+ */
 export function filterCsvString(str, bbox4326) {
   const lines = str.split('\n').filter((l, idx) => {
     if (idx === 0) {
@@ -25,18 +52,11 @@ export function filterCsvString(str, bbox4326) {
   return filteredString;
 }
 
-
-/**
- * @typedef {Object} ZipFromDataItem
- * @property {string} layer
- * @property {string} filename
- * @property {string|ArrayBuffer} content
- */
-
 /**
  * Create a ZIP containing values like:
  * /swissgeol-data/layer_name/filename.ext
- * @param {ZipFromDataItem[]} pieces
+ * @param {DataPiece[]} pieces
+ * @return {JSZip}
  */
 export function createZipFromData(pieces) {
   const zip = new JSZip();
@@ -48,6 +68,13 @@ export function createZipFromData(pieces) {
 }
 
 
+/**
+ *
+ * @param {DataSpec} spec
+ * @param {number[]} bbox
+ * @param {fetch} fetcher
+ * @return {Promise<DataPiece>}
+ */
 async function handleCSV(spec, bbox, fetcher) {
   const filename = 'filtered_' + spec.url.substr(spec.url.lastIndexOf('/') + 1);
   const filteredCSV = await fetcher(spec.url)
@@ -60,7 +87,12 @@ async function handleCSV(spec, bbox, fetcher) {
   };
 }
 
-
+/**
+ *
+ * @param {number[]} extent1
+ * @param {number[]} extent2
+ * @return {boolean}
+ */
 export function isBboxIntersecting(extent1, extent2) {
   // From OL6
   return (
@@ -70,6 +102,13 @@ export function isBboxIntersecting(extent1, extent2) {
     extent1[3] >= extent2[1]
   );}
 
+/**
+ *
+ * @param {Object<string, IndexEntry[]>} indices
+ * @param {DataSpec} spec
+ * @param {fetch} fetcher
+ * @return {Promise<IndexEntry[]>}
+ */
 export async function getIndex(indices, spec, fetcher) {
   let index = indices[spec.layer];
   if (!index) {
@@ -103,6 +142,14 @@ export async function getIndex(indices, spec, fetcher) {
   return index;
 }
 
+/**
+ *
+ * @param {Object<string, IndexEntry[]>} indices
+ * @param {DataSpec} spec
+ * @param {number[]} bbox
+ * @param {fetch} fetcher
+ * @yields {DataPiece}
+ */
 export async function* createIndexedDataGenerator(indices, spec, bbox, fetcher) {
   const index = await getIndex(indices, spec, fetcher);
   const path = spec.url.substr(0, spec.url.lastIndexOf('/'));
@@ -118,6 +165,13 @@ export async function* createIndexedDataGenerator(indices, spec, bbox, fetcher) 
   }
 }
 
+/**
+ *
+ * @param {DataSpec[]} specs
+ * @param {number[]} bbox
+ * @param {fetch} fetcher
+ * @yields {DataPiece}
+ */
 export async function* createDataGenerator(specs, bbox, fetcher = fetch) {
   const indices = {};
   for (const spec of specs) {
@@ -135,4 +189,3 @@ export async function* createDataGenerator(specs, bbox, fetcher = fetch) {
     }
   }
 }
-
