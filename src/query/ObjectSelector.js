@@ -9,6 +9,7 @@ import {
 import {extractEntitiesAttributes, extractPrimitiveAttributes, isPickable} from './objectInformation';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
+import {TemplateResult} from 'lit-element';
 
 export default class ObjectSelector {
   /**
@@ -30,7 +31,7 @@ export default class ObjectSelector {
 
   pickAttributes(clickPosition, pickedPosition, object) {
     this.unhighlight();
-    let attributes = null;
+    let attributes = {};
     if (!object) {
       const objects = this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
       object = objects[0];
@@ -42,7 +43,7 @@ export default class ObjectSelector {
       }
 
       if (object.getPropertyNames) {
-        attributes = extractPrimitiveAttributes(object);
+        attributes.properties = extractPrimitiveAttributes(object);
         attributes.zoom = () => {
           const boundingSphere = new BoundingSphere(pickedPosition, OBJECT_ZOOMTO_RADIUS);
           const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
@@ -67,24 +68,24 @@ export default class ObjectSelector {
 
   handleEntitySelect(entity, attributes) {
     const props = extractEntitiesAttributes(entity);
-    attributes = {...props};
+    attributes.properties = Object.entries(props).map(([key, value]) => [key, value]);
     const aoiDataSource = this.viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
     const earthquakesDataSource = this.viewer.dataSources.getByName(LAYER_TYPES.earthquakes)[0];
 
     attributes.zoom = () => this.viewer.zoomTo(entity, props.zoomHeadingPitchRange);
 
     if (aoiDataSource.entities.contains(entity)) {
-      attributes = {...attributes, name: entity.name};
       const aoiElement = document.querySelector('ngm-aoi-drawer');
-      attributes = aoiElement.getInfoProps(attributes);
+      attributes = aoiElement.getInfoProps({...props, name: entity.name});
     } else if (earthquakesDataSource.entities.contains(entity)) {
       this.toggleEarthquakeHighlight(entity);
     }
 
-    if (attributes.zoomHeadingPitchRange) {
-      // Don't show the value in the object info window
-      delete attributes.zoomHeadingPitchRange;
-    }
+    attributes.properties = attributes.properties.filter(value =>
+      typeof value[1] === 'number'
+      || (typeof value[1] === 'string' && value[1].match(/[A-Z0-9]/gi)) // 'match' uses to avoid empty strings with strange symbols
+      || (typeof value[1] === 'object' && value[1] instanceof TemplateResult)); // for lit-element templates like links or images
+
     return attributes;
   }
 

@@ -31,16 +31,14 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
     super.connectedCallback();
   }
 
-  filterInfo([key, value]) {
-    return !(value instanceof Function);
-  }
-
   render() {
-    if (this.info) {
+    if (this.info && this.info.properties) {
       let content = html`
         <table class="ui compact small very basic table">
         <tbody>
-          ${Object.entries(this.info).filter(this.filterInfo).map(([key, value]) => {
+          ${this.info.properties.map(row => {
+        const key = row[0];
+        const value = row[1];
         switch (key) {
           case 'PDF_Link':
             return html`
