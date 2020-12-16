@@ -145,7 +145,7 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 206085,
+          assetId: 220432,
           label: t('lyr_cross_section_ga25_pixel_label'),
           layer: 'cross_section_ga25_pixel',
           transparency: DEFAULT_LAYER_TRANSPARENCY,

@@ -400,27 +400,31 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     });
   }
 
-  getInfoProps(props) {
+  getInfoProps(properties) {
     const attributes = {
-      [i18next.t('obj_info_name_label')]: props.name,
-      zoom: () => this.flyToArea(props.id)
+      properties: [[i18next.t('obj_info_name_label'), properties.name]],
+      zoom: () => this.flyToArea(properties.id)
     };
-    if (props.type === 'rectangle' || props.type === 'polygon') {
-      attributes[i18next.t('obj_info_area_label')] = `${props.area}km²`;
-      attributes[i18next.t('obj_info_perimeter_label')] = `${props.perimeter}km`;
-      attributes[i18next.t('obj_info_number_segments_label')] = props.numberOfSegments;
-    } else if (props.type === 'line') {
-      attributes[i18next.t('obj_info_length_label')] = `${props.perimeter}km`;
+    if (properties.type === 'rectangle' || properties.type === 'polygon') {
+      attributes.properties.push([i18next.t('obj_info_area_label'), `${properties.area}km²`]);
+      attributes.properties.push([i18next.t('obj_info_perimeter_label'), `${properties.perimeter}km`]);
+      attributes.properties.push([i18next.t('obj_info_number_segments_label'), properties.numberOfSegments]);
+    } else if (properties.type === 'line') {
+      attributes.properties.push([i18next.t('obj_info_length_label'), `${properties.perimeter}km`]);
     }
-    if (props.description && props.description.length) {
-      attributes[i18next.t('obj_info_description_label')] = props.description;
+    if (properties.description && properties.description.length) {
+      attributes.properties.push([i18next.t('obj_info_description_label'), properties.description]);
     }
-    if (props.image && props.image.length) {
-      attributes[i18next.t('obj_info_image_label')] = html`<img src="${props.image}" alt="${props.image}">`;
+    if (properties.image && properties.image.length) {
+      attributes.properties.push(
+        [i18next.t('obj_info_image_label'), html`<img src="${properties.image}" alt="${properties.image}">`]
+      );
     }
-    if (props.website && props.website.length) {
-      attributes[i18next.t('obj_info_website_label')] =
-        html`<a href="${props.website}" target="_blank" rel="noopener">${props.website}</a`;
+    if (properties.website && properties.website.length) {
+      attributes.properties.push(
+        [i18next.t('obj_info_website_label'), html`<a href="${properties.website}" target="_blank"
+                                                      rel="noopener">${properties.website}</a>`]
+      );
     }
     return attributes;
   }
