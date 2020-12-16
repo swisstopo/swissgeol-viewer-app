@@ -759,7 +759,6 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const cartographicPosition = Cartographic.fromCartesian(item.positions[0]);
     const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
     cartographicPosition.height -= altitude;
-    cartographicPosition.height;
     this.swissforagesModalOptions = {
       id: item.id,
       name: item.name,
@@ -801,6 +800,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       return;
     }
     try {
+      this.toggleSwissforagesSyncLoader(id);
       const boreholeData = await this.swissforagesService.getBoreholeById(swissforagesId);
       const entity = this.interestAreasDataSource.entities.getById(id);
       if (boreholeData) {
@@ -823,9 +823,17 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         entity.ellipse.show = false;
         entity.properties.swissforagesId = undefined;
       }
+      this.toggleSwissforagesSyncLoader(id);
     } catch (e) {
       showWarning(e);
+      this.toggleSwissforagesSyncLoader(id);
     }
+  }
+
+  toggleSwissforagesSyncLoader(id) {
+    const syncBtnElement = this.querySelector(`.ngm-swissforages-sync-${id}`);
+    syncBtnElement.classList.toggle('disabled');
+    syncBtnElement.querySelector('.dimmer').classList.toggle('active');
   }
 
   render() {

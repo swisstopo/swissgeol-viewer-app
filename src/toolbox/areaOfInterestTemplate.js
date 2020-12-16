@@ -155,12 +155,17 @@ function aoiListTemplate() {
                 </button>
                 ${i.swissforagesId ? html`
                   <button
-                    class="ui button"
+                    class="ui button ngm-swissforages-sync-${i.id}"
                     @click=${this.syncPointWithSwissforages.bind(this, i.id, i.swissforagesId)}
                     data-tooltip=${i18next.t('tbx_swissforages_sync_hint')}
                     data-position="top right"
                     data-variation="tiny"
-                  ><i class="sync icon"></i></button>` : ''}
+                  >
+                    <div class="ui very light dimmer">
+                      <div class="ui tiny loader"></div>
+                    </div>
+                    <i class="sync icon"></i>
+                  </button>` : ''}
               </div>` : ''}
             ${i.type === 'line' ?
       html`<ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>` : ''}

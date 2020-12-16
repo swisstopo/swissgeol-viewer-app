@@ -22,7 +22,7 @@ export class SwissforagesService {
   }
 
   /**
-   * Gets swissforages user credentials and returns user workgroups list or error
+   * Gets swissforages user credentials and returns user workgroups list
    * @param username
    * @param password
    * @return {Promise<string|array>}
