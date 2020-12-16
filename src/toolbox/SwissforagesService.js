@@ -1,8 +1,7 @@
 import {SWISSFORAGES_API_URL} from '../constants';
-import Cartographic from 'cesium/Source/Core/Cartographic';
 import {radiansToLv95} from '../projection';
-
-const byteSize = str => new Blob([str]).size;
+import i18next from 'i18next';
+import {showWarning} from '../message';
 
 export class SwissforagesService {
   constructor() {
@@ -45,10 +44,10 @@ export class SwissforagesService {
         this.userToken = token;
         return workgroups;
       } else {
-        return 'No write permisions';
+        throw new Error(i18next.t('tbx_swissforages_no_permission_error'));
       }
     } else {
-      return 'User not found'; // TODO translation
+      throw new Error(i18next.t('tbx_swissforages_no_user_error'));
     }
   }
 
@@ -68,58 +67,78 @@ export class SwissforagesService {
     if (response && response.success) {
       boreholeId = response.id;
     } else {
-      return 'Error during borehole creation'; // todo translation
+      throw new Error(i18next.t('tbx_swissforages_borehole_creation_error'));
     }
 
-    // todo handle errors
     if (location) {
-      await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
-        ...this.requestOptions,
-        body: JSON.stringify({
-          'action': 'PATCH',
-          'id': boreholeId,
-          'field': 'location',
-          'value': location
-        }),
-      });
+      try {
+        await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
+          ...this.requestOptions,
+          body: JSON.stringify({
+            'action': 'PATCH',
+            'id': boreholeId,
+            'field': 'location',
+            'value': location
+          }),
+        });
+      } catch (e) {
+        console.error(e);
+        showWarning(i18next.t('tbx_swissforages_borehole_location_error'));
+      }
     }
 
     if (depth) {
-      await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
-        ...this.requestOptions,
-        body: JSON.stringify({
-          'action': 'PATCH',
-          'id': boreholeId,
-          'field': 'length',
-          'value': depth
-        }),
-      });
+      try {
+        await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
+          ...this.requestOptions,
+          body: JSON.stringify({
+            'action': 'PATCH',
+            'id': boreholeId,
+            'field': 'length',
+            'value': depth
+          }),
+        });
+      } catch (e) {
+        console.error(e);
+        showWarning(i18next.t('tbx_swissforages_borehole_depth_error'));
+      }
     }
 
     if (name) {
-      await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
-        ...this.requestOptions,
-        body: JSON.stringify({
-          'action': 'PATCH',
-          'id': boreholeId,
-          'field': 'custom.public_name',
-          'value': name
-        }),
-      });
+      try {
+        await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
+          ...this.requestOptions,
+          body: JSON.stringify({
+            'action': 'PATCH',
+            'id': boreholeId,
+            'field': 'custom.public_name',
+            'value': name
+          }),
+        });
+      } catch (e) {
+        console.error(e);
+        showWarning(i18next.t('tbx_swissforages_borehole_name_error'));
+      }
     }
     return boreholeId;
   }
 
   async getLocation(position) {
-    const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/geoapi/location`, {
-      ...this.requestOptions,
-      body: JSON.stringify({
-        action: 'LOCATION',
-        easting: position[0],
-        northing: position[1]
-      }),
-    });
-    const response = await fetchResult.json();
+    let response = undefined;
+    try {
+      const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/geoapi/location`, {
+        ...this.requestOptions,
+        body: JSON.stringify({
+          action: 'LOCATION',
+          easting: position[0],
+          northing: position[1]
+        }),
+      });
+      response = await fetchResult.json();
+    } catch (e) {
+      console.error(e);
+      showWarning(i18next.t('tbx_swissforages_get_location_error'));
+    }
 
     if (response && response.success) {
       const cid = response.data.cid;
@@ -143,7 +162,7 @@ export class SwissforagesService {
     if (response && response.success) {
       return response.data;
     } else {
-      return 'Error';
+      throw new Error(i18next.t('tbx_swissforages_borehole_sync_error'));
     }
   }
 }

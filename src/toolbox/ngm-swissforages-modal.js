@@ -70,20 +70,19 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
       return;
     }
     this.toggleLoading();
-    const res = await this.service.login(this.username, this.password);
-    if (typeof res === 'string') {
-      console.error(res);
-      return;
+    try {
+      this.userWorkgroups = await this.service.login(this.username, this.password);
+      this.initWorkgroupSelector();
+      this.toggleLoading();
+      if (this.options.onLoggedIn) {
+        this.options.show = false;
+        this.element.modal('hide');
+        this.options.onLoggedIn();
+      }
+    } catch (e) {
+      showWarning(e);
+      this.loading = false;
     }
-    this.userWorkgroups = res;
-    this.initWorkgroupSelector();
-    // this.requestUpdate();
-    if (this.options.onLoggedIn) {
-      this.options.onLoggedIn();
-      this.options.show = false;
-      this.element.modal('hide');
-    }
-    this.toggleLoading();
   }
 
   toggleLoading() {
@@ -92,39 +91,47 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
 
   async createBorehole() {
     this.toggleLoading();
-    const boreholeId = await this.service.createBorehole(this.options.position, this.depth, this.options.name);
-    this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.depth);
-    this.toggleLoading();
+    try {
+      const boreholeId = await this.service.createBorehole(this.options.position, this.depth, this.options.name);
+      this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.depth);
+      this.toggleLoading();
+    } catch (e) {
+      showWarning(e);
+      this.loading = false;
+    }
   }
 
   render() {
     return html`
-      <div class="ngm-swissforages-modal ui dimmable dimmed modal ${this.options.swissforagesId ? 'large' : 'mini'}">
+      <div class="ngm-swissforages-modal ui modal ${this.options.swissforagesId ? 'large' : 'mini'}">
         <div class="ui inverted dimmer ${this.loading ? 'active' : ''}">
           <div class="ui loader"></div>
         </div>
         <div class="content" style="height: ${this.options.swissforagesId ? '80vh' : 'auto'}">
           <div ?hidden="${this.service.userToken || this.options.swissforagesId}">
-            <div class="ui input">
-              <input
-                class="ngm-swissforages-login-input"
-                type="text"
-                placeholder="Username"
-                @input="${evt => this.username = evt.target.value}">
-            </div>
-            <div class="ui input">
-              <input
-                class="ngm-swissforages-password-input"
-                type="password"
-                placeholder="Password"
-                @input="${evt => this.password = evt.target.value}">
+            <label>${i18next.t('tbx_swissforages_login_label')}</label>
+            <div class="ngm-swissforages-configuration">
+              <div class="ui input">
+                <input
+                  class="ngm-swissforages-login-input"
+                  type="text"
+                  placeholder="${i18next.t('tbx_swissforages_username_label')}"
+                  @input="${evt => this.username = evt.target.value}">
+              </div>
+              <div class="ui input">
+                <input
+                  class="ngm-swissforages-password-input"
+                  type="password"
+                  placeholder="${i18next.t('tbx_swissforages_password_label')}"
+                  @input="${evt => this.password = evt.target.value}">
+              </div>
             </div>
           </div>
           <div
             ?hidden="${!this.service.userToken || this.options.swissforagesId}"
             class="ngm-swissforages-configuration">
             <div>
-              <label>Workgroup: </label>
+              <label>${i18next.t('tbx_swissforages_workgroup_label')}</label>
               <div
                 class="ui dropdown ngm-swissforages-workgroup-selector ${this.userWorkgroups.length === 1 ? 'disabled' : ''}">
                 <div class="text"></div>
@@ -132,7 +139,7 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
               </div>
             </div>
             <div>
-              <label>Depth: </label>
+              <label>${i18next.t('tbx_swissforages_depth_label')}</label>
               <div class="ui input tiny">
                 <input
                   class="ngm-swissforages-depth-input"
@@ -155,13 +162,13 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
             class="ui green small button"
             ?hidden="${this.options.swissforagesId || this.service.userToken}"
             @click="${() => this.login()}">
-            ${i18next.t('tbx_login_swissforages_btn_label')}
+            ${i18next.t('tbx_swissforages_modal_login_btn_label')}
           </div>
           <div
             class="ui green small button"
             ?hidden="${this.options.swissforagesId || !this.service.userToken}"
             @click="${() => this.createBorehole()}">
-            ${i18next.t('tbx_create_swissforages_modal_btn_label')}
+            ${i18next.t('tbx_swissforages_modal_create_btn_label')}
           </div>
         </div>
       </div>

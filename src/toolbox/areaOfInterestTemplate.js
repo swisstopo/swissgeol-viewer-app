@@ -102,14 +102,6 @@ function aoiListTemplate() {
                     data-variation="tiny"
                     ><i class="search plus icon"></i></button>
                     <button
-                      ?hidden="${!i.swissforagesId}"
-                      class="ui button"
-                      @click=${this.syncPointWithSwissforages.bind(this, i.id, i.swissforagesId)}
-                      data-tooltip=${i18next.t('tbx_sync_swissforages_hint')}
-                      data-position="top center"
-                      data-variation="tiny"
-                    ><i class="sync icon"></i></button>
-                    <button
                       ?hidden="${i.swissforagesId}"
                       class="ui button"
                       @click=${this.editAreaPosition.bind(this, i.id)}
@@ -158,9 +150,17 @@ function aoiListTemplate() {
                   class="ui button"
                   @click=${this.showSwissforagesModal.bind(this, i)}>
                   ${i.swissforagesId ?
-                    i18next.t('tbx_show_swissforages_btn_label') :
-                    i18next.t('tbx_create_swissforages_btn_label')}
+                    i18next.t('tbx_swissforages_show_btn_label') :
+                    i18next.t('tbx_swissforages_create_btn_label')}
                 </button>
+                ${i.swissforagesId ? html`
+                  <button
+                    class="ui button"
+                    @click=${this.syncPointWithSwissforages.bind(this, i.id, i.swissforagesId)}
+                    data-tooltip=${i18next.t('tbx_swissforages_sync_hint')}
+                    data-position="top right"
+                    data-variation="tiny"
+                  ><i class="sync icon"></i></button>` : ''}
               </div>` : ''}
             ${i.type === 'line' ?
       html`<ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>` : ''}

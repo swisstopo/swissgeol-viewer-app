@@ -72,6 +72,6 @@ export const SLICE_ARROW_ICONS = [
   {type: 'altitude-up', uri: './images/arrowA.glb'}
 ];
 
-// export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/';
+// export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/'; todo change when CORS will be enabled
 export const SWISSFORAGES_VIEWER_URL = 'https://swisstopo.supsi.ch/bdms/';
 export const SWISSFORAGES_API_URL = `${SWISSFORAGES_VIEWER_URL}api/v1`;

@@ -14,7 +14,7 @@ import {
   AOI_DATASOURCE_NAME,
   DEFAULT_AOI_COLOR,
   DEFAULT_VOLUME_HEIGHT_LIMITS,
-  AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR
+  AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR, SWISSFORAGES_VIEWER_URL
 } from '../constants.js';
 import {updateColor, cleanupUploadedEntity, getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
 import {showWarning} from '../message.js';
@@ -772,6 +772,12 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     entity.properties.swissforagesId = boreholeId;
     entity.properties.depth = depth;
     updateBoreholeHeights(entity, this.julianDate);
+    const url = `${SWISSFORAGES_VIEWER_URL}${boreholeId}`;
+    if (entity.properties.website) {
+      entity.properties.website = url;
+    } else {
+      entity.properties.addProperty('website', url);
+    }
     entity.ellipse.show = true;
     this.viewer.scene.requestRender();
     this.swissforagesModalOptions = {
@@ -790,27 +796,31 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       this.requestUpdate();
       return;
     }
-    const boreholeData = await this.swissforagesService.getBoreholeById(swissforagesId);
-    const entity = this.interestAreasDataSource.entities.getById(id);
-    if (boreholeData) {
-      if (boreholeData.location_x && boreholeData.location_y) {
-        const height = boreholeData.elevation_z || 0;
-        const positionlv95 = lv95ToDegrees([boreholeData.location_x, boreholeData.location_y]);
-        const cartographicPosition = Cartographic.fromDegrees(positionlv95[0], positionlv95[1]);
-        const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
-        cartographicPosition.height = height + altitude;
-        entity.position = Cartographic.toCartesian(cartographicPosition);
-        updateBoreholeHeights(entity, this.julianDate);
+    try {
+      const boreholeData = await this.swissforagesService.getBoreholeById(swissforagesId);
+      const entity = this.interestAreasDataSource.entities.getById(id);
+      if (boreholeData) {
+        if (boreholeData.location_x && boreholeData.location_y) {
+          const height = boreholeData.elevation_z || 0;
+          const positionlv95 = lv95ToDegrees([boreholeData.location_x, boreholeData.location_y]);
+          const cartographicPosition = Cartographic.fromDegrees(positionlv95[0], positionlv95[1]);
+          const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
+          cartographicPosition.height = height + altitude;
+          entity.position = Cartographic.toCartesian(cartographicPosition);
+          updateBoreholeHeights(entity, this.julianDate);
+        }
+        entity.properties.depth = boreholeData.length || entity.properties.depth;
+        if (boreholeData.custom && boreholeData.custom.public_name) {
+          entity.properties.name = boreholeData.custom.public_name;
+          entity.name = boreholeData.custom.public_name;
+        }
+      } else {
+        showWarning(i18next.t('tbx_swissforages_borehole_not_exists_warning'));
+        entity.ellipse.show = false;
+        entity.properties.swissforagesId = undefined;
       }
-      entity.properties.depth = boreholeData.length || entity.properties.depth;
-      if (boreholeData.custom && boreholeData.custom.public_name) {
-        entity.properties.name = boreholeData.custom.public_name;
-        entity.name = boreholeData.custom.public_name;
-      }
-    } else {
-      showWarning(i18next.t('tbx_swissforages_borehole_not_exists_warning'));
-      entity.ellipse.show = false;
-      entity.properties.swissforagesId = undefined;
+    } catch (e) {
+      showWarning(e);
     }
   }
 

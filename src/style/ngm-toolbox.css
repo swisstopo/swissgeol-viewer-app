@@ -139,3 +139,7 @@ ngm-toolbox-slicer {
   display: flex;
   flex-direction: column;
 }
+
+.ngm-swissforages-configuration {
+  margin-top: 5px;
+}
