@@ -58,3 +58,11 @@ npm run extract-from-assets
 ```
 
 Then, run the `npm run extract-i18n` command to add this new key (`text_key`) to the files in the `locales` directory.
+
+## Invalidating some paths from cloudfront
+
+See https://docs.aws.amazon.com/cli/latest/reference/cloudfront/create-invalidation.html
+
+```
+aws cloudfront create-invalidation --distribution-id $THE_DISTRIB_ID --paths /somepath
+```
