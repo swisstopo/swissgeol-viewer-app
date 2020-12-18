@@ -18,6 +18,7 @@ export default function getTemplate() {
                 data-position="top left"
                 @click=${this.onAddAreaClick_.bind(this, 'point')}>
             <i class="map marker alternate icon"></i>
+        </button>
         <button class="ui button"
                 data-tooltip=${i18next.t('tbx_add_line_btn_label')}
                 data-variation="mini"
@@ -69,6 +70,58 @@ export default function getTemplate() {
   `;
 }
 
+function createButtonsFields(i) {
+  return html`
+  <div class="ngm-btns-field">
+    <div class="ui tiny fluid compact buttons ngm-aoi-buttons">
+        <button
+        class="ui button"
+        @click=${this.showAreaInfo.bind(this, i)}
+        data-tooltip=${i18next.t('tbx_info_btn_hint')}
+        data-position="top center"
+        data-variation="tiny"
+        ><i class="info circle icon"></i></button>
+        <button
+        class="ui button"
+        @click=${this.flyToArea.bind(this, i.id)}
+        data-tooltip=${i18next.t('tbx_fly_to_btn_hint')}
+        data-position="top center"
+        data-variation="tiny"
+        ><i class="search plus icon"></i></button>
+        <button
+        class="ui button"
+        @click=${this.editAreaPosition.bind(this, i.id)}
+        data-tooltip=${i18next.t('tbx_edit_area_hint')}
+        data-position="top center"
+        data-variation="tiny"
+        ><i class="pen icon"></i></button>
+        <button
+        class="ui button"
+        @click=${this.updateEntityVolume.bind(this, i.id, true)}
+        ?hidden=${i.type === 'point' || i.volumeShowed}
+        data-tooltip=${i18next.t('tbx_show_volume_btn_label')}
+        data-position="top center"
+        data-variation="tiny"
+        ><i class="${this.getIconClass.call(this, i.id, true)}"></i></button>
+        <button
+        class="ui button"
+        @click=${this.hideVolume.bind(this, i.id)}
+        ?hidden=${i.type === 'point' || !i.volumeShowed}
+        data-tooltip=${i18next.t('tbx_hide_volume_btn_label')}
+        data-position="top center"
+        data-variation="tiny"
+        ><i class="${this.getIconClass.call(this, i.id, true)}"></i></button>
+        <button
+        class="ui button"
+        @click=${this.onRemoveEntityClick_.bind(this, i.id)}
+        data-tooltip=${i18next.t('tbx_remove_btn_hint')}
+        data-position="top center"
+        data-variation="tiny"
+        ><i class="trash alternate outline icon"></i></button>
+    </div>
+</div>`;
+}
+
 function aoiListTemplate() {
   return this.entitiesList_.map((i, index) =>
     html`
@@ -81,86 +134,44 @@ function aoiListTemplate() {
             </div>
         </div>
         <div class="content ngm-aoi-content">
-            <div class="ngm-btns-field">
-                <div class="ui tiny fluid compact buttons ngm-aoi-buttons">
-                    <button
-                    class="ui button"
-                    @click=${this.showAreaInfo.bind(this, i)}
-                    data-tooltip=${i18next.t('tbx_info_btn_hint')}
-                    data-position="top center"
-                    data-variation="tiny"
-                    ><i class="info circle icon"></i></button>
-                    <button
-                    class="ui button"
-                    @click=${this.flyToArea.bind(this, i.id)}
-                    data-tooltip=${i18next.t('tbx_fly_to_btn_hint')}
-                    data-position="top center"
-                    data-variation="tiny"
-                    ><i class="search plus icon"></i></button>
-                    <button
-                    class="ui button"
-                    @click=${this.editAreaPosition.bind(this, i.id)}
-                    data-tooltip=${i18next.t('tbx_edit_area_hint')}
-                    data-position="top center"
-                    data-variation="tiny"
-                    ><i class="pen icon"></i></button>
-                    <button
-                    class="ui button"
-                    @click=${this.updateEntityVolume.bind(this, i.id, true)}
-                    ?hidden=${i.type === 'point' || i.volumeShowed}
-                    data-tooltip=${i18next.t('tbx_show_volume_btn_label')}
-                    data-position="top center"
-                    data-variation="tiny"
-                    ><i class="${this.getIconClass.call(this, i.id, true)}"></i></button>
-                    <button
-                    class="ui button"
-                    @click=${this.hideVolume.bind(this, i.id)}
-                    ?hidden=${i.type === 'point' || !i.volumeShowed}
-                    data-tooltip=${i18next.t('tbx_hide_volume_btn_label')}
-                    data-position="top center"
-                    data-variation="tiny"
-                    ><i class="${this.getIconClass.call(this, i.id, true)}"></i></button>
-                    <button class="ui button"
-                    data-tooltip=${i18next.t('tbx_download_hint')}
-                    data-position="top left"
-                    data-variation="mini"
-                    @click=${() => {
+            ${createButtonsFields.call(this, i)}
 
-                      const rectangle = this.selectedArea_.polygon.hierarchy.getValue().positions.map(cartesianToDegrees);
-                      rectangle.pop();
-                      console.log('hey', rectangle);
-                      const bbox = coordinatesToBbox(rectangle);
-                      console.log('hey', bbox);
-                      this.dispatchEvent(new CustomEvent('downloadActiveData', {
-                        detail: {
-                          bbox4326: bbox
-                        }
-                      }));
-                    }
-                    }>
-                    <i class="download icon"></i>
-                    </button>
-                    <button
-                    class="ui button"
-                    @click=${this.onRemoveEntityClick_.bind(this, i.id)}
-                    data-tooltip=${i18next.t('tbx_remove_btn_hint')}
-                    data-position="top center"
-                    data-variation="tiny"
-                    ><i class="trash alternate outline icon"></i></button>
-                </div>
-            </div>
             ${i.type !== 'polygon' ?
-      html`
+            html`
                     <ngm-gst-interaction
                         .viewer=${this.viewer}
                         .positions=${i.positions}
                         .geometryType=${i.type}
                         .parentElement=${this}>
-                    </ngm-gst-interaction>
-                ` : ''}
+                    </ngm-gst-interaction>`
+            : ''}
             ${i.type === 'line' ?
-      html`<ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>` : ''}
+            html`<ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>`
+            : ''}
+            ${i.type === 'rectangle' ?
+            html `
+              <div class="ui tiny buttons">
+              <button class="ui button"
+                data-position="top left"
+                data-variation="mini"
+                @click=${() => {
+                  const rectangle = i.positions.map(cartesianToDegrees);
+                  rectangle.pop();
+                  const bbox = coordinatesToBbox(rectangle);
+                  this.dispatchEvent(new CustomEvent('downloadActiveData', {
+                    detail: {
+                      bbox4326: bbox
+                    }
+                  }));
+                }
+                }>
+                ${i18next.t('tbx_download_data_inside_rectangle_label')}
+              </button>
+            </div>
+            `
+            : ''}
         </div>
+
         <div class="ngm-aoi-edit"  ?hidden=${!this.draw_.entityForEdit || this.draw_.entityForEdit.id !== i.id}>
             <div class="ui mini basic fluid buttons ngm-aoi-tooltip-container">
                 <button class="ui button basic primary"
