@@ -69,6 +69,7 @@ async function zoomTo(config) {
  * @type {import('cesium/Source/Scene/Scene.js').default}
  */
 const scene = viewer.scene;
+window.scene = scene;
 
 /**
  * @type {import('cesium/Source/Scene/Globe.js').default}

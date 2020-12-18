@@ -46,7 +46,7 @@ describe('Auth', () => {
   describe('waitForAuthenticate', () => {
     it('should wait until the user authenticates', async () => {
       Auth.logout();
-      setInterval(() => Auth.setUser(user), 120);
+      setTimeout(() => Auth.setUser(user));
       await Auth.waitForAuthenticate();
       assert.deepStrictEqual(Auth.getUser(), user);
     });
