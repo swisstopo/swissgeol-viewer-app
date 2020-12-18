@@ -190,6 +190,22 @@ const geo_base = {
           zoomToBbox: true
         }
       ]
+    },
+    {
+      label: t('lyr_geophysics_label'),
+      children: [
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 226670,
+          label: t('lyr_seismic_transects_label'),
+          layer: 'seismic_transects',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true,
+          visible: false,
+          displayed: false,
+          propsOrder: ['Line', 'Owner', 'Public', 'SRD', 'AcqYear', 'Length', 'data_link']
+        },
+      ]
     }
   ]
 };
