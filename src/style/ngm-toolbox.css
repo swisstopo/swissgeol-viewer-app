@@ -14,7 +14,9 @@
 }
 
 .ngm-aoi-title {
+  text-overflow: ellipsis;
   white-space: nowrap;
+  overflow: hidden;
   font-weight: normal;
 }
 
