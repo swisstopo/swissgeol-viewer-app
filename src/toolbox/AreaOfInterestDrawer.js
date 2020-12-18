@@ -5,7 +5,7 @@ import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import GpxDataSource from '../GpxDataSource.js';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
-import {getMeasurements} from '../utils.js';
+import {getMeasurements} from '../cesiumutils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 
 import {html, LitElement} from 'lit-element';
@@ -24,7 +24,8 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
-import {applyLimits, updateHeightForCartesianPositions} from '../utils';
+import {updateHeightForCartesianPositions} from '../cesiumutils';
+import {applyLimits} from '../utils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
 import {showMessage} from '../message';

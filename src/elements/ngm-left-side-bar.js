@@ -21,6 +21,8 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../message';
+import {createDataGenerator, createZipFromData} from '../download.js';
+import {saveAs} from 'file-saver';
 
 const WELCOME_PANEL = 'welcome-panel';
 const CATALOG_PANEL = 'catalog-panel';
@@ -111,7 +113,11 @@ class LeftSideBar extends I18nMixin(LitElement) {
           ${i18next.t('tbx_toolbox_label')}
         </div>
         <div class="content">
-          <ngm-aoi-drawer .viewer=${this.viewer}></ngm-aoi-drawer>
+          <ngm-aoi-drawer
+            .viewer=${this.viewer}
+            @downloadActiveData=${evt => this.downloadActiveData(evt)}
+          >
+          </ngm-aoi-drawer>
         </div>
       </div>
 
@@ -138,6 +144,26 @@ class LeftSideBar extends I18nMixin(LitElement) {
         </div>
       </div>
     `;
+  }
+
+  async downloadActiveData(evt) {
+    const {bbox4326} = evt.detail;
+    const specs = this.activeLayers
+      .filter(l => !!l.downloadDataType)
+      .map(l => ({
+        layer: l.layer,
+        url: l.downloadDataPath,
+        type: l.downloadDataType
+      }));
+    const data = [];
+    for await (const d of createDataGenerator(specs, bbox4326)) data.push(d);
+    if (data.length === 0) {
+      console.log('Nothing to download');
+      return;
+    }
+    const zip = await createZipFromData(data);
+    const blob = await zip.generateAsync({type: 'blob'});
+    saveAs(blob, 'swissgeol_data.zip');
   }
 
   initializeActiveLayers() {

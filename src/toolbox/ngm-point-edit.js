@@ -5,8 +5,11 @@ import $ from '../jquery';
 import {lv95ToDegrees} from '../projection';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {applyLimits, prepareCoordinatesForUi} from '../utils';
+import {prepareCoordinatesForUi} from '../cesiumutils';
+import {applyLimits} from '../utils';
+
 import {AOI_POINT_COLORS, AOI_POINT_SYMBOLS} from '../constants';
+
 
 class NgmPointEdit extends I18nMixin(LitElement) {
 

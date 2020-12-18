@@ -1,6 +1,7 @@
 import {html} from 'lit-element';
 import i18next from 'i18next';
-import {clickOnElement} from '../utils.js';
+import {cartesianToDegrees} from '../cesiumutils.js';
+import {clickOnElement, coordinatesToBbox} from '../utils.js';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';
@@ -119,6 +120,26 @@ function aoiListTemplate() {
                     data-position="top center"
                     data-variation="tiny"
                     ><i class="${this.getIconClass.call(this, i.id, true)}"></i></button>
+                    <button class="ui button"
+                    data-tooltip=${i18next.t('tbx_download_hint')}
+                    data-position="top left"
+                    data-variation="mini"
+                    @click=${() => {
+
+                      const rectangle = this.selectedArea_.polygon.hierarchy.getValue().positions.map(cartesianToDegrees);
+                      rectangle.pop();
+                      console.log('hey', rectangle);
+                      const bbox = coordinatesToBbox(rectangle);
+                      console.log('hey', bbox);
+                      this.dispatchEvent(new CustomEvent('downloadActiveData', {
+                        detail: {
+                          bbox4326: bbox
+                        }
+                      }));
+                    }
+                    }>
+                    <i class="download icon"></i>
+                    </button>
                     <button
                     class="ui button"
                     @click=${this.onRemoveEntityClick_.bind(this, i.id)}

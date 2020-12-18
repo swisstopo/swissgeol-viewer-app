@@ -7,7 +7,7 @@ import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {I18nMixin} from '../i18n.js';
 import i18next from 'i18next';
-import {prepareCoordinatesForUi} from '../utils';
+import {prepareCoordinatesForUi} from '../cesiumutils';
 
 class NgmPositionEdit extends I18nMixin(LitElement) {
 

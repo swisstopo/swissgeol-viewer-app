@@ -2,7 +2,8 @@
 
 import assert from 'assert';
 import {assert as chaiAssert} from 'chai';
-import {filterCsvString, containsXY, createZipFromData, createDataGenerator} from '../src/download.js';
+import {createZipFromData, createDataGenerator} from '../src/download.js';
+import {containsXY, filterCsvString, isBboxInsideAnotherOne, areBboxIntersectings} from '../src/utils.js';
 
 // see https://stackoverflow.com/questions/58668361/how-can-i-convert-an-async-iterator-to-an-array
 async function toArray(asyncIterator) {
@@ -24,9 +25,33 @@ describe('Download', () => {
     });
   });
 
+  describe('bbox inclusion and intersection', () => {
+    const unitBox = [-1, -1, 1, 1];
+    it('true if completly inside', () => {
+      const tested = [-0.5, -0.5, 0.5, 0.5];
+      assert.ok(areBboxIntersectings(unitBox, tested));
+    });
+    it('false if completly outside', () => {
+      const tested = [10, 10, 21, 21];
+      assert.ok(!areBboxIntersectings(unitBox, tested));
+    });
+    it('true if overlapping', () => {
+      const tested = [0, 0, 2, 2];
+      assert.ok(areBboxIntersectings(unitBox, tested));
+    });
+  });
+
   describe('filterCsvString', () => {
     it('return empty CSV if input is empty', () => {
       const result = filterCsvString('', [0, 0, 1, 1]);
+      assert.strictEqual(result, '');
+    });
+    it('skip empty lines', () => {
+      const result = filterCsvString('\n', [0, 0, 1, 1]);
+      assert.strictEqual(result, '');
+    });
+    it('skip spaces', () => {
+      const result = filterCsvString(' ', [0, 0, 1, 1]);
       assert.strictEqual(result, '');
     });
 

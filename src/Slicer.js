@@ -1,7 +1,7 @@
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import Plane from 'cesium/Source/Core/Plane';
-import {pickCenter} from './utils.js';
+import {pickCenter} from './cesiumutils.js';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
@@ -15,7 +15,8 @@ import ShadowMode from 'cesium/Source/Scene/ShadowMode';
 import {lv95ToDegrees, radiansToLv95} from './projection';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
-import {applyLimits, executeForAllPrimitives, pickCenterOnEllipsoid, planeFromTwoPoints} from './utils';
+import {pickCenterOnEllipsoid, planeFromTwoPoints} from './cesiumutils';
+import {applyLimits, executeForAllPrimitives} from './utils';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
 import Transforms from 'cesium/Source/Core/Transforms';
