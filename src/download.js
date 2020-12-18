@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import {coordinatesToBbox, isBboxInsideAnotherOne, areBboxIntersectings, filterCsvString} from './utils.js';
+import {coordinatesToBbox, areBboxIntersectings, filterCsvString} from './utils.js';
 
 
 /**

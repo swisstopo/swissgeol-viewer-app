@@ -3,7 +3,7 @@
 import assert from 'assert';
 import {assert as chaiAssert} from 'chai';
 import {createZipFromData, createDataGenerator} from '../src/download.js';
-import {containsXY, filterCsvString, isBboxInsideAnotherOne, areBboxIntersectings} from '../src/utils.js';
+import {containsXY, filterCsvString, areBboxIntersectings} from '../src/utils.js';
 
 // see https://stackoverflow.com/questions/58668361/how-can-i-convert-an-async-iterator-to-an-array
 async function toArray(asyncIterator) {

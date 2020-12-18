@@ -78,21 +78,6 @@ export function executeForAllPrimitives(viewer, functionToExecute) {
 }
 
 /**
- *
- * @param {number[]} tested
- * @param {number[]} ref
- * @return {boolean}
- */
-export function isBboxInsideAnotherOne(tested, ref) {
-  return (
-    tested[0] <= ref[2] &&
-    tested[2] >= ref[0] &&
-    tested[1] <= ref[3] &&
-    tested[3] >= ref[1]
-  );
-}
-
-/**
  * @param {number[]} b1
  * @param {number[]} b2
  * @return {boolean}
