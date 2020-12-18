@@ -104,6 +104,9 @@ export function setupViewer(container) {
     case 'cli_ticino_0.5m':
       terrainUrl = 'https://download.swissgeol.ch/cli_terrain/ticino-0.5m/';
       break;
+      case 'cli_walensee_0.5m':
+        terrainUrl = 'https://download.swissgeol.ch/cli_terrain/walensee-0.5m/';
+        break;
     default:
       terrainUrl = 'https://3d.geo.admin.ch/1.0.0/ch.swisstopo.terrain.3d/default/20200520/4326/';
   }
