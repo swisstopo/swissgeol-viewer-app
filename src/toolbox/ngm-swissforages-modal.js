@@ -101,13 +101,17 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
     }
   }
 
+  get modalSizeClass() {
+    return this.options.swissforagesId ? 'large' : 'mini';
+  }
+
   render() {
     return html`
-      <div class="ngm-swissforages-modal ui modal ${this.options.swissforagesId ? 'large' : 'mini'}">
+      <div class="ngm-swissforages-modal top aligned ui modal ${this.modalSizeClass}">
         <div class="ui inverted dimmer ${this.loading ? 'active' : ''}">
           <div class="ui loader"></div>
         </div>
-        <div class="content" style="height: ${this.options.swissforagesId ? '80vh' : 'auto'}">
+        <div class="content ${this.modalSizeClass}">
           <div ?hidden="${this.service.userToken || this.options.swissforagesId}">
             <label>${i18next.t('tbx_swissforages_login_label')}</label>
             <div class="ngm-swissforages-configuration">

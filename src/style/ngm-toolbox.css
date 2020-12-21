@@ -143,3 +143,11 @@ ngm-toolbox-slicer {
 .ngm-swissforages-configuration {
   margin-top: 5px;
 }
+
+.ngm-swissforages-modal .content.large {
+  height: 80vh;
+}
+
+.ngm-swissforages-modal .content.mini {
+  height: auto;
+}
