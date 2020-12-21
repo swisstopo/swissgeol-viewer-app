@@ -126,10 +126,35 @@ ngm-toolbox-slicer {
   margin-right: 0;
 }
 
+.ngm-swissforages-configuration {
+  display: flex;
+  justify-content: space-around;
+}
 .ui.button.ngm-disabled-btn {
   cursor: default;
   opacity: 0.45 !important;
   background-image: none;
   box-shadow: none;
   pointer-events: none !important;
+}
+
+.ngm-swissforages-configuration label {
+  margin-bottom: 5px;
+}
+
+.ngm-swissforages-configuration > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.ngm-swissforages-configuration {
+  margin-top: 5px;
+}
+
+.ngm-swissforages-modal .content.large {
+  height: 80vh;
+}
+
+.ngm-swissforages-modal .content.mini {
+  height: auto;
 }

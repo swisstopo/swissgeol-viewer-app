@@ -36,6 +36,7 @@ A few URL parameters will modify the behaviour of the viewer:
 - `ownterrain=false` disables the Swisstopo terrain (mind that their is only data in the swissrectangle)
   `ownterrain=cli_2m` use the 2m terrain generated using Cesium CLI (for testing only)
   `ownterrain=cli_ticino_0.5m`' use the 0.5m terrain generated using Cesium CLI (for testing only - only around Ticino)
+  `ownterrain=cli_walensee_0.5m`' use the 0.5m terrain generated using Cesium CLI (for testing only - only around Walensee)
 - `swissrectangle=false` do not restrict rendering to the Swiss rectangle
 - `norequestrendermode` disable the resource optimizations (will use 100% CPU)
 - `inspector` display the Cesium Inspector widget
