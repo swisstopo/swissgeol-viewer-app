@@ -40,7 +40,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     return {
       viewer: {type: Object},
       selectedArea_: {type: Object},
-      slicer: {type: Object}
+      slicer: {type: Object},
+      downloadActiveDataEnabled: {type: Boolean}
     };
   }
 
@@ -567,11 +568,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   disableToolButtons() {
-    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button').forEach(button => button.classList.add('disabled'));
+    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
+      .forEach(button => button.classList.add('ngm-disabled-btn'));
   }
 
   enableToolButtons() {
-    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button').forEach(button => button.classList.remove('disabled'));
+    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
+      .forEach(button => button.classList.remove('ngm-disabled-btn'));
   }
 
   /**

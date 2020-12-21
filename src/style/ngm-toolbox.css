@@ -126,3 +126,10 @@ ngm-toolbox-slicer {
   margin-right: 0;
 }
 
+.ui.button.ngm-disabled-btn {
+  cursor: default;
+  opacity: 0.45 !important;
+  background-image: none;
+  box-shadow: none;
+  pointer-events: none !important;
+}

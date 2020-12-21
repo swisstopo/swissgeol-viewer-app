@@ -143,6 +143,7 @@
   "tbx_kml_large_warning": "KML zu gross. Es werden nur 10 Geometrien geladen, um Performanceeinschränlungen zu vermeiden",
   "tbx_line_slice_warn": "Nur der erste und letzte Punkt der Polylinie wird beim Schneiden berücksichtigt",
   "tbx_name_label": "Name",
+  "tbx_no_data_to_download_warning": "",
   "tbx_point_color_label": "Farbe:",
   "tbx_point_symbol_label": "Symbol:",
   "tbx_remove_btn_hint": "Entfernen",

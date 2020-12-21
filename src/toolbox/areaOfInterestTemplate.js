@@ -5,6 +5,7 @@ import {clickOnElement, coordinatesToBbox} from '../utils.js';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';
+import {classMap} from 'lit-html/directives/class-map.js';
 
 const fileUploadInputId = 'fileUpload';
 
@@ -151,7 +152,7 @@ function aoiListTemplate() {
             ${i.type === 'rectangle' ?
             html `
               <div class="ui tiny buttons">
-              <button class="ui button"
+              <button class="ui button ${classMap({disabled: !this.downloadActiveDataEnabled})}"
                 data-position="top left"
                 data-variation="mini"
                 @click=${() => {

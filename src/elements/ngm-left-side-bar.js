@@ -103,7 +103,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
               <span class="small_load_counter">${this.globeQueueLength_}</span>
             </div>
           </h5>
-           <ngm-map-configuration .viewer=${this.viewer} .mapChooser=${this.mapChooser}></ngm-map-configuration>
+          <ngm-map-configuration .viewer=${this.viewer} .mapChooser=${this.mapChooser}></ngm-map-configuration>
         </div>
       </div>
 
@@ -115,6 +115,7 @@ class LeftSideBar extends I18nMixin(LitElement) {
         <div class="content">
           <ngm-aoi-drawer
             .viewer=${this.viewer}
+            .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
             @downloadActiveData=${evt => this.downloadActiveData(evt)}
           >
           </ngm-aoi-drawer>
@@ -129,16 +130,16 @@ class LeftSideBar extends I18nMixin(LitElement) {
         <div class="content">
           <div class="ui link list">
             <a class="item" target="_blank" href="https://swissforages.ch/">
-             <button class="ui icon button">
-               <i class="pencil ruler icon"></i>
-             </button>
-             swissforages.ch
+              <button class="ui icon button">
+                <i class="pencil ruler icon"></i>
+              </button>
+              swissforages.ch
             </a>
             <a class="item" target="_blank" href="https://www.strati.ch/">
-             <button class="ui icon button">
-               <i class="receipt icon"></i>
-             </button>
-             strati.ch
+              <button class="ui icon button">
+                <i class="receipt icon"></i>
+              </button>
+              strati.ch
             </a>
           </div>
         </div>
@@ -146,19 +147,23 @@ class LeftSideBar extends I18nMixin(LitElement) {
     `;
   }
 
-  async downloadActiveData(evt) {
-    const {bbox4326} = evt.detail;
-    const specs = this.activeLayers
+  get activeLayersForDownload() {
+    return this.activeLayers
       .filter(l => !!l.downloadDataType)
       .map(l => ({
         layer: l.layer,
         url: l.downloadDataPath,
         type: l.downloadDataType
       }));
+  }
+
+  async downloadActiveData(evt) {
+    const {bbox4326} = evt.detail;
+    const specs = this.activeLayersForDownload;
     const data = [];
     for await (const d of createDataGenerator(specs, bbox4326)) data.push(d);
     if (data.length === 0) {
-      console.log('Nothing to download');
+      showWarning(i18next.t('tbx_no_data_to_download_warning'));
       return;
     }
     const zip = await createZipFromData(data);
