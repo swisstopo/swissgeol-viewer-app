@@ -95,6 +95,7 @@ function createButtonsFields(i) {
         data-variation="tiny"
         ><i class="search plus icon"></i></button>
         <button
+        ?hidden="${i.swissforagesId}"
         class="ui button"
         @click=${this.editAreaPosition.bind(this, i.id)}
         data-tooltip=${i18next.t('tbx_edit_area_hint')}
@@ -141,7 +142,6 @@ function aoiListTemplate() {
         </div>
         <div class="content ngm-aoi-content">
             ${createButtonsFields.call(this, i)}
-
             ${i.type !== 'polygon' ?
             html`
                     <ngm-gst-interaction
