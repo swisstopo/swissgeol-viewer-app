@@ -7,6 +7,7 @@ import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {getMeasurements} from '../utils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 import {html, LitElement} from 'lit-element';
 
@@ -355,7 +356,9 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       attributes.id = entity.id;
       attributes.name = !entity.name && entity.parent && entity.parent.name ? entity.parent.name : dataSourceName;
       if (type === 'point') {
-        attributes.positions = [entity.position];
+        // getValue doesn't work with julianDate for some reason
+        const position = entity.position.getValue ? entity.position.getValue(new Date()) : entity.position;
+        attributes.positions = [position];
         attributes.clampPoint = true;
       } else if (type === 'line') {
         attributes.positions = entity.polyline.positions;
