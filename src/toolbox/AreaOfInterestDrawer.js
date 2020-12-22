@@ -14,9 +14,9 @@ import {
   AOI_DATASOURCE_NAME,
   DEFAULT_AOI_COLOR,
   DEFAULT_VOLUME_HEIGHT_LIMITS,
-  AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR
+  AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR, SWISSFORAGES_VIEWER_URL
 } from '../constants.js';
-import {updateColor, cleanupUploadedEntity, getUploadedEntityType} from './helpers.js';
+import {updateColor, cleanupUploadedEntity, getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
 import {showWarning} from '../message.js';
 import {I18nMixin} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -30,7 +30,9 @@ import {showMessage} from '../message';
 import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {DEFAULT_AOI_VOLUME_COLOR} from '../constants';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
+import {SwissforagesService} from './SwissforagesService';
+import Cartographic from 'cesium/Source/Core/Cartographic';
+import {lv95ToDegrees} from '../projection';
 
 class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
 
@@ -49,6 +51,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.minVolumeLowerLimit = -30000;
     this.maxVolumeLowerLimit = 30000;
     this.julianDate = new JulianDate();
+    this.swissforagesService = new SwissforagesService();
   }
 
   update(changedProperties) {
@@ -101,6 +104,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       if (volumeShowedProp && volumeShowedProp.getValue()) {
         this.updateEntityVolume(this.draw_.entityForEdit.id);
       }
+      updateBoreholeHeights(this.draw_.entityForEdit, this.julianDate);
     });
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
@@ -115,6 +119,14 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       }));
     });
     this.sectionImageUrl = null;
+    this.swissforagesModalOptions = {
+      name: undefined,
+      id: undefined,
+      position: undefined,
+      onLoggedIn: undefined,
+      onSwissforagesBoreholeCreated: undefined,
+      show: false
+    };
 
     this.aoiInited = true;
   }
@@ -218,6 +230,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         description: val.properties.description ? val.properties.description.getValue() : '',
         image: val.properties.image ? val.properties.image.getValue() : '',
         website: val.properties.website ? val.properties.website.getValue() : '',
+        swissforagesId: val.properties.swissforagesId ? val.properties.swissforagesId.getValue() : undefined,
+        depth: val.properties.depth ? val.properties.depth.getValue() : undefined,
       };
       if (val.billboard) {
         item.pointColor = val.billboard.color.getValue(this.julianDate);
@@ -412,6 +426,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const entity = this.interestAreasDataSource.entities.getById(id);
     const type = entity.properties.type ? entity.properties.type.getValue() : undefined;
     let volume = entity.properties.volumeShowed ? entity.properties.volumeShowed.getValue() : undefined;
+    const swissforagesId = entity.properties.swissforagesId ? entity.properties.swissforagesId.getValue() : undefined;
     if (inverted) {
       volume = !volume;
     }
@@ -423,7 +438,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       case 'line':
         return volume ? 'map outline icon' : 'route icon';
       case 'point':
-        return 'map marker alternate icon';
+        return swissforagesId ? 'ruler vertical icon' : 'map marker alternate icon';
       default:
         return '';
     }
@@ -492,6 +507,17 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         verticalOrigin: VerticalOrigin.BOTTOM,
         disableDepthTestDistance: 0,
         heightReference: attributes.clampPoint ? HeightReference.CLAMP_TO_GROUND : HeightReference.NONE
+      };
+      entityAttrs.properties.swissforagesId = attributes.swissforagesId;
+      entityAttrs.properties.depth = attributes.depth;
+      const height = Cartographic.fromCartesian(entityAttrs.position).height;
+      entityAttrs.ellipse = {
+        show: !!attributes.swissforagesId,
+        material: Color.GREY,
+        semiMinorAxis: 500.0,
+        semiMajorAxis: 500.0,
+        extrudedHeight: height,
+        height: height - attributes.depth
       };
     }
     return this.interestAreasDataSource.entities.add(entityAttrs);
@@ -723,6 +749,87 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     } else {
       entity.properties.addProperty('website', websiteElem.value);
     }
+  }
+
+  showSwissforagesModal(item) {
+    const cartographicPosition = Cartographic.fromCartesian(item.positions[0]);
+    const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
+    cartographicPosition.height -= altitude;
+    this.swissforagesModalOptions = {
+      id: item.id,
+      name: item.name,
+      position: cartographicPosition,
+      swissforagesId: item.swissforagesId,
+      show: true,
+      onSwissforagesBoreholeCreated: (pointId, boreholeId, depth) => this.onSwissforagesBoreholeCreated(pointId, boreholeId, depth)
+    };
+    this.requestUpdate();
+  }
+
+  onSwissforagesBoreholeCreated(pointId, boreholeId, depth) {
+    const entity = this.interestAreasDataSource.entities.getById(pointId);
+    entity.properties.swissforagesId = boreholeId;
+    entity.properties.depth = depth;
+    updateBoreholeHeights(entity, this.julianDate);
+    const url = `${SWISSFORAGES_VIEWER_URL}${boreholeId}`;
+    if (entity.properties.website) {
+      entity.properties.website = url;
+    } else {
+      entity.properties.addProperty('website', url);
+    }
+    entity.ellipse.show = true;
+    this.viewer.scene.requestRender();
+    this.swissforagesModalOptions = {
+      swissforagesId: boreholeId,
+      show: true
+    };
+    this.requestUpdate();
+  }
+
+  async syncPointWithSwissforages(id, swissforagesId) {
+    if (!this.swissforagesService.userToken) {
+      this.swissforagesModalOptions = {
+        onLoggedIn: () => this.syncPointWithSwissforages(id, swissforagesId),
+        show: true
+      };
+      this.requestUpdate();
+      return;
+    }
+    try {
+      this.toggleSwissforagesSyncLoader(id);
+      const boreholeData = await this.swissforagesService.getBoreholeById(swissforagesId);
+      const entity = this.interestAreasDataSource.entities.getById(id);
+      if (boreholeData) {
+        if (boreholeData.location_x && boreholeData.location_y) {
+          const height = boreholeData.elevation_z || 0;
+          const positionlv95 = lv95ToDegrees([boreholeData.location_x, boreholeData.location_y]);
+          const cartographicPosition = Cartographic.fromDegrees(positionlv95[0], positionlv95[1]);
+          const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
+          cartographicPosition.height = height + altitude;
+          entity.position = Cartographic.toCartesian(cartographicPosition);
+          updateBoreholeHeights(entity, this.julianDate);
+        }
+        entity.properties.depth = boreholeData.length || entity.properties.depth;
+        if (boreholeData.custom && boreholeData.custom.public_name) {
+          entity.properties.name = boreholeData.custom.public_name;
+          entity.name = boreholeData.custom.public_name;
+        }
+      } else {
+        showWarning(i18next.t('tbx_swissforages_borehole_not_exists_warning'));
+        entity.ellipse.show = false;
+        entity.properties.swissforagesId = undefined;
+      }
+      this.toggleSwissforagesSyncLoader(id);
+    } catch (e) {
+      showWarning(e);
+      this.toggleSwissforagesSyncLoader(id);
+    }
+  }
+
+  toggleSwissforagesSyncLoader(id) {
+    const syncBtnElement = this.querySelector(`.ngm-swissforages-sync-${id}`);
+    syncBtnElement.classList.toggle('disabled');
+    syncBtnElement.querySelector('.dimmer').classList.toggle('active');
   }
 
   render() {

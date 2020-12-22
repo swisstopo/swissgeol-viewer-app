@@ -7,6 +7,8 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {applyLimits, prepareCoordinatesForUi} from '../utils';
 import {AOI_POINT_COLORS, AOI_POINT_SYMBOLS} from '../constants';
+import {updateBoreholeHeights} from './helpers';
+import JulianDate from 'cesium/Source/Core/JulianDate';
 
 class NgmPointEdit extends I18nMixin(LitElement) {
 
@@ -27,6 +29,7 @@ class NgmPointEdit extends I18nMixin(LitElement) {
     this.coordsType = 'wsg84';
     this.minHeight = -30000;
     this.maxHeight = 30000;
+    this.julianDate = new JulianDate();
   }
 
   updated() {
@@ -72,8 +75,8 @@ class NgmPointEdit extends I18nMixin(LitElement) {
     const cartographicPosition = Cartographic.fromCartesian(this.position);
     this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
-    const heightInput = this.querySelector('.ngm-height-input');
-    this.heightValue = applyLimits(heightInput.value, this.minHeight, this.maxHeight);
+    const heightValue = Number(this.querySelector('.ngm-height-input').value);
+    this.heightValue = applyLimits(heightValue, this.minHeight, this.maxHeight);
     const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
     let lon = this.xValue;
     let lat = this.yValue;
@@ -82,10 +85,12 @@ class NgmPointEdit extends I18nMixin(LitElement) {
       lon = radianCoords[0];
       lat = radianCoords[1];
     }
-    const cartesianPosition = Cartesian3.fromDegrees(lon, lat, this.heightValue + altitude);
+    const height = this.heightValue + altitude;
+    const cartesianPosition = Cartesian3.fromDegrees(lon, lat, height);
     this.position = cartesianPosition;
     this.updateInputValues();
     this.entity.position = cartesianPosition;
+    updateBoreholeHeights(this.entity, this.julianDate);
     this.viewer.scene.requestRender();
   }
 
@@ -102,58 +107,59 @@ class NgmPointEdit extends I18nMixin(LitElement) {
       this.updateInputValues();
     }
     return html`
-        <div>
-            <label>${i18next.t('nav_coordinates_label')}:</label>
-            <div class="ngm-coord-input">
-                <div class="ui mini right labeled input">
-                    <div class="ui mini dropdown label ngm-coord-type-select">
-                          <div class="text"></div>
-                          <i class="dropdown icon"></i>
-                    </div>
-                    <input type="number" class="ngm-coord-x-input"
-                        .step="${this.coordsStep}"
-                        .value="${this.xValue}"
-                        @change="${this.onPositionChange}">
-                </div>
-                <div class="ui mini left action input">
-                    <input type="number" class="ngm-coord-y-input"
-                        .step="${this.coordsStep}"
-                        .value="${this.yValue}"
-                        @change="${this.onPositionChange}">
-                </div>
+      <div>
+        <label>${i18next.t('nav_coordinates_label')}:</label>
+        <div class="ngm-coord-input">
+          <div class="ui mini right labeled input">
+            <div class="ui mini dropdown label ngm-coord-type-select">
+              <div class="text"></div>
+              <i class="dropdown icon"></i>
             </div>
-            <label>${i18next.t('tbx_camera_height_label')}:</label></br>
-            <div class="ui mini input right labeled">
-                <input type="number" step="10" min="${this.minHeight}" max="${this.maxHeight}"
-                    class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
-                <label class="ui label">m</label>
-            </div>
-            <button class="ui icon button ngm-aoi-point-style-btn">
-                <i class="map marker alternate icon"></i>
-            </button>
+            <input type="number" class="ngm-coord-x-input"
+                   .step="${this.coordsStep}"
+                   .value="${this.xValue}"
+                   @change="${this.onPositionChange}">
+          </div>
+          <div class="ui mini left action input">
+            <input type="number" class="ngm-coord-y-input"
+                   .step="${this.coordsStep}"
+                   .value="${this.yValue}"
+                   @change="${this.onPositionChange}">
+          </div>
         </div>
-        <div class="ui mini popup ngm-aoi-point-style">
-            <label>${i18next.t('tbx_point_color_label')}</label>
-            <div class="ngm-aoi-color-selector">
-            ${AOI_POINT_COLORS.map(pointColor => {
-      return html`<div
-                      style="background-color: ${pointColor.color};"
-                      @click=${this.onColorChange.bind(this, pointColor.value)}
-                      class="ngm-aoi-color-container"></div>`;
-    })}
-            </div>
+        <label>${i18next.t('tbx_camera_height_label')}:</label></br>
+        <div class="ui mini input right labeled">
+          <input type="number" step="10" min="${this.minHeight}" max="${this.maxHeight}"
+                 class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
+          <label class="ui label">m</label>
+        </div>
+        <button class="ui icon button ngm-aoi-point-style-btn">
+          <i class="map marker alternate icon"></i>
+        </button>
+      </div>
+      <div class="ui mini popup ngm-aoi-point-style">
+        <label>${i18next.t('tbx_point_color_label')}</label>
+        <div class="ngm-aoi-color-selector">
+          ${AOI_POINT_COLORS.map(pointColor => {
+            return html`
+              <div
+                style="background-color: ${pointColor.color};"
+                @click=${this.onColorChange.bind(this, pointColor.value)}
+                class="ngm-aoi-color-container"></div>`;
+          })}
+        </div>
 
-            <label>${i18next.t('tbx_point_symbol_label')}</label>
-            <div class="ngm-aoi-symbol-selector">
-            ${AOI_POINT_SYMBOLS.map(image => {
-      return html`<img
-                      class="ui mini image"
-                      src="./images/${image}"
-                      @click=${this.onSymbolChange.bind(this, image)}>`;
-    })}
-            </div>
+        <label>${i18next.t('tbx_point_symbol_label')}</label>
+        <div class="ngm-aoi-symbol-selector">
+          ${AOI_POINT_SYMBOLS.map(image => {
+            return html`<img
+              class="ui mini image"
+              src="./images/${image}"
+              @click=${this.onSymbolChange.bind(this, image)}>`;
+          })}
         </div>
-      `;
+      </div>
+    `;
   }
 
   createRenderRoot() {
