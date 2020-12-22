@@ -31,11 +31,9 @@ export function getUploadedEntityType(entity) {
   for (const geometry of CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD) {
     if (entity[geometry] !== undefined) {
       return geometry === 'polyline' ? 'line' : geometry;
-    } else if (entity.position) {
-      return 'point';
     }
   }
-  return undefined;
+  return entity.position ? 'point' : undefined;
 }
 
 export function updateBoreholeHeights(entity, date) {
