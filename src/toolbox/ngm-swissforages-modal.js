@@ -6,7 +6,7 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';
 import 'fomantic-ui-css/components/dropdown.js';
-import {SWISSFORAGES_VIEWER_URL} from '../constants';
+import {SWISSFORAGES_EDITOR_URL} from '../constants';
 import {showWarning} from '../message';
 
 class NgmSwissforagesModal extends I18nMixin(LitElement) {
@@ -16,7 +16,6 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
     this.userWorkgroups = [];
     this.username = '';
     this.password = '';
-    this.depth = 0;
   }
 
   static get properties() {
@@ -41,6 +40,8 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
         });
       }
       this.element.modal('show');
+    } else if (this.element) {
+      this.element.modal('hide');
     }
   }
 
@@ -92,8 +93,8 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
   async createBorehole() {
     this.toggleLoading();
     try {
-      const boreholeId = await this.service.createBorehole(this.options.position, this.depth, this.options.name);
-      this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.depth);
+      const boreholeId = await this.service.createBorehole(this.options.position, this.options.depth, this.options.name);
+      this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.options.depth);
       this.toggleLoading();
     } catch (e) {
       showWarning(e);
@@ -106,6 +107,8 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
   }
 
   render() {
+    if (this.element)
+      this.element[0].querySelector('input.ngm-swissforages-depth-input').value = this.options.depth;
     return html`
       <div class="ngm-swissforages-modal top aligned ui modal ${this.modalSizeClass}">
         <div class="ui inverted dimmer ${this.loading ? 'active' : ''}">
@@ -148,13 +151,15 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
                 <input
                   class="ngm-swissforages-depth-input"
                   type="number"
-                  @input="${evt => this.depth = Number(evt.target.value)}">
+                  .value="${this.options.depth}"
+                  @change="${evt => this.options.depth = Number(evt.target.value)}"
+                  step="100">
               </div>
             </div>
           </div>
           <iframe
             ?hidden="${!this.options.swissforagesId}"
-            src="${`${SWISSFORAGES_VIEWER_URL}${this.options.swissforagesId}`}" width="100%" height="100%"
+            src="${`${SWISSFORAGES_EDITOR_URL}${this.options.swissforagesId}`}" width="100%" height="100%"
             style="border:none;">
           </iframe>
         </div>
