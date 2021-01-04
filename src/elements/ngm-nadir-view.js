@@ -1,7 +1,7 @@
 import {LitElement, html} from 'lit-element';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
-import {setCameraHeight, aroundCenter} from '../utils.js';
+import {setCameraHeight, aroundCenter} from '../cesiumutils.js';
 
 import CesiumMath from 'cesium/Source/Core/Math';
 

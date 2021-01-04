@@ -5,7 +5,7 @@ import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import GpxDataSource from '../GpxDataSource.js';
 import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
-import {getMeasurements} from '../utils.js';
+import {getMeasurements} from '../cesiumutils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 
@@ -24,7 +24,8 @@ import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import {applyLimits, updateHeightForCartesianPositions} from '../utils';
+import {updateHeightForCartesianPositions} from '../cesiumutils';
+import {applyLimits} from '../utils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
 import {showMessage} from '../message';
@@ -41,7 +42,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     return {
       viewer: {type: Object},
       selectedArea_: {type: Object},
-      slicer: {type: Object}
+      slicer: {type: Object},
+      downloadActiveDataEnabled: {type: Boolean}
     };
   }
 
@@ -591,11 +593,13 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
   }
 
   disableToolButtons() {
-    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button').forEach(button => button.classList.add('disabled'));
+    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
+      .forEach(button => button.classList.add('ngm-disabled-btn'));
   }
 
   enableToolButtons() {
-    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button').forEach(button => button.classList.remove('disabled'));
+    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
+      .forEach(button => button.classList.remove('ngm-disabled-btn'));
   }
 
   /**

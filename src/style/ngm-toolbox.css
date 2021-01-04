@@ -132,6 +132,13 @@ ngm-toolbox-slicer {
   display: flex;
   justify-content: space-around;
 }
+.ui.button.ngm-disabled-btn {
+  cursor: default;
+  opacity: 0.45 !important;
+  background-image: none;
+  box-shadow: none;
+  pointer-events: none !important;
+}
 
 .ngm-swissforages-configuration label {
   margin-bottom: 5px;

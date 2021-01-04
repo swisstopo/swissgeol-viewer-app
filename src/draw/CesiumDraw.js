@@ -12,7 +12,7 @@ import Intersections2D from 'cesium/Source/Core/Intersections2D';
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
 import {getDimensionLabel} from './helpers.js';
-import {getMeasurements} from '../utils.js';
+import {getMeasurements, cartesianToDegrees} from '../cesiumutils.js';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 
 /**
@@ -195,7 +195,7 @@ export class CesiumDraw extends EventTarget {
     const measurements = getMeasurements(positions, this.activeDistances_, this.type);
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
-        positions: positions.map(cartesiantoDegrees),
+        positions: positions.map(cartesianToDegrees),
         type: this.type,
         measurements: measurements
       }
@@ -764,18 +764,4 @@ function rectanglify(coordinates) {
   } else {
     return coordinates;
   }
-}
-
-
-/**
- * @param {import('cesium/Source/Core/Cartesian3').default} cartesian
- * @return {Array<number>}
- */
-function cartesiantoDegrees(cartesian) {
-  const cartographic = Cartographic.fromCartesian(cartesian);
-  return [
-    cartographic.longitude * 180 / Math.PI,
-    cartographic.latitude * 180 / Math.PI,
-    cartographic.height
-  ];
 }
