@@ -123,7 +123,7 @@ const geo_base = {
           visible: false,
           displayed: true,
           downloadDataType: 'csv',
-          downloadDataPath: 'https://download.swissgeol.ch/bh_2D_20201127_00.csv?nocache_remove_this_one_day',
+          downloadDataPath: 'https://download.swissgeol.ch/bh_2D_20201127_00.csv',
           propsOrder: ['XCOORD', 'YCOORD', 'ZCOORDB', 'ORIGNAME', 'NAMEPUB', 'SHORTNAME', 'BOHREDAT', 'BOHRTYP',
             'GRUND', 'RESTRICTIO', 'TIEFEMD', 'DEPTHFROM', 'DEPTHTO', 'LAYERDESC', 'ORIGGEOL', 'LITHOLOGY',
             'LITHOSTRAT', 'CHRONOSTR', 'TECTO', 'USCS1', 'USCS2', 'USCS3']
@@ -435,7 +435,7 @@ const subsurface = {
           propsOrder: FAULTS_ORDER,
           downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Faults.zip',
           downloadDataType: 'indexed_download',
-          downloadDataPath: 'https://download.swissgeol.ch/Faults/footprints_boxed.geojson?nocache_remove_this_one_day',
+          downloadDataPath: 'https://download.swissgeol.ch/Faults/footprints_boxed.geojson',
         },
       ]
     },
