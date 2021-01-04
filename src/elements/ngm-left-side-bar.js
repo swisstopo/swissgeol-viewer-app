@@ -148,13 +148,14 @@ class LeftSideBar extends I18nMixin(LitElement) {
   }
 
   get activeLayersForDownload() {
-    return this.activeLayers
-      .filter(l => !!l.downloadDataType)
+    const result = this.activeLayers
+      .filter(l => l.visible && !!l.downloadDataType)
       .map(l => ({
         layer: l.layer,
         url: l.downloadDataPath,
         type: l.downloadDataType
       }));
+      return result;
   }
 
   async downloadActiveData(evt) {
