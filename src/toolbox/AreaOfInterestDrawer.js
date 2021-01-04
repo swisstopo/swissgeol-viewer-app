@@ -7,6 +7,7 @@ import getTemplate from './areaOfInterestTemplate.js';
 import i18next from 'i18next';
 import {getMeasurements} from '../cesiumutils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
+import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 import {html, LitElement} from 'lit-element';
 
@@ -23,7 +24,6 @@ import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import NearFarScalar from 'cesium/Source/Core/NearFarScalar';
 import {updateHeightForCartesianPositions} from '../cesiumutils';
 import {applyLimits} from '../utils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
@@ -315,27 +315,10 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       entities = entities.slice(0, 10);
     }
     let atLeastOneValid = false;
-    entities.forEach((ent, index) => {
+    entities.forEach(ent => {
       const exists = this.interestAreasDataSource.entities.getById(ent.id);
       if (!exists) {
-        const type = getUploadedEntityType(ent);
-        if (type) {
-          atLeastOneValid = true;
-          ent = cleanupUploadedEntity(ent);
-          if (type === 'point') {
-            ent.point = {
-              pixelSize: 8,
-              scaleByDistance: new NearFarScalar(0, 1, 1, 1)
-            };
-          }
-          ent.name = ent.name ? `${ent.name}` : `${kmlDataSource.name}`;
-          ent.properties = this.getAreaProperties(ent, type);
-          if (ent.polygon) {
-            ent.polygon.fill = true;
-          }
-          updateColor(ent, false);
-          this.interestAreasDataSource.entities.add(ent);
-        }
+        atLeastOneValid = this.addUploadedArea(ent, kmlDataSource.name);
       } else {
         atLeastOneValid = true;
         showWarning(i18next.t('tbx_kml_area_existing_warning'));
@@ -356,24 +339,38 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const entities = gpxDataSource.entities.values;
     entities.forEach(entity => {
       if (!this.interestAreasDataSource.entities.getById(entity.id)) {
-        const type = getUploadedEntityType(entity);
-        entity = cleanupUploadedEntity(entity);
-
-        if (type === 'point') {
-          entity.billboard = {
-            image: `./images/${AOI_POINT_SYMBOLS[0]}`,
-            color: Color.GRAY,
-            scale: 0.5,
-            verticalOrigin: VerticalOrigin.BOTTOM,
-            disableDepthTestDistance: 0
-          };
-        }
-        entity.name = entity.name || gpxDataSource.name;
-        entity.properties = this.getAreaProperties(entity, type);
-        updateColor(entity, false);
-        this.interestAreasDataSource.entities.add(entity);
+        this.addUploadedArea(entity, gpxDataSource.name);
       }
     });
+  }
+
+  /**
+   * Adds entity to dataSource. Returns true if entity added.
+   * @param entity
+   * @param dataSourceName
+   * @return {boolean}
+   */
+  addUploadedArea(entity, dataSourceName) {
+    const type = getUploadedEntityType(entity);
+    if (type) {
+      entity = cleanupUploadedEntity(entity);
+      const attributes = {...this.getAreaProperties(entity, type)};
+      attributes.id = entity.id;
+      attributes.name = !entity.name && entity.parent && entity.parent.name ? entity.parent.name : dataSourceName;
+      if (type === 'point') {
+        // getValue doesn't work with julianDate for some reason
+        const position = entity.position.getValue ? entity.position.getValue(new Date()) : entity.position;
+        attributes.positions = [position];
+        attributes.clampPoint = true;
+      } else if (type === 'line') {
+        attributes.positions = entity.polyline.positions;
+      } else {
+        attributes.positions = entity.polygon.hierarchy;
+      }
+      this.addAreaEntity(attributes);
+      return true;
+    }
+    return false;
   }
 
   setAreasClickable(areasClickable) {
@@ -471,12 +468,14 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
        website: string,
        pointSymbol: (optional) string,
        pointColor: (optional) Color,
+       clampPoint: (optional) Boolean,
    * }
    */
   addAreaEntity(attributes) {
     const type = attributes.type;
     const name = type.charAt(0).toUpperCase() + type.slice(1);
     const entityAttrs = {
+      id: attributes.id || undefined,
       name: attributes.name || `${name} ${this.areasCounter_[type]}`,
       show: typeof attributes.show === 'boolean' ? attributes.show : true,
       properties: {
@@ -511,7 +510,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
         color: attributes.pointColor || Color.GRAY,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
-        disableDepthTestDistance: 0
+        disableDepthTestDistance: 0,
+        heightReference: attributes.clampPoint ? HeightReference.CLAMP_TO_GROUND : HeightReference.NONE
       };
       entityAttrs.properties.swissforagesId = attributes.swissforagesId;
       entityAttrs.properties.depth = attributes.depth;

@@ -39,20 +39,19 @@ class NgmObjectInformation extends I18nMixin(LitElement) {
           ${this.info.properties.map(row => {
         const key = row[0];
         const value = row[1];
-        switch (key) {
-          case 'PDF_Link':
-            return html`
+        if ((typeof value === 'string') && (value.startsWith('http'))) {
+          return html`
           <tr class="top aligned">
             <td class="key">${i18next.t(`assets:${key}`)}</td>
             <td class="val"><a href="${value}" target="_blank" rel="noopener">${value.split('/').pop()}</a></td>
           </tr>
           `;
-          default:
-            return html`
+        } else {
+          return html`
           <tr class="top aligned">
-              <td class="key">${i18next.t(`assets:${key}`)}</td>
-              <td class="val">${value}</td>
-            </tr>
+            <td class="key">${i18next.t(`assets:${key}`)}</td>
+            <td class="val">${value}</td>
+          </tr>
           `;
         }
       })}
