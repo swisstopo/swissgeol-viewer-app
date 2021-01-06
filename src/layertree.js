@@ -59,14 +59,14 @@ const SWISSTOPO_LABEL_STYLE = {
   }
 };
 
-const TUNNEL_STYLE = {
-  color: {
-    conditions: [
-      ['${TunnelType} === "RailTunnel"', 'color("red")'],
-      ['${TunnelType} === "RoadTunnel"', 'color("blue")']
-    ]
-  }
-};
+// const TUNNEL_STYLE = {
+//   color: {
+//     conditions: [
+//       ['${TunnelType} === "RailTunnel"', 'color("red")'],
+//       ['${TunnelType} === "RoadTunnel"', 'color("blue")']
+//     ]
+//   }
+// };
 
 const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
 const DOWNLOAD_ROOT = 'https://download.swissgeol.ch/';
@@ -447,10 +447,25 @@ const man_made_objects = {
   children: [
     {
       type: LAYER_TYPES.tiles3d,
-      assetId: 96056,
-      style: TUNNEL_STYLE,
-      label: t('lyr_tunnel_label'),
-      layer: 'tunnel',
+      assetId: 244982,
+      label: t('lyr_road_tunnel_label'),
+      layer: 'road_tunnel',
+      pickable: true,
+      transparencyDisabled: true
+    },
+    {
+      type: LAYER_TYPES.tiles3d,
+      assetId: 244984,
+      label: t('lyr_rail_tunnel_label'),
+      layer: 'rail_tunnel',
+      pickable: true,
+      transparencyDisabled: true
+    },
+    {
+      type: LAYER_TYPES.tiles3d,
+      assetId: 244985,
+      label: t('lyr_water_tunnel_label'),
+      layer: 'water_tunnel',
       pickable: true,
       transparencyDisabled: true
     },
