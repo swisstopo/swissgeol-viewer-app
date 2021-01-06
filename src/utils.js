@@ -30,19 +30,6 @@ export function clickOnElement(id) {
 }
 
 /**
- * Change element position in array
- * @param {Array} array target array
- * @param {number} fromIdx from index
- * @param {number} toIdx to index
- * @return {Array}
- */
-export function insertAndShift(array, fromIdx, toIdx) {
-  const cutOut = array.splice(fromIdx, 1)[0];
-  array.splice(toIdx, 0, cutOut);
-  return array;
-}
-
-/**
  * @param {string} string
  * @return {string}
  */
