@@ -37,20 +37,6 @@ export function escapeRegExp(string) {
   return string ? string.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&') : string;
 }
 
-/**
- * Applies min/max values and returns value
- * @param {number} value
- * @param {number} minValue
- * @param {number} maxValue
- * @return {number}
- */
-export function applyLimits(value, minValue, maxValue) {
-  if (value < minValue || value > maxValue) {
-    value = Math.max(value, minValue);
-    value = Math.min(value, maxValue);
-  }
-  return value;
-}
 
 /**
  * @param viewer

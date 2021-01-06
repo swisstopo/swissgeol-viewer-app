@@ -25,7 +25,7 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import {updateHeightForCartesianPositions} from '../cesiumutils';
-import {applyLimits} from '../utils';
+import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
 import {showMessage} from '../message';
@@ -701,8 +701,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     const entity = this.draw_.entityForEdit;
     const limitInput = this.querySelector(`.ngm-lower-limit-input-${index}`);
     const heightInput = this.querySelector(`.ngm-volume-height-input-${index}`);
-    const lowerLimit = applyLimits(Number(limitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
-    const height = applyLimits(Number(heightInput.value), this.minVolumeHeight, this.maxVolumeHeight);
+    const lowerLimit = CesiumMath.clamp(Number(limitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
+    const height = CesiumMath.clamp(Number(heightInput.value), this.minVolumeHeight, this.maxVolumeHeight);
     limitInput.value = lowerLimit;
     heightInput.value = height;
     entity.properties.volumeHeightLimits = {lowerLimit, height};

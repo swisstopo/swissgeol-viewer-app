@@ -16,7 +16,8 @@ import {lv95ToDegrees, radiansToLv95} from './projection';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
 import {pickCenterOnEllipsoid, planeFromTwoPoints} from './cesiumutils';
-import {applyLimits, executeForAllPrimitives} from './utils';
+import {executeForAllPrimitives} from './utils';
+import CesiumMath from 'cesium/Source/Core/Math';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
 import Transforms from 'cesium/Source/Core/Transforms';
@@ -522,12 +523,12 @@ export default class Slicer {
         if (type.includes('horizontal')) {
           const horizontalMin = lv95Center[0] - halfWidth + offset;
           const horizontalMax = lv95Center[0] + halfWidth - offset;
-          lon = applyLimits(viewCenterLv95[0], horizontalMin, horizontalMax);
+          lon = CesiumMath.clamp(viewCenterLv95[0], horizontalMin, horizontalMax);
           lat = lv95Center[1] + halfHeight * negate;
         } else if (type.includes('vertical')) {
           const verticalMin = lv95Center[1] - halfHeight + offset;
           const verticalMax = lv95Center[1] + halfHeight - offset;
-          lat = applyLimits(viewCenterLv95[1], verticalMin, verticalMax);
+          lat = CesiumMath.clamp(viewCenterLv95[1], verticalMin, verticalMax);
           lon = lv95Center[0] + halfWidth * negate;
         }
       }
