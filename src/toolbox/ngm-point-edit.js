@@ -6,7 +6,7 @@ import {lv95ToDegrees} from '../projection';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {prepareCoordinatesForUi} from '../cesiumutils';
-import {applyLimits} from '../utils';
+import CesiumMath from 'cesium/Source/Core/Math';
 
 import {AOI_POINT_COLORS, AOI_POINT_SYMBOLS} from '../constants';
 import {updateBoreholeHeights} from './helpers';
@@ -79,7 +79,7 @@ class NgmPointEdit extends I18nMixin(LitElement) {
     this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
     const heightValue = Number(this.querySelector('.ngm-height-input').value);
-    this.heightValue = applyLimits(heightValue, this.minHeight, this.maxHeight);
+    this.heightValue = CesiumMath.clamp(heightValue, this.minHeight, this.maxHeight);
     const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
     let lon = this.xValue;
     let lat = this.yValue;

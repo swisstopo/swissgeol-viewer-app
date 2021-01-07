@@ -30,19 +30,6 @@ export function clickOnElement(id) {
 }
 
 /**
- * Change element position in array
- * @param {Array} array target array
- * @param {number} fromIdx from index
- * @param {number} toIdx to index
- * @return {Array}
- */
-export function insertAndShift(array, fromIdx, toIdx) {
-  const cutOut = array.splice(fromIdx, 1)[0];
-  array.splice(toIdx, 0, cutOut);
-  return array;
-}
-
-/**
  * @param {string} string
  * @return {string}
  */
@@ -50,20 +37,6 @@ export function escapeRegExp(string) {
   return string ? string.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&') : string;
 }
 
-/**
- * Applies min/max values and returns value
- * @param {number} value
- * @param {number} minValue
- * @param {number} maxValue
- * @return {number}
- */
-export function applyLimits(value, minValue, maxValue) {
-  if (value < minValue || value > maxValue) {
-    value = Math.max(value, minValue);
-    value = Math.min(value, maxValue);
-  }
-  return value;
-}
 
 /**
  * @param viewer
