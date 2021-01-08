@@ -106,6 +106,18 @@ main {
   overflow: hidden;
 }
 
+/* do not commit these hacks */
+ngm-left-side-bar {
+  position: absolute;
+  z-index: 10000;
+}
+
+ngm-main {
+  flex: auto;
+  display: flex;
+  overflow: hidden;
+}
+
 .map {
   display: flex;
   flex-direction: column;
@@ -127,6 +139,8 @@ main {
 #cesium {
   display: flex;
   flex: auto;
+  width: 100vw;
+  height: 90vh;
 }
 
 /* This is workaround to make the 'clientHeight' works in cesium when the parent element is in flex grow */

@@ -46,30 +46,7 @@
     </div>
   </header>
   <main>
-    <ngm-loading-mask></ngm-loading-mask>
-    <ngm-left-side-bar class="left sidebar"></ngm-left-side-bar>
-    <div class="map">
-      <div id="cesium">
-        <ngm-slow-loading style="display: none;"></ngm-slow-loading>
-        <div class="navigation-widgets">
-          <ngm-navigation-widgets data-fs="no"></ngm-navigation-widgets>
-          <ngm-full-screen-view></ngm-full-screen-view>
-        </div>
-        <ngm-object-information></ngm-object-information>
-        <ngm-review-window data-fs="no"></ngm-review-window>
-        <ngm-object-position-popup></ngm-object-position-popup>
-      </div>
-      <div class="footer">
-        <div class="ui horizontal link list">
-          <ngm-feature-height class="item"></ngm-feature-height>
-        </div>
-        <div style="flex: auto;"></div>
-        <div class="ui horizontal link list">
-          <a class="item" target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
-          <a class="item" target='_blank' data-i18n="[href]disclaimer_href;disclaimer_text"></a>
-        </div>
-      </div>
-    </div>
+    <ngm-main></ngm-main>
   </main>
   <script type="module" id="app-script" crossorigin="use-credentials"></script>
   <script type="module">

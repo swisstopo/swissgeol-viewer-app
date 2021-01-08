@@ -74,9 +74,9 @@ const FOG_FRAGMENT_SHADER_SOURCE = `
   }`;
 
 /**
- * @param {HTMLElement} container
+ * @param {Element} container
  */
-export function setupViewer(container) {
+export function setupViewer(container, rethrowRenderErrors) {
 
   // The first layer of Cesium is special; using a 1x1 white image to workaround it.
   // See https://github.com/AnalyticalGraphicsInc/cesium/issues/1323 for details.
@@ -122,6 +122,7 @@ export function setupViewer(container) {
         powerPreference: 'high-performance'
       }
     },
+    showRenderLoopErrors: rethrowRenderErrors,
     animation: false,
     baseLayerPicker: false,
     fullscreenButton: false,
@@ -137,19 +138,18 @@ export function setupViewer(container) {
     scene3DOnly: true,
     skyBox: false,
     imageryProvider: firstImageryProvider,
-    showRenderLoopErrors: false,
     useBrowserRecommendedResolution: true,
     terrainProvider: terrainProvider,
     terrainExaggeration: terrainExaggeration,
     requestRenderMode: requestRenderMode,
     // maximumRenderTimeChange: 10,
   });
-
+  const scene = viewer.scene;
+  scene.rethrowRenderErrors = rethrowRenderErrors;
   // remove the default behaviour of calling 'zoomTo' on the double clicked entity
   viewer.screenSpaceEventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
   enableCenterOfRotate(viewer);
 
-  const scene = viewer.scene;
   const globe = scene.globe;
 
   if (searchParams.get('swissrectangle') !== 'false') {

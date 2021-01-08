@@ -33,12 +33,12 @@ class LeftSideBar extends I18nMixin {
   static get properties() {
     return {
       viewer: {type: Object},
-      zoomTo: {type: Function},
+      zoomTo: {type: Object},
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
       hideWelcome: {type: Boolean},
       hideCatalog: {type: Boolean},
-      mapChooser: {type: Function},
+      mapChooser: {type: Object},
       authenticated: {type: Boolean},
       globeQueueLength_: {type: Number},
     };
@@ -95,7 +95,7 @@ class LeftSideBar extends I18nMixin {
             .authenticated=${this.authenticated}
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
-            @zoomTo=${evt => this.zoomTo(evt.detail)}>
+            @zoomTo=${evt => this.zoomTo(this.viewer, evt.detail)}>
           </ngm-layers>
           <h5 class="ui horizontal divider header">
             ${i18next.t('dtd_background_map_label')}
