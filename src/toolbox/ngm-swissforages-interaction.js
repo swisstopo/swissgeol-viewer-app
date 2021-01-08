@@ -35,18 +35,24 @@ class NgmSwissforagesInteraction extends I18nMixin(LitElement) {
   }
 
   showSwissforagesModal() {
-    const cartographicPosition = Cartographic.fromCartesian(this.item.positions[0]);
-    const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
-    cartographicPosition.height -= altitude;
-    this.updateModalOptions({
-      id: this.item.id,
-      name: this.item.name,
-      position: cartographicPosition,
-      depth: this.item.depth,
-      swissforagesId: this.item.swissforagesId,
-      show: true,
-      onSwissforagesBoreholeCreated: (pointId, boreholeId, depth) => this.onSwissforagesBoreholeCreated(pointId, boreholeId, depth)
-    });
+    if (this.item.swissforagesId) {
+      // show
+      window.open(`${SWISSFORAGES_EDITOR_URL}${this.item.swissforagesId}`, '_blank');
+    } else {
+      // create
+      const cartographicPosition = Cartographic.fromCartesian(this.item.positions[0]);
+      const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
+      cartographicPosition.height -= altitude;
+      this.updateModalOptions({
+        id: this.item.id,
+        name: this.item.name,
+        position: cartographicPosition,
+        depth: this.item.depth,
+        swissforagesId: this.item.swissforagesId,
+        show: true,
+        onSwissforagesBoreholeCreated: (pointId, boreholeId, depth) => this.onSwissforagesBoreholeCreated(pointId, boreholeId, depth)
+      });
+    }
   }
 
   onSwissforagesBoreholeCreated(pointId, boreholeId, depth) {

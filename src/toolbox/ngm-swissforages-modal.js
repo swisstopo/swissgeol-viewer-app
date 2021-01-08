@@ -6,7 +6,6 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';
 import 'fomantic-ui-css/components/dropdown.js';
-import {SWISSFORAGES_EDITOR_URL} from '../constants';
 import {showWarning} from '../message';
 
 class NgmSwissforagesModal extends I18nMixin(LitElement) {
@@ -116,38 +115,40 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
         </div>
         <div class="content ${this.modalSizeClass}">
           <div ?hidden="${this.service.userToken || this.options.swissforagesId}">
-            <label>${i18next.t('tbx_swissforages_login_label')}</label>
-            <div class="ngm-swissforages-configuration">
-              <div class="ui input">
-                <input
-                  class="ngm-swissforages-login-input"
-                  type="text"
-                  placeholder="${i18next.t('tbx_swissforages_username_label')}"
-                  @input="${evt => this.username = evt.target.value}">
-              </div>
-              <div class="ui input">
-                <input
-                  class="ngm-swissforages-password-input"
-                  type="password"
-                  placeholder="${i18next.t('tbx_swissforages_password_label')}"
-                  @input="${evt => this.password = evt.target.value}">
+            <h5 class="ui dividing header">${i18next.t('tbx_swissforages_login_label')}</h5>
+            <div class="ui form">
+              <div class="two fields">
+                <div class="field">
+                  <label>${i18next.t('tbx_swissforages_username_label')}</label>
+                  <input
+                    type="text"
+                    placeholder="${i18next.t('tbx_swissforages_username_label')}"
+                    @input="${evt => this.username = evt.target.value}">
+                </div>
+                <div class="field">
+                  <label>${i18next.t('tbx_swissforages_password_label')}</label>
+                  <input
+                    type="password"
+                    placeholder="${i18next.t('tbx_swissforages_password_label')}"
+                    @input="${evt => this.password = evt.target.value}">
+                </div>
               </div>
             </div>
           </div>
           <div
             ?hidden="${!this.service.userToken || this.options.swissforagesId}"
-            class="ngm-swissforages-configuration">
-            <div>
-              <label>${i18next.t('tbx_swissforages_workgroup_label')}</label>
-              <div
-                class="ui dropdown ngm-swissforages-workgroup-selector ${this.userWorkgroups.length === 1 ? 'disabled' : ''}">
-                <div class="text"></div>
-                <i class="dropdown icon"></i>
+            class="ui form">
+            <div class="two fields">
+              <div class="field">
+                <label>${i18next.t('tbx_swissforages_workgroup_label')}</label>
+                <div
+                  class="ui selection dropdown ngm-swissforages-workgroup-selector ${this.userWorkgroups.length === 1 ? 'disabled' : ''}">
+                  <div class="text"></div>
+                  <i class="dropdown icon"></i>
+                </div>
               </div>
-            </div>
-            <div>
+              <div class="field">
               <label>${i18next.t('tbx_swissforages_depth_label')}</label>
-              <div class="ui input tiny">
                 <input
                   class="ngm-swissforages-depth-input"
                   type="number"
@@ -157,11 +158,6 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
               </div>
             </div>
           </div>
-          <iframe
-            ?hidden="${!this.options.swissforagesId}"
-            src="${`${SWISSFORAGES_EDITOR_URL}${this.options.swissforagesId}`}" width="100%" height="100%"
-            style="border:none;">
-          </iframe>
         </div>
         <div class="actions">
           <div class="ui cancel small button">
