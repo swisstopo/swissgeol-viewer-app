@@ -1,7 +1,8 @@
 import i18next from 'i18next';
 import locI18next from 'loc-i18next';
 import Backend from 'i18next-xhr-backend';
-import {html, render} from 'lit-html';
+import {render} from 'lit-html';
+import {html, LitElement} from 'lit-element';
 import {SUPPORTED_LANGUAGES} from './constants.js';
 import {getURLSearchParams, setURLSearchParams} from './utils.js';
 
@@ -9,9 +10,10 @@ import {getURLSearchParams, setURLSearchParams} from './utils.js';
 class LanguageDetector {
   constructor() {
     this.async = false;
+    this.type = 'languageDetector';
   }
 
-  init(services, detectorOptions, i18nextOptions) {
+  init(services, _, i18nextOptions) {
     this.languageUtils = services.languageUtils;
     this.fallbackLng = i18nextOptions.fallbackLng;
   }
@@ -31,9 +33,9 @@ class LanguageDetector {
       } else if (navigator.language) {
         languages.push(navigator.language);
       }
-      for (const lang of languages) {
-        if (this.languageUtils.isWhitelisted(lang)) {
-          language = lang;
+      for (const l of languages) {
+        if (this.languageUtils.isWhitelisted(l)) {
+          language = l;
           break;
         }
       }
@@ -81,7 +83,7 @@ export function setupI18n() {
 /**
  * @param {import('lit-element').LitElement} Base
  */
-export const I18nMixin = Base => class extends Base {
+export class I18nMixin extends LitElement {
 
   connectedCallback() {
     this.i18nLanguageChangedCallback_ = () => this.requestUpdate();
@@ -93,4 +95,4 @@ export const I18nMixin = Base => class extends Base {
     i18next.off('languageChanged', this.i18nLanguageChangedCallback_);
     super.disconnectedCallback();
   }
-};
+}

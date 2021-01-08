@@ -1,4 +1,4 @@
-import {LitElement, html} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map';
 import 'fomantic-ui-css/components/progress.js';
 import $ from '../jquery.js';

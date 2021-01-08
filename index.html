@@ -18,7 +18,7 @@
 <body>
   <div id="outdated-browser" style="display: none;">
     <header>
-      <img class="logo" src="src/images/logo-CH.svg">
+      <img alt="logo" class="logo" src="src/images/logo-CH.svg">
     </header>
 
     <div class="ui large negative icon floating message">
@@ -52,11 +52,11 @@
       <div id="cesium">
         <ngm-slow-loading style="display: none;"></ngm-slow-loading>
         <div class="navigation-widgets">
-          <ngm-navigation-widgets></ngm-navigation-widgets>
+          <ngm-navigation-widgets data-fs="no"></ngm-navigation-widgets>
           <ngm-full-screen-view></ngm-full-screen-view>
         </div>
         <ngm-object-information></ngm-object-information>
-        <ngm-review-window></ngm-review-window>
+        <ngm-review-window data-fs="no"></ngm-review-window>
         <ngm-object-position-popup></ngm-object-position-popup>
       </div>
       <div class="footer">

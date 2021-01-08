@@ -1,4 +1,4 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/popup.js';
 import 'fomantic-ui-css/components/dropdown.js';
@@ -9,10 +9,11 @@ import {I18nMixin} from '../i18n.js';
 import i18next from 'i18next';
 import {prepareCoordinatesForUi} from '../cesiumutils';
 
-class NgmPositionEdit extends I18nMixin(LitElement) {
+class NgmPositionEdit extends I18nMixin {
 
   static get properties() {
     return {
+      scene: {type: Object},
       coordinates: {type: String},
       xValue: {type: Number},
       yValue: {type: Number},

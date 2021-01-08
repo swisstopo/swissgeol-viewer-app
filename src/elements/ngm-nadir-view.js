@@ -1,11 +1,11 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 import {setCameraHeight, aroundCenter} from '../cesiumutils.js';
 
 import CesiumMath from 'cesium/Source/Core/Math';
 
-class NgmNadirView extends I18nMixin(LitElement) {
+class NgmNadirView extends I18nMixin {
   static get properties() {
     return {
       scene: {type: Object},
@@ -17,9 +17,9 @@ class NgmNadirView extends I18nMixin(LitElement) {
     super();
 
     /**
-     * @type {import('cesium/Source/Scene/Scene').default}
+     * @type {import('cesium').Scene}
      */
-    this.scene;
+    this.scene = null;
 
     this.pitch = undefined;
     this.height = undefined;

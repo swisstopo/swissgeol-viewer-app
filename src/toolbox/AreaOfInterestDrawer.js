@@ -9,7 +9,7 @@ import {getMeasurements} from '../cesiumutils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 
-import {html, LitElement} from 'lit-element';
+import {html} from 'lit-element';
 
 import {
   AOI_DATASOURCE_NAME,
@@ -35,7 +35,7 @@ import {DEFAULT_AOI_VOLUME_COLOR} from '../constants';
 import {SwissforagesService} from './SwissforagesService';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 
-class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
+class NgmAreaOfInterestDrawer extends I18nMixin {
 
   static get properties() {
     return {

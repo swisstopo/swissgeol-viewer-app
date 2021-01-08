@@ -133,6 +133,9 @@ export default class Slicer {
       outlineColor: PLANE_COLOR,
     };
 
+    /**
+     * @type {Entity.ConstructorOptions}
+     */
     const horizontalEntityTemplate = {
       position: new CallbackProperty(this.centerUpdateFunction('horizontal'), false),
       plane: {
@@ -142,6 +145,9 @@ export default class Slicer {
       }
     };
 
+    /**
+     * @type {Entity.ConstructorOptions}
+     */
     const verticalEntityTemplate = {
       position: new CallbackProperty(this.centerUpdateFunction('vertical'), false),
       plane: {
@@ -151,6 +157,9 @@ export default class Slicer {
       }
     };
 
+    /**
+     * @type {Entity.ConstructorOptions}
+     */
     const zEntityTemplate = {
       position: new CallbackProperty(this.centerUpdateFunction('altitude'), false),
       plane: {
@@ -393,10 +402,6 @@ export default class Slicer {
     };
   }
 
-  /**
-   *
-   * @param {Cartographic} viewCenter
-   */
   setInitialTargetsForBox() {
     const globe = this.viewer.scene.globe;
     this.planesCenter = pickCenter(this.viewer.scene);

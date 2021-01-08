@@ -1,4 +1,4 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import Auth from '../auth.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
@@ -7,7 +7,7 @@ import {I18nMixin} from '../i18n.js';
 /**
  * Authentication component
  */
-class NgmAuth extends I18nMixin(LitElement) {
+class NgmAuth extends I18nMixin {
 
   static get properties() {
     return {

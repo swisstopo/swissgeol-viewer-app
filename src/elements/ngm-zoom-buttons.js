@@ -1,10 +1,10 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 import {DEFAULT_VIEW} from '../constants.js';
 
-class NgmZoomButtons extends I18nMixin(LitElement) {
+class NgmZoomButtons extends I18nMixin {
 
   static get properties() {
     return {

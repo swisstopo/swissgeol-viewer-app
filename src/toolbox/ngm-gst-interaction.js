@@ -1,4 +1,4 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import {degreesToLv95, round} from '../projection.js';
 import {borehole, verticalCrossSection, horizontalCrossSection} from '../gst.js';
 import {showError, showWarning} from '../message.js';
@@ -22,7 +22,7 @@ const createBtnId = 'ngm-create-section';
  * @typedef {"point" | "line" | "rectangle"} GeometryType
  */
 
-class NgmGstInteraction extends I18nMixin(LitElement) {
+class NgmGstInteraction extends I18nMixin {
 
   static get properties() {
     return {

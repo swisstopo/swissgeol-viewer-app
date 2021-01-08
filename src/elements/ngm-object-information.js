@@ -1,10 +1,10 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import draggable from './draggable.js';
 import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 import {unsafeHTML} from 'lit-html/directives/unsafe-html';
 
-class NgmObjectInformation extends I18nMixin(LitElement) {
+class NgmObjectInformation extends I18nMixin {
 
   static get properties() {
     return {

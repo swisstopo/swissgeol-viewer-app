@@ -1,4 +1,4 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import '@geoblocks/cesium-compass';
 import '@geoblocks/cesium-view-cube';
 import './cesium-minimap.js';
@@ -12,7 +12,7 @@ import i18next from 'i18next';
 import {I18nMixin} from '../i18n.js';
 import {SWITZERLAND_RECTANGLE} from '../constants.js';
 
-class NgmNavigationWidgets extends I18nMixin(LitElement) {
+class NgmNavigationWidgets extends I18nMixin {
 
   static get properties() {
     return {
@@ -25,13 +25,17 @@ class NgmNavigationWidgets extends I18nMixin(LitElement) {
   constructor() {
     super();
     this.minimapExpanded = true;
+    /**
+     * @type {import('cesium').Viewer}
+     */
+    this.viewer = null;
   }
 
   render() {
     if (this.viewer) {
       return html`
         <cesium-minimap
-        .scene="${this.viewer.scene}"
+        .scene=${this.viewer.scene}
         extent="[5.910642046, 45.791912227, 10.554524194, 47.804750923]"
         ?expanded=${this.minimapExpanded}
         @sizechanged=${evt => this.minimapExpanded = evt.detail.expanded}
