@@ -164,7 +164,7 @@
   "tbx_swissforages_borehole_name_error": "Borehole name can't be set",
   "tbx_swissforages_borehole_not_exists_warning": "Borehole removed from Swissforages",
   "tbx_swissforages_borehole_sync_error": "Borehole can't be synchronized",
-  "tbx_swissforages_create_btn_label": "Create Borehole in Swissforages ",
+  "tbx_swissforages_create_btn_label": "Create Borehole in Swissforages",
   "tbx_swissforages_depth_label": "Depth: ",
   "tbx_swissforages_get_location_error": "Can't get location from Swissforages",
   "tbx_swissforages_incorrect_creds_warning": "Credentials incorrect",
