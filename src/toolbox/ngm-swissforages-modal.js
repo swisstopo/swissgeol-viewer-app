@@ -6,7 +6,6 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';
 import 'fomantic-ui-css/components/dropdown.js';
-import {SWISSFORAGES_EDITOR_URL} from '../constants';
 import {showWarning} from '../message';
 
 class NgmSwissforagesModal extends I18nMixin(LitElement) {
@@ -159,11 +158,6 @@ class NgmSwissforagesModal extends I18nMixin(LitElement) {
               </div>
             </div>
           </div>
-          <iframe
-            ?hidden="${!this.options.swissforagesId}"
-            src="${`${SWISSFORAGES_EDITOR_URL}${this.options.swissforagesId}`}" width="100%" height="100%"
-            style="border:none;">
-          </iframe>
         </div>
         <div class="actions">
           <div class="ui cancel small button">
