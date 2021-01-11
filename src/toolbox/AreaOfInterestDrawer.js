@@ -75,8 +75,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin {
     this.viewer = null;
   }
 
-  firstUpdated(_) {
-    super.firstUpdated(_);
+  firstUpdated() {
     this.addStoredAreas(this.getStoredAoi());
   }
 
