@@ -53,12 +53,16 @@ class NgmAreaOfInterestDrawer extends I18nMixin {
       viewer: {type: Object},
       selectedArea_: {type: Object},
       slicer: {type: Object},
+      setStoredAoi: {type: Object},
+      getStoredAoi: {type: Object},
       downloadActiveDataEnabled: {type: Boolean}
     };
   }
 
   constructor() {
     super();
+    this.getStoredAoi = null;
+    this.setStoredAoi = null;
     this.minVolumeHeight = 1;
     this.maxVolumeHeight = 30000;
     this.minVolumeLowerLimit = -30000;
@@ -69,6 +73,11 @@ class NgmAreaOfInterestDrawer extends I18nMixin {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
+  }
+
+  firstUpdated(_) {
+    super.firstUpdated(_);
+    this.addStoredAreas(this.getStoredAoi());
   }
 
   update(changedProperties) {
@@ -387,11 +396,7 @@ aoiListTemplate() {
     this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
       this.viewer.scene.requestRender();
       this.requestUpdate();
-      this.dispatchEvent(new CustomEvent('aoi_list_changed', {
-        detail: {
-          entities: this.entitiesList_
-        }
-      }));
+      this.setStoredAoi(this.entitiesList_);
     });
     this.sectionImageUrl = null;
     this.swissforagesModalOptions = {

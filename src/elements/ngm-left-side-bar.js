@@ -30,6 +30,14 @@ const TOOLBOX = 'ngm-toolbox';
 
 class LeftSideBar extends I18nMixin {
 
+  constructor() {
+    super();
+    /**
+     * @type {import('cesium').Viewer}
+     */
+    this.viewer = null;
+  }
+
   static get properties() {
     return {
       viewer: {type: Object},
@@ -40,7 +48,9 @@ class LeftSideBar extends I18nMixin {
       hideCatalog: {type: Boolean},
       mapChooser: {type: Object},
       authenticated: {type: Boolean},
-      globeQueueLength_: {type: Number},
+      slicer: {type: Object},
+      globeQueueLength_: {type: Number, attribut: false},
+      localStorageController: {type: Object},
     };
   }
 
@@ -92,7 +102,6 @@ class LeftSideBar extends I18nMixin {
           <ngm-layers
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             @layerChanged=${this.onLayerChanged}
-            .authenticated=${this.authenticated}
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(this.viewer, evt.detail)}>
@@ -115,6 +124,9 @@ class LeftSideBar extends I18nMixin {
         <div class="content">
           <ngm-aoi-drawer
             .viewer=${this.viewer}
+            .slicer=${this.slicer}
+            .getStoredAoi=${this.localStorageController.getStoredAoi}
+            .setStoredAoi=${this.localStorageController.setAoiInStorage}
             .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
             @downloadActiveData=${evt => this.downloadActiveData(evt)}
           >

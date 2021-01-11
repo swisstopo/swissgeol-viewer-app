@@ -8,6 +8,7 @@ import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
 import './elements/ngm-review-window';
 import './elements/ngm-feature-height';
+import './elements/ngm-auth';
 
 import {
   DEFAULT_VIEW,
@@ -27,6 +28,8 @@ import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 import {LocalStorageController} from './LocalStorageController.js';
 import {getZoomToPosition} from './permalink';
 import Slicer from './Slicer.js';
+
+import {setupI18n} from './i18n.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -67,15 +70,22 @@ const onStep1Finished = (globe, searchParams) => {
   globe.maximumScreenSpaceError = sse;
 };
 
-class NgmMain extends I18nMixin {
+/**
+ * This is the root component. It is useful for:
+ * - wiring the attributes of all top-level components;
+ * - distribute events vertically between components (non hierarchical).
+ */
+class NgmApp extends I18nMixin {
 
   /**
    * @type {import('lit-element').PropertyDeclarations}
    */
   static get properties() {
     return {
-      viewer: {type: Object},
-      mapChooser: {type: Object},
+      viewer: {type: Object, attribute: false},
+      mapChooser: {type: Object, attribute: false},
+      slicer_: {type: Object, attribute: false},
+      authenticated: {type: Boolean, attribute: false}
     };
   }
 
@@ -83,6 +93,7 @@ class NgmMain extends I18nMixin {
     super();
     this.slicer_ = null;
     this.viewer = null;
+    this.mapChooser = null;
   }
 
   onLayerAdded(evt) {
@@ -94,26 +105,23 @@ class NgmMain extends I18nMixin {
     }
   }
 
-  onStep2Finished({loadingMask, viewer, auth}) {
+  onStep2Finished({loadingMask, viewer}) {
     loadingMask.active = false;
     const loadingTime = performance.now() / 1000;
     console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
     this.querySelector('ngm-slow-loading').style.display = 'none';
-    const slicer = this.slicer_ = new Slicer(viewer);
+    this.slicer_ = new Slicer(viewer);
     // setup web components
 
     this.mapChooser = setupBaseLayers(viewer);
     this.viewer = viewer;
+    const auth = this.querySelector('ngm-auth');
+    this.authenticated = !!auth.user;
 
-    const widgets = this.querySelector('ngm-navigation-widgets');
-    widgets.viewer = viewer;
-    widgets.slicer = slicer;
     const sideBar = this.querySelector('ngm-left-side-bar');
-    sideBar.authenticated = !!auth.user;
-    auth.addEventListener('refresh', (evt) => sideBar.authenticated = evt.detail.authenticated);
 
     addMantelEllipsoid(viewer);
-    setupSearch(viewer, document.querySelector('ga-search'), sideBar);
+    setupSearch(viewer, this.querySelector('ga-search'), sideBar);
 
     const sentryConfirmed = localStorageController.isSentryConfirmed;
     if (!sentryConfirmed) {
@@ -129,42 +137,21 @@ class NgmMain extends I18nMixin {
       showMessage(i18next.t('sentry_message'), options);
     }
 
-    // Ugly hack: wait for the ngm-left-bar to be initialized
-    setTimeout(() => {
-      const aoiElement = this.querySelector('ngm-aoi-drawer');
-      aoiElement.slicer = slicer;
-      aoiElement.addStoredAreas(localStorageController.getStoredAoi());
-      aoiElement.addEventListener('aoi_list_changed', evt =>
-        localStorageController.setAoiInStorage(evt.detail.entities));
-    });
-
-    const reviewWindowElement = document.querySelector('ngm-review-window');
-    reviewWindowElement.hideReviewWindow = localStorageController.hideReviewWindowValue;
-    reviewWindowElement.addEventListener('review_window_changed', localStorageController.updateReviewWindowState);
-
     sideBar.zoomToPermalinkObject();
   }
 
-  firstUpdated() {
-    console.error('XXXXXXXXXXXXX');
-    const cesiumContainer = this.querySelector('#cesium');
-    const viewer = setupViewer(cesiumContainer, isLocalhost);
-
-    const loadingMask = document.querySelector('ngm-loading-mask');
-    const scene = viewer.scene;
-    window.scene = scene;
-    const globe = scene.globe;
+  /**
+   * @param {import ('cesium').Viewer} viewer
+   */
+  startCesiumLoadingProcess(viewer) {
+    const globe = viewer.scene.globe;
 
     // Temporarily increasing the maximum screen space error to load low LOD tiles.
     const searchParams = new URLSearchParams(document.location.search);
     globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') || '2000');
 
-    // setup auth component
-    const auth = document.querySelector('ngm-auth');
-    auth.endpoint = 'https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize';
-    auth.clientId = '5k1mgef7ggiremt415eecn95ki';
-
     let currentStep = 1;
+    const loadingMask = this.querySelector('ngm-loading-mask');
     const unlisten = globe.tileLoadProgressEvent.addEventListener(queueLength => {
       loadingMask.message = queueLength;
       if (currentStep === 1 && globe.tilesLoaded) {
@@ -176,17 +163,28 @@ class NgmMain extends I18nMixin {
           if (currentStep === 2) {
             console.log('Too long: going straight to step 3');
             currentStep = 3;
-            this.onStep2Finished({auth, loadingMask, viewer});
+            this.onStep2Finished({loadingMask, viewer});
             unlisten();
           }
         }, SKIP_STEP2_TIMEOUT);
       } else if (currentStep === 2 && globe.tilesLoaded) {
         currentStep = 3;
         console.log('Step 2 finished');
-        this.onStep2Finished({auth, loadingMask, viewer});
+        this.onStep2Finished({loadingMask, viewer});
         unlisten();
       }
     });
+
+
+  }
+
+  firstUpdated() {
+    setupI18n();
+    const cesiumContainer = this.querySelector('#cesium');
+    const viewer = setupViewer(cesiumContainer, isLocalhost);
+    window['viewer'] = viewer; // for debugging
+
+    this.startCesiumLoadingProcess(viewer);
 
     const {destination, orientation} = getCameraView();
     const zoomToPosition = getZoomToPosition();
@@ -200,47 +198,66 @@ class NgmMain extends I18nMixin {
 
     viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
-
-    document.querySelector('ngm-feature-height').viewer = viewer;
-
     i18next.on('languageChanged', (lang) => {
-      document.querySelector('#ngm-help-btn').href =
+      this.querySelector('#ngm-help-btn').href =
         lang === 'de' ? './manuals/manual_de.html' : './manuals/manual_en.html';
     });
 
-    function showSlowLoadingWindow() {
-      const timeout = 10000;
-      if (loadingMask.active && performance.now() > timeout) {
-        document.querySelector('ngm-slow-loading').style.display = 'block';
-      } else {
-        setTimeout(() => {
-          if (loadingMask.active) {
-            document.querySelector('ngm-slow-loading').style.display = 'block';
-          }
-        }, timeout - performance.now());
-      }
-    }
-
     i18next.on('initialized', () => {
-      showSlowLoadingWindow();
+      this.showSlowLoadingWindow();
     });
 
     const origin = window.location.origin;
     const pathname = window.location.pathname;
-    document.querySelector('#ngm-home-link').href = `${origin}${pathname}`;
+    this.querySelector('#ngm-home-link').href = `${origin}${pathname}`;
+  }
 
+  showSlowLoadingWindow() {
+    const timeout = 10000;
+    const loadingMask = this.querySelector('ngm-loading-mask');
+    if (loadingMask.active && performance.now() > timeout) {
+      this.querySelector('ngm-slow-loading').style.display = 'block';
+    } else {
+      setTimeout(() => {
+        if (loadingMask.active) {
+          this.querySelector('ngm-slow-loading').style.display = 'block';
+        }
+      }, timeout - performance.now());
+    }
   }
 
   render() {
     return html`
+  <header>
+    <a id="ngm-home-link" href=""><img class="logo" src="src/images/logo-CH.svg"></a>
+    <ga-search class="ui small left icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
+      <input type="search" data-i18n="[placeholder]header_search_placeholder">
+      <i class="search icon"></i>
+      <ul class="search-results"></ul>
+    </ga-search>
+    <div style="flex: auto;"></div>
+    <div class="ngm-header-links">
+      <div id="langs" class="ui horizontal selection list"></div>
+      <a id="ngm-help-btn" href="/manuals/manual_en.html" target="_blank" data-i18n="header_help_link"></a>
+      <ngm-auth
+        endpoint='https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize'
+        clientId='5k1mgef7ggiremt415eecn95ki'
+        @refresh=${(evt) => this.authenticated = evt.detail.authenticated}
+      ></ngm-auth>
+    </div>
+  </header>
+  <main>
     <ngm-loading-mask></ngm-loading-mask>
     <ngm-left-side-bar
+      .authenticated=${this.authenticated}
       @welcome_panel_changed=${localStorageController.updateWelcomePanelState}
       .hideWelcome=${localStorageController.hideWelcomeValue}
       .hideCatalog=${localStorageController.hideCatalogValue}
        @catalog_panel_changed=${localStorageController.toggleCatalogState}
       .zoomTo=${zoomTo}
+      .localStorageController=${localStorageController}
       @layeradded=${this.onLayerAdded}
+      .slicer=${this.slicer_}
       .viewer=${this.viewer}
       .mapChooser=${this.mapChooser}
       class='left sidebar'>
@@ -249,16 +266,25 @@ class NgmMain extends I18nMixin {
       <div id='cesium'>
         <ngm-slow-loading style='display: none;'></ngm-slow-loading>
         <div class='navigation-widgets'>
-          <ngm-navigation-widgets data-fs='no'></ngm-navigation-widgets>
+          <ngm-navigation-widgets
+            .viewer=${this.viewer}
+            .slicer=${this.slicer_}
+            data-fs='no'>
+          </ngm-navigation-widgets>
           <ngm-full-screen-view></ngm-full-screen-view>
         </div>
         <ngm-object-information></ngm-object-information>
-        <ngm-review-window data-fs='no'></ngm-review-window>
-        <ngm-object-position-popup></ngm-object-position-popup>
+        <ngm-review-window
+          .hideReviewWindow=${localStorageController.hideReviewWindowValue}
+          @review_window_changed=${localStorageController.updateReviewWindowState};
+          data-fs='no'>
+        </ngm-review-window>
       </div>
       <div class='footer'>
         <div class='ui horizontal link list'>
-          <ngm-feature-height class='item'></ngm-feature-height>
+          <ngm-feature-height class='item'
+            .viewer=${this.viewer}
+          ></ngm-feature-height>
         </div>
         <div style='flex: auto;'></div>
         <div class='ui horizontal link list'>
@@ -267,7 +293,8 @@ class NgmMain extends I18nMixin {
         </div>
       </div>
     </div>
-    `;
+  </main>
+  `;
   }
 
   createRenderRoot() {
@@ -275,4 +302,4 @@ class NgmMain extends I18nMixin {
   }
 }
 
-customElements.define('ngm-main', NgmMain);
+customElements.define('ngm-app', NgmApp);
