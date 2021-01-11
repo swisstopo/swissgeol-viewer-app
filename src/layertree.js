@@ -196,7 +196,7 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 226670,
+          assetId: 249376,
           label: t('lyr_seismic_transects_label'),
           layer: 'seismic_transects',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
