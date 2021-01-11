@@ -29,7 +29,10 @@ class NgmToolboxSlicer extends LitElementI18n {
       position: 'top left',
       content: i18next.t('tbx_line_slice_warn'),
       variation: 'mini',
-      forcePosition: true
+      forcePosition: true,
+      onShow: () => {
+        $(this.querySelector('.ngm-slice-warn')).popup('change content', i18next.t('tbx_line_slice_warn'));
+      }
     });
     $(this.querySelector('.ngm-slice-tools-btn')).popup({
       popup: $(this.querySelector('.ngm-slice-tools-popup')),
@@ -42,11 +45,7 @@ class NgmToolboxSlicer extends LitElementI18n {
         if (this.slicer.active) {
           this.toggleSlicer(true);
         }
-      },
-      values: [
-        {name: i18next.t('tbx_slice_left_label'), value: 'left', selected: this.sliceSide === 'left'},
-        {name: i18next.t('tbx_slice_right_label'), value: 'right', selected: this.sliceSide === 'right'}
-      ]
+      }
     });
   }
 
@@ -74,29 +73,36 @@ class NgmToolboxSlicer extends LitElementI18n {
     if (this.slicer && this.positions.length) {
       return html`
         <div class="ngm-slice-btns-container">
-            <div class="ui tiny buttons">
-                ${this.sliceEnabled ?
-        html`<button class="ui button"
+          <div class="ui tiny buttons">
+            ${this.sliceEnabled ?
+              html`
+                <button class="ui button"
                         @click=${() => this.toggleSlicer(false)}>
-                        ${i18next.t('tbx_disable_slice_btn_label')}
+                  ${i18next.t('tbx_disable_slice_btn_label')}
                 </button>` :
-        html`<button class="ui button"
+              html`
+                <button class="ui button"
                         @click=${() => this.toggleSlicer(true)}>
-                        ${i18next.t('tbx_slice_btn_label')}
-                        ${this.positions.length > 2 ? html`
-                        <i class="exclamation triangle icon ngm-slice-warn">` : ''}
+                  ${i18next.t('tbx_slice_btn_label')}
+                  ${this.positions.length > 2 ? html`
+                    <i class="exclamation triangle icon ngm-slice-warn">` : ''}
                 </button>`}
-                <button class="ui button ngm-slice-tools-btn"><i class="tools icon"></i></button>
-            </div>
+            <button class="ui button ngm-slice-tools-btn"><i class="tools icon"></i></button>
+          </div>
         </div>
         <div class="ui mini popup ngm-slice-tools-popup">
-            <label>${i18next.t('tbx_slice_side_label')}</label>
-            <div class="ui fluid selection mini dropdown ngm-slice-side">
-                <div class="text"></div>
-                <i class="dropdown icon"></i>
+          <label>${i18next.t('tbx_slice_side_label')}</label>
+          <div class="ui fluid selection mini dropdown ngm-slice-side">
+            <input type="hidden" value="${this.sliceSide}">
+            <div class="text"></div>
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              <div class="item" data-value="left">${i18next.t('tbx_slice_left_label')}</div>
+              <div class="item" data-value="right">${i18next.t('tbx_slice_right_label')}</div>
             </div>
+          </div>
         </div>
-    `;
+      `;
     } else {
       return html``;
     }

@@ -16,7 +16,6 @@ import 'fomantic-ui-css/components/popup.js';
 
 const configurePopupId = 'ngm-section-configuration';
 const formatSelectorId = 'ngm-section-format';
-const createBtnId = 'ngm-create-section';
 
 /**
  * @typedef {"point" | "line" | "rectangle"} GeometryType
@@ -65,11 +64,12 @@ class NgmGstInteraction extends LitElementI18n {
   }
 
   firstUpdated() {
-    $(this.querySelector(`#${createBtnId}`)).popup({
+    $(this.querySelector('.ngm-create-section')).popup({
       position: 'top left',
       content: i18next.t('tbx_create_section_hint'),
       variation: 'mini',
       onShow: () => {
+        $(this.querySelector('.ngm-create-section')).popup('change content', i18next.t('tbx_create_section_hint'));
         this.gstExtent.show = true;
         this.viewer.scene.requestRender();
       },
@@ -198,8 +198,7 @@ class NgmGstInteraction extends LitElementI18n {
     return html`
         <div class="ngm-gst-btns-container">
             <div class="ui tiny buttons">
-                <button id="${createBtnId}"
-                        class="ui button ${this.hasValidParams() ? '' : 'disabled'}"
+                <button class="ui button ngm-create-section ${this.hasValidParams() ? '' : 'disabled'}"
                         @click=${this.getGST}>
                         ${i18next.t('tbx_create_section_label')}
                 </button>
