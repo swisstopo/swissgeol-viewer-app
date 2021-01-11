@@ -1,10 +1,10 @@
-import {I18nMixin} from '../i18n';
+import {LitElementI18n} from '../i18n';
 import i18next from 'i18next';
 import {html} from 'lit-element';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 
-class NgmSlowLoading extends I18nMixin {
+class NgmSlowLoading extends LitElementI18n {
 
   firstUpdated() {
     $(this.querySelector('.accordion')).accordion({

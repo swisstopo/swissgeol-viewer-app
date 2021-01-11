@@ -1,11 +1,11 @@
 import i18next from 'i18next';
 import {html} from 'lit-element';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import $ from '../jquery';
 
 
-export class LayerTreeItem extends I18nMixin {
+export class LayerTreeItem extends LitElementI18n {
 
   static get properties() {
     return {

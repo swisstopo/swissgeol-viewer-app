@@ -1,5 +1,5 @@
 import {html} from 'lit-element';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import '../toolbox/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
@@ -28,7 +28,7 @@ const WELCOME_PANEL = 'welcome-panel';
 const CATALOG_PANEL = 'catalog-panel';
 const TOOLBOX = 'ngm-toolbox';
 
-class LeftSideBar extends I18nMixin {
+class LeftSideBar extends LitElementI18n {
 
   constructor() {
     super();

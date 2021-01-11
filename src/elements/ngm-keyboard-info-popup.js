@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n';
+import {LitElementI18n} from '../i18n';
 import {html} from 'lit-element';
 import $ from '../jquery.js';
 
@@ -36,7 +36,7 @@ const infoConfig = [
   }
 ];
 
-class NgmKeyboardInfoPopup extends I18nMixin {
+class NgmKeyboardInfoPopup extends LitElementI18n {
 
   updated() {
     if (!this.popupInitialized && i18next.language) {

@@ -9,10 +9,10 @@ import './ngm-nadir-view.js';
 import './ngm-camera-information.js';
 import './slicer/ngm-slicer.js';
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import {SWITZERLAND_RECTANGLE} from '../constants.js';
 
-class NgmNavigationWidgets extends I18nMixin {
+class NgmNavigationWidgets extends LitElementI18n {
 
   static get properties() {
     return {

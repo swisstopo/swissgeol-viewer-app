@@ -18,7 +18,7 @@ import {
 } from '../constants.js';
 import {updateColor, cleanupUploadedEntity, getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
 import {showWarning} from '../message.js';
-import {I18nMixin} from '../i18n';
+import {LitElementI18n} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
@@ -46,7 +46,7 @@ import './ngm-swissforages-interaction.js';
 const fileUploadInputId = 'fileUpload';
 
 
-class NgmAreaOfInterestDrawer extends I18nMixin {
+class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   static get properties() {
     return {

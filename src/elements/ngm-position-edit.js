@@ -5,11 +5,11 @@ import 'fomantic-ui-css/components/dropdown.js';
 import {lv95ToDegrees} from '../projection.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import {prepareCoordinatesForUi} from '../cesiumutils';
 
-class NgmPositionEdit extends I18nMixin {
+class NgmPositionEdit extends LitElementI18n {
 
   static get properties() {
     return {

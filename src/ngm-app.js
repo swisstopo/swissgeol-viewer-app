@@ -1,4 +1,4 @@
-import {I18nMixin} from './i18n';
+import {LitElementI18n} from './i18n';
 import {html} from 'lit-html';
 import './elements/ngm-loading-mask';
 import './elements/ngm-left-side-bar';
@@ -75,7 +75,7 @@ const onStep1Finished = (globe, searchParams) => {
  * - wiring the attributes of all top-level components;
  * - distribute events vertically between components (non hierarchical).
  */
-class NgmApp extends I18nMixin {
+class NgmApp extends LitElementI18n {
 
   /**
    * @type {import('lit-element').PropertyDeclarations}

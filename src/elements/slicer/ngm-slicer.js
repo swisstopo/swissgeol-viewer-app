@@ -1,8 +1,8 @@
 import {html} from 'lit-element';
 import i18next from 'i18next';
-import {I18nMixin} from '../../i18n.js';
+import {LitElementI18n} from '../../i18n.js';
 
-class NgmSlicer extends I18nMixin {
+class NgmSlicer extends LitElementI18n {
 
   static get properties() {
     return {

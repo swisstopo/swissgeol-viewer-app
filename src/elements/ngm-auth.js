@@ -1,13 +1,13 @@
 import {html} from 'lit-element';
 import Auth from '../auth.js';
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 
 
 /**
  * Authentication component
  */
-class NgmAuth extends I18nMixin {
+class NgmAuth extends LitElementI18n {
 
   static get properties() {
     return {

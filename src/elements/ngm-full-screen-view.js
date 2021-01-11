@@ -1,8 +1,8 @@
-import {I18nMixin} from '../i18n';
+import {LitElementI18n} from '../i18n';
 import i18next from 'i18next';
 import {html} from 'lit-element';
 
-class NgmFullScreenView extends I18nMixin {
+class NgmFullScreenView extends LitElementI18n {
 
   static get properties() {
     return {

@@ -1,4 +1,4 @@
-import {I18nMixin} from '../i18n';
+import {LitElementI18n} from '../i18n';
 import {html} from 'lit-element';
 import i18next from 'i18next';
 import Cartographic from 'cesium/Source/Core/Cartographic';
@@ -9,7 +9,7 @@ import {showWarning} from '../message';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
 
-class NgmSwissforagesInteraction extends I18nMixin {
+class NgmSwissforagesInteraction extends LitElementI18n {
 
   constructor() {
     super();

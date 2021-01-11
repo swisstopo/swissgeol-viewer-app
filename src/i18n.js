@@ -83,7 +83,7 @@ export function setupI18n() {
 /**
  * @param {import('lit-element').LitElement} Base
  */
-export class I18nMixin extends LitElement {
+export class LitElementI18n extends LitElement {
 
   connectedCallback() {
     this.i18nLanguageChangedCallback_ = () => this.requestUpdate();

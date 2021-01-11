@@ -1,6 +1,6 @@
 import {html} from 'lit-element';
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/dimmer.js';
@@ -8,7 +8,7 @@ import 'fomantic-ui-css/components/modal.js';
 import 'fomantic-ui-css/components/dropdown.js';
 import {showWarning} from '../message';
 
-class NgmSwissforagesModal extends I18nMixin {
+class NgmSwissforagesModal extends LitElementI18n {
 
   constructor() {
     super();

@@ -1,6 +1,6 @@
 import {html} from 'lit-element';
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import $ from '../jquery';
 import {lv95ToDegrees} from '../projection';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
@@ -13,7 +13,7 @@ import {updateBoreholeHeights} from './helpers';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 
 
-class NgmPointEdit extends I18nMixin {
+class NgmPointEdit extends LitElementI18n {
 
   static get properties() {
     return {

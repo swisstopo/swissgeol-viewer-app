@@ -1,11 +1,11 @@
 import {html} from 'lit-element';
 import {repeat} from 'lit-html/directives/repeat.js';
 
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 
 import './ngm-layers-item.js';
 
-export default class LayerTree extends I18nMixin {
+export default class LayerTree extends LitElementI18n {
 
   static get properties() {
     return {
