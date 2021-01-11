@@ -74,7 +74,7 @@ class NgmPositionEdit extends I18nMixin(LitElement) {
   }
 
   updateInputValues() {
-    const coordinates = prepareCoordinatesForUi(this.scene, this.scene.camera.positionCartographic, this.coordsType);
+    const coordinates = prepareCoordinatesForUi(this.scene, this.scene.camera.positionCartographic, this.coordsType, true);
     this.xValue = coordinates.x;
     this.yValue = coordinates.y;
     this.heightValue = coordinates.height;
