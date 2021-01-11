@@ -231,14 +231,14 @@ class NgmApp extends LitElementI18n {
   <header>
     <a id="ngm-home-link" href=""><img class="logo" src="src/images/logo-CH.svg"></a>
     <ga-search class="ui small left icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
-      <input type="search" data-i18n="[placeholder]header_search_placeholder">
+      <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
       <i class="search icon"></i>
       <ul class="search-results"></ul>
     </ga-search>
     <div style="flex: auto;"></div>
     <div class="ngm-header-links">
       <div id="langs" class="ui horizontal selection list"></div>
-      <a id="ngm-help-btn" href="/manuals/manual_en.html" target="_blank" data-i18n="header_help_link"></a>
+      <a id="ngm-help-btn" href="/manuals/manual_en.html" target="_blank">${i18next.t('header_help_link')}</a>
       <ngm-auth
         endpoint='https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize'
         clientId='5k1mgef7ggiremt415eecn95ki'
@@ -289,7 +289,7 @@ class NgmApp extends LitElementI18n {
         <div style='flex: auto;'></div>
         <div class='ui horizontal link list'>
           <a class='item' target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
-          <a class='item' target='_blank' data-i18n='[href]disclaimer_href;disclaimer_text'></a>
+          <a class='item' target='_blank' href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
         </div>
       </div>
     </div>
