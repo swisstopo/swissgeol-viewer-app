@@ -137,8 +137,7 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
     this.draw_.active = false;
     this.draw_.clear();
 
-    // wgs84 to Cartesian3
-    const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
+    const positions = event.detail.positions;
     const measurements = event.detail.measurements;
     const type = event.detail.type;
     const attributes = {
@@ -147,7 +146,8 @@ class NgmAreaOfInterestDrawer extends I18nMixin(LitElement) {
       perimeter: measurements.perimeter,
       sidesLength: measurements.sidesLength,
       numberOfSegments: measurements.segmentsNumber,
-      type: type
+      type: type,
+      clampPoint: true
     };
     this.areasCounter_[type] = this.areasCounter_[type] + 1;
     this.addAreaEntity(attributes);

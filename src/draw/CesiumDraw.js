@@ -195,7 +195,7 @@ export class CesiumDraw extends EventTarget {
     const measurements = getMeasurements(positions, this.activeDistances_, this.type);
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
-        positions: positions.map(cartesianToDegrees),
+        positions: positions,
         type: this.type,
         measurements: measurements
       }
