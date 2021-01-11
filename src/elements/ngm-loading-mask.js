@@ -1,7 +1,7 @@
 import {html, LitElement} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map';
-import 'fomantic-ui-css/components/progress.js';
 import $ from '../jquery.js';
+import 'fomantic-ui-css/components/progress.js';
 
 
 class NgmLoadingMask extends LitElement {
