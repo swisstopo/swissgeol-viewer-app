@@ -1,10 +1,10 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import {setCameraHeight} from '../cesiumutils.js';
 
-class NgmElevatorButtons extends I18nMixin(LitElement) {
+class NgmElevatorButtons extends LitElementI18n {
 
   static get properties() {
     return {

@@ -1,10 +1,10 @@
-import {I18nMixin} from '../i18n';
+import {LitElementI18n} from '../i18n';
 import i18next from 'i18next';
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 
-class NgmReviewWindow extends I18nMixin(LitElement) {
+class NgmReviewWindow extends LitElementI18n {
 
   static get properties() {
     return {

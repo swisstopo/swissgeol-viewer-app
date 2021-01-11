@@ -1,17 +1,20 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 
 
-class NgmFeatureHeight extends I18nMixin(LitElement) {
+class NgmFeatureHeight extends LitElementI18n {
 
+  /**
+   * @type {import('lit-element').PropertyDeclarations}
+   */
   static get properties() {
     return {
       viewer: {type: Object},
-      height: {type: Number}
+      height: {type: Number, attribute: false}
     };
   }
 
@@ -21,7 +24,7 @@ class NgmFeatureHeight extends I18nMixin(LitElement) {
     /**
      * @type {import('cesium/Source/Widgets/Viewer/Viewer').default}
      */
-    this.viewer;
+    this.viewer = null;
 
     this.height = undefined;
     this.eventHandler = undefined;

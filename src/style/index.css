@@ -51,7 +51,6 @@ html, body {
 body {
   line-height: 1.4285em;
   display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
@@ -104,6 +103,12 @@ main {
   flex: auto;
   display: flex;
   overflow: hidden;
+}
+
+ngm-app {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .map {

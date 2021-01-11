@@ -1,10 +1,8 @@
-import {I18nMixin} from '../i18n';
+import {LitElementI18n} from '../i18n';
 import i18next from 'i18next';
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 
-const ELEMENTS_TO_HIDE = ['ngm-navigation-widgets', 'ngm-review-window'];
-
-class NgmFullScreenView extends I18nMixin(LitElement) {
+class NgmFullScreenView extends LitElementI18n {
 
   static get properties() {
     return {
@@ -20,9 +18,7 @@ class NgmFullScreenView extends I18nMixin(LitElement) {
       this.fullScreenActive = !this.fullScreenActive;
       this.classList.toggle('full-active');
       document.querySelector('#cesium').classList.toggle('full-active');
-      ELEMENTS_TO_HIDE.forEach(selector => {
-        document.querySelector(selector).hidden = this.fullScreenActive;
-      });
+      document.querySelectorAll('[data-fs="no"]').forEach(n => n.hidden = this.fullScreenActive);
     };
   }
 

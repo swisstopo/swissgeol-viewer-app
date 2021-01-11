@@ -1,6 +1,6 @@
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n';
-import {LitElement, html} from 'lit-element';
+import {LitElementI18n} from '../i18n';
+import {html} from 'lit-element';
 import $ from '../jquery.js';
 
 import 'fomantic-ui-css/components/popup.js';
@@ -36,10 +36,10 @@ const infoConfig = [
   }
 ];
 
-class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
+class NgmKeyboardInfoPopup extends LitElementI18n {
 
   updated() {
-    if (!this.popupInited && i18next.language) {
+    if (!this.popupInitialized && i18next.language) {
       $(`#${btnId}`).popup({
         position: 'left center',
         content: i18next.t('nav_info_btn_hint'),
@@ -58,7 +58,7 @@ class NgmKeyboardInfoPopup extends I18nMixin(LitElement) {
         onHide: () => this.toggleInfoPopup(false),
         position: 'left center'
       });
-      this.popupInited = true;
+      this.popupInitialized = true;
     }
   }
 

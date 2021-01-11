@@ -1,5 +1,5 @@
-import {I18nMixin} from '../i18n';
-import {html, LitElement} from 'lit-element';
+import {LitElementI18n} from '../i18n';
+import {html} from 'lit-element';
 import i18next from 'i18next';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {updateBoreholeHeights} from './helpers';
@@ -9,11 +9,15 @@ import {showWarning} from '../message';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
 
-class NgmSwissforagesInteraction extends I18nMixin(LitElement) {
+class NgmSwissforagesInteraction extends LitElementI18n {
 
   constructor() {
     super();
     this.julianDate = new JulianDate();
+    /**
+     * @type {import('cesium').Viewer}
+     */
+    this.viewer = null;
   }
 
   static get properties() {
@@ -22,7 +26,7 @@ class NgmSwissforagesInteraction extends I18nMixin(LitElement) {
       service: {type: Object},
       viewer: {type: Object},
       dataSource: {type: Object},
-      updateModalOptions: {type: Function},
+      updateModalOptions: {type: Object},
     };
   }
 

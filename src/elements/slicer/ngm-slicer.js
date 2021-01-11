@@ -1,8 +1,8 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import i18next from 'i18next';
-import {I18nMixin} from '../../i18n.js';
+import {LitElementI18n} from '../../i18n.js';
 
-class NgmSlicer extends I18nMixin(LitElement) {
+class NgmSlicer extends LitElementI18n {
 
   static get properties() {
     return {
@@ -14,9 +14,9 @@ class NgmSlicer extends I18nMixin(LitElement) {
     super();
 
     /**
-     * @type {Slicer}
+     * @type {import('../../Slicer').default}
      */
-    this.slicer;
+    this.slicer = null;
   }
 
   toggleSlicer(box) {

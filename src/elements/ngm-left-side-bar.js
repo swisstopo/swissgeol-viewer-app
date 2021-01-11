@@ -1,5 +1,5 @@
-import {LitElement, html} from 'lit-element';
-import {I18nMixin} from '../i18n.js';
+import {html} from 'lit-element';
+import {LitElementI18n} from '../i18n.js';
 import '../toolbox/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
@@ -28,19 +28,29 @@ const WELCOME_PANEL = 'welcome-panel';
 const CATALOG_PANEL = 'catalog-panel';
 const TOOLBOX = 'ngm-toolbox';
 
-class LeftSideBar extends I18nMixin(LitElement) {
+class LeftSideBar extends LitElementI18n {
+
+  constructor() {
+    super();
+    /**
+     * @type {import('cesium').Viewer}
+     */
+    this.viewer = null;
+  }
 
   static get properties() {
     return {
       viewer: {type: Object},
-      zoomTo: {type: Function},
+      zoomTo: {type: Object},
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
       hideWelcome: {type: Boolean},
       hideCatalog: {type: Boolean},
-      mapChooser: {type: Function},
+      mapChooser: {type: Object},
       authenticated: {type: Boolean},
-      globeQueueLength_: {type: Number},
+      slicer: {type: Object},
+      globeQueueLength_: {type: Number, attribut: false},
+      localStorageController: {type: Object},
     };
   }
 
@@ -92,10 +102,9 @@ class LeftSideBar extends I18nMixin(LitElement) {
           <ngm-layers
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             @layerChanged=${this.onLayerChanged}
-            .authenticated=${this.authenticated}
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
-            @zoomTo=${evt => this.zoomTo(evt.detail)}>
+            @zoomTo=${evt => this.zoomTo(this.viewer, evt.detail)}>
           </ngm-layers>
           <h5 class="ui horizontal divider header">
             ${i18next.t('dtd_background_map_label')}
@@ -115,6 +124,9 @@ class LeftSideBar extends I18nMixin(LitElement) {
         <div class="content">
           <ngm-aoi-drawer
             .viewer=${this.viewer}
+            .slicer=${this.slicer}
+            .getStoredAoi=${this.localStorageController.getStoredAoi}
+            .setStoredAoi=${this.localStorageController.setAoiInStorage}
             .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
             @downloadActiveData=${evt => this.downloadActiveData(evt)}
           >

@@ -1,9 +1,9 @@
-import {LitElement, html} from 'lit-element';
-import {I18nMixin} from '../i18n.js';
+import {html} from 'lit-element';
+import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 
 
-class Catalog extends I18nMixin(LitElement) {
+class Catalog extends LitElementI18n {
 
   static get properties() {
     return {

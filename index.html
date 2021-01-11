@@ -18,7 +18,7 @@
 <body>
   <div id="outdated-browser" style="display: none;">
     <header>
-      <img class="logo" src="src/images/logo-CH.svg">
+      <img alt="logo" class="logo" src="src/images/logo-CH.svg">
     </header>
 
     <div class="ui large negative icon floating message">
@@ -31,46 +31,8 @@
 
   </div>
 
-  <header>
-    <a id="ngm-home-link" href=""><img class="logo" src="src/images/logo-CH.svg"></a>
-    <ga-search class="ui small left icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
-      <input type="search" data-i18n="[placeholder]header_search_placeholder">
-      <i class="search icon"></i>
-      <ul class="search-results"></ul>
-    </ga-search>
-    <div style="flex: auto;"></div>
-    <div class="ngm-header-links">
-      <div id="langs" class="ui horizontal selection list"></div>
-      <a id="ngm-help-btn" href="/manuals/manual_en.html" target="_blank" data-i18n="header_help_link"></a>
-      <ngm-auth></ngm-auth>
-    </div>
-  </header>
-  <main>
-    <ngm-loading-mask></ngm-loading-mask>
-    <ngm-left-side-bar class="left sidebar"></ngm-left-side-bar>
-    <div class="map">
-      <div id="cesium">
-        <ngm-slow-loading style="display: none;"></ngm-slow-loading>
-        <div class="navigation-widgets">
-          <ngm-navigation-widgets></ngm-navigation-widgets>
-          <ngm-full-screen-view></ngm-full-screen-view>
-        </div>
-        <ngm-object-information></ngm-object-information>
-        <ngm-review-window></ngm-review-window>
-        <ngm-object-position-popup></ngm-object-position-popup>
-      </div>
-      <div class="footer">
-        <div class="ui horizontal link list">
-          <ngm-feature-height class="item"></ngm-feature-height>
-        </div>
-        <div style="flex: auto;"></div>
-        <div class="ui horizontal link list">
-          <a class="item" target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
-          <a class="item" target='_blank' data-i18n="[href]disclaimer_href;disclaimer_text"></a>
-        </div>
-      </div>
-    </div>
-  </main>
+  <ngm-app>
+  </ngm-app>
   <script type="module" id="app-script" crossorigin="use-credentials"></script>
   <script type="module">
     const debug = !location.search.includes('prod') && (location.search.includes('debug') || location.hostname === 'localhost');

@@ -1,4 +1,4 @@
-import {LitElement, html} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map';
 
 class NgmMapChooser extends LitElement {
@@ -10,6 +10,12 @@ class NgmMapChooser extends LitElement {
     };
   }
 
+  constructor() {
+    super();
+    this.choices = [];
+    this.active = null;
+  }
+
   updated() {
     this.dispatchEvent(new CustomEvent('change', {
       detail: {
@@ -18,20 +24,23 @@ class NgmMapChooser extends LitElement {
     }));
   }
 
-  get mapTemplates() {
-    return this.choices.map(mapConfig =>
-      html`<div class="ngm-map-preview ${classMap({active: mapConfig.id === this.active.id})}"
-                data-tooltip="${mapConfig.labelKey}"
-                data-variation="mini"
-                data-position="top center"
-                @click=${() => this.active = mapConfig}>
-              <img src=${mapConfig.backgroundImgSrc} />
-           </div>`
-    );
+  getMapTemplate(mapConfig) {
+    return html`
+    <div class="ngm-map-preview ${classMap({active: mapConfig.id === this.active.id})}"
+        data-tooltip="${mapConfig.labelKey}"
+        data-variation="mini"
+        data-position="top center"
+        @click=${() => this.active = mapConfig}>
+      <img src=${mapConfig.backgroundImgSrc} />
+    </div>`;
   }
 
   render() {
-    return html`<div class="ngm-maps-container">${this.mapTemplates}</div>`;
+    return html`
+      <div class="ngm-maps-container">
+        ${this.choices.map(c => this.getMapTemplate(c))}
+      </div>
+    `;
   }
 
   createRenderRoot() {

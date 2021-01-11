@@ -1,18 +1,19 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/popup.js';
 import 'fomantic-ui-css/components/dropdown.js';
 import {lv95ToDegrees} from '../projection.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import {prepareCoordinatesForUi} from '../cesiumutils';
 
-class NgmPositionEdit extends I18nMixin(LitElement) {
+class NgmPositionEdit extends LitElementI18n {
 
   static get properties() {
     return {
+      scene: {type: Object},
       coordinates: {type: String},
       xValue: {type: Number},
       yValue: {type: Number},

@@ -1,17 +1,30 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/slider.js';
 import './ngm-map-chooser.js';
 import {syncMapTransparencyParam} from '../permalink.js';
 
-class NgmMapConfiguration extends I18nMixin(LitElement) {
+class NgmMapConfiguration extends LitElementI18n {
+
+  /**
+   * @type {import('lit-element').PropertyDeclarations}
+   */
   static get properties() {
     return {
       viewer: {type: Object},
-      mapChooser: {type: Function}
+      mapChooser: {type: Object}
     };
+  }
+
+  constructor() {
+    super();
+    /**
+     * @type {import('cesium').Viewer}
+     */
+    this.viewer = null;
+    this.mapChooser = null;
   }
 
   firstUpdated() {

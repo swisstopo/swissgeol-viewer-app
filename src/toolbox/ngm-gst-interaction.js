@@ -1,9 +1,9 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import {degreesToLv95, round} from '../projection.js';
 import {borehole, verticalCrossSection, horizontalCrossSection} from '../gst.js';
 import {showError, showWarning} from '../message.js';
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import IonResource from 'cesium/Source/Core/IonResource';
 import Color from 'cesium/Source/Core/Color';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
@@ -22,7 +22,7 @@ const createBtnId = 'ngm-create-section';
  * @typedef {"point" | "line" | "rectangle"} GeometryType
  */
 
-class NgmGstInteraction extends I18nMixin(LitElement) {
+class NgmGstInteraction extends LitElementI18n {
 
   static get properties() {
     return {

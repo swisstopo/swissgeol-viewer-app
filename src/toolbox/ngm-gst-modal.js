@@ -1,12 +1,12 @@
-import {LitElement, html} from 'lit-element';
+import {html} from 'lit-element';
 import i18next from 'i18next';
-import {I18nMixin} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';
 
-class NgmGstModal extends I18nMixin(LitElement) {
+class NgmGstModal extends LitElementI18n {
 
   static get properties() {
     return {
