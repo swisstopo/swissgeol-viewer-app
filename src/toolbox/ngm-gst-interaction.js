@@ -10,6 +10,7 @@ import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 
 import './ngm-gst-modal.js';
+import '../elements/ngm-i18n-content.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
@@ -66,10 +67,9 @@ class NgmGstInteraction extends LitElementI18n {
   firstUpdated() {
     $(this.querySelector('.ngm-create-section')).popup({
       position: 'top left',
-      content: i18next.t('tbx_create_section_hint'),
+      html: '<ngm-i18n-content key="tbx_create_section_hint"></ngm-i18n-content>',
       variation: 'mini',
       onShow: () => {
-        $(this.querySelector('.ngm-create-section')).popup('change content', i18next.t('tbx_create_section_hint'));
         this.gstExtent.show = true;
         this.viewer.scene.requestRender();
       },

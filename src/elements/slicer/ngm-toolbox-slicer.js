@@ -2,6 +2,7 @@ import {html} from 'lit-element';
 import i18next from 'i18next';
 import {LitElementI18n} from '../../i18n.js';
 import $ from '../../jquery';
+import '../ngm-i18n-content.js';
 
 class NgmToolboxSlicer extends LitElementI18n {
 
@@ -27,12 +28,9 @@ class NgmToolboxSlicer extends LitElementI18n {
   firstUpdated() {
     $(this.querySelector('.ngm-slice-warn')).popup({
       position: 'top left',
-      content: i18next.t('tbx_line_slice_warn'),
+      html: '<ngm-i18n-content key="tbx_line_slice_warn"></ngm-i18n-content>',
       variation: 'mini',
       forcePosition: true,
-      onShow: () => {
-        $(this.querySelector('.ngm-slice-warn')).popup('change content', i18next.t('tbx_line_slice_warn'));
-      }
     });
     $(this.querySelector('.ngm-slice-tools-btn')).popup({
       popup: $(this.querySelector('.ngm-slice-tools-popup')),
