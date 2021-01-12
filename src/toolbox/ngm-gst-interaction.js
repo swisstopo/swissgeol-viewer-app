@@ -15,9 +15,6 @@ import CesiumMath from 'cesium/Source/Core/Math';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
 
-const configurePopupId = 'ngm-section-configuration';
-const formatSelectorId = 'ngm-section-format';
-
 /**
  * @typedef {"point" | "line" | "rectangle"} GeometryType
  */
@@ -69,21 +66,15 @@ class NgmGstInteraction extends LitElementI18n {
       position: 'top left',
       html: '<ngm-i18n-content key="tbx_create_section_hint"></ngm-i18n-content>',
       variation: 'mini',
-      onShow: () => {
-        this.gstExtent.show = true;
-        this.viewer.scene.requestRender();
-      },
-      onHidden: () => {
-        this.gstExtent.show = false;
-        this.viewer.scene.requestRender();
-      }
+      onShow: () => this.switchExtent(true),
+      onHidden: () => this.switchExtent(false)
     });
     $(this.querySelector('.ngm-tools-btn')).popup({
-      popup: $(this.querySelector(`#${configurePopupId}`)),
+      popup: $(this.querySelector('.ngm-section-configuration')),
       on: 'click',
       position: 'right center'
     });
-    $(this.querySelector(`#${formatSelectorId}`)).dropdown({
+    $(this.querySelector('.ngm-section-format')).dropdown({
       onChange: value => this.outputFormat = value,
       values: [
         {name: 'PDF', value: 'pdf', selected: this.outputFormat === 'pdf'},
@@ -194,6 +185,11 @@ class NgmGstInteraction extends LitElementI18n {
     this.depth = event.target.value;
   }
 
+  switchExtent(show) {
+    this.gstExtent.show = show;
+    this.viewer.scene.requestRender();
+  }
+
   render() {
     return html`
         <div class="ngm-gst-btns-container">
@@ -205,7 +201,7 @@ class NgmGstInteraction extends LitElementI18n {
                 <button class="ui button ngm-tools-btn"><i class="tools icon"></i></button>
             </div>
         </div>
-        <div id=${configurePopupId} class="ui mini popup">
+        <div class="ui mini popup ngm-section-configuration">
             ${this.geometryType === 'rectangle' ?
             html`<label>${i18next.t('tbx_cross_sections_depth_label')}</label>
                   <div class="ui tiny form depth">
@@ -223,7 +219,7 @@ class NgmGstInteraction extends LitElementI18n {
                       </div>
                   </div>` : ''}
             <label>${i18next.t('tbx_cross_sections_format_label')}</label>
-            <div id="${formatSelectorId}" class="ui fluid selection mini dropdown">
+            <div class="ui fluid selection mini dropdown ngm-section-format">
                 <div class="text"></div>
                 <i class="dropdown icon"></i>
             </div>
