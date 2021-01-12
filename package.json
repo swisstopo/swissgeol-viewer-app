@@ -43,7 +43,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "autoprefixer": "^9.8.6",
     "chai": "^4.2.0",
-    "copy-webpack-plugin": "6.3.2",
+    "copy-webpack-plugin": "6.4.1",
     "core-js": "3.8.2",
     "css-loader": "^5.0.1",
     "eslint": "7.17.0",
