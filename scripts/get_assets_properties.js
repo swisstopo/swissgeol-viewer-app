@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import layertree from '../src/layertree.js';
 
-const defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
+const defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4ZmViYzU2MC00M2Y4LTQzZTAtOWNiNC05NjFlYjE5ZDFiNjAiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiXSwiaWF0IjoxNTk3MjIwNzM5fQ.CpzMbDo8hD83hNmDcRfeIZhu3Vf1FWkpjSExXrOmHF4';
 
 function fetchIon(url, token=defaultAccessToken) {
   return fetch(url, {
