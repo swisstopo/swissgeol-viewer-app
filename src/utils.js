@@ -122,3 +122,17 @@ export function filterCsvString(str, bbox4326) {
   const filteredString = lines.join('\n');
   return filteredString;
 }
+
+/**
+ * Check is string can be parsed to object
+ * @param string
+ * @returns {boolean}
+ */
+export function isStringJson(string) {
+  try {
+    JSON.parse(string);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
