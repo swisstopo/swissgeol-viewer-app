@@ -73,6 +73,8 @@ const DOWNLOAD_ROOT = 'https://download.swissgeol.ch/';
 const CENOZOIC_BEDROCK_ORDER = ['Name', 'Horizon', ...DOWNLOAD_PROP_ORDER];
 const CONSOLIDATED_ORDER = ['Name', 'Horizon', 'HARMOS-ORIGINAL', ...DOWNLOAD_PROP_ORDER];
 const FAULTS_ORDER = ['Name', 'Source', 'Status', 'Type', 'Version', ...DOWNLOAD_PROP_ORDER];
+const TEMPERATURE_HORIZON_ORDER = ['name', 'temp_c'];
+const TEMPERATURE_HORIZON_BGL_ORDER = ['name', 'temp_c', 'depth_bgl'];
 
 const t = a => a;
 const geo_map_series = {
@@ -224,7 +226,103 @@ const geo_energy = {
           layer: 'temperature_model',
           transparencyDisabled: true,
           pickable: true
-        }
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251747,
+          label: t('lyr_temperature_horizon_tomm_label'),
+          layer: 'temperature_horizon_tomm',
+          propsOrder: TEMPERATURE_HORIZON_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251782,
+          label: t('lyr_temperature_horizon_tuma_label'),
+          layer: 'temperature_horizon_tuma',
+          propsOrder: TEMPERATURE_HORIZON_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251781,
+          label: t('lyr_temperature_horizon_tmus_label'),
+          layer: 'temperature_horizon_tmus',
+          propsOrder: TEMPERATURE_HORIZON_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251756,
+          label: t('lyr_temperature_500_bgl_label'),
+          layer: 'temperature_500_bgl',
+          propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251788,
+          label: t('lyr_temperature_1000_bgl_label'),
+          layer: 'temperature_1000_bgl',
+          propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251790,
+          label: t('lyr_temperature_1500_bgl_label'),
+          layer: 'temperature_1500_bgl',
+          propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251786,
+          label: t('lyr_temperature_2000_bgl_label'),
+          layer: 'temperature_2000_bgl',
+          propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251785,
+          label: t('lyr_temperature_3000_bgl_label'),
+          layer: 'temperature_3000_bgl',
+          propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251789,
+          label: t('lyr_temperature_4000_bgl_label'),
+          layer: 'temperature_4000_bgl',
+          propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251755,
+          label: t('lyr_temperature_isotherm_60c_label'),
+          layer: 'temperature_isotherm_60c',
+          propsOrder: TEMPERATURE_HORIZON_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251787,
+          label: t('lyr_temperature_isotherm_100c_label'),
+          layer: 'temperature_isotherm_100c',
+          propsOrder: TEMPERATURE_HORIZON_ORDER,
+          pickable: true
+        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 251783,
+          label: t('lyr_temperature_isotherm_150c_label'),
+          layer: 'temperature_isotherm_150c',
+          propsOrder: TEMPERATURE_HORIZON_ORDER,
+          pickable: true
+        },
       ]
     },
   ]
