@@ -4,7 +4,7 @@ import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import GpxDataSource from '../GpxDataSource.js';
 import i18next from 'i18next';
-import {getMeasurements, cartesianToDegrees} from '../cesiumutils.js';
+import {getMeasurements, cartesianToDegrees, extendKmlWithProperties} from '../cesiumutils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
@@ -138,7 +138,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                 @click=${clickOnElement.bind(null, fileUploadInputId)}>
           <i class="file upload icon"></i>
         </button>
-        <button class="ui button"
+        <button class="ui button ${classMap({disabled: !this.atLeastOneEntityVisible})}"
                 data-tooltip=${i18next.t('tbx_download_btn_label')}
                 data-variation="mini"
                 data-position="top right"
@@ -1087,22 +1087,13 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     });
     const exportResult = await exportKml({entities: visibleGeometries, time: this.julianDate});
     let kml = exportResult.kml;
-    // add properties to kml as it is skipped by cesium
-    visibleGeometries.values.forEach(ent => {
-      let kmlProperties = '<ExtendedData>';
-      ent.properties.propertyNames.forEach(prop => {
-        let value = ent.properties[prop] ? ent.properties[prop].getValue() : undefined;
-        if (value || typeof value === 'number') {
-          value = typeof value === 'object' ? JSON.stringify(value) : value;
-          kmlProperties += `<Data name="${prop}"><value>${value}</value></Data>`;
-        }
-      });
-      kmlProperties += '</ExtendedData>';
-      const placemark = `<Placemark id="${ent.id}">`;
-      kml = kml.replace(placemark, `${placemark}${kmlProperties}`);
-    });
+    kml = extendKmlWithProperties(kml, visibleGeometries);
     const blob = new Blob([kml], {type: 'text/xml'});
-    saveAs(blob, 'swissgeol_data.kml');
+    saveAs(blob, 'swissgeol_geometries.kml');
+  }
+
+  get atLeastOneEntityVisible() {
+    return !!this.entitiesList_.find(ent => ent.show);
   }
 
   render() {

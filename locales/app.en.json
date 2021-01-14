@@ -133,6 +133,7 @@
   "tbx_depth_warning": "Depth must be between {{minDepth}}m and {{maxDepth}}m",
   "tbx_description_label": "Description",
   "tbx_disable_slice_btn_label": "Show full map",
+  "tbx_download_btn_label": "Download visible",
   "tbx_download_data_inside_rectangle_label": "Download data inside the rectangle",
   "tbx_download_section_output_label": "Download",
   "tbx_drawing_tools_label": "Drawing and measuring:",
