@@ -19,7 +19,7 @@
     "@geoblocks/cesium-compass": "0.3.0",
     "@geoblocks/cesium-view-cube": "0.0.1",
     "@geoblocks/ga-search": "^0.0.18",
-    "@sentry/browser": "5.29.2",
+    "@sentry/browser": "5.30.0",
     "@webcomponents/webcomponentsjs": "^2.5.0",
     "cesium": "1.77.0",
     "event-target-shim": "^5.0.1",
@@ -71,6 +71,6 @@
     "speed-measure-webpack-plugin": "^1.3.3",
     "webpack": "^4.44.2",
     "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.2"
   }
 }
