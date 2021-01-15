@@ -75,11 +75,12 @@ export default class QueryManager {
   async pickObject(position) {
     const pickedPosition = this.scene.pickPosition(position);
     let attributes = this.objectSelector.pickAttributes(position, pickedPosition);
+    const attributesEmpty = !attributes || !Object.getOwnPropertyNames(attributes).length;
 
     const layers = 'ch.swisstopo.geologie-geocover';
     // we only search the remote Swisstopo service when there was no result for the local search
     // and the geocover layer is enabled
-    if (!attributes && pickedPosition && this.searchableLayers.includes(layers)) {
+    if (attributesEmpty && pickedPosition && this.searchableLayers.includes(layers)) {
       const result = await this.querySwisstopo(pickedPosition, layers);
       attributes = result || attributes;
     }
