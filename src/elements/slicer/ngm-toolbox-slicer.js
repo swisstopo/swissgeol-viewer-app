@@ -26,6 +26,8 @@ class NgmToolboxSlicer extends LitElementI18n {
   }
 
   firstUpdated() {
+    // FIXME: update the i18n extractor to collect the 'key' from ngm-i18n-content
+    // workaround: t('tbx_line_slice_warn')
     $(this.querySelector('.ngm-slice-warn')).popup({
       position: 'top left',
       html: '<ngm-i18n-content key="tbx_line_slice_warn"></ngm-i18n-content>',

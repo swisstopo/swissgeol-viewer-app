@@ -62,6 +62,8 @@ class NgmGstInteraction extends LitElementI18n {
   }
 
   firstUpdated() {
+    // FIXME: update the i18n extractor to collect the 'key' from ngm-i18n-content
+    // workaround: t('tbx_create_section_hint')
     $(this.querySelector('.ngm-create-section')).popup({
       position: 'top left',
       html: '<ngm-i18n-content key="tbx_create_section_hint"></ngm-i18n-content>',
