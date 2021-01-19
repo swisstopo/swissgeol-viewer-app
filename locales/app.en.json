@@ -198,7 +198,12 @@
   "tbx_volume_hint": "Press 'Edit' button to change height or position of volume",
   "tbx_volume_lower_limit_label": "Lower limit",
   "tbx_website_label": "Website URL",
+  "welcome_copy_btn_label": "Copy",
+  "welcome_copy_guide": "Press Ctrl+C to copy",
+  "welcome_get_shortlink_error": "",
   "welcome_instructions": "Navigate with the mouse and use 'CTRL' to tilt the 3D view",
   "welcome_label": "swissgeol.ch",
+  "welcome_share_link_label": "Share link:",
+  "welcome_shortlink_copied": "Link copied",
   "welcome_text": "Welcome to swissgeol.ch, the 3D subsurface viewer!"
 }

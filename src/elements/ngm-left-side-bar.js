@@ -23,6 +23,7 @@ import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../message';
 import {createDataGenerator, createZipFromData} from '../download.js';
 import {saveAs} from 'file-saver';
+import './ngm-share-link.js';
 
 const WELCOME_PANEL = 'welcome-panel';
 const CATALOG_PANEL = 'catalog-panel';
@@ -75,6 +76,7 @@ class LeftSideBar extends LitElementI18n {
             <i class="ui lightbulb icon"></i>
             ${i18next.t('welcome_instructions')}
           </div>
+          <ngm-share-link></ngm-share-link>
         </div>
       </div>
 
