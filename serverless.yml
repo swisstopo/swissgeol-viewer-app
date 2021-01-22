@@ -1,0 +1,71 @@
+# https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml/
+
+service: serverless-swissgeol
+
+package:
+  exclude:
+    - ./**
+  include:
+    - lambda/**
+
+plugins:
+  - serverless-python-requirements
+
+provider:
+  name: aws
+  runtime: python3.6
+  stage: dev
+  region: us-west-2
+  apiName: shortlink-api
+  environment:
+    S3_BUCKET:
+      Ref: ServerlessDeploymentBucket
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 's3:PutObject'
+        - 's3:PutObject'
+      Resource:
+        Fn::Join:
+          - ''
+          - - 'arn:aws:s3:::'
+            - Ref: ServerlessDeploymentBucket
+            - '/u/*'
+
+functions:
+  urlRedirector:
+    memorySize: 384
+    package:
+      include:
+        - lambda/URLShortener/URLRedirector.py
+    handler: lambda/URLShortener/URLRedirector.handler
+    events:
+      - http:
+          path: /{key}
+          method: get
+          integration: lambda
+  urlShortener:
+    memorySize: 384
+    package:
+      include:
+        - lambda/URLShortener/URLShortenet.py
+    handler: lambda/URLShortener/URLShortener.handler
+    events:
+      - http:
+          path: url_shortener
+          method: post
+          integration: lambda
+          request:
+            template:
+              application/x-www-form-urlencoded: null
+              application/json: null
+            passThrough: WHEN_NO_MATCH
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
