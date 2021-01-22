@@ -10,6 +10,7 @@ package:
 
 plugins:
   - serverless-python-requirements
+  - serverless-offline
 
 provider:
   name: aws
@@ -24,7 +25,7 @@ provider:
     - Effect: 'Allow'
       Action:
         - 's3:PutObject'
-        - 's3:PutObject'
+        - 's3:GetObject'
       Resource:
         Fn::Join:
           - ''
@@ -44,6 +45,15 @@ functions:
           path: /{key}
           method: get
           integration: lambda
+          request:
+            template:
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              302:
+                pattern: ''
+                headers:
+                  Location: integration.response.body.Redirect
   urlShortener:
     memorySize: 384
     package:

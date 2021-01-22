@@ -6,7 +6,8 @@ S3_BUCKET = os.environ['S3_BUCKET']
 
 def handler(event, context):
   print(event)
-  short_url = "u/" + event.get("Key")
+  path = event.get("path")
+  short_url = "u/" + path.get("key")
 
   s3 = boto3.client('s3', config=Config(signature_version='s3v4'))
   resp = s3.head_object(Bucket=S3_BUCKET, Key=short_url)
