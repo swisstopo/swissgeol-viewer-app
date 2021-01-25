@@ -17,6 +17,7 @@ i18next.t('assets:Download');
 i18next.t('assets:Download ASCII');
 i18next.t('assets:Download All data');
 i18next.t('assets:Download DXF');
+i18next.t('assets:Download ESRI-GRID');
 i18next.t('assets:Download GoCad');
 i18next.t('assets:Download Move');
 i18next.t('assets:GA25_Name');
