@@ -10,7 +10,8 @@
     "rollup-start": "node scripts/environment.js && node scripts/generateManuals.js && rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && rm -rf dist/* && rollup --environment mode:production -c && scripts/create_versions.sh",
     "test": "mocha --exit",
-    "offline-api": "sls offline start"
+    "offline-api": "sls offline start",
+    "deploy-dev": "sls deploy -c serverless-dev.yml"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.2.0",
