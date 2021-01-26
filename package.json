@@ -41,7 +41,7 @@
     "@babel/preset-env": "7.12.7",
     "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-json": "^4.1.0",
-    "autoprefixer": "^9.8.6",
+    "autoprefixer": "^10.2.3",
     "chai": "^4.2.0",
     "copy-webpack-plugin": "6.4.1",
     "core-js": "3.8.3",
