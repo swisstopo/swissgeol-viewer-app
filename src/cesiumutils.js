@@ -226,17 +226,17 @@ export function cartesianToDegrees(cartesian) {
  * @return {string}
  */
 export function extendKmlWithProperties(kml, entities) {
-  entities.values.forEach(ent => {
+  entities.values.forEach(entity => {
     let kmlProperties = '<ExtendedData>';
-    ent.properties.propertyNames.forEach(prop => {
-      let value = ent.properties[prop] ? ent.properties[prop].getValue() : undefined;
-      if (value || typeof value === 'number') {
+    entity.properties.propertyNames.forEach(prop => {
+      let value = entity.properties[prop] ? entity.properties[prop].getValue() : undefined;
+      if (value !== undefined && value !== null) {
         value = typeof value === 'object' ? JSON.stringify(value) : value;
         kmlProperties += `<Data name="${prop}"><value>${value}</value></Data>`;
       }
     });
     kmlProperties += '</ExtendedData>';
-    const placemark = `<Placemark id="${ent.id}">`;
+    const placemark = `<Placemark id="${entity.id}">`;
     kml = kml.replace(placemark, `${placemark}${kmlProperties}`);
   });
   return kml;

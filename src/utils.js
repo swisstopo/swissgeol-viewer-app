@@ -124,15 +124,14 @@ export function filterCsvString(str, bbox4326) {
 }
 
 /**
- * Check is string can be parsed to object
- * @param string
- * @returns {boolean}
+ * Returns object parsed from string or undefined
+ * @param {string} string
+ * @returns {object|undefined}
  */
-export function isStringJson(string) {
+export function parseJson(string) {
   try {
-    JSON.parse(string);
+    return JSON.parse(string);
   } catch (e) {
-    return false;
+    return undefined;
   }
-  return true;
 }

@@ -38,7 +38,7 @@ import {SwissforagesService} from './SwissforagesService';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 
 
-import {clickOnElement, coordinatesToBbox, isStringJson} from '../utils.js';
+import {clickOnElement, coordinatesToBbox, parseJson} from '../utils.js';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';
@@ -650,10 +650,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     let type = getUploadedEntityType(entity);
     const extendedData = entity.kml && entity.kml.extendedData ? entity.kml.extendedData : {};
     Object.getOwnPropertyNames(extendedData).forEach(prop => {
-      extendedData[prop] = extendedData[prop].value;
-      if (isStringJson(extendedData[prop])) {
-        extendedData[prop] = JSON.parse(extendedData[prop]);
-      }
+      extendedData[prop] = parseJson(extendedData[prop].value) || extendedData[prop].value;
     });
     if (extendedData.type && AVAILABLE_AOI_TYPES.includes(extendedData.type)) {
       type = extendedData.type;
@@ -795,7 +792,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         numberOfSegments: attributes.numberOfSegments,
         sidesLength: attributes.sidesLength || [],
         type: type,
-        volumeShowed: attributes.volumeShowed ? Boolean(attributes.volumeShowed) : false,
+        volumeShowed:
+          typeof attributes.volumeShowed === 'boolean' ? attributes.volumeShowed : attributes.volumeShowed === 'true',
         volumeHeightLimits: attributes.volumeHeightLimits || DEFAULT_VOLUME_HEIGHT_LIMITS,
         description: attributes.description || '',
         image: attributes.image || '',
