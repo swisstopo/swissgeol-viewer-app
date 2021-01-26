@@ -19,19 +19,13 @@ provider:
   region: us-west-2
   apiName: shortlink-api
   environment:
-    S3_BUCKET:
-      Ref: ServerlessDeploymentBucket
+    S3_BUCKET: 'serverless-swissgeol-dev-serverlessdeploymentbuck-7r1g98ijhjng'
   iamRoleStatements:
     - Effect: 'Allow'
       Action:
         - 's3:PutObject'
         - 's3:GetObject'
-      Resource:
-        Fn::Join:
-          - ''
-          - - 'arn:aws:s3:::'
-            - Ref: ServerlessDeploymentBucket
-            - '/u/*'
+      Resource: 'arn:aws:s3:::serverless-swissgeol-dev-serverlessdeploymentbuck-7r1g98ijhjng/u/*'
 
 functions:
   urlRedirector:
