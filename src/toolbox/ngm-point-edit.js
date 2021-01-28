@@ -75,12 +75,10 @@ class NgmPointEdit extends LitElementI18n {
   }
 
   onPositionChange() {
-    const cartographicPosition = Cartographic.fromCartesian(this.position);
     this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
     const heightValue = Number(this.querySelector('.ngm-height-input').value);
     this.heightValue = CesiumMath.clamp(heightValue, this.minHeight, this.maxHeight);
-    const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
     let lon = this.xValue;
     let lat = this.yValue;
     if (this.coordsType === 'lv95') {
@@ -88,7 +86,7 @@ class NgmPointEdit extends LitElementI18n {
       lon = radianCoords[0];
       lat = radianCoords[1];
     }
-    const height = this.heightValue + altitude;
+    const height = this.heightValue;
     const cartesianPosition = Cartesian3.fromDegrees(lon, lat, height);
     this.position = cartesianPosition;
     this.updateInputValues();

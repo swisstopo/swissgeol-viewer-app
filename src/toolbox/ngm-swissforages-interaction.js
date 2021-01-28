@@ -45,8 +45,6 @@ class NgmSwissforagesInteraction extends LitElementI18n {
     } else {
       // create
       const cartographicPosition = Cartographic.fromCartesian(this.item.positions[0]);
-      const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
-      cartographicPosition.height -= altitude;
       this.updateModalOptions({
         id: this.item.id,
         name: this.item.name,
@@ -96,8 +94,7 @@ class NgmSwissforagesInteraction extends LitElementI18n {
           const height = boreholeData.elevation_z || 0;
           const positionlv95 = lv95ToDegrees([boreholeData.location_x, boreholeData.location_y]);
           const cartographicPosition = Cartographic.fromDegrees(positionlv95[0], positionlv95[1]);
-          const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
-          cartographicPosition.height = height + altitude;
+          cartographicPosition.height = height;
           entity.position = Cartographic.toCartesian(cartographicPosition);
           updateBoreholeHeights(entity, this.julianDate);
         }
