@@ -145,6 +145,7 @@
   "tbx_depth_warning": "La profondeur doit se situer entre {{minDepth}}m et {{maxDepth}}m",
   "tbx_description_label": "Description",
   "tbx_disable_slice_btn_label": "Afficher la carte complète",
+  "tbx_download_btn_label": "",
   "tbx_download_data_inside_rectangle_label": "Télécharger les données à l'intérieur du rectangle",
   "tbx_download_section_output_label": "Télécharger",
   "tbx_drawing_tools_label": "Dessiner et mesurer:",

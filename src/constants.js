@@ -36,9 +36,8 @@ export const DEFAULT_AOI_COLOR = Color.BLACK.withAlpha(0.3);
 export const DEFAULT_AOI_VOLUME_COLOR = Color.GREY.withAlpha(0.3);
 export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW.withAlpha(0.3);
 
-// list of not graphics entity.propertyNames
-export const CESIUM_NOT_GRAPHICS_ENTITY_PROPS = ['orientation', 'position', 'description', 'properties', 'viewForm', 'kml'];
 export const CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD = ['polygon', 'polyline', 'point'];
+export const AVAILABLE_AOI_TYPES = ['polygon', 'line', 'point', 'rectangle'];
 
 export const AOI_DATASOURCE_NAME = 'interestAreas';
 

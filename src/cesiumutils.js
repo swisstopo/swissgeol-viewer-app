@@ -221,3 +221,26 @@ export function cartesianToDegrees(cartesian) {
     cartographic.height
   ];
 }
+
+/**
+ * Extend kml for export with entities properties
+ * @param {string} kml - kml for export
+ * @param {Array<Entity>} entities - list of entities for export
+ * @return {string}
+ */
+export function extendKmlWithProperties(kml, entities) {
+  entities.values.forEach(entity => {
+    let kmlProperties = '<ExtendedData>';
+    entity.properties.propertyNames.forEach(prop => {
+      let value = entity.properties[prop] ? entity.properties[prop].getValue() : undefined;
+      if (value !== undefined && value !== null) {
+        value = typeof value === 'object' ? JSON.stringify(value) : value;
+        kmlProperties += `<Data name="${prop}"><value>${value}</value></Data>`;
+      }
+    });
+    kmlProperties += '</ExtendedData>';
+    const placemark = `<Placemark id="${entity.id}">`;
+    kml = kml.replace(placemark, `${placemark}${kmlProperties}`);
+  });
+  return kml;
+}

@@ -4,9 +4,12 @@ import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import GpxDataSource from '../GpxDataSource.js';
 import i18next from 'i18next';
-import {getMeasurements, cartesianToDegrees} from '../cesiumutils.js';
+import {getMeasurements, cartesianToDegrees, extendKmlWithProperties} from '../cesiumutils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
+import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
+import {exportKml} from 'cesium';
+import {saveAs} from 'file-saver';
 
 import {html} from 'lit-element';
 
@@ -14,9 +17,9 @@ import {
   AOI_DATASOURCE_NAME,
   DEFAULT_AOI_COLOR,
   DEFAULT_VOLUME_HEIGHT_LIMITS,
-  AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR
+  AOI_POINT_SYMBOLS, HIGHLIGHTED_AOI_COLOR, AVAILABLE_AOI_TYPES
 } from '../constants.js';
-import {updateColor, cleanupUploadedEntity, getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
+import {updateColor, getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
 import {showWarning} from '../message.js';
 import {LitElementI18n} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -35,7 +38,7 @@ import {SwissforagesService} from './SwissforagesService';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 
 
-import {clickOnElement, coordinatesToBbox} from '../utils.js';
+import {clickOnElement, coordinatesToBbox, parseJson} from '../utils.js';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';
@@ -95,261 +98,278 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
 
-getTemplate() {
-  return html`
-    <label>${i18next.t('tbx_drawing_tools_label')}</label>
-    <div class="ui fluid compact tiny buttons ngm-aoi-buttons" ?hidden=${this.draw_.active && !this.draw_.entityForEdit}>
+  getTemplate() {
+    return html`
+      <label>${i18next.t('tbx_drawing_tools_label')}</label>
+      <div class="ui fluid compact tiny buttons ngm-aoi-buttons"
+           ?hidden=${this.draw_.active && !this.draw_.entityForEdit}>
         <button class="ui button"
                 data-tooltip=${i18next.t('tbx_add_point_btn_label')}
                 data-variation="mini"
                 data-position="top left"
                 @click=${this.onAddAreaClick_.bind(this, 'point')}>
-            <i class="map marker alternate icon"></i>
+          <i class="map marker alternate icon"></i>
         </button>
         <button class="ui button"
                 data-tooltip=${i18next.t('tbx_add_line_btn_label')}
                 data-variation="mini"
                 data-position="top center"
                 @click=${this.onAddAreaClick_.bind(this, 'line')}>
-            <i class="route icon"></i>
+          <i class="route icon"></i>
         </button>
         <button class="ui button"
                 data-tooltip=${i18next.t('tbx_add_polygon_area_btn_label')}
                 data-variation="mini"
                 data-position="top center"
                 @click=${this.onAddAreaClick_.bind(this, 'polygon')}>
-            <i class="draw polygon icon"></i>
+          <i class="draw polygon icon"></i>
         </button>
         <button class="ui button"
                 data-tooltip=${i18next.t('tbx_add_rect_area_btn_label')}
                 data-variation="mini"
                 data-position="top center"
                 @click=${this.onAddAreaClick_.bind(this, 'rectangle')}>
-            <i class="vector square icon"></i>
+          <i class="vector square icon"></i>
         </button>
         <button class="ui button"
                 data-tooltip=${i18next.t('tbx_upload_btn_label')}
                 data-variation="mini"
                 data-position="top right"
                 @click=${clickOnElement.bind(null, fileUploadInputId)}>
-            <i class="file upload icon"></i>
+          <i class="file upload icon"></i>
         </button>
-    </div>
-    <input id="${fileUploadInputId}" type='file' accept=".kml,.KML,.gpx,.GPX" hidden @change=${this.uploadFile_.bind(this)} />
-    <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container" ?hidden=${!this.draw_.active || this.draw_.entityForEdit}>
-        <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}</button>
+        <button class="ui button ${classMap({disabled: !this.atLeastOneEntityVisible})}"
+                data-tooltip=${i18next.t('tbx_download_btn_label')}
+                data-variation="mini"
+                data-position="top right"
+                @click=${this.downloadVisibleGeometries}>
+          <i class="download icon"></i>
+        </button>
+      </div>
+      <input id="${fileUploadInputId}" type='file' accept=".kml,.KML,.gpx,.GPX" hidden
+             @change=${this.uploadFile_.bind(this)}/>
+      <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container"
+           ?hidden=${!this.draw_.active || this.draw_.entityForEdit}>
+        <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}
+        </button>
         <button class="ui button ngm-help-btn"
                 data-tooltip=${i18next.t('tbx_area_of_interest_add_hint')}
                 data-variation="tiny"
                 data-position="top right">
-            <i class="question circle outline icon"></i>
+          <i class="question circle outline icon"></i>
         </button>
-    </div>
+      </div>
 
-    <label>${i18next.t('tbx_analysis_tools_label')}</label>
-    <div class="ui vertical accordion ngm-aoi-areas" ?hidden=${!this.entitiesList_ || !this.entitiesList_.length}>
-     ${this.aoiListTemplate()}
-    </div>
-    <div ?hidden=${this.entitiesList_ && !!this.entitiesList_.length} class="ui tertiary center aligned segment">
+      <label>${i18next.t('tbx_analysis_tools_label')}</label>
+      <div class="ui vertical accordion ngm-aoi-areas" ?hidden=${!this.entitiesList_ || !this.entitiesList_.length}>
+        ${this.aoiListTemplate()}
+      </div>
+      <div ?hidden=${this.entitiesList_ && !!this.entitiesList_.length} class="ui tertiary center aligned segment">
         <span>${i18next.t('tbx_area_of_interest_empty_hint')}</span>
-    </div>
-    <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
-    <ngm-swissforages-modal
-      .service="${this.swissforagesService}"
-      .options="${this.swissforagesModalOptions}">
-    </ngm-swissforages-modal>
-  `;
-}
+      </div>
+      <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
+      <ngm-swissforages-modal
+        .service="${this.swissforagesService}"
+        .options="${this.swissforagesModalOptions}">
+      </ngm-swissforages-modal>
+    `;
+  }
 
-createButtonsFields(i) {
-  return html`
-  <div class="ngm-btns-field">
-    <div class="ui tiny fluid compact buttons ngm-aoi-buttons">
-        <button
-        class="ui button"
-        @click=${this.showAreaInfo.bind(this, i)}
-        data-tooltip=${i18next.t('tbx_info_btn_hint')}
-        data-position="top center"
-        data-variation="tiny"
-        ><i class="info circle icon"></i></button>
-        <button
-        class="ui button"
-        @click=${this.flyToArea.bind(this, i.id)}
-        data-tooltip=${i18next.t('tbx_fly_to_btn_hint')}
-        data-position="top center"
-        data-variation="tiny"
-        ><i class="search plus icon"></i></button>
-        <button
-        ?hidden="${i.swissforagesId}"
-        class="ui button"
-        @click=${this.editAreaPosition.bind(this, i.id)}
-        data-tooltip=${i18next.t('tbx_edit_area_hint')}
-        data-position="top center"
-        data-variation="tiny"
-        ><i class="pen icon"></i></button>
-        <button
-        class="ui button"
-        @click=${this.updateEntityVolume.bind(this, i.id, true)}
-        ?hidden=${i.type === 'point' || i.volumeShowed}
-        data-tooltip=${i18next.t('tbx_show_volume_btn_label')}
-        data-position="top center"
-        data-variation="tiny"
-        ><i class="${this.getIconClass(i.id, true)}"></i></button>
-        <button
-        class="ui button"
-        @click=${this.hideVolume.bind(this, i.id)}
-        ?hidden=${i.type === 'point' || !i.volumeShowed}
-        data-tooltip=${i18next.t('tbx_hide_volume_btn_label')}
-        data-position="top center"
-        data-variation="tiny"
-        ><i class="${this.getIconClass(i.id, true)}"></i></button>
-        <button
-        class="ui button"
-        @click=${this.onRemoveEntityClick_.bind(this, i.id)}
-        data-tooltip=${i18next.t('tbx_remove_btn_hint')}
-        data-position="top center"
-        data-variation="tiny"
-        ><i class="trash alternate outline icon"></i></button>
-    </div>
-</div>`;
-}
+  createButtonsFields(i) {
+    return html`
+      <div class="ngm-btns-field">
+        <div class="ui tiny fluid compact buttons ngm-aoi-buttons">
+          <button
+            class="ui button"
+            @click=${this.showAreaInfo.bind(this, i)}
+            data-tooltip=${i18next.t('tbx_info_btn_hint')}
+            data-position="top center"
+            data-variation="tiny"
+          ><i class="info circle icon"></i></button>
+          <button
+            class="ui button"
+            @click=${this.flyToArea.bind(this, i.id)}
+            data-tooltip=${i18next.t('tbx_fly_to_btn_hint')}
+            data-position="top center"
+            data-variation="tiny"
+          ><i class="search plus icon"></i></button>
+          <button
+            ?hidden="${i.swissforagesId}"
+            class="ui button"
+            @click=${this.editAreaPosition.bind(this, i.id)}
+            data-tooltip=${i18next.t('tbx_edit_area_hint')}
+            data-position="top center"
+            data-variation="tiny"
+          ><i class="pen icon"></i></button>
+          <button
+            class="ui button"
+            @click=${this.updateEntityVolume.bind(this, i.id, true)}
+            ?hidden=${i.type === 'point' || i.volumeShowed}
+            data-tooltip=${i18next.t('tbx_show_volume_btn_label')}
+            data-position="top center"
+            data-variation="tiny"
+          ><i class="${this.getIconClass(i.id, true)}"></i></button>
+          <button
+            class="ui button"
+            @click=${this.hideVolume.bind(this, i.id)}
+            ?hidden=${i.type === 'point' || !i.volumeShowed}
+            data-tooltip=${i18next.t('tbx_hide_volume_btn_label')}
+            data-position="top center"
+            data-variation="tiny"
+          ><i class="${this.getIconClass(i.id, true)}"></i></button>
+          <button
+            class="ui button"
+            @click=${this.onRemoveEntityClick_.bind(this, i.id)}
+            data-tooltip=${i18next.t('tbx_remove_btn_hint')}
+            data-position="top center"
+            data-variation="tiny"
+          ><i class="trash alternate outline icon"></i></button>
+        </div>
+      </div>`;
+  }
 
-aoiListTemplate() {
-  return this.entitiesList_.map((i, index) =>
-    html`
-      <div class="item">
-        <div class="title" @click=${evt => this.onAreaClick(evt)}>
-             <i class="dropdown icon"></i>
+  aoiListTemplate() {
+    return this.entitiesList_.map((i, index) =>
+      html`
+        <div class="item">
+          <div class="title" @click=${evt => this.onAreaClick(evt)}>
+            <i class="dropdown icon"></i>
             <div class="ui checkbox">
               <input type="checkbox" @input=${evt => this.onShowHideEntityClick_(evt, i.id)} .checked=${i.show}>
               <label class="ngm-aoi-title"><i class=${this.getIconClass(i.id)}></i>${i.name}</label>
             </div>
-        </div>
-        <div class="content ngm-aoi-content">
+          </div>
+          <div class="content ngm-aoi-content">
             ${this.createButtonsFields(i)}
             ${i.type !== 'polygon' ?
-            html`
-                    <ngm-gst-interaction
-                        .viewer=${this.viewer}
-                        .positions=${i.positions}
-                        .geometryType=${i.type}
-                        .parentElement=${this}>
-                    </ngm-gst-interaction>
-                ` : ''}
-          <ngm-swissforages-interaction
-            .item=${i}
-            .service=${this.swissforagesService}
-            .dataSource=${this.interestAreasDataSource}
-            .viewer=${this.viewer}
-            .updateModalOptions=${(options => {
-              this.swissforagesModalOptions = options;
-              this.requestUpdate();
-            })}>
-          </ngm-swissforages-interaction>
+              html`
+                <ngm-gst-interaction
+                  .viewer=${this.viewer}
+                  .positions=${i.positions}
+                  .geometryType=${i.type}
+                  .parentElement=${this}>
+                </ngm-gst-interaction>
+              ` : ''}
+            <ngm-swissforages-interaction
+              .item=${i}
+              .service=${this.swissforagesService}
+              .dataSource=${this.interestAreasDataSource}
+              .viewer=${this.viewer}
+              .updateModalOptions=${(options => {
+                this.swissforagesModalOptions = options;
+                this.requestUpdate();
+              })}>
+            </ngm-swissforages-interaction>
             ${i.type === 'line' ?
-            html`<ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>`
-            : ''}
+              html`
+                <ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>`
+              : ''}
             ${i.type === 'rectangle' ?
-            html `
-              <div class="ui tiny buttons">
-              <button class="ui button ${classMap({disabled: !this.downloadActiveDataEnabled})}"
-                data-position="top left"
-                data-variation="mini"
-                @click=${() => {
-                  const rectangle = i.positions.map(cartesianToDegrees);
-                  rectangle.pop();
-                  const bbox = coordinatesToBbox(rectangle);
-                  this.dispatchEvent(new CustomEvent('downloadActiveData', {
-                    detail: {
-                      bbox4326: bbox
-                    }
-                  }));
-                }
-                }>
-                ${i18next.t('tbx_download_data_inside_rectangle_label')}
+              html`
+                <div class="ui tiny buttons">
+                  <button class="ui button ${classMap({disabled: !this.downloadActiveDataEnabled})}"
+                          data-position="top left"
+                          data-variation="mini"
+                          @click=${() => {
+                            const rectangle = i.positions.map(cartesianToDegrees);
+                            rectangle.pop();
+                            const bbox = coordinatesToBbox(rectangle);
+                            this.dispatchEvent(new CustomEvent('downloadActiveData', {
+                              detail: {
+                                bbox4326: bbox
+                              }
+                            }));
+                          }
+                          }>
+                    ${i18next.t('tbx_download_data_inside_rectangle_label')}
+                  </button>
+                </div>
+              `
+              : ''}
+          </div>
+
+          <div class="ngm-aoi-edit" ?hidden=${!this.draw_.entityForEdit || this.draw_.entityForEdit.id !== i.id}>
+            <div class="ui mini basic fluid buttons ngm-aoi-tooltip-container">
+              <button class="ui button basic primary"
+                      @click=${this.saveEditing.bind(this)}>${i18next.t('tbx_save_editing_btn_label')}
+              </button>
+              <button class="ui button basic grey" @click=${this.cancelDraw.bind(this)}>
+                ${i18next.t('tbx_cancel_area_btn_label')}
+              </button>
+              <button class="ui button basic grey ngm-help-btn"
+                      data-tooltip=${i18next.t('tbx_area_of_interest_edit_hint')}
+                      data-variation="tiny"
+                      data-position="top right">
+                <i class="question circle outline icon"></i>
               </button>
             </div>
-            `
-            : ''}
-        </div>
-
-        <div class="ngm-aoi-edit"  ?hidden=${!this.draw_.entityForEdit || this.draw_.entityForEdit.id !== i.id}>
-            <div class="ui mini basic fluid buttons ngm-aoi-tooltip-container">
-                <button class="ui button basic primary"
-                        @click=${this.saveEditing.bind(this)}>${i18next.t('tbx_save_editing_btn_label')}</button>
-                <button class="ui button basic grey" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}</button>
-                <button class="ui button basic grey ngm-help-btn"
-                        data-tooltip=${i18next.t('tbx_area_of_interest_edit_hint')}
-                        data-variation="tiny"
-                        data-position="top right">
-                    <i class="question circle outline icon"></i>
-                </button>
+            <div class="ngm-aoi-input-container">
+              <label>${i18next.t('tbx_name_label')}:</label>
+              <div class="ui mini input">
+                <input
+                  class=${`ngm-aoi-name-input-${index}`}
+                  type="text" .value="${i.name}"
+                  @input="${() => this.onNameInputChange(index)}">
+              </div>
             </div>
             <div class="ngm-aoi-input-container">
-                <label>${i18next.t('tbx_name_label')}:</label>
-                <div class="ui mini input">
-                  <input
-                    class=${`ngm-aoi-name-input-${index}`}
-                    type="text" .value="${i.name}"
-                    @input="${() => this.onNameInputChange(index)}">
-                </div>
-            </div>
-            <div class="ngm-aoi-input-container">
-                <label>${i18next.t('tbx_description_label')}:</label>
-                <div class="ui mini input">
+              <label>${i18next.t('tbx_description_label')}:</label>
+              <div class="ui mini input">
                   <textarea
                     class=${`ngm-aoi-description-${index}`}
                     type="text" .value="${i.description}"
                     @input="${() => this.onDescriptionChange(index)}"></textarea>
-                </div>
+              </div>
             </div>
             <div class="ngm-aoi-input-container">
-                <label>${i18next.t('tbx_image_label')}:</label>
-                <div class="ui mini input">
+              <label>${i18next.t('tbx_image_label')}:</label>
+              <div class="ui mini input">
                   <textarea
                     class=${`ngm-aoi-image-${index}`}
                     type="text" .value="${i.image}"
                     @input="${() => this.onImageChange(index)}"></textarea>
-                </div>
+              </div>
             </div>
             <div class="ngm-aoi-input-container">
-                <label>${i18next.t('tbx_website_label')}:</label>
-                <div class="ui mini input">
+              <label>${i18next.t('tbx_website_label')}:</label>
+              <div class="ui mini input">
                   <textarea
                     class=${`ngm-aoi-website-${index}`}
                     type="text" .value="${i.website}"
                     @input="${() => this.onWebsiteChange(index)}"></textarea>
-                </div>
+              </div>
             </div>
             <div class="ngm-volume-limits-input"
-                ?hidden=${!this.draw_.entityForEdit || !(this.draw_.entityForEdit.properties.volumeShowed && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
-                <div>
-                    <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
-                    <div class="ui mini input right labeled">
-                         <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class=${`ngm-lower-limit-input-${index}`}
-                            .value="${this.volumeHeightLimits.lowerLimit}"
-                            @input="${this.onVolumeHeightLimitsChange.bind(this, index)}">
-                        <label class="ui label">m</label>
-                    </div>
+                 ?hidden=${!this.draw_.entityForEdit || !(this.draw_.entityForEdit.properties.volumeShowed && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
+              <div>
+                <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
+                <div class="ui mini input right labeled">
+                  <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
+                         class=${`ngm-lower-limit-input-${index}`}
+                         .value="${this.volumeHeightLimits.lowerLimit}"
+                         @input="${this.onVolumeHeightLimitsChange.bind(this, index)}">
+                  <label class="ui label">m</label>
                 </div>
-                <div>
-                    <label>${i18next.t('tbx_volume_height_label')}:</label></br>
-                    <div class="ui mini input right labeled">
-                        <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}" class=${`ngm-volume-height-input-${index}`}
-                            .value="${this.volumeHeightLimits.height}"
-                            @change="${this.onVolumeHeightLimitsChange.bind(this, index)}">
-                        <label class="ui label">m</label>
-                    </div>
+              </div>
+              <div>
+                <label>${i18next.t('tbx_volume_height_label')}:</label></br>
+                <div class="ui mini input right labeled">
+                  <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
+                         class=${`ngm-volume-height-input-${index}`}
+                         .value="${this.volumeHeightLimits.height}"
+                         @change="${this.onVolumeHeightLimitsChange.bind(this, index)}">
+                  <label class="ui label">m</label>
                 </div>
+              </div>
             </div>
-           <ngm-point-edit
-                ?hidden=${i.type !== 'point'}
-                .viewer=${this.viewer}
-                .position=${i.positions[0]}
-                .entity=${this.draw_.entityForEdit}>
-           </ngm-point-edit>
-        </div>
-      </div>`);
+            <ngm-point-edit
+              ?hidden=${i.type !== 'point'}
+              .viewer=${this.viewer}
+              .position=${i.positions[0]}
+              .entity=${this.draw_.entityForEdit}>
+            </ngm-point-edit>
+          </div>
+        </div>`);
   }
 
   initAoi() {
@@ -627,17 +647,32 @@ aoiListTemplate() {
    * @return {boolean}
    */
   addUploadedArea(entity, dataSourceName) {
-    const type = getUploadedEntityType(entity);
+    let type = getUploadedEntityType(entity);
+    const extendedData = entity.kml && entity.kml.extendedData ? entity.kml.extendedData : {};
+    Object.getOwnPropertyNames(extendedData).forEach(prop => {
+      extendedData[prop] = parseJson(extendedData[prop].value) || extendedData[prop].value;
+    });
+    if (extendedData.type && AVAILABLE_AOI_TYPES.includes(extendedData.type)) {
+      type = extendedData.type;
+    }
     if (type) {
-      entity = cleanupUploadedEntity(entity);
-      const attributes = {...this.getAreaProperties(entity, type)};
+      const attributes = {...extendedData, ...this.getAreaProperties(entity, type)};
       attributes.id = entity.id;
-      attributes.name = !entity.name && entity.parent && entity.parent.name ? entity.parent.name : dataSourceName;
+      if (entity.name) {
+        attributes.name = entity.name;
+      } else {
+        attributes.name = entity.parent && entity.parent.name ? entity.parent.name : dataSourceName;
+      }
       if (type === 'point') {
         // getValue doesn't work with julianDate for some reason
         const position = entity.position.getValue ? entity.position.getValue(new Date()) : entity.position;
         attributes.positions = [position];
         attributes.clampPoint = true;
+        const billboard = entity.billboard;
+        if (billboard) {
+          attributes.pointColor = billboard.color ? billboard.color.getValue(this.julianDate) : undefined;
+          attributes.pointSymbol = billboard.image ? billboard.image.getValue(this.julianDate).url : undefined;
+        }
       } else if (type === 'line') {
         attributes.positions = entity.polyline.positions;
       } else {
@@ -665,9 +700,6 @@ aoiListTemplate() {
         this.areasCounter_[area.type] = areaNumber;
       }
       const entity = this.addAreaEntity(area);
-      if (area.volumeShowed) {
-        this.updateEntityVolume(entity.id);
-      }
       if (area.selected) {
         this.pickArea_(entity.id);
       }
@@ -760,35 +792,25 @@ aoiListTemplate() {
         numberOfSegments: attributes.numberOfSegments,
         sidesLength: attributes.sidesLength || [],
         type: type,
-        volumeShowed: attributes.volumeShowed || false,
+        volumeShowed:
+          typeof attributes.volumeShowed === 'boolean' ? attributes.volumeShowed : attributes.volumeShowed === 'true',
         volumeHeightLimits: attributes.volumeHeightLimits || DEFAULT_VOLUME_HEIGHT_LIMITS,
         description: attributes.description || '',
         image: attributes.image || '',
         website: attributes.website || ''
       }
     };
-    if (type === 'rectangle' || type === 'polygon') {
-      entityAttrs.polygon = {
-        hierarchy: attributes.positions,
-        material: DEFAULT_AOI_COLOR
-      };
-    } else if (type === 'line') {
-      entityAttrs.polyline = {
-        positions: attributes.positions,
-        clampToGround: true,
-        width: 4,
-        material: DEFAULT_AOI_COLOR
-      };
-    } else if (type === 'point') {
+    if (type === 'point') {
       entityAttrs.position = attributes.positions[0];
       if (attributes.clampPoint) {
         const cartPosition = Cartographic.fromCartesian(entityAttrs.position);
         cartPosition.height = 0;
         entityAttrs.position = Cartographic.toCartesian(cartPosition);
       }
+      const color = attributes.pointColor;
       entityAttrs.billboard = {
         image: attributes.pointSymbol || `./images/${AOI_POINT_SYMBOLS[0]}`,
-        color: attributes.pointColor || Color.GRAY,
+        color: color ? new Color(color.red, color.green, color.blue) : Color.GRAY,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
         disableDepthTestDistance: 0,
@@ -807,9 +829,32 @@ aoiListTemplate() {
         heightReference: HeightReference.RELATIVE_TO_GROUND,
         extrudedHeightReference: HeightReference.RELATIVE_TO_GROUND
       };
+    } else {
+      if (type === 'rectangle' || type === 'polygon') {
+        entityAttrs.polygon = {
+          hierarchy: attributes.positions,
+          material: DEFAULT_AOI_COLOR
+        };
+      } else if (type === 'line') {
+        entityAttrs.polyline = {
+          positions: attributes.positions,
+          clampToGround: true,
+          width: 4,
+          material: DEFAULT_AOI_COLOR
+        };
+      }
+      entityAttrs.polylineVolume = {
+        cornerType: CornerType.MITERED,
+        outline: true,
+        outlineColor: DEFAULT_AOI_VOLUME_COLOR,
+        material: DEFAULT_AOI_VOLUME_COLOR
+      };
     }
-
-    return this.interestAreasDataSource.entities.add(entityAttrs);
+    const entity = this.interestAreasDataSource.entities.add(entityAttrs);
+    if (entityAttrs.properties.volumeShowed) {
+      this.updateEntityVolume(entity.id);
+    }
+    return entity;
   }
 
   showSectionModal(imageUrl) {
@@ -946,12 +991,8 @@ aoiListTemplate() {
     }
     const color = this.selectedArea_ && this.selectedArea_.id === id ?
       HIGHLIGHTED_AOI_COLOR : DEFAULT_AOI_VOLUME_COLOR;
-    entity.polylineVolume = {
-      cornerType: CornerType.MITERED,
-      outline: true,
-      outlineColor: color,
-      material: color
-    };
+    entity.polylineVolume.outlineColor = color;
+    entity.polylineVolume.material = color;
     this.updateVolumePositions(entity, positions);
     entity.polylineVolume.show = true;
 
@@ -1040,6 +1081,24 @@ aoiListTemplate() {
     } else {
       entity.properties.addProperty('website', websiteElem.value);
     }
+  }
+
+  async downloadVisibleGeometries() {
+    const visibleGeometries = new EntityCollection();
+    this.interestAreasDataSource.entities.values.forEach(ent => {
+      if (ent.isShowing) {
+        visibleGeometries.add(ent);
+      }
+    });
+    const exportResult = await exportKml({entities: visibleGeometries, time: this.julianDate});
+    let kml = exportResult.kml;
+    kml = extendKmlWithProperties(kml, visibleGeometries);
+    const blob = new Blob([kml], {type: 'text/xml'});
+    saveAs(blob, 'swissgeol_geometries.kml');
+  }
+
+  get atLeastOneEntityVisible() {
+    return !!this.entitiesList_.find(ent => ent.show);
   }
 
   render() {
