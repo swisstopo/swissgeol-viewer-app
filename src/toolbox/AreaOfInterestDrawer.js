@@ -414,8 +414,7 @@ aoiListTemplate() {
     this.draw_.active = false;
     this.draw_.clear();
 
-    // wgs84 to Cartesian3
-    const positions = Cartesian3.fromDegreesArrayHeights(event.detail.positions.flat());
+    const positions = event.detail.positions;
     const measurements = event.detail.measurements;
     const type = event.detail.type;
     const attributes = {
@@ -424,7 +423,8 @@ aoiListTemplate() {
       perimeter: measurements.perimeter,
       sidesLength: measurements.sidesLength,
       numberOfSegments: measurements.segmentsNumber,
-      type: type
+      type: type,
+      clampPoint: true
     };
     this.areasCounter_[type] = this.areasCounter_[type] + 1;
     this.addAreaEntity(attributes);
@@ -781,13 +781,18 @@ aoiListTemplate() {
       };
     } else if (type === 'point') {
       entityAttrs.position = attributes.positions[0];
+      if (attributes.clampPoint) {
+        const cartPosition = Cartographic.fromCartesian(entityAttrs.position);
+        cartPosition.height = 0;
+        entityAttrs.position = Cartographic.toCartesian(cartPosition);
+      }
       entityAttrs.billboard = {
         image: attributes.pointSymbol || `./images/${AOI_POINT_SYMBOLS[0]}`,
         color: attributes.pointColor || Color.GRAY,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
         disableDepthTestDistance: 0,
-        heightReference: attributes.clampPoint ? HeightReference.CLAMP_TO_GROUND : HeightReference.NONE
+        heightReference: HeightReference.RELATIVE_TO_GROUND
       };
       entityAttrs.properties.swissforagesId = attributes.swissforagesId;
       entityAttrs.properties.depth = attributes.depth || 400;
@@ -798,9 +803,12 @@ aoiListTemplate() {
         semiMinorAxis: 40.0,
         semiMajorAxis: 40.0,
         extrudedHeight: height,
-        height: height - attributes.depth
+        height: height - attributes.depth,
+        heightReference: HeightReference.RELATIVE_TO_GROUND,
+        extrudedHeightReference: HeightReference.RELATIVE_TO_GROUND
       };
     }
+
     return this.interestAreasDataSource.entities.add(entityAttrs);
   }
 
