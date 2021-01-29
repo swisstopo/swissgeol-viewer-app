@@ -275,8 +275,9 @@ class LeftSideBar extends LitElementI18n {
   }
 
   updated(changedProperties) {
-    if (this.viewer && !this.accordionInited) {
-      this.initBarAccordions();
+    if (this.viewer) {
+      !this.accordionInited && this.initBarAccordions();
+      !this.zoomedToPosition && this.zoomToPermalinkObject();
     }
 
     if (changedProperties.has('authenticated') && !this.authenticated) {
@@ -453,6 +454,7 @@ class LeftSideBar extends LitElementI18n {
   }
 
   zoomToPermalinkObject() {
+    this.zoomedToPosition = true;
     const zoomToPosition = getZoomToPosition();
     if (zoomToPosition) {
       let altitude = undefined, cartesianPosition = undefined, windowPosition = undefined;

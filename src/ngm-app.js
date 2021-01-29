@@ -136,8 +136,6 @@ class NgmApp extends LitElementI18n {
       };
       showMessage(i18next.t('sentry_message'), options);
     }
-
-    sideBar.zoomToPermalinkObject();
   }
 
   /**
@@ -228,73 +226,73 @@ class NgmApp extends LitElementI18n {
 
   render() {
     return html`
-  <header>
-    <a id="ngm-home-link" href=""><img class="logo" src="src/images/logo-CH.svg"></a>
-    <ga-search class="ui small left icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
-      <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
-      <i class="search icon"></i>
-      <ul class="search-results"></ul>
-    </ga-search>
-    <div style="flex: auto;"></div>
-    <div class="ngm-header-links">
-      <div id="langs" class="ui horizontal selection list"></div>
-      <a id="ngm-help-btn" href="/manuals/manual_en.html" target="_blank">${i18next.t('header_help_link')}</a>
-      <ngm-auth
-        endpoint='https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize'
-        clientId='5k1mgef7ggiremt415eecn95ki'
-        @refresh=${(evt) => this.authenticated = evt.detail.authenticated}
-      ></ngm-auth>
-    </div>
-  </header>
-  <main>
-    <ngm-loading-mask></ngm-loading-mask>
-    <ngm-left-side-bar
-      .authenticated=${this.authenticated}
-      @welcome_panel_changed=${localStorageController.updateWelcomePanelState}
-      .hideWelcome=${localStorageController.hideWelcomeValue}
-      .hideCatalog=${localStorageController.hideCatalogValue}
-       @catalog_panel_changed=${localStorageController.toggleCatalogState}
-      .zoomTo=${zoomTo}
-      .localStorageController=${localStorageController}
-      @layeradded=${this.onLayerAdded}
-      .slicer=${this.slicer_}
-      .viewer=${this.viewer}
-      .mapChooser=${this.mapChooser}
-      class='left sidebar'>
-    </ngm-left-side-bar>
-    <div class='map'>
-      <div id='cesium'>
-        <ngm-slow-loading style='display: none;'></ngm-slow-loading>
-        <div class='navigation-widgets'>
-          <ngm-navigation-widgets
-            .viewer=${this.viewer}
-            .slicer=${this.slicer_}
-            data-fs='no'>
-          </ngm-navigation-widgets>
-          <ngm-full-screen-view></ngm-full-screen-view>
+      <header>
+        <a id="ngm-home-link" href=""><img class="logo" src="src/images/logo-CH.svg"></a>
+        <ga-search class="ui small left icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
+          <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
+          <i class="search icon"></i>
+          <ul class="search-results"></ul>
+        </ga-search>
+        <div style="flex: auto;"></div>
+        <div class="ngm-header-links">
+          <div id="langs" class="ui horizontal selection list"></div>
+          <a id="ngm-help-btn" href="/manuals/manual_en.html" target="_blank">${i18next.t('header_help_link')}</a>
+          <ngm-auth
+            endpoint='https://mylogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize'
+            clientId='5k1mgef7ggiremt415eecn95ki'
+            @refresh=${(evt) => this.authenticated = evt.detail.authenticated}
+          ></ngm-auth>
         </div>
-        <ngm-object-information></ngm-object-information>
-        <ngm-review-window
-          .hideReviewWindow=${localStorageController.hideReviewWindowValue}
-          @review_window_changed=${localStorageController.updateReviewWindowState};
-          data-fs='no'>
-        </ngm-review-window>
-      </div>
-      <div class='footer'>
-        <div class='ui horizontal link list'>
-          <ngm-feature-height class='item'
-            .viewer=${this.viewer}
-          ></ngm-feature-height>
+      </header>
+      <main>
+        <ngm-loading-mask></ngm-loading-mask>
+        <ngm-left-side-bar
+          .authenticated=${this.authenticated}
+          @welcome_panel_changed=${localStorageController.updateWelcomePanelState}
+          .hideWelcome=${localStorageController.hideWelcomeValue}
+          .hideCatalog=${localStorageController.hideCatalogValue}
+          @catalog_panel_changed=${localStorageController.toggleCatalogState}
+          .zoomTo=${zoomTo}
+          .localStorageController=${localStorageController}
+          @layeradded=${this.onLayerAdded}
+          .slicer=${this.slicer_}
+          .viewer=${this.viewer}
+          .mapChooser=${this.mapChooser}
+          class='left sidebar'>
+        </ngm-left-side-bar>
+        <div class='map'>
+          <div id='cesium'>
+            <ngm-slow-loading style='display: none;'></ngm-slow-loading>
+            <div class='navigation-widgets'>
+              <ngm-navigation-widgets
+                .viewer=${this.viewer}
+                .slicer=${this.slicer_}
+                data-fs='no'>
+              </ngm-navigation-widgets>
+              <ngm-full-screen-view></ngm-full-screen-view>
+            </div>
+            <ngm-object-information></ngm-object-information>
+            <ngm-review-window
+              .hideReviewWindow=${localStorageController.hideReviewWindowValue}
+              @review_window_changed=${localStorageController.updateReviewWindowState};
+              data-fs='no'>
+            </ngm-review-window>
+          </div>
+          <div class='footer'>
+            <div class='ui horizontal link list'>
+              <ngm-feature-height class='item'
+                                  .viewer=${this.viewer}
+              ></ngm-feature-height>
+            </div>
+            <div style='flex: auto;'></div>
+            <div class='ui horizontal link list'>
+              <a class='item' target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
+              <a class='item' target='_blank' href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
+            </div>
+          </div>
         </div>
-        <div style='flex: auto;'></div>
-        <div class='ui horizontal link list'>
-          <a class='item' target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
-          <a class='item' target='_blank' href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
-        </div>
-      </div>
-    </div>
-  </main>
-  `;
+      </main>
+    `;
   }
 
   createRenderRoot() {
