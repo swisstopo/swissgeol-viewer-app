@@ -39,9 +39,6 @@ functions:
           path: /{key}
           method: get
           integration: lambda
-          request:
-            template:
-              application/x-www-form-urlencoded: null
           response:
             statusCodes:
               302:

@@ -55,6 +55,6 @@ def handler(event, context):
                        WebsiteRedirectLocation=native_url,
                        ContentType="text/plain")
 
-  public_short_url = "https://" + cdn_prefix + "/" + short_id
+  public_short_url = "http://" + cdn_prefix + "/" + short_id
 
   return { "url_short": public_short_url, "url_long": native_url }

@@ -38,14 +38,14 @@ class NgmShareLink extends LitElementI18n {
 
   async getShortlink() {
     try {
-      const result = await fetch('https://e2cxtjb2ok.execute-api.us-west-2.amazonaws.com/dev/url_shortener', {
+      const result = await fetch('http://localhost:3000/dev/url_shortener', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;charset=UTF-8'
         },
         body: JSON.stringify({
           'url_long': window.location.href,
-          'cdn_prefix': 'd3rurwdano627k.cloudfront.net' // window.location.host
+          'cdn_prefix': 'localhost:3000/dev' // window.location.host
         }),
       });
       const response = await result.json();
