@@ -170,9 +170,9 @@ export default class QueryManager {
   }
 
   async selectTile(feature) {
-    const x = feature.getProperty('XCOORD');
-    const y = feature.getProperty('YCOORD');
-    const z = feature.getProperty('ZCOORDB');
+    const x = getProperty(feature, /\w*XCOORD/);
+    const y = getProperty(feature, /\w*YCOORD/);
+    const z = getProperty(feature, /\w*ZCOORDB/);
     if (!x || !y || !z) return; // boreholes only solution for now
     const coords = lv95ToDegrees([x, y]);
     const cartographicCoords = Cartographic.fromDegrees(coords[0], coords[1], z);
@@ -185,5 +185,12 @@ export default class QueryManager {
     attributes.zoom();
 
     this.scene.requestRender();
+  }
+}
+
+function getProperty(feature, pattern) {
+  const key = feature.getPropertyNames().find(value => pattern.test(value));
+  if (key) {
+    return feature.getProperty(key);
   }
 }
