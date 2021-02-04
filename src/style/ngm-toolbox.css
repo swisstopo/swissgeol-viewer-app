@@ -30,7 +30,7 @@
 }
 
 .ngm-aoi-content .ui.buttons {
-  width: 95%;
+  flex: auto;
   margin-bottom: 5px;
 }
 
@@ -38,12 +38,8 @@
   margin-bottom: 5px;
 }
 
-.ngm-aoi-buttons.ui.buttons > button {
-  flex: 1
-}
-
 .ngm-aoi-content {
-  padding: 10px 0 0 0 !important;
+  padding: 10px 5px !important;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -68,6 +64,7 @@ ngm-swissforages-interaction{
 }
 
 .ngm-slice-btns-container > .tiny.buttons > button:first-child,
+.ngm-swissforages-btns-container > .tiny.buttons > button:first-child,
 .ngm-gst-btns-container > .tiny.buttons > button:first-child {
   flex: 3;
 }
