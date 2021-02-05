@@ -118,7 +118,7 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 198337,
+          assetId: 281173,
           label: t('lyr_boreholes_public_label'),
           layer: 'boreholes',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
@@ -126,10 +126,12 @@ const geo_base = {
           visible: false,
           displayed: true,
           downloadDataType: 'csv',
-          downloadDataPath: 'https://download.swissgeol.ch/bh_2D_20201127_00.csv',
-          propsOrder: ['XCOORD', 'YCOORD', 'ZCOORDB', 'ORIGNAME', 'NAMEPUB', 'SHORTNAME', 'BOHREDAT', 'BOHRTYP',
-            'GRUND', 'RESTRICTIO', 'TIEFEMD', 'DEPTHFROM', 'DEPTHTO', 'LAYERDESC', 'ORIGGEOL', 'LITHOLOGY',
-            'LITHOSTRAT', 'CHRONOSTR', 'TECTO', 'USCS1', 'USCS2', 'USCS3']
+          downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
+          propsOrder: ['bh_pub_XCOORD', 'bh_pub_YCOORD', 'bh_pub_ZCOORDB', 'bh_pub_ORIGNAME', 'bh_pub_NAMEPUB',
+            'bh_pub_SHORTNAME', 'bh_pub_BOHREDAT', 'bh_pub_BOHRTYP', 'bh_pub_GRUND', 'bh_pub_RESTRICTIO',
+            'bh_pub_TIEFEMD', 'bh_pub_DEPTHFROM', 'bh_pub_DEPTHTO', 'bh_pub_LAYERDESC', 'bh_pub_ORIGGEOL',
+            'bh_pub_LITHOLOGY', 'bh_pub_LITHOSTRAT', 'bh_pub_CHRONOSTR', 'bh_pub_TECTO', 'bh_pub_USCS1',
+            'bh_pub_USCS2', 'bh_pub_USCS3']
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -141,7 +143,7 @@ const geo_base = {
           displayed: false,
           restricted: true,
           aws_s3_bucket: 'ngm-dev-authenticated-resources',
-          aws_s3_key: 'tiles/bh_private_20201117_00/tileset.json',
+          aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
         },
       ]
     },

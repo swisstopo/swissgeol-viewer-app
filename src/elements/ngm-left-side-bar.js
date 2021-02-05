@@ -247,7 +247,7 @@ class LeftSideBar extends LitElementI18n {
         const feature = content.getFeature(i);
         if (feature.getProperty(attributeKey) === attributeValue) {
           removeTileLoadListener();
-          this.searchedFeature = feature;
+          this.queryManager.selectTile(feature);
           return;
         }
       }
@@ -266,10 +266,6 @@ class LeftSideBar extends LitElementI18n {
       this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(queueLength => {
         this.globeQueueLength_ = queueLength;
       });
-    }
-    if (this.searchedFeature) {
-      this.queryManager.selectTile(this.searchedFeature);
-      this.searchedFeature = undefined;
     }
     super.update(changedProperties);
   }
