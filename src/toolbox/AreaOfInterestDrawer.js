@@ -204,7 +204,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
           <button
             class="ui button"
             @click=${this.updateEntityVolume.bind(this, i.id, true)}
-            ?hidden=${i.type === 'point' || i.volumeShowed}
+            ?hidden=${i.volumeShowed}
             data-tooltip=${i18next.t('tbx_show_volume_btn_label')}
             data-position="top center"
             data-variation="tiny"
@@ -212,7 +212,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
           <button
             class="ui button"
             @click=${this.hideVolume.bind(this, i.id)}
-            ?hidden=${i.type === 'point' || !i.volumeShowed}
+            ?hidden=${!i.volumeShowed}
             data-tooltip=${i18next.t('tbx_hide_volume_btn_label')}
             data-position="top center"
             data-variation="tiny"
@@ -340,7 +340,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               </div>
             </div>
             <div class="ngm-volume-limits-input"
-                 ?hidden=${!this.draw_.entityForEdit || !(this.draw_.entityForEdit.properties.volumeShowed && this.draw_.entityForEdit.properties.volumeShowed.getValue())}>
+                 ?hidden=${this.isVolumeInputsHidden()}>
               <div>
                 <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
                 <div class="ui mini input right labeled">
@@ -366,6 +366,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               ?hidden=${i.type !== 'point'}
               .viewer=${this.viewer}
               .position=${i.positions[0]}
+              .depth=${i.depth}
+              .volumeShowed=${i.volumeShowed}
               .entity=${this.draw_.entityForEdit}>
             </ngm-point-edit>
           </div>
@@ -398,16 +400,19 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     });
     this.draw_.addEventListener('leftdown', () => {
       const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
-      if (volumeShowedProp && volumeShowedProp.getValue()) {
+      const type = this.draw_.entityForEdit.properties.type.getValue();
+      if (volumeShowedProp && volumeShowedProp.getValue() && type !== 'point') {
         this.draw_.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
       }
     });
     this.draw_.addEventListener('leftup', () => {
       const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
-      if (volumeShowedProp && volumeShowedProp.getValue()) {
+      const type = this.draw_.entityForEdit.properties.type.getValue();
+      if (type === 'point') {
+        updateBoreholeHeights(this.draw_.entityForEdit, this.julianDate);
+      } else if (volumeShowedProp && volumeShowedProp.getValue()) {
         this.updateEntityVolume(this.draw_.entityForEdit.id);
       }
-      updateBoreholeHeights(this.draw_.entityForEdit, this.julianDate);
     });
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
@@ -751,7 +756,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       case 'line':
         return volume ? 'map outline icon' : 'route icon';
       case 'point':
-        return swissforagesId ? 'ruler vertical icon' : 'map marker alternate icon';
+        return swissforagesId || volume ? 'ruler vertical icon' : 'map marker alternate icon';
       default:
         return '';
     }
@@ -820,7 +825,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       entityAttrs.properties.depth = attributes.depth || 400;
       const height = Cartographic.fromCartesian(entityAttrs.position).height;
       entityAttrs.ellipse = {
-        show: !!attributes.swissforagesId,
+        show: !!attributes.swissforagesId || !!attributes.volumeShowed,
         material: Color.GREY,
         semiMinorAxis: 40.0,
         semiMajorAxis: 40.0,
@@ -977,7 +982,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (type === 'line') {
       positions = [...entity.polyline.positions.getValue()];
       entity.polyline.show = false;
-    } else {
+    } else if (type !== 'point') {
       positions = [...entity.polygon.hierarchy.getValue().positions];
       positions.push(positions[0]);
       entity.polygon.show = false;
@@ -991,10 +996,15 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
     const color = this.selectedArea_ && this.selectedArea_.id === id ?
       HIGHLIGHTED_AOI_COLOR : DEFAULT_AOI_VOLUME_COLOR;
-    entity.polylineVolume.outlineColor = color;
-    entity.polylineVolume.material = color;
-    this.updateVolumePositions(entity, positions);
-    entity.polylineVolume.show = true;
+    if (type === 'point') {
+      entity.ellipse.show = true;
+      updateBoreholeHeights(entity, this.julianDate);
+    } else {
+      entity.polylineVolume.outlineColor = color;
+      entity.polylineVolume.material = color;
+      this.updateVolumePositions(entity, positions);
+      entity.polylineVolume.show = true;
+    }
 
     if (showHint) {
       showMessage(i18next.t('tbx_volume_hint'));
@@ -1003,12 +1013,16 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   hideVolume(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
-    if (entity.polyline) {
-      entity.polyline.show = true;
+    if (entity.billboard) {
+      entity.ellipse.show = false;
     } else {
-      entity.polygon.show = true;
+      if (entity.polyline) {
+        entity.polyline.show = true;
+      } else {
+        entity.polygon.show = true;
+      }
+      entity.polylineVolume.show = false;
     }
-    entity.polylineVolume.show = false;
     entity.properties.volumeShowed = false;
   }
 
@@ -1099,6 +1113,14 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   get atLeastOneEntityVisible() {
     return !!this.entitiesList_.find(ent => ent.show);
+  }
+
+  isVolumeInputsHidden() {
+    const entity = this.draw_.entityForEdit;
+    if (!entity) return true;
+    const volumeShowed = entity.properties.volumeShowed && entity.properties.volumeShowed.getValue();
+    const type = entity.properties.type.getValue();
+    return type === 'point' || !volumeShowed;
   }
 
   render() {

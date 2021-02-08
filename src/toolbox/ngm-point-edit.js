@@ -19,7 +19,9 @@ class NgmPointEdit extends LitElementI18n {
     return {
       viewer: {type: Object},
       position: {type: Object},
-      entity: {type: Object}
+      entity: {type: Object},
+      depth: {type: Number},
+      volumeShowed: {type: Boolean},
     };
   }
 
@@ -32,6 +34,8 @@ class NgmPointEdit extends LitElementI18n {
     this.coordsType = 'wsg84';
     this.minHeight = -30000;
     this.maxHeight = 30000;
+    this.minDepth = -30000;
+    this.maxDepth = 30000;
     this.julianDate = new JulianDate();
   }
 
@@ -95,6 +99,13 @@ class NgmPointEdit extends LitElementI18n {
     this.viewer.scene.requestRender();
   }
 
+  onDepthChange(event) {
+    const depth = Number(event.target.value);
+    this.depth = depth;
+    this.entity.properties.depth = depth;
+    updateBoreholeHeights(this.entity, this.julianDate);
+  }
+
   onColorChange(color) {
     this.entity.billboard.color = color;
   }
@@ -137,6 +148,14 @@ class NgmPointEdit extends LitElementI18n {
         <button class="ui icon button ngm-aoi-point-style-btn">
           <i class="map marker alternate icon"></i>
         </button>
+        <div ?hidden="${!this.volumeShowed}">
+          <label>${i18next.t('tbx_point_depth_label')}:</label></br>
+          <div class="ui mini input right labeled">
+            <input type="number" step="10" min="${this.minDepth}" max="${this.maxDepth}"
+                   class="ngm-point-depth-input" .value="${this.depth}" @change="${this.onDepthChange}">
+            <label class="ui label">m</label>
+          </div>
+        </div>
       </div>
       <div class="ui mini popup ngm-aoi-point-style">
         <label>${i18next.t('tbx_point_color_label')}</label>

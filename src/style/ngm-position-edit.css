@@ -18,6 +18,7 @@
   width: 110px;
 }
 
+input.ngm-point-depth-input,
 input.ngm-height-input {
   width: 80px;
 }
