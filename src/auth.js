@@ -28,11 +28,11 @@ export default class Auth {
     if (accessToken) {
       window['AWSCred'] = _AWSCredentials = fromCognitoIdentityPool({
         client: new CognitoIdentityClient({
-          region: 'eu-central-1'
+          region: 'eu-west-1'
         }),
-        identityPoolId: 'eu-central-1:21355ebf-703b-44dd-8900-f8bc391b4bde',
+        identityPoolId: 'eu-west-1:8e7b48a6-9d3f-4a46-afa3-d05a78c46a90',
         logins: {
-          'cognito-idp.eu-central-1.amazonaws.com/eu-central-1_5wXXpcDt8': accessToken
+          'cognito-idp.eu-west-1.amazonaws.com/eu-west-1_qWvXTsQXi': accessToken
         }
       });
     }
