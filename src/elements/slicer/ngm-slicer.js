@@ -14,7 +14,7 @@ class NgmSlicer extends LitElementI18n {
     super();
 
     /**
-     * @type {import('../../Slicer').default}
+     * @type {import('../../slicer/Slicer').default}
      */
     this.slicer = null;
   }
