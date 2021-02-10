@@ -96,9 +96,15 @@ class NgmApp extends LitElementI18n {
     this.mapChooser = null;
   }
 
+  /**
+   * @param {CustomEvent} evt
+   */
   onLayerAdded(evt) {
+    const layer = evt.detail.layer;
+    if (layer.backgroundId !== undefined) {
+      this.mapChooser.selectMap(layer.backgroundId);
+    }
     if (this.slicer_ && this.slicer_.active) {
-      const layer = evt.detail.layer;
       if (layer && layer.promise) {
         this.slicer_.applyClippingPlanesToTileset(layer.promise);
       }

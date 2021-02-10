@@ -21,7 +21,6 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import PostProcessStage from 'cesium/Source/Scene/PostProcessStage';
 import Cartesian4 from 'cesium/Source/Core/Cartesian4';
 import CesiumInspector from 'cesium/Source/Widgets/CesiumInspector/CesiumInspector';
-import {getMapTransparencyParam} from './permalink.js';
 import CameraEventType from 'cesium/Source/Scene/CameraEventType';
 import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
 import Transforms from 'cesium/Source/Core/Transforms';
@@ -78,10 +77,10 @@ const FOG_FRAGMENT_SHADER_SOURCE = `
  */
 export function setupViewer(container, rethrowRenderErrors) {
 
-  // The first layer of Cesium is special; using a 1x1 white image to workaround it.
+  // The first layer of Cesium is special; using a 1x1 transparent image to workaround it.
   // See https://github.com/AnalyticalGraphicsInc/cesium/issues/1323 for details.
   const firstImageryProvider = new SingleTileImageryProvider({
-    url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=',
+    url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=',
     rectangle: Rectangle.fromDegrees(0, 0, 1, 1) // the Rectangle dimensions are arbitrary
   });
 
@@ -176,18 +175,14 @@ export function setupViewer(container, rethrowRenderErrors) {
   scene.screenSpaceCameraController.enableCollisionDetection = false;
   scene.useDepthPicking = true;
   scene.pickTranslucentDepth = true;
+  scene.backgroundColor = Color.TRANSPARENT;
 
-  globe.baseColor = Color.WHITE;
+  globe.baseColor = Color.TRANSPARENT;
   globe.depthTestAgainstTerrain = true;
   globe.showGroundAtmosphere = false;
   globe.showWaterEffect = false;
   globe.backFaceCulling = false;
 
-  const transparencyParam = getMapTransparencyParam();
-  const transparency = !isNaN(transparencyParam) ? 1 - transparencyParam : 0.6;
-  globe.translucency.enabled = transparency !== 1;
-  globe.translucency.frontFaceAlpha = transparency;
-  globe.translucency.backFaceAlpha = transparency === 1 ? 1 : 0;
   const fog = new PostProcessStage({
     fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
     uniforms: {
@@ -291,6 +286,17 @@ export function addMantelEllipsoid(viewer) {
 }
 
 /**
+ * @typedef {Object} BaseLayerConfig
+ * @property {string} id
+ * @property {string} labelKey
+ * @property {string} backgroundImgSrc
+ * @property {Boolean=} default
+ * @property {Boolean=} hasAlphaChannel
+ * @property {Array<import('cesium/Source/Scene/ImageryLayer').default>} layers
+ */
+
+
+/**
  * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  */
 export function setupBaseLayers(viewer) {
@@ -303,24 +309,45 @@ export function setupBaseLayers(viewer) {
     }
   };
   const t = a => a;
+
+  /**
+   * @type {Array<BaseLayerConfig>}
+   */
   const mapsConfig = [
     {
       id: arealLayer,
       labelKey: t('dtd_areal_map_label'),
       backgroundImgSrc: './images/arealimage.png',
-      layer: addSwisstopoLayer(viewer, arealLayer, 'jpeg', false)
+      layers: [
+        addSwisstopoLayer(viewer, arealLayer, 'jpeg')
+      ]
     },
     {
       id: greyLayer,
+      default: true,
       labelKey: t('dtd_grey_map_label'),
       backgroundImgSrc: './images/grey.png',
-      layer: addSwisstopoLayer(viewer, greyLayer, 'jpeg')
+      layers: [
+        addSwisstopoLayer(viewer, greyLayer, 'jpeg')
+      ]
+    },
+    {
+      id: 'lakes_rivers_map',
+      labelKey: t('dtd_lakes_rivers_map_label'),
+      backgroundImgSrc: './images/lakes_rivers.png',
+      hasAlphaChannel: true,
+      layers: [
+        addSwisstopoLayer(viewer, 'ch.bafu.vec25-gewaessernetz_2000', 'png', '20070101'),
+        addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', '20070101')
+      ]
     },
     {
       id: 'empty_map',
       labelKey: t('dtd_empty_map_label'),
       backgroundImgSrc: './images/empty.png',
-      layer: emptyLayer
+      layers: [
+        emptyLayer
+      ]
     }];
 
   return new MapChooser(viewer, mapsConfig);
