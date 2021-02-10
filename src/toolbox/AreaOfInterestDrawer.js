@@ -266,24 +266,22 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               : ''}
             ${i.type === 'rectangle' ?
               html`
-                <div class="ui tiny buttons">
-                  <button class="ui button ${classMap({disabled: !this.downloadActiveDataEnabled})}"
-                          data-position="top left"
-                          data-variation="mini"
-                          @click=${() => {
-                            const rectangle = i.positions.map(cartesianToDegrees);
-                            rectangle.pop();
-                            const bbox = coordinatesToBbox(rectangle);
-                            this.dispatchEvent(new CustomEvent('downloadActiveData', {
-                              detail: {
-                                bbox4326: bbox
-                              }
-                            }));
-                          }
-                          }>
-                    ${i18next.t('tbx_download_data_inside_rectangle_label')}
-                  </button>
-                </div>
+                <button class="ui tiny fluid button ${classMap({disabled: !this.downloadActiveDataEnabled})}"
+                        data-position="top left"
+                        data-variation="mini"
+                        @click=${() => {
+                          const rectangle = i.positions.map(cartesianToDegrees);
+                          rectangle.pop();
+                          const bbox = coordinatesToBbox(rectangle);
+                          this.dispatchEvent(new CustomEvent('downloadActiveData', {
+                            detail: {
+                              bbox4326: bbox
+                            }
+                          }));
+                        }
+                        }>
+                  ${i18next.t('tbx_download_data_inside_rectangle_label')}
+                </button>
               `
               : ''}
           </div>
