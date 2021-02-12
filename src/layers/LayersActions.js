@@ -74,7 +74,6 @@ export default class LayersAction {
 
   // changes layer position in 'Displayed Layers'
   moveLayer(layers, config, delta) {
-    console.assert(delta === -1 || delta === 1);
     const previousIndex = layers.indexOf(config);
     const toIndex = previousIndex + delta;
     if (toIndex < 0 || toIndex > layers.length - 1) {

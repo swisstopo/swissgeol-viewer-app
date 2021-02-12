@@ -100,6 +100,7 @@ class LeftSideBar extends LitElementI18n {
         </div>
         <div class="content active">
           <ngm-layers
+            class="ui celled list"
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             @layerChanged=${this.onLayerChanged}
             .layers=${this.activeLayers}

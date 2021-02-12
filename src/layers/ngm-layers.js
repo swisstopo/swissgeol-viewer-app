@@ -1,6 +1,6 @@
 import {html} from 'lit-element';
 import {repeat} from 'lit-html/directives/repeat.js';
-
+import Sortable from 'sortablejs';
 import {LitElementI18n} from '../i18n.js';
 
 import './ngm-layers-item.js';
@@ -14,6 +14,20 @@ export default class LayerTree extends LitElementI18n {
     };
   }
 
+  firstUpdated() {
+    new Sortable(this, {
+      handle: '.grip',
+      animation: 100,
+      forceFallback: true,
+      onEnd: (event) => {
+        const oldIndex = this.layers.length - 1 - event.oldIndex;
+        const newIndex = this.layers.length - 1 - event.newIndex;
+        this.actions.moveLayer(this.layers, this.layers[oldIndex], newIndex - oldIndex);
+        this.requestUpdate();
+      }
+    });
+  }
+
   createRenderRoot() {
     return this;
   }
@@ -24,9 +38,7 @@ export default class LayerTree extends LitElementI18n {
    * @param {number} idx
    */
   createLayerTemplate(config, idx, len) {
-    const upClassMap = {disabled: (idx === 0)};
     idx = len - 1 - idx; // we want to create in reverse order
-    const downClassMap = {disabled: idx === 0};
 
     if (!config.promise) {
       config.promise = config.load();
@@ -37,6 +49,7 @@ export default class LayerTree extends LitElementI18n {
     };
     return html`
     <ngm-layers-item
+       class="item"
        .actions=${this.actions}
        .config=${config}
        label=${config.label}
@@ -46,9 +59,6 @@ export default class LayerTree extends LitElementI18n {
          this.dispatchEvent(new CustomEvent('layerChanged'));
          this.requestUpdate(); // force update to render visiblity changes
        }}
-       @moveLayer=${evt => this.moveLayer(config, evt.detail)}
-       .upClassMap=${upClassMap}
-       .downClassMap=${downClassMap}
       >
     </ngm-layers-item>
     `;
@@ -63,12 +73,6 @@ export default class LayerTree extends LitElementI18n {
       config => config.label,
       (config, idx) => this.createLayerTemplate(config, idx, len)
     );
-  }
-
-  // changes layer position in 'Displayed Layers'
-  moveLayer(config, delta) {
-    this.actions.moveLayer(this.layers, config, delta);
-    this.requestUpdate();
   }
 }
 

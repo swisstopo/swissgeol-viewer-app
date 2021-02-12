@@ -51,3 +51,7 @@
 .ngm-displayed-container label.displayed {
   color: red;
 }
+
+ngm-layers-item.sortable-ghost {
+  visibility: hidden;
+}

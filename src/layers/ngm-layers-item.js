@@ -1,7 +1,6 @@
 import i18next from 'i18next';
 import {html} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
-import {classMap} from 'lit-html/directives/class-map.js';
 import $ from '../jquery';
 
 
@@ -13,8 +12,6 @@ export class LayerTreeItem extends LitElementI18n {
       config: {type: Object},
       label: {type: String},
       loading: {type: Number},
-      upClassMap: {type: Object},
-      downClassMap: {type: Object},
     };
   }
 
@@ -85,20 +82,6 @@ export class LayerTreeItem extends LitElementI18n {
           @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
             <i class="search plus icon"></i>
         </button>` : ''}
-        <button class="ui button ${classMap(this.downClassMap)}"
-          data-tooltip=${i18next.t('dtd_layer_down_label')}
-          data-position="top center"
-          data-variation="mini"
-          @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
-            <i class="angle down icon"></i>
-        </button>
-        <button class="ui button ${classMap(this.upClassMap)}"
-          data-tooltip=${i18next.t('dtd_layer_up_label')}
-          data-position="top center"
-          data-variation="mini"
-          @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
-            <i class="angle up icon"></i>
-        </button>
         ${this.config.downloadUrl ?
         html`<button class="ui button"
           data-tooltip=${i18next.t('dtd_download_hint')}
@@ -121,6 +104,7 @@ export class LayerTreeItem extends LitElementI18n {
   render() {
     return html`
       <div class="ngm-displayed-container">
+        <i class="grip vertical icon"></i>
         <div class="ui checkbox">
           <input class="ngm-layer-checkbox" type="checkbox"
             .checked=${this.config.visible}
