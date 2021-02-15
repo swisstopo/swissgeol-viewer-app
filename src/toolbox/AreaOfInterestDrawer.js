@@ -101,7 +101,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   getTemplate() {
     return html`
       <label>${i18next.t('tbx_drawing_tools_label')}</label>
-      <div class="ui fluid compact tiny buttons ngm-aoi-buttons"
+      <div class="ui fluid compact tiny icon buttons ngm-aoi-buttons"
            ?hidden=${this.draw_.active && !this.draw_.entityForEdit}>
         <button class="ui button"
                 data-tooltip=${i18next.t('tbx_add_point_btn_label')}
@@ -178,7 +178,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   createButtonsFields(i) {
     return html`
       <div class="ngm-btns-field">
-        <div class="ui tiny fluid compact buttons ngm-aoi-buttons">
+        <div class="ui tiny fluid compact icon buttons ngm-aoi-buttons">
           <button
             class="ui button"
             @click=${this.showAreaInfo.bind(this, i)}
@@ -266,24 +266,22 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               : ''}
             ${i.type === 'rectangle' ?
               html`
-                <div class="ui tiny buttons">
-                  <button class="ui button ${classMap({disabled: !this.downloadActiveDataEnabled})}"
-                          data-position="top left"
-                          data-variation="mini"
-                          @click=${() => {
-                            const rectangle = i.positions.map(cartesianToDegrees);
-                            rectangle.pop();
-                            const bbox = coordinatesToBbox(rectangle);
-                            this.dispatchEvent(new CustomEvent('downloadActiveData', {
-                              detail: {
-                                bbox4326: bbox
-                              }
-                            }));
-                          }
-                          }>
-                    ${i18next.t('tbx_download_data_inside_rectangle_label')}
-                  </button>
-                </div>
+                <button class="ui tiny fluid button ${classMap({disabled: !this.downloadActiveDataEnabled})}"
+                        data-position="top left"
+                        data-variation="mini"
+                        @click=${() => {
+                          const rectangle = i.positions.map(cartesianToDegrees);
+                          rectangle.pop();
+                          const bbox = coordinatesToBbox(rectangle);
+                          this.dispatchEvent(new CustomEvent('downloadActiveData', {
+                            detail: {
+                              bbox4326: bbox
+                            }
+                          }));
+                        }
+                        }>
+                  ${i18next.t('tbx_download_data_inside_rectangle_label')}
+                </button>
               `
               : ''}
           </div>

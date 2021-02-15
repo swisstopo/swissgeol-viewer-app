@@ -151,7 +151,7 @@ class NgmSwissforagesInteraction extends LitElementI18n {
                 <i class="sync icon"></i>
               </button>` :
             html`
-              <button class="ui button ngm-tools-btn"><i class="tools icon"></i></button>`}
+              <button class="ui icon button ngm-tools-btn"><i class="tools icon"></i></button>`}
         </div>
       </div>
       <div class="ui mini popup ngm-swissforages-config-popup">
