@@ -1,7 +1,6 @@
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {executeForAllPrimitives} from '../utils';
 import JulianDate from 'cesium/Source/Core/JulianDate';
-import SlicingBBox from './SlicingBBox';
 import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 
@@ -25,9 +24,8 @@ export default class Slicer {
     this.viewer.dataSources.add(this.slicerDataSource);
     this.sliceActive = false;
     this.sliceOptions = {...DEFAULT_SLICE_OPTIONS};
-    this.slicingBbox = new SlicingBBox(this.viewer, 1 / 3); // todo
-    this.slicingBox = new SlicingBox(this.viewer, this.slicingBbox, this.slicerDataSource);
-    this.slicingLine = new SlicingLine(this.viewer, this.sliceOptions);
+    this.slicingBox = new SlicingBox(this.viewer, this.slicerDataSource);
+    this.slicingLine = new SlicingLine(this.viewer);
     this.slicingTool = null;
 
     this.julianDate = new JulianDate();
@@ -38,8 +36,7 @@ export default class Slicer {
     if (value) {
       this.sliceActive = true;
       this.slicingTool = this.sliceOptions.box ? this.slicingBox : this.slicingLine;
-      this.slicingTool.options = this.sliceOptions; // todo improve
-      this.slicingTool.activate();
+      this.slicingTool.activate(this.sliceOptions);
     } else {
       this.sliceActive = false;
       this.sliceOptions.deactivationCallback();

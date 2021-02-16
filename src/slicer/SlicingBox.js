@@ -1,22 +1,17 @@
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import Color from 'cesium/Source/Core/Color';
-import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
-import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import Entity from 'cesium/Source/DataSources/Entity';
 import {executeForAllPrimitives} from '../utils';
-import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import Cartographic from 'cesium/Source/Core/Cartographic';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
-import {getOffsetForPrimitive} from './helper';
+import {getBboxFromMapRatio, getOffsetForPrimitive} from './helper';
+import {Plane} from 'cesium';
+import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
+import {SLICING_GEOMETRY_COLOR} from '../constants';
 
-const PLANE_COLOR = Color.WHITE; // todo
 export default class SlicingBox {
-  constructor(viewer, bbox, dataSource) {
+  constructor(viewer, dataSource) {
     this.viewer = viewer;
-    this.bbox = bbox;
     this.dataSource = dataSource;
 
     this.offsets = {};
@@ -24,95 +19,37 @@ export default class SlicingBox {
     this.planeHorizontalUp = null;
     this.planeVerticalLeft = null;
     this.planeVerticalRight = null;
+    this.bbox = null;
     this.julianDate = new JulianDate();
 
-    this.eventHandler = null;
-
-    this.slicerArrows = new SlicerArrows(this.viewer, this.eventHandler, this.dataSource, this.bbox);
+    this.slicerArrows = new SlicerArrows(this.viewer, this.dataSource, this);
   }
 
   activate() {
-    this.bbox.activate();
+    this.bbox = getBboxFromMapRatio(this.viewer, 1 / 3);
+    this.planeHorizontalDown = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 1.0, 0.0));
+    this.planeHorizontalUp = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, -1.0, 0.0));
+    this.planeVerticalLeft = Plane.fromPointNormal(this.bbox.center, new Cartesian3(1.0, 0.0, 0.0));
+    this.planeVerticalRight = Plane.fromPointNormal(this.bbox.center, new Cartesian3(-1.0, 0.0, 0.0));
+    this.planeDown = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 0, 1.0));
+    this.planeUp = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 0, -1.0));
+    this.updatePlanesDistance();
+    this.slicerArrows.show(this.bbox);
 
-    this.planeHorizontalDown = new ClippingPlane(new Cartesian3(0.0, 1.0, 0.0), 0.0);
-    this.planeHorizontalUp = new ClippingPlane(new Cartesian3(0.0, -1.0, 0.0), 0.0);
-    this.planeVerticalLeft = new ClippingPlane(new Cartesian3(1.0, 0.0, 0.0), 0.0);
-    this.planeVerticalRight = new ClippingPlane(new Cartesian3(-1.0, 0.0, 0.0), 0.0);
-    this.planeDown = new ClippingPlane(new Cartesian3(0.0, 0, 1.0), 0.0);
-    this.planeUp = new ClippingPlane(new Cartesian3(0.0, 0, -1.0), 0.0);
-    const planeStyle = {
-      material: Color.WHITE.withAlpha(0.1),
-      outline: true,
-      outlineColor: PLANE_COLOR,
-    };
+    this.slicingBoxEntity = this.dataSource.entities.add({ // todo fix move across opposite side
+      position: new CallbackProperty(() => this.slicerArrows.center, false),
+      box: {
+        dimensions: new CallbackProperty(this.dimensionsUpdateFunction(), false),
+        material: SLICING_GEOMETRY_COLOR.withAlpha(0.1),
+        outline: true,
+        outlineColor: SLICING_GEOMETRY_COLOR,
+      },
+    });
 
-    /**
-     * @type {Entity.ConstructorOptions}
-     */
-    const horizontalEntityTemplate = {
-      position: new CallbackProperty(this.centerUpdateFunction('horizontal'), false),
-      plane: {
-        plane: new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeHorizontalDown, 'horizontal'), false),
-        dimensions: new CallbackProperty(() => new Cartesian2(this.bbox.planesHorizontalLength, this.bbox.boxHeight), false),
-        ...planeStyle
-      }
-    };
-
-    /**
-     * @type {Entity.ConstructorOptions}
-     */
-    const verticalEntityTemplate = {
-      position: new CallbackProperty(this.centerUpdateFunction('vertical'), false),
-      plane: {
-        plane: new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeVerticalLeft, 'vertical'), false),
-        dimensions: new CallbackProperty(() => new Cartesian2(this.bbox.planesVerticalLength, this.bbox.boxHeight), false),
-        ...planeStyle
-      }
-    };
-
-    /**
-     * @type {Entity.ConstructorOptions}
-     */
-    const zEntityTemplate = {
-      position: new CallbackProperty(this.centerUpdateFunction('altitude'), false),
-      plane: {
-        plane: new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeDown, 'altitude-down'), false),
-        dimensions: new CallbackProperty(() => new Cartesian2(this.bbox.planesHorizontalLength, this.bbox.planesVerticalLength), false),
-        ...planeStyle
-      }
-    };
-    this.planeEntitDown = new Entity(zEntityTemplate);
-    this.dataSource.entities.add(this.planeEntitDown);
-
-    zEntityTemplate.plane.plane =
-      new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeUp, 'altitude-up'), false);
-    this.planeEntitUp = new Entity(zEntityTemplate);
-    this.dataSource.entities.add(this.planeEntitUp);
-
-    this.planeEntityHorizontal = new Entity(horizontalEntityTemplate);
-    this.dataSource.entities.add(this.planeEntityHorizontal);
-
-    horizontalEntityTemplate.plane.plane =
-      new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeHorizontalUp, 'horizontal-northeast'), false);
-    this.planeEntityHorizontalUp = new Entity(horizontalEntityTemplate);
-    this.dataSource.entities.add(this.planeEntityHorizontalUp);
-
-    this.planeEntityVertical = new Entity(verticalEntityTemplate);
-    this.dataSource.entities.add(this.planeEntityVertical);
-
-    verticalEntityTemplate.plane.plane =
-      new CallbackProperty(this.createBoxPlaneUpdateFunction(this.planeVerticalRight, 'vertical-northeast'), false);
-    this.planeEntityVerticalRight = new Entity(verticalEntityTemplate);
-    this.dataSource.entities.add(this.planeEntityVerticalRight);
-
-    this.viewer.scene.globe.clippingPlanes = this.createClippingPlanes(this.planeEntityHorizontal.computeModelMatrix(this.julianDate));
+    this.viewer.scene.globe.clippingPlanes = this.createClippingPlanes(this.slicingBoxEntity.computeModelMatrix(this.julianDate));
 
     executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlanes(primitive));
-
-    if (!this.eventHandler) {
-      this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-      this.slicerArrows.eventHandler = this.eventHandler; // todo
-      this.slicerArrows.activate();
+    if (!this.onTickRemove) {
       const syncPlanes = this.movePlane.bind(this);
       this.onTickRemove = this.viewer.scene.postRender.addEventListener(syncPlanes);
     }
@@ -124,11 +61,11 @@ export default class SlicingBox {
     this.planeHorizontalUp = null;
     this.planeVerticalLeft = null;
     this.planeVerticalRight = null;
-    if (this.eventHandler) {
-      this.eventHandler.destroy();
-      this.eventHandler = null;
+    if (this.onTickRemove) {
       this.onTickRemove();
+      this.onTickRemove = null;
     }
+    this.slicerArrows.hide();
   }
 
   createClippingPlanes(modelMatrix) {
@@ -145,7 +82,7 @@ export default class SlicingBox {
 
   addClippingPlanes(primitive) {
     if (!primitive.root || !primitive.boundingSphere) return;
-    this.offsets[primitive.url] = getOffsetForPrimitive(primitive);
+    this.offsets[primitive.url] = getOffsetForPrimitive(primitive, this.bbox.center);
     primitive.clippingPlanes = this.createClippingPlanes();
   }
 
@@ -187,35 +124,19 @@ export default class SlicingBox {
     }
   }
 
-  /**
-   * @param {Plane} plane
-   * @param {string}type
-   */
-  createBoxPlaneUpdateFunction(plane, type) {
-    return () => {
-      if (type.includes('altitude')) {
-        plane.distance = type.includes('down') ? this.bbox.targetDown : this.bbox.targetUp;
-      } else if (type.includes('horizontal')) {
-        plane.distance = type.includes('northeast') ? this.bbox.targetYNortheast : this.bbox.targetYSouthwest;
-      } else if (type.includes('vertical')) {
-        plane.distance = type.includes('northeast') ? this.bbox.targetXNortheast : this.bbox.targetXSouthwest;
-      }
-      return plane;
-    };
+  updatePlanesDistance() {
+    this.planeHorizontalDown.distance = this.bbox.width / 2;
+    this.planeHorizontalUp.distance = this.bbox.width / 2;
+    this.planeVerticalLeft.distance = this.bbox.length / 2;
+    this.planeVerticalRight.distance = this.bbox.length / 2;
+    this.planeDown.distance = this.bbox.height / 2;
+    this.planeUp.distance = this.bbox.height / 2;
+    this.viewer.scene.requestRender();
   }
 
-  centerUpdateFunction(type) {
+  dimensionsUpdateFunction() {
     return () => {
-      if (type === 'horizontal')
-        return this.bbox.planesCenterH;
-      else if (type === 'vertical')
-        return this.bbox.planesCenterV;
-      else {
-        const centerHCart = Cartographic.fromCartesian(this.bbox.planesCenterH);
-        const centerVCart = Cartographic.fromCartesian(this.bbox.planesCenterV);
-        const center = new Cartographic(centerHCart.longitude, centerVCart.latitude);
-        return Cartographic.toCartesian(center);
-      }
+      return new Cartesian3(this.bbox.length, this.bbox.width, this.bbox.height);
     };
   }
 

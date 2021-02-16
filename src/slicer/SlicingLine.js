@@ -7,14 +7,14 @@ import Transforms from 'cesium/Source/Core/Transforms';
 import {executeForAllPrimitives} from '../utils';
 
 export default class SlicingLine {
-  constructor(viewer, options) {
+  constructor(viewer) {
     this.viewer = viewer;
-    this.options = options;
-
+    this.options = null;
     this.planeEntity = null;
   }
 
-  activate() {
+  activate(options) {
+    this.options = options;
     const slicePoints = this.options.slicePoints;
     if (!slicePoints || slicePoints.length !== 2) {
       const center = pickCenter(this.viewer.scene);
@@ -29,6 +29,7 @@ export default class SlicingLine {
   }
 
   deactivate() {
+    this.options = null;
     this.plane = null;
   }
 

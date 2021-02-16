@@ -71,6 +71,9 @@ export const SLICE_ARROW_ICONS = [
   {type: 'altitude-up', uri: './images/arrowA.glb'}
 ];
 
+export const SLICING_BOX_HEIGHT = 15000;
+export const SLICING_GEOMETRY_COLOR = Color.WHITE;
+
 // export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/'; todo change when CORS will be enabled
 export const SWISSFORAGES_VIEWER_URL = 'https://swisstopo.supsi.ch/bdms/';
 export const SWISSFORAGES_EDITOR_URL = `${SWISSFORAGES_VIEWER_URL}editor/`;
