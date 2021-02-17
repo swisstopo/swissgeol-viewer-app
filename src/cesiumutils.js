@@ -8,7 +8,6 @@ import Transforms from 'cesium/Source/Core/Transforms';
 import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
 import {degreesToLv95} from './projection';
 import Plane from 'cesium/Source/Core/Plane';
-import CesiumMath from 'cesium/Source/Core/Math';
 
 
 /**
@@ -282,7 +281,7 @@ export function clampPosition(position, minPosition, maxPosition, start, end) {
       const maxDistance = Cartesian3.distance(minPosition, maxPosition);
       const distance = Cartesian3.distance(minPosition, position);
       distanceScalar = distance / maxDistance;
-      distanceScalar = CesiumMath.clamp(distanceScalar, start, end);
+      distanceScalar = CMath.clamp(distanceScalar, start, end);
     } else {
       distanceScalar = end;
     }
