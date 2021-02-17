@@ -62,16 +62,17 @@ export const AOI_POINT_COLORS = [
 
 export const AOI_POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
 
-export const SLICE_ARROW_ICONS = [
-  {type: 'vertical', uri: './images/arrowV.glb'},
-  {type: 'vertical-northeast', uri: './images/arrowV.glb'},
-  {type: 'horizontal', uri: './images/arrowH.glb'},
-  {type: 'horizontal-northeast', uri: './images/arrowH.glb'},
-  {type: 'altitude-down', uri: './images/arrowA.glb'},
-  {type: 'altitude-up', uri: './images/arrowA.glb'}
+export const SLICE_BOX_ARROWS = [
+  {side: 'left', oppositeSide: 'right', uri: './images/arrowV.glb'},
+  {side: 'right', oppositeSide: 'left', uri: './images/arrowV.glb'},
+  {side: 'bottom', oppositeSide: 'top', uri: './images/arrowH.glb'},
+  {side: 'top', oppositeSide: 'bottom', uri: './images/arrowH.glb'},
+  {side: 'down', oppositeSide: 'up', uri: './images/arrowA.glb'},
+  {side: 'up', oppositeSide: 'down', uri: './images/arrowA.glb'}
 ];
 
 export const SLICING_BOX_HEIGHT = 15000;
+export const SLICING_BOX_MIN_SIZE = 1000;
 export const SLICING_GEOMETRY_COLOR = Color.WHITE;
 
 // export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/'; todo change when CORS will be enabled
