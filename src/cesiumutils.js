@@ -8,6 +8,7 @@ import Transforms from 'cesium/Source/Core/Transforms';
 import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
 import {degreesToLv95} from './projection';
 import Plane from 'cesium/Source/Core/Plane';
+import CesiumMath from 'cesium/Source/Core/Math';
 
 
 /**
@@ -169,16 +170,19 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType, useAlt
 
 /**
  * Sets height in meters for each cartesian3 position in array
- * @param {import('cesium/Source/Scene/Scene.js').default} scene
  * @param {Array<Cartesian3>} positions
  * @param {number} height
+ * @param scene?
  * @return {Array<Cartesian3>}
  */
-export function updateHeightForCartesianPositions(scene, positions, height) {
+export function updateHeightForCartesianPositions(positions, height, scene) {
   return positions.map(p => {
     const cartographicPosition = Cartographic.fromCartesian(p);
-    const altitude = scene.globe.getHeight(cartographicPosition) || 0;
-    cartographicPosition.height = height + altitude;
+    cartographicPosition.height = height;
+    if (scene) {
+      const altitude = scene.globe.getHeight(cartographicPosition) || 0;
+      cartographicPosition.height += altitude;
+    }
     return Cartographic.toCartesian(cartographicPosition);
   });
 }
@@ -243,4 +247,60 @@ export function extendKmlWithProperties(kml, entities) {
     kml = kml.replace(placemark, `${placemark}${kmlProperties}`);
   });
   return kml;
+}
+
+/**
+ * Calculates point projection on vector from provided points
+ * @param vectorPoint1
+ * @param vectorPoint2
+ * @param pointToProject
+ * @return {Cartesian3}
+ */
+export function projectPointOntoVector(vectorPoint1, vectorPoint2, pointToProject) {
+  const vect1 = Cartesian3.subtract(vectorPoint2, vectorPoint1, new Cartesian3());
+  const vect2 = Cartesian3.subtract(pointToProject, vectorPoint1, new Cartesian3());
+  const projectionVector = Cartesian3.projectVector(vect2, vect1, new Cartesian3());
+  return Cartesian3.add(vectorPoint1, projectionVector, new Cartesian3());
+}
+
+/**
+ * Wrapper for Cartesian3.lerp. Computes position on segment.
+ * @param position
+ * @param minPosition
+ * @param maxPosition
+ * @param start
+ * @param end
+ */
+export function clampPosition(position, minPosition, maxPosition, start, end) {
+  let distanceScalar = start;
+  const minDifference = Cartesian3.subtract(minPosition, position, new Cartesian3());
+  const min = minDifference.x + minDifference.y + minDifference.z;
+  if (min > 0) {
+    const maxDifference = Cartesian3.subtract(maxPosition, position, new Cartesian3());
+    const max = maxDifference.x + maxDifference.y + maxDifference.z;
+    if (max < 0) {
+      const maxDistance = Cartesian3.distance(minPosition, maxPosition);
+      const distance = Cartesian3.distance(minPosition, position);
+      distanceScalar = distance / maxDistance;
+      distanceScalar = CesiumMath.clamp(distanceScalar, start, end);
+    } else {
+      distanceScalar = end;
+    }
+  }
+  Cartesian3.lerp(minPosition, maxPosition, distanceScalar, position);
+}
+
+/**
+ * @param {Cartesian3} point
+ * @param {Cartesian3} startPoint
+ * @param {Cartesian3} endPoint
+ * @param {number} start - The value corresponding to point at 0.0.
+ * @param {number} end - The value corresponding to point at 1.0.
+ * @param {number} height - height in meters
+ * @return {Cartesian3}
+ */
+export function projectPointOnSegment(point, startPoint, endPoint, start, end, height) {
+  const position = projectPointOntoVector(startPoint, endPoint, point);
+  clampPosition(position, startPoint, endPoint, start, end);
+  return updateHeightForCartesianPositions([position], height)[0];
 }

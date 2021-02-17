@@ -60,11 +60,12 @@ export function createClippingPlanes(planes, modelMatrix) {
 }
 
 /**
+ * Returns bbox for box slicing from according to provided view ratio
  * @param {Viewer} viewer
  * @param {number} ratio
  * @return {{center: Cartesian3, width: number, length: number, height: number}}
  */
-export function getBboxFromMapRatio(viewer, ratio) {
+export function getBboxFromViewRatio(viewer, ratio) {
   const globe = viewer.scene.globe;
   const sceneCenter = pickCenter(viewer.scene);
   let planesCenter = Cartographic.fromCartesian(sceneCenter);
@@ -89,17 +90,23 @@ export function getBboxFromMapRatio(viewer, ratio) {
     lon = mapRectNortheast.longitude;
     lat = mapRectNortheast.latitude;
   }
+
+  const bottomRight = Cartesian3.fromRadians(lon, planesCenter.latitude, 0);
+  const topLeft = Cartesian3.fromRadians(planesCenter.longitude, lat, 0);
+  const topRight = Cartesian3.fromRadians(lon, lat, 0);
+  const bottomLeft = Cartographic.toCartesian(planesCenter);
+
   // moves the center of slicing. Left down corner should be placed in the view center
   planesCenter.longitude = sliceRectWidth / 2 + planesCenter.longitude;
   planesCenter.latitude = sliceRectHeight / 2 + planesCenter.latitude;
 
-  const topPoint = Cartesian3.fromRadians(lon, planesCenter.latitude, 0);
-  const rightPoint = Cartesian3.fromRadians(planesCenter.longitude, lat, 0);
-  const center = Cartographic.toCartesian(planesCenter);
   return {
     center: Cartographic.toCartesian(planesCenter),
-    width: Cartesian3.distance(rightPoint, center) * 2,
-    length: Cartesian3.distance(topPoint, center) * 2,
-    height: SLICING_BOX_HEIGHT
+    width: Cartesian3.distance(topLeft, bottomLeft),
+    length: Cartesian3.distance(bottomRight, bottomLeft),
+    height: SLICING_BOX_HEIGHT,
+    corners: {
+      bottomRight, bottomLeft, topRight, topLeft,
+    }
   };
 }

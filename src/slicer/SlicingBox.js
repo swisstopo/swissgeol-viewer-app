@@ -2,14 +2,14 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {executeForAllPrimitives} from '../utils';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
-import {applyOffsetToPlane, createClippingPlanes, getBboxFromMapRatio, getOffsetForPrimitive} from './helper';
+import {applyOffsetToPlane, createClippingPlanes, getBboxFromViewRatio, getOffsetForPrimitive} from './helper';
 import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {SLICE_BOX_ARROWS, SLICING_BOX_MIN_SIZE, SLICING_GEOMETRY_COLOR} from '../constants';
-import {lv95ToDegrees, radiansToLv95} from '../projection';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {pickCenterOnEllipsoid} from '../cesiumutils';
-import CesiumMath from 'cesium/Source/Core/Math';
+import {
+  pickCenterOnEllipsoid, projectPointOnSegment
+} from '../cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
 
 export default class SlicingBox extends SlicingToolBase {
@@ -26,7 +26,7 @@ export default class SlicingBox extends SlicingToolBase {
   }
 
   activate() {
-    this.bbox = getBboxFromMapRatio(this.viewer, 1 / 3);
+    this.bbox = getBboxFromViewRatio(this.viewer, 1 / 3);
     this.boxCenter = this.bbox.center;
 
     this.bottomPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 1.0, 0.0));
@@ -111,20 +111,40 @@ export default class SlicingBox extends SlicingToolBase {
       return value < SLICING_BOX_MIN_SIZE ? undefined : value;
     };
     switch (side) {
-      case 'left':
-      case 'right': {
-        const length = validateBoxSize(side === 'left', this.bbox.length);
+      case 'left': {
+        const length = validateBoxSize(true, this.bbox.length);
         if (!length) return;
         this.bbox.length = length;
-        side === 'left' ? this.leftPlane.distance += moveAmount : this.rightPlane.distance -= moveAmount;
+        this.leftPlane.distance += moveAmount;
+        Cartesian3.add(this.bbox.corners.bottomLeft, moveVector, this.bbox.corners.bottomLeft);
+        Cartesian3.add(this.bbox.corners.topLeft, moveVector, this.bbox.corners.topLeft);
         break;
       }
-      case 'top':
-      case 'bottom': {
-        const width = validateBoxSize(side === 'top', this.bbox.width);
+      case 'right': {
+        const length = validateBoxSize(false, this.bbox.length);
+        if (!length) return;
+        this.bbox.length = length;
+        this.rightPlane.distance -= moveAmount;
+        Cartesian3.add(this.bbox.corners.bottomRight, moveVector, this.bbox.corners.bottomRight);
+        Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
+        break;
+      }
+      case 'top': {
+        const width = validateBoxSize(true, this.bbox.width);
         if (!width) return;
         this.bbox.width = width;
-        side === 'top' ? this.topPlane.distance += moveAmount : this.bottomPlane.distance -= moveAmount;
+        this.topPlane.distance += moveAmount;
+        Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
+        Cartesian3.add(this.bbox.corners.topLeft, moveVector, this.bbox.corners.topLeft);
+        break;
+      }
+      case 'bottom': {
+        const width = validateBoxSize(false, this.bbox.width);
+        if (!width) return;
+        this.bbox.width = width;
+        this.bottomPlane.distance -= moveAmount;
+        Cartesian3.add(this.bbox.corners.bottomRight, moveVector, this.bbox.corners.bottomRight);
+        Cartesian3.add(this.bbox.corners.bottomLeft, moveVector, this.bbox.corners.bottomLeft);
         break;
       }
       case 'up':
@@ -148,43 +168,31 @@ export default class SlicingBox extends SlicingToolBase {
   arrowPositionCallback(side) {
     const boxCenter = Cartographic.fromCartesian(this.boxCenter);
     const boxHeight = this.bbox.height;
-    const lv95Center = radiansToLv95([boxCenter.longitude, boxCenter.latitude]);
-
-    let lon, lat, height;
-    const halfLength = this.bbox.length / 2;
-    const halfWidth = this.bbox.width / 2;
+    const corners = this.bbox.corners;
 
     if (side === 'up' || side === 'down') {
-      lon = lv95Center[0] - halfLength;
-      lat = lv95Center[1] - halfWidth;
-      side === 'down' ? height = -(boxHeight / 2) : height = boxHeight / 2;
+      const position = Cartographic.fromCartesian(corners.bottomLeft);
+      position.height = side === 'down' ? -(boxHeight / 2) : boxHeight / 2;
+      position.height += boxCenter.height;
+      return Cartographic.toCartesian(position);
     } else {
-      let viewCenterLv95 = lv95Center;
-      const viewCenter = pickCenterOnEllipsoid(this.viewer.scene);
-      if (viewCenter) {
-        const viewCenterCart = Cartographic.fromCartesian(viewCenter);
-        viewCenterLv95 = radiansToLv95([viewCenterCart.longitude, viewCenterCart.latitude]);
-      }
+      const viewCenter = pickCenterOnEllipsoid(this.viewer.scene) || this.boxCenter;
       const heightOffset = 20;
-      height = this.viewer.scene.cameraUnderground ?
-        -(boxHeight / 2) - heightOffset :
-        boxHeight / 2 + heightOffset;
-      const negate = side === 'top' || side === 'right' ? 1 : -1;
-      const offset = 5000;
-      if (side === 'top' || side === 'bottom') {
-        const horizontalMin = lv95Center[0] - halfLength + offset;
-        const horizontalMax = lv95Center[0] + halfLength - offset;
-        lon = CesiumMath.clamp(viewCenterLv95[0], horizontalMin, horizontalMax);
-        lat = lv95Center[1] + halfWidth * negate;
-      } else if (side === 'left' || side === 'right') {
-        const verticalMin = lv95Center[1] - halfWidth + offset;
-        const verticalMax = lv95Center[1] + halfWidth - offset;
-        lat = CesiumMath.clamp(viewCenterLv95[1], verticalMin, verticalMax);
-        lon = lv95Center[0] + halfLength * negate;
+      let height = boxHeight / 2 + heightOffset;
+      height = this.viewer.scene.cameraUnderground ? boxCenter.height - height : boxCenter.height + height;
+      const start = 0.05;
+      const end = 0.95;
+      switch (side) {
+        case 'right':
+          return projectPointOnSegment(viewCenter, corners.bottomRight, corners.topRight, start, end, height);
+        case 'left':
+          return projectPointOnSegment(viewCenter, corners.bottomLeft, corners.topLeft, start, end, height);
+        case 'bottom':
+          return projectPointOnSegment(viewCenter, corners.bottomRight, corners.bottomLeft, start, end, height);
+        case 'top':
+          return projectPointOnSegment(viewCenter, corners.topRight, corners.topLeft, start, end, height);
       }
     }
-    const degCenter = lv95ToDegrees([lon, lat]);
-    return Cartesian3.fromDegrees(degCenter[0], degCenter[1], boxCenter.height + height);
   }
 
   movePlane() {

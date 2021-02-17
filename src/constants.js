@@ -72,7 +72,7 @@ export const SLICE_BOX_ARROWS = [
 ];
 
 export const SLICING_BOX_HEIGHT = 15000;
-export const SLICING_BOX_MIN_SIZE = 1000;
+export const SLICING_BOX_MIN_SIZE = 10000;
 export const SLICING_GEOMETRY_COLOR = Color.WHITE;
 
 // export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/'; todo change when CORS will be enabled
