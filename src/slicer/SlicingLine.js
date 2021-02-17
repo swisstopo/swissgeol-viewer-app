@@ -1,14 +1,15 @@
 import Matrix4 from 'cesium/Source/Core/Matrix4';
-import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
 import {pickCenter, planeFromTwoPoints} from '../cesiumutils';
 import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
 import Plane from 'cesium/Source/Core/Plane';
 import Transforms from 'cesium/Source/Core/Transforms';
 import {executeForAllPrimitives} from '../utils';
+import {createClippingPlanes} from './helper';
+import SlicingToolBase from './SlicingToolBase';
 
-export default class SlicingLine {
+export default class SlicingLine extends SlicingToolBase {
   constructor(viewer) {
-    this.viewer = viewer;
+    super(viewer);
     this.options = null;
     this.planeEntity = null;
   }
@@ -24,7 +25,7 @@ export default class SlicingLine {
       this.plane = planeFromTwoPoints(slicePoints[0], slicePoints[1], this.options.negate);
     }
 
-    this.viewer.scene.globe.clippingPlanes = this.createClippingPlanes();
+    this.viewer.scene.globe.clippingPlanes = createClippingPlanes([this.plane]);
     executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlane(primitive));
   }
 
@@ -33,21 +34,9 @@ export default class SlicingLine {
     this.plane = null;
   }
 
-  /**
-   * @param {Matrix4=} modelMatrix
-   */
-  createClippingPlanes(modelMatrix) {
-    return new ClippingPlaneCollection({
-      modelMatrix: modelMatrix,
-      planes: [this.plane],
-      edgeWidth: 1.0,
-      unionClippingRegions: true
-    });
-  }
-
   addClippingPlane(primitive) {
     if (!primitive.root || !primitive.root.computedTransform) return;
     const modelMatrix = Matrix4.inverse(primitive.root.computedTransform, new Matrix4());
-    primitive.clippingPlanes = this.createClippingPlanes(modelMatrix);
+    primitive.clippingPlanes = createClippingPlanes([this.plane], modelMatrix);
   }
 }

@@ -5,29 +5,65 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {pickCenter} from '../cesiumutils';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT} from '../constants';
+import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
+import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
 
+/**
+ * @param primitive
+ * @param {Cartesian3} bboxCenter
+ * @return {Cartesian3}
+ */
 export function getOffsetForPrimitive(primitive, bboxCenter) {
   const tileCenter = Cartographic.fromCartesian(primitive.boundingSphere.center);
   const cartCenter = Cartographic.fromCartesian(bboxCenter);
   const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
   const lv95Tile = radiansToLv95([tileCenter.longitude, tileCenter.latitude]);
-  const offsetX = lv95Center[1] - lv95Tile[1];
-  const offsetY = lv95Center[0] - lv95Tile[0];
+  const x = lv95Center[0] - lv95Tile[0];
+  const y = lv95Center[1] - lv95Tile[1];
 
   const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
   const transformCartographic = Cartographic.fromCartesian(transformCenter);
   const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
-  let offsetZ = boundingSphereCartographic.height;
+  let z = boundingSphereCartographic.height;
   if (transformCartographic) {
-    offsetZ = transformCartographic.height;
+    z = transformCartographic.height;
   }
-  return {
-    offsetX: offsetX,
-    offsetY: offsetY,
-    offsetZ: offsetZ,
-  };
+  return new Cartesian3(x, y, z);
 }
 
+/**
+ * @param {ClippingPlane} plane
+ * @param {Cartesian3} offset
+ * @return {ClippingPlane}
+ */
+export function applyOffsetToPlane(plane, offset) {
+  const planeCopy = ClippingPlane.clone(plane);
+  const normal = Cartesian3.clone(planeCopy.normal);
+  Cartesian3.multiplyByScalar(normal, -1, normal);
+  const normalizedOffset = Cartesian3.multiplyComponents(offset, normal, new Cartesian3());
+  planeCopy.distance += normalizedOffset.x + normalizedOffset.y + normalizedOffset.z;
+  return planeCopy;
+}
+
+/**
+ * @param planes
+ * @param [modelMatrix]
+ * @return {module:cesium.ClippingPlaneCollection}
+ */
+export function createClippingPlanes(planes, modelMatrix) {
+  return new ClippingPlaneCollection({
+    modelMatrix: modelMatrix,
+    planes: planes,
+    edgeWidth: 1.0,
+    unionClippingRegions: true
+  });
+}
+
+/**
+ * @param {Viewer} viewer
+ * @param {number} ratio
+ * @return {{center: Cartesian3, width: number, length: number, height: number}}
+ */
 export function getBboxFromMapRatio(viewer, ratio) {
   const globe = viewer.scene.globe;
   const sceneCenter = pickCenter(viewer.scene);
@@ -56,13 +92,14 @@ export function getBboxFromMapRatio(viewer, ratio) {
   // moves the center of slicing. Left down corner should be placed in the view center
   planesCenter.longitude = sliceRectWidth / 2 + planesCenter.longitude;
   planesCenter.latitude = sliceRectHeight / 2 + planesCenter.latitude;
-  // converts coordinates to lv95 to calculate initial planes distance in meters
-  const lv95SecondPosition = radiansToLv95([lon, lat]);
-  const lv95Center = radiansToLv95([planesCenter.longitude, planesCenter.latitude]);
+
+  const topPoint = Cartesian3.fromRadians(lon, planesCenter.latitude, 0);
+  const rightPoint = Cartesian3.fromRadians(planesCenter.longitude, lat, 0);
+  const center = Cartographic.toCartesian(planesCenter);
   return {
     center: Cartographic.toCartesian(planesCenter),
-    width: (lv95SecondPosition[1] - lv95Center[1]) * 2,
-    length: (lv95SecondPosition[0] - lv95Center[0]) * 2,
+    width: Cartesian3.distance(rightPoint, center) * 2,
+    length: Cartesian3.distance(topPoint, center) * 2,
     height: SLICING_BOX_HEIGHT
   };
 }

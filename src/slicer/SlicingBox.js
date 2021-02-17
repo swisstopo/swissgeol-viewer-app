@@ -1,10 +1,8 @@
-import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {executeForAllPrimitives} from '../utils';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
-import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
-import {getBboxFromMapRatio, getOffsetForPrimitive} from './helper';
+import {applyOffsetToPlane, createClippingPlanes, getBboxFromMapRatio, getOffsetForPrimitive} from './helper';
 import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {SLICE_BOX_ARROWS, SLICING_BOX_MIN_SIZE, SLICING_GEOMETRY_COLOR} from '../constants';
@@ -12,12 +10,11 @@ import {lv95ToDegrees, radiansToLv95} from '../projection';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {pickCenterOnEllipsoid} from '../cesiumutils';
 import CesiumMath from 'cesium/Source/Core/Math';
+import SlicingToolBase from './SlicingToolBase';
 
-export default class SlicingBox {
+export default class SlicingBox extends SlicingToolBase {
   constructor(viewer, dataSource) {
-    this.viewer = viewer;
-    this.dataSource = dataSource;
-
+    super(viewer, dataSource);
     this.offsets = {};
     this.bottomPlane = null;
     this.topPlane = null;
@@ -31,13 +28,24 @@ export default class SlicingBox {
   activate() {
     this.bbox = getBboxFromMapRatio(this.viewer, 1 / 3);
     this.boxCenter = this.bbox.center;
+
     this.bottomPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 1.0, 0.0));
     this.topPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, -1.0, 0.0));
+    this.bottomPlane.distance = this.topPlane.distance = this.bbox.width / 2;
+
     this.leftPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(1.0, 0.0, 0.0));
     this.rightPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(-1.0, 0.0, 0.0));
+    this.leftPlane.distance = this.rightPlane.distance = this.bbox.length / 2;
+
     this.downPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 0, 1.0));
     this.upPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 0, -1.0));
-    this.updatePlanesDistance();
+    this.downPlane.distance = this.upPlane.distance = this.bbox.height / 2;
+
+    this.planes = [
+      this.bottomPlane, this.leftPlane, this.topPlane, this.rightPlane,
+      this.downPlane, this.upPlane
+    ];
+
     this.slicerArrows = new SlicerArrows(this.viewer,
       this.dataSource,
       {
@@ -47,7 +55,7 @@ export default class SlicingBox {
       });
     this.slicerArrows.show(this.bbox);
 
-    this.slicingBoxEntity = this.dataSource.entities.add({ // todo fix move across opposite side
+    this.slicingBoxEntity = this.dataSource.entities.add({
       position: new CallbackProperty(() => this.boxCenter, false),
       box: {
         dimensions: new CallbackProperty(() => new Cartesian3(this.bbox.length, this.bbox.width, this.bbox.height), false),
@@ -57,13 +65,16 @@ export default class SlicingBox {
       },
     });
 
-    this.viewer.scene.globe.clippingPlanes = this.createClippingPlanes(this.slicingBoxEntity.computeModelMatrix(this.julianDate));
+    const modelMatrix = this.slicingBoxEntity.computeModelMatrix(this.julianDate);
+    this.viewer.scene.globe.clippingPlanes = createClippingPlanes(this.planes, modelMatrix);
 
     executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlanes(primitive));
     if (!this.onTickRemove) {
       const syncPlanes = this.movePlane.bind(this);
       this.onTickRemove = this.viewer.scene.postRender.addEventListener(syncPlanes);
     }
+
+    this.viewer.scene.requestRender();
   }
 
   deactivate() {
@@ -79,70 +90,19 @@ export default class SlicingBox {
     this.slicerArrows.hide();
   }
 
-  createClippingPlanes(modelMatrix) {
-    return new ClippingPlaneCollection({
-      modelMatrix: modelMatrix,
-      planes: [
-        this.bottomPlane, this.leftPlane, this.topPlane, this.rightPlane,
-        this.downPlane, this.upPlane
-      ],
-      edgeWidth: 1.0,
-      unionClippingRegions: true
-    });
-  }
-
   addClippingPlanes(primitive) {
     if (!primitive.root || !primitive.boundingSphere) return;
     this.offsets[primitive.url] = getOffsetForPrimitive(primitive, this.bbox.center);
-    primitive.clippingPlanes = this.createClippingPlanes();
+    primitive.clippingPlanes = createClippingPlanes(this.planes);
   }
 
   updateBoxClippingPlanes(clippingPlanes, offset) {
     if (!clippingPlanes) return;
     clippingPlanes.removeAll();
-    if (offset) {
-      const bottomPlane = ClippingPlane.clone(this.bottomPlane);
-      bottomPlane.distance = bottomPlane.distance - offset.offsetX;
-
-      const topPlane = ClippingPlane.clone(this.topPlane);
-      topPlane.distance = topPlane.distance + offset.offsetX;
-
-      const leftPlane = ClippingPlane.clone(this.leftPlane);
-      leftPlane.distance = leftPlane.distance - offset.offsetY;
-
-      const rightPlane = ClippingPlane.clone(this.rightPlane);
-      rightPlane.distance = rightPlane.distance + offset.offsetY;
-
-      const downPlane = ClippingPlane.clone(this.downPlane);
-      downPlane.distance = downPlane.distance + offset.offsetZ;
-
-      const upPlane = ClippingPlane.clone(this.upPlane);
-      upPlane.distance = upPlane.distance - offset.offsetZ;
-
-      clippingPlanes.add(bottomPlane);
-      clippingPlanes.add(topPlane);
-      clippingPlanes.add(leftPlane);
-      clippingPlanes.add(rightPlane);
-      clippingPlanes.add(downPlane);
-      clippingPlanes.add(upPlane);
-    } else {
-      clippingPlanes.add(this.bottomPlane);
-      clippingPlanes.add(this.leftPlane);
-      clippingPlanes.add(this.topPlane);
-      clippingPlanes.add(this.rightPlane);
-      clippingPlanes.add(this.downPlane);
-      clippingPlanes.add(this.upPlane);
-    }
-  }
-
-  updatePlanesDistance() {
-    this.bottomPlane.distance = this.bbox.width / 2;
-    this.topPlane.distance = this.bbox.width / 2;
-    this.leftPlane.distance = this.bbox.length / 2;
-    this.rightPlane.distance = this.bbox.length / 2;
-    this.downPlane.distance = this.bbox.height / 2;
-    this.upPlane.distance = this.bbox.height / 2;
-    this.viewer.scene.requestRender();
+    this.planes.forEach(plane => {
+      plane = offset ? applyOffsetToPlane(plane, offset) : plane;
+      clippingPlanes.add(plane);
+    });
   }
 
   onPlaneMove(side, moveAmount, moveVector) {
@@ -191,11 +151,12 @@ export default class SlicingBox {
     const lv95Center = radiansToLv95([boxCenter.longitude, boxCenter.latitude]);
 
     let lon, lat, height;
-    const halfWidth = this.bbox.length / 2;
-    const halfHeight = this.bbox.width / 2;
+    const halfLength = this.bbox.length / 2;
+    const halfWidth = this.bbox.width / 2;
+
     if (side === 'up' || side === 'down') {
-      lon = lv95Center[0] - halfWidth;
-      lat = lv95Center[1] - halfHeight;
+      lon = lv95Center[0] - halfLength;
+      lat = lv95Center[1] - halfWidth;
       side === 'down' ? height = -(boxHeight / 2) : height = boxHeight / 2;
     } else {
       let viewCenterLv95 = lv95Center;
@@ -211,15 +172,15 @@ export default class SlicingBox {
       const negate = side === 'top' || side === 'right' ? 1 : -1;
       const offset = 5000;
       if (side === 'top' || side === 'bottom') {
-        const horizontalMin = lv95Center[0] - halfWidth + offset;
-        const horizontalMax = lv95Center[0] + halfWidth - offset;
+        const horizontalMin = lv95Center[0] - halfLength + offset;
+        const horizontalMax = lv95Center[0] + halfLength - offset;
         lon = CesiumMath.clamp(viewCenterLv95[0], horizontalMin, horizontalMax);
-        lat = lv95Center[1] + halfHeight * negate;
+        lat = lv95Center[1] + halfWidth * negate;
       } else if (side === 'left' || side === 'right') {
-        const verticalMin = lv95Center[1] - halfHeight + offset;
-        const verticalMax = lv95Center[1] + halfHeight - offset;
+        const verticalMin = lv95Center[1] - halfWidth + offset;
+        const verticalMax = lv95Center[1] + halfWidth - offset;
         lat = CesiumMath.clamp(viewCenterLv95[1], verticalMin, verticalMax);
-        lon = lv95Center[0] + halfWidth * negate;
+        lon = lv95Center[0] + halfLength * negate;
       }
     }
     const degCenter = lv95ToDegrees([lon, lat]);
