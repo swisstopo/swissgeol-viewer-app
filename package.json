@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.5.0",
-    "@aws-sdk/client-s3": "^3.3.0",
+    "@aws-sdk/client-s3": "^3.5.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.5.0",
     "@aws-sdk/s3-request-presigner": "^3.3.0",
     "@geoblocks/cesium-compass": "0.3.0",
