@@ -66,17 +66,22 @@ export function createClippingPlanes(planes, modelMatrix) {
  * @return {{center: Cartesian3, width: number, length: number, height: number}}
  */
 export function getBboxFromViewRatio(viewer, ratio) {
-  const globe = viewer.scene.globe;
   const sceneCenter = pickCenter(viewer.scene);
-  let planesCenter = Cartographic.fromCartesian(sceneCenter);
-  planesCenter.height = 0;
-  // check is slicing center placed on map otherwise use map center
-  if (!Rectangle.contains(globe.cartographicLimitRectangle, planesCenter)) {
-    planesCenter = Rectangle.center(globe.cartographicLimitRectangle);
-  }
-
-  let viewRect = viewer.scene.camera.computeViewRectangle();
+  let viewCenter = Cartographic.fromCartesian(sceneCenter);
   const mapRect = viewer.scene.globe.cartographicLimitRectangle;
+  viewCenter.height = 0;
+
+  // look for nearest point on map
+  const mapRectSouthwest = Rectangle.southwest(mapRect);
+  viewCenter.longitude = viewCenter.longitude < mapRectSouthwest.longitude ? mapRectSouthwest.longitude : viewCenter.longitude;
+  viewCenter.latitude = viewCenter.latitude < mapRectSouthwest.latitude ? mapRectSouthwest.latitude : viewCenter.latitude;
+
+  // check is slicing center placed on map otherwise use map center
+  if (!Rectangle.contains(mapRect, viewCenter)) {
+    viewCenter = Rectangle.center(mapRect);
+  }
+  // use map rectangle if view too big
+  let viewRect = viewer.scene.camera.computeViewRectangle();
   if (viewRect.width > mapRect.width || viewRect.height > mapRect.height) {
     viewRect = mapRect;
   }
@@ -84,24 +89,21 @@ export function getBboxFromViewRatio(viewer, ratio) {
   const mapRectNortheast = Rectangle.northeast(mapRect);
   const sliceRectWidth = ratio * viewRect.width;
   const sliceRectHeight = ratio * viewRect.height;
-  let lon = planesCenter.longitude + sliceRectWidth;
-  let lat = planesCenter.latitude + sliceRectHeight;
-  if (!Rectangle.contains(globe.cartographicLimitRectangle, Cartographic.fromRadians(lon, lat))) {
-    lon = mapRectNortheast.longitude;
-    lat = mapRectNortheast.latitude;
+  let northeastLon = viewCenter.longitude + sliceRectWidth;
+  let northeastLat = viewCenter.latitude + sliceRectHeight;
+  if (!Rectangle.contains(mapRect, Cartographic.fromRadians(northeastLon, northeastLat))) {
+    northeastLon = northeastLon > mapRectNortheast.longitude ? mapRectNortheast.longitude : northeastLon;
+    northeastLat = northeastLat > mapRectNortheast.latitude ? mapRectNortheast.latitude : northeastLat;
   }
-
-  const bottomRight = Cartesian3.fromRadians(lon, planesCenter.latitude, 0);
-  const topLeft = Cartesian3.fromRadians(planesCenter.longitude, lat, 0);
-  const topRight = Cartesian3.fromRadians(lon, lat, 0);
-  const bottomLeft = Cartographic.toCartesian(planesCenter);
-
-  // moves the center of slicing. Left down corner should be placed in the view center
-  planesCenter.longitude = sliceRectWidth / 2 + planesCenter.longitude;
-  planesCenter.latitude = sliceRectHeight / 2 + planesCenter.latitude;
+  // Left bottom corner should be placed in the view center
+  const bottomLeft = Cartographic.toCartesian(viewCenter);
+  const bottomRight = Cartesian3.fromRadians(northeastLon, viewCenter.latitude, 0);
+  const topLeft = Cartesian3.fromRadians(viewCenter.longitude, northeastLat, 0);
+  const topRight = Cartesian3.fromRadians(northeastLon, northeastLat, 0);
+  const center = Cartesian3.midpoint(topLeft, bottomRight, new Cartesian3());
 
   return {
-    center: Cartographic.toCartesian(planesCenter),
+    center: center,
     width: Cartesian3.distance(topLeft, bottomLeft),
     length: Cartesian3.distance(bottomRight, bottomLeft),
     height: SLICING_BOX_HEIGHT,
