@@ -303,3 +303,15 @@ export function projectPointOnSegment(point, startPoint, endPoint, start, end, h
   clampPosition(position, startPoint, endPoint, start, end);
   return updateHeightForCartesianPositions([position], height)[0];
 }
+
+/**
+ * Returns 1 if 'to' point on left-bottom side of 'from' point or -1 if vice-versa
+ * @param {Cartesian3} from
+ * @param {Cartesian3} to
+ * @return {number}
+ */
+export function getDirectionFromPoints(from, to) {
+  const axisVect = Cartesian3.subtract(from, to, new Cartesian3());
+  const direction = axisVect.x + axisVect.y + axisVect.y;
+  return Math.round((1 / direction) * Math.abs(direction));
+}

@@ -10,6 +10,7 @@ import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
+import {getDirectionFromPoints} from '../cesiumutils';
 
 /**
  * @typedef {object} ArrowListItem
@@ -121,10 +122,7 @@ export default class SlicerArrows {
       }
       if (this.moveCallback) {
         // calculate move amount (distance with direction)
-        const diff = Cartesian3.subtract(arrowPosition3d, newArrowPosition3d, new Cartesian3());
-        const diffSum = diff.x + diff.y + diff.z;
-        const direction = (1 / diffSum) * Math.abs(diffSum);
-        const moveAmount = distance * direction;
+        const moveAmount = distance * getDirectionFromPoints(arrowPosition3d, newArrowPosition3d);
 
         this.moveCallback(side, moveAmount, objectMoveVector3d);
       }

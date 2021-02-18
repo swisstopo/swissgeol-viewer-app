@@ -92,7 +92,7 @@ export default class SlicingBox extends SlicingToolBase {
 
   addClippingPlanes(primitive) {
     if (!primitive.root || !primitive.boundingSphere) return;
-    this.offsets[primitive.url] = getOffsetForPrimitive(primitive, this.bbox.center);
+    this.offsets[primitive.url] = getOffsetForPrimitive(primitive, this.bbox);
     primitive.clippingPlanes = createClippingPlanes(this.planes);
   }
 

@@ -1,8 +1,7 @@
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {radiansToLv95} from '../projection';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import {pickCenter} from '../cesiumutils';
+import {getDirectionFromPoints, pickCenter, projectPointOntoVector} from '../cesiumutils';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
@@ -10,25 +9,30 @@ import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection
 
 /**
  * @param primitive
- * @param {Cartesian3} bboxCenter
+ * @param bbox
  * @return {Cartesian3}
  */
-export function getOffsetForPrimitive(primitive, bboxCenter) {
-  const tileCenter = Cartographic.fromCartesian(primitive.boundingSphere.center);
-  const cartCenter = Cartographic.fromCartesian(bboxCenter);
-  const lv95Center = radiansToLv95([cartCenter.longitude, cartCenter.latitude]);
-  const lv95Tile = radiansToLv95([tileCenter.longitude, tileCenter.latitude]);
-  const x = lv95Center[0] - lv95Tile[0];
-  const y = lv95Center[1] - lv95Tile[1];
+export function getOffsetForPrimitive(primitive, bbox) {
+  const primitiveCenter = primitive.boundingSphere.center;
+  const corners = bbox.corners;
+  const tileCenterAxisX = projectPointOntoVector(corners.topLeft, corners.topRight, primitiveCenter);
+  const centerAxisX = Cartesian3.midpoint(corners.topLeft, corners.topRight, new Cartesian3());
+  const x = Cartesian3.distance(centerAxisX, tileCenterAxisX) * getDirectionFromPoints(centerAxisX, tileCenterAxisX);
 
+  const tileCenterAxisY = projectPointOntoVector(corners.bottomRight, corners.topRight, primitiveCenter);
+  const centerAxisY = Cartesian3.midpoint(corners.bottomRight, corners.topRight, new Cartesian3());
+  const y = Cartesian3.distance(centerAxisY, tileCenterAxisY) * getDirectionFromPoints(tileCenterAxisY, centerAxisY);
+
+  let z;
   const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
   const transformCartographic = Cartographic.fromCartesian(transformCenter);
-  const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
-  let z = boundingSphereCartographic.height;
   if (transformCartographic) {
     z = transformCartographic.height;
+  } else {
+    const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
+    z = boundingSphereCartographic.height;
   }
-  return new Cartesian3(x, y, z);
+  return new Cartesian3(x, y, z * -1);
 }
 
 /**
