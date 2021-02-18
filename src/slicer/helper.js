@@ -74,8 +74,11 @@ export function getClippingPlaneFromSegment(start, end, tileCenter, mapRect, map
 
   // computations depends on first point position according to second point
   let lineVector;
+  // project start, end points in one axis for direction calculation
+  const startXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, start);
+  const endXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, end);
   // calculates the angle between map side and line (+ map offset for higher precision) and apply to the plane
-  if (getDirectionFromPoints(start, end) < 0) {
+  if (getDirectionFromPoints(startXAxis, endXAxis) < 0) {
     lineVector = Cartesian3.subtract(start, end, new Cartesian3());
     const angle = Cartesian3.angleBetween(lineVector, leftVector) + angleOffset;
     plane.normal.x = Math.cos(angle);
