@@ -1,14 +1,37 @@
+import {writeFile} from 'fs';
+import {S3Client, GetObjectCommand} from '@aws-sdk/client-s3';
+import streamToPromise from 'stream-to-promise';
 import fetch from 'node-fetch';
 import layertree from '../src/layertree.js';
 
+const output = process.argv[2];
+
+if (!output) {
+  console.error('missing output file');
+  process.exit(1);
+}
+
+if (!('AWS_ACCESS_KEY_ID' in process.env && 'AWS_SECRET_ACCESS_KEY' in process.env)) {
+  console.error('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env variables must but set');
+  process.exit(1);
+}
+
 const defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
-function fetchIon(url, token=defaultAccessToken) {
+const s3 = new S3Client({
+  region: 'eu-central-1'
+});
+
+function fetchIon(url, token = defaultAccessToken) {
   return fetch(url, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
   });
+}
+
+function fetchAws(params) {
+  return s3.send(new GetObjectCommand(params));
 }
 
 const header = `
@@ -23,27 +46,47 @@ const reduceTree = (func, init, node) => {
   } else {
     return node.children.reduce((acc, node) => reduceTree(func, acc, node), acc);
   }
-}
-const getAssetId = (acc, node) => {
+};
+
+const getIonAssetId = (acc, node) => {
   if (node.type === '3dtiles' && node.assetId !== undefined) {
     acc.push(node.assetId);
   }
   return acc;
-}
+};
 
-const assetIds = reduceTree(getAssetId, [], {children: layertree});
+const getAwsParams = (acc, node) => {
+  if (node.type === '3dtiles' && node.aws_s3_key !== undefined) {
+    acc.push({
+      Bucket: node.aws_s3_bucket,
+      Key: node.aws_s3_key
+    });
+  }
+  return acc;
+};
 
-const endpoints = Promise.all(assetIds.map(id => fetchIon(`https://api.cesium.com/v1/assets/${id}/endpoint`)))
+// Get tilesets from Ion
+const ionAssetIds = reduceTree(getIonAssetId, [], {children: layertree});
+
+const ionEndpoints = Promise.all(ionAssetIds.map(id => fetchIon(`https://api.cesium.com/v1/assets/${id}/endpoint`)))
   .then(responses => Promise.all(responses.map(response => response.json())));
 
 // only keep the 3d tiles tilesets and request the tileset.json files
-const tilesets = endpoints.then(responses => responses.filter(response => response.type === '3DTILES'))
+const ionTilesets = ionEndpoints.then(responses => responses.filter(response => response.type === '3DTILES'))
   .then(assets => assets.map(asset => fetchIon(asset.url, asset.accessToken)))
   .then(requests => Promise.all(requests))
   .then(responses => Promise.all(responses.map(response => response.json())));
 
-// create an array of all properties
-const properties = tilesets.then(responses => responses.filter(response => response.properties))
+// Get tilesets from Aws
+const awsAssetParams = reduceTree(getAwsParams, [], {children: layertree});
+
+const awsTilesets = Promise.all(awsAssetParams.map(params => fetchAws(params)))
+  .then(responses => Promise.all(responses.map(response => streamToPromise(response.Body))))
+  .then(responses => Promise.all(responses.map(response => JSON.parse(response.toString()))));
+
+const properties = Promise.all([ionTilesets, awsTilesets])
+  .then(responses => responses.flat())
+  .then(responses => responses.filter(response => response.properties))
   .then(responses => responses.map(response => Object.keys(response.properties)).flat())
   .then(properties => Array.from(new Set(properties)));
 
@@ -51,4 +94,10 @@ const properties = tilesets.then(responses => responses.filter(response => respo
 properties.then(values => values.filter(value => !value.startsWith('_')))
   .then(values => values.sort().map(value => `i18next.t('assets:${value}');`))
   .then(values => [header].concat(values))
-  .then(values => console.log(values.join('\n')));
+  .then(values => {
+    writeFile(output, values.join('\n') + '\n', err => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  });
