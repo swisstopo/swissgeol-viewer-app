@@ -2,7 +2,7 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {executeForAllPrimitives} from '../utils';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
-import {applyOffsetToPlane, createClippingPlanes, getBboxFromViewRatio, getOffsetForPrimitive} from './helper';
+import {applyOffsetToPlane, createClippingPlanes, getBboxFromViewRatio, getOffsetFromBbox} from './helper';
 import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {SLICE_BOX_ARROWS, SLICING_BOX_MIN_SIZE, SLICING_GEOMETRY_COLOR} from '../constants';
@@ -92,7 +92,7 @@ export default class SlicingBox extends SlicingToolBase {
 
   addClippingPlanes(primitive) {
     if (!primitive.root || !primitive.boundingSphere) return;
-    this.offsets[primitive.url] = getOffsetForPrimitive(primitive, this.bbox);
+    this.offsets[primitive.url] = getOffsetFromBbox(primitive, this.bbox);
     primitive.clippingPlanes = createClippingPlanes(this.planes);
   }
 

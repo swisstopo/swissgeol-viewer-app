@@ -6,13 +6,15 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
+import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
+import Matrix3 from 'cesium/Source/Core/Matrix3';
 
 /**
  * @param primitive
  * @param bbox
  * @return {Cartesian3}
  */
-export function getOffsetForPrimitive(primitive, bbox) {
+export function getOffsetFromBbox(primitive, bbox) {
   const primitiveCenter = primitive.boundingSphere.center;
   const corners = bbox.corners;
   const tileCenterAxisX = projectPointOntoVector(corners.topLeft, corners.topRight, primitiveCenter);
@@ -33,6 +35,62 @@ export function getOffsetForPrimitive(primitive, bbox) {
     z = boundingSphereCartographic.height;
   }
   return new Cartesian3(x, y, z * -1);
+}
+
+/**
+ * Computes offset between two positions
+ * @param {Cartesian3} position
+ * @param {Cartesian3} targetPosition
+ * @param {Cartesian3} planeNormal
+ * @return {number}
+ */
+export function getPositionsOffset(position, targetPosition, planeNormal) {
+  const diff = Cartesian3.subtract(position, targetPosition, new Cartesian3());
+  const offset = Cartesian3.multiplyComponents(diff, planeNormal, new Cartesian3());
+  return offset.x + offset.y + offset.z;
+}
+
+/**
+ * Computes clipping plane for tileset from two points
+ * @param {Cartesian3} start - segment start point
+ * @param {Cartesian3} end - segment end point
+ * @param {Rectangle} mapRect - cartographic limit rectangle
+ * @param {Cartesian3} tileCenter - tileset center
+ * @param {Cartesian3} mapPlaneNormal - globe plane normal (can be get using 'planeFromTwoPoints')
+ * @return {module:cesium.ClippingPlane}
+ */
+export function getClippingPlaneFromSegment(start, end, tileCenter, mapRect, mapPlaneNormal) {
+  const plane = new ClippingPlane(new Cartesian3(1, 0, 0), 0);
+  // map vectors need for computation of plane rotation
+  const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect));
+  const mapSouthwest = Cartographic.toCartesian(Rectangle.southwest(mapRect));
+  const mapNortheast = Cartographic.toCartesian(Rectangle.northeast(mapRect));
+  const leftVector = Cartesian3.subtract(mapNorthwest, mapSouthwest, new Cartesian3());
+  const topVector = Cartesian3.subtract(mapNorthwest, mapNortheast, new Cartesian3());
+
+  // because of map not rectangular
+  const mapCornerAngle = Cartesian3.angleBetween(topVector, leftVector);
+  const angleOffset = Math.PI / 2 - mapCornerAngle;
+
+  // computations depends on first point position according to second point
+  let lineVector;
+  // calculates the angle between map side and line (+ map offset for higher precision) and apply to the plane
+  if (getDirectionFromPoints(start, end) < 0) {
+    lineVector = Cartesian3.subtract(start, end, new Cartesian3());
+    const angle = Cartesian3.angleBetween(lineVector, leftVector) + angleOffset;
+    plane.normal.x = Math.cos(angle);
+    plane.normal.y = Math.sin(angle);
+  } else {
+    lineVector = Cartesian3.subtract(end, start, new Cartesian3());
+    const angle = Cartesian3.angleBetween(lineVector, leftVector) + angleOffset;
+    plane.normal.x = -Math.cos(angle);
+    plane.normal.y = -Math.sin(angle);
+  }
+  // calculate offset between tile center and line center
+  const center = Cartesian3.midpoint(start, end, new Cartesian3());
+  plane.distance = getPositionsOffset(tileCenter, center, mapPlaneNormal);
+
+  return plane;
 }
 
 /**

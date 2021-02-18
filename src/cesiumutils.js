@@ -8,6 +8,9 @@ import Transforms from 'cesium/Source/Core/Transforms';
 import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
 import {degreesToLv95} from './projection';
 import Plane from 'cesium/Source/Core/Plane';
+import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
+import Matrix3 from 'cesium/Source/Core/Matrix3';
+import Rectangle from 'cesium/Source/Core/Rectangle';
 
 
 /**
@@ -314,4 +317,43 @@ export function getDirectionFromPoints(from, to) {
   const axisVect = Cartesian3.subtract(from, to, new Cartesian3());
   const direction = axisVect.x + axisVect.y + axisVect.y;
   return Math.round((1 / direction) * Math.abs(direction));
+}
+
+/**
+ * Returns vector orthogonal to view direction
+ * @param viewer
+ * @return {Cartesian3}
+ */
+export function getVectorOrthogonalToView(viewer) {
+  const hpr = new HeadingPitchRoll(viewer.scene.camera.heading, 0.0, 0.0);
+  const rotation = Matrix3.fromHeadingPitchRoll(hpr);
+  const viewRect = viewer.scene.camera.computeViewRectangle();
+
+  const northwest = Cartographic.toCartesian(Rectangle.northwest(viewRect));
+  const southwest = Cartographic.toCartesian(Rectangle.southwest(viewRect));
+  const northeast = Cartographic.toCartesian(Rectangle.northeast(viewRect));
+  const southeast = Cartographic.toCartesian(Rectangle.southeast(viewRect));
+
+  const p1 = Cartesian3.midpoint(northwest, southwest, new Cartesian3());
+  const p2 = Cartesian3.midpoint(northeast, southeast, new Cartesian3());
+  const viewVect = Cartesian3.subtract(p2, p1, new Cartesian3());
+  return Matrix3.multiplyByVector(rotation, viewVect, viewVect);
+}
+
+/**
+ * Returns left,right points of view rectangle
+ * @param viewer
+ * @return {{left: Cartesian3, right: Cartesian3}}
+ */
+export function getOrthogonalViewPoints(viewer) {
+  const center = pickCenter(viewer.scene);
+  let left = new Cartesian3();
+  let right = new Cartesian3();
+  const orthogonalVector = getVectorOrthogonalToView(viewer);
+
+  Cartesian3.divideByScalar(orthogonalVector, 2, orthogonalVector);
+  Cartesian3.subtract(center, orthogonalVector, left);
+  Cartesian3.add(center, orthogonalVector, right);
+  [left, right] = updateHeightForCartesianPositions([left, right], 0);
+  return {left, right};
 }

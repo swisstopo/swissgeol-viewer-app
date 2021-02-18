@@ -1,32 +1,23 @@
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import {pickCenter, planeFromTwoPoints} from '../cesiumutils';
-import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
-import Plane from 'cesium/Source/Core/Plane';
-import Transforms from 'cesium/Source/Core/Transforms';
+import {getOrthogonalViewPoints, planeFromTwoPoints} from '../cesiumutils';
 import {executeForAllPrimitives} from '../utils';
-import {createClippingPlanes} from './helper';
+import {createClippingPlanes, getClippingPlaneFromSegment} from './helper';
 import SlicingToolBase from './SlicingToolBase';
 
 export default class SlicingLine extends SlicingToolBase {
   constructor(viewer) {
     super(viewer);
     this.options = null;
-    this.planeEntity = null;
   }
 
   activate(options) {
     this.options = options;
-    const slicePoints = this.options.slicePoints;
-    if (!slicePoints || slicePoints.length !== 2) {
-      const center = pickCenter(this.viewer.scene);
-      const hpr = new HeadingPitchRoll(this.viewer.scene.camera.heading, 0.0, 0.0);
-      this.plane = Plane.transform(Plane.ORIGIN_ZX_PLANE, Transforms.headingPitchRollToFixedFrame(center, hpr));
-    } else {
-      this.plane = planeFromTwoPoints(slicePoints[0], slicePoints[1], this.options.negate);
+    if (!this.options.slicePoints || this.options.slicePoints.length !== 2) {
+      const points = getOrthogonalViewPoints(this.viewer);
+      this.options.slicePoints = [points.left, points.right];
     }
-
+    this.plane = planeFromTwoPoints(this.options.slicePoints[0], this.options.slicePoints[1], this.options.negate);
     this.viewer.scene.globe.clippingPlanes = createClippingPlanes([this.plane]);
-    executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlane(primitive));
+    executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlanes(primitive));
   }
 
   deactivate() {
@@ -34,9 +25,19 @@ export default class SlicingLine extends SlicingToolBase {
     this.plane = null;
   }
 
-  addClippingPlane(primitive) {
-    if (!primitive.root || !primitive.root.computedTransform) return;
-    const modelMatrix = Matrix4.inverse(primitive.root.computedTransform, new Matrix4());
-    primitive.clippingPlanes = createClippingPlanes([this.plane], modelMatrix);
+  addClippingPlanes(primitive) {
+    if (!primitive.root || !primitive.boundingSphere) return;
+    const planeNormal = this.plane.normal;
+    const p1 = this.options.slicePoints[0];
+    const p2 = this.options.slicePoints[1];
+    const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
+    const tileCenter = primitive.boundingSphere.center;
+
+    const plane = getClippingPlaneFromSegment(p1, p2, tileCenter, mapRect, planeNormal);
+    if (this.options.negate) {
+      plane.normal.x *= -1;
+      plane.normal.y *= -1;
+    }
+    primitive.clippingPlanes = createClippingPlanes([plane]);
   }
 }
