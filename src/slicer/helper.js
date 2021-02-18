@@ -6,9 +6,6 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
-import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
-import Matrix3 from 'cesium/Source/Core/Matrix3';
-
 /**
  * @param primitive
  * @param bbox
