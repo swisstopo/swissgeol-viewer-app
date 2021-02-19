@@ -5,8 +5,7 @@
 
 .ngm-map-preview img {
   display: block;
-  width: 64px;
-  height: 64px;
+  height: 50px;
 }
 
 .ngm-map-preview {

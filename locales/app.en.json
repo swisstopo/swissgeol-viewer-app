@@ -7,6 +7,7 @@
   "dtd_download_hint": "Download",
   "dtd_empty_map_label": "No background",
   "dtd_grey_map_label": "Grey map",
+  "dtd_lakes_rivers_map_label": "Lakes & rivers",
   "dtd_layer_down_label": "Layer Down",
   "dtd_layer_up_label": "Layer Up",
   "dtd_object_on_coordinates_not_found_warning": "Object not found or you moved camera away from initial position",

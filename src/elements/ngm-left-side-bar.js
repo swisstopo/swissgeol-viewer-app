@@ -36,6 +36,11 @@ class LeftSideBar extends LitElementI18n {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
+
+    /**
+     * @type {import('../MapChooser').default}
+     */
+    this.mapChooser = null;
   }
 
   static get properties() {
@@ -256,7 +261,7 @@ class LeftSideBar extends LitElementI18n {
 
   update(changedProperties) {
     if (this.viewer && !this.layerActions) {
-      this.layerActions = new LayersActions(this.viewer);
+      this.layerActions = new LayersActions(this.viewer, this.mapChooser);
       // Handle queries (local and Swisstopo)
       this.queryManager = new QueryManager(this.viewer);
       if (!this.catalogLayers) {

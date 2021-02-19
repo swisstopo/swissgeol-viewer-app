@@ -59,15 +59,6 @@ const SWISSTOPO_LABEL_STYLE = {
   }
 };
 
-// const TUNNEL_STYLE = {
-//   color: {
-//     conditions: [
-//       ['${TunnelType} === "RailTunnel"', 'color("red")'],
-//       ['${TunnelType} === "RoadTunnel"', 'color("blue")']
-//     ]
-//   }
-// };
-
 const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
 const DOWNLOAD_ROOT_GEOMOL = 'https://download.swissgeol.ch/geomol/';
 const CENOZOIC_BEDROCK_ORDER = ['Name', 'Horizon', ...DOWNLOAD_PROP_ORDER];
@@ -156,6 +147,7 @@ const geo_base = {
           label: t('lyr_cross_section_ga25_pixel_label'),
           layer: 'cross_section_ga25_pixel',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
+          backgroundId: 'lakes_rivers_map',
           visible: false,
           displayed: false,
           pickable: true,
@@ -205,6 +197,7 @@ const geo_base = {
           label: t('lyr_seismic_transects_label'),
           layer: 'seismic_transects',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
+          backgroundId: 'lakes_rivers_map',
           pickable: true,
           visible: false,
           displayed: false,
