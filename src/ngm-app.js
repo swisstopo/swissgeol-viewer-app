@@ -9,6 +9,7 @@ import './elements/ngm-object-information';
 import './elements/ngm-review-window';
 import './elements/ngm-feature-height';
 import './elements/ngm-auth';
+import {init as initDrop} from './drop.js';
 
 import {
   DEFAULT_VIEW,
@@ -136,6 +137,16 @@ class NgmApp extends LitElementI18n {
       };
       showMessage(i18next.t('sentry_message'), options);
     }
+
+    initDrop('.map', (file) => {
+      const aoi = document.querySelector('ngm-aoi-drawer');
+      if (file.name.toLowerCase().endsWith('.kml')) {
+        aoi.uploadKml(file);
+      } else if (file.name.toLowerCase().endsWith('.gpx')) {
+        aoi.uploadGpx(file);
+      }
+    });
+
   }
 
   /**
