@@ -50,7 +50,7 @@ class NgmSlicer extends LitElementI18n {
           data-tooltip=${i18next.t('nav_slice_hint')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button ${this.sliceEnabled && this.slicingType === 'line' ? 'grey' : ''}"
+          class="ui compact mini icon button ${this.sliceEnabled && this.slicingType === 'view-line' ? 'grey' : ''}"
           @pointerdown="${() => this.toggleSlicer('view-line')}">
             <i class="cut icon"></i>
         </button>
