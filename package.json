@@ -44,7 +44,7 @@
     "autoprefixer": "^9.8.6",
     "chai": "^4.3.0",
     "copy-webpack-plugin": "6.4.1",
-    "core-js": "3.8.3",
+    "core-js": "3.9.0",
     "css-loader": "^5.0.2",
     "eslint": "7.20.0",
     "esm": "^3.2.25",
