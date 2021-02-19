@@ -57,7 +57,7 @@ export function getPositionsOffset(position, targetPosition, planeNormal) {
  * @return {module:cesium.ClippingPlane}
  */
 export function getClippingPlaneFromSegment(start, end, tileCenter, mapRect, mapPlaneNormal) {
-  const plane = new ClippingPlane(new Cartesian3(1, 0, 0), 0);
+  const plane = new ClippingPlane(Cartesian3.UNIT_X, 0);
   // map vectors need for computation of plane rotation
   const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect));
   const mapSouthwest = Cartographic.toCartesian(Rectangle.southwest(mapRect));
@@ -129,18 +129,18 @@ export function createClippingPlanes(planes, modelMatrix) {
  */
 export function getBboxFromViewRatio(viewer, ratio) {
   const sceneCenter = pickCenter(viewer.scene);
-  let viewCenter = Cartographic.fromCartesian(sceneCenter);
+  let slicingCenter = Cartographic.fromCartesian(sceneCenter);
   const mapRect = viewer.scene.globe.cartographicLimitRectangle;
-  viewCenter.height = 0;
+  slicingCenter.height = 0;
 
-  // look for nearest point on map
+  // look for nearest point on map (left bottom corner should be placed in the view center)
   const mapRectSouthwest = Rectangle.southwest(mapRect);
-  viewCenter.longitude = viewCenter.longitude < mapRectSouthwest.longitude ? mapRectSouthwest.longitude : viewCenter.longitude;
-  viewCenter.latitude = viewCenter.latitude < mapRectSouthwest.latitude ? mapRectSouthwest.latitude : viewCenter.latitude;
+  slicingCenter.longitude = slicingCenter.longitude < mapRectSouthwest.longitude ? mapRectSouthwest.longitude : slicingCenter.longitude;
+  slicingCenter.latitude = slicingCenter.latitude < mapRectSouthwest.latitude ? mapRectSouthwest.latitude : slicingCenter.latitude;
 
   // check is slicing center placed on map otherwise use map center
-  if (!Rectangle.contains(mapRect, viewCenter)) {
-    viewCenter = Rectangle.center(mapRect);
+  if (!Rectangle.contains(mapRect, slicingCenter)) {
+    slicingCenter = Rectangle.center(mapRect);
   }
   // use map rectangle if view too big
   let viewRect = viewer.scene.camera.computeViewRectangle();
@@ -151,16 +151,16 @@ export function getBboxFromViewRatio(viewer, ratio) {
   const mapRectNortheast = Rectangle.northeast(mapRect);
   const sliceRectWidth = ratio * viewRect.width;
   const sliceRectHeight = ratio * viewRect.height;
-  let northeastLon = viewCenter.longitude + sliceRectWidth;
-  let northeastLat = viewCenter.latitude + sliceRectHeight;
+  let northeastLon = slicingCenter.longitude + sliceRectWidth;
+  let northeastLat = slicingCenter.latitude + sliceRectHeight;
   if (!Rectangle.contains(mapRect, Cartographic.fromRadians(northeastLon, northeastLat))) {
     northeastLon = northeastLon > mapRectNortheast.longitude ? mapRectNortheast.longitude : northeastLon;
     northeastLat = northeastLat > mapRectNortheast.latitude ? mapRectNortheast.latitude : northeastLat;
   }
   // Left bottom corner should be placed in the view center
-  const bottomLeft = Cartographic.toCartesian(viewCenter);
-  const bottomRight = Cartesian3.fromRadians(northeastLon, viewCenter.latitude, 0);
-  const topLeft = Cartesian3.fromRadians(viewCenter.longitude, northeastLat, 0);
+  const bottomLeft = Cartographic.toCartesian(slicingCenter);
+  const bottomRight = Cartesian3.fromRadians(northeastLon, slicingCenter.latitude, 0);
+  const topLeft = Cartesian3.fromRadians(slicingCenter.longitude, northeastLat, 0);
   const topRight = Cartesian3.fromRadians(northeastLon, northeastLat, 0);
   const center = Cartesian3.midpoint(topLeft, bottomRight, new Cartesian3());
 

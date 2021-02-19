@@ -16,8 +16,8 @@ export default class SlicingBox extends SlicingToolBase {
   constructor(viewer, dataSource) {
     super(viewer, dataSource);
     this.offsets = {};
-    this.bottomPlane = null;
-    this.topPlane = null;
+    this.backPlane = null;
+    this.frontPlane = null;
     this.leftPlane = null;
     this.rightPlane = null;
     this.bbox = null;
@@ -29,20 +29,20 @@ export default class SlicingBox extends SlicingToolBase {
     this.bbox = getBboxFromViewRatio(this.viewer, 1 / 3);
     this.boxCenter = this.bbox.center;
 
-    this.bottomPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 1.0, 0.0));
-    this.topPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, -1.0, 0.0));
-    this.bottomPlane.distance = this.topPlane.distance = this.bbox.width / 2;
+    this.backPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.UNIT_Y);
+    this.frontPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.negate(Cartesian3.UNIT_Y, new Cartesian3()));
+    this.backPlane.distance = this.frontPlane.distance = this.bbox.width / 2;
 
-    this.leftPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(1.0, 0.0, 0.0));
-    this.rightPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(-1.0, 0.0, 0.0));
+    this.leftPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.UNIT_X);
+    this.rightPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.negate(Cartesian3.UNIT_X, new Cartesian3()));
     this.leftPlane.distance = this.rightPlane.distance = this.bbox.length / 2;
 
-    this.downPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 0, 1.0));
-    this.upPlane = Plane.fromPointNormal(this.bbox.center, new Cartesian3(0.0, 0, -1.0));
+    this.downPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.UNIT_Z);
+    this.upPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.negate(Cartesian3.UNIT_Z, new Cartesian3()));
     this.downPlane.distance = this.upPlane.distance = this.bbox.height / 2;
 
     this.planes = [
-      this.bottomPlane, this.leftPlane, this.topPlane, this.rightPlane,
+      this.backPlane, this.leftPlane, this.frontPlane, this.rightPlane,
       this.downPlane, this.upPlane
     ];
 
@@ -76,8 +76,8 @@ export default class SlicingBox extends SlicingToolBase {
 
   deactivate() {
     this.offsets = {};
-    this.bottomPlane = null;
-    this.topPlane = null;
+    this.backPlane = null;
+    this.frontPlane = null;
     this.leftPlane = null;
     this.rightPlane = null;
     this.slicerArrows.hide();
@@ -123,20 +123,20 @@ export default class SlicingBox extends SlicingToolBase {
         Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
         break;
       }
-      case 'top': {
+      case 'front': {
         const width = validateBoxSize(true, this.bbox.width);
         if (!width) return;
         this.bbox.width = width;
-        this.topPlane.distance += moveAmount;
+        this.frontPlane.distance += moveAmount;
         Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
         Cartesian3.add(this.bbox.corners.topLeft, moveVector, this.bbox.corners.topLeft);
         break;
       }
-      case 'bottom': {
+      case 'back': {
         const width = validateBoxSize(false, this.bbox.width);
         if (!width) return;
         this.bbox.width = width;
-        this.bottomPlane.distance -= moveAmount;
+        this.backPlane.distance -= moveAmount;
         Cartesian3.add(this.bbox.corners.bottomRight, moveVector, this.bbox.corners.bottomRight);
         Cartesian3.add(this.bbox.corners.bottomLeft, moveVector, this.bbox.corners.bottomLeft);
         break;
@@ -182,9 +182,9 @@ export default class SlicingBox extends SlicingToolBase {
           return projectPointOnSegment(viewCenter, corners.bottomRight, corners.topRight, start, end, height);
         case 'left':
           return projectPointOnSegment(viewCenter, corners.bottomLeft, corners.topLeft, start, end, height);
-        case 'bottom':
+        case 'back':
           return projectPointOnSegment(viewCenter, corners.bottomRight, corners.bottomLeft, start, end, height);
-        case 'top':
+        case 'front':
           return projectPointOnSegment(viewCenter, corners.topRight, corners.topLeft, start, end, height);
       }
     }

@@ -13,7 +13,7 @@ export default class SlicingLine extends SlicingToolBase {
     this.options = options;
     if (!this.options.slicePoints || this.options.slicePoints.length !== 2) {
       const points = getOrthogonalViewPoints(this.viewer);
-      this.options.slicePoints = [points.left, points.right];
+      this.options.slicePoints = [points[0], points[1]];
     }
     this.plane = planeFromTwoPoints(this.options.slicePoints[0], this.options.slicePoints[1], this.options.negate);
     this.viewer.scene.globe.clippingPlanes = createClippingPlanes([this.plane]);

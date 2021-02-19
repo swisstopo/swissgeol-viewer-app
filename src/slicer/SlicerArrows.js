@@ -1,7 +1,5 @@
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import ShadowMode from 'cesium/Source/Scene/ShadowMode';
-import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
-import {SLICING_GEOMETRY_COLOR} from '../constants';
+import {DEFAULT_CONFIG_FOR_SLICING_ARROW, SLICING_GEOMETRY_COLOR} from '../constants';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import Entity from 'cesium/Source/DataSources/Entity';
 import Color from 'cesium/Source/Core/Color';
@@ -21,16 +19,30 @@ import {getDirectionFromPoints} from '../cesiumutils';
  * @property {string} [oppositePosition - position to create move axis. Required if no opposite arrow]
  */
 
+/**
+ * @typedef {object} ArrowConfiguration
+ * @property {number} [minimumPixelSize - specifying the approximate minimum pixel size of the model regardless of zoom]
+ * @property {number} [scale - specifying a uniform linear scale]
+ * @property {number} [maximumScale - the maximum scale size of a model. An upper limit for minimumPixelSize]
+ * @property {shadows} [shadowMode - specifying whether the model casts or receives shadows from light sources]
+ * @property {ColorBlendMode} [colorBlendMode - specifying how the color blends with the model]
+ * @property {Color} [color - specifying the Color that blends with the model's rendered color.]
+ */
+
+/**
+ * @typedef {object} SlicerArrowOptions
+ * @property {ArrowListItem[]} arrowsList
+ * @property {ArrowConfiguration} [arrowConfiguration]
+ * @property {(function(string): Cartesian3)} [positionUpdateCallback - entity position callback]
+ * @property {(function(string, number, Cartesian3): void)} [moveCallback - calls on arrow move]
+ */
+
 export default class SlicerArrows {
   /**
    * Creates one or more entities and handle their move.
    * @param {Viewer} viewer
    * @param {DataSource} dataSource - dataSource to store entities
-   * @param {{
-   *          arrowsList: ArrowListItem[],
-   *          positionUpdateCallback: (function(string): Cartesian3),
-   *          moveCallback: (function(string, number, Cartesian3): void)
-   *        }} options
+   * @param {SlicerArrowOptions} options
    */
   constructor(viewer, dataSource, options) {
     this.viewer = viewer;
@@ -39,22 +51,34 @@ export default class SlicerArrows {
     this.positionUpdateCallback = options.positionUpdateCallback;
     this.arrowsList = options.arrowsList;
     this.julianDate = new JulianDate();
-    this.eventHandler = null;
     this.selectedArrow = null;
+    this.arrowConfiguration = options.arrowConfiguration || DEFAULT_CONFIG_FOR_SLICING_ARROW;
+
+    this.eventHandler_ = null;
+    this.enableInputs_ = true;
+
+    this.scratchBoundingSphere_ = new BoundingSphere();
+    this.scratchArrowPosition2d_ = new Cartesian2();
+    this.scratchOppositeArrowPosition2d_ = new Cartesian2();
+    this.scratchAxisVector2d_ = new Cartesian2();
+    this.scratchMouseMoveVector_ = new Cartesian2();
+    this.scratchObjectMoveVector2d_ = new Cartesian2();
+    this.scratchNewArrowPosition2d_ = new Cartesian2();
+    this.scratchAxisVector3d_ = new Cartesian3();
   }
 
   show() {
     this.createMoveArrows();
-    this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-    this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
-    this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
-    this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
+    this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer.canvas);
+    this.eventHandler_.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
+    this.eventHandler_.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
+    this.eventHandler_.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
   }
 
   hide() {
-    if (this.eventHandler) {
-      this.eventHandler.destroy();
-      this.eventHandler = null;
+    if (this.eventHandler_) {
+      this.eventHandler_.destroy();
+      this.eventHandler_ = null;
     }
   }
 
@@ -63,6 +87,7 @@ export default class SlicerArrows {
     const isModelPicked = pickedObject && pickedObject.id && pickedObject.id.model;
     if (isModelPicked && pickedObject.id.properties && pickedObject.id.properties.side) {
       this.selectedArrow = pickedObject.id;
+      this.enableInputs_ = this.viewer.scene.screenSpaceCameraController.enableInputs;
       this.viewer.scene.screenSpaceCameraController.enableInputs = false;
     }
   }
@@ -70,7 +95,7 @@ export default class SlicerArrows {
   onLeftUp() {
     if (this.selectedArrow) {
       this.selectedArrow = null;
-      this.viewer.scene.screenSpaceCameraController.enableInputs = true;
+      this.viewer.scene.screenSpaceCameraController.enableInputs = this.enableInputs_;
     }
     this.unhighlightArrow();
   }
@@ -92,28 +117,30 @@ export default class SlicerArrows {
       }
 
       const arrowPosition3d = this.selectedArrow.position.getValue(this.julianDate);
-      const arrowPosition2d = scene.cartesianToCanvasCoordinates(arrowPosition3d);
-      const oppositePosition2d = scene.cartesianToCanvasCoordinates(oppositePosition3d);
+      scene.cartesianToCanvasCoordinates(arrowPosition3d, this.scratchArrowPosition2d_);
+      scene.cartesianToCanvasCoordinates(oppositePosition3d, this.scratchOppositeArrowPosition2d_);
 
       // get pixel size for calculation move distance in meters
-      const boundingSphere = new BoundingSphere(arrowPosition3d);
-      const pixelSize = scene.camera.getPixelSize(boundingSphere, scene.drawingBufferWidth, scene.drawingBufferHeight);
+      this.scratchBoundingSphere_.center = arrowPosition3d;
+      const pixelSize = scene.camera.getPixelSize(this.scratchBoundingSphere_, scene.drawingBufferWidth, scene.drawingBufferHeight);
 
       // calculate scalar of mouse move
-      const axisVector2d = Cartesian2.subtract(oppositePosition2d, arrowPosition2d, new Cartesian2());
-      const mouseMoveVector = Cartesian2.subtract(movement.endPosition, arrowPosition2d, new Cartesian2());
-      const scalar2d = Cartesian2.dot(mouseMoveVector, axisVector2d) / Cartesian2.dot(axisVector2d, axisVector2d);
+      Cartesian2.subtract(this.scratchOppositeArrowPosition2d_, this.scratchArrowPosition2d_, this.scratchAxisVector2d_);
+      Cartesian2.subtract(movement.endPosition, this.scratchArrowPosition2d_, this.scratchMouseMoveVector_);
+      const scalar2d =
+        Cartesian2.dot(this.scratchMouseMoveVector_, this.scratchAxisVector2d_) / Cartesian2.dot(this.scratchAxisVector2d_, this.scratchAxisVector2d_);
 
       // calculate distance in meters
-      const objectMoveVector2d = Cartesian2.multiplyByScalar(axisVector2d, scalar2d, new Cartesian2());
-      const newArrowPosition2d = Cartesian2.add(arrowPosition2d, objectMoveVector2d, new Cartesian2());
-      const distance = Cartesian2.distance(newArrowPosition2d, arrowPosition2d) * pixelSize;
+      Cartesian2.multiplyByScalar(this.scratchAxisVector2d_, scalar2d, this.scratchObjectMoveVector2d_);
+      Cartesian2.add(this.scratchArrowPosition2d_, this.scratchObjectMoveVector2d_, this.scratchNewArrowPosition2d_);
+      const distance = Cartesian2.distance(this.scratchNewArrowPosition2d_, this.scratchArrowPosition2d_) * pixelSize;
 
       // calculate Cartesian3 position of arrow
       const scalarDirection = (1 / scalar2d) * Math.abs(scalar2d);
       const scalar3d = distance / Cartesian3.distance(arrowPosition3d, oppositePosition3d) * scalarDirection;
-      const axisVector3d = Cartesian3.subtract(oppositePosition3d, arrowPosition3d, new Cartesian3());
-      const objectMoveVector3d = Cartesian3.multiplyByScalar(axisVector3d, scalar3d, new Cartesian3());
+      Cartesian3.subtract(oppositePosition3d, arrowPosition3d, this.scratchAxisVector3d_);
+
+      const objectMoveVector3d = Cartesian3.multiplyByScalar(this.scratchAxisVector3d_, scalar3d, new Cartesian3());
       const newArrowPosition3d = Cartesian3.add(arrowPosition3d, objectMoveVector3d, new Cartesian3());
 
       // directly update arrow position if position callback not provided
@@ -135,14 +162,7 @@ export default class SlicerArrows {
 
   createMoveArrows() {
     const arrowEntityTemplate = {
-      model: {
-        minimumPixelSize: 64,
-        scale: 3000,
-        maximumScale: 10000,
-        shadowMode: ShadowMode.DISABLED,
-        colorBlendMode: ColorBlendMode.MIX,
-        color: SLICING_GEOMETRY_COLOR
-      },
+      model: this.arrowConfiguration,
       properties: {}
     };
     this.arrows = {};
@@ -170,7 +190,7 @@ export default class SlicerArrows {
     const isModelPicked = pickedObject && pickedObject.id && pickedObject.id.model;
     if (isModelPicked && pickedObject.id.properties && pickedObject.id.properties.side) {
       this.highlightedArrow = pickedObject.id;
-      document.querySelector('.cesium-widget').style.cursor = 'pointer';
+      this.viewer.canvas.style.cursor = 'pointer';
       this.highlightedArrow.model.color = Color.YELLOW;
     } else {
       this.unhighlightArrow();
@@ -181,7 +201,7 @@ export default class SlicerArrows {
     if (this.highlightedArrow) {
       this.highlightedArrow.model.color = SLICING_GEOMETRY_COLOR;
       this.highlightedArrow = undefined;
-      document.querySelector('.cesium-widget').style.cursor = '';
+      this.viewer.canvas.style.cursor = '';
     }
   }
 }

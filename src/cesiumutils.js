@@ -251,20 +251,27 @@ export function extendKmlWithProperties(kml, entities) {
   return kml;
 }
 
+
+const scratchVector1 = new Cartesian3();
+const scratchVector2 = new Cartesian3();
+const scratchProjectionVector = new Cartesian3();
 /**
  * Calculates point projection on vector from provided points
  * @param vectorPoint1
  * @param vectorPoint2
  * @param pointToProject
+ * @param result
  * @return {Cartesian3}
  */
-export function projectPointOntoVector(vectorPoint1, vectorPoint2, pointToProject) {
-  const vect1 = Cartesian3.subtract(vectorPoint2, vectorPoint1, new Cartesian3());
-  const vect2 = Cartesian3.subtract(pointToProject, vectorPoint1, new Cartesian3());
-  const projectionVector = Cartesian3.projectVector(vect2, vect1, new Cartesian3());
-  return Cartesian3.add(vectorPoint1, projectionVector, new Cartesian3());
+export function projectPointOntoVector(vectorPoint1, vectorPoint2, pointToProject, result = new Cartesian3()) {
+  Cartesian3.subtract(vectorPoint2, vectorPoint1, scratchVector1);
+  Cartesian3.subtract(pointToProject, vectorPoint1, scratchVector2);
+  Cartesian3.projectVector(scratchVector2, scratchVector1, scratchProjectionVector);
+  return Cartesian3.add(vectorPoint1, scratchProjectionVector, result);
 }
 
+const minDifferenceScratch = new Cartesian3();
+const maxDifferenceScratch = new Cartesian3();
 /**
  * Wrapper for Cartesian3.lerp. Computes position on segment.
  * @param position
@@ -275,10 +282,10 @@ export function projectPointOntoVector(vectorPoint1, vectorPoint2, pointToProjec
  */
 export function clampPosition(position, minPosition, maxPosition, start, end) {
   let distanceScalar = start;
-  const minDifference = Cartesian3.subtract(minPosition, position, new Cartesian3());
+  const minDifference = Cartesian3.subtract(minPosition, position, minDifferenceScratch);
   const min = minDifference.x + minDifference.y + minDifference.z;
   if (min > 0) {
-    const maxDifference = Cartesian3.subtract(maxPosition, position, new Cartesian3());
+    const maxDifference = Cartesian3.subtract(maxPosition, position, maxDifferenceScratch);
     const max = maxDifference.x + maxDifference.y + maxDifference.z;
     if (max < 0) {
       const maxDistance = Cartesian3.distance(minPosition, maxPosition);
@@ -307,6 +314,7 @@ export function projectPointOnSegment(point, startPoint, endPoint, start, end, h
   return updateHeightForCartesianPositions([position], height)[0];
 }
 
+const axisScratch = new Cartesian3();
 /**
  * Returns 1 if 'to' point on left-bottom side of 'from' point or -1 if vice-versa
  * @param {Cartesian3} from
@@ -314,13 +322,16 @@ export function projectPointOnSegment(point, startPoint, endPoint, start, end, h
  * @return {number}
  */
 export function getDirectionFromPoints(from, to) {
-  const axisVect = Cartesian3.subtract(from, to, new Cartesian3());
+  const axisVect = Cartesian3.subtract(from, to, axisScratch);
   const direction = axisVect.x + axisVect.y + axisVect.y;
   return Math.round((1 / direction) * Math.abs(direction));
 }
 
+const westPointScratch = new Cartesian3();
+const eastPointScratch = new Cartesian3();
 /**
- * Returns vector orthogonal to view direction
+ * Returns vector orthogonal to view vector (vector from camera position to position on map)
+ * https://user-images.githubusercontent.com/51954170/108503213-abff8580-72bc-11eb-8b75-3385b5fd171e.png
  * @param viewer
  * @return {Cartesian3}
  */
@@ -334,26 +345,25 @@ export function getVectorOrthogonalToView(viewer) {
   const northeast = Cartographic.toCartesian(Rectangle.northeast(viewRect));
   const southeast = Cartographic.toCartesian(Rectangle.southeast(viewRect));
 
-  const p1 = Cartesian3.midpoint(northwest, southwest, new Cartesian3());
-  const p2 = Cartesian3.midpoint(northeast, southeast, new Cartesian3());
-  const viewVect = Cartesian3.subtract(p2, p1, new Cartesian3());
+  Cartesian3.midpoint(northwest, southwest, westPointScratch);
+  Cartesian3.midpoint(northeast, southeast, eastPointScratch);
+  const viewVect = Cartesian3.subtract(eastPointScratch, westPointScratch, new Cartesian3());
   return Matrix3.multiplyByVector(rotation, viewVect, viewVect);
 }
 
 /**
  * Returns left,right points of view rectangle
  * @param viewer
- * @return {{left: Cartesian3, right: Cartesian3}}
+ * @return {Array<Cartesian3>}
  */
 export function getOrthogonalViewPoints(viewer) {
   const center = pickCenter(viewer.scene);
-  let left = new Cartesian3();
-  let right = new Cartesian3();
+  const left = new Cartesian3();
+  const right = new Cartesian3();
   const orthogonalVector = getVectorOrthogonalToView(viewer);
 
   Cartesian3.divideByScalar(orthogonalVector, 2, orthogonalVector);
   Cartesian3.subtract(center, orthogonalVector, left);
   Cartesian3.add(center, orthogonalVector, right);
-  [left, right] = updateHeightForCartesianPositions([left, right], 0);
-  return {left, right};
+  return updateHeightForCartesianPositions([left, right], 0);
 }
