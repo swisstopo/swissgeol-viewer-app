@@ -2,6 +2,8 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import Color from 'cesium/Source/Core/Color';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CMath from 'cesium/Source/Core/Math';
+import ShadowMode from 'cesium/Source/Scene/ShadowMode';
+import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
 
 export {LAYER_TYPES, DEFAULT_LAYER_TRANSPARENCY} from './layertree.js';
 
@@ -62,14 +64,26 @@ export const AOI_POINT_COLORS = [
 
 export const AOI_POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
 
-export const SLICE_ARROW_ICONS = [
-  {type: 'vertical', uri: './images/arrowV.glb'},
-  {type: 'vertical-northeast', uri: './images/arrowV.glb'},
-  {type: 'horizontal', uri: './images/arrowH.glb'},
-  {type: 'horizontal-northeast', uri: './images/arrowH.glb'},
-  {type: 'altitude-down', uri: './images/arrowA.glb'},
-  {type: 'altitude-up', uri: './images/arrowA.glb'}
+export const SLICE_BOX_ARROWS = [
+  {side: 'left', oppositeSide: 'right', uri: './images/arrowV.glb'},
+  {side: 'right', oppositeSide: 'left', uri: './images/arrowV.glb'},
+  {side: 'back', oppositeSide: 'front', uri: './images/arrowH.glb'},
+  {side: 'front', oppositeSide: 'back', uri: './images/arrowH.glb'},
+  {side: 'down', oppositeSide: 'up', uri: './images/arrowA.glb'},
+  {side: 'up', oppositeSide: 'down', uri: './images/arrowA.glb'}
 ];
+
+export const SLICING_BOX_HEIGHT = 15000;
+export const SLICING_BOX_MIN_SIZE = 10000;
+export const SLICING_GEOMETRY_COLOR = Color.WHITE;
+export const DEFAULT_CONFIG_FOR_SLICING_ARROW = {
+  minimumPixelSize: 64,
+  scale: 3000,
+  maximumScale: 10000,
+  shadows: ShadowMode.DISABLED,
+  colorBlendMode: ColorBlendMode.MIX,
+  color: SLICING_GEOMETRY_COLOR
+};
 
 // export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/'; todo change when CORS will be enabled
 export const SWISSFORAGES_VIEWER_URL = 'https://swisstopo.supsi.ch/bdms/';

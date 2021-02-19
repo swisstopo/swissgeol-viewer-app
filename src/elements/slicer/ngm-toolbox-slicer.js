@@ -54,6 +54,7 @@ class NgmToolboxSlicer extends LitElementI18n {
     if (this.slicer.active) this.slicer.active = false;
     if (value) {
       this.slicer.sliceOptions = {
+        type: 'line',
         slicePoints: [this.positions[0], this.positions[this.positions.length - 1]],
         negate: this.sliceSide === 'left',
         deactivationCallback: () => this.onDeactivation()

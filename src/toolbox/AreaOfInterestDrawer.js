@@ -1050,7 +1050,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   updateVolumePositions(entity, positions) {
     const volumeHeightLimits = entity.properties.volumeHeightLimits.getValue();
-    entity.polylineVolume.positions = updateHeightForCartesianPositions(this.viewer.scene, positions, volumeHeightLimits.lowerLimit);
+    entity.polylineVolume.positions = updateHeightForCartesianPositions(positions, volumeHeightLimits.lowerLimit, this.viewer.scene);
     entity.polylineVolume.shape = [
       new Cartesian2(0, 0),
       new Cartesian2(0, 0),

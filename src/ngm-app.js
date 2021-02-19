@@ -27,7 +27,7 @@ import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 
 import {LocalStorageController} from './LocalStorageController.js';
 import {getZoomToPosition} from './permalink';
-import Slicer from './Slicer.js';
+import Slicer from './slicer/Slicer.js';
 
 import {setupI18n} from './i18n.js';
 
