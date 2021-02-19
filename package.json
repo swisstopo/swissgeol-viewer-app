@@ -22,7 +22,7 @@
     "@sentry/browser": "6.2.0",
     "@webcomponents/webcomponentsjs": "^2.5.0",
     "cesium": "1.78.0",
-    "event-target-shim": "^5.0.1",
+    "event-target-shim": "^6.0.2",
     "fomantic-ui-css": "^2.8.7",
     "i18next": "19.8.8",
     "i18next-xhr-backend": "^3.2.2",
