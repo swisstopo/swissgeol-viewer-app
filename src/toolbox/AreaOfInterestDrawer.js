@@ -591,9 +591,9 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (file) {
       evt.target.value = null;
       if (file.name.toLowerCase().endsWith('.kml')) {
-        return this.uploadKml_(file);
+        return this.uploadKml(file);
       } else if (file.name.toLowerCase().endsWith('.gpx')) {
-        return this.uploadGpx_(file);
+        return this.uploadGpx(file);
       } else {
         showWarning(i18next.t('tbx_unsupported_file_warning'));
         return;
@@ -601,7 +601,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
   }
 
-  async uploadKml_(file) {
+  async uploadKml(file) {
     const kmlDataSource = await KmlDataSource.load(file, {
       camera: this.viewer.scene.camera,
       canvas: this.viewer.scene.canvas,
@@ -631,7 +631,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
   }
 
-  async uploadGpx_(file) {
+  async uploadGpx(file) {
     const gpxDataSource = await GpxDataSource.load(file, {
       clampToGround: true
     });
