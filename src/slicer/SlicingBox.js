@@ -69,10 +69,7 @@ export default class SlicingBox extends SlicingToolBase {
     this.viewer.scene.globe.clippingPlanes = createClippingPlanes(this.planes, modelMatrix);
 
     executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlanes(primitive));
-    if (!this.onTickRemove) {
-      const syncPlanes = this.movePlane.bind(this);
-      this.onTickRemove = this.viewer.scene.postRender.addEventListener(syncPlanes);
-    }
+    this.syncPlanes();
 
     this.viewer.scene.requestRender();
   }
@@ -83,10 +80,6 @@ export default class SlicingBox extends SlicingToolBase {
     this.topPlane = null;
     this.leftPlane = null;
     this.rightPlane = null;
-    if (this.onTickRemove) {
-      this.onTickRemove();
-      this.onTickRemove = null;
-    }
     this.slicerArrows.hide();
   }
 
@@ -94,6 +87,7 @@ export default class SlicingBox extends SlicingToolBase {
     if (!primitive.root || !primitive.boundingSphere) return;
     this.offsets[primitive.url] = getOffsetFromBbox(primitive, this.bbox);
     primitive.clippingPlanes = createClippingPlanes(this.planes);
+    this.syncPlanes();
   }
 
   updateBoxClippingPlanes(clippingPlanes, offset) {
@@ -158,6 +152,7 @@ export default class SlicingBox extends SlicingToolBase {
     }
     Cartesian3.divideByScalar(moveVector, 2, moveVector);
     Cartesian3.add(this.boxCenter, moveVector, this.boxCenter);
+    this.syncPlanes();
   }
 
   /**
@@ -195,7 +190,7 @@ export default class SlicingBox extends SlicingToolBase {
     }
   }
 
-  movePlane() {
+  syncPlanes() {
     this.updateBoxClippingPlanes(this.viewer.scene.globe.clippingPlanes);
     executeForAllPrimitives(this.viewer, (primitive) =>
       this.updateBoxClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.url]));
