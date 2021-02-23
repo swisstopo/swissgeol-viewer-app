@@ -12,7 +12,7 @@
     "test": "mocha --exit"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "^3.5.0",
+    "@aws-sdk/client-cognito-identity": "^3.6.1",
     "@aws-sdk/client-s3": "^3.6.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.5.0",
     "@aws-sdk/s3-request-presigner": "^3.6.0",
