@@ -1,3 +1,6 @@
+import CSVParser from 'papaparse';
+
+
 export async function readTextFile(url) {
   const response = await fetch(url);
   try {
@@ -105,22 +108,27 @@ export function containsXY(extent, x, y) {
  * @return {string}
  */
 export function filterCsvString(str, bbox4326) {
-  const lines = str.split('\n').filter((l, idx) => {
-    if (!l || !l.trim()) {
-      // some lines have no content :/
-      return false;
-    }
-    if (idx === 0) {
-      return true;
-    }
-    const columns = l.split(',');
-    const x4326 = +columns[3].trim();
-    const y4326 = +columns[4].trim();
-    const inside = containsXY(bbox4326, x4326, y4326);
-    return inside;
+  const csv = CSVParser.parse(str, {
+    header: true,
+    skipEmptyLines: 'greedy'
   });
-  const filteredString = lines.join('\n');
-  return filteredString;
+
+  // find the x and y keys
+  const x = csv.meta.fields.find(key => /\w*x4326/.test(key));
+  const y = csv.meta.fields.find(key => /\w*y4326/.test(key));
+
+  // filter lines
+  const lines = csv.data.filter(line => {
+    const x4326 = +line[x].trim();
+    const y4326 = +line[y].trim();
+    return containsXY(bbox4326, x4326, y4326);
+  });
+
+  // create filtered csv
+  return [
+    csv.meta.fields.join(csv.meta.delimiter),
+    ...lines.map(line => csv.meta.fields.map(key => line[key]).join(csv.meta.delimiter))
+  ].join(csv.meta.linebreak);
 }
 
 /**
