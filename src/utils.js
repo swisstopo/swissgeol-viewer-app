@@ -124,11 +124,13 @@ export function filterCsvString(str, bbox4326) {
     return containsXY(bbox4326, x4326, y4326);
   });
 
-  // create filtered csv
-  return [
-    csv.meta.fields.join(csv.meta.delimiter),
-    ...lines.map(line => csv.meta.fields.map(key => line[key]).join(csv.meta.delimiter))
-  ].join(csv.meta.linebreak);
+  return CSVParser.unparse({
+    fields: csv.meta.fields,
+    data: lines
+  }, {
+    delimiter: csv.meta.delimiter,
+    newline: csv.meta.linebreak
+  });
 }
 
 /**
