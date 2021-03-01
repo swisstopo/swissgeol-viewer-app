@@ -122,6 +122,7 @@ class NgmSwissforagesModal extends LitElementI18n {
                   <label>${i18next.t('tbx_swissforages_username_label')}</label>
                   <input
                     type="text"
+                    autocomplete="username"
                     placeholder="${i18next.t('tbx_swissforages_username_label')}"
                     @input="${evt => this.username = evt.target.value}">
                 </div>
@@ -129,6 +130,7 @@ class NgmSwissforagesModal extends LitElementI18n {
                   <label>${i18next.t('tbx_swissforages_password_label')}</label>
                   <input
                     type="password"
+                    autocomplete="current-password"
                     placeholder="${i18next.t('tbx_swissforages_password_label')}"
                     @input="${evt => this.password = evt.target.value}">
                 </div>
