@@ -26,8 +26,8 @@ export VERSION="THE_TAG_YOU_WANT_DEPLOYED"
 
 git checkout $VERSION
 # use gopass to export the S3 access key and secret
-export AWS_ACCESS_KEY_ID=$(gopass ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
-export AWS_SECRET_ACCESS_KEY=$(gopass ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
+export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
+export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
 
 scripts/deploy_to_prod.sh
 [ $? -eq 0 ] && echo OK || echo failed
