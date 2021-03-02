@@ -9,7 +9,8 @@ class NgmToolboxSlicer extends LitElementI18n {
   static get properties() {
     return {
       slicer: {type: Object},
-      positions: {type: Array}
+      positions: {type: Array},
+      type: {type: String}
     };
   }
 
@@ -53,12 +54,20 @@ class NgmToolboxSlicer extends LitElementI18n {
     this.sliceEnabled = false;
     if (this.slicer.active) this.slicer.active = false;
     if (value) {
-      this.slicer.sliceOptions = {
-        type: 'line',
-        slicePoints: [this.positions[0], this.positions[this.positions.length - 1]],
-        negate: this.sliceSide === 'left',
-        deactivationCallback: () => this.onDeactivation()
-      };
+      if (this.type === 'line') {
+        this.slicer.sliceOptions = {
+          type: 'line',
+          slicePoints: [this.positions[0], this.positions[this.positions.length - 1]],
+          negate: this.sliceSide === 'left',
+          deactivationCallback: () => this.onDeactivation()
+        };
+      } else {
+        this.slicer.sliceOptions = {
+          type: 'box',
+          slicePoints: this.positions,
+          deactivationCallback: () => this.onDeactivation()
+        };
+      }
       this.slicer.active = true;
       this.sliceEnabled = true;
     }
@@ -85,7 +94,7 @@ class NgmToolboxSlicer extends LitElementI18n {
                 <button class="ui button"
                         @click=${() => this.toggleSlicer(true)}>
                   ${i18next.t('tbx_slice_btn_label')}
-                  ${this.positions.length > 2 ? html`
+                  ${this.positions.length > 2 && this.type === 'line' ? html`
                     <i class="exclamation triangle icon ngm-slice-warn">` : ''}
                 </button>`}
             <button class="ui button ngm-slice-tools-btn"><i class="tools icon"></i></button>

@@ -7,7 +7,7 @@ import SlicingToolBase from './SlicingToolBase';
 
 /**
  * @typedef {object} SliceOptions
- * @property {'box'|'line'|'view-line'} type - slice type
+ * @property {'view-box'|'line'|'view-line'} type - slice type
  * @property [{Cartesian3[]} slicePoints - points for line slicing. Required with 'line' type]
  * @property [{boolean} negate - slice direction for line slicing]
  * @property [{function} deactivationCallback - calls on slicing deactivation]
@@ -77,7 +77,7 @@ export default class Slicer {
 
   getSlicingTool() {
     switch (this.sliceOptions.type) {
-      case 'box':
+      case 'view-box':
         return this.slicingBox;
       case 'view-line':
       case 'line':

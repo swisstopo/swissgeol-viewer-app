@@ -260,9 +260,13 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                 this.requestUpdate();
               })}>
             </ngm-swissforages-interaction>
-            ${i.type === 'line' ?
+            ${i.type === 'line' || i.type === 'rectangle' ?
               html`
-                <ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>`
+                <ngm-toolbox-slicer
+                  .slicer=${this.slicer}
+                  .positions=${i.positions}
+                  .type=${i.type}
+                ></ngm-toolbox-slicer>`
               : ''}
             ${i.type === 'rectangle' ?
               html`
