@@ -78,6 +78,7 @@ export default class Slicer {
   getSlicingTool() {
     switch (this.sliceOptions.type) {
       case 'view-box':
+      case 'box':
         return this.slicingBox;
       case 'view-line':
       case 'line':

@@ -2,19 +2,28 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {executeForAllPrimitives} from '../utils';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
-import {applyOffsetToPlane, createClippingPlanes, getBboxFromViewRatio, getOffsetFromBbox} from './helper';
-import {Plane} from 'cesium';
+import {
+  applyOffsetToPlane,
+  createClippingPlanes, getBboxFromRectangle,
+  getBboxFromViewRatio,
+  getClippingPlaneFromSegment,
+  getOffsetFromBbox
+} from './helper';
+import {Plane, Rectangle} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {SLICE_BOX_ARROWS, SLICING_BOX_MIN_SIZE, SLICING_GEOMETRY_COLOR} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {
-  pickCenterOnEllipsoid, projectPointOnSegment
+  pickCenterOnEllipsoid, planeFromTwoPoints, projectPointOnSegment
 } from '../cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
+import Entity from 'cesium/Source/DataSources/Entity';
+import Color from 'cesium/Source/Core/Color';
 
 export default class SlicingBox extends SlicingToolBase {
   constructor(viewer, dataSource) {
     super(viewer, dataSource);
+    this.options = null;
     this.offsets = {};
     this.backPlane = null;
     this.frontPlane = null;
@@ -25,9 +34,20 @@ export default class SlicingBox extends SlicingToolBase {
     this.julianDate = new JulianDate();
   }
 
-  activate() {
-    this.bbox = getBboxFromViewRatio(this.viewer, 1 / 3);
+  activate(options) {
+    this.options = options;
+    if (this.options.slicePoints && this.options.slicePoints.length) {
+      this.bbox = getBboxFromRectangle(this.viewer, this.options.slicePoints);
+    } else {
+      this.bbox = getBboxFromViewRatio(this.viewer, 1 / 3);
+    }
     this.boxCenter = this.bbox.center;
+    this.planesPositions = [
+      [this.bbox.corners.bottomLeft, this.bbox.corners.bottomRight],
+      [this.bbox.corners.topRight, this.bbox.corners.topLeft],
+      [this.bbox.corners.bottomRight, this.bbox.corners.topRight],
+      [this.bbox.corners.topLeft, this.bbox.corners.bottomLeft],
+    ];
 
     this.backPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.UNIT_Y);
     this.frontPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.negate(Cartesian3.UNIT_Y, new Cartesian3()));
@@ -42,7 +62,7 @@ export default class SlicingBox extends SlicingToolBase {
     this.downPlane.distance = this.upPlane.distance = this.bbox.height / 2;
 
     this.planes = [
-      this.backPlane, this.leftPlane, this.frontPlane, this.rightPlane,
+      /*this.bottomPlane, this.leftPlane, this.topPlane, this.rightPlane,*/
       this.downPlane, this.upPlane
     ];
 
@@ -75,6 +95,7 @@ export default class SlicingBox extends SlicingToolBase {
   }
 
   deactivate() {
+    this.options = null;
     this.offsets = {};
     this.backPlane = null;
     this.frontPlane = null;
@@ -93,6 +114,22 @@ export default class SlicingBox extends SlicingToolBase {
   updateBoxClippingPlanes(clippingPlanes, offset) {
     if (!clippingPlanes) return;
     clippingPlanes.removeAll();
+    this.planes.forEach(plane => {
+      plane = offset ? applyOffsetToPlane(plane, offset) : plane;
+      clippingPlanes.add(plane);
+    });
+  }
+
+  updateBoxTileClippingPlanes(clippingPlanes, offset, center) {
+    if (!clippingPlanes) return;
+    clippingPlanes.removeAll();
+    this.planesPositions.forEach(positions => {
+      const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
+      const plane = planeFromTwoPoints(positions[0], positions[1], false);
+      const p = getClippingPlaneFromSegment(positions[0], positions[1], center, mapRect, plane.normal);
+      clippingPlanes.add(p);
+      // this.planes.push(p);
+    });
     this.planes.forEach(plane => {
       plane = offset ? applyOffsetToPlane(plane, offset) : plane;
       clippingPlanes.add(plane);
@@ -192,7 +229,11 @@ export default class SlicingBox extends SlicingToolBase {
 
   syncPlanes() {
     this.updateBoxClippingPlanes(this.viewer.scene.globe.clippingPlanes);
-    executeForAllPrimitives(this.viewer, (primitive) =>
-      this.updateBoxClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.url]));
+    executeForAllPrimitives(this.viewer, (primitive) => {
+      if (primitive.root && primitive.boundingSphere) {
+        this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.url], primitive.boundingSphere.center);
+      }
+    });
+
   }
 }
