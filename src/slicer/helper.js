@@ -6,6 +6,7 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
+
 /**
  * @param primitive
  * @param bbox
@@ -171,6 +172,42 @@ export function getBboxFromViewRatio(viewer, ratio) {
     height: SLICING_BOX_HEIGHT,
     corners: {
       bottomRight, bottomLeft, topRight, topLeft,
+    },
+    cornersA: [bottomRight, bottomLeft, topRight, topLeft]
+  };
+}
+
+/**
+ * Returns bbox for box slicing from rectangle positions
+ * @param viewer
+ * @param {Cartesian3[]} positions
+ * @return {{center: Cartesian3, width: number, length: number, height: number}}
+ */
+export function getBboxFromRectangle(viewer, positions) {
+  const mapRect = viewer.scene.globe.cartographicLimitRectangle;
+  const mapCorners = [
+    {position: Rectangle.southeast(mapRect), key: 'bottomRight'},
+    {position: Rectangle.southwest(mapRect), key: 'bottomLeft'},
+    {position: Rectangle.northeast(mapRect), key: 'topRight'},
+    {position: Rectangle.northwest(mapRect), key: 'topLeft'}
+  ];
+  const sliceCorners = {};
+  mapCorners.forEach(corner => {
+    const cartesianPosition = Cartographic.toCartesian(corner.position);
+    sliceCorners[corner.key] = positions.reduce((a, b) =>
+      Cartesian3.distance(a, cartesianPosition) < Cartesian3.distance(b, cartesianPosition) ? a : b);
+  });
+
+  return {
+    center: Cartesian3.midpoint(sliceCorners.topLeft, sliceCorners.bottomRight, new Cartesian3()),
+    width: Cartesian3.distance(sliceCorners.topLeft, sliceCorners.bottomLeft),
+    length: Cartesian3.distance(sliceCorners.bottomRight, sliceCorners.bottomLeft),
+    height: SLICING_BOX_HEIGHT,
+    corners: {
+      bottomRight: sliceCorners.bottomRight,
+      bottomLeft: sliceCorners.bottomLeft,
+      topRight: sliceCorners.topRight,
+      topLeft: sliceCorners.topLeft,
     }
   };
 }
