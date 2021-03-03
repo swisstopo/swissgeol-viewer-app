@@ -10,6 +10,8 @@ class NgmToolboxSlicer extends LitElementI18n {
     return {
       slicer: {type: Object},
       positions: {type: Array},
+      lowerLimit: {type: Number},
+      height: {type: Number},
       type: {type: String}
     };
   }
@@ -65,6 +67,8 @@ class NgmToolboxSlicer extends LitElementI18n {
         this.slicer.sliceOptions = {
           type: 'box',
           slicePoints: this.positions,
+          lowerLimit: this.lowerLimit,
+          height: this.height,
           deactivationCallback: () => this.onDeactivation()
         };
       }

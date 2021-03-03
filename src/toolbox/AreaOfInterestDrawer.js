@@ -265,6 +265,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                 <ngm-toolbox-slicer
                   .slicer=${this.slicer}
                   .positions=${i.positions}
+                  .lowerLimit=${i.volumeHeightLimits ? i.volumeHeightLimits.lowerLimit : undefined}
+                  .height=${i.volumeHeightLimits ? i.volumeHeightLimits.height : undefined}
                   .type=${i.type}
                 ></ngm-toolbox-slicer>`
               : ''}

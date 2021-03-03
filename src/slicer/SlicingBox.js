@@ -9,16 +9,19 @@ import {
   getClippingPlaneFromSegment,
   getOffsetFromBbox
 } from './helper';
-import {Plane, Rectangle} from 'cesium';
+import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
-import {SLICE_BOX_ARROWS, SLICING_BOX_MIN_SIZE, SLICING_GEOMETRY_COLOR} from '../constants';
+import {
+  DEFAULT_CONFIG_FOR_SLICING_ARROW,
+  SLICE_BOX_ARROWS,
+  SLICING_BOX_MIN_SIZE,
+  SLICING_GEOMETRY_COLOR
+} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {
   pickCenterOnEllipsoid, planeFromTwoPoints, projectPointOnSegment
 } from '../cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
-import Entity from 'cesium/Source/DataSources/Entity';
-import Color from 'cesium/Source/Core/Color';
 
 export default class SlicingBox extends SlicingToolBase {
   constructor(viewer, dataSource) {
@@ -37,7 +40,7 @@ export default class SlicingBox extends SlicingToolBase {
   activate(options) {
     this.options = options;
     if (this.options.slicePoints && this.options.slicePoints.length) {
-      this.bbox = getBboxFromRectangle(this.viewer, this.options.slicePoints);
+      this.bbox = getBboxFromRectangle(this.viewer, this.options.slicePoints, this.options.lowerLimit, this.options.height);
     } else {
       this.bbox = getBboxFromViewRatio(this.viewer, 1 / 3);
     }
@@ -71,12 +74,14 @@ export default class SlicingBox extends SlicingToolBase {
       {
         moveCallback: (side, moveAmount, moveVector) => this.onPlaneMove(side, moveAmount, moveVector),
         positionUpdateCallback: (side) => this.arrowPositionCallback(side),
-        arrowsList: SLICE_BOX_ARROWS
+        arrowsList: SLICE_BOX_ARROWS,
+        arrowConfiguration: {...DEFAULT_CONFIG_FOR_SLICING_ARROW, orientation: this.bbox.orientation}
       });
-    this.slicerArrows.show(this.bbox);
+    this.slicerArrows.show();
 
     this.slicingBoxEntity = this.dataSource.entities.add({
       position: new CallbackProperty(() => this.boxCenter, false),
+      orientation: this.bbox.orientation,
       box: {
         dimensions: new CallbackProperty(() => new Cartesian3(this.bbox.length, this.bbox.width, this.bbox.height), false),
         material: SLICING_GEOMETRY_COLOR.withAlpha(0.1),

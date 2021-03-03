@@ -27,6 +27,7 @@ import {getDirectionFromPoints} from '../cesiumutils';
  * @property {shadows} [shadowMode - specifying whether the model casts or receives shadows from light sources]
  * @property {ColorBlendMode} [colorBlendMode - specifying how the color blends with the model]
  * @property {Color} [color - specifying the Color that blends with the model's rendered color.]
+ * @property {Quaternion} [orientation - entity orientation.]
  */
 
 /**
@@ -162,6 +163,7 @@ export default class SlicerArrows {
 
   createMoveArrows() {
     const arrowEntityTemplate = {
+      orientation: this.arrowConfiguration.orientation,
       model: this.arrowConfiguration,
       properties: {}
     };

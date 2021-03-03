@@ -7,9 +7,11 @@ import SlicingToolBase from './SlicingToolBase';
 
 /**
  * @typedef {object} SliceOptions
- * @property {'view-box'|'line'|'view-line'} type - slice type
+ * @property {'box'|'view-box'|'line'|'view-line'} type - slice type
  * @property [{Cartesian3[]} slicePoints - points for line slicing. Required with 'line' type]
  * @property [{boolean} negate - slice direction for line slicing]
+ * @property [{number} lowerLimit - lower limit for box slicing]
+ * @property [{number} height - box height for box slicing]
  * @property [{function} deactivationCallback - calls on slicing deactivation]
  */
 

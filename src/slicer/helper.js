@@ -1,11 +1,17 @@
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import {getDirectionFromPoints, pickCenter, projectPointOntoVector} from '../cesiumutils';
+import {
+  getDirectionFromPoints,
+  pickCenter,
+  projectPointOntoVector,
+  updateHeightForCartesianPositions
+} from '../cesiumutils';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
+import {HeadingPitchRoll, Transforms} from 'cesium';
 
 /**
  * @param primitive
@@ -181,9 +187,17 @@ export function getBboxFromViewRatio(viewer, ratio) {
  * Returns bbox for box slicing from rectangle positions
  * @param viewer
  * @param {Cartesian3[]} positions
+ * @param {Number} [lowerLimit]
+ * @param {Number} [height]
  * @return {{center: Cartesian3, width: number, length: number, height: number}}
  */
-export function getBboxFromRectangle(viewer, positions) {
+export function getBboxFromRectangle(viewer, positions, lowerLimit, height) {
+  const boxHeight = height || SLICING_BOX_HEIGHT;
+  let centerHeight = 0;
+  if (lowerLimit !== null && lowerLimit !== undefined) {
+    centerHeight = lowerLimit + (boxHeight / 2);
+  }
+
   const mapRect = viewer.scene.globe.cartographicLimitRectangle;
   const mapCorners = [
     {position: Rectangle.southeast(mapRect), key: 'bottomRight'},
@@ -193,21 +207,30 @@ export function getBboxFromRectangle(viewer, positions) {
   ];
   const sliceCorners = {};
   mapCorners.forEach(corner => {
-    const cartesianPosition = Cartographic.toCartesian(corner.position);
+    const cartesianPosition = Cartographic.toCartesian(corner.position); // todo scratch
     sliceCorners[corner.key] = positions.reduce((a, b) =>
       Cartesian3.distance(a, cartesianPosition) < Cartesian3.distance(b, cartesianPosition) ? a : b);
   });
+  const center = Cartesian3.midpoint(sliceCorners.topLeft, sliceCorners.bottomRight, new Cartesian3());
+
+  const rect = Rectangle.fromCartesianArray(positions);
+  const northwest = Cartographic.toCartesian(Rectangle.northwest(rect));
+  const northeast = Cartographic.toCartesian(Rectangle.northeast(rect));
+  const vect = Cartesian3.subtract(northwest, northeast, new Cartesian3());
+  const vect2 = Cartesian3.subtract(sliceCorners.topLeft, sliceCorners.topRight, new Cartesian3());
+  const angle = -Cartesian3.angleBetween(vect, vect2);
 
   return {
-    center: Cartesian3.midpoint(sliceCorners.topLeft, sliceCorners.bottomRight, new Cartesian3()),
+    center: updateHeightForCartesianPositions([center], centerHeight, viewer.scene)[0],
     width: Cartesian3.distance(sliceCorners.topLeft, sliceCorners.bottomLeft),
     length: Cartesian3.distance(sliceCorners.bottomRight, sliceCorners.bottomLeft),
-    height: SLICING_BOX_HEIGHT,
+    height: boxHeight,
     corners: {
       bottomRight: sliceCorners.bottomRight,
       bottomLeft: sliceCorners.bottomLeft,
       topRight: sliceCorners.topRight,
       topLeft: sliceCorners.topLeft,
-    }
+    },
+    orientation: Transforms.headingPitchRollQuaternion(center, new HeadingPitchRoll(angle, 0, 0))
   };
 }
