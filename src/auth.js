@@ -32,7 +32,7 @@ export default class Auth {
         }),
         identityPoolId: 'eu-west-1:8e7b48a6-9d3f-4a46-afa3-d05a78c46a90',
         logins: {
-          'cognito-idp.eu-west-1.amazonaws.com/eu-west-1_qWvXTsQXi': accessToken
+          'cognito-idp.eu-west-1.amazonaws.com/eu-west-1_1NcmOhPt4': accessToken
         }
       });
     }

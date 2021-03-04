@@ -256,7 +256,7 @@ class NgmApp extends LitElementI18n {
           <a id="ngm-help-btn" href="/manuals/manual_en.html" target="_blank">${i18next.t('header_help_link')}</a>
           <ngm-auth
             endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
-            clientId='6ceqlq7kf66bk30l5tao7ofgal'
+            clientId='6brvjsufv7fdubr12r9u0gajnj'
             @refresh=${(evt) => this.authenticated = evt.detail.authenticated}
           ></ngm-auth>
         </div>
