@@ -53,25 +53,11 @@ export default class SlicingBox extends SlicingToolBase {
       [this.bbox.corners.bottomRight, this.bbox.corners.topRight],
       [this.bbox.corners.topLeft, this.bbox.corners.bottomLeft],
     ];
-    const planes = this.planesPositions.map(positions => planeFromTwoPoints(positions[0], positions[1], false));
-    this.backPlane = planes[0];
-    this.frontPlane = planes[1];
-    this.rightPlane = planes[2];
-    this.leftPlane = planes[3];
-
-    // this.backPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.UNIT_Y);
-    // this.frontPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.negate(Cartesian3.UNIT_Y, new Cartesian3()));
-    // this.backPlane.distance = this.frontPlane.distance = this.bbox.width / 2;
-
-    // this.leftPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.UNIT_X);
-    // this.rightPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.negate(Cartesian3.UNIT_X, new Cartesian3()));
-    // this.leftPlane.distance = this.rightPlane.distance = this.bbox.length / 2;
+    this.updateSidePlanes();
 
     this.downPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.UNIT_Z);
     this.upPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.negate(Cartesian3.UNIT_Z, new Cartesian3()));
     this.downPlane.distance = this.upPlane.distance = this.bbox.height / 2;
-
-    this.sidePlanes = [this.backPlane, this.leftPlane, this.frontPlane, this.rightPlane];
     this.zPlanes = [this.downPlane, this.upPlane];
 
     this.slicerArrows = new SlicerArrows(this.viewer,
@@ -124,6 +110,7 @@ export default class SlicingBox extends SlicingToolBase {
   updateBoxGlobeClippingPlanes(clippingPlanes) {
     if (!clippingPlanes) return;
     clippingPlanes.removeAll();
+    this.updateSidePlanes();
     this.sidePlanes.forEach(plane => clippingPlanes.add(plane));
     this.zPlanes.forEach(plane => clippingPlanes.add(Plane.transform(plane, this.modelMatrix)));
   }
@@ -144,56 +131,39 @@ export default class SlicingBox extends SlicingToolBase {
   }
 
   onPlaneMove(side, moveAmount, moveVector) {
-    const validateBoxSize = (condition, value) => {
-      condition ? value += moveAmount : value -= moveAmount;
-      return value < SLICING_BOX_MIN_SIZE ? undefined : value;
-    };
     switch (side) {
       case 'left': {
-        const length = validateBoxSize(true, this.bbox.length);
-        if (!length) return;
-        this.bbox.length = length;
-        this.leftPlane.distance += moveAmount;
         Cartesian3.add(this.bbox.corners.bottomLeft, moveVector, this.bbox.corners.bottomLeft);
         Cartesian3.add(this.bbox.corners.topLeft, moveVector, this.bbox.corners.topLeft);
         break;
       }
       case 'right': {
-        const length = validateBoxSize(false, this.bbox.length);
-        if (!length) return;
-        this.bbox.length = length;
-        this.rightPlane.distance -= moveAmount;
         Cartesian3.add(this.bbox.corners.bottomRight, moveVector, this.bbox.corners.bottomRight);
         Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
         break;
       }
       case 'front': {
-        const width = validateBoxSize(true, this.bbox.width);
-        if (!width) return;
-        this.bbox.width = width;
-        this.frontPlane.distance += moveAmount;
         Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
         Cartesian3.add(this.bbox.corners.topLeft, moveVector, this.bbox.corners.topLeft);
         break;
       }
       case 'back': {
-        const width = validateBoxSize(false, this.bbox.width);
-        if (!width) return;
-        this.bbox.width = width;
-        this.backPlane.distance -= moveAmount;
         Cartesian3.add(this.bbox.corners.bottomRight, moveVector, this.bbox.corners.bottomRight);
         Cartesian3.add(this.bbox.corners.bottomLeft, moveVector, this.bbox.corners.bottomLeft);
         break;
       }
       case 'up':
       case 'down': {
-        const height = validateBoxSize(side === 'down', this.bbox.height);
+        side === 'down' ? this.bbox.height += moveAmount : this.bbox.height -= moveAmount;
+        const height = this.bbox.height < SLICING_BOX_MIN_SIZE ? undefined : this.bbox.height;
         if (!height) return;
         this.bbox.height = height;
         side === 'down' ? this.downPlane.distance += moveAmount : this.upPlane.distance -= moveAmount;
         break;
       }
     }
+    this.bbox.width = Cartesian3.distance(this.bbox.corners.topLeft, this.bbox.corners.bottomLeft);
+    this.bbox.length = Cartesian3.distance(this.bbox.corners.bottomRight, this.bbox.corners.bottomLeft);
     Cartesian3.divideByScalar(moveVector, 2, moveVector);
     Cartesian3.add(this.boxCenter, moveVector, this.boxCenter);
     this.syncPlanes();
@@ -241,6 +211,13 @@ export default class SlicingBox extends SlicingToolBase {
         this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.url], primitive.boundingSphere.center);
       }
     });
+  }
 
+  updateSidePlanes() {
+    this.backPlane = planeFromTwoPoints(this.bbox.corners.bottomLeft, this.bbox.corners.bottomRight, false);
+    this.frontPlane = planeFromTwoPoints(this.bbox.corners.topRight, this.bbox.corners.topLeft, false);
+    this.rightPlane = planeFromTwoPoints(this.bbox.corners.bottomRight, this.bbox.corners.topRight, false);
+    this.leftPlane = planeFromTwoPoints(this.bbox.corners.topLeft, this.bbox.corners.bottomLeft, false);
+    this.sidePlanes = [this.backPlane, this.leftPlane, this.frontPlane, this.rightPlane];
   }
 }

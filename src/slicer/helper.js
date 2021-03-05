@@ -11,7 +11,7 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
-import {HeadingPitchRoll, Transforms} from 'cesium';
+import {HeadingPitchRoll, Math as CesiumMath, Transforms} from 'cesium';
 
 /**
  * @param primitive
@@ -197,28 +197,34 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit, height) {
   if (lowerLimit !== null && lowerLimit !== undefined) {
     centerHeight = lowerLimit + (boxHeight / 2);
   }
+  const cartographicPosition = positions.map(p => Cartographic.fromCartesian(p));
 
-  const mapRect = viewer.scene.globe.cartographicLimitRectangle;
-  const mapCorners = [
-    {position: Rectangle.southeast(mapRect), key: 'bottomRight'},
-    {position: Rectangle.southwest(mapRect), key: 'bottomLeft'},
-    {position: Rectangle.northeast(mapRect), key: 'topRight'},
-    {position: Rectangle.northwest(mapRect), key: 'topLeft'}
-  ];
-  const sliceCorners = {};
-  mapCorners.forEach(corner => {
-    const cartesianPosition = Cartographic.toCartesian(corner.position); // todo scratch
-    sliceCorners[corner.key] = positions.reduce((a, b) =>
-      Cartesian3.distance(a, cartesianPosition) < Cartesian3.distance(b, cartesianPosition) ? a : b);
-  });
+  const leftPositions = [cartographicPosition.reduce((a, b) => a.longitude < b.longitude ? a : b)];
+  cartographicPosition.splice(cartographicPosition.indexOf(leftPositions[0]), 1);
+  leftPositions.push(cartographicPosition.reduce((a, b) => a.longitude < b.longitude ? a : b));
+  cartographicPosition.splice(cartographicPosition.indexOf(leftPositions[1]), 1);
+  const rightPosition = cartographicPosition;
+  const sliceCorners = {
+    topLeft: leftPositions[0].latitude > leftPositions[1].latitude ? leftPositions[0] : leftPositions[1],
+    bottomLeft: leftPositions[0].latitude < leftPositions[1].latitude ? leftPositions[0] : leftPositions[1],
+    topRight: rightPosition[0].latitude > rightPosition[1].latitude ? rightPosition[0] : rightPosition[1],
+    bottomRight: rightPosition[0].latitude < rightPosition[1].latitude ? rightPosition[0] : rightPosition[1]
+  };
+  for (const key in sliceCorners) {
+    sliceCorners[key] = Cartographic.toCartesian(sliceCorners[key]); // todo scratch
+  }
+
   const center = Cartesian3.midpoint(sliceCorners.topLeft, sliceCorners.bottomRight, new Cartesian3());
 
-  const rect = Rectangle.fromCartesianArray(positions);
-  const northwest = Cartographic.toCartesian(Rectangle.northwest(rect));
-  const northeast = Cartographic.toCartesian(Rectangle.northeast(rect));
-  const vect = Cartesian3.subtract(northwest, northeast, new Cartesian3());
-  const vect2 = Cartesian3.subtract(sliceCorners.topLeft, sliceCorners.topRight, new Cartesian3());
-  const angle = -Cartesian3.angleBetween(vect, vect2);
+  const mapRect = viewer.scene.globe.cartographicLimitRectangle;
+  const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect));
+  const mapNortheast = Cartographic.toCartesian(Rectangle.northeast(mapRect));
+  const topVector = Cartesian3.subtract(mapNorthwest, mapNortheast, new Cartesian3());
+
+  const startXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, sliceCorners.topLeft);
+  const endXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, sliceCorners.bottomLeft);
+  const lineVector = Cartesian3.subtract(sliceCorners.topLeft, sliceCorners.topRight, new Cartesian3());
+  const angle = Cartesian3.angleBetween(topVector, lineVector) * getDirectionFromPoints(startXAxis, endXAxis);
 
   return {
     center: updateHeightForCartesianPositions([center], centerHeight, viewer.scene)[0],
