@@ -110,7 +110,6 @@ export default class SlicingBox extends SlicingToolBase {
   updateBoxGlobeClippingPlanes(clippingPlanes) {
     if (!clippingPlanes) return;
     clippingPlanes.removeAll();
-    this.updateSidePlanes();
     this.sidePlanes.forEach(plane => clippingPlanes.add(plane));
     this.zPlanes.forEach(plane => clippingPlanes.add(Plane.transform(plane, this.modelMatrix)));
   }
@@ -205,6 +204,7 @@ export default class SlicingBox extends SlicingToolBase {
   }
 
   syncPlanes() {
+    this.updateSidePlanes();
     this.updateBoxGlobeClippingPlanes(this.viewer.scene.globe.clippingPlanes);
     executeForAllPrimitives(this.viewer, (primitive) => {
       if (primitive.root && primitive.boundingSphere) {

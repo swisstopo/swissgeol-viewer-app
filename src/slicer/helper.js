@@ -11,7 +11,7 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
-import {HeadingPitchRoll, Math as CesiumMath, Transforms} from 'cesium';
+import {HeadingPitchRoll, Transforms} from 'cesium';
 
 /**
  * @param primitive
@@ -82,6 +82,7 @@ export function getClippingPlaneFromSegment(start, end, tileCenter, mapRect, map
   const startXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, start);
   const endXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, end);
   // calculates the angle between map side and line (+ map offset for higher precision) and apply to the plane
+  console.log(getDirectionFromPoints(startXAxis, endXAxis) < 0);
   if (getDirectionFromPoints(startXAxis, endXAxis) < 0) {
     lineVector = Cartesian3.subtract(start, end, new Cartesian3());
     const angle = Cartesian3.angleBetween(lineVector, leftVector) + angleOffset;
