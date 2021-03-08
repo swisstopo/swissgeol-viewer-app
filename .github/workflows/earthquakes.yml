@@ -1,11 +1,14 @@
 name: Earthquake-Fetcher
 
-# Run this workflow every night
 on:
+  # Run this workflow every night
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '0 10 * * *'
-
+  # test action on development branch
+  push:
+    branches:
+      - GSNGM-438
 
 jobs:
   # Set the job key. The key is displayed as the job name
@@ -24,5 +27,7 @@ jobs:
       # Runs the Earthquake-Fetcher action
       - name: Run Earthquake-Fetcher
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID_DOWNLOAD}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_DOWNLOAD}}
         run: scripts/fetch_earthquakes.sh
