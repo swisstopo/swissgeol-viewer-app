@@ -134,7 +134,7 @@ const geo_base = {
           displayed: false,
           restricted: true,
           aws_s3_bucket: 'ngm-protected-prod',
-          aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
+          aws_s3_key: 'tiles/bh_private_20201117_00/tileset.json',
         },
       ]
     },
