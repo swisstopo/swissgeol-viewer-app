@@ -18,14 +18,18 @@ export function parseEarthquakeData(data) {
 
 
 /**
- * Returns color for earthquake sphere according to magnitude.
- * From light blue (magnitude - 0.1 - rgb(0, 149, 251)) to dark blue (magnitude - 10 - rgb(0, 15, 112))
- * @param magnitude
+ * Returns color for earthquake sphere according to age.
+ * From dark blue (age < 24h - rgb(24, 48, 59)), to light blue (age < 90d - rgb(130, 165, 179))
+ * @param datetime
  * @returns {Color}
  */
-export function getColorForMagnitude(magnitude) {
-  const colorR = 0;
-  const colorG = (15 * (10 - Number(magnitude)));
-  const colorB = (14 * (18 - Number(magnitude)));
-  return Color.fromBytes(colorR, colorG, colorB);
+export function getColorFromTime(datetime) {
+  const age_in_h = (Date.now() - Date.parse(datetime)) / 3600000;
+  if (age_in_h < 24) {
+    return Color.fromBytes(24, 48, 59);
+  } else if (age_in_h < 72) {
+    return Color.fromBytes(75, 103, 123);
+  } else {
+    return Color.fromBytes(130, 165, 179);
+  }
 }

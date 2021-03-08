@@ -1,8 +1,7 @@
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorForMagnitude} from './helpers.js';
-import {readTextFile} from '../utils.js';
+import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime} from './helpers.js';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import CMath from 'cesium/Source/Core/Math';
 import {LAYER_TYPES} from '../constants.js';
@@ -28,32 +27,35 @@ export default class EarthquakeVisualizer {
   }
 
   async showEarthquakes() {
-    const earthquakeText = await readTextFile('./src/earthquakeVisualization/testData/earthquake.txt'); // temporary
-    const earthquakeData = parseEarthquakeData(earthquakeText);
-    earthquakeData.map(data => {
-      const size = Number(data.Magnitude) * EARTHQUAKE_SPHERE_SIZE_COEF;
-      const depthMeters = Number(data.Depthkm) * 1000; // convert km to m
-      const longitude = Number(data.Longitude);
-      const latitude = Number(data.Latitude);
-      const position = Cartesian3.fromDegrees(longitude, latitude, -depthMeters);
-      const cameraDistance = size * 4;
-      const zoomHeadingPitchRange = new HeadingPitchRange(0, CMath.toRadians(25), cameraDistance);
-      this.boundingRectangle.west = Math.min(CMath.toRadians(longitude), this.boundingRectangle.west);
-      this.boundingRectangle.south = Math.min(CMath.toRadians(latitude), this.boundingRectangle.south);
-      this.boundingRectangle.east = Math.max(CMath.toRadians(longitude), this.boundingRectangle.east);
-      this.boundingRectangle.north = Math.max(CMath.toRadians(latitude), this.boundingRectangle.north);
-      this.maximumHeight = Math.max(this.maximumHeight, depthMeters * 2);
-      return this.earthquakeDataSource.entities.add({
-        position: position,
-        ellipsoid: {
-          radii: new Cartesian3(size, size, size),
-          material: getColorForMagnitude(data.Magnitude),
-          heightReference: HeightReference.RELATIVE_TO_GROUND
-        },
-        properties: {
-          ...data,
-          zoomHeadingPitchRange
-        }
+    // add { mode: 'no-cors'} to make localhost work
+    fetch('https://download.swissgeol.ch/earthquakes/earthquakes.txt').then(response => {
+      response.text().then(text => {
+        parseEarthquakeData(text).map(data => {
+          const size = Number(data.Magnitude) * EARTHQUAKE_SPHERE_SIZE_COEF;
+          const depthMeters = Number(data.Depthkm) * 1000; // convert km to m
+          const longitude = Number(data.Longitude);
+          const latitude = Number(data.Latitude);
+          const position = Cartesian3.fromDegrees(longitude, latitude, -depthMeters);
+          const cameraDistance = size * 4;
+          const zoomHeadingPitchRange = new HeadingPitchRange(0, CMath.toRadians(25), cameraDistance);
+          this.boundingRectangle.west = Math.min(CMath.toRadians(longitude), this.boundingRectangle.west);
+          this.boundingRectangle.south = Math.min(CMath.toRadians(latitude), this.boundingRectangle.south);
+          this.boundingRectangle.east = Math.max(CMath.toRadians(longitude), this.boundingRectangle.east);
+          this.boundingRectangle.north = Math.max(CMath.toRadians(latitude), this.boundingRectangle.north);
+          this.maximumHeight = Math.max(this.maximumHeight, depthMeters * 2);
+          return this.earthquakeDataSource.entities.add({
+            position: position,
+            ellipsoid: {
+              radii: new Cartesian3(size, size, size),
+              material: getColorFromTime(data.Time),
+              heightReference: HeightReference.RELATIVE_TO_GROUND
+            },
+            properties: {
+              ...data,
+              zoomHeadingPitchRange
+            }
+          });
+        });
       });
     });
     this.boundingSphere = BoundingSphere.fromRectangle3D(this.boundingRectangle);
