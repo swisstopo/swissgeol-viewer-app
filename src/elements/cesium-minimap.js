@@ -48,7 +48,7 @@ class CesiumMinimap extends LitElement {
     this.unlistenPostRender = null;
     this.expanded = true;
     /**
-     * @type {import('cesium').Scene}
+     * @type {import('cesium/Source/Scene/Scene').default}
      */
     this.scene = null;
     /**
@@ -56,7 +56,7 @@ class CesiumMinimap extends LitElement {
      */
     this.extent = null;
     /**
-     * @type {import('cesium').Rectangle}
+     * @type {Rectangle}
      */
     this.mapRectangle = null;
     this.moveMarker = false;

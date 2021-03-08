@@ -42,7 +42,7 @@ export function escapeRegExp(string) {
 
 
 /**
- * @param viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  * @param {function} functionToExecute - executes for each primitive on scene. Gets primitive as the first argument
  */
 export function executeForAllPrimitives(viewer, functionToExecute) {

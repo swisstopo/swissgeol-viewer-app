@@ -174,7 +174,7 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType, useAlt
  * Sets height in meters for each cartesian3 position in array
  * @param {Array<Cartesian3>} positions
  * @param {number} height
- * @param scene?
+ * @param {import('cesium/Source/Scene/Scene').default} [scene]
  * @return {Array<Cartesian3>}
  */
 export function updateHeightForCartesianPositions(positions, height, scene) {
@@ -332,7 +332,7 @@ const eastPointScratch = new Cartesian3();
 /**
  * Returns vector orthogonal to view vector (vector from camera position to position on map)
  * https://user-images.githubusercontent.com/51954170/108503213-abff8580-72bc-11eb-8b75-3385b5fd171e.png
- * @param viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  * @return {Cartesian3}
  */
 export function getVectorOrthogonalToView(viewer) {
@@ -353,7 +353,7 @@ export function getVectorOrthogonalToView(viewer) {
 
 /**
  * Returns left,right points of view rectangle
- * @param viewer
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  * @return {Array<Cartesian3>}
  */
 export function getOrthogonalViewPoints(viewer) {

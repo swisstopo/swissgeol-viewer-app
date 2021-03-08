@@ -17,7 +17,7 @@ class NgmNadirView extends LitElementI18n {
     super();
 
     /**
-     * @type {import('cesium').Scene}
+     * @type {import('cesium/Source/Scene/Scene').default}
      */
     this.scene = null;
 
