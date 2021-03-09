@@ -33,10 +33,10 @@ export function getOffsetFromBbox(primitive, bbox) {
   const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
   const transformCartographic = Cartographic.fromCartesian(transformCenter);
   if (transformCartographic) {
-    z = transformCartographic.height;
+    z = -Cartographic.fromCartesian(bbox.center).height + transformCartographic.height;
   } else {
     const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
-    z = boundingSphereCartographic.height;
+    z = -Cartographic.fromCartesian(bbox.center).height + boundingSphereCartographic.height;
   }
   return new Cartesian3(x, y, z * -1);
 }
@@ -235,7 +235,7 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit, height) {
   const angle = Cartesian3.angleBetween(topVectorScratch, lineVectorScratch) * getDirectionFromPoints(startXAxis, endXAxis);
 
   return {
-    center: updateHeightForCartesianPositions([center], centerHeight, viewer.scene)[0],
+    center: updateHeightForCartesianPositions([center], centerHeight)[0],
     width: Cartesian3.distance(sliceCorners.topLeft, sliceCorners.bottomLeft),
     length: Cartesian3.distance(sliceCorners.bottomRight, sliceCorners.bottomLeft),
     height: boxHeight,

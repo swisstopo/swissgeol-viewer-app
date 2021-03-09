@@ -22,6 +22,7 @@ import {
   pickCenterOnEllipsoid, planeFromTwoPoints, projectPointOnSegment
 } from '../cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
+import Matrix4 from 'cesium/Source/Core/Matrix4';
 
 export default class SlicingBox extends SlicingToolBase {
   constructor(viewer, dataSource) {
@@ -97,6 +98,7 @@ export default class SlicingBox extends SlicingToolBase {
     this.frontPlane = null;
     this.leftPlane = null;
     this.rightPlane = null;
+    this.boxCenter = null;
     this.slicerArrows.hide();
   }
 
@@ -208,7 +210,9 @@ export default class SlicingBox extends SlicingToolBase {
     this.updateBoxGlobeClippingPlanes(this.viewer.scene.globe.clippingPlanes);
     executeForAllPrimitives(this.viewer, (primitive) => {
       if (primitive.root && primitive.boundingSphere) {
-        this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.url], primitive.boundingSphere.center);
+        const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
+        const tileCenter = Cartesian3.equals(transformCenter, Cartesian3.ZERO) ? primitive.boundingSphere.center : transformCenter;
+        this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.url], tileCenter);
       }
     });
   }
