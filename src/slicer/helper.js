@@ -54,6 +54,12 @@ export function getPositionsOffset(position, targetPosition, planeNormal) {
   return offset.x + offset.y + offset.z;
 }
 
+const lVectorScratch = new Cartesian3();
+const tVectorScratch = new Cartesian3();
+const sliceVectorScratch = new Cartesian3();
+const normalizedSVectorScratch = new Cartesian3();
+const normalizedLVectorScratch = new Cartesian3();
+const crossScratch = new Cartesian3();
 /**
  * Computes clipping plane for tileset from two points
  * @param {Cartesian3} start - segment start point
@@ -69,30 +75,26 @@ export function getClippingPlaneFromSegment(start, end, tileCenter, mapRect, map
   const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect));
   const mapSouthwest = Cartographic.toCartesian(Rectangle.southwest(mapRect));
   const mapNortheast = Cartographic.toCartesian(Rectangle.northeast(mapRect));
-  const leftVector = Cartesian3.subtract(mapNorthwest, mapSouthwest, new Cartesian3());
-  const topVector = Cartesian3.subtract(mapNorthwest, mapNortheast, new Cartesian3());
+  Cartesian3.subtract(mapNorthwest, mapSouthwest, lVectorScratch);
+  Cartesian3.subtract(mapNorthwest, mapNortheast, tVectorScratch);
 
   // because of map not rectangular
-  const mapCornerAngle = Cartesian3.angleBetween(topVector, leftVector);
+  const mapCornerAngle = Cartesian3.angleBetween(tVectorScratch, lVectorScratch);
   const angleOffset = Math.PI / 2 - mapCornerAngle;
 
   // computations depends on first point position according to second point
-  let lineVector;
-  // project start, end points in one axis for direction calculation
-  const startXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, start);
-  const endXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, end);
-  // calculates the angle between map side and line (+ map offset for higher precision) and apply to the plane
-  if (getDirectionFromPoints(startXAxis, endXAxis) < 0) {
-    lineVector = Cartesian3.subtract(start, end, new Cartesian3());
-    const angle = Cartesian3.angleBetween(lineVector, leftVector) + angleOffset;
-    plane.normal.x = Math.cos(angle);
-    plane.normal.y = Math.sin(angle);
-  } else {
-    lineVector = Cartesian3.subtract(end, start, new Cartesian3());
-    const angle = Cartesian3.angleBetween(lineVector, leftVector) + angleOffset;
-    plane.normal.x = -Math.cos(angle);
-    plane.normal.y = -Math.sin(angle);
+  Cartesian3.subtract(start, end, sliceVectorScratch);
+
+  Cartesian3.normalize(lVectorScratch, normalizedLVectorScratch);
+  Cartesian3.normalize(sliceVectorScratch, normalizedSVectorScratch);
+  let angle = Math.acos(Cartesian3.dot(normalizedLVectorScratch, normalizedSVectorScratch));
+  Cartesian3.cross(lVectorScratch, sliceVectorScratch, crossScratch);
+  if (Cartesian3.dot(plane.normal, crossScratch) < 0) {
+    angle = -angle;
   }
+  angle += angleOffset;
+  plane.normal.x = Math.cos(angle);
+  plane.normal.y = Math.sin(angle);
   // calculate offset between tile center and line center
   const center = Cartesian3.midpoint(start, end, new Cartesian3());
   plane.distance = getPositionsOffset(tileCenter, center, mapPlaneNormal);
