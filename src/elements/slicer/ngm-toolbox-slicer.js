@@ -105,12 +105,12 @@ class NgmToolboxSlicer extends LitElementI18n {
           <div class="ui tiny buttons">
             ${this.sliceEnabled ?
               html`
-                <button class="ui button"
+                <button class="ui button ngm-slice-off-btn"
                         @click=${() => this.toggleSlicer(false)}>
                   ${i18next.t('tbx_disable_slice_btn_label')}
                 </button>` :
               html`
-                <button class="ui button ngm-slice-btn"
+                <button class="ui button"
                         @click=${() => this.toggleSlicer(true)}>
                   ${this.type === 'line' ? i18next.t('tbx_slice_btn_label') : i18next.t('tbx_slice_edit_btn_label')}
                   ${this.positions.length > 2 && this.type === 'line' ? html`

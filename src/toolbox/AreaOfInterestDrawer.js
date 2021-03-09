@@ -463,6 +463,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   cancelDraw() {
+    if (!this.draw_.active) return;
     if (this.editedBackup) {
       this.draw_.entityForEdit.properties = this.editedBackup.properties;
       if (this.draw_.type === 'point') {
@@ -936,7 +937,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
       .forEach(button => {
         const classList = button.classList;
-        if (!skipSliceBtn || (!classList.contains('ngm-slice-tools-btn') && !classList.contains('ngm-slice-btn'))) {
+        if (!skipSliceBtn || (!classList.contains('ngm-slice-tools-btn') && !classList.contains('ngm-slice-off-btn'))) {
           classList.add('ngm-disabled-btn');
         }
       });
