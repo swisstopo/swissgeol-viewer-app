@@ -155,10 +155,11 @@ export default class SlicingBox extends SlicingToolBase {
       }
       case 'up':
       case 'down': {
-        side === 'down' ? this.bbox.height += moveAmount : this.bbox.height -= moveAmount;
-        const height = this.bbox.height < SLICING_BOX_MIN_SIZE ? undefined : this.bbox.height;
-        if (!height) return;
-        this.bbox.height = height;
+        let boxHeight = this.bbox.height;
+        side === 'down' ? boxHeight += moveAmount : boxHeight -= moveAmount;
+        boxHeight = boxHeight < SLICING_BOX_MIN_SIZE ? undefined : boxHeight;
+        if (!boxHeight) return;
+        this.bbox.height = boxHeight;
         side === 'down' ? this.downPlane.distance += moveAmount : this.upPlane.distance -= moveAmount;
         break;
       }
