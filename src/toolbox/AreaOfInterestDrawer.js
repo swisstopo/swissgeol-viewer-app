@@ -932,9 +932,14 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.cancelDraw();
   }
 
-  disableToolButtons() {
+  disableToolButtons(skipSliceBtn) {
     this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
-      .forEach(button => button.classList.add('ngm-disabled-btn'));
+      .forEach(button => {
+        const classList = button.classList;
+        if (!skipSliceBtn || (!classList.contains('ngm-slice-tools-btn') && !classList.contains('ngm-slice-btn'))) {
+          classList.add('ngm-disabled-btn');
+        }
+      });
   }
 
   enableToolButtons() {
@@ -1132,6 +1137,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   onEnableSlicing(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
     entity.show = false;
+    this.disableToolButtons(true);
   }
 
   onDisableSlicing(id, type, positions, lowerLimit, height) {
@@ -1142,6 +1148,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       this.updateEntityVolume(id);
     }
     entity.show = true;
+    this.enableToolButtons();
   }
 
   render() {
