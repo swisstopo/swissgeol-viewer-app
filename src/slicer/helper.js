@@ -82,7 +82,6 @@ export function getClippingPlaneFromSegment(start, end, tileCenter, mapRect, map
   const startXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, start);
   const endXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, end);
   // calculates the angle between map side and line (+ map offset for higher precision) and apply to the plane
-  console.log(getDirectionFromPoints(startXAxis, endXAxis) < 0);
   if (getDirectionFromPoints(startXAxis, endXAxis) < 0) {
     lineVector = Cartesian3.subtract(start, end, new Cartesian3());
     const angle = Cartesian3.angleBetween(lineVector, leftVector) + angleOffset;
@@ -184,6 +183,11 @@ export function getBboxFromViewRatio(viewer, ratio) {
   };
 }
 
+
+const mapNorthwestScratch = new Cartographic();
+const mapNortheastScratch = new Cartographic();
+const topVectorScratch = new Cartesian3();
+const lineVectorScratch = new Cartesian3();
 /**
  * Returns bbox for box slicing from rectangle positions
  * @param viewer
@@ -212,20 +216,21 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit, height) {
     bottomRight: rightPosition[0].latitude < rightPosition[1].latitude ? rightPosition[0] : rightPosition[1]
   };
   for (const key in sliceCorners) {
-    sliceCorners[key] = Cartographic.toCartesian(sliceCorners[key]); // todo scratch
+    sliceCorners[key].height = 0;
+    sliceCorners[key] = Cartographic.toCartesian(sliceCorners[key]);
   }
 
   const center = Cartesian3.midpoint(sliceCorners.topLeft, sliceCorners.bottomRight, new Cartesian3());
 
   const mapRect = viewer.scene.globe.cartographicLimitRectangle;
-  const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect));
-  const mapNortheast = Cartographic.toCartesian(Rectangle.northeast(mapRect));
-  const topVector = Cartesian3.subtract(mapNorthwest, mapNortheast, new Cartesian3());
+  const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect, mapNorthwestScratch));
+  const mapNortheast = Cartographic.toCartesian(Rectangle.northeast(mapRect, mapNortheastScratch));
+  Cartesian3.subtract(mapNorthwest, mapNortheast, topVectorScratch);
 
   const startXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, sliceCorners.topLeft);
   const endXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, sliceCorners.bottomLeft);
-  const lineVector = Cartesian3.subtract(sliceCorners.topLeft, sliceCorners.topRight, new Cartesian3());
-  const angle = Cartesian3.angleBetween(topVector, lineVector) * getDirectionFromPoints(startXAxis, endXAxis);
+  Cartesian3.subtract(sliceCorners.topLeft, sliceCorners.topRight, lineVectorScratch);
+  const angle = Cartesian3.angleBetween(topVectorScratch, lineVectorScratch) * getDirectionFromPoints(startXAxis, endXAxis);
 
   return {
     center: updateHeightForCartesianPositions([center], centerHeight, viewer.scene)[0],
