@@ -206,11 +206,14 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit, height) {
   }
   const cartographicPosition = positions.map(p => Cartographic.fromCartesian(p));
 
+  // search for two positions with smallest longitude (left)
   const leftPositions = [cartographicPosition.reduce((a, b) => a.longitude < b.longitude ? a : b)];
   cartographicPosition.splice(cartographicPosition.indexOf(leftPositions[0]), 1);
   leftPositions.push(cartographicPosition.reduce((a, b) => a.longitude < b.longitude ? a : b));
   cartographicPosition.splice(cartographicPosition.indexOf(leftPositions[1]), 1);
+  // two other is right
   const rightPosition = cartographicPosition;
+  // set rectangle positions to bbox corners according to positions on map
   const sliceCorners = {
     topLeft: leftPositions[0].latitude > leftPositions[1].latitude ? leftPositions[0] : leftPositions[1],
     bottomLeft: leftPositions[0].latitude < leftPositions[1].latitude ? leftPositions[0] : leftPositions[1],
@@ -224,11 +227,11 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit, height) {
 
   const center = Cartesian3.midpoint(sliceCorners.topLeft, sliceCorners.bottomRight, new Cartesian3());
 
+  // calculate angle of rotation of rectangle according to map
   const mapRect = viewer.scene.globe.cartographicLimitRectangle;
   const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect, mapNorthwestScratch));
   const mapNortheast = Cartographic.toCartesian(Rectangle.northeast(mapRect, mapNortheastScratch));
   Cartesian3.subtract(mapNorthwest, mapNortheast, topVectorScratch);
-
   const startXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, sliceCorners.topLeft);
   const endXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, sliceCorners.bottomLeft);
   Cartesian3.subtract(sliceCorners.topLeft, sliceCorners.topRight, lineVectorScratch);
