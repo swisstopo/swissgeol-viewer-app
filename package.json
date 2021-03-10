@@ -37,7 +37,7 @@
     "typeface-source-sans-pro": "1.1.13"
   },
   "devDependencies": {
-    "@babel/core": "7.13.8",
+    "@babel/core": "7.13.10",
     "@babel/plugin-proposal-object-rest-spread": "^7.13.8",
     "@babel/preset-env": "7.13.9",
     "@rollup/plugin-commonjs": "^16.0.0",
