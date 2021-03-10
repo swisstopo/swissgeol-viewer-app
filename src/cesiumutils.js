@@ -323,7 +323,7 @@ const axisScratch = new Cartesian3();
  */
 export function getDirectionFromPoints(from, to) {
   const axisVect = Cartesian3.subtract(from, to, axisScratch);
-  const direction = axisVect.x + axisVect.y + axisVect.y;
+  const direction = axisVect.x + axisVect.y + axisVect.z;
   return Math.round((1 / direction) * Math.abs(direction));
 }
 

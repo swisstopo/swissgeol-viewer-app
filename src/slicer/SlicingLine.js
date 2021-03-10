@@ -2,6 +2,8 @@ import {getOrthogonalViewPoints, planeFromTwoPoints} from '../cesiumutils';
 import {executeForAllPrimitives} from '../utils';
 import {createClippingPlanes, getClippingPlaneFromSegment} from './helper';
 import SlicingToolBase from './SlicingToolBase';
+import Matrix4 from 'cesium/Source/Core/Matrix4';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
 export default class SlicingLine extends SlicingToolBase {
   constructor(viewer) {
@@ -31,7 +33,8 @@ export default class SlicingLine extends SlicingToolBase {
     const p1 = this.options.slicePoints[0];
     const p2 = this.options.slicePoints[1];
     const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
-    const tileCenter = primitive.boundingSphere.center;
+    const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
+    const tileCenter = Cartesian3.equals(transformCenter, Cartesian3.ZERO) ? primitive.boundingSphere.center : transformCenter;
 
     const plane = getClippingPlaneFromSegment(p1, p2, tileCenter, mapRect, planeNormal);
     if (this.options.negate) {

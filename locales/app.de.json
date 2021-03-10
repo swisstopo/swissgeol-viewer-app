@@ -170,6 +170,7 @@
   "tbx_save_editing_btn_label": "Speichern",
   "tbx_show_volume_btn_label": "Extrusion der Geometrie anzeigen",
   "tbx_slice_btn_label": "Aufschneiden",
+  "tbx_slice_edit_btn_label": "",
   "tbx_slice_left_label": "Links",
   "tbx_slice_right_label": "Rechts",
   "tbx_slice_side_label": "Schnittseite",

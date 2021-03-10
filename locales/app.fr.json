@@ -170,6 +170,7 @@
   "tbx_save_editing_btn_label": "Sauvegarder",
   "tbx_show_volume_btn_label": "Afficher la géométrie de l'extrusion",
   "tbx_slice_btn_label": "Coupez",
+  "tbx_slice_edit_btn_label": "",
   "tbx_slice_left_label": "Gauche",
   "tbx_slice_right_label": "Droite",
   "tbx_slice_side_label": "Côté coupe",

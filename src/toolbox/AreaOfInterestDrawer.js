@@ -260,9 +260,17 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                 this.requestUpdate();
               })}>
             </ngm-swissforages-interaction>
-            ${i.type === 'line' ?
+            ${i.type === 'line' || i.type === 'rectangle' ?
               html`
-                <ngm-toolbox-slicer .slicer=${this.slicer} .positions=${i.positions}></ngm-toolbox-slicer>`
+                <ngm-toolbox-slicer
+                  .slicer=${this.slicer}
+                  .positions=${i.positions}
+                  .lowerLimit=${i.volumeHeightLimits ? i.volumeHeightLimits.lowerLimit : undefined}
+                  .height=${i.volumeHeightLimits ? i.volumeHeightLimits.height : undefined}
+                  .type=${i.type}
+                  .onEnableSlicing=${() => this.onEnableSlicing(i.id, i.type)}
+                  .onDisableSlicing=${(positions, lowerLimit, height) => this.onDisableSlicing(i.id, i.type, positions, lowerLimit, height)}
+                ></ngm-toolbox-slicer>`
               : ''}
             ${i.type === 'rectangle' ?
               html`
@@ -455,6 +463,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   cancelDraw() {
+    if (!this.draw_.active) return;
     if (this.editedBackup) {
       this.draw_.entityForEdit.properties = this.editedBackup.properties;
       if (this.draw_.type === 'point') {
@@ -924,9 +933,14 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.cancelDraw();
   }
 
-  disableToolButtons() {
+  disableToolButtons(skipSliceBtn) {
     this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
-      .forEach(button => button.classList.add('ngm-disabled-btn'));
+      .forEach(button => {
+        const classList = button.classList;
+        if (!skipSliceBtn || (!classList.contains('ngm-slice-tools-btn') && !classList.contains('ngm-slice-off-btn'))) {
+          classList.add('ngm-disabled-btn');
+        }
+      });
   }
 
   enableToolButtons() {
@@ -1119,6 +1133,23 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     const volumeShowed = entity.properties.volumeShowed && entity.properties.volumeShowed.getValue();
     const type = entity.properties.type.getValue();
     return type === 'point' || !volumeShowed;
+  }
+
+  onEnableSlicing(id) {
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    entity.show = false;
+    this.disableToolButtons(true);
+  }
+
+  onDisableSlicing(id, type, positions, lowerLimit, height) {
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    if (type === 'rectangle') {
+      entity.polygon.hierarchy = {positions};
+      entity.properties.volumeHeightLimits = {lowerLimit, height};
+      this.updateEntityVolume(id);
+    }
+    entity.show = true;
+    this.enableToolButtons();
   }
 
   render() {

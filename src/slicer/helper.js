@@ -1,11 +1,18 @@
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import {getDirectionFromPoints, pickCenter, projectPointOntoVector} from '../cesiumutils';
+import {
+  getDirectionFromPoints,
+  pickCenter,
+  projectPointOntoVector,
+  updateHeightForCartesianPositions
+} from '../cesiumutils';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
+import {HeadingPitchRoll, Transforms} from 'cesium';
+
 /**
  * @param primitive
  * @param bbox
@@ -26,10 +33,10 @@ export function getOffsetFromBbox(primitive, bbox) {
   const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
   const transformCartographic = Cartographic.fromCartesian(transformCenter);
   if (transformCartographic) {
-    z = transformCartographic.height;
+    z = -Cartographic.fromCartesian(bbox.center).height + transformCartographic.height;
   } else {
     const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
-    z = boundingSphereCartographic.height;
+    z = -Cartographic.fromCartesian(bbox.center).height + boundingSphereCartographic.height;
   }
   return new Cartesian3(x, y, z * -1);
 }
@@ -47,6 +54,12 @@ export function getPositionsOffset(position, targetPosition, planeNormal) {
   return offset.x + offset.y + offset.z;
 }
 
+const lVectorScratch = new Cartesian3();
+const tVectorScratch = new Cartesian3();
+const sliceVectorScratch = new Cartesian3();
+const normalizedSVectorScratch = new Cartesian3();
+const normalizedLVectorScratch = new Cartesian3();
+const crossScratch = new Cartesian3();
 /**
  * Computes clipping plane for tileset from two points
  * @param {Cartesian3} start - segment start point
@@ -62,30 +75,26 @@ export function getClippingPlaneFromSegment(start, end, tileCenter, mapRect, map
   const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect));
   const mapSouthwest = Cartographic.toCartesian(Rectangle.southwest(mapRect));
   const mapNortheast = Cartographic.toCartesian(Rectangle.northeast(mapRect));
-  const leftVector = Cartesian3.subtract(mapNorthwest, mapSouthwest, new Cartesian3());
-  const topVector = Cartesian3.subtract(mapNorthwest, mapNortheast, new Cartesian3());
+  Cartesian3.subtract(mapNorthwest, mapSouthwest, lVectorScratch);
+  Cartesian3.subtract(mapNorthwest, mapNortheast, tVectorScratch);
 
   // because of map not rectangular
-  const mapCornerAngle = Cartesian3.angleBetween(topVector, leftVector);
+  const mapCornerAngle = Cartesian3.angleBetween(tVectorScratch, lVectorScratch);
   const angleOffset = Math.PI / 2 - mapCornerAngle;
 
   // computations depends on first point position according to second point
-  let lineVector;
-  // project start, end points in one axis for direction calculation
-  const startXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, start);
-  const endXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, end);
-  // calculates the angle between map side and line (+ map offset for higher precision) and apply to the plane
-  if (getDirectionFromPoints(startXAxis, endXAxis) < 0) {
-    lineVector = Cartesian3.subtract(start, end, new Cartesian3());
-    const angle = Cartesian3.angleBetween(lineVector, leftVector) + angleOffset;
-    plane.normal.x = Math.cos(angle);
-    plane.normal.y = Math.sin(angle);
-  } else {
-    lineVector = Cartesian3.subtract(end, start, new Cartesian3());
-    const angle = Cartesian3.angleBetween(lineVector, leftVector) + angleOffset;
-    plane.normal.x = -Math.cos(angle);
-    plane.normal.y = -Math.sin(angle);
+  Cartesian3.subtract(start, end, sliceVectorScratch);
+
+  Cartesian3.normalize(lVectorScratch, normalizedLVectorScratch);
+  Cartesian3.normalize(sliceVectorScratch, normalizedSVectorScratch);
+  let angle = Math.acos(Cartesian3.dot(normalizedLVectorScratch, normalizedSVectorScratch));
+  Cartesian3.cross(lVectorScratch, sliceVectorScratch, crossScratch);
+  if (Cartesian3.dot(plane.normal, crossScratch) < 0) {
+    angle = -angle;
   }
+  angle += angleOffset;
+  plane.normal.x = Math.cos(angle);
+  plane.normal.y = Math.sin(angle);
   // calculate offset between tile center and line center
   const center = Cartesian3.midpoint(start, end, new Cartesian3());
   plane.distance = getPositionsOffset(tileCenter, center, mapPlaneNormal);
@@ -171,6 +180,74 @@ export function getBboxFromViewRatio(viewer, ratio) {
     height: SLICING_BOX_HEIGHT,
     corners: {
       bottomRight, bottomLeft, topRight, topLeft,
-    }
+    },
+    cornersA: [bottomRight, bottomLeft, topRight, topLeft]
+  };
+}
+
+
+const mapNorthwestScratch = new Cartographic();
+const mapNortheastScratch = new Cartographic();
+const topVectorScratch = new Cartesian3();
+const lineVectorScratch = new Cartesian3();
+/**
+ * Returns bbox for box slicing from rectangle positions
+ * @param viewer
+ * @param {Cartesian3[]} positions
+ * @param {Number} [lowerLimit]
+ * @param {Number} [height]
+ * @return {{center: Cartesian3, width: number, length: number, height: number}}
+ */
+export function getBboxFromRectangle(viewer, positions, lowerLimit, height) {
+  const boxHeight = height || SLICING_BOX_HEIGHT;
+  let centerHeight = 0;
+  if (lowerLimit !== null && lowerLimit !== undefined) {
+    centerHeight = lowerLimit + (boxHeight / 2);
+  }
+  const cartographicPosition = positions.map(p => Cartographic.fromCartesian(p));
+
+  // search for two positions with smallest longitude (left)
+  const leftPositions = [cartographicPosition.reduce((a, b) => a.longitude < b.longitude ? a : b)];
+  cartographicPosition.splice(cartographicPosition.indexOf(leftPositions[0]), 1);
+  leftPositions.push(cartographicPosition.reduce((a, b) => a.longitude < b.longitude ? a : b));
+  cartographicPosition.splice(cartographicPosition.indexOf(leftPositions[1]), 1);
+  // two other is right
+  const rightPosition = cartographicPosition;
+  // set rectangle positions to bbox corners according to positions on map
+  const sliceCorners = {
+    topLeft: leftPositions[0].latitude > leftPositions[1].latitude ? leftPositions[0] : leftPositions[1],
+    bottomLeft: leftPositions[0].latitude < leftPositions[1].latitude ? leftPositions[0] : leftPositions[1],
+    topRight: rightPosition[0].latitude > rightPosition[1].latitude ? rightPosition[0] : rightPosition[1],
+    bottomRight: rightPosition[0].latitude < rightPosition[1].latitude ? rightPosition[0] : rightPosition[1]
+  };
+  for (const key in sliceCorners) {
+    sliceCorners[key].height = 0;
+    sliceCorners[key] = Cartographic.toCartesian(sliceCorners[key]);
+  }
+
+  const center = Cartesian3.midpoint(sliceCorners.topLeft, sliceCorners.bottomRight, new Cartesian3());
+
+  // calculate angle of rotation of rectangle according to map
+  const mapRect = viewer.scene.globe.cartographicLimitRectangle;
+  const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect, mapNorthwestScratch));
+  const mapNortheast = Cartographic.toCartesian(Rectangle.northeast(mapRect, mapNortheastScratch));
+  Cartesian3.subtract(mapNorthwest, mapNortheast, topVectorScratch);
+  const startXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, sliceCorners.topLeft);
+  const endXAxis = projectPointOntoVector(mapNorthwest, mapNortheast, sliceCorners.bottomLeft);
+  Cartesian3.subtract(sliceCorners.topLeft, sliceCorners.topRight, lineVectorScratch);
+  const angle = Cartesian3.angleBetween(topVectorScratch, lineVectorScratch) * getDirectionFromPoints(startXAxis, endXAxis);
+
+  return {
+    center: updateHeightForCartesianPositions([center], centerHeight)[0],
+    width: Cartesian3.distance(sliceCorners.topLeft, sliceCorners.bottomLeft),
+    length: Cartesian3.distance(sliceCorners.bottomRight, sliceCorners.bottomLeft),
+    height: boxHeight,
+    corners: {
+      bottomRight: sliceCorners.bottomRight,
+      bottomLeft: sliceCorners.bottomLeft,
+      topRight: sliceCorners.topRight,
+      topLeft: sliceCorners.topLeft,
+    },
+    orientation: Transforms.headingPitchRollQuaternion(center, new HeadingPitchRoll(angle, 0, 0))
   };
 }
