@@ -9,10 +9,7 @@
     "webpack-start": "node scripts/environment.js && node scripts/generateManuals.js && webpack serve",
     "rollup-start": "node scripts/environment.js && node scripts/generateManuals.js && rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && rm -rf dist/* && rollup --environment mode:production -c && scripts/create_versions.sh",
-    "test": "mocha --exit",
-    "offline-requirments": "sls requirements install",
-    "offline-api": "set PYTHONPATH=.serverless/requirements && sls offline start",
-    "deploy-dev": "sls deploy -c serverless-dev.yml"
+    "test": "mocha --exit"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.8.0",
@@ -72,9 +69,6 @@
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-plugin-strip-pragma": "^1.0.0",
     "rollup-plugin-terser": "^7.0.2",
-    "serverless": "^2.20.1",
-    "serverless-offline": "^6.8.0",
-    "serverless-python-requirements": "^5.1.0",
     "source-map-loader": "^1.1.3",
     "speed-measure-webpack-plugin": "^1.4.2",
     "stream-to-promise": "^3.0.0",
