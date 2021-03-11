@@ -38,14 +38,14 @@ class NgmShareLink extends LitElementI18n {
 
   async getShortlink() {
     try {
-      const result = await fetch('http://localhost:3000/dev/url_shortener', {
+      const result = await fetch('https://link.dev.swissgeol.ch/admin_shrink_url', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;charset=UTF-8'
         },
         body: JSON.stringify({
           'url_long': window.location.href,
-          'cdn_prefix': 'localhost:3000/dev' // window.location.host
+          'cdn_prefix': window.location.host
         }),
       });
       const response = await result.json();
