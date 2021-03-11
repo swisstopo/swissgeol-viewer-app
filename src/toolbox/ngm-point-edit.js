@@ -19,7 +19,9 @@ class NgmPointEdit extends LitElementI18n {
     return {
       viewer: {type: Object},
       position: {type: Object},
-      entity: {type: Object}
+      entity: {type: Object},
+      depth: {type: Number},
+      volumeShowed: {type: Boolean},
     };
   }
 
@@ -32,6 +34,8 @@ class NgmPointEdit extends LitElementI18n {
     this.coordsType = 'wsg84';
     this.minHeight = -30000;
     this.maxHeight = 30000;
+    this.minDepth = -30000;
+    this.maxDepth = 30000;
     this.julianDate = new JulianDate();
   }
 
@@ -75,12 +79,10 @@ class NgmPointEdit extends LitElementI18n {
   }
 
   onPositionChange() {
-    const cartographicPosition = Cartographic.fromCartesian(this.position);
     this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
     const heightValue = Number(this.querySelector('.ngm-height-input').value);
     this.heightValue = CesiumMath.clamp(heightValue, this.minHeight, this.maxHeight);
-    const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
     let lon = this.xValue;
     let lat = this.yValue;
     if (this.coordsType === 'lv95') {
@@ -88,13 +90,20 @@ class NgmPointEdit extends LitElementI18n {
       lon = radianCoords[0];
       lat = radianCoords[1];
     }
-    const height = this.heightValue + altitude;
+    const height = this.heightValue;
     const cartesianPosition = Cartesian3.fromDegrees(lon, lat, height);
     this.position = cartesianPosition;
     this.updateInputValues();
     this.entity.position = cartesianPosition;
     updateBoreholeHeights(this.entity, this.julianDate);
     this.viewer.scene.requestRender();
+  }
+
+  onDepthChange(event) {
+    const depth = Number(event.target.value);
+    this.depth = depth;
+    this.entity.properties.depth = depth;
+    updateBoreholeHeights(this.entity, this.julianDate);
   }
 
   onColorChange(color) {
@@ -139,6 +148,14 @@ class NgmPointEdit extends LitElementI18n {
         <button class="ui icon button ngm-aoi-point-style-btn">
           <i class="map marker alternate icon"></i>
         </button>
+        <div ?hidden="${!this.volumeShowed}">
+          <label>${i18next.t('tbx_point_depth_label')}:</label></br>
+          <div class="ui mini input right labeled">
+            <input type="number" step="10" min="${this.minDepth}" max="${this.maxDepth}"
+                   class="ngm-point-depth-input" .value="${this.depth}" @change="${this.onDepthChange}">
+            <label class="ui label">m</label>
+          </div>
+        </div>
       </div>
       <div class="ui mini popup ngm-aoi-point-style">
         <label>${i18next.t('tbx_point_color_label')}</label>

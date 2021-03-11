@@ -8,9 +8,13 @@ import Color from 'cesium/Source/Core/Color';
 
 
 export default class LayersAction {
-
-  constructor(viewer) {
+  /**
+   * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
+   * @param {import('../MapChooser').default} mapChooser
+   */
+  constructor(viewer, mapChooser) {
     this.viewer = viewer;
+    this.mapChooser = mapChooser;
     this.boundingBoxEntity = this.viewer.entities.add({
       position: Cartesian3.ZERO,
       show: false,
@@ -29,6 +33,9 @@ export default class LayersAction {
 
   changeVisibility(config, checked) {
     config.setVisibility(checked);
+    if (checked && config.backgroundId !== undefined) {
+      this.mapChooser.selectMap(config.backgroundId);
+    }
     config.visible = checked;
     this.viewer.scene.requestRender();
   }

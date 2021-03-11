@@ -26,8 +26,8 @@ export VERSION="THE_TAG_YOU_WANT_DEPLOYED"
 
 git checkout $VERSION
 # use gopass to export the S3 access key and secret
-export AWS_ACCESS_KEY_ID=$(gopass ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
-export AWS_SECRET_ACCESS_KEY=$(gopass ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
+export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
+export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
 
 scripts/deploy_to_prod.sh
 [ $? -eq 0 ] && echo OK || echo failed
@@ -54,6 +54,9 @@ i18next.t('text_key');
 
 The properties from all the 3dtiles can be collected for translation using the `extract-from-assets` command:
 ```bash
+export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/ngm-protected-prod/AWS_ACCESS_KEY_ID)
+export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/ngm-protected-prod/AWS_SECRET_ACCESS_KEY)
+
 npm run extract-from-assets
 ```
 

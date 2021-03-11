@@ -12,7 +12,7 @@ import Intersections2D from 'cesium/Source/Core/Intersections2D';
 // Safari and old versions of Edge are not able to extends EventTarget
 import {EventTarget} from 'event-target-shim';
 import {getDimensionLabel} from './helpers.js';
-import {getMeasurements, cartesianToDegrees} from '../cesiumutils.js';
+import {getMeasurements} from '../cesiumutils.js';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 
 /**
@@ -195,7 +195,7 @@ export class CesiumDraw extends EventTarget {
     const measurements = getMeasurements(positions, this.activeDistances_, this.type);
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
-        positions: positions.map(cartesianToDegrees),
+        positions: positions,
         type: this.type,
         measurements: measurements
       }
@@ -416,7 +416,11 @@ export class CesiumDraw extends EventTarget {
     if (this.entityForEdit && !!this.leftPressedPixel_) {
       if (this.moveEntity) {
         if (this.type === 'point') {
-          this.entityForEdit.position = position;
+          const cartographicPosition = Cartographic.fromCartesian(this.entityForEdit.position.getValue(this.julianDate));
+          const updatedCartographicPosition = Cartographic.fromCartesian(position);
+          // save height after move
+          updatedCartographicPosition.height = cartographicPosition.height;
+          this.entityForEdit.position = Cartographic.toCartesian(updatedCartographicPosition);
         } else {
           const pointProperties = this.sketchPoint_.properties;
           const index = pointProperties.index;

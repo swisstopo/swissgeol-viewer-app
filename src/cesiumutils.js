@@ -8,6 +8,9 @@ import Transforms from 'cesium/Source/Core/Transforms';
 import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
 import {degreesToLv95} from './projection';
 import Plane from 'cesium/Source/Core/Plane';
+import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
+import Matrix3 from 'cesium/Source/Core/Matrix3';
+import Rectangle from 'cesium/Source/Core/Rectangle';
 
 
 /**
@@ -144,9 +147,10 @@ export function convertCartographicToScreenCoordinates(scene, cartographicPositi
  * @param {import('cesium/Source/Scene/Scene.js').default} scene
  * @param {Cartographic} position
  * @param {'lv95' | 'wsg84'} coordinatesType
+ * @param {boolean} useAltitude
  * @return {{x: number, y: number, height: number}}
  */
-export function prepareCoordinatesForUi(scene, position, coordinatesType) {
+export function prepareCoordinatesForUi(scene, position, coordinatesType, useAltitude = false) {
   let x, y;
   const lon = CMath.toDegrees(position.longitude);
   const lat = CMath.toDegrees(position.latitude);
@@ -158,24 +162,29 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType) {
     x = Number(lon.toFixed(6));
     y = Number(lat.toFixed(6));
   }
-  let altitude = scene.globe.getHeight(position);
-  altitude = altitude ? altitude : 0;
+  let altitude = 0;
+  if (useAltitude) {
+    altitude = scene.globe.getHeight(position) || 0;
+  }
   const height = Math.round(position.height - altitude);
   return {x, y, height};
 }
 
 /**
  * Sets height in meters for each cartesian3 position in array
- * @param {import('cesium/Source/Scene/Scene.js').default} scene
  * @param {Array<Cartesian3>} positions
  * @param {number} height
+ * @param {import('cesium/Source/Scene/Scene').default} [scene]
  * @return {Array<Cartesian3>}
  */
-export function updateHeightForCartesianPositions(scene, positions, height) {
+export function updateHeightForCartesianPositions(positions, height, scene) {
   return positions.map(p => {
     const cartographicPosition = Cartographic.fromCartesian(p);
-    const altitude = scene.globe.getHeight(cartographicPosition) || 0;
-    cartographicPosition.height = height + altitude;
+    cartographicPosition.height = height;
+    if (scene) {
+      const altitude = scene.globe.getHeight(cartographicPosition) || 0;
+      cartographicPosition.height += altitude;
+    }
     return Cartographic.toCartesian(cartographicPosition);
   });
 }
@@ -217,4 +226,144 @@ export function cartesianToDegrees(cartesian) {
     cartographic.latitude * 180 / Math.PI,
     cartographic.height
   ];
+}
+
+/**
+ * Extend kml for export with entities properties
+ * @param {string} kml - kml for export
+ * @param {Array<Entity>} entities - list of entities for export
+ * @return {string}
+ */
+export function extendKmlWithProperties(kml, entities) {
+  entities.values.forEach(entity => {
+    let kmlProperties = '<ExtendedData>';
+    entity.properties.propertyNames.forEach(prop => {
+      let value = entity.properties[prop] ? entity.properties[prop].getValue() : undefined;
+      if (value !== undefined && value !== null) {
+        value = typeof value === 'object' ? JSON.stringify(value) : value;
+        kmlProperties += `<Data name="${prop}"><value>${value}</value></Data>`;
+      }
+    });
+    kmlProperties += '</ExtendedData>';
+    const placemark = `<Placemark id="${entity.id}">`;
+    kml = kml.replace(placemark, `${placemark}${kmlProperties}`);
+  });
+  return kml;
+}
+
+
+const scratchVector1 = new Cartesian3();
+const scratchVector2 = new Cartesian3();
+const scratchProjectionVector = new Cartesian3();
+/**
+ * Calculates point projection on vector from provided points
+ * @param vectorPoint1
+ * @param vectorPoint2
+ * @param pointToProject
+ * @param result
+ * @return {Cartesian3}
+ */
+export function projectPointOntoVector(vectorPoint1, vectorPoint2, pointToProject, result = new Cartesian3()) {
+  Cartesian3.subtract(vectorPoint2, vectorPoint1, scratchVector1);
+  Cartesian3.subtract(pointToProject, vectorPoint1, scratchVector2);
+  Cartesian3.projectVector(scratchVector2, scratchVector1, scratchProjectionVector);
+  return Cartesian3.add(vectorPoint1, scratchProjectionVector, result);
+}
+
+const minDifferenceScratch = new Cartesian3();
+const maxDifferenceScratch = new Cartesian3();
+/**
+ * Wrapper for Cartesian3.lerp. Computes position on segment.
+ * @param position
+ * @param minPosition
+ * @param maxPosition
+ * @param start
+ * @param end
+ */
+export function clampPosition(position, minPosition, maxPosition, start, end) {
+  let distanceScalar = start;
+  const minDifference = Cartesian3.subtract(minPosition, position, minDifferenceScratch);
+  const min = minDifference.x + minDifference.y + minDifference.z;
+  if (min > 0) {
+    const maxDifference = Cartesian3.subtract(maxPosition, position, maxDifferenceScratch);
+    const max = maxDifference.x + maxDifference.y + maxDifference.z;
+    if (max < 0) {
+      const maxDistance = Cartesian3.distance(minPosition, maxPosition);
+      const distance = Cartesian3.distance(minPosition, position);
+      distanceScalar = distance / maxDistance;
+      distanceScalar = CMath.clamp(distanceScalar, start, end);
+    } else {
+      distanceScalar = end;
+    }
+  }
+  Cartesian3.lerp(minPosition, maxPosition, distanceScalar, position);
+}
+
+/**
+ * @param {Cartesian3} point
+ * @param {Cartesian3} startPoint
+ * @param {Cartesian3} endPoint
+ * @param {number} start - The value corresponding to point at 0.0.
+ * @param {number} end - The value corresponding to point at 1.0.
+ * @param {number} height - height in meters
+ * @return {Cartesian3}
+ */
+export function projectPointOnSegment(point, startPoint, endPoint, start, end, height) {
+  const position = projectPointOntoVector(startPoint, endPoint, point);
+  clampPosition(position, startPoint, endPoint, start, end);
+  return updateHeightForCartesianPositions([position], height)[0];
+}
+
+const axisScratch = new Cartesian3();
+/**
+ * Returns 1 if 'to' point on left-bottom side of 'from' point or -1 if vice-versa
+ * @param {Cartesian3} from
+ * @param {Cartesian3} to
+ * @return {number}
+ */
+export function getDirectionFromPoints(from, to) {
+  const axisVect = Cartesian3.subtract(from, to, axisScratch);
+  const direction = axisVect.x + axisVect.y + axisVect.z;
+  return Math.round((1 / direction) * Math.abs(direction));
+}
+
+const westPointScratch = new Cartesian3();
+const eastPointScratch = new Cartesian3();
+/**
+ * Returns vector orthogonal to view vector (vector from camera position to position on map)
+ * https://user-images.githubusercontent.com/51954170/108503213-abff8580-72bc-11eb-8b75-3385b5fd171e.png
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
+ * @return {Cartesian3}
+ */
+export function getVectorOrthogonalToView(viewer) {
+  const hpr = new HeadingPitchRoll(viewer.scene.camera.heading, 0.0, 0.0);
+  const rotation = Matrix3.fromHeadingPitchRoll(hpr);
+  const viewRect = viewer.scene.camera.computeViewRectangle();
+
+  const northwest = Cartographic.toCartesian(Rectangle.northwest(viewRect));
+  const southwest = Cartographic.toCartesian(Rectangle.southwest(viewRect));
+  const northeast = Cartographic.toCartesian(Rectangle.northeast(viewRect));
+  const southeast = Cartographic.toCartesian(Rectangle.southeast(viewRect));
+
+  Cartesian3.midpoint(northwest, southwest, westPointScratch);
+  Cartesian3.midpoint(northeast, southeast, eastPointScratch);
+  const viewVect = Cartesian3.subtract(eastPointScratch, westPointScratch, new Cartesian3());
+  return Matrix3.multiplyByVector(rotation, viewVect, viewVect);
+}
+
+/**
+ * Returns left,right points of view rectangle
+ * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
+ * @return {Array<Cartesian3>}
+ */
+export function getOrthogonalViewPoints(viewer) {
+  const center = pickCenter(viewer.scene);
+  const left = new Cartesian3();
+  const right = new Cartesian3();
+  const orthogonalVector = getVectorOrthogonalToView(viewer);
+
+  Cartesian3.divideByScalar(orthogonalVector, 2, orthogonalVector);
+  Cartesian3.subtract(center, orthogonalVector, left);
+  Cartesian3.add(center, orthogonalVector, right);
+  return updateHeightForCartesianPositions([left, right], 0);
 }

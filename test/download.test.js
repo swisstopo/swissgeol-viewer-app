@@ -57,7 +57,7 @@ describe('Download', () => {
 
     it('keep first line', () => {
       const result = filterCsvString('nawak', [0, 0, 1, 1]);
-      assert.strictEqual(result, 'nawak');
+      assert.strictEqual(result, 'nawak\n');
     });
 
     it('should filter according to bbox', () => {

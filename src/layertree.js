@@ -59,18 +59,10 @@ const SWISSTOPO_LABEL_STYLE = {
   }
 };
 
-// const TUNNEL_STYLE = {
-//   color: {
-//     conditions: [
-//       ['${TunnelType} === "RailTunnel"', 'color("red")'],
-//       ['${TunnelType} === "RoadTunnel"', 'color("blue")']
-//     ]
-//   }
-// };
-
 const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
-const DOWNLOAD_ROOT = 'https://download.swissgeol.ch/';
+const DOWNLOAD_ROOT_GEOMOL = 'https://download.swissgeol.ch/geomol/';
 const CENOZOIC_BEDROCK_ORDER = ['Name', 'Horizon', ...DOWNLOAD_PROP_ORDER];
+CENOZOIC_BEDROCK_ORDER.splice(6, 0, 'Download ESRI-GRID');
 const CONSOLIDATED_ORDER = ['Name', 'Horizon', 'HARMOS-ORIGINAL', ...DOWNLOAD_PROP_ORDER];
 const FAULTS_ORDER = ['Name', 'Source', 'Status', 'Type', 'Version', ...DOWNLOAD_PROP_ORDER];
 const TEMPERATURE_HORIZON_ORDER = ['name', 'temp_c'];
@@ -117,7 +109,7 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 198337,
+          assetId: 287568,
           label: t('lyr_boreholes_public_label'),
           layer: 'boreholes',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
@@ -125,10 +117,12 @@ const geo_base = {
           visible: false,
           displayed: true,
           downloadDataType: 'csv',
-          downloadDataPath: 'https://download.swissgeol.ch/bh_2D_20201127_00.csv',
-          propsOrder: ['XCOORD', 'YCOORD', 'ZCOORDB', 'ORIGNAME', 'NAMEPUB', 'SHORTNAME', 'BOHREDAT', 'BOHRTYP',
-            'GRUND', 'RESTRICTIO', 'TIEFEMD', 'DEPTHFROM', 'DEPTHTO', 'LAYERDESC', 'ORIGGEOL', 'LITHOLOGY',
-            'LITHOSTRAT', 'CHRONOSTR', 'TECTO', 'USCS1', 'USCS2', 'USCS3']
+          downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
+          propsOrder: ['bh_pub_XCOORD', 'bh_pub_YCOORD', 'bh_pub_ZCOORDB', 'bh_pub_ORIGNAME', 'bh_pub_NAMEPUB',
+            'bh_pub_SHORTNAME', 'bh_pub_BOHREDAT', 'bh_pub_BOHRTYP', 'bh_pub_GRUND', 'bh_pub_RESTRICTIO',
+            'bh_pub_TIEFEMD', 'bh_pub_DEPTHFROM', 'bh_pub_DEPTHTO', 'bh_pub_LAYERDESC', 'bh_pub_ORIGGEOL',
+            'bh_pub_LITHOLOGY', 'bh_pub_LITHOSTRAT', 'bh_pub_CHRONOSTR', 'bh_pub_TECTO', 'bh_pub_USCS1',
+            'bh_pub_USCS2', 'bh_pub_USCS3']
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -139,8 +133,8 @@ const geo_base = {
           visible: false,
           displayed: false,
           restricted: true,
-          aws_s3_bucket: 'ngm-dev-authenticated-resources',
-          aws_s3_key: 'tiles/bh_private_20201117_00/tileset.json',
+          aws_s3_bucket: 'ngm-protected-prod',
+          aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
         },
       ]
     },
@@ -153,6 +147,7 @@ const geo_base = {
           label: t('lyr_cross_section_ga25_pixel_label'),
           layer: 'cross_section_ga25_pixel',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
+          backgroundId: 'lakes_rivers_map',
           visible: false,
           displayed: false,
           pickable: true,
@@ -202,6 +197,7 @@ const geo_base = {
           label: t('lyr_seismic_transects_label'),
           layer: 'seismic_transects',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
+          backgroundId: 'lakes_rivers_map',
           pickable: true,
           visible: false,
           displayed: false,
@@ -365,13 +361,13 @@ const subsurface = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111882,
+          assetId: 267898,
           label: t('lyr_top_bedrock_label'),
           layer: 'top_bedrock',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CENOZOIC_BEDROCK_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Bedrock.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Bedrock.zip'
         },
       ]
     },
@@ -380,143 +376,143 @@ const subsurface = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111880,
+          assetId: 267959,
           label: t('lyr_top_omm_label'),
           layer: 'top_omm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-UpperMarineMolasse.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111879,
+          assetId: 267961,
           label: t('lyr_top_usm_label'),
           layer: 'top_usm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-LowerFreshwaterMolasse.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerFreshwaterMolasse.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111888,
+          assetId: 267966,
           label: t('lyr_top_umm_label'),
           layer: 'top_umm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-LowerFreshwaterMolasse.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMarineMolasse.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111886,
+          assetId: 267954,
           label: t('lyr_base_cenozoic_label'),
           layer: 'base_cenozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CENOZOIC_BEDROCK_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Base-Cenozoic.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Cenozoic.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111881,
-          label: t('lyr_top_creatateus_label'),
-          layer: 'top_creatateus',
+          assetId: 267958,
+          label: t('lyr_top_cretaceous_label'),
+          layer: 'top_cretaceous',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Cretaceous.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Cretaceous.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111890,
+          assetId: 267962,
           label: t('lyr_top_upper_malm_label'),
           layer: 'top_upper_malm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-UpperMalm.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMalm.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111889,
+          assetId: 267963,
           label: t('lyr_top_lower_malm_label'),
           layer: 'top_lower_malm',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-LowerMalm.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMalm.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111894,
+          assetId: 267957,
           label: t('lyr_top_dogger_label'),
           layer: 'top_dogger',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Dogger.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Dogger.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111885,
+          assetId: 267899,
           label: t('lyr_top_lias_label'),
           layer: 'top_lias',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Lias.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Lias.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 117460,
+          assetId: 267960,
           label: t('lyr_top_keuper_label'),
           layer: 'top_keuper',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Keuper.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Keuper.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111893,
+          assetId: 267953,
           label: t('lyr_top_muschelkalk_label'),
           layer: 'top_muschelkalk',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Top-Muschelkalk.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Muschelkalk.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111883,
+          assetId: 267952,
           label: t('lyr_base_mesozoic_label'),
           layer: 'base_mesozoic',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CENOZOIC_BEDROCK_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Base-Mesozoic.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Mesozoic.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111891,
-          label: t('lyr_base_cermocarboniferous'),
-          layer: 'base_cermocarboniferous',
+          assetId: 267965,
+          label: t('lyr_base_permocarboniferous'),
+          layer: 'base_permocarboniferous',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Base-Permocarboniferous.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 111892,
-          label: t('lyr_base_cermocarboniferous_supposed'),
-          layer: 'base_cermocarboniferous_supposed',
+          assetId: 267964,
+          label: t('lyr_base_permocarboniferous_supposed'),
+          layer: 'base_permocarboniferous_supposed',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Base-Permocarboniferous-assumed.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous-inferred.zip'
         },
       ]
     },
@@ -525,13 +521,13 @@ const subsurface = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 114815,
+          assetId: 267872,
           label: t('lyr_faults_geomol_label'),
           layer: 'faults_geomol',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: FAULTS_ORDER,
-          downloadUrl: DOWNLOAD_ROOT + 'GeoMol-Faults.zip',
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Faults.zip',
           downloadDataType: 'indexed_download',
           downloadDataPath: 'https://download.swissgeol.ch/Faults/footprints_boxed.geojson',
         },

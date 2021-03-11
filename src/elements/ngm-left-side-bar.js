@@ -37,6 +37,11 @@ class LeftSideBar extends LitElementI18n {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
+
+    /**
+     * @type {import('../MapChooser').default}
+     */
+    this.mapChooser = null;
   }
 
   static get properties() {
@@ -249,7 +254,7 @@ class LeftSideBar extends LitElementI18n {
         const feature = content.getFeature(i);
         if (feature.getProperty(attributeKey) === attributeValue) {
           removeTileLoadListener();
-          this.searchedFeature = feature;
+          this.queryManager.selectTile(feature);
           return;
         }
       }
@@ -258,7 +263,7 @@ class LeftSideBar extends LitElementI18n {
 
   update(changedProperties) {
     if (this.viewer && !this.layerActions) {
-      this.layerActions = new LayersActions(this.viewer);
+      this.layerActions = new LayersActions(this.viewer, this.mapChooser);
       // Handle queries (local and Swisstopo)
       this.queryManager = new QueryManager(this.viewer);
       if (!this.catalogLayers) {
@@ -269,16 +274,13 @@ class LeftSideBar extends LitElementI18n {
         this.globeQueueLength_ = queueLength;
       });
     }
-    if (this.searchedFeature) {
-      this.queryManager.selectTile(this.searchedFeature);
-      this.searchedFeature = undefined;
-    }
     super.update(changedProperties);
   }
 
   updated(changedProperties) {
-    if (this.viewer && !this.accordionInited) {
-      this.initBarAccordions();
+    if (this.viewer) {
+      !this.accordionInited && this.initBarAccordions();
+      !this.zoomedToPosition && this.zoomToPermalinkObject();
     }
 
     if (changedProperties.has('authenticated') && !this.authenticated) {
@@ -455,6 +457,7 @@ class LeftSideBar extends LitElementI18n {
   }
 
   zoomToPermalinkObject() {
+    this.zoomedToPosition = true;
     const zoomToPosition = getZoomToPosition();
     if (zoomToPosition) {
       let altitude = undefined, cartesianPosition = undefined, windowPosition = undefined;

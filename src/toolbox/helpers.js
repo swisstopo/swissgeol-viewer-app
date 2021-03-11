@@ -1,7 +1,7 @@
 import {
   HIGHLIGHTED_AOI_COLOR,
   DEFAULT_AOI_COLOR,
-  CESIUM_NOT_GRAPHICS_ENTITY_PROPS, CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_AOI_VOLUME_COLOR
+  CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_AOI_VOLUME_COLOR
 } from '../constants.js';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 
@@ -16,15 +16,6 @@ export function updateColor(entity, selected) {
   }
   const entityType = entity.polygon ? 'polygon' : 'polyline';
   entity[entityType].material = selected ? HIGHLIGHTED_AOI_COLOR : DEFAULT_AOI_COLOR;
-}
-
-export function cleanupUploadedEntity(entity) {
-  const availableProps = [...CESIUM_NOT_GRAPHICS_ENTITY_PROPS, ...CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD];
-  const invalidProps = entity.propertyNames.filter(prop => !availableProps.includes(prop));
-  invalidProps.forEach(prop => {
-    entity[prop] = undefined;
-  });
-  return entity;
 }
 
 export function getUploadedEntityType(entity) {

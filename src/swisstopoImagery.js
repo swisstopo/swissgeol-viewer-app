@@ -75,14 +75,14 @@ export function getLayersConfig() {
 /**
  * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  * @param {string} layer
- * @param {string} format
- * @param {boolean} show
+ * @param {'png' | 'jpeg'} format
+ * @param {string} timestamp
  * @return {ImageryLayer}
  */
-export function addSwisstopoLayer(viewer, layer, format, show = true) {
+export function addSwisstopoLayer(viewer, layer, format, timestamp = 'current') {
   const url = layerUrlTemplate
     .replace('{layer}', layer)
-    .replace('{timestamp}', 'current')
+    .replace('{timestamp}', timestamp)
     .replace('{format}', format);
 
   const imageryLayer = new ImageryLayer(
@@ -90,7 +90,9 @@ export function addSwisstopoLayer(viewer, layer, format, show = true) {
       rectangle: SWITZERLAND_RECTANGLE,
       credit: new Credit('swisstopo'),
       url: url
-    }), {show});
+    }), {
+      show: false
+    });
   viewer.scene.imageryLayers.add(imageryLayer);
 
   return imageryLayer;

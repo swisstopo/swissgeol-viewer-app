@@ -4,7 +4,7 @@ import {LitElementI18n} from '../i18n.js';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/slider.js';
 import './ngm-map-chooser.js';
-import {syncMapTransparencyParam} from '../permalink.js';
+import {getMapTransparencyParam, syncMapTransparencyParam} from '../permalink.js';
 
 class NgmMapConfiguration extends LitElementI18n {
 
@@ -27,37 +27,46 @@ class NgmMapConfiguration extends LitElementI18n {
     this.mapChooser = null;
   }
 
+
+  updateTransparency(selectedMap) {
+    const val = this.transparencySlider.slider('get value');
+    if (val === 0) {
+      this.viewer.scene.globe.translucency.enabled = !!selectedMap.hasAlphaChannel;
+      this.viewer.scene.globe.translucency.backFaceAlpha = 1;
+    } else {
+      this.viewer.scene.globe.translucency.backFaceAlpha = 0;
+      this.viewer.scene.globe.translucency.frontFaceAlpha = 1 - val;
+      if (!this.viewer.scene.globe.translucency.enabled) {
+        this.viewer.scene.globe.translucency.enabled = true;
+      }
+    }
+    this.viewer.scene.requestRender();
+    syncMapTransparencyParam(val);
+  }
+
+
   firstUpdated() {
     this.mapChooser.initMapChooser(this.querySelector('ngm-map-chooser'));
 
-    $('#ngm-transparency-slider').slider({
+    const transparencyParam = getMapTransparencyParam();
+    const transparency = !isNaN(transparencyParam) ? 1 - transparencyParam : 0.6;
+
+    this.transparencySlider = $(this.querySelector('.slider'));
+    this.transparencySlider.slider({
       min: 0,
       max: 1,
-      start: 1 - this.viewer.scene.globe.translucency.frontFaceAlpha,
+      start: 1 - transparency,
       step: 0.01,
-      onMove: (val) => {
-        if (val === 0) {
-          this.viewer.scene.globe.translucency.enabled = false;
-          this.viewer.scene.globe.translucency.backFaceAlpha = 1;
-        } else {
-          this.viewer.scene.globe.translucency.backFaceAlpha = 0;
-          this.viewer.scene.globe.translucency.frontFaceAlpha = 1 - val;
-          if (!this.viewer.scene.globe.translucency.enabled) {
-            this.viewer.scene.globe.translucency.enabled = true;
-          }
-        }
-        this.viewer.scene.requestRender();
-        syncMapTransparencyParam(val);
-      }
+      onMove: () => this.updateTransparency(this.mapChooser.selectedMap)
     });
   }
 
   render() {
     return html`
-      <ngm-map-chooser></ngm-map-chooser>
+      <ngm-map-chooser @change="${(event) => this.updateTransparency(event.detail.active)}"></ngm-map-chooser>
       <div class="ngm-displayed-container">
         <label>${i18next.t('dtd_transparency_label')}</label>
-        <div class="ui grey small slider" id="ngm-transparency-slider"></div>
+        <div class="ui grey small slider"></div>
       </div>
       `;
   }

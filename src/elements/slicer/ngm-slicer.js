@@ -14,18 +14,18 @@ class NgmSlicer extends LitElementI18n {
     super();
 
     /**
-     * @type {import('../../Slicer').default}
+     * @type {import('../../slicer/Slicer').default}
      */
     this.slicer = null;
   }
 
-  toggleSlicer(box) {
+  toggleSlicer(type) {
     const active = this.slicer.active;
-    const boxOptionChanged = this.slicer.sliceOptions.box !== box;
+    const boxOptionChanged = this.slicingType !== type;
     this.slicer.active = false;
     if (!active || boxOptionChanged) {
       this.slicer.sliceOptions = {
-        box: box,
+        type: type,
         deactivationCallback: () => this.onDeactivation()
       };
       this.slicer.active = true;
@@ -39,6 +39,10 @@ class NgmSlicer extends LitElementI18n {
     this.requestUpdate();
   }
 
+  get slicingType() {
+    return this.slicer.sliceOptions.type;
+  }
+
   render() {
     if (this.slicer) {
       return html`
@@ -46,16 +50,16 @@ class NgmSlicer extends LitElementI18n {
           data-tooltip=${i18next.t('nav_slice_hint')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button ${this.sliceEnabled && !this.slicer.sliceOptions.box ? 'grey' : ''}"
-          @pointerdown="${() => this.toggleSlicer(false)}">
+          class="ui compact mini icon button ${this.sliceEnabled && this.slicingType === 'view-line' ? 'grey' : ''}"
+          @pointerdown="${() => this.toggleSlicer('view-line')}">
             <i class="cut icon"></i>
         </button>
         <button
           data-tooltip=${i18next.t('nav_box_slice_hint')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button ${this.sliceEnabled && this.slicer.sliceOptions.box ? 'grey' : ''}"
-          @pointerdown="${() => this.toggleSlicer(true)}">
+          class="ui compact mini icon button ${this.sliceEnabled && this.slicingType === 'view-box' ? 'grey' : ''}"
+          @pointerdown="${() => this.toggleSlicer('view-box')}">
             <i class="cube icon"></i>
         </button>
       `;

@@ -200,7 +200,7 @@ class NgmGstInteraction extends LitElementI18n {
                         @click=${this.getGST}>
                         ${i18next.t('tbx_create_section_label')}
                 </button>
-                <button class="ui button ngm-tools-btn"><i class="tools icon"></i></button>
+                <button class="ui icon button ngm-tools-btn"><i class="tools icon"></i></button>
             </div>
         </div>
         <div class="ui mini popup ngm-section-configuration">
