@@ -56,9 +56,9 @@ export default class EarthquakeVisualizer {
             }
           });
         });
+        this.boundingSphere = BoundingSphere.fromRectangle3D(this.boundingRectangle);
       });
     });
-    this.boundingSphere = BoundingSphere.fromRectangle3D(this.boundingRectangle);
   }
 
   async setVisible(visible) {
