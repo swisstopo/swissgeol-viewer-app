@@ -9,6 +9,9 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 
 export default class EarthquakeVisualizer {
+  /**
+   * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
+   */
   constructor(viewer) {
     this.viewer = viewer;
     this.earthquakeDataSource = new CustomDataSource(LAYER_TYPES.earthquakes);
@@ -61,6 +64,9 @@ export default class EarthquakeVisualizer {
     });
   }
 
+  /**
+   * @param {boolean} visible
+   */
   async setVisible(visible) {
     const entities = this.earthquakeDataSource.entities.values;
     if (entities && entities.length) {
@@ -72,6 +78,9 @@ export default class EarthquakeVisualizer {
     }
   }
 
+  /**
+   * @param {number} opacity
+   */
   setOpacity(opacity) {
     const entities = this.earthquakeDataSource.entities.values;
     entities.forEach(entity => {

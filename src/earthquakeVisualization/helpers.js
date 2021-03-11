@@ -20,7 +20,7 @@ export function parseEarthquakeData(data) {
 /**
  * Returns color for earthquake sphere according to age.
  * From dark blue (age < 24h - rgb(24, 48, 59)), to light blue (age < 90d - rgb(130, 165, 179))
- * @param datetime
+ * @param {string} datetime
  * @returns {Color}
  */
 export function getColorFromTime(datetime) {
