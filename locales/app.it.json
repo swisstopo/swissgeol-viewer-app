@@ -202,7 +202,13 @@
   "tbx_volume_hint": "",
   "tbx_volume_lower_limit_label": "",
   "tbx_website_label": "",
+  "welcome_copy_btn_label": "",
+  "welcome_copy_guide": "",
+  "welcome_get_shortlink_error": "",
   "welcome_instructions": "",
   "welcome_label": "",
+  "welcome_share_link_label": "",
+  "welcome_shortlink_copied": "",
+  "welcome_shortlink_placeholder": "",
   "welcome_text": ""
 }

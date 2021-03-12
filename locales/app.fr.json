@@ -202,7 +202,13 @@
   "tbx_volume_hint": "Appuyez sur le bouton 'Modifier' pour changer la hauteur ou la position du volume",
   "tbx_volume_lower_limit_label": "Limite inférieure",
   "tbx_website_label": "URL site web",
+  "welcome_copy_btn_label": "",
+  "welcome_copy_guide": "",
+  "welcome_get_shortlink_error": "",
   "welcome_instructions": "Naviguez avec la souris et utilisez 'CTRL' pour incliner la vue 3D",
   "welcome_label": "swissgeol.ch",
+  "welcome_share_link_label": "",
+  "welcome_shortlink_copied": "",
+  "welcome_shortlink_placeholder": "",
   "welcome_text": "Bienvenue dans swissgeol.ch le visualisateur 3D du sous-sol !"
 }

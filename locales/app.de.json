@@ -202,7 +202,13 @@
   "tbx_volume_hint": "Bitte 'Bearbeiten' um die Höhe oder die Position der Geometrie anzupassen",
   "tbx_volume_lower_limit_label": "Untergrenze",
   "tbx_website_label": "Website URL",
+  "welcome_copy_btn_label": "",
+  "welcome_copy_guide": "",
+  "welcome_get_shortlink_error": "",
   "welcome_instructions": "Navigieren Sie mit der Maus und drücken Sie 'CTRL', um die 3D-Ansicht zu kippen",
   "welcome_label": "swissgeol.ch",
+  "welcome_share_link_label": "",
+  "welcome_shortlink_copied": "",
+  "welcome_shortlink_placeholder": "",
   "welcome_text": "Willkommen bei swissgeol.ch, dem 3D-Untergrundviewer!"
 }

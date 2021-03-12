@@ -335,3 +335,8 @@ ngm-slicer {
   font-size: 0.5rem;
   vertical-align: bottom;
 }
+
+.ui.input.ngm-share-link {
+  display: flex;
+}
+
