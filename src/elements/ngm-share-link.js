@@ -6,17 +6,20 @@ import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
 import './ngm-i18n-content.js';
 import {SHORTLINK_HOST_BY_PAGE_HOST} from '../constants';
+import {classMap} from 'lit-html/directives/class-map.js';
 
 class NgmShareLink extends LitElementI18n {
 
   static get properties() {
     return {
-      shortlink: {type: String}
+      shortlink: {attribute: false},
+      displayLoader: {attribute: false}
     };
   }
 
   constructor() {
     super();
+    this.displayLoader = false;
     this.shortlink = i18next.t('welcome_shortlink_placeholder');
   }
 
@@ -47,9 +50,7 @@ class NgmShareLink extends LitElementI18n {
         }),
       });
       const response = await result.json();
-      if (response && response.url_short) {
-        return response.url_short;
-      }
+      return response ? response.url_short : undefined;
     } catch (e) {
       console.error(e);
       showWarning(i18next.t('welcome_get_shortlink_error'));
@@ -62,9 +63,7 @@ class NgmShareLink extends LitElementI18n {
     try {
       const inputElement = this.querySelector('.ngm-share-link > input');
       this.shortlink = await this.getShortlink();
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(this.shortlink);
-      }
+      await navigator.clipboard.writeText(this.shortlink);
       inputElement.select();
       $(inputElement).popup('show');
       setTimeout(() => $(inputElement).popup('hide'), 2000);
@@ -76,20 +75,16 @@ class NgmShareLink extends LitElementI18n {
   }
 
   toggleLoader() {
-    const btnElement = this.querySelector('.ngm-share-link > button');
-    const inputElement = this.querySelector('.ngm-share-link > input');
-    btnElement.classList.toggle('disabled');
-    inputElement.disabled = !inputElement.disabled;
-    btnElement.querySelector('.dimmer').classList.toggle('active');
+    this.displayLoader = !this.displayLoader;
   }
 
   render() {
     return html`
       <p>${i18next.t('welcome_share_link_label')}</p>
       <div class="ui mini action input ngm-share-link">
-        <input type="text" readonly value="${this.shortlink}" @click=${this.onClick}>
-        <button class="ui mini button" @click=${this.onClick}>
-          <div class="ui very light dimmer">
+        <input type="text" class="${classMap({disabled: this.displayLoader})}" readonly value="${this.shortlink}" @click=${this.onClick}>
+        <button class="ui mini button ${classMap({disabled: this.displayLoader})}" @click=${this.onClick}>
+          <div class="ui very light dimmer ${classMap({active: this.displayLoader})}">
             <div class="ui tiny loader"></div>
           </div>
           ${i18next.t('welcome_copy_btn_label')}
