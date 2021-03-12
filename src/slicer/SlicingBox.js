@@ -7,7 +7,7 @@ import {
   createClippingPlanes, getBboxFromRectangle,
   getBboxFromViewRatio,
   getClippingPlaneFromSegment,
-  getOffsetFromBbox
+  getOffsetFromBbox, moveSlicingBoxCorners
 } from './helper';
 import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
@@ -132,41 +132,43 @@ export default class SlicingBox extends SlicingToolBase {
   }
 
   onPlaneMove(side, moveAmount, moveVector) {
+    let bothSideMove = false;
+    const corners = this.bbox.corners;
     switch (side) {
       case 'left': {
-        Cartesian3.add(this.bbox.corners.bottomLeft, moveVector, this.bbox.corners.bottomLeft);
-        Cartesian3.add(this.bbox.corners.topLeft, moveVector, this.bbox.corners.topLeft);
+        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.bottomLeft, corners.topRight, corners.bottomRight, moveVector);
         break;
       }
       case 'right': {
-        Cartesian3.add(this.bbox.corners.bottomRight, moveVector, this.bbox.corners.bottomRight);
-        Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
+        bothSideMove = moveSlicingBoxCorners(corners.topRight, corners.bottomRight, corners.topLeft, corners.bottomLeft, moveVector);
         break;
       }
       case 'front': {
-        Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
-        Cartesian3.add(this.bbox.corners.topLeft, moveVector, this.bbox.corners.topLeft);
+        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.topRight, corners.bottomLeft, corners.bottomRight, moveVector);
         break;
       }
       case 'back': {
-        Cartesian3.add(this.bbox.corners.bottomRight, moveVector, this.bbox.corners.bottomRight);
-        Cartesian3.add(this.bbox.corners.bottomLeft, moveVector, this.bbox.corners.bottomLeft);
+        bothSideMove = moveSlicingBoxCorners(corners.bottomLeft, corners.bottomRight, corners.topLeft, corners.topRight, moveVector);
         break;
       }
       case 'up':
       case 'down': {
         let boxHeight = this.bbox.height;
         side === 'down' ? boxHeight += moveAmount : boxHeight -= moveAmount;
-        boxHeight = boxHeight < SLICING_BOX_MIN_SIZE ? undefined : boxHeight;
-        if (!boxHeight) return;
-        this.bbox.height = boxHeight;
+        if (boxHeight < SLICING_BOX_MIN_SIZE) {
+          side === 'down' ? this.upPlane.distance -= moveAmount : this.downPlane.distance += moveAmount;
+          bothSideMove = true;
+        }
+        this.bbox.height = boxHeight < SLICING_BOX_MIN_SIZE ? SLICING_BOX_MIN_SIZE : boxHeight;
         side === 'down' ? this.downPlane.distance += moveAmount : this.upPlane.distance -= moveAmount;
         break;
       }
     }
-    this.bbox.width = Cartesian3.distance(this.bbox.corners.topLeft, this.bbox.corners.bottomLeft);
-    this.bbox.length = Cartesian3.distance(this.bbox.corners.bottomRight, this.bbox.corners.bottomLeft);
-    Cartesian3.divideByScalar(moveVector, 2, moveVector);
+    this.bbox.width = Cartesian3.distance(corners.topLeft, corners.bottomLeft);
+    this.bbox.length = Cartesian3.distance(corners.bottomRight, corners.bottomLeft);
+    if (!bothSideMove) {
+      Cartesian3.divideByScalar(moveVector, 2, moveVector);
+    }
     Cartesian3.add(this.boxCenter, moveVector, this.boxCenter);
     this.syncPlanes();
   }
