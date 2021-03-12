@@ -38,7 +38,7 @@ class NgmShareLink extends LitElementI18n {
 
   async getShortlink() {
     try {
-      const result = await fetch('https://94cf3dc1-9819-4573-9556-2b54b4943629.mock.pstmn.io/admin_shrink_url', {
+      const result = await fetch('https://861meyuffd.execute-api.us-west-2.amazonaws.com/test/admin_shrink_url', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;charset=UTF-8'
