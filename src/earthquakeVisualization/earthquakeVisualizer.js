@@ -11,9 +11,11 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 export default class EarthquakeVisualizer {
   /**
    * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
+   * @param {Object} config
    */
-  constructor(viewer) {
+  constructor(viewer, config) {
     this.viewer = viewer;
+    this.config = config;
     this.earthquakeDataSource = new CustomDataSource(LAYER_TYPES.earthquakes);
     this.viewer.dataSources.add(this.earthquakeDataSource);
     this.boundingSphere = null;
@@ -55,7 +57,8 @@ export default class EarthquakeVisualizer {
             },
             properties: {
               ...data,
-              zoomHeadingPitchRange
+              propsOrder: this.config.propsOrder,
+              zoomHeadingPitchRange: zoomHeadingPitchRange
             }
           });
         });
