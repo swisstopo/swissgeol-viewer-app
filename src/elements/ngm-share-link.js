@@ -92,11 +92,10 @@ class NgmShareLink extends LitElementI18n {
       <p>${i18next.t('welcome_share_link_label')}</p>
       <div class="ui mini action input ngm-share-link">
         <input type="text" readonly value="${this.shortlink}" @click=${this.onClick}>
-        <button class="ui mini right labeled icon button" @click=${this.onClick}>
+        <button class="ui mini button" @click=${this.onClick}>
           <div class="ui very light dimmer">
             <div class="ui tiny loader"></div>
           </div>
-          <i class="copy icon"></i>
           ${i18next.t('welcome_copy_btn_label')}
         </button>
       </div>`;
