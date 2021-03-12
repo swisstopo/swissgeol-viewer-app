@@ -34,8 +34,8 @@ export default class EarthquakeVisualizer {
     fetch('https://download.swissgeol.ch/earthquakes/earthquakes.txt').then(response => {
       response.text().then(text => {
         parseEarthquakeData(text).map(data => {
-          const size = Number(data.Magnitude) * EARTHQUAKE_SPHERE_SIZE_COEF;
-          const depthMeters = Number(data.Depthkm) * 1000; // convert km to m
+          const size = Number(data.Magnitude.split(' ')[0]) * EARTHQUAKE_SPHERE_SIZE_COEF;
+          const depthMeters = Number(data.Depthkm.split(' ')[0]) * 1000; // convert km to m
           const longitude = Number(data.Longitude);
           const latitude = Number(data.Latitude);
           const position = Cartesian3.fromDegrees(longitude, latitude, -depthMeters);
