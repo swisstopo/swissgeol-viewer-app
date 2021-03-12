@@ -40,6 +40,8 @@ export default class EarthquakeVisualizer {
           const depthMeters = Number(data.Depthkm.split(' ')[0]) * 1000; // convert km to m
           const longitude = Number(data.Longitude);
           const latitude = Number(data.Latitude);
+          delete data.Longitude;
+          delete data.Latitude;
           const position = Cartesian3.fromDegrees(longitude, latitude, -depthMeters);
           const cameraDistance = size * 4;
           const zoomHeadingPitchRange = new HeadingPitchRange(0, CMath.toRadians(25), cameraDistance);

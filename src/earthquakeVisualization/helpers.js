@@ -22,8 +22,12 @@ export function parseEarthquakeData(data) {
         case 'Depthkm':
           earthquakeData[propsArr[i]] = parseFloat(valuesArr[i]).toFixed(1).toString() + ' km';
           break;
-        default:
+        case 'EventLocationName':
+        case 'Latitude':
+        case 'Longitude':
           earthquakeData[propsArr[i]] = valuesArr[i];
+          break;
+        default:
           break;
       }
     }
