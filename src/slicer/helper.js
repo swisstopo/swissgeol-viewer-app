@@ -33,7 +33,7 @@ export function getOffsetFromBbox(primitive, bbox) {
   const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
   const transformCartographic = Cartographic.fromCartesian(transformCenter);
   if (transformCartographic) {
-    z = -Cartographic.fromCartesian(bbox.center).height + transformCartographic.height;
+    z = transformCartographic.height;
   } else {
     const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
     z = -Cartographic.fromCartesian(bbox.center).height + boundingSphereCartographic.height;
