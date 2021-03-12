@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
 import './ngm-i18n-content.js';
+import {SHORTLINK_HOST_BY_PAGE_HOST} from '../constants';
 
 class NgmShareLink extends LitElementI18n {
 
@@ -37,15 +38,16 @@ class NgmShareLink extends LitElementI18n {
   }
 
   async getShortlink() {
+    const serviceHost = SHORTLINK_HOST_BY_PAGE_HOST[window.location.host];
     try {
-      const result = await fetch('https://jxiyyahp51.execute-api.us-west-2.amazonaws.com/dev/url_shortener', {
+      const result = await fetch(`https://${serviceHost}/admin_shrink_url`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;charset=UTF-8'
         },
         body: JSON.stringify({
           'url_long': window.location.href,
-          'cdn_prefix': window.location.host
+          'cdn_prefix': serviceHost
         }),
       });
       const response = await result.json();

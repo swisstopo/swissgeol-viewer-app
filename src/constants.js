@@ -88,3 +88,12 @@ export const DEFAULT_CONFIG_FOR_SLICING_ARROW = {
 export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/';
 export const SWISSFORAGES_EDITOR_URL = `${SWISSFORAGES_VIEWER_URL}editor/`;
 export const SWISSFORAGES_API_URL = `${SWISSFORAGES_VIEWER_URL}api/v1`;
+
+export const SHORTLINK_HOST_BY_PAGE_HOST = {
+  'localhost:8000': 'link.dev.swissgeol.ch',
+  'review.swissgeol.ch': 'link.dev.swissgeol.ch',
+  'dev.swissgeol.ch': 'link.dev.swissgeol.ch',
+  'int.swissgeol.ch': 'link.int.swissgeol.ch',
+  'beta.swissgeol.ch': 'link.swissgeol.ch',
+  'swissgeol.ch': 'link.swissgeol.ch',
+};
