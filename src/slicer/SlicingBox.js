@@ -132,25 +132,33 @@ export default class SlicingBox extends SlicingToolBase {
   }
 
   onPlaneMove(side, moveAmount, moveVector) {
+    let bothSideMove = false;
+    const moveCorners = (position1, position2, oppositePosition1, oppositePosition2) => {
+      const initialDistance = Cartesian3.distance(position1, oppositePosition1);
+      Cartesian3.add(position1, moveVector, position1);
+      Cartesian3.add(position2, moveVector, position2);
+      const newDistance = Cartesian3.distance(position1, oppositePosition1);
+      if (initialDistance > newDistance && newDistance < SLICING_BOX_MIN_SIZE) {
+        Cartesian3.add(oppositePosition1, moveVector, oppositePosition1);
+        Cartesian3.add(oppositePosition2, moveVector, oppositePosition2);
+        bothSideMove = true;
+      }
+    };
     switch (side) {
       case 'left': {
-        Cartesian3.add(this.bbox.corners.bottomLeft, moveVector, this.bbox.corners.bottomLeft);
-        Cartesian3.add(this.bbox.corners.topLeft, moveVector, this.bbox.corners.topLeft);
+        moveCorners(this.bbox.corners.topLeft, this.bbox.corners.bottomLeft, this.bbox.corners.topRight, this.bbox.corners.bottomRight);
         break;
       }
       case 'right': {
-        Cartesian3.add(this.bbox.corners.bottomRight, moveVector, this.bbox.corners.bottomRight);
-        Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
+        moveCorners(this.bbox.corners.topRight, this.bbox.corners.bottomRight, this.bbox.corners.topLeft, this.bbox.corners.bottomLeft);
         break;
       }
       case 'front': {
-        Cartesian3.add(this.bbox.corners.topRight, moveVector, this.bbox.corners.topRight);
-        Cartesian3.add(this.bbox.corners.topLeft, moveVector, this.bbox.corners.topLeft);
+        moveCorners(this.bbox.corners.topLeft, this.bbox.corners.topRight, this.bbox.corners.bottomLeft, this.bbox.corners.bottomRight);
         break;
       }
       case 'back': {
-        Cartesian3.add(this.bbox.corners.bottomRight, moveVector, this.bbox.corners.bottomRight);
-        Cartesian3.add(this.bbox.corners.bottomLeft, moveVector, this.bbox.corners.bottomLeft);
+        moveCorners(this.bbox.corners.bottomLeft, this.bbox.corners.bottomRight, this.bbox.corners.topLeft, this.bbox.corners.topRight);
         break;
       }
       case 'up':
@@ -166,7 +174,9 @@ export default class SlicingBox extends SlicingToolBase {
     }
     this.bbox.width = Cartesian3.distance(this.bbox.corners.topLeft, this.bbox.corners.bottomLeft);
     this.bbox.length = Cartesian3.distance(this.bbox.corners.bottomRight, this.bbox.corners.bottomLeft);
-    Cartesian3.divideByScalar(moveVector, 2, moveVector);
+    if (!bothSideMove) {
+      Cartesian3.divideByScalar(moveVector, 2, moveVector);
+    }
     Cartesian3.add(this.boxCenter, moveVector, this.boxCenter);
     this.syncPlanes();
   }
