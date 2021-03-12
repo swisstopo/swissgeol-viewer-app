@@ -209,5 +209,6 @@
   "welcome_label": "swissgeol.ch",
   "welcome_share_link_label": "Share link:",
   "welcome_shortlink_copied": "Link copied",
+  "welcome_shortlink_placeholder": "Click to get link",
   "welcome_text": "Welcome to swissgeol.ch, the 3D subsurface viewer!"
 }

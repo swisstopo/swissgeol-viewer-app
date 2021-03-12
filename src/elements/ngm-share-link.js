@@ -17,11 +17,7 @@ class NgmShareLink extends LitElementI18n {
 
   constructor() {
     super();
-
-    this.shortlink = window.location.href;
-    this.getShortlink().then(link => {
-      this.shortlink = link;
-    });
+    this.shortlink = i18next.t('welcome_shortlink_placeholder');
   }
 
   firstUpdated() {
