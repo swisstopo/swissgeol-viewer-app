@@ -1,5 +1,4 @@
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime} from './helpers.js';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
@@ -32,7 +31,6 @@ export default class EarthquakeVisualizer {
   }
 
   async showEarthquakes() {
-    // add { mode: 'no-cors'} to make localhost work
     fetch('https://download.swissgeol.ch/earthquakes/earthquakes.txt').then(response => {
       response.text().then(text => {
         parseEarthquakeData(text).map(data => {
@@ -55,7 +53,6 @@ export default class EarthquakeVisualizer {
             ellipsoid: {
               radii: new Cartesian3(size, size, size),
               material: getColorFromTime(data.Time),
-              heightReference: HeightReference.RELATIVE_TO_GROUND
             },
             properties: {
               ...data,

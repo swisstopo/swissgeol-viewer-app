@@ -11,16 +11,16 @@ export function parseEarthquakeData(data) {
   return values.map(val => {
     const valuesArr = val.split('|');
     const earthquakeData = {};
-    for (const i in [...propsArr.keys()]) {
+    for (const i in propsArr) {
       switch (propsArr[i]) {
         case 'Time':
           earthquakeData[propsArr[i]] = valuesArr[i].split('.')[0].replace('T', ' ');
           break;
         case 'Magnitude':
-          earthquakeData[propsArr[i]] = parseFloat(valuesArr[i]).toFixed(1).toString() + ' MLhc';
+          earthquakeData[propsArr[i]] = parseFloat(valuesArr[i]).toFixed(1) + ' MLhc';
           break;
         case 'Depthkm':
-          earthquakeData[propsArr[i]] = parseFloat(valuesArr[i]).toFixed(1).toString() + ' km';
+          earthquakeData[propsArr[i]] = parseFloat(valuesArr[i]).toFixed(1) + ' km';
           break;
         case 'EventLocationName':
         case 'Latitude':
