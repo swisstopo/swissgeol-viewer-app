@@ -13,11 +13,29 @@ class NgmDropFiles extends LitElementI18n {
     };
   }
 
-  firstUpdated() {
+  constructor() {
+    super();
+
+    /**
+     * @type {HTMLElement}
+     */
+    this.target;
+
+    this.onDragEnterFunction = this.onDragEnter.bind(this);
+  }
+
+  connectedCallback() {
     this.dimmer = this.querySelector('.ui.dimmer');
     this.target.addEventListener('dragover', cancel, false);
-    this.target.addEventListener('dragenter', event => this.onDragEnter(event), false);
+    this.target.addEventListener('dragenter', this.onDragEnterFunction, false);
     // dragleave and drop events are triggered by the dimmer
+    super.connectedCallback();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.target.removeEventListener('dragover', cancel, false);
+    this.target.removeEventListener('dragenter', this.onDragEnterFunction, false);
   }
 
   onDragEnter(event) {
