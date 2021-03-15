@@ -104,7 +104,7 @@ export default class SlicingBox extends SlicingToolBase {
 
   addClippingPlanes(primitive) {
     if (!primitive.root || !primitive.boundingSphere) return;
-    this.offsets[primitive.url] = getOffsetFromBbox(primitive, this.bbox);
+    this.offsets[primitive.basePath] = getOffsetFromBbox(primitive, this.bbox);
     primitive.clippingPlanes = createClippingPlanes([...this.sidePlanes, ...this.zPlanes]);
     this.syncPlanes();
   }
@@ -215,7 +215,7 @@ export default class SlicingBox extends SlicingToolBase {
       if (primitive.root && primitive.boundingSphere) {
         const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
         const tileCenter = Cartesian3.equals(transformCenter, Cartesian3.ZERO) ? primitive.boundingSphere.center : transformCenter;
-        this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.url], tileCenter);
+        this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.basePath], tileCenter);
       }
     });
   }
