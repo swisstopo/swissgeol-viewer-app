@@ -1,5 +1,5 @@
 import {html} from 'lit-element';
-
+import {classMap} from 'lit-html/directives/class-map';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 
@@ -10,6 +10,7 @@ class NgmDropFiles extends LitElementI18n {
   static get properties() {
     return {
       target: {type: Object},
+      active: {type: Boolean},
     };
   }
 
@@ -21,11 +22,19 @@ class NgmDropFiles extends LitElementI18n {
      */
     this.target;
 
+    /**
+     * @type {boolean}
+     */
+    this.active = false;
+
     this.onDragEnterFunction = this.onDragEnter.bind(this);
   }
 
-  connectedCallback() {
+  firstUpdated() {
     this.dimmer = this.querySelector('.ui.dimmer');
+  }
+
+  connectedCallback() {
     this.target.addEventListener('dragover', cancel, false);
     this.target.addEventListener('dragenter', this.onDragEnterFunction, false);
     // dragleave and drop events are triggered by the dimmer
@@ -38,19 +47,30 @@ class NgmDropFiles extends LitElementI18n {
     this.target.removeEventListener('dragenter', this.onDragEnterFunction, false);
   }
 
+  /**
+   * @param {DragEvent} event
+   */
   onDragEnter(event) {
     cancel(event);
-    this.dimmer.classList.add('active');
+    this.active = true;
   }
-  onDragLeave(event) {
+
+  /**
+   * @param {DragEvent} event
+   */
+   onDragLeave(event) {
     if (event.target === this.dimmer) {
       cancel(event);
-      this.dimmer.classList.remove('active');
+      this.active = false;
     }
   }
-  onDrop(event) {
+
+  /**
+   * @param {DragEvent} event
+   */
+   onDrop(event) {
     cancel(event);
-    this.dimmer.classList.remove('active');
+    this.active = false;
     for (const file of event.dataTransfer.files) {
       this.dispatchEvent(new CustomEvent('filedrop', {
         detail: {
@@ -62,7 +82,7 @@ class NgmDropFiles extends LitElementI18n {
 
   render() {
     return html`
-      <div class="ui page dimmer" @drop="${event => this.onDrop(event)}" @dragleave="${event => this.onDragLeave(event)}">
+      <div class="ui page dimmer ${classMap({active: this.active})}" @drop="${event => this.onDrop(event)}" @dragleave="${event => this.onDragLeave(event)}">
         <div class="content"><h1>${i18next.t('drop_file_message')}</h1></div>
       </div>
     `;
