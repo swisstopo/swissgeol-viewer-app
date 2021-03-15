@@ -262,7 +262,7 @@ class NgmApp extends LitElementI18n {
         </div>
       </header>
       <main>
-        <ngm-drop-files @filedrop="${event => this.onFileDrop(event.detail.file)}" target="body"></ngm-drop-files>
+        <ngm-drop-files @filedrop="${event => this.onFileDrop(event.detail.file)}" .target="${document.body}"></ngm-drop-files>
         <ngm-loading-mask></ngm-loading-mask>
         <ngm-left-side-bar
           .authenticated=${this.authenticated}

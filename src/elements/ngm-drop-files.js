@@ -9,15 +9,14 @@ class NgmDropFiles extends LitElementI18n {
 
   static get properties() {
     return {
-      target: {type: String},
+      target: {type: Object},
     };
   }
 
   firstUpdated() {
     this.dimmer = this.querySelector('.ui.dimmer');
-    const target = document.querySelector(this.target);
-    target.addEventListener('dragover', cancel, false);
-    target.addEventListener('dragenter', event => this.onDragEnter(event), false);
+    this.target.addEventListener('dragover', cancel, false);
+    this.target.addEventListener('dragenter', event => this.onDragEnter(event), false);
     // dragleave and drop events are triggered by the dimmer
   }
 
