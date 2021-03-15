@@ -1,4 +1,4 @@
-import {html, css} from 'lit-element';
+import {html} from 'lit-element';
 
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
@@ -11,12 +11,6 @@ class NgmDropFiles extends LitElementI18n {
     return {
       target: {type: String},
     };
-  }
-
-  static get styles() {
-    return css`
-
-    `;
   }
 
   firstUpdated() {
