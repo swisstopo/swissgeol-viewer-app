@@ -43,7 +43,7 @@
     "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "autoprefixer": "^10.2.5",
-    "chai": "^4.3.0",
+    "chai": "^4.3.4",
     "copy-webpack-plugin": "6.4.1",
     "core-js": "3.9.1",
     "css-loader": "^5.1.1",
