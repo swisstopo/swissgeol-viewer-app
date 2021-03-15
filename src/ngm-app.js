@@ -147,7 +147,7 @@ class NgmApp extends LitElementI18n {
 
 
   onFileDrop(file) {
-    const aoi = document.querySelector('ngm-aoi-drawer');
+    const aoi = this.querySelector('ngm-aoi-drawer');
     if (file.name.toLowerCase().endsWith('.kml')) {
       aoi.uploadKml(file);
     } else if (file.name.toLowerCase().endsWith('.gpx')) {
