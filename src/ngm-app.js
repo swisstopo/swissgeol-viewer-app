@@ -9,7 +9,7 @@ import './elements/ngm-object-information';
 import './elements/ngm-review-window';
 import './elements/ngm-feature-height';
 import './elements/ngm-auth';
-import {init as initDrop} from './drop.js';
+import './elements/ngm-drop-files';
 
 import {
   DEFAULT_VIEW,
@@ -143,16 +143,16 @@ class NgmApp extends LitElementI18n {
       };
       showMessage(i18next.t('sentry_message'), options);
     }
+  }
 
-    initDrop('.map', (file) => {
-      const aoi = document.querySelector('ngm-aoi-drawer');
-      if (file.name.toLowerCase().endsWith('.kml')) {
-        aoi.uploadKml(file);
-      } else if (file.name.toLowerCase().endsWith('.gpx')) {
-        aoi.uploadGpx(file);
-      }
-    });
 
+  onFileDrop(file) {
+    const aoi = this.querySelector('ngm-aoi-drawer');
+    if (file.name.toLowerCase().endsWith('.kml')) {
+      aoi.uploadKml(file);
+    } else if (file.name.toLowerCase().endsWith('.gpx')) {
+      aoi.uploadGpx(file);
+    }
   }
 
   /**
@@ -262,6 +262,7 @@ class NgmApp extends LitElementI18n {
         </div>
       </header>
       <main>
+        <ngm-drop-files @filedrop="${event => this.onFileDrop(event.detail.file)}" .target="${document.body}"></ngm-drop-files>
         <ngm-loading-mask></ngm-loading-mask>
         <ngm-left-side-bar
           .authenticated=${this.authenticated}

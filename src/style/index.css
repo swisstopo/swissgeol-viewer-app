@@ -38,6 +38,7 @@
 @import 'ngm-camera-information.css';
 @import 'ngm-position-edit.css';
 @import 'ngm-map-chooser.css';
+@import 'ngm-drop-files.css';
 
 [hidden] {
   display: none !important;
