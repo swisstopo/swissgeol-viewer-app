@@ -1,16 +1,5 @@
 import CSVParser from 'papaparse';
 
-
-export async function readTextFile(url) {
-  const response = await fetch(url);
-  try {
-    return await response.text();
-  } catch (e) {
-    console.warn(e);
-  }
-}
-
-
 /**
  * @return {URLSearchParams}
  */

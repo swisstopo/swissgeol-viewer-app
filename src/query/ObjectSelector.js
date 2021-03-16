@@ -6,7 +6,7 @@ import {
   LAYER_TYPES,
   OBJECT_HIGHLIGHT_COLOR, OBJECT_ZOOMTO_RADIUS
 } from '../constants';
-import {extractEntitiesAttributes, extractPrimitiveAttributes, isPickable} from './objectInformation';
+import {extractEntitiesAttributes, extractPrimitiveAttributes, isPickable, sortPropertyNames} from './objectInformation';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import {TemplateResult} from 'lit-element';
@@ -68,7 +68,8 @@ export default class ObjectSelector {
 
   handleEntitySelect(entity, attributes) {
     const props = extractEntitiesAttributes(entity);
-    attributes.properties = Object.entries(props).map(([key, value]) => [key, value]);
+    const orderedProps = sortPropertyNames(Object.keys(props), props.propsOrder);
+    attributes.properties = orderedProps.map((key) => [key, props[key]]);
     const aoiDataSource = this.viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
     const earthquakesDataSource = this.viewer.dataSources.getByName(LAYER_TYPES.earthquakes)[0];
 

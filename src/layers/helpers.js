@@ -17,7 +17,7 @@ import Cesium3DTileColorBlendMode from 'cesium/Source/Scene/Cesium3DTileColorBle
 import AmazonS3Resource from '../AmazonS3Resource.js';
 
 export function createEarthquakeFromConfig(viewer, config) {
-  const earthquakeVisualizer = new EarthquakeVisualizer(viewer);
+  const earthquakeVisualizer = new EarthquakeVisualizer(viewer, config);
   if (config.visible) {
     earthquakeVisualizer.setVisible(true);
   }

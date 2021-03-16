@@ -1,0 +1,30 @@
+name: Earthquake-Fetcher
+
+on:
+  # Run this workflow every night
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '0 10 * * *'
+
+jobs:
+  # Set the job key. The key is displayed as the job name
+  # when a job name is not provided
+  earthquake-fetch:
+    # Name the Job
+    name: Fetch latest earthquakes
+    # Set the type of machine to run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Runs the Earthquake-Fetcher action
+      - name: Run Earthquake-Fetcher
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID_DOWNLOAD}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_DOWNLOAD}}
+          AWS_DEFAULT_REGION: eu-west-1
+        run: scripts/fetch_earthquakes.sh

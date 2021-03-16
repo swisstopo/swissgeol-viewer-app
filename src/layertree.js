@@ -333,7 +333,8 @@ const natural_hazard = {
       layer: 'earthquakes',
       visible: false,
       displayed: true,
-      transparency: DEFAULT_LAYER_TRANSPARENCY
+      transparency: DEFAULT_LAYER_TRANSPARENCY,
+      propsOrder: ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'],
     },
   ]
 };
