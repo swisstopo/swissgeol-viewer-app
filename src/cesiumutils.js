@@ -357,7 +357,7 @@ export function getVectorOrthogonalToView(viewer) {
  * @return {Array<Cartesian3>}
  */
 export function getOrthogonalViewPoints(viewer) {
-  const center = pickCenter(viewer.scene);
+  const center = pickCenterOnEllipsoid(viewer.scene);
   const left = new Cartesian3();
   const right = new Cartesian3();
   const orthogonalVector = getVectorOrthogonalToView(viewer);
