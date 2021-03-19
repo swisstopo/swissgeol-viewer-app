@@ -143,7 +143,7 @@ const geo_base = {
       children: [
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 220432,
+          assetId: 374264,
           label: t('lyr_cross_section_ga25_pixel_label'),
           layer: 'cross_section_ga25_pixel',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
@@ -152,7 +152,9 @@ const geo_base = {
           displayed: false,
           pickable: true,
           zoomToBbox: true,
-          propsOrder: ['ORIG_FID', 'GA25_Nr', 'GA25_Name', 'Autoren', 'Massstab', 'Datei', 'PDF_Link']
+          propsOrder: ['CSGA25Px_Name', 'CSGA25Px_Pub', 'CSGA25Px_ID', 'CSGA25Px_Plate_No', 'CSGA25Px_Section_No',
+            'CSGA25Px_Scale', 'CSGA25Px_Vert_Exag', 'CSGA25Px_Sec_Type', 'CSGA25Px_Author', 'CSGA25Px_Link_Orig',
+            'CSGA25Px_Link_Shp']
         },
         {
           type: LAYER_TYPES.tiles3d,
