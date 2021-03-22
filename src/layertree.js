@@ -132,7 +132,7 @@ const geo_base = {
           pickable: true,
           visible: false,
           displayed: false,
-          restricted: true,
+          restricted: 'ngm-prod-privileged', // the group required to see this layer
           aws_s3_bucket: 'ngm-protected-prod',
           aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
         },
