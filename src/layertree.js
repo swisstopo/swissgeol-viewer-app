@@ -141,19 +141,19 @@ const geo_base = {
     {
       label: t('lyr_cross_section_label'),
       children: [
-        {
-          type: LAYER_TYPES.tiles3d,
-          assetId: 220432,
-          label: t('lyr_cross_section_ga25_pixel_label'),
-          layer: 'cross_section_ga25_pixel',
-          transparency: DEFAULT_LAYER_TRANSPARENCY,
-          backgroundId: 'lakes_rivers_map',
-          visible: false,
-          displayed: false,
-          pickable: true,
-          zoomToBbox: true,
-          propsOrder: ['ORIG_FID', 'GA25_Nr', 'GA25_Name', 'Autoren', 'Massstab', 'Datei', 'PDF_Link']
-        },
+//        {
+//          type: LAYER_TYPES.tiles3d,
+//          assetId: 220432,
+//          label: t('lyr_cross_section_ga25_pixel_label'),
+//          layer: 'cross_section_ga25_pixel',
+//          transparency: DEFAULT_LAYER_TRANSPARENCY,
+//          backgroundId: 'lakes_rivers_map',
+//          visible: false,
+//          displayed: false,
+//          pickable: true,
+//          zoomToBbox: true,
+//          propsOrder: ['ORIG_FID', 'GA25_Nr', 'GA25_Name', 'Autoren', 'Massstab', 'Datei', 'PDF_Link']
+//        },
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 68881,
@@ -188,23 +188,23 @@ const geo_base = {
         }
       ]
     },
-    {
-      label: t('lyr_geophysics_label'),
-      children: [
-        {
-          type: LAYER_TYPES.tiles3d,
-          assetId: 249376,
-          label: t('lyr_seismic_transects_label'),
-          layer: 'seismic_transects',
-          transparency: DEFAULT_LAYER_TRANSPARENCY,
-          backgroundId: 'lakes_rivers_map',
-          pickable: true,
-          visible: false,
-          displayed: false,
-          propsOrder: ['Line', 'Owner', 'Public', 'SRD', 'AcqYear', 'Length', 'data_link']
-        },
-      ]
-    }
+//    {
+//      label: t('lyr_geophysics_label'),
+//      children: [
+//        {
+//          type: LAYER_TYPES.tiles3d,
+//          assetId: 249376,
+//          label: t('lyr_seismic_transects_label'),
+//          layer: 'seismic_transects',
+//          transparency: DEFAULT_LAYER_TRANSPARENCY,
+//          backgroundId: 'lakes_rivers_map',
+//          pickable: true,
+//          visible: false,
+//          displayed: false,
+//          propsOrder: ['Line', 'Owner', 'Public', 'SRD', 'AcqYear', 'Length', 'data_link']
+//        },
+//      ]
+//    }
   ]
 };
 
