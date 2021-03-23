@@ -17,7 +17,7 @@
 }
 
 .ui.checkbox.ngm-displayed-container, .ngm-displayed-container {
-  display: flex;
+  display: block;
   justify-content: space-between;
   align-items: center;
   margin-left: 18px;
@@ -33,6 +33,19 @@
 
 .ngm-displayed-container label {
   margin-right: 10px;
+}
+
+.ngm-layer-label {
+  font-weight: bold;
+}
+
+.ngm-displayed-container.buttons {
+  float: right;
+}
+
+.ngm-displayed-container.transparency {
+  display: flex;
+  margin-left: 43px;
 }
 
 .ngmmidgrey {
