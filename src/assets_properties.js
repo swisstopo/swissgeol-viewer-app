@@ -8,6 +8,7 @@ i18next.t('assets:CSGA25Px_ID');
 i18next.t('assets:CSGA25Px_Link_Orig');
 i18next.t('assets:CSGA25Px_Link_Shp');
 i18next.t('assets:CSGA25Px_Name');
+i18next.t('assets:CSGA25Px_No');
 i18next.t('assets:CSGA25Px_Plate_No');
 i18next.t('assets:CSGA25Px_Pub');
 i18next.t('assets:CSGA25Px_Scale');
