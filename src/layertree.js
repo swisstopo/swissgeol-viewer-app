@@ -141,21 +141,21 @@ const geo_base = {
     {
       label: t('lyr_cross_section_label'),
       children: [
-//        {
-//          type: LAYER_TYPES.tiles3d,
-//          assetId: 220432,
-//          label: t('lyr_cross_section_ga25_pixel_label'),
-//          layer: 'cross_section_ga25_pixel',
-//          transparency: DEFAULT_LAYER_TRANSPARENCY,
-//          backgroundId: 'lakes_rivers_map',
-//          visible: false,
-//          displayed: false,
-//          pickable: true,
-//          zoomToBbox: true,
-//          propsOrder: ['CSGA25Px_Name', 'CSGA25Px_Pub', 'CSGA25Px_ID', 'CSGA25Px_Plate_No', 'CSGA25Px_Section_No',
-//            'CSGA25Px_Scale', 'CSGA25Px_Vert_Exag', 'CSGA25Px_Sec_Type', 'CSGA25Px_Author', 'CSGA25Px_Link_Orig',
-//            'CSGA25Px_Link_Shp']
-//        },
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 376868,
+          label: t('lyr_cross_section_ga25_pixel_label'),
+          layer: 'cross_section_ga25_pixel',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          backgroundId: 'lakes_rivers_map',
+          visible: false,
+          displayed: false,
+          pickable: true,
+          zoomToBbox: true,
+          propsOrder: ['CSGA25Px_No', 'CSGA25Px_Name', 'CSGA25Px_Pub', 'CSGA25Px_Author', 'CSGA25Px_Plate_No',
+            'CSGA25Px_Section_No', 'CSGA25Px_Sec_Type', 'CSGA25Px_Scale', 'CSGA25Px_Vert_Exag', 'CSGA25Px_Link_Orig',
+            'CSGA25Px_Link_Shp']
+        },
         {
           type: LAYER_TYPES.tiles3d,
           assetId: 68881,
