@@ -132,7 +132,7 @@ const geo_base = {
           pickable: true,
           visible: false,
           displayed: false,
-          restricted: true,
+          restricted: 'ngm-prod-privileged', // the group required to see this layer
           aws_s3_bucket: 'ngm-protected-prod',
           aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
         },
@@ -190,23 +190,23 @@ const geo_base = {
         }
       ]
     },
-    {
-      label: t('lyr_geophysics_label'),
-      children: [
-        {
-          type: LAYER_TYPES.tiles3d,
-          assetId: 249376,
-          label: t('lyr_seismic_transects_label'),
-          layer: 'seismic_transects',
-          transparency: DEFAULT_LAYER_TRANSPARENCY,
-          backgroundId: 'lakes_rivers_map',
-          pickable: true,
-          visible: false,
-          displayed: false,
-          propsOrder: ['Line', 'Owner', 'Public', 'SRD', 'AcqYear', 'Length', 'data_link']
-        },
-      ]
-    }
+//    {
+//      label: t('lyr_geophysics_label'),
+//      children: [
+//        {
+//          type: LAYER_TYPES.tiles3d,
+//          assetId: 249376,
+//          label: t('lyr_seismic_transects_label'),
+//          layer: 'seismic_transects',
+//          transparency: DEFAULT_LAYER_TRANSPARENCY,
+//          backgroundId: 'lakes_rivers_map',
+//          pickable: true,
+//          visible: false,
+//          displayed: false,
+//          propsOrder: ['Line', 'Owner', 'Public', 'SRD', 'AcqYear', 'Length', 'data_link']
+//        },
+//      ]
+//    }
   ]
 };
 

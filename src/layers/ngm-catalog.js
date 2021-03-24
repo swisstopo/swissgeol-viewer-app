@@ -8,13 +8,13 @@ class Catalog extends LitElementI18n {
   static get properties() {
     return {
       layers: {type: Object},
-      authenticated: {type: Boolean},
+      userGroups: {type: Object},
     };
   }
 
   getCategoryOrLayerTemplate(c) {
     // if it is a restricted layer, the user must be logged in to see it
-    if (c.restricted && !this.authenticated) {
+    if (c.restricted && (!this.userGroups || !this.userGroups.includes(c.restricted))) {
       return;
     }
     if (c.children) {

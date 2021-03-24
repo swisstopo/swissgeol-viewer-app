@@ -54,6 +54,7 @@ class LeftSideBar extends LitElementI18n {
       hideCatalog: {type: Boolean},
       mapChooser: {type: Object},
       authenticated: {type: Boolean},
+      userGroups: {type: Object},
       slicer: {type: Object},
       globeQueueLength_: {type: Number, attribut: false},
       localStorageController: {type: Object},
@@ -93,7 +94,7 @@ class LeftSideBar extends LitElementI18n {
         <div class="content ngm-layer-content ${!this.hideCatalog ? 'active' : ''}">
           <ngm-catalog
             .layers=${this.catalogLayers}
-            .authenticated=${this.authenticated}
+            .userGroups=${this.userGroups}
             @layerclick=${this.onCatalogLayerClicked}
           >
           </ngm-catalog>

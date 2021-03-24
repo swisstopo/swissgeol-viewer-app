@@ -59,6 +59,14 @@ export default class Auth {
     return JSON.parse(value);
   }
 
+  /**
+   * @return {string[]}
+   */
+  static getGroups() {
+    const user = this.getUser();
+    return user ? user['cognito:groups'] : [];
+  }
+
   static setUser(user) {
     const value = JSON.stringify(user);
     localStorage.setItem(cognitoUser, value);

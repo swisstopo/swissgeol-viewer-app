@@ -12,6 +12,7 @@ class NgmAuth extends LitElementI18n {
   static get properties() {
     return {
       user: {type: Object},
+      userGroups: {type: Object},
 
       // OAuth2 parameters
       endpoint: {type: String},
@@ -25,6 +26,7 @@ class NgmAuth extends LitElementI18n {
   constructor() {
     super();
     this.user = Auth.getUser();
+    this.userGroups = Auth.getGroups();
     this.updateLogoutTimeout_(this.user);
     this.responseType = 'token';
     this.redirectUri = `${location.origin}${location.pathname}`;
@@ -68,13 +70,17 @@ class NgmAuth extends LitElementI18n {
     await Auth.waitForAuthenticate();
     Auth.initialize();
     this.user = Auth.getUser();
+    this.userGroups = Auth.getGroups();
     console.assert(this.user);
     this.updateLogoutTimeout_(this.user);
 
     // close the authentication popup
     popup.close();
 
-    this.dispatchEvent(new CustomEvent('refresh', {detail: {authenticated: true}}));
+    this.dispatchEvent(new CustomEvent('refresh', {detail: {
+      authenticated: true,
+      groups: this.userGroups,
+    }}));
   }
 
   logout() {

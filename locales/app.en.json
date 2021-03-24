@@ -204,7 +204,7 @@
   "tbx_website_label": "Website URL",
   "welcome_copy_btn_label": "Copy the link",
   "welcome_copy_guide": "Press Ctrl+C to copy",
-  "welcome_get_shortlink_error": "",
+  "welcome_get_shortlink_error": "An error occurred and the shortlink cannot be created, please try again later.",
   "welcome_instructions": "Navigate with the mouse and use 'CTRL' to tilt the 3D view",
   "welcome_label": "swissgeol.ch",
   "welcome_share_link_label": "Share link:",
