@@ -36,21 +36,23 @@ export default class LayerTree extends LitElementI18n {
       idx
     };
     return html`
-    <ngm-layers-item
-       .actions=${this.actions}
-       .config=${config}
-       label=${config.label}
-       @removeDisplayedLayer=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}))}
-       @zoomTo=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}
-       @layerChanged=${() => {
-         this.dispatchEvent(new CustomEvent('layerChanged'));
-         this.requestUpdate(); // force update to render visiblity changes
-       }}
-       @moveLayer=${evt => this.moveLayer(config, evt.detail)}
-       .upClassMap=${upClassMap}
-       .downClassMap=${downClassMap}
+      <ngm-layers-item
+        .actions=${this.actions}
+        .config=${config}
+        label=${config.label}
+        @removeDisplayedLayer=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}))}
+        @zoomTo=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}
+        @layerChanged=${() => {
+          this.dispatchEvent(new CustomEvent('layerChanged'));
+          this.requestUpdate(); // force update to render visiblity changes
+        }}
+        @moveLayer=${evt => this.moveLayer(config, evt.detail)}
+        .upClassMap=${upClassMap}
+        .downClassMap=${downClassMap}
       >
-    </ngm-layers-item>
+      </ngm-layers-item>
+      ${idx !== 0 ? html`
+        <div class="ui divider"></div>` : ''}
     `;
   }
 
@@ -58,11 +60,15 @@ export default class LayerTree extends LitElementI18n {
   render() {
     const len = this.layers.length;
     const reverse = [...this.layers].reverse();
-    return repeat(
-      reverse,
-      config => config.label,
-      (config, idx) => this.createLayerTemplate(config, idx, len)
-    );
+    return html`
+      <div class="ui segment">
+        ${repeat(
+          reverse,
+          config => config.label,
+          (config, idx) => this.createLayerTemplate(config, idx, len)
+        )}
+      </div>
+    `;
   }
 
   // changes layer position in 'Displayed Layers'

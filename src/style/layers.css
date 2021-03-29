@@ -17,10 +17,8 @@
 }
 
 .ui.checkbox.ngm-displayed-container, .ngm-displayed-container {
-  display: block;
-  justify-content: space-between;
+  display: flex;
   align-items: center;
-  margin-left: 18px;
 }
 
 .ui.checkbox.ngm-displayed-container {
@@ -40,12 +38,14 @@
 }
 
 .ngm-displayed-container.buttons {
-  float: right;
+  justify-content: flex-end;
+  margin-bottom: 5px;
 }
 
 .ngm-displayed-container.transparency {
   display: flex;
-  margin-left: 43px;
+  margin-left: 25px;
+  height: 30px;
 }
 
 .ngmmidgrey {
@@ -64,3 +64,18 @@
 .ngm-displayed-container label.displayed {
   color: red;
 }
+
+ngm-layers-item {
+  display: flex;
+  flex-direction: column;
+}
+
+ngm-layers .ui.divider {
+  margin: 5px -5px;
+}
+
+ngm-layers .ui.segment {
+  padding: 5px 5px;
+}
+
+
