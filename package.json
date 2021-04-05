@@ -61,7 +61,7 @@
     "postcss-import": "^14.0.0",
     "postcss-inline-svg": "^5.0.0",
     "postcss-url": "^10.1.1",
-    "rollup": "^2.40.0",
+    "rollup": "^2.44.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-ejs": "^2.2.0",
