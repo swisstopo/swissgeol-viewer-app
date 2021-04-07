@@ -82,6 +82,7 @@ const geo_map_series = {
           visible: true,
           displayed: true,
           transparency: 0.3,
+          geocatId: '2467ab13-e794-4c13-8c55-59fe276398c5',
           // }, {
           //   type: LAYER_TYPES.swisstopoWMTS,
           //   label: t('ch.swisstopo.pixelkarte-farbe'),

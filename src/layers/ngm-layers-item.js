@@ -75,8 +75,16 @@ export class LayerTreeItem extends LitElementI18n {
   get buttons() {
     return html`
       <div class="ui icon buttons compact mini">
+      ${this.config.geocatId ?
+        html`<button class="ui button"
+          data-tooltip=${i18next.t('dtd_disclaimer_hint')}
+          data-position="top left"
+          data-variation="mini"
+          @click=${() => window.open(geocatLink(this.config.geocatId))}>
+            <i class="question circle icon"></i>
+        </button>` : ''}
       ${this.config.zoomToBbox ?
-      html`<button class="ui button"
+        html`<button class="ui button"
           data-tooltip=${i18next.t('dtd_zoom_to_hint')}
           data-position="top left"
           data-variation="mini"
@@ -120,26 +128,40 @@ export class LayerTreeItem extends LitElementI18n {
 
   render() {
     return html`
+      <div class="ngm-displayed-container buttons">
+        ${this.buttons}
+      </div>
       <div class="ngm-displayed-container">
         <div class="ui checkbox">
           <input class="ngm-layer-checkbox" type="checkbox"
             .checked=${this.config.visible}
             @change=${this.changeVisibility}>
-          <label @click=${this.onLabelClicked}>
+          <label class="ngm-layer-label" @click=${this.onLabelClicked}>
             <i class=${this.config.restricted ? 'lock icon' : ''}></i>${i18next.t(this.label)}
             <div class="ui ${this.loading > 0 ? 'active' : ''} inline mini loader layerloader">
               <span class="small_load_counter">${this.loading}</span>
             </div>
           </label>
         </div>
-        ${this.buttons}
       </div>
-      <div class="ngm-displayed-container" ?hidden=${!this.config.setTransparency}>
+      <div class="ngm-displayed-container transparency" ?hidden=${!this.config.setTransparency}>
         <label>${i18next.t('dtd_transparency_label')} </label>
         <div class="ui grey small slider"></div>
       </div>
     `;
   }
+}
+
+const GEOCAT_LANG_CODE = {
+  'de': 'ger',
+  'fr': 'fre',
+  'it': 'ita',
+  'en': 'eng',
+};
+
+function geocatLink(id) {
+  const lang = GEOCAT_LANG_CODE[i18next.language];
+  return `https://www.geocat.ch/geonetwork/srv/${lang}/md.viewer#/full_view/${id}/tab/complete`;
 }
 
 customElements.define('ngm-layers-item', LayerTreeItem);
