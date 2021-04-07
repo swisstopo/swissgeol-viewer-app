@@ -1,8 +1,10 @@
 {
   "disclaimer_href": "https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright",
   "disclaimer_text": "Conditions d'utilisation",
+  "drop_file_message": "",
   "dtd_areal_map_label": "Photo aérienne",
   "dtd_background_map_label": "Carte d'arrière-plan",
+  "dtd_disclaimer_hint": "",
   "dtd_displayed_data_label": "Données affichées",
   "dtd_download_hint": "Télécharger",
   "dtd_empty_map_label": "Sans arrière-plan",
