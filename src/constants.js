@@ -51,7 +51,7 @@ export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
   height: 10000
 };
 
-export const AOI_POINT_COLORS = [
+export const AOI_COLORS = [
   {color: 'black', value: Color.BLACK},
   {color: 'blue', value: Color.BLUE},
   {color: 'gray', value: Color.GRAY},
