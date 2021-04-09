@@ -8,6 +8,7 @@ import {getMeasurements, cartesianToDegrees, extendKmlWithProperties} from '../c
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
+import PolylineOutlineMaterialProperty from 'cesium/Source/DataSources/PolylineOutlineMaterialProperty';
 import {exportKml} from 'cesium';
 import {saveAs} from 'file-saver';
 
@@ -17,7 +18,7 @@ import {
   AOI_DATASOURCE_NAME,
   DEFAULT_AOI_COLOR,
   DEFAULT_VOLUME_HEIGHT_LIMITS,
-  AOI_POINT_SYMBOLS, AVAILABLE_AOI_TYPES, AOI_COLORS
+  AOI_POINT_SYMBOLS, AVAILABLE_AOI_TYPES, AOI_COLORS, HIGHLIGHTED_AOI_COLOR, DEFAULT_POINT_COLOR
 } from '../constants.js';
 import {getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
 import {showWarning} from '../message.js';
@@ -76,6 +77,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
+    this.aoiSupportDatasource = new CustomDataSource('aoiSupportDatasource');
+    this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
   }
 
   firstUpdated() {
@@ -399,8 +402,29 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       fillColor: DEFAULT_AOI_COLOR
     });
     this.draw_.active = false;
-    this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.viewer.dataSources.add(this.interestAreasDataSource);
+    this.viewer.dataSources.add(this.aoiSupportDatasource);
+
+    this.lineHighlightEntity = this.aoiSupportDatasource.entities.add({
+      show: false,
+      polyline: {
+        material: new PolylineOutlineMaterialProperty({
+          color: HIGHLIGHTED_AOI_COLOR.withAlpha(0),
+          outlineColor: HIGHLIGHTED_AOI_COLOR,
+          outlineWidth: 3
+        }),
+        width: 6,
+        clampToGround: true
+      }
+    });
+    this.polygonHighlightEntity = this.aoiSupportDatasource.entities.add({
+      show: false,
+      polyline: {
+        material: HIGHLIGHTED_AOI_COLOR,
+        width: 3,
+        clampToGround: true
+      }
+    });
     this.editedBackup = undefined;
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
@@ -506,7 +530,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         if (this.interestAreasDataSource.entities.contains(pickedObject.id)) {
           this.pickArea_(pickedObject.id.id);
         } else if (this.selectedArea_) {
-          // updateColor(this.selectedArea_, false);
+          this.updateHighlight(this.selectedArea_, false);
           this.selectedArea_ = null;
         }
       }
@@ -515,7 +539,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   deselectArea() {
     if (this.selectedArea_ && !this.draw_.entityForEdit) {
-      // updateColor(this.selectedArea_, false); // TODO
+      this.updateHighlight(this.selectedArea_, false);
       this.selectedArea_ = null;
     }
   }
@@ -526,11 +550,11 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
     const entity = this.interestAreasDataSource.entities.getById(id);
     if (this.selectedArea_) {
-      // updateColor(this.selectedArea_, false); // TODO new highlight
+      this.updateHighlight(this.selectedArea_, false);
       this.selectedArea_ = null;
     }
     this.selectedArea_ = entity;
-    // updateColor(this.selectedArea_, true);
+    this.updateHighlight(this.selectedArea_, true);
   }
 
   get entitiesList_() {
@@ -583,6 +607,9 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   onRemoveEntityClick_(id) {
+    if (this.selectedArea_ && id === this.selectedArea_.id) {
+      this.deselectArea();
+    }
     this.interestAreasDataSource.entities.removeById(id);
   }
 
@@ -701,8 +728,10 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         }
       } else if (type === 'line') {
         attributes.positions = entity.polyline.positions;
+        attributes.color = entity.polyline.material ? entity.polyline.material.getValue(this.julianDate).color : undefined;
       } else {
         attributes.positions = entity.polygon.hierarchy;
+        attributes.color = entity.polygon.material ? entity.polygon.material.getValue(this.julianDate).color : undefined;
       }
       this.addAreaEntity(attributes);
       return true;
@@ -836,7 +865,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       }
       entityAttrs.billboard = {
         image: attributes.pointSymbol || `./images/${AOI_POINT_SYMBOLS[0]}`,
-        color: color ? new Color(color.red, color.green, color.blue) : Color.GRAY,
+        color: color ? new Color(color.red, color.green, color.blue) : DEFAULT_POINT_COLOR,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
         disableDepthTestDistance: 0,
@@ -1179,6 +1208,32 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       entity.polylineVolume.outlineColor = color;
     }
   }
+
+  updateHighlight(entity, selected) {
+    if (entity.billboard) {
+      return;
+    }
+    if (entity.polylineVolume && entity.polylineVolume.show) {
+      entity.polylineVolume.outlineColor =
+        selected ? HIGHLIGHTED_AOI_COLOR : entity.polylineVolume.material.getValue(this.julianDate).color;
+      return;
+    }
+    if (selected) {
+      if (entity.polygon) {
+        const positions = entity.polygon.hierarchy.getValue(this.julianDate).positions;
+        positions.push(positions[0]);
+        this.polygonHighlightEntity.polyline.positions = positions;
+        this.polygonHighlightEntity.show = true;
+      } else {
+        this.lineHighlightEntity.polyline.positions = entity.polyline.positions.getValue(this.julianDate);
+        this.lineHighlightEntity.show = true;
+      }
+    } else {
+      this.polygonHighlightEntity.show = false;
+      this.lineHighlightEntity.show = false;
+    }
+  }
+
 
   render() {
     if (!this.viewer) {
