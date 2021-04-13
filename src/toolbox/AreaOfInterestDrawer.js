@@ -76,6 +76,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
+
+    this.restrictedEditing = false;
   }
 
   firstUpdated() {
@@ -194,9 +196,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
             data-variation="tiny"
           ><i class="search plus icon"></i></button>
           <button
-            ?hidden="${i.swissforagesId}"
             class="ui button"
-            @click=${this.editAreaPosition.bind(this, i.id)}
+            @click=${this.editAreaPosition.bind(this, i.id, !!i.swissforagesId)}
             data-tooltip=${i18next.t('tbx_edit_area_hint')}
             data-position="top center"
             data-variation="tiny"
@@ -315,7 +316,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                 <input
                   class=${`ngm-aoi-name-input-${index}`}
                   type="text" .value="${i.name}"
-                  @input="${() => this.onNameInputChange(index)}">
+                  ?disabled="${!!i.swissforagesId}"
+                  @input="${() => {if (!i.swissforagesId) this.onNameInputChange(index);}}">
               </div>
             </div>
             <div class="ngm-aoi-input-container">
@@ -342,7 +344,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                   <textarea
                     class=${`ngm-aoi-website-${index}`}
                     type="text" .value="${i.website}"
-                    @input="${() => this.onWebsiteChange(index)}"></textarea>
+                    ?disabled=${!!i.swissforagesId}
+                    @input="${() => {if (!i.swissforagesId) this.onWebsiteChange(index);}}"></textarea>
               </div>
             </div>
             <div class="ngm-volume-limits-input"
@@ -374,7 +377,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               .position=${i.positions[0]}
               .depth=${i.depth}
               .volumeShowed=${i.volumeShowed}
-              .entity=${this.draw_.entityForEdit}>
+              .entity=${this.draw_.entityForEdit}
+              .restricted=${!!i.swissforagesId}>
             </ngm-point-edit>
           </div>
         </div>`);
@@ -463,7 +467,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   cancelDraw() {
-    if (!this.draw_.active) return;
+    if (!this.draw_.active && !this.restrictedEditing) return;
     if (this.editedBackup) {
       this.draw_.entityForEdit.properties = this.editedBackup.properties;
       if (this.draw_.type === 'point') {
@@ -482,6 +486,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
     this.editedBackup = undefined;
     this.draw_.active = false;
+    this.restrictedEditing = false;
     this.draw_.clear();
     if (this.unlistenEditPostRender) {
       this.unlistenEditPostRender();
@@ -891,7 +896,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     return this.draw_.active;
   }
 
-  editAreaPosition(id) {
+  editAreaPosition(id, restrictedPoint = false) {
     this.disableToolButtons();
     this.pickArea_(id);
     const entity = this.interestAreasDataSource.entities.getById(id);
@@ -902,7 +907,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
     this.draw_.entityForEdit = entity;
     this.draw_.type = type;
-    this.draw_.active = true;
+    this.draw_.active = !restrictedPoint;
+    this.restrictedEditing = restrictedPoint;
 
     this.editedBackup = {
       name: entity.name,
