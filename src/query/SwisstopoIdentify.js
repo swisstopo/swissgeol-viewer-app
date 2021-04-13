@@ -1,5 +1,5 @@
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import proj4 from 'proj4';
+import {radiansToLv95} from '../projection';
 
 const getIdentifyUrl = ({geom2056, lang, layers}) =>
   `https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=${geom2056}&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1916,516,96&lang=${lang}&layers=all:ch.swisstopo.geologie-geocover&limit=1&mapExtent=2662725.2310832636,1178131.5409737106,2672305.2310832636,1180711.5409737106&returnGeometry=true&sr=2056&tolerance=0&layer=${layers}`;
@@ -9,13 +9,6 @@ const getPopupUrl = ({layerBodId, featureId, lang}) =>
 
 export default class SwisstopoIdentify {
 
-  toLv95(carto) {
-    return proj4('EPSG:4326', 'EPSG:2056', [
-      carto.longitude * 180 / Math.PI,
-      carto.latitude * 180 / Math.PI,
-    ]);
-  }
-
   /**
    * @param {import ('cesium/Source/Core/Cartesian3.js').default} position
    * @param {string} layers
@@ -24,12 +17,12 @@ export default class SwisstopoIdentify {
    */
   async identify(position, layers, lang) {
     const carto = Cartographic.fromCartesian(position);
-    const geom2056 = this.toLv95(carto).join(',');
+    const geom2056 = radiansToLv95([carto.longitude, carto.latitude]);
     const url = getIdentifyUrl({geom2056, lang, layers});
     return fetch(url)
-    .then(response => response.json())
-    .then(data => data.results)
-    .then(data => data && data[0]);
+      .then(response => response.json())
+      .then(data => data.results)
+      .then(data => data && data[0]);
   }
 
   /**
@@ -41,6 +34,6 @@ export default class SwisstopoIdentify {
   async getPopupForFeature(layerBodId, featureId, lang) {
     const url = getPopupUrl({layerBodId, featureId, lang});
     return fetch(url)
-    .then(response => response.text());
+      .then(response => response.text());
   }
 }

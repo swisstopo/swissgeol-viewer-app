@@ -21,7 +21,7 @@ export const DEFAULT_VIEW = {
 };
 
 export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'];
-export const DRILL_PICK_LIMIT = 1;
+export const DRILL_PICK_LIMIT = 2;
 export const DRILL_PICK_LENGTH = 1;
 
 export const LAYERS_URL_PARAM = 'layers';
