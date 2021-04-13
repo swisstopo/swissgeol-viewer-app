@@ -12,6 +12,7 @@ import {
 import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {
+  DEFAULT_AOI_VOLUME_COLOR,
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
   SLICE_BOX_ARROWS,
   SLICING_BOX_MIN_SIZE,
@@ -19,10 +20,12 @@ import {
 } from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {
-  pickCenterOnEllipsoid, planeFromTwoPoints, projectPointOnSegment
+  pickCenterOnEllipsoid, planeFromTwoPoints, projectPointOnSegment, updateHeightForCartesianPositions
 } from '../cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
+import CornerType from 'cesium/Source/Core/CornerType';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 
 export default class SlicingBox extends SlicingToolBase {
   constructor(viewer, dataSource) {
@@ -72,14 +75,27 @@ export default class SlicingBox extends SlicingToolBase {
     this.slicerArrows.show();
 
     this.slicingBoxEntity = this.dataSource.entities.add({
-      position: new CallbackProperty(() => this.boxCenter, false),
-      orientation: this.bbox.orientation,
-      box: {
-        dimensions: new CallbackProperty(() => new Cartesian3(this.bbox.length, this.bbox.width, this.bbox.height), false),
-        material: SLICING_GEOMETRY_COLOR.withAlpha(0.1),
+      // position: new CallbackProperty(() => this.boxCenter, false),
+      // orientation: this.bbox.orientation,
+      // box: {
+      //   dimensions: new CallbackProperty(() => new Cartesian3(this.bbox.length, this.bbox.width, this.bbox.height), false),
+      //   material: SLICING_GEOMETRY_COLOR.withAlpha(0.1),
+      //   outline: true,
+      //   outlineColor: SLICING_GEOMETRY_COLOR,
+      // },
+      polylineVolume: {
+        positions: updateHeightForCartesianPositions(this.bbox.cornersA, -(this.bbox.height / 2), this.viewer.scene),
+        cornerType: CornerType.MITERED,
         outline: true,
-        outlineColor: SLICING_GEOMETRY_COLOR,
-      },
+        outlineColor: SLICING_GEOMETRY_COLOR.withAlpha(0.1),
+        material: SLICING_GEOMETRY_COLOR.withAlpha(0.1),
+        shape: [
+          new Cartesian2(0, 0),
+          new Cartesian2(0, 0),
+          new Cartesian2(1, 0),
+          new Cartesian2(0, this.bbox.height),
+        ]
+      }
     });
 
     this.modelMatrix = this.slicingBoxEntity.computeModelMatrix(this.julianDate);

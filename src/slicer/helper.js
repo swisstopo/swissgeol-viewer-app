@@ -181,7 +181,7 @@ export function getBboxFromViewRatio(viewer, ratio) {
     corners: {
       bottomRight, bottomLeft, topRight, topLeft,
     },
-    cornersA: [bottomRight, bottomLeft, topRight, topLeft]
+    cornersA: [bottomRight, bottomLeft, topLeft, topRight, bottomRight]
   };
 }
 
