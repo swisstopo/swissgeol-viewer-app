@@ -77,8 +77,8 @@ export const SLICING_BOX_HEIGHT = 15000;
 export const SLICING_BOX_MIN_SIZE = 5000;
 export const SLICING_GEOMETRY_COLOR = Color.WHITE;
 export const DEFAULT_CONFIG_FOR_SLICING_ARROW = {
-  minimumPixelSize: 64,
-  scale: 3000,
+  minimumPixelSize: 32,
+  scale: 1500,
   maximumScale: 10000,
   shadows: ShadowMode.DISABLED,
   colorBlendMode: ColorBlendMode.MIX,
