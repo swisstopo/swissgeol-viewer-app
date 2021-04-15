@@ -80,21 +80,22 @@ export default class SlicingBox extends SlicingToolBase {
       this.bbox.corners.topRight,
       this.bbox.corners.bottomRight
     ];
-    const scratchZeroCartesian2 = Cartesian2.ZERO;
     const scratchCartesian2 = new Cartesian2(1, 0);
+    const scratchCenter = new Cartographic();
     this.slicingBoxEntity = this.dataSource.entities.add({
       position: new CallbackProperty(() => this.boxCenter, false),
       polylineVolume: {
         positions: new CallbackProperty(() => {
-          const height = Cartographic.fromCartesian(this.bbox.center).height - (this.bbox.height / 2);
+          const height =
+            Cartographic.fromCartesian(this.bbox.center, null, scratchCenter).height - (this.bbox.height / 2);
           return updateHeightForCartesianPositions(boxPositions, height);
         }, false),
         cornerType: CornerType.MITERED,
         outline: false,
         material: SLICING_GEOMETRY_COLOR.withAlpha(0.2),
         shape: new CallbackProperty(() => [
-          scratchZeroCartesian2,
-          scratchZeroCartesian2,
+          Cartesian2.ZERO,
+          Cartesian2.ZERO,
           scratchCartesian2,
           new Cartesian2(0, this.bbox.height),
         ], false)
