@@ -207,7 +207,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
           <button
             class="ui button"
             @click=${this.updateEntityVolume.bind(this, i.id, true)}
-            ?hidden=${i.volumeShowed}
+            ?hidden=${i.volumeShowed || !!i.swissforagesId}
             data-tooltip=${i18next.t('tbx_show_volume_btn_label')}
             data-position="top center"
             data-variation="tiny"
@@ -215,7 +215,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
           <button
             class="ui button"
             @click=${this.hideVolume.bind(this, i.id)}
-            ?hidden=${!i.volumeShowed}
+            ?hidden=${!i.volumeShowed || !!i.swissforagesId}
             data-tooltip=${i18next.t('tbx_hide_volume_btn_label')}
             data-position="top center"
             data-variation="tiny"
@@ -344,7 +344,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               <label>${i18next.t('tbx_website_label')}:</label>
               <div class="ui mini input">
                   <textarea
-                    class=${`ngm-aoi-website-${index}`}
+                    class=${`ngm-aoi-website-${index} ${i.swissforagesId ? 'ngm-disabled' : ''}`}
                     type="text" .value="${i.website}"
                     ?disabled=${!!i.swissforagesId}
                     @input="${() => {if (!i.swissforagesId) this.onWebsiteChange(index);}}"></textarea>
@@ -510,7 +510,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         this.draw_.entityForEdit.polygon.hierarchy = this.editedBackup.positions;
         this.draw_.entityForEdit.polygon.material = this.editedBackup.color;
       }
-      if (this.editedBackup.properties.volumeShowed) {
+      if (this.editedBackup.properties.volumeShowed && this.draw_.entityForEdit.polylineVolume) {
         this.updateEntityVolume(this.draw_.entityForEdit.id);
         this.draw_.entityForEdit.polylineVolume.outlineColor = this.editedBackup.color;
         this.draw_.entityForEdit.polylineVolume.material = this.editedBackup.color;
@@ -989,14 +989,14 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       .forEach(button => {
         const classList = button.classList;
         if (!skipSliceBtn || (!classList.contains('ngm-slice-tools-btn') && !classList.contains('ngm-slice-off-btn'))) {
-          classList.add('ngm-disabled-btn');
+          classList.add('ngm-disabled');
         }
       });
   }
 
   enableToolButtons() {
     this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
-      .forEach(button => button.classList.remove('ngm-disabled-btn'));
+      .forEach(button => button.classList.remove('ngm-disabled'));
   }
 
   /**
