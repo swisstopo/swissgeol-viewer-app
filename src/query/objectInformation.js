@@ -37,7 +37,7 @@ export function extractEntitiesAttributes(entity) {
  * @param {Array<string>} propertiesOrder
  * @return {Array<string>}
  */
-export function sortPropertyNames(propertyNames, propertiesOrder) {
+export function sortPropertyNames(propertyNames, propertiesOrder = []) {
   const lowerPriorityProps = propertyNames
     .filter(prop => !propertiesOrder.includes(prop))
     .sort((left, right) => {
