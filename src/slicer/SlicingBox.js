@@ -19,10 +19,12 @@ import {
 } from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {
-  pickCenterOnEllipsoid, planeFromTwoPoints, projectPointOnSegment
+  pickCenterOnEllipsoid, planeFromTwoPoints, projectPointOnSegment, updateHeightForCartesianPositions
 } from '../cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
+import CornerType from 'cesium/Source/Core/CornerType';
+import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 
 export default class SlicingBox extends SlicingToolBase {
   constructor(viewer, dataSource) {
@@ -71,15 +73,33 @@ export default class SlicingBox extends SlicingToolBase {
       });
     this.slicerArrows.show();
 
+    const boxPositions = [
+      this.bbox.corners.bottomRight,
+      this.bbox.corners.bottomLeft,
+      this.bbox.corners.topLeft,
+      this.bbox.corners.topRight,
+      this.bbox.corners.bottomRight
+    ];
+    const scratchCartesian2 = new Cartesian2(1, 0);
+    const scratchCenter = new Cartographic();
     this.slicingBoxEntity = this.dataSource.entities.add({
       position: new CallbackProperty(() => this.boxCenter, false),
-      orientation: this.bbox.orientation,
-      box: {
-        dimensions: new CallbackProperty(() => new Cartesian3(this.bbox.length, this.bbox.width, this.bbox.height), false),
-        material: SLICING_GEOMETRY_COLOR.withAlpha(0.1),
-        outline: true,
-        outlineColor: SLICING_GEOMETRY_COLOR,
-      },
+      polylineVolume: {
+        positions: new CallbackProperty(() => {
+          const height =
+            Cartographic.fromCartesian(this.bbox.center, null, scratchCenter).height - (this.bbox.height / 2);
+          return updateHeightForCartesianPositions(boxPositions, height);
+        }, false),
+        cornerType: CornerType.MITERED,
+        outline: false,
+        material: SLICING_GEOMETRY_COLOR.withAlpha(0.2),
+        shape: new CallbackProperty(() => [
+          Cartesian2.ZERO,
+          Cartesian2.ZERO,
+          scratchCartesian2,
+          new Cartesian2(0, this.bbox.height),
+        ], false)
+      }
     });
 
     this.modelMatrix = this.slicingBoxEntity.computeModelMatrix(this.julianDate);
@@ -113,7 +133,7 @@ export default class SlicingBox extends SlicingToolBase {
     if (!clippingPlanes) return;
     clippingPlanes.removeAll();
     this.sidePlanes.forEach(plane => clippingPlanes.add(plane));
-    this.zPlanes.forEach(plane => clippingPlanes.add(Plane.transform(plane, this.modelMatrix)));
+    this.zPlanes.forEach(plane => clippingPlanes.add(this.modelMatrix ? Plane.transform(plane, this.modelMatrix) : plane));
   }
 
   updateBoxTileClippingPlanes(clippingPlanes, offset, center) {
