@@ -8,7 +8,6 @@ import {getMeasurements, cartesianToDegrees, extendKmlWithProperties} from '../c
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
-import PolylineOutlineMaterialProperty from 'cesium/Source/DataSources/PolylineOutlineMaterialProperty';
 import {exportKml} from 'cesium';
 import {saveAs} from 'file-saver';
 
@@ -18,7 +17,12 @@ import {
   AOI_DATASOURCE_NAME,
   DEFAULT_AOI_COLOR,
   DEFAULT_VOLUME_HEIGHT_LIMITS,
-  AOI_POINT_SYMBOLS, AVAILABLE_AOI_TYPES, AOI_COLORS, HIGHLIGHTED_AOI_COLOR, DEFAULT_POINT_COLOR
+  AOI_POINT_SYMBOLS,
+  AVAILABLE_AOI_TYPES,
+  AOI_COLORS,
+  HIGHLIGHTED_AOI_COLOR,
+  AOI_POLYGON_ALPHA,
+  AOI_LINE_ALPHA
 } from '../constants.js';
 import {getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
 import {showWarning} from '../message.js';
@@ -80,6 +84,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.aoiSupportDatasource = new CustomDataSource('aoiSupportDatasource');
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.restrictedEditing = false;
+    this.colorBeforeHighlight = DEFAULT_AOI_COLOR;
   }
 
   firstUpdated() {
@@ -319,7 +324,9 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                   class=${`ngm-aoi-name-input-${index}`}
                   type="text" .value="${i.name}"
                   ?disabled="${!!i.swissforagesId}"
-                  @input="${() => {if (!i.swissforagesId) this.onNameInputChange(index);}}">
+                  @input="${() => {
+                    if (!i.swissforagesId) this.onNameInputChange(index);
+                  }}">
               </div>
             </div>
             <div class="ngm-aoi-input-container">
@@ -347,7 +354,9 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                     class=${`ngm-aoi-website-${index}`}
                     type="text" .value="${i.website}"
                     ?disabled=${!!i.swissforagesId}
-                    @input="${() => {if (!i.swissforagesId) this.onWebsiteChange(index);}}"></textarea>
+                    @input="${() => {
+                      if (!i.swissforagesId) this.onWebsiteChange(index);
+                    }}"></textarea>
               </div>
             </div>
             <div class="ngm-volume-limits-input"
@@ -408,26 +417,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.viewer.dataSources.add(this.interestAreasDataSource);
     this.viewer.dataSources.add(this.aoiSupportDatasource);
 
-    this.lineHighlightEntity = this.aoiSupportDatasource.entities.add({
-      show: false,
-      polyline: {
-        material: new PolylineOutlineMaterialProperty({
-          color: HIGHLIGHTED_AOI_COLOR.withAlpha(0),
-          outlineColor: HIGHLIGHTED_AOI_COLOR,
-          outlineWidth: 3
-        }),
-        width: 6,
-        clampToGround: true
-      }
-    });
-    this.polygonHighlightEntity = this.aoiSupportDatasource.entities.add({
-      show: false,
-      polyline: {
-        material: HIGHLIGHTED_AOI_COLOR,
-        width: 3,
-        clampToGround: true
-      }
-    });
     this.editedBackup = undefined;
 
     this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
@@ -534,17 +523,21 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         if (this.interestAreasDataSource.entities.contains(pickedObject.id)) {
           this.pickArea_(pickedObject.id.id);
         } else if (this.selectedArea_) {
-          this.updateHighlight(this.selectedArea_, false);
-          this.selectedArea_ = null;
+          this.deselectArea();
         }
       }
     }
   }
 
   deselectArea() {
-    if (this.selectedArea_ && !this.draw_.entityForEdit) {
+    if (this.selectedArea_) {
       this.updateHighlight(this.selectedArea_, false);
       this.selectedArea_ = null;
+      const objectInfo = document.querySelector('ngm-object-information');
+      if (objectInfo.opened) {
+        objectInfo.info = null;
+        objectInfo.opened = false;
+      }
     }
   }
 
@@ -554,8 +547,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
     const entity = this.interestAreasDataSource.entities.getById(id);
     if (this.selectedArea_) {
-      this.updateHighlight(this.selectedArea_, false);
-      this.selectedArea_ = null;
+      this.deselectArea();
     }
     this.selectedArea_ = entity;
     this.updateHighlight(this.selectedArea_, true);
@@ -568,7 +560,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         name: val.name,
         show: val.isShowing,
         positions: this.getAreaPositions(val),
-        selected: this.selectedArea_ && this.selectedArea_.id === val.id,
         area: val.properties.area ? val.properties.area.getValue() : undefined,
         perimeter: val.properties.perimeter ? val.properties.perimeter.getValue() : undefined,
         sidesLength: val.properties.sidesLength ? val.properties.sidesLength.getValue() : undefined,
@@ -582,13 +573,15 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         swissforagesId: val.properties.swissforagesId ? val.properties.swissforagesId.getValue() : undefined,
         depth: val.properties.depth ? val.properties.depth.getValue() : undefined,
       };
-      if (val.billboard) {
-        item.color = val.billboard.color.getValue(this.julianDate);
-        item.pointSymbol = val.billboard.image.getValue(this.julianDate);
-      } else if (val.polyline) {
-        item.color = val.polyline.material.getValue(this.julianDate).color;
-      } else if (val.polygon) {
-        item.color = val.polygon.material.getValue(this.julianDate).color;
+      if (!this.selectedArea_ || val.id !== this.selectedArea_.id) {
+        if (val.billboard) {
+          item.color = val.billboard.color.getValue(this.julianDate);
+          item.pointSymbol = val.billboard.image.getValue(this.julianDate);
+        } else if (val.polyline) {
+          item.color = val.polyline.material.getValue(this.julianDate).color;
+        } else if (val.polygon) {
+          item.color = val.polygon.material.getValue(this.julianDate).color;
+        }
       }
       return item;
     });
@@ -743,13 +736,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     return false;
   }
 
-  setAreasClickable(areasClickable) {
-    this.areasClickable = areasClickable;
-    if (!this.areasClickable) {
-      this.deselectArea();
-    }
-  }
-
   addStoredAreas(areas) {
     areas.forEach(area => {
       if (!area.positions) return;
@@ -758,10 +744,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.areasCounter_[area.type]) {
         this.areasCounter_[area.type] = areaNumber;
       }
-      const entity = this.addAreaEntity(area);
-      if (area.selected) {
-        this.pickArea_(entity.id);
-      }
+      this.addAreaEntity(area);
     });
   }
 
@@ -869,7 +852,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       }
       entityAttrs.billboard = {
         image: attributes.pointSymbol || `./images/${AOI_POINT_SYMBOLS[0]}`,
-        color: color ? new Color(color.red, color.green, color.blue) : DEFAULT_POINT_COLOR,
+        color: color ? new Color(color.red, color.green, color.blue) : DEFAULT_AOI_COLOR,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
         disableDepthTestDistance: 0,
@@ -889,7 +872,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         extrudedHeightReference: HeightReference.RELATIVE_TO_GROUND
       };
     } else {
-      const material = color ? new Color(color.red, color.green, color.blue, 0.3) : DEFAULT_AOI_COLOR;
+      const alpha = type === 'line' ? AOI_LINE_ALPHA : AOI_POLYGON_ALPHA;
+      const material = color ? new Color(color.red, color.green, color.blue, alpha) : DEFAULT_AOI_COLOR.withAlpha(alpha);
       if (type === 'rectangle' || type === 'polygon') {
         entityAttrs.polygon = {
           hierarchy: attributes.positions,
@@ -940,8 +924,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   editAreaPosition(id, restrictedPoint = false) {
+    this.deselectArea();
     this.disableToolButtons();
-    this.pickArea_(id);
     const entity = this.interestAreasDataSource.entities.getById(id);
     const type = entity.properties.type.getValue();
     if (!entity.isShowing) {
@@ -1216,26 +1200,25 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   updateHighlight(entity, selected) {
     if (entity.billboard) {
+      if (selected) {
+        this.colorBeforeHighlight = entity.billboard.color.getValue(this.julianDate);
+        entity.billboard.color = HIGHLIGHTED_AOI_COLOR;
+      } else {
+        entity.billboard.color = this.colorBeforeHighlight;
+      }
       return;
+    }
+    const entityType = entity.polygon ? 'polygon' : 'polyline';
+    if (selected) {
+      this.colorBeforeHighlight = entity[entityType].material.getValue(this.julianDate).color;
+      entity[entityType].material = entity.polygon ?
+        HIGHLIGHTED_AOI_COLOR.withAlpha(AOI_POLYGON_ALPHA) : HIGHLIGHTED_AOI_COLOR.withAlpha(AOI_LINE_ALPHA);
+    } else {
+      entity[entityType].material = this.colorBeforeHighlight;
     }
     if (entity.polylineVolume && entity.polylineVolume.show) {
-      entity.polylineVolume.outlineColor =
-        selected ? HIGHLIGHTED_AOI_COLOR : entity.polylineVolume.material.getValue(this.julianDate).color;
-      return;
-    }
-    if (selected) {
-      if (entity.polygon) {
-        const positions = entity.polygon.hierarchy.getValue(this.julianDate).positions;
-        positions.push(positions[0]);
-        this.polygonHighlightEntity.polyline.positions = positions;
-        this.polygonHighlightEntity.show = true;
-      } else {
-        this.lineHighlightEntity.polyline.positions = entity.polyline.positions.getValue(this.julianDate);
-        this.lineHighlightEntity.show = true;
-      }
-    } else {
-      this.polygonHighlightEntity.show = false;
-      this.lineHighlightEntity.show = false;
+      entity.polylineVolume.material = selected ? HIGHLIGHTED_AOI_COLOR : this.colorBeforeHighlight;
+      entity.polylineVolume.outlineColor = selected ? HIGHLIGHTED_AOI_COLOR : this.colorBeforeHighlight;
     }
   }
 
