@@ -132,7 +132,8 @@ ngm-point-edit ngm-geom-configuration {
   margin-top: -35px;
 }
 
-.ui.button.ngm-disabled-btn {
+.ngm-disabled,
+.ui.button.ngm-disabled {
   cursor: default;
   opacity: 0.45 !important;
   background-image: none;
