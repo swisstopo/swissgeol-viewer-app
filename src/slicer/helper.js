@@ -180,8 +180,7 @@ export function getBboxFromViewRatio(viewer, ratio) {
     height: SLICING_BOX_HEIGHT,
     corners: {
       bottomRight, bottomLeft, topRight, topLeft,
-    },
-    cornersA: [bottomRight, bottomLeft, topRight, topLeft]
+    }
   };
 }
 

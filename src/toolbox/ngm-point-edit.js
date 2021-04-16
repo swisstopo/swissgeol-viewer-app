@@ -8,7 +8,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {prepareCoordinatesForUi} from '../cesiumutils';
 import CesiumMath from 'cesium/Source/Core/Math';
 
-import {AOI_POINT_COLORS, AOI_POINT_SYMBOLS} from '../constants';
+import {AOI_COLORS, AOI_POINT_SYMBOLS} from '../constants';
 import {updateBoreholeHeights} from './helpers';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 
@@ -22,6 +22,7 @@ class NgmPointEdit extends LitElementI18n {
       entity: {type: Object},
       depth: {type: Number},
       volumeShowed: {type: Boolean},
+      restricted: {type: Boolean},
     };
   }
 
@@ -61,11 +62,6 @@ class NgmPointEdit extends LitElementI18n {
           }
         ]
       });
-      $(this.querySelector('.ngm-aoi-point-style-btn')).popup({
-        popup: $(this.querySelector('.ngm-aoi-point-style')),
-        on: 'click',
-        position: 'right center'
-      });
       this.dropdownInited = true;
     }
   }
@@ -79,6 +75,7 @@ class NgmPointEdit extends LitElementI18n {
   }
 
   onPositionChange() {
+    if (this.restricted) return;
     this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
     this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
     const heightValue = Number(this.querySelector('.ngm-height-input').value);
@@ -100,6 +97,7 @@ class NgmPointEdit extends LitElementI18n {
   }
 
   onDepthChange(event) {
+    if (this.restricted) return;
     const depth = Number(event.target.value);
     this.depth = depth;
     this.entity.properties.depth = depth;
@@ -127,13 +125,13 @@ class NgmPointEdit extends LitElementI18n {
               <div class="text"></div>
               <i class="dropdown icon"></i>
             </div>
-            <input type="number" class="ngm-coord-x-input"
+            <input type="number" class="ngm-coord-x-input" ?disabled="${this.restricted}"
                    .step="${this.coordsStep}"
                    .value="${this.xValue}"
                    @change="${this.onPositionChange}">
           </div>
           <div class="ui mini left action input">
-            <input type="number" class="ngm-coord-y-input"
+            <input type="number" class="ngm-coord-y-input" ?disabled="${this.restricted}"
                    .step="${this.coordsStep}"
                    .value="${this.yValue}"
                    @change="${this.onPositionChange}">
@@ -141,44 +139,29 @@ class NgmPointEdit extends LitElementI18n {
         </div>
         <label>${i18next.t('tbx_camera_height_label')}:</label></br>
         <div class="ui mini input right labeled">
-          <input type="number" step="10" min="${this.minHeight}" max="${this.maxHeight}"
+          <input type="number" step="10" min="${this.minHeight}" max="${this.maxHeight}" ?disabled="${this.restricted}"
                  class="ngm-height-input" .value="${this.heightValue}" @change="${this.onPositionChange}">
           <label class="ui label">m</label>
         </div>
-        <button class="ui icon button ngm-aoi-point-style-btn">
-          <i class="map marker alternate icon"></i>
-        </button>
+
+        <ngm-geom-configuration
+            .iconClass=${'map marker alternate'}
+            .colors="${AOI_COLORS}"
+            .symbols="${AOI_POINT_SYMBOLS}"
+            .onColorChange="${color => this.onColorChange(color)}"
+            .onSymbolChange="${symbol => this.onSymbolChange(symbol)}"
+        ></ngm-geom-configuration>
+
         <div ?hidden="${!this.volumeShowed}">
           <label>${i18next.t('tbx_point_depth_label')}:</label></br>
           <div class="ui mini input right labeled">
-            <input type="number" step="10" min="${this.minDepth}" max="${this.maxDepth}"
+            <input type="number" step="10" min="${this.minDepth}" max="${this.maxDepth}" ?disabled="${this.restricted}"
                    class="ngm-point-depth-input" .value="${this.depth}" @change="${this.onDepthChange}">
             <label class="ui label">m</label>
           </div>
         </div>
       </div>
-      <div class="ui mini popup ngm-aoi-point-style">
-        <label>${i18next.t('tbx_point_color_label')}</label>
-        <div class="ngm-aoi-color-selector">
-          ${AOI_POINT_COLORS.map(pointColor => {
-            return html`
-              <div
-                style="background-color: ${pointColor.color};"
-                @click=${this.onColorChange.bind(this, pointColor.value)}
-                class="ngm-aoi-color-container"></div>`;
-          })}
-        </div>
 
-        <label>${i18next.t('tbx_point_symbol_label')}</label>
-        <div class="ngm-aoi-symbol-selector">
-          ${AOI_POINT_SYMBOLS.map(image => {
-            return html`<img
-              class="ui mini image"
-              src="./images/${image}"
-              @click=${this.onSymbolChange.bind(this, image)}>`;
-          })}
-        </div>
-      </div>
     `;
   }
 
