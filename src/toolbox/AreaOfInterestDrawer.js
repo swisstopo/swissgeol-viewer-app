@@ -867,7 +867,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         extrudedHeightReference: HeightReference.RELATIVE_TO_GROUND
       };
     } else {
-      console.log(color);
       const material = color ?
         new Color(color.red, color.green, color.blue, AOI_POLYGON_ALPHA) :
         DEFAULT_AOI_COLOR.withAlpha(AOI_POLYGON_ALPHA);
