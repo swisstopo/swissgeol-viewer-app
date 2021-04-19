@@ -31,6 +31,18 @@ class NgmObjectInformation extends LitElementI18n {
     super.connectedCallback();
   }
 
+  open(info) {
+    this.info = info;
+    this.opened = !!info;
+  }
+
+  close() {
+    if (this.opened) {
+      this.opened = false;
+      this.info = null;
+    }
+  }
+
   render() {
     if (this.info && (this.info.popupContent || this.info.properties)) {
       const content = this.info.popupContent ?
