@@ -21,7 +21,7 @@ export const DEFAULT_VIEW = {
 };
 
 export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'];
-export const DRILL_PICK_LIMIT = 1;
+export const DRILL_PICK_LIMIT = 2;
 export const DRILL_PICK_LENGTH = 1;
 
 export const LAYERS_URL_PARAM = 'layers';
@@ -35,7 +35,7 @@ export const ATTRIBUTE_VALUE_PARAM = 'attribute_value';
 export const ZOOM_TO_PARAM = 'zoom_to';
 
 export const DEFAULT_AOI_COLOR = Color.BLUE;
-export const AOI_LINE_ALPHA = 0.5;
+export const AOI_LINE_ALPHA = 0.8;
 export const AOI_POLYGON_ALPHA = 0.3;
 export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW;
 
@@ -79,8 +79,8 @@ export const SLICING_BOX_MIN_SIZE = 5000;
 export const SLICING_GEOMETRY_COLOR = Color.WHITE;
 export const DEFAULT_CONFIG_FOR_SLICING_ARROW = {
   minimumPixelSize: 32,
-  scale: 1500,
-  maximumScale: 10000,
+  scale: 1,
+  maximumScale: 15000,
   shadows: ShadowMode.DISABLED,
   colorBlendMode: ColorBlendMode.MIX,
   color: SLICING_GEOMETRY_COLOR

@@ -6,7 +6,12 @@ import {
   LAYER_TYPES,
   OBJECT_HIGHLIGHT_COLOR, OBJECT_ZOOMTO_RADIUS
 } from '../constants';
-import {extractEntitiesAttributes, extractPrimitiveAttributes, isPickable, sortPropertyNames} from './objectInformation';
+import {
+  extractEntitiesAttributes,
+  extractPrimitiveAttributes,
+  isPickable,
+  sortPropertyNames
+} from './objectInformation';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import {TemplateResult} from 'lit-element';
@@ -33,15 +38,22 @@ export default class ObjectSelector {
     this.unhighlight();
     let attributes = {};
     if (!object) {
+      const slicerDataSource = this.viewer.dataSources.getByName('slicer')[0];
       const objects = this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
       object = objects[0];
+      // selects second object if first is entity related to slicing box and next is not related to slicing box
+      if (object && object.id && slicerDataSource.entities.contains(object.id)) {
+        object = undefined;
+        if (objects[1] && (!objects[1].id || !slicerDataSource.entities.contains(objects[1].id))) {
+          object = objects[1];
+        }
+      }
     }
 
     if (object) {
       if (!isPickable(object)) {
         return;
       }
-
       if (object.getPropertyNames) {
         attributes.properties = extractPrimitiveAttributes(object);
         attributes.zoom = () => {
@@ -54,8 +66,11 @@ export default class ObjectSelector {
         };
 
         this.toggleTileHighlight(object);
-      } else if (object.id && object.id.properties) {
+      } else if (object.id) {
         attributes = this.handleEntitySelect(object.id, attributes);
+        if (!attributes) {
+          return;
+        }
       }
       const onhide = () => {
         this.unhighlight();
@@ -68,6 +83,7 @@ export default class ObjectSelector {
 
   handleEntitySelect(entity, attributes) {
     const props = extractEntitiesAttributes(entity);
+    if (!props) return null;
     const orderedProps = sortPropertyNames(Object.keys(props), props.propsOrder);
     attributes.properties = orderedProps.map((key) => [key, props[key]]);
     const aoiDataSource = this.viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
@@ -78,7 +94,7 @@ export default class ObjectSelector {
     if (aoiDataSource.entities.contains(entity)) {
       const aoiElement = document.querySelector('ngm-aoi-drawer');
       attributes = aoiElement.getInfoProps({...props, name: entity.name});
-    } else if (earthquakesDataSource.entities.contains(entity)) {
+    } else if (earthquakesDataSource && earthquakesDataSource.entities.contains(entity)) {
       this.toggleEarthquakeHighlight(entity);
     }
 
