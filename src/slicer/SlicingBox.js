@@ -49,7 +49,7 @@ export default class SlicingBox extends SlicingToolBase {
     } else {
       this.bbox = getBboxFromViewRatio(this.viewer, 1 / 3);
     }
-    this.boxCenter = this.bbox.center;
+    this.boxCenter = updateHeightForCartesianPositions([this.bbox.center], 0)[0];
     this.planesPositions = [
       [this.bbox.corners.bottomLeft, this.bbox.corners.bottomRight],
       [this.bbox.corners.topRight, this.bbox.corners.topLeft],
@@ -58,8 +58,8 @@ export default class SlicingBox extends SlicingToolBase {
     ];
     this.updateSidePlanes();
 
-    this.downPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.UNIT_Z);
-    this.upPlane = Plane.fromPointNormal(this.bbox.center, Cartesian3.negate(Cartesian3.UNIT_Z, new Cartesian3()));
+    this.downPlane = Plane.fromPointNormal(this.boxCenter, Cartesian3.UNIT_Z);
+    this.upPlane = Plane.fromPointNormal(this.boxCenter, Cartesian3.negate(Cartesian3.UNIT_Z, new Cartesian3()));
     this.downPlane.distance = this.upPlane.distance = this.bbox.height / 2;
     this.zPlanes = [this.downPlane, this.upPlane];
 
@@ -83,11 +83,11 @@ export default class SlicingBox extends SlicingToolBase {
     const scratchCartesian2 = new Cartesian2(1, 0);
     const scratchCenter = new Cartographic();
     this.slicingBoxEntity = this.dataSource.entities.add({
-      position: new CallbackProperty(() => this.boxCenter, false),
+      position: Cartesian3.midpoint(boxPositions[0], boxPositions[2], new Cartesian3()),
       polylineVolume: {
         positions: new CallbackProperty(() => {
           const height =
-            Cartographic.fromCartesian(this.bbox.center, null, scratchCenter).height - (this.bbox.height / 2);
+            Cartographic.fromCartesian(this.boxCenter, null, scratchCenter).height - (this.bbox.height / 2);
           return updateHeightForCartesianPositions(boxPositions, height);
         }, false),
         cornerType: CornerType.MITERED,
@@ -133,7 +133,7 @@ export default class SlicingBox extends SlicingToolBase {
     if (!clippingPlanes) return;
     clippingPlanes.removeAll();
     this.sidePlanes.forEach(plane => clippingPlanes.add(plane));
-    this.zPlanes.forEach(plane => clippingPlanes.add(this.modelMatrix ? Plane.transform(plane, this.modelMatrix) : plane));
+    this.zPlanes.forEach(plane => clippingPlanes.add(Plane.transform(plane, this.modelMatrix)));
   }
 
   updateBoxTileClippingPlanes(clippingPlanes, offset, center) {
