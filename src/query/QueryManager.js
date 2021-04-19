@@ -64,9 +64,7 @@ export default class QueryManager {
     const slicerElement = document.querySelector('ngm-slicer');
     toolboxElement.deselectArea();
     if (!this.enabled || toolboxElement.drawState || slicerElement.slicer.active) {
-      const objectInfo = document.querySelector('ngm-object-information');
-      objectInfo.info = null;
-      objectInfo.opened = false;
+      document.querySelector('ngm-object-information').close();
       return;
     }
     await this.pickObject(click.position);
@@ -85,9 +83,7 @@ export default class QueryManager {
       attributes = result || attributes;
     }
 
-    const objectInfo = document.querySelector('ngm-object-information');
-    objectInfo.info = attributes;
-    objectInfo.opened = !!attributes;
+    document.querySelector('ngm-object-information').open(attributes);
 
     this.scene.requestRender();
   }
@@ -179,9 +175,7 @@ export default class QueryManager {
     const position = Cartographic.toCartesian(cartographicCoords);
     const attributes = this.objectSelector.pickAttributes(null, position, feature);
 
-    const objectInfo = document.querySelector('ngm-object-information');
-    objectInfo.info = attributes;
-    objectInfo.opened = !!attributes;
+    document.querySelector('ngm-object-information').open(attributes);
     attributes.zoom();
 
     this.scene.requestRender();

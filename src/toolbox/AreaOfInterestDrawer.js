@@ -533,11 +533,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (this.selectedArea_) {
       this.updateHighlight(this.selectedArea_, false);
       this.selectedArea_ = null;
-      const objectInfo = document.querySelector('ngm-object-information');
-      if (objectInfo.opened) {
-        objectInfo.info = null;
-        objectInfo.opened = false;
-      }
+      this.dispatchEvent(new CustomEvent('hide-area-info'));
     }
   }
 
@@ -907,9 +903,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   showAreaInfo(areaAttrs) {
-    const objectInfo = document.querySelector('ngm-object-information');
-    objectInfo.info = this.getInfoProps(areaAttrs);
-    objectInfo.opened = !!areaAttrs;
+    this.dispatchEvent(new CustomEvent('show-area-info', {detail: {info: this.getInfoProps(areaAttrs)}}));
     this.pickArea_(areaAttrs.id);
   }
 
