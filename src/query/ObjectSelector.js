@@ -41,9 +41,12 @@ export default class ObjectSelector {
       const slicerDataSource = this.viewer.dataSources.getByName('slicer')[0];
       const objects = this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
       object = objects[0];
+      // selects second object if first is entity related to slicing box and next is not related to slicing box
       if (object && object.id && slicerDataSource.entities.contains(object.id)) {
-        object =
-          objects[1] && (!objects[1].id || !slicerDataSource.entities.contains(objects[1].id)) ? objects[1] : undefined;
+        object = undefined;
+        if (objects[1] && (!objects[1].id || !slicerDataSource.entities.contains(objects[1].id))) {
+          object = objects[1];
+        }
       }
     }
 
