@@ -35,7 +35,7 @@ export const ATTRIBUTE_VALUE_PARAM = 'attribute_value';
 export const ZOOM_TO_PARAM = 'zoom_to';
 
 export const DEFAULT_AOI_COLOR = Color.BLUE;
-export const AOI_LINE_ALPHA = 0.5;
+export const AOI_LINE_ALPHA = 0.8;
 export const AOI_POLYGON_ALPHA = 0.3;
 export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW;
 
