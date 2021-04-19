@@ -569,15 +569,14 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         swissforagesId: val.properties.swissforagesId ? val.properties.swissforagesId.getValue() : undefined,
         depth: val.properties.depth ? val.properties.depth.getValue() : undefined,
       };
-      if (!this.selectedArea_ || val.id !== this.selectedArea_.id) {
-        if (val.billboard) {
-          item.color = val.billboard.color.getValue(this.julianDate);
-          item.pointSymbol = val.billboard.image.getValue(this.julianDate);
-        } else if (val.polyline) {
-          item.color = val.polyline.material.getValue(this.julianDate).color;
-        } else if (val.polygon) {
-          item.color = val.polygon.material.getValue(this.julianDate).color;
-        }
+      const colorBeforeHighlight = !this.selectedArea_ || val.id !== this.selectedArea_.id ? undefined : this.colorBeforeHighlight;
+      if (val.billboard) {
+        item.color = colorBeforeHighlight || val.billboard.color.getValue(this.julianDate);
+        item.pointSymbol = val.billboard.image.getValue(this.julianDate);
+      } else if (val.polyline) {
+        item.color = colorBeforeHighlight || val.polyline.material.getValue(this.julianDate).color;
+      } else if (val.polygon) {
+        item.color = colorBeforeHighlight || val.polygon.material.getValue(this.julianDate).color;
       }
       return item;
     });
@@ -868,8 +867,9 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         extrudedHeightReference: HeightReference.RELATIVE_TO_GROUND
       };
     } else {
-      const alpha = type === 'line' ? AOI_LINE_ALPHA : AOI_POLYGON_ALPHA;
-      const material = color ? new Color(color.red, color.green, color.blue, alpha) : DEFAULT_AOI_COLOR.withAlpha(alpha);
+      const material = color ?
+        new Color(color.red, color.green, color.blue, AOI_POLYGON_ALPHA) :
+        DEFAULT_AOI_COLOR.withAlpha(AOI_POLYGON_ALPHA);
       if (type === 'rectangle' || type === 'polygon') {
         entityAttrs.polygon = {
           hierarchy: attributes.positions,
@@ -880,7 +880,9 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
           positions: attributes.positions,
           clampToGround: true,
           width: 4,
-          material: material,
+          material: color ?
+            new Color(color.red, color.green, color.blue, AOI_LINE_ALPHA) :
+            DEFAULT_AOI_COLOR.withAlpha(AOI_LINE_ALPHA),
         };
       }
       entityAttrs.polylineVolume = {
@@ -1211,8 +1213,9 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       entity[entityType].material = this.colorBeforeHighlight;
     }
     if (entity.polylineVolume && entity.polylineVolume.show) {
-      entity.polylineVolume.material = selected ? HIGHLIGHTED_AOI_COLOR : this.colorBeforeHighlight;
-      entity.polylineVolume.outlineColor = selected ? HIGHLIGHTED_AOI_COLOR : this.colorBeforeHighlight;
+      const color = selected ? HIGHLIGHTED_AOI_COLOR.withAlpha(AOI_POLYGON_ALPHA) : this.colorBeforeHighlight;
+      entity.polylineVolume.material = color;
+      entity.polylineVolume.outlineColor = color;
     }
   }
 
