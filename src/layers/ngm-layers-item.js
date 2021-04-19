@@ -57,8 +57,7 @@ export class LayerTreeItem extends LitElementI18n {
 
   changeTransparency(transparency) {
     this.actions.changeTransparency(this.config, transparency);
-    const objectInfo = document.querySelector('ngm-object-information');
-    objectInfo.opened = false;
+    document.querySelector('ngm-object-information').close();
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
 

@@ -34,9 +34,10 @@ export const ATTRIBUTE_KEY_PARAM = 'attribute_key';
 export const ATTRIBUTE_VALUE_PARAM = 'attribute_value';
 export const ZOOM_TO_PARAM = 'zoom_to';
 
-export const DEFAULT_POINT_COLOR = Color.BLUE;
-export const DEFAULT_AOI_COLOR = DEFAULT_POINT_COLOR.withAlpha(0.3);
-export const HIGHLIGHTED_AOI_COLOR = Color.RED;
+export const DEFAULT_AOI_COLOR = Color.BLUE;
+export const AOI_LINE_ALPHA = 0.5;
+export const AOI_POLYGON_ALPHA = 0.3;
+export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW;
 
 export const CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD = ['polygon', 'polyline', 'point'];
 export const AVAILABLE_AOI_TYPES = ['polygon', 'line', 'point', 'rectangle'];

@@ -227,6 +227,12 @@ class NgmApp extends LitElementI18n {
     const origin = window.location.origin;
     const pathname = window.location.pathname;
     this.querySelector('#ngm-home-link').href = `${origin}${pathname}`;
+
+    const sideBar = this.querySelector('ngm-left-side-bar');
+    const toolbox = sideBar.querySelector('ngm-aoi-drawer');
+    const infoPopup = this.querySelector('ngm-object-information');
+    toolbox.addEventListener('show-area-info', event => infoPopup.open(event.detail.info));
+    toolbox.addEventListener('hide-area-info', () => infoPopup.close());
   }
 
   showSlowLoadingWindow() {
@@ -267,7 +273,8 @@ class NgmApp extends LitElementI18n {
         </div>
       </header>
       <main>
-        <ngm-drop-files @filedrop="${event => this.onFileDrop(event.detail.file)}" .target="${document.body}"></ngm-drop-files>
+        <ngm-drop-files @filedrop="${event => this.onFileDrop(event.detail.file)}"
+                        .target="${document.body}"></ngm-drop-files>
         <ngm-loading-mask></ngm-loading-mask>
         <ngm-left-side-bar
           .authenticated=${this.authenticated}

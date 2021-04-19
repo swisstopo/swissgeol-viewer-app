@@ -133,6 +133,8 @@ export default class ObjectSelector {
   unhighlight() {
     this.toggleTileHighlight(null);
     this.toggleEarthquakeHighlight(null);
+    const aoiElement = document.querySelector('ngm-aoi-drawer');
+    aoiElement.deselectArea();
     this.scene.requestRender();
   }
 }
