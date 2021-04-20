@@ -1213,7 +1213,9 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       entity[entityType].material = this.colorBeforeHighlight;
     }
     if (entity.polylineVolume && entity.polylineVolume.show) {
-      const color = selected ? HIGHLIGHTED_AOI_COLOR.withAlpha(AOI_POLYGON_ALPHA) : this.colorBeforeHighlight;
+      const color = selected ?
+        HIGHLIGHTED_AOI_COLOR.withAlpha(AOI_POLYGON_ALPHA) :
+        this.colorBeforeHighlight.withAlpha(AOI_POLYGON_ALPHA);
       entity.polylineVolume.material = color;
       entity.polylineVolume.outlineColor = color;
     }
