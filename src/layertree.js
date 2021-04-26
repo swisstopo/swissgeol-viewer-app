@@ -198,6 +198,7 @@ const geo_base = {
           displayed: false,
           pickable: true,
           geocatId: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Cross-Sections.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
