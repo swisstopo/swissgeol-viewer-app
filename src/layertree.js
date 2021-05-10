@@ -123,7 +123,8 @@ const geo_base = {
             'bh_pub_SHORTNAME', 'bh_pub_BOHREDAT', 'bh_pub_BOHRTYP', 'bh_pub_GRUND', 'bh_pub_RESTRICTIO',
             'bh_pub_TIEFEMD', 'bh_pub_DEPTHFROM', 'bh_pub_DEPTHTO', 'bh_pub_LAYERDESC', 'bh_pub_ORIGGEOL',
             'bh_pub_LITHOLOGY', 'bh_pub_LITHOSTRAT', 'bh_pub_CHRONOSTR', 'bh_pub_TECTO', 'bh_pub_USCS1',
-            'bh_pub_USCS2', 'bh_pub_USCS3']
+            'bh_pub_USCS2', 'bh_pub_USCS3'],
+          geocatId: 'd57ac0ad-be44-4b3f-8349-c19ef3a5c6c1',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -155,7 +156,8 @@ const geo_base = {
           zoomToBbox: true,
           propsOrder: ['CSGA25Px_No', 'CSGA25Px_Name', 'CSGA25Px_Pub', 'CSGA25Px_Author', 'CSGA25Px_Plate_No',
             'CSGA25Px_Section_No', 'CSGA25Px_Sec_Type', 'CSGA25Px_Scale', 'CSGA25Px_Vert_Exag', 'CSGA25Px_Link_Orig',
-            'CSGA25Px_Link_Shp']
+            'CSGA25Px_Link_Shp'],
+          geocatId: '97197401-6019-49b0-91d6-eaf35d57529c',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -166,7 +168,8 @@ const geo_base = {
           visible: false,
           displayed: true,
           pickable: true,
-          zoomToBbox: true
+          zoomToBbox: true,
+          geocatId: 'd1912e80-59c8-4dc5-a1f2-67c42d2ff473',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -176,7 +179,8 @@ const geo_base = {
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           visible: false,
           displayed: false,
-          pickable: true
+          pickable: true,
+          geocatId: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -187,7 +191,8 @@ const geo_base = {
           visible: false,
           displayed: false,
           pickable: true,
-          zoomToBbox: true
+          zoomToBbox: true,
+          geocatId: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
         }
       ]
     },
@@ -204,7 +209,8 @@ const geo_base = {
 //          pickable: true,
 //          visible: false,
 //          displayed: false,
-//          propsOrder: ['Line', 'Owner', 'Public', 'SRD', 'AcqYear', 'Length', 'data_link']
+//          propsOrder: ['Line', 'Owner', 'Public', 'SRD', 'AcqYear', 'Length', 'data_link'],
+//          geocatId: '62f8d10b-f65b-4902-967e-bd4f972b56e9',
 //        },
 //      ]
 //    }
@@ -224,7 +230,8 @@ const geo_energy = {
           label: t('lyr_temperature_model_label'),
           layer: 'temperature_model',
           transparencyDisabled: true,
-          pickable: true
+          pickable: true,
+          geocatId: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -232,7 +239,8 @@ const geo_energy = {
           label: t('lyr_temperature_horizon_tomm_label'),
           layer: 'temperature_horizon_tomm',
           propsOrder: TEMPERATURE_HORIZON_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '4f9e3f59-891e-434b-bba5-40db1b9495e0',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -240,7 +248,8 @@ const geo_energy = {
           label: t('lyr_temperature_horizon_tuma_label'),
           layer: 'temperature_horizon_tuma',
           propsOrder: TEMPERATURE_HORIZON_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '613cdc6f-0237-416d-af16-ae5d2f1934ff',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -248,7 +257,8 @@ const geo_energy = {
           label: t('lyr_temperature_horizon_tmus_label'),
           layer: 'temperature_horizon_tmus',
           propsOrder: TEMPERATURE_HORIZON_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: 'e0be0de5-4ed0-488a-a952-5eb385fd5595',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -256,7 +266,8 @@ const geo_energy = {
           label: t('lyr_temperature_500_bgl_label'),
           layer: 'temperature_500_bgl',
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '08e66941-4ebb-4017-8018-b39caa8fd107',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -264,7 +275,8 @@ const geo_energy = {
           label: t('lyr_temperature_1000_bgl_label'),
           layer: 'temperature_1000_bgl',
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '5e32ea72-a356-4250-b40a-a441165fd936',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -272,7 +284,8 @@ const geo_energy = {
           label: t('lyr_temperature_1500_bgl_label'),
           layer: 'temperature_1500_bgl',
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '162989d7-5c1c-48fb-8d16-2ccf5be339b9',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -280,7 +293,8 @@ const geo_energy = {
           label: t('lyr_temperature_2000_bgl_label'),
           layer: 'temperature_2000_bgl',
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: 'ac604460-7a7a-44c5-bc5a-41062fbd21ff',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -288,7 +302,8 @@ const geo_energy = {
           label: t('lyr_temperature_3000_bgl_label'),
           layer: 'temperature_3000_bgl',
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '47f79661-212e-4297-b048-2606db7affa8',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -296,7 +311,8 @@ const geo_energy = {
           label: t('lyr_temperature_4000_bgl_label'),
           layer: 'temperature_4000_bgl',
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '739e9095-77f6-462d-9a1e-438898cf0c9c',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -304,7 +320,8 @@ const geo_energy = {
           label: t('lyr_temperature_isotherm_60c_label'),
           layer: 'temperature_isotherm_60c',
           propsOrder: TEMPERATURE_HORIZON_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '6edca35d-0f08-43b9-9faf-4c7b207888a1',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -312,7 +329,8 @@ const geo_energy = {
           label: t('lyr_temperature_isotherm_100c_label'),
           layer: 'temperature_isotherm_100c',
           propsOrder: TEMPERATURE_HORIZON_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '8681fb45-6220-41ef-825a-86210d8a72fc',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -320,7 +338,8 @@ const geo_energy = {
           label: t('lyr_temperature_isotherm_150c_label'),
           layer: 'temperature_isotherm_150c',
           propsOrder: TEMPERATURE_HORIZON_ORDER,
-          pickable: true
+          pickable: true,
+          geocatId: '31dc428e-a62b-4f6b-a263-e5eca9d9a074',
         },
       ]
     },
@@ -371,7 +390,8 @@ const subsurface = {
           transparency: DEFAULT_LAYER_TRANSPARENCY,
           pickable: true,
           propsOrder: CENOZOIC_BEDROCK_ORDER,
-          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Bedrock.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Bedrock.zip',
+          geocatId: '133b54a9-60d1-481c-85e8-e1a222d6ac3f',
         },
       ]
     },
@@ -549,7 +569,8 @@ const man_made_objects = {
       label: t('lyr_road_tunnel_label'),
       layer: 'road_tunnel',
       pickable: true,
-      transparencyDisabled: true
+      transparencyDisabled: true,
+      geocatId: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
     },
     {
       type: LAYER_TYPES.tiles3d,
@@ -557,7 +578,8 @@ const man_made_objects = {
       label: t('lyr_rail_tunnel_label'),
       layer: 'rail_tunnel',
       pickable: true,
-      transparencyDisabled: true
+      transparencyDisabled: true,
+      geocatId: '4897848c-3777-4636-9c7e-16ef91c723f6',
     },
     {
       type: LAYER_TYPES.tiles3d,
@@ -565,7 +587,8 @@ const man_made_objects = {
       label: t('lyr_water_tunnel_label'),
       layer: 'water_tunnel',
       pickable: true,
-      transparencyDisabled: true
+      transparencyDisabled: true,
+      geocatId: '71ee97cb-91f8-427d-b217-f293a0a9760a',
     },
     {
       type: LAYER_TYPES.tiles3d,
@@ -573,7 +596,8 @@ const man_made_objects = {
       label: t('lyr_swiss_buildings_label'),
       layer: 'ch.swisstopo.swisstlm3d.3d',
       pickable: false,
-      transparency: DEFAULT_LAYER_TRANSPARENCY
+      transparency: DEFAULT_LAYER_TRANSPARENCY,
+      geocatId: '21c98c73-48da-408b-ab73-8f1ab9d5fbe4',
     }
   ]
 };
