@@ -46,7 +46,7 @@
     "chai": "^4.3.4",
     "copy-webpack-plugin": "^8.1.1",
     "core-js": "^3.10.1",
-    "css-loader": "^5.2.1",
+    "css-loader": "^5.2.5",
     "eslint": "^7.24.0",
     "esm": "^3.2.25",
     "file-loader": "^6.2.0",
