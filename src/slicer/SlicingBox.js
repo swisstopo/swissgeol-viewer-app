@@ -25,7 +25,6 @@ import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import CornerType from 'cesium/Source/Core/CornerType';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import {syncSliceParam} from '../permalink';
 
 export default class SlicingBox extends SlicingToolBase {
   constructor(viewer, dataSource) {
