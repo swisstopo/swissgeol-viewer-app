@@ -25,6 +25,7 @@ import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import CornerType from 'cesium/Source/Core/CornerType';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
+import {syncSliceParam} from '../permalink';
 
 export default class SlicingBox extends SlicingToolBase {
   constructor(viewer, dataSource) {
@@ -237,6 +238,13 @@ export default class SlicingBox extends SlicingToolBase {
         const tileCenter = Cartesian3.equals(transformCenter, Cartesian3.ZERO) ? primitive.boundingSphere.center : transformCenter;
         this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.basePath], tileCenter);
       }
+    });
+    const boxCenter = Cartographic.fromCartesian(this.boxCenter);
+    syncSliceParam({
+      type: this.options.type,
+      slicePoints: Object.values(this.bbox.corners),
+      lowerLimit: boxCenter.height - this.bbox.height,
+      height: this.bbox.height
     });
   }
 

@@ -175,7 +175,7 @@ class LeftSideBar extends LitElementI18n {
         url: l.downloadDataPath,
         type: l.downloadDataType
       }));
-      return result;
+    return result;
   }
 
   async downloadActiveData(evt) {
@@ -239,7 +239,7 @@ class LeftSideBar extends LitElementI18n {
         pickable: true,
         customAsset: true
       };
-      layer.load = () => layer.promise = createCesiumObject(this.viewer, layer);
+      layer.load = () => this.addLayer(layer);
       activeLayers.push(layer);
     });
 
@@ -311,16 +311,11 @@ class LeftSideBar extends LitElementI18n {
         layer.visible = true;
       }
     } else {
-      await (layer.promise || (layer.promise = createCesiumObject(this.viewer, layer)));
+      await (layer.promise || this.addLayer(layer));
       layer.add && layer.add();
       layer.visible = true;
       layer.displayed = true;
       this.activeLayers.push(layer);
-      this.dispatchEvent(new CustomEvent('layeradded', {
-        detail: {
-          layer
-        }
-      }));
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
 
@@ -361,8 +356,7 @@ class LeftSideBar extends LitElementI18n {
       if (layer.children) {
         flat.push(...this.getFlatLayers(layer.children, tileLoadCallback));
       } else {
-        layer.load = () =>
-          layer.promise = createCesiumObject(this.viewer, layer, tileLoadCallback);
+        layer.load = () => this.addLayer(layer);
         flat.push(layer);
       }
     }
@@ -407,7 +401,7 @@ class LeftSideBar extends LitElementI18n {
       displayed: true,
       transparency: DEFAULT_LAYER_TRANSPARENCY
     };
-    config.load = () => config.promise = createCesiumObject(this.viewer, config);
+    config.load = () => this.addLayer(layer);
     return config;
   }
 
@@ -508,6 +502,16 @@ class LeftSideBar extends LitElementI18n {
       offset: zoomHeadingPitchRange,
       complete: complete
     });
+  }
+
+  addLayer(layer) {
+    layer.promise = createCesiumObject(this.viewer, layer);
+    this.dispatchEvent(new CustomEvent('layeradded', {
+      detail: {
+        layer
+      }
+    }));
+    return layer.promise;
   }
 
   createRenderRoot() {

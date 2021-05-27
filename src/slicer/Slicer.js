@@ -4,6 +4,7 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 import SlicingToolBase from './SlicingToolBase';
+import {syncSliceParam} from '../permalink';
 
 /**
  * @typedef {object} SliceOptions
@@ -54,6 +55,10 @@ export default class Slicer {
 
       this.sliceActive = true;
       this.slicingTool.activate(this.sliceOptions);
+      const type = this.sliceOptions.type;
+      if (type === 'view-line') {
+        syncSliceParam({type: type, slicePoints: this.sliceOptions.slicePoints});
+      }
     } else {
       this.sliceActive = false;
       this.sliceOptions.deactivationCallback();
@@ -73,6 +78,7 @@ export default class Slicer {
         primitive.clippingPlanes.enabled = false;
         primitive.clippingPlanes = undefined;
       });
+      syncSliceParam();
     }
     this.viewer.scene.requestRender();
   }
