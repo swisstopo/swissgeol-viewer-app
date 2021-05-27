@@ -1,6 +1,7 @@
 import {html} from 'lit-element';
 import i18next from 'i18next';
 import {LitElementI18n} from '../../i18n.js';
+import {syncSliceParam} from '../../permalink';
 
 class NgmSlicer extends LitElementI18n {
 
@@ -26,21 +27,31 @@ class NgmSlicer extends LitElementI18n {
     if (!active || boxOptionChanged) {
       this.slicer.sliceOptions = {
         type: type,
-        deactivationCallback: () => this.onDeactivation()
+        deactivationCallback: () => this.onDeactivation(),
+        syncBoxPlanesCallback: (sliceInfo) => syncSliceParam(sliceInfo)
       };
+      if (type === 'view-line') {
+        this.slicer.sliceOptions.activationCallback = () => syncSliceParam({
+          type: type,
+          slicePoints: this.slicer.sliceOptions.slicePoints
+        });
+      }
       this.slicer.active = true;
     }
-    this.sliceEnabled = this.slicer.active;
     this.requestUpdate();
   }
 
   onDeactivation() {
-    this.sliceEnabled = false;
+    syncSliceParam();
     this.requestUpdate();
   }
 
   get slicingType() {
     return this.slicer.sliceOptions.type;
+  }
+
+  get slicingEnabled() {
+    return this.slicer.active;
   }
 
   render() {
@@ -50,17 +61,17 @@ class NgmSlicer extends LitElementI18n {
           data-tooltip=${i18next.t('nav_slice_hint')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button ${this.sliceEnabled && this.slicingType === 'view-line' ? 'grey' : ''}"
+          class="ui compact mini icon button ${this.slicingEnabled && this.slicingType === 'view-line' ? 'grey' : ''}"
           @pointerdown="${() => this.toggleSlicer('view-line')}">
-            <i class="cut icon"></i>
+          <i class="cut icon"></i>
         </button>
         <button
           data-tooltip=${i18next.t('nav_box_slice_hint')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button ${this.sliceEnabled && this.slicingType === 'view-box' ? 'grey' : ''}"
+          class="ui compact mini icon button ${this.slicingEnabled && this.slicingType === 'view-box' ? 'grey' : ''}"
           @pointerdown="${() => this.toggleSlicer('view-box')}">
-            <i class="cube icon"></i>
+          <i class="cube icon"></i>
         </button>
       `;
     } else {

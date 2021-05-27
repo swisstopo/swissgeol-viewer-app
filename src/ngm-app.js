@@ -19,7 +19,7 @@ import {
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
 
-import {getCameraView, getSliceParam, syncCamera} from './permalink.js';
+import {getCameraView, getSliceParam, syncCamera, syncSliceParam} from './permalink.js';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import {showMessage} from './message.js';
 import i18next from 'i18next';
@@ -121,7 +121,14 @@ class NgmApp extends LitElementI18n {
     this.slicer_ = new Slicer(viewer);
     const sliceOptions = getSliceParam();
     if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
-      this.slicer_.sliceOptions = {...this.slicer_.sliceOptions, ...sliceOptions};
+      this.slicer_.sliceOptions = {
+        ...this.slicer_.sliceOptions, ...sliceOptions,
+        syncBoxPlanesCallback: (sliceInfo) => syncSliceParam(sliceInfo),
+        deactivationCallback: () => {
+          syncSliceParam();
+          this.querySelector('ngm-slicer').requestUpdate();
+        }
+      };
       this.slicer_.active = true;
     }
 

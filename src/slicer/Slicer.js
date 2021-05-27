@@ -4,7 +4,19 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 import SlicingToolBase from './SlicingToolBase';
-import {syncSliceParam} from '../permalink';
+
+/**
+ * @typedef {object} BoxSliceInfo
+ * @property {'box'|'view-box'} type - slice type
+ * @property {Cartesian3[]} slicePoints - box corner positions
+ * @property {Number} lowerLimit - lower limit of the box
+ * @property {Number} height - height of the box
+ */
+
+/**
+ * @callback SyncBoxPlanesCallback
+ * @param {BoxSliceInfo} sliceInfo
+ */
 
 /**
  * @typedef {object} SliceOptions
@@ -14,6 +26,8 @@ import {syncSliceParam} from '../permalink';
  * @property [{number} lowerLimit - lower limit for box slicing]
  * @property [{number} height - box height for box slicing]
  * @property [{function} deactivationCallback - calls on slicing deactivation]
+ * @property [{function} activationCallback - calls on slicing activation]
+ * @property [{SyncBoxPlanesCallback} syncBoxPlanesCallback - calls on synchronization of box planes]
  */
 
 
@@ -21,7 +35,11 @@ const DEFAULT_SLICE_OPTIONS = {
   type: undefined,
   slicePoints: [],
   negate: false,
+  activationCallback: () => {
+  },
   deactivationCallback: () => {
+  },
+  syncBoxPlanesCallback: () => {
   }
 };
 
@@ -55,13 +73,12 @@ export default class Slicer {
 
       this.sliceActive = true;
       this.slicingTool.activate(this.sliceOptions);
-      const type = this.sliceOptions.type;
-      if (type === 'view-line') {
-        syncSliceParam({type: type, slicePoints: this.sliceOptions.slicePoints});
-      }
+      if (this.sliceOptions.activationCallback)
+        this.sliceOptions.activationCallback();
     } else {
       this.sliceActive = false;
-      this.sliceOptions.deactivationCallback();
+      if (this.sliceOptions.deactivationCallback)
+        this.sliceOptions.deactivationCallback();
       this.sliceOptions = {...DEFAULT_SLICE_OPTIONS};
       this.slicerDataSource.entities.removeAll();
       if (this.slicingTool)
@@ -78,7 +95,6 @@ export default class Slicer {
         primitive.clippingPlanes.enabled = false;
         primitive.clippingPlanes = undefined;
       });
-      syncSliceParam();
     }
     this.viewer.scene.requestRender();
   }

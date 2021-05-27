@@ -240,13 +240,16 @@ export default class SlicingBox extends SlicingToolBase {
         this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.basePath], tileCenter);
       }
     });
-    const boxCenter = Cartographic.fromCartesian(this.boxCenter);
-    syncSliceParam({
-      type: this.options.type,
-      slicePoints: Object.values(this.bbox.corners),
-      lowerLimit: boxCenter.height - this.bbox.height / 2,
-      height: this.bbox.height
-    });
+    if (this.options.syncBoxPlanesCallback) {
+      const boxCenter = Cartographic.fromCartesian(this.boxCenter);
+      const planesInfo = {
+        type: this.options.type,
+        slicePoints: Object.values(this.bbox.corners),
+        lowerLimit: boxCenter.height - this.bbox.height / 2,
+        height: this.bbox.height
+      };
+      this.options.syncBoxPlanesCallback(planesInfo);
+    }
   }
 
   updateSidePlanes() {
