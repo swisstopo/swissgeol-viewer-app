@@ -1,14 +1,9 @@
 const LOCALSTORAGE_AOI_KEY = 'aoi';
 const LOCALSTORAGE_WELCOME_KEY = 'hideWelcome';
-const LOCALSTORAGE_SENTRY_KEY = 'sentryConfirmed';
 const LOCALSTORAGE_REVIEW_KEY = 'hideReviewWindow';
 const LOCALSTORAGE_CATALOG_KEY = 'hideCatalogWindow';
 
 export class LocalStorageController {
-  get isSentryConfirmed() {
-    return localStorage.getItem(LOCALSTORAGE_SENTRY_KEY) === 'true';
-  }
-
   get hideWelcomeValue() {
     return localStorage.getItem(LOCALSTORAGE_WELCOME_KEY) === 'true';
   }
@@ -19,10 +14,6 @@ export class LocalStorageController {
 
   get hideCatalogValue() {
     return localStorage.getItem(LOCALSTORAGE_CATALOG_KEY) === 'true';
-  }
-
-  saveSentryConfirmation() {
-    localStorage.setItem(LOCALSTORAGE_SENTRY_KEY, 'true');
   }
 
   updateWelcomePanelState() {

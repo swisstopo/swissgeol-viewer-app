@@ -25,6 +25,7 @@
 @import 'fomantic-ui-css/components/label.css';
 @import 'fomantic-ui-css/components/progress.css';
 @import 'fomantic-ui-css/components/header.css';
+@import 'fomantic-ui-css/components/card.css';
 
 @import 'cesium/Build/Cesium/Widgets/widgets.css';
 
@@ -39,6 +40,7 @@
 @import 'ngm-position-edit.css';
 @import 'ngm-map-chooser.css';
 @import 'ngm-drop-files.css';
+@import 'ngm-tracking-consent.css';
 
 [hidden] {
   display: none !important;
