@@ -11,13 +11,15 @@ import HeightReference from 'cesium/Source/Scene/HeightReference';
 
 
 export default class QueryManager {
-  constructor(viewer) {
+  constructor(viewer, objectInfoElement) {
     this.objectSelector = new ObjectSelector(viewer);
     this.swisstopoIndentify = new SwisstopoIdentify();
     this.viewer = viewer;
     this.scene = viewer.scene;
     this.enabled = true;
     this.highlightEntity = null;
+    this.toolboxElement = null;
+    this.objectInfoElement = objectInfoElement;
     viewer.screenSpaceEventHandler.setInputAction(click => this.onclick(click), ScreenSpaceEventType.LEFT_CLICK);
   }
 
@@ -60,10 +62,10 @@ export default class QueryManager {
 
   async onclick(click) {
     this.unhighlight();
-    const toolboxElement = document.querySelector('ngm-aoi-drawer');
-    toolboxElement.deselectArea();
-    if (!this.enabled || toolboxElement.drawState) {
-      document.querySelector('ngm-object-information').close();
+    if (this.toolboxElement)
+      this.toolboxElement.deselectArea();
+    if (!this.enabled || (this.toolboxElement && this.toolboxElement.drawState)) {
+      this.hideObjectInformation();
       return;
     }
     await this.pickObject(click.position);
@@ -84,7 +86,7 @@ export default class QueryManager {
       }
     }
 
-    document.querySelector('ngm-object-information').open(attributes);
+    this.showObjectInformation(attributes);
 
     this.scene.requestRender();
   }
@@ -176,10 +178,18 @@ export default class QueryManager {
     const position = Cartographic.toCartesian(cartographicCoords);
     const attributes = this.objectSelector.pickAttributes(null, position, feature);
 
-    document.querySelector('ngm-object-information').open(attributes);
+    this.showObjectInformation(attributes);
     attributes.zoom();
 
     this.scene.requestRender();
+  }
+
+  showObjectInformation(attributes) {
+    this.objectInfoElement.open(attributes);
+  }
+
+  hideObjectInformation() {
+    this.objectInfoElement.close();
   }
 }
 

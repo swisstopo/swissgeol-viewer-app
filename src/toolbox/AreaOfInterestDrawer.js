@@ -63,6 +63,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       slicer: {type: Object},
       setStoredAoi: {type: Object},
       getStoredAoi: {type: Object},
+      queryManager: {type: Object},
       downloadActiveDataEnabled: {type: Boolean}
     };
   }
@@ -533,7 +534,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (this.selectedArea_) {
       this.updateHighlight(this.selectedArea_, false);
       this.selectedArea_ = null;
-      this.dispatchEvent(new CustomEvent('hide-area-info'));
+      this.queryManager.hideObjectInformation();
     }
   }
 
@@ -905,7 +906,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   showAreaInfo(areaAttrs) {
-    this.dispatchEvent(new CustomEvent('show-area-info', {detail: {info: this.getInfoProps(areaAttrs)}}));
+    this.queryManager.showObjectInformation(this.getInfoProps(areaAttrs));
     this.pickArea_(areaAttrs.id);
   }
 

@@ -57,7 +57,6 @@ export class LayerTreeItem extends LitElementI18n {
 
   changeTransparency(transparency) {
     this.actions.changeTransparency(this.config, transparency);
-    document.querySelector('ngm-object-information').close();
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
 
@@ -74,52 +73,55 @@ export class LayerTreeItem extends LitElementI18n {
   get buttons() {
     return html`
       <div class="ui icon buttons compact mini">
-      ${this.config.geocatId ?
-        html`<button class="ui button"
-          data-tooltip=${i18next.t('dtd_disclaimer_hint')}
-          data-position="top left"
-          data-variation="mini"
-          @click=${() => window.open(geocatLink(this.config.geocatId))}>
-            <i class="question circle icon"></i>
-        </button>` : ''}
-      ${this.config.zoomToBbox ?
-        html`<button class="ui button"
-          data-tooltip=${i18next.t('dtd_zoom_to_hint')}
-          data-position="top left"
-          data-variation="mini"
-          @mouseenter=${() => this.actions.showBoundingBox(this.config)}
-          @mouseleave=${() => this.actions.hideBoundingBox()}
-          @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
-            <i class="search plus icon"></i>
-        </button>` : ''}
+        ${this.config.geocatId ?
+          html`
+            <button class="ui button"
+                    data-tooltip=${i18next.t('dtd_disclaimer_hint')}
+                    data-position="top left"
+                    data-variation="mini"
+                    @click=${() => window.open(geocatLink(this.config.geocatId))}>
+              <i class="question circle icon"></i>
+            </button>` : ''}
+        ${this.config.zoomToBbox ?
+          html`
+            <button class="ui button"
+                    data-tooltip=${i18next.t('dtd_zoom_to_hint')}
+                    data-position="top left"
+                    data-variation="mini"
+                    @mouseenter=${() => this.actions.showBoundingBox(this.config)}
+                    @mouseleave=${() => this.actions.hideBoundingBox()}
+                    @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
+              <i class="search plus icon"></i>
+            </button>` : ''}
         <button class="ui button ${classMap(this.downClassMap)}"
-          data-tooltip=${i18next.t('dtd_layer_down_label')}
-          data-position="top center"
-          data-variation="mini"
-          @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
-            <i class="angle down icon"></i>
+                data-tooltip=${i18next.t('dtd_layer_down_label')}
+                data-position="top center"
+                data-variation="mini"
+                @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
+          <i class="angle down icon"></i>
         </button>
         <button class="ui button ${classMap(this.upClassMap)}"
-          data-tooltip=${i18next.t('dtd_layer_up_label')}
-          data-position="top center"
-          data-variation="mini"
-          @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
-            <i class="angle up icon"></i>
+                data-tooltip=${i18next.t('dtd_layer_up_label')}
+                data-position="top center"
+                data-variation="mini"
+                @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
+          <i class="angle up icon"></i>
         </button>
         ${this.config.downloadUrl ?
-        html`<button class="ui button"
-          data-tooltip=${i18next.t('dtd_download_hint')}
-          data-position="top left"
-          data-variation="mini"
-          @click=${() => window.open(this.config.downloadUrl)}>
-            <i class="download icon"></i>
-        </button>` : ''}
+          html`
+            <button class="ui button"
+                    data-tooltip=${i18next.t('dtd_download_hint')}
+                    data-position="top left"
+                    data-variation="mini"
+                    @click=${() => window.open(this.config.downloadUrl)}>
+              <i class="download icon"></i>
+            </button>` : ''}
         <button class="ui button"
-          data-tooltip=${i18next.t('tbx_remove_btn_hint')}
-          data-position="top right"
-          data-variation="mini"
-          @click=${this.onRemove}>
-            <i class="icon trash alternate outline"></i>
+                data-tooltip=${i18next.t('tbx_remove_btn_hint')}
+                data-position="top right"
+                data-variation="mini"
+                @click=${this.onRemove}>
+          <i class="icon trash alternate outline"></i>
         </button>
       </div>
     `;
@@ -133,8 +135,8 @@ export class LayerTreeItem extends LitElementI18n {
       <div class="ngm-displayed-container">
         <div class="ui checkbox">
           <input class="ngm-layer-checkbox" type="checkbox"
-            .checked=${this.config.visible}
-            @change=${this.changeVisibility}>
+                 .checked=${this.config.visible}
+                 @change=${this.changeVisibility}>
           <label class="ngm-layer-label" @click=${this.onLabelClicked}>
             <i class=${this.config.restricted ? 'lock icon' : ''}></i>${i18next.t(this.label)}
             <div class="ui ${this.loading > 0 ? 'active' : ''} inline mini loader layerloader">
