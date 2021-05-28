@@ -21,8 +21,8 @@ export default class QueryManager {
     viewer.screenSpaceEventHandler.setInputAction(click => this.onclick(click), ScreenSpaceEventType.LEFT_CLICK);
   }
 
-  set activeLayers(names) {
-    this.searchableLayers = names;
+  set activeLayers(layers) {
+    this.searchableLayers = layers;
   }
 
   async querySwisstopo(pickedPosition, layers) {
@@ -74,12 +74,14 @@ export default class QueryManager {
     let attributes = this.objectSelector.pickAttributes(position, pickedPosition);
     const attributesEmpty = !attributes || !Object.getOwnPropertyNames(attributes).length;
 
-    const layers = 'ch.swisstopo.geologie-geocover';
-    // we only search the remote Swisstopo service when there was no result for the local search
-    // and the geocover layer is enabled
-    if (attributesEmpty && pickedPosition && this.searchableLayers.includes(layers)) {
-      const result = await this.querySwisstopo(pickedPosition, layers);
-      attributes = result || attributes;
+    // we only search the remote Swisstopo service when there was no result for the local search.
+    if (attributesEmpty && pickedPosition) {
+      // find the first queryable swisstopo layer
+      const config = this.searchableLayers.find(config => config.queryType === 'geoadmin');
+      if (config) {
+        const result = await this.querySwisstopo(pickedPosition, config.layer);
+        attributes = result || attributes;
+      }
     }
 
     document.querySelector('ngm-object-information').open(attributes);
