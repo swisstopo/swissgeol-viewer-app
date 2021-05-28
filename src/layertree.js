@@ -202,7 +202,7 @@ const geo_base = {
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 471478,
+          assetId: 472446,
           label: t('lyr_cross_section_geoquat_label'),
           layer: 'cross_section_geoquat',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
@@ -212,7 +212,6 @@ const geo_base = {
           zoomToBbox: true,
           propsOrder: ['CS-AAT-Cross-section', 'CS-AAT-Lithostratigraphy', 'CS-AAT-Type', 'CS-AAT-Legend', 'CS-AAT-Report'],
           geocatId: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
-          downloadUrl: 'https://download.swissgeol.ch/geoquat/CS-Aaretal-Legende.pdf',
         }
       ]
     },
