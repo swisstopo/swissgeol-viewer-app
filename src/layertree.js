@@ -112,7 +112,7 @@ const geo_map_series = {
           visible: false,
           displayed: false,
           transparency: 0.3,
-          queryable: false,
+          noQuery: true,
           geocatId: 'f1455593-7571-48b0-8603-307ec59a6702',
         },
       ]

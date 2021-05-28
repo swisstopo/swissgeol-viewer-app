@@ -67,7 +67,7 @@ class LeftSideBar extends LitElementI18n {
     }
 
     this.queryManager.activeLayers = this.activeLayers
-      .filter(config => config.visible && config.queryable !== false);
+      .filter(config => config.visible && !config.noQuery);
 
     return html`
       <div class="ui styled accordion" id="${WELCOME_PANEL}">
