@@ -12,7 +12,6 @@ import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 import './ngm-map-configuration.js';
-import QueryManager from '../query/QueryManager.js';
 import {getZoomToPosition} from '../permalink';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
@@ -58,6 +57,7 @@ class LeftSideBar extends LitElementI18n {
       slicer: {type: Object},
       globeQueueLength_: {type: Number, attribut: false},
       localStorageController: {type: Object},
+      queryManager: {type: Object},
     };
   }
 
@@ -135,6 +135,7 @@ class LeftSideBar extends LitElementI18n {
             .getStoredAoi=${this.localStorageController.getStoredAoi}
             .setStoredAoi=${this.localStorageController.setAoiInStorage}
             .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
+            .queryManager=${this.queryManager}
             @downloadActiveData=${evt => this.downloadActiveData(evt)}
           >
           </ngm-aoi-drawer>
@@ -264,8 +265,6 @@ class LeftSideBar extends LitElementI18n {
   update(changedProperties) {
     if (this.viewer && !this.layerActions) {
       this.layerActions = new LayersActions(this.viewer, this.mapChooser);
-      // Handle queries (local and Swisstopo)
-      this.queryManager = new QueryManager(this.viewer);
       if (!this.catalogLayers) {
         this.catalogLayers = [...defaultLayerTree];
         this.initializeActiveLayers();
@@ -291,6 +290,10 @@ class LeftSideBar extends LitElementI18n {
         this.activeLayers.splice(idx, 1);
         this.removeLayer(config);
       });
+    }
+
+    if (this.querySelector('ngm-aoi-drawer') && !this.queryManager.toolboxElement) {
+      this.queryManager.toolboxElement = this.querySelector('ngm-aoi-drawer');
     }
 
     super.updated(changedProperties);
@@ -325,6 +328,7 @@ class LeftSideBar extends LitElementI18n {
   }
 
   onLayerChanged() {
+    this.queryManager.hideObjectInformation();
     this.catalogLayers = [...this.catalogLayers];
     syncLayersParam(this.activeLayers);
   }

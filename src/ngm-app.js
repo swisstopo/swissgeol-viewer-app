@@ -31,6 +31,7 @@ import {getZoomToPosition} from './permalink';
 import Slicer from './slicer/Slicer.js';
 
 import {setupI18n} from './i18n.js';
+import QueryManager from './query/QueryManager';
 
 import {initAnalytics} from './analytics.js';
 import {initSentry} from './sentry.js';
@@ -141,6 +142,8 @@ class NgmApp extends LitElementI18n {
     const auth = this.querySelector('ngm-auth');
     this.authenticated = !!auth.user;
     this.userGroups = auth.userGroups;
+    // Handle queries (local and Swisstopo)
+    this.queryManager = new QueryManager(this.viewer, this.querySelector('ngm-object-information'));
 
     const sideBar = this.querySelector('ngm-left-side-bar');
 
@@ -228,12 +231,6 @@ class NgmApp extends LitElementI18n {
     const origin = window.location.origin;
     const pathname = window.location.pathname;
     this.querySelector('#ngm-home-link').href = `${origin}${pathname}`;
-
-    const sideBar = this.querySelector('ngm-left-side-bar');
-    const toolbox = sideBar.querySelector('ngm-aoi-drawer');
-    const infoPopup = this.querySelector('ngm-object-information');
-    toolbox.addEventListener('show-area-info', event => infoPopup.open(event.detail.info));
-    toolbox.addEventListener('hide-area-info', () => infoPopup.close());
   }
 
   showSlowLoadingWindow() {
@@ -295,6 +292,7 @@ class NgmApp extends LitElementI18n {
           .slicer=${this.slicer_}
           .viewer=${this.viewer}
           .mapChooser=${this.mapChooser}
+          .queryManager=${this.queryManager}
           class='left sidebar'>
         </ngm-left-side-bar>
         <div class='map'>
