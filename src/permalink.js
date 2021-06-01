@@ -1,7 +1,7 @@
 import Math from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
-import {getURLSearchParams, setURLSearchParams} from './utils.js';
+import {getURLSearchParams, parseJson, setURLSearchParams} from './utils.js';
 import {
   LAYERS_TRANSPARENCY_URL_PARAM,
   LAYERS_URL_PARAM,
@@ -9,7 +9,7 @@ import {
   ASSET_IDS_URL_PARAM,
   MAP_URL_PARAM,
   MAP_TRANSPARENCY_URL_PARAM,
-  ATTRIBUTE_KEY_PARAM, ATTRIBUTE_VALUE_PARAM, ZOOM_TO_PARAM
+  ATTRIBUTE_KEY_PARAM, ATTRIBUTE_VALUE_PARAM, ZOOM_TO_PARAM, SLICE_PARAM
 } from './constants.js';
 
 export function getCameraView() {
@@ -157,4 +157,23 @@ export function getZoomToPosition() {
     return undefined;
   }
   return {longitude: Number(position[0]), latitude: Number(position[1]), height: Number(position[2])};
+}
+
+export function syncSliceParam(sliceOptions) {
+  const params = getURLSearchParams();
+  if (sliceOptions) {
+    params.set(SLICE_PARAM, JSON.stringify(sliceOptions));
+  } else {
+    params.delete(SLICE_PARAM);
+  }
+  setURLSearchParams(params);
+}
+
+export function getSliceParam() {
+  const params = getURLSearchParams();
+  const sliceOptions = parseJson(params.get(SLICE_PARAM));
+  if (sliceOptions && sliceOptions.slicePoints) {
+    sliceOptions.slicePoints = sliceOptions.slicePoints.map(coord => new Cartesian3(coord.x, coord.y, coord.z));
+  }
+  return sliceOptions;
 }

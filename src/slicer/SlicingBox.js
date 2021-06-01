@@ -49,7 +49,7 @@ export default class SlicingBox extends SlicingToolBase {
     } else {
       this.bbox = getBboxFromViewRatio(this.viewer, 1 / 3);
     }
-    this.boxCenter = updateHeightForCartesianPositions([this.bbox.center], 0)[0];
+    this.boxCenter = this.bbox.center;
     this.planesPositions = [
       [this.bbox.corners.bottomLeft, this.bbox.corners.bottomRight],
       [this.bbox.corners.topRight, this.bbox.corners.topLeft],
@@ -60,7 +60,8 @@ export default class SlicingBox extends SlicingToolBase {
 
     this.downPlane = Plane.fromPointNormal(this.boxCenter, Cartesian3.UNIT_Z);
     this.upPlane = Plane.fromPointNormal(this.boxCenter, Cartesian3.negate(Cartesian3.UNIT_Z, new Cartesian3()));
-    this.downPlane.distance = this.upPlane.distance = this.bbox.height / 2;
+    this.downPlane.distance = this.options.lowerLimit ? this.options.lowerLimit * -1 : this.bbox.height / 2;
+    this.upPlane.distance = this.options.lowerLimit ? this.options.lowerLimit + this.bbox.height : this.bbox.height / 2;
     this.zPlanes = [this.downPlane, this.upPlane];
 
     this.slicerArrows = new SlicerArrows(this.viewer,
@@ -238,6 +239,16 @@ export default class SlicingBox extends SlicingToolBase {
         this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.basePath], tileCenter);
       }
     });
+    if (this.options.syncBoxPlanesCallback) {
+      const boxCenter = Cartographic.fromCartesian(this.boxCenter);
+      const planesInfo = {
+        type: this.options.type,
+        slicePoints: Object.values(this.bbox.corners),
+        lowerLimit: boxCenter.height - this.bbox.height / 2,
+        height: this.bbox.height
+      };
+      this.options.syncBoxPlanesCallback(planesInfo);
+    }
   }
 
   updateSidePlanes() {
