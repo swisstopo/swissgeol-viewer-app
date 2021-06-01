@@ -10,6 +10,7 @@ import './elements/ngm-review-window';
 import './elements/ngm-feature-height';
 import './elements/ngm-auth';
 import './elements/ngm-drop-files';
+import './elements/ngm-tracking-consent';
 
 import {
   DEFAULT_VIEW,
@@ -21,7 +22,6 @@ import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
 
 import {getCameraView, syncCamera} from './permalink.js';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import {showMessage} from './message.js';
 import i18next from 'i18next';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
@@ -31,6 +31,9 @@ import {getZoomToPosition} from './permalink';
 import Slicer from './slicer/Slicer.js';
 
 import {setupI18n} from './i18n.js';
+
+import {initAnalytics} from './analytics.js';
+import {initSentry} from './sentry.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -131,20 +134,6 @@ class NgmApp extends LitElementI18n {
 
     addMantelEllipsoid(viewer);
     setupSearch(viewer, this.querySelector('ga-search'), sideBar);
-
-    const sentryConfirmed = localStorageController.isSentryConfirmed;
-    if (!sentryConfirmed) {
-      const options = {
-        displayTime: 0,
-        position: 'bottom right',
-        classActions: 'basic left',
-        actions: [{
-          text: i18next.t('sentry_ok_btn_label'),
-          click: localStorageController.saveSentryConfirmation
-        }]
-      };
-      showMessage(i18next.t('sentry_message'), options);
-    }
   }
 
 
@@ -249,6 +238,11 @@ class NgmApp extends LitElementI18n {
     }
   }
 
+  onTrackingAllowedChanged(event) {
+    initSentry(event.detail.allowed);
+    initAnalytics(event.detail.allowed);
+  }
+
   render() {
     return html`
       <header>
@@ -321,6 +315,7 @@ class NgmApp extends LitElementI18n {
               <a class='item' target='_blank' href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
             </div>
           </div>
+          <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
         </div>
       </main>
     `;
