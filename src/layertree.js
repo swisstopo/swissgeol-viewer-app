@@ -191,7 +191,7 @@ const geo_base = {
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 124555,
+          assetId: 452436,
           label: t('lyr_cross_section_geomol_label'),
           layer: 'cross_section_geomol',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
@@ -199,10 +199,11 @@ const geo_base = {
           displayed: false,
           pickable: true,
           geocatId: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Cross-Sections.zip'
         },
         {
           type: LAYER_TYPES.tiles3d,
-          assetId: 99320,
+          assetId: 472446,
           label: t('lyr_cross_section_geoquat_label'),
           layer: 'cross_section_geoquat',
           transparency: DEFAULT_LAYER_TRANSPARENCY,
@@ -210,6 +211,7 @@ const geo_base = {
           displayed: false,
           pickable: true,
           zoomToBbox: true,
+          propsOrder: ['CS-AAT-Cross-section', 'CS-AAT-Lithostratigraphy', 'CS-AAT-Type', 'CS-AAT-Legend', 'CS-AAT-Report'],
           geocatId: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
         }
       ]
