@@ -61,7 +61,7 @@ const SWISSTOPO_LABEL_STYLE = {
 
 const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
 const DOWNLOAD_ROOT_GEOMOL = 'https://download.swissgeol.ch/geomol/';
-// const DOWNLOAD_ROOT_VOXEL = 'https://download.swissgeol.ch/voxel/';
+const DOWNLOAD_ROOT_VOXEL = 'https://download.swissgeol.ch/voxel/';
 const CENOZOIC_BEDROCK_ORDER = ['Name', 'Horizon', ...DOWNLOAD_PROP_ORDER];
 CENOZOIC_BEDROCK_ORDER.splice(6, 0, 'Download ESRI-GRID');
 const CONSOLIDATED_ORDER = ['Name', 'Horizon', 'HARMOS-ORIGINAL', ...DOWNLOAD_PROP_ORDER];
@@ -394,6 +394,7 @@ const subsurface = {
           transparencyDisabled: true,
           pickable: false,
           zoomToBbox: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -404,6 +405,7 @@ const subsurface = {
           transparencyDisabled: true,
           pickable: false,
           zoomToBbox: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -414,6 +416,7 @@ const subsurface = {
           transparencyDisabled: true,
           pickable: false,
           zoomToBbox: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -424,6 +427,7 @@ const subsurface = {
           transparencyDisabled: true,
           pickable: false,
           zoomToBbox: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -434,6 +438,7 @@ const subsurface = {
           transparencyDisabled: true,
           pickable: false,
           zoomToBbox: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -444,6 +449,7 @@ const subsurface = {
           transparencyDisabled: true,
           pickable: false,
           zoomToBbox: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -454,6 +460,7 @@ const subsurface = {
           transparencyDisabled: true,
           pickable: false,
           zoomToBbox: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -464,6 +471,7 @@ const subsurface = {
           transparencyDisabled: true,
           pickable: false,
           zoomToBbox: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
         },
       ]
     },
