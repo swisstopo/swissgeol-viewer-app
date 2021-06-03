@@ -2,6 +2,9 @@
 
 mkdir -p dist/legal/
 
+template=$(<legal/template.html)
+
 for file in legal/*.md; do
-  marked -i $file -o dist/${file/.md/.html};
+  html=$(marked -i $file)
+  echo "${template//_CONTENT_/$html}" > dist/${file/.md/.html}
 done

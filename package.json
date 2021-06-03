@@ -6,10 +6,10 @@
     "extract-from-assets": "node -r esm scripts/get_assets_properties.js src/assets_properties.js",
     "extract-i18n": "i18next",
     "start": "npm run webpack-start",
-    "prepare": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && scripts/legal_md_to_html.sh",
-    "webpack-start": "npm run prepare && webpack serve",
-    "rollup-start": "npm run prepare && rollup --environment SERVE:true -c --watch --no-treeshake",
-    "build": "npm run prepare && rm -rf dist/* && rollup --environment mode:production -c && scripts/create_versions.sh",
+    "build-static": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && scripts/legal_md_to_html.sh",
+    "webpack-start": "npm run build-static && webpack serve",
+    "rollup-start": "npm run build-static && rollup --environment SERVE:true -c --watch --no-treeshake",
+    "build": "rm -rf dist/* && npm run build-static && rollup --environment mode:production -c && scripts/create_versions.sh",
     "test": "mocha --exit"
   },
   "dependencies": {
@@ -55,7 +55,7 @@
     "i18next-parser": "^3.7.0",
     "jsdom": "^16.5.3",
     "jsdom-global": "3.0.2",
-    "marked": "^2.0.6",
+    "marked": "^2.0.7",
     "mini-css-extract-plugin": "^1.4.1",
     "mocha": "^8.3.2",
     "node-fetch": "^2.6.1",
