@@ -142,7 +142,7 @@ const geo_base = {
             'bh_pub_TIEFEMD', 'bh_pub_DEPTHFROM', 'bh_pub_DEPTHTO', 'bh_pub_LAYERDESC', 'bh_pub_ORIGGEOL',
             'bh_pub_LITHOLOGY', 'bh_pub_LITHOSTRAT', 'bh_pub_CHRONOSTR', 'bh_pub_TECTO', 'bh_pub_USCS1',
             'bh_pub_USCS2', 'bh_pub_USCS3'],
-          geocatId: 'd57ac0ad-be44-4b3f-8349-c19ef3a5c6c1',
+          geocatId: '3996dfad-69dd-418f-a4e6-5f32b96c760a',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -250,7 +250,7 @@ const geo_energy = {
           label: t('lyr_temperature_model_label'),
           layer: 'temperature_model',
           transparencyDisabled: true,
-          pickable: true,
+          pickable: false,
           geocatId: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
         },
         {
