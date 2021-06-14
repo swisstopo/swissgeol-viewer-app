@@ -26,6 +26,7 @@ export VERSION="THE_TAG_YOU_WANT_DEPLOYED"
 
 git checkout $VERSION
 # use gopass to export the S3 access key and secret
+export AWS_REGION=eu-west-1
 export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
 export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
 
