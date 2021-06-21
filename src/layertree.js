@@ -288,6 +288,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
           pickable: true,
           geocatId: '08e66941-4ebb-4017-8018-b39caa8fd107',
+          legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_500'
         },
         {
           type: LAYER_TYPES.tiles3d,

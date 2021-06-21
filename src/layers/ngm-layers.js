@@ -44,7 +44,7 @@ export default class LayerTree extends LitElementI18n {
         @zoomTo=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}
         @layerChanged=${() => {
           this.dispatchEvent(new CustomEvent('layerChanged'));
-          this.requestUpdate(); // force update to render visiblity changes
+          this.requestUpdate(); // force update to render visibility changes
         }}
         @moveLayer=${evt => this.moveLayer(config, evt.detail)}
         .upClassMap=${upClassMap}
