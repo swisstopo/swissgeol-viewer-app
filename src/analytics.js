@@ -15,5 +15,15 @@ export function initAnalytics(active) {
     ga('set', 'anonymizeIp', true);
 
     ga('send', 'pageview');
+
+    /* Hotjar Tracking Code for www.swissgeol.ch */
+    (function (h, o, t, j, a, r) {
+      h.hj = h.hj || function () {(h.hj.q = h.hj.q || []).push(arguments)};
+      h._hjSettings = {hjid: 2463857, hjsv: 6};
+      a = o.getElementsByTagName('head')[0];
+      r = o.createElement('script'); r.async = 1;
+      r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+      a.appendChild(r);
+    })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
   }
 }
