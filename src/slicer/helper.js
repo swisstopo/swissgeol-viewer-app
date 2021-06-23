@@ -60,6 +60,7 @@ const sliceVectorScratch = new Cartesian3();
 const normalizedSVectorScratch = new Cartesian3();
 const normalizedLVectorScratch = new Cartesian3();
 const crossScratch = new Cartesian3();
+
 /**
  * Computes clipping plane for tileset from two points
  * @param {Cartesian3} start - segment start point
@@ -118,15 +119,14 @@ export function applyOffsetToPlane(plane, offset) {
 
 /**
  * @param planes
- * @param [modelMatrix]
+ * @param unionClippingRegions
  * @return {module:cesium.ClippingPlaneCollection}
  */
-export function createClippingPlanes(planes, modelMatrix) {
+export function createClippingPlanes(planes, unionClippingRegions = true) {
   return new ClippingPlaneCollection({
-    modelMatrix: modelMatrix,
     planes: planes,
     edgeWidth: 1.0,
-    unionClippingRegions: true
+    unionClippingRegions: unionClippingRegions
   });
 }
 
@@ -189,6 +189,7 @@ const mapNorthwestScratch = new Cartographic();
 const mapNortheastScratch = new Cartographic();
 const topVectorScratch = new Cartesian3();
 const lineVectorScratch = new Cartesian3();
+
 /**
  * Returns bbox for box slicing from rectangle positions
  * @param viewer
