@@ -72,7 +72,7 @@ class NgmToolboxSlicer extends LitElementI18n {
           slicePoints: this.positions,
           lowerLimit: this.lowerLimit,
           height: this.height,
-          negate: this.sliceSide === 'left',
+          negate: this.sliceSide === 'right',
           deactivationCallback: () => this.onDeactivation()
         };
       }
@@ -127,8 +127,12 @@ class NgmToolboxSlicer extends LitElementI18n {
             <div class="text"></div>
             <i class="dropdown icon"></i>
             <div class="menu">
-              <div class="item" data-value="left">${i18next.t('tbx_slice_left_label')}</div>
-              <div class="item" data-value="right">${i18next.t('tbx_slice_right_label')}</div>
+              <div class="item" data-value="left">
+                ${this.type === 'line' ? i18next.t('tbx_slice_left_label') : i18next.t('tbx_slice_outside_label')}
+              </div>
+              <div class="item" data-value="right">
+                ${this.type === 'line' ? i18next.t('tbx_slice_right_label') : i18next.t('tbx_slice_inside_label')}
+              </div>
             </div>
           </div>
         </div>
