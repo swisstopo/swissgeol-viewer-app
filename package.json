@@ -6,10 +6,10 @@
     "extract-from-assets": "node -r esm scripts/get_assets_properties.js src/assets_properties.js",
     "extract-i18n": "i18next",
     "start": "npm run webpack-start",
-    "build-static": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && sh scripts/legal_md_to_html.sh",
+    "build-static": "node scripts/environment.js $RELEASE_NAME && node scripts/generateManuals.js && bash scripts/legal_md_to_html.sh",
     "webpack-start": "npm run build-static && webpack serve",
     "rollup-start": "npm run build-static && rollup --environment SERVE:true -c --watch --no-treeshake",
-    "build": "rm -rf dist/* && npm run build-static && rollup --environment mode:production -c && sh scripts/create_versions.sh",
+    "build": "rm -rf dist/* && npm run build-static && rollup --environment mode:production -c && bash scripts/create_versions.sh",
     "test": "mocha --exit"
   },
   "dependencies": {
