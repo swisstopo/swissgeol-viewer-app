@@ -13,7 +13,7 @@ import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
-  SLICE_BOX_ARROWS, SLICE_BOX_ARROWS_INSIDE, SLICE_BOX_ARROWS_OUTSIDE,
+  SLICE_BOX_ARROWS_INSIDE, SLICE_BOX_ARROWS_OUTSIDE,
   SLICING_BOX_MIN_SIZE,
   SLICING_GEOMETRY_COLOR
 } from '../constants';
