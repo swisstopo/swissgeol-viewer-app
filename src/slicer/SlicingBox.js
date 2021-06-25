@@ -13,7 +13,7 @@ import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
-  SLICE_BOX_ARROWS,
+  SLICE_BOX_ARROWS_INSIDE, SLICE_BOX_ARROWS_OUTSIDE,
   SLICING_BOX_MIN_SIZE,
   SLICING_GEOMETRY_COLOR
 } from '../constants';
@@ -69,7 +69,7 @@ export default class SlicingBox extends SlicingToolBase {
       {
         moveCallback: (side, moveAmount, moveVector) => this.onPlaneMove(side, moveAmount, moveVector),
         positionUpdateCallback: (side) => this.arrowPositionCallback(side),
-        arrowsList: SLICE_BOX_ARROWS,
+        arrowsList: this.options.negate ? SLICE_BOX_ARROWS_INSIDE : SLICE_BOX_ARROWS_OUTSIDE,
         arrowConfiguration: {...DEFAULT_CONFIG_FOR_SLICING_ARROW, orientation: this.bbox.orientation}
       });
     this.slicerArrows.show();
@@ -104,7 +104,11 @@ export default class SlicingBox extends SlicingToolBase {
     });
 
     this.modelMatrix = this.slicingBoxEntity.computeModelMatrix(this.julianDate);
-    this.viewer.scene.globe.clippingPlanes = createClippingPlanes([...this.sidePlanes, ...this.zPlanes]);
+    const planes = [...this.sidePlanes];
+    if (!this.options.negate) {
+      planes.push(...this.zPlanes);
+    }
+    this.viewer.scene.globe.clippingPlanes = createClippingPlanes(planes, !this.options.negate);
 
     executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlanes(primitive));
     this.syncPlanes();
@@ -126,7 +130,11 @@ export default class SlicingBox extends SlicingToolBase {
   addClippingPlanes(primitive) {
     if (!primitive.root || !primitive.boundingSphere) return;
     this.offsets[primitive.basePath] = getOffsetFromBbox(primitive, this.bbox);
-    primitive.clippingPlanes = createClippingPlanes([...this.sidePlanes, ...this.zPlanes]);
+    const planes = [...this.sidePlanes];
+    if (!this.options.negate) {
+      planes.push(...this.zPlanes);
+    }
+    primitive.clippingPlanes = createClippingPlanes(planes, !this.options.negate);
     this.syncPlanes();
   }
 
@@ -134,7 +142,8 @@ export default class SlicingBox extends SlicingToolBase {
     if (!clippingPlanes) return;
     clippingPlanes.removeAll();
     this.sidePlanes.forEach(plane => clippingPlanes.add(plane));
-    this.zPlanes.forEach(plane => clippingPlanes.add(Plane.transform(plane, this.modelMatrix)));
+    if (!this.options.negate)
+      this.zPlanes.forEach(plane => clippingPlanes.add(Plane.transform(plane, this.modelMatrix)));
   }
 
   updateBoxTileClippingPlanes(clippingPlanes, offset, center) {
@@ -144,12 +153,18 @@ export default class SlicingBox extends SlicingToolBase {
       const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
       const plane = planeFromTwoPoints(positions[0], positions[1], false);
       const p = getClippingPlaneFromSegment(positions[0], positions[1], center, mapRect, plane.normal);
+      if (this.options.negate) {
+        Cartesian3.negate(p.normal, p.normal);
+        p.distance *= -1;
+      }
       clippingPlanes.add(p);
     });
-    this.zPlanes.forEach(plane => {
-      plane = offset ? applyOffsetToPlane(plane, offset) : plane;
-      clippingPlanes.add(plane);
-    });
+    if (!this.options.negate) {
+      this.zPlanes.forEach(plane => {
+        plane = offset ? applyOffsetToPlane(plane, offset) : plane;
+        clippingPlanes.add(plane);
+      });
+    }
   }
 
   onPlaneMove(side, moveAmount, moveVector) {
@@ -252,10 +267,10 @@ export default class SlicingBox extends SlicingToolBase {
   }
 
   updateSidePlanes() {
-    this.backPlane = planeFromTwoPoints(this.bbox.corners.bottomLeft, this.bbox.corners.bottomRight, false);
-    this.frontPlane = planeFromTwoPoints(this.bbox.corners.topRight, this.bbox.corners.topLeft, false);
-    this.rightPlane = planeFromTwoPoints(this.bbox.corners.bottomRight, this.bbox.corners.topRight, false);
-    this.leftPlane = planeFromTwoPoints(this.bbox.corners.topLeft, this.bbox.corners.bottomLeft, false);
+    this.backPlane = planeFromTwoPoints(this.bbox.corners.bottomLeft, this.bbox.corners.bottomRight, this.options.negate);
+    this.frontPlane = planeFromTwoPoints(this.bbox.corners.topRight, this.bbox.corners.topLeft, this.options.negate);
+    this.rightPlane = planeFromTwoPoints(this.bbox.corners.bottomRight, this.bbox.corners.topRight, this.options.negate);
+    this.leftPlane = planeFromTwoPoints(this.bbox.corners.topLeft, this.bbox.corners.bottomLeft, this.options.negate);
     this.sidePlanes = [this.backPlane, this.leftPlane, this.frontPlane, this.rightPlane];
   }
 }
