@@ -28,7 +28,7 @@ class NgmLayerLegend extends LitElementI18n {
   }
 
   render() {
-    const legendImage = this.config.legend ? `https://api.geo.admin.ch/static/images/legends/${this.config.legend}_fr.png` : undefined;
+    const legendImage = this.config.legend ? `https://api.geo.admin.ch/static/images/legends/${this.config.legend}_${i18next.language}.png` : undefined;
     const geocatUrl = this.config.geocatId ? geocatLink(this.config.geocatId) : undefined;
     return html`
       <div class="ui segment">
