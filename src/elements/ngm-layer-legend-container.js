@@ -1,18 +1,33 @@
 import {LitElement} from 'lit-element';
+import {html} from 'lit-html';
 import './ngm-layer-legend.js';
 
 class NgmLayerLegendContainer extends LitElement {
 
+  constructor() {
+    super();
+    this.configs = new Set();
+  }
+
   showLegend(config) {
-    console.assert(config.layer);
-    const legendId = `legend_for_${config.layer}`;
-    if (!this.querySelector('#' + legendId)) {
-      const element = document.createElement('ngm-layer-legend');
-      element.id = legendId;
-      element.config = config;
-      element.addEventListener('close', event => event.target.remove());
-      this.appendChild(element);
+    if (!this.configs.has(config)) {
+      this.configs.add(config);
+      this.requestUpdate();
     }
+  }
+
+  render() {
+    return html`
+      ${[...this.configs].map(config => html`
+        <ngm-layer-legend .config=${config} @close=${this.onClose}></ngm-layer-legend>
+      `)}
+    `;
+  }
+
+  onClose(event) {
+    console.assert(this.configs.has(event.target.config));
+    this.configs.delete(event.target.config);
+    this.requestUpdate();
   }
 
   createRenderRoot() {
