@@ -91,6 +91,8 @@
   "lyr_voxel_visp_logk_label": "Visp: Hydraulic conductivity",
   "lyr_water_tunnel_label": "Water tunnel",
   "nav_box_slice_hint": "Slice 3D-scene (box)",
+  "nav_box_slice_transform_btn": "Add current box to your toolbox",
+  "nav_box_slice_transform_hint": "Do you want to re-use this box? You can add it to your toolbox!",
   "nav_camera_height_label": "Camera Height",
   "nav_camera_position_label": "Coords: {{coordinates}}<br/>H: {{height}} m / Dir: {{angle}}° / Tilt: {{pitch}}°",
   "nav_cesium_compass_hint": "Click and drag to rotate or tilt the camera",

@@ -120,6 +120,7 @@ ngm-app {
   flex-direction: column;
   flex: auto;
 }
+
 .map .footer {
   display: flex;
   padding: 0 4px;
@@ -129,6 +130,7 @@ ngm-app {
 .map .footer .ui.list {
   margin: 0;
 }
+
 .map .footer .ui.list .item {
   vertical-align: middle;
 }
@@ -142,11 +144,13 @@ ngm-app {
 #cesium .cesium-widget {
   position: absolute;
 }
+
 #cesium .cesium-viewer {
   flex: auto;
   width: auto;
   height: auto;
 }
+
 /* End of workaround */
 
 #cesium .cesium-viewer-bottom {
@@ -179,14 +183,14 @@ ngm-navigation-widgets {
   width: 0;
 }
 
-.navigation-widgets .ui.button, ngm-elevator-buttons{
+.navigation-widgets .ui.button, ngm-elevator-buttons {
   margin: .5em 0 0 0;
 }
 
 cesium-compass {
   width: 98px;
   height: 98px;
-  --cesium-compass-stroke-color:rgba(0, 0, 0, 0.6);
+  --cesium-compass-stroke-color: rgba(0, 0, 0, 0.6);
   --cesium-compass-fill-color: rgb(224, 225, 226);
 }
 
@@ -253,8 +257,8 @@ body:after { /* Beta label */
 }
 
 #divinspector {
-  position:absolute;
-  z-index:10;
+  position: absolute;
+  z-index: 10;
 }
 
 ngm-auth > a {
@@ -351,7 +355,22 @@ ngm-layer-legend-container {
   z-index: 2;
   pointer-events: none;
 }
+.ngm-slice-to-draw > div {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+}
 
 ngm-layer-legend-container > ngm-layer-legend {
   pointer-events: auto;
 }
+
+.ngm-slice-to-draw i {
+  font-size: 18px;
+  margin-right: 5px;
+}
+
+.ngm-slice-to-draw > button {
+  width: 215px;
+}
+
