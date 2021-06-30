@@ -134,3 +134,13 @@ export function parseJson(string) {
     return undefined;
   }
 }
+
+export function interpolateBetweenNumbers(min, max, percent) {
+  const diff = max - min;
+  return min + ((percent / 100) * diff);
+}
+
+export function getPercent(min, max, value) {
+  const diff = max - min;
+  return value / diff * 100;
+}

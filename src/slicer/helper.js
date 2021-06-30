@@ -8,10 +8,11 @@ import {
   updateHeightForCartesianPositions
 } from '../cesiumutils';
 import Rectangle from 'cesium/Source/Core/Rectangle';
-import {SLICING_BOX_HEIGHT, SLICING_BOX_MIN_SIZE} from '../constants';
+import {SLICING_BOX_HEIGHT, SLICING_BOX_LOWER_LIMIT, SLICING_BOX_MIN_SIZE} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
 import {HeadingPitchRoll, Transforms} from 'cesium';
+import {getPercent, interpolateBetweenNumbers} from '../utils';
 
 /**
  * @param primitive
@@ -36,7 +37,7 @@ export function getOffsetFromBbox(primitive, bbox) {
     z = transformCartographic.height;
   } else {
     const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
-    z = -Cartographic.fromCartesian(bbox.center).height + boundingSphereCartographic.height;
+    z = boundingSphereCartographic.height;
   }
   return new Cartesian3(x, y, z * -1);
 }
@@ -172,12 +173,32 @@ export function getBboxFromViewRatio(viewer, ratio) {
   const topLeft = Cartesian3.fromRadians(slicingCenter.longitude, northeastLat, 0);
   const topRight = Cartesian3.fromRadians(northeastLon, northeastLat, 0);
   const center = Cartesian3.midpoint(topLeft, bottomRight, new Cartesian3());
+  const width = Cartesian3.distance(topLeft, bottomLeft);
+  const length = Cartesian3.distance(bottomRight, bottomLeft);
+  let height = SLICING_BOX_HEIGHT;
+  let lowerLimit = SLICING_BOX_LOWER_LIMIT;
+  const cartCenter = Cartographic.fromCartesian(center);
+
+  // values from https://jira.camptocamp.com/browse/GSNGM-567
+  const area = (width / 1000) * (length / 1000);
+  if (area <= 0.005) {
+    height = 300;
+    lowerLimit = -150;
+  } else if (area < 25) {
+    const p = getPercent(0.005, 25, area);
+    height = interpolateBetweenNumbers(300, 10000, p);
+    lowerLimit = interpolateBetweenNumbers(-150, -5000, p);
+  }
+  const altitude = viewer.scene.globe.getHeight(cartCenter);
+  lowerLimit += altitude ? altitude : 0;
+  cartCenter.height = height / 2 + lowerLimit;
 
   return {
-    center: center,
-    width: Cartesian3.distance(topLeft, bottomLeft),
-    length: Cartesian3.distance(bottomRight, bottomLeft),
-    height: SLICING_BOX_HEIGHT,
+    center: Cartographic.toCartesian(cartCenter, null, center),
+    width: width,
+    length: length,
+    height: height,
+    lowerLimit: lowerLimit,
     corners: {
       bottomRight, bottomLeft, topRight, topLeft,
     }
@@ -198,12 +219,7 @@ const lineVectorScratch = new Cartesian3();
  * @param {Number} [height]
  * @return {{center: Cartesian3, width: number, length: number, height: number}}
  */
-export function getBboxFromRectangle(viewer, positions, lowerLimit, height) {
-  const boxHeight = height || SLICING_BOX_HEIGHT;
-  let centerHeight = 0;
-  if (lowerLimit !== null && lowerLimit !== undefined) {
-    centerHeight = lowerLimit + (boxHeight / 2);
-  }
+export function getBboxFromRectangle(viewer, positions, lowerLimit = SLICING_BOX_LOWER_LIMIT, height = SLICING_BOX_HEIGHT) {
   const cartographicPosition = positions.map(p => Cartographic.fromCartesian(p));
 
   // search for two positions with smallest longitude (left)
@@ -238,10 +254,11 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit, height) {
   const angle = Cartesian3.angleBetween(topVectorScratch, lineVectorScratch) * getDirectionFromPoints(startXAxis, endXAxis);
 
   return {
-    center: updateHeightForCartesianPositions([center], centerHeight)[0],
+    center: updateHeightForCartesianPositions([center], height / 2 + lowerLimit)[0],
     width: Cartesian3.distance(sliceCorners.topLeft, sliceCorners.bottomLeft),
     length: Cartesian3.distance(sliceCorners.bottomRight, sliceCorners.bottomLeft),
-    height: boxHeight,
+    height: height,
+    lowerLimit: lowerLimit,
     corners: {
       bottomRight: sliceCorners.bottomRight,
       bottomLeft: sliceCorners.bottomLeft,
