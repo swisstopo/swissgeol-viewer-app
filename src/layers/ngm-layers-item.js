@@ -70,17 +70,26 @@ export class LayerTreeItem extends LitElementI18n {
     this.dispatchEvent(new CustomEvent('removeDisplayedLayer'));
   }
 
+  showLayerLegend(config) {
+    this.dispatchEvent(new CustomEvent('showLayerLegend', {
+      bubbles: true,
+      detail: {
+        config: config
+      }
+    }));
+  }
+
   get buttons() {
     return html`
       <div class="ui icon buttons compact mini">
-        ${this.config.geocatId ?
+        ${this.config.geocatId || this.config.legend ?
           html`
             <button class="ui button"
                     data-tooltip=${i18next.t('dtd_disclaimer_hint')}
                     data-position="top left"
                     data-variation="mini"
-                    @click=${() => window.open(geocatLink(this.config.geocatId))}>
-              <i class="question circle icon"></i>
+                    @click=${() => this.showLayerLegend(this.config)}>
+              <i class="swatchbook icon"></i>
             </button>` : ''}
         ${this.config.zoomToBbox ?
           html`
@@ -151,18 +160,6 @@ export class LayerTreeItem extends LitElementI18n {
       </div>
     `;
   }
-}
-
-const GEOCAT_LANG_CODE = {
-  'de': 'ger',
-  'fr': 'fre',
-  'it': 'ita',
-  'en': 'eng',
-};
-
-function geocatLink(id) {
-  const lang = GEOCAT_LANG_CODE[i18next.language];
-  return `https://www.geocat.ch/geonetwork/srv/${lang}/md.viewer#/full_view/${id}/tab/complete`;
 }
 
 customElements.define('ngm-layers-item', LayerTreeItem);

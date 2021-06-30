@@ -261,6 +261,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_ORDER,
           pickable: true,
           geocatId: '4f9e3f59-891e-434b-bba5-40db1b9495e0',
+          legend: 'ch.swisstopo.geologie-geomol-temperatur_top_omm',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -270,6 +271,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_ORDER,
           pickable: true,
           geocatId: '613cdc6f-0237-416d-af16-ae5d2f1934ff',
+          legend: 'ch.swisstopo.geologie-geomol-temperatur_top_omalm',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -279,6 +281,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_ORDER,
           pickable: true,
           geocatId: 'e0be0de5-4ed0-488a-a952-5eb385fd5595',
+          legend: 'ch.swisstopo.geologie-geomol-temperatur_top_muschelkalk',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -288,6 +291,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
           pickable: true,
           geocatId: '08e66941-4ebb-4017-8018-b39caa8fd107',
+          legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_500',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -297,6 +301,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
           pickable: true,
           geocatId: '5e32ea72-a356-4250-b40a-a441165fd936',
+          legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_1000',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -306,6 +311,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
           pickable: true,
           geocatId: '162989d7-5c1c-48fb-8d16-2ccf5be339b9',
+          legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_1500',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -315,6 +321,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
           pickable: true,
           geocatId: 'ac604460-7a7a-44c5-bc5a-41062fbd21ff',
+          legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_2000',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -324,6 +331,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
           pickable: true,
           geocatId: '47f79661-212e-4297-b048-2606db7affa8',
+          legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_3000',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -333,6 +341,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_BGL_ORDER,
           pickable: true,
           geocatId: '739e9095-77f6-462d-9a1e-438898cf0c9c',
+          legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_4000',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -342,6 +351,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_ORDER,
           pickable: true,
           geocatId: '6edca35d-0f08-43b9-9faf-4c7b207888a1',
+          legend: 'ch.swisstopo.geologie-geomol-isotherme_60',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -351,6 +361,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_ORDER,
           pickable: true,
           geocatId: '8681fb45-6220-41ef-825a-86210d8a72fc',
+          legend: 'ch.swisstopo.geologie-geomol-isotherme_100',
         },
         {
           type: LAYER_TYPES.tiles3d,
@@ -360,6 +371,7 @@ const geo_energy = {
           propsOrder: TEMPERATURE_HORIZON_ORDER,
           pickable: true,
           geocatId: '31dc428e-a62b-4f6b-a263-e5eca9d9a074',
+          legend: 'ch.swisstopo.geologie-geomol-isotherme_150',
         },
       ]
     },

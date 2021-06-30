@@ -11,6 +11,7 @@ import './elements/ngm-feature-height';
 import './elements/ngm-auth';
 import './elements/ngm-drop-files';
 import './elements/ngm-tracking-consent';
+import './elements/ngm-layer-legend-container';
 
 import {
   DEFAULT_VIEW,
@@ -115,6 +116,10 @@ class NgmApp extends LitElementI18n {
         this.slicer_.applyClippingPlanesToTileset(layer.promise);
       }
     }
+  }
+
+  onShowLayerLegend(event) {
+    this.querySelector('ngm-layer-legend-container').showLegend(event.detail.config);
   }
 
   onStep2Finished({loadingMask, viewer}) {
@@ -289,6 +294,7 @@ class NgmApp extends LitElementI18n {
           .zoomTo=${zoomTo}
           .localStorageController=${localStorageController}
           @layeradded=${this.onLayerAdded}
+          @showLayerLegend=${this.onShowLayerLegend}
           .slicer=${this.slicer_}
           .viewer=${this.viewer}
           .mapChooser=${this.mapChooser}
@@ -307,6 +313,7 @@ class NgmApp extends LitElementI18n {
               <ngm-full-screen-view></ngm-full-screen-view>
             </div>
             <ngm-object-information></ngm-object-information>
+            <ngm-layer-legend-container></ngm-layer-legend-container>
             <ngm-review-window
               .hideReviewWindow=${localStorageController.hideReviewWindowValue}
               @review_window_changed=${localStorageController.updateReviewWindowState};
