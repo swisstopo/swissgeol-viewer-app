@@ -35,32 +35,34 @@ class NgmNavigationWidgets extends LitElementI18n {
     if (this.viewer) {
       return html`
         <cesium-minimap
-        .scene=${this.viewer.scene}
-        extent="[5.910642046, 45.791912227, 10.554524194, 47.804750923]"
-        ?expanded=${this.minimapExpanded}
-        @sizechanged=${evt => this.minimapExpanded = evt.detail.expanded}
-        .mapRectangle="${SWITZERLAND_RECTANGLE}">
+          .scene=${this.viewer.scene}
+          extent="[5.910642046, 45.791912227, 10.554524194, 47.804750923]"
+          ?expanded=${this.minimapExpanded}
+          @sizechanged=${evt => this.minimapExpanded = evt.detail.expanded}
+          .mapRectangle="${SWITZERLAND_RECTANGLE}">
           <i slot="collapse-icon" class="compress arrows alternate icon"></i>
           <i slot="expand-icon" class="expand arrows alternate icon"></i>
           <img slot="marker" src="src/images/mapMarker.svg">
           <img slot="image" src="src/images/overview.svg">
         </cesium-minimap>
         <ngm-camera-information
-           ?hidden=${!this.minimapExpanded}
+          ?hidden=${!this.minimapExpanded}
           .scene="${this.viewer.scene}" class="item">
         </ngm-camera-information>
         <div class="ngm-navigation-buttons">
           <div id="compass-info-popup"></div>
           <cesium-view-cube .scene="${this.viewer.scene}"></cesium-view-cube>
           <cesium-compass .scene="${this.viewer.scene}" .clock="${this.viewer.clock}"
-          data-tooltip=${i18next.t('nav_cesium_compass_hint')}
-          data-position="left center"
-          data-variation="mini"
+                          data-tooltip=${i18next.t('nav_cesium_compass_hint')}
+                          data-position="left center"
+                          data-variation="mini"
           ></cesium-compass>
           <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
           <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
           <ngm-nadir-view .scene="${this.viewer.scene}"></ngm-nadir-view>
-          <ngm-slicer .slicer="${this.slicer}"></ngm-slicer>
+          <ngm-slicer
+            .slicer="${this.slicer}"
+            @createrectangle=${() => this.dispatchEvent(new CustomEvent('createrectangle'))}></ngm-slicer>
           <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
         </div>
       `;

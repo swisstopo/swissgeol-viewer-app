@@ -476,7 +476,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       area: measurements.area,
       perimeter: measurements.perimeter,
       sidesLength: measurements.sidesLength,
-      numberOfSegments: measurements.segmentsNumber,
+      numberOfSegments: measurements.numberOfSegments,
       type: type,
       clampPoint: true
     };
@@ -1001,20 +1001,13 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       };
     }
     const positions = type === 'line' ? entity.polyline.positions.getValue() : entity.polygon.hierarchy.getValue().positions;
-    const distances = [];
-    positions.forEach((p, key) => {
-      if (key > 0) {
-        distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
-      }
-    });
-
-    const measurements = getMeasurements(positions, distances, type);
+    const measurements = getMeasurements(positions, type);
     return {
       ...props,
       type: type,
       area: measurements.area,
       perimeter: measurements.perimeter,
-      numberOfSegments: measurements.segmentsNumber,
+      numberOfSegments: measurements.numberOfSegments,
       sidesLength: measurements.sidesLength,
     };
   }

@@ -111,12 +111,17 @@ function getPolygonArea(positions, holes = []) {
 /**
  * Returns measurements for geometry
  * @param {Array<Cartesian3>} positions
- * @param {Array<number>} distances
  * @param {import('./draw/CesiumDraw').ShapeType} type
  */
-export function getMeasurements(positions, distances, type) {
+export function getMeasurements(positions, type) {
+  const distances = [];
+  positions.forEach((p, key) => {
+    if (key > 0) {
+      distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
+    }
+  });
   const result = {
-    segmentsNumber: positions.length
+    numberOfSegments: positions.length
   };
   let perimeter = distances.reduce((a, b) => a + b, 0);
   if (type === 'rectangle') {

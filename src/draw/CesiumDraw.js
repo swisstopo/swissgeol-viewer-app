@@ -192,7 +192,7 @@ export class CesiumDraw extends EventTarget {
     }
     this.viewer_.scene.requestRender();
 
-    const measurements = getMeasurements(positions, this.activeDistances_, this.type);
+    const measurements = getMeasurements(positions, this.type);
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
         positions: positions,

@@ -22,12 +22,16 @@ class NgmSlicer extends LitElementI18n {
   }
 
   firstUpdated() {
-    $(this.querySelector('.ngm-box-slice-btn')).popup({
+    this.transformPopup = $(this.querySelector('.ngm-box-slice-btn')).popup({
       popup: $(this.querySelector('.ngm-slice-to-draw')),
       on: 'click',
       position: 'left',
       closable: false
     });
+    if (this.slicer.active && this.slicingType === 'view-box') {
+      // wait until all buttons loaded to have correct position
+      setTimeout(() => this.transformPopup.popup('show'), 500);
+    }
   }
 
   toggleSlicer(type) {
@@ -53,6 +57,7 @@ class NgmSlicer extends LitElementI18n {
 
   onDeactivation() {
     syncSliceParam();
+    this.transformPopup.popup('hide');
     this.requestUpdate();
   }
 
@@ -62,6 +67,10 @@ class NgmSlicer extends LitElementI18n {
 
   get slicingEnabled() {
     return this.slicer.active;
+  }
+
+  addCurrentBoxToToolbox() {
+    this.dispatchEvent(new CustomEvent('createrectangle'));
   }
 
   render() {
@@ -90,9 +99,7 @@ class NgmSlicer extends LitElementI18n {
           </div>
           <button
             class="ui tiny button"
-            @click="${() => {
-
-            }}">
+            @click="${this.addCurrentBoxToToolbox}">
             ${i18next.t('nav_box_slice_transform_btn')}
           </button>
         </div>
