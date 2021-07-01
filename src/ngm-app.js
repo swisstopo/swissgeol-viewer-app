@@ -268,6 +268,7 @@ class NgmApp extends LitElementI18n {
       bbox.corners.topLeft,
       bbox.corners.topRight
     ];
+    aoi.increaseAreasCounter(type);
     aoi.addAreaEntity({
       type: type,
       positions: positions,
@@ -279,6 +280,8 @@ class NgmApp extends LitElementI18n {
       ...getMeasurements(positions, type)
     });
     this.slicer_.active = false;
+    this.querySelector('#ngm-toolbox > .title').classList.add('active');
+    this.querySelector('#ngm-toolbox > .content').classList.add('active');
   }
 
   render() {

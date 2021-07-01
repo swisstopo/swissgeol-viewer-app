@@ -355,22 +355,47 @@ ngm-layer-legend-container {
   z-index: 2;
   pointer-events: none;
 }
-.ngm-slice-to-draw > div {
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-}
 
 ngm-layer-legend-container > ngm-layer-legend {
   pointer-events: auto;
 }
 
-.ngm-slice-to-draw i {
+.ngm-slice-to-draw .description {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+}
+
+.ngm-slice-to-draw .lightbulb {
   font-size: 18px;
   margin-right: 5px;
 }
 
-.ngm-slice-to-draw > button {
+.ngm-slice-to-draw .minus {
+  float: right;
+  margin-right: -5px;
+  margin-top: -5px;
+}
+
+.ngm-slice-to-draw .minus,
+.ngm-slice-to-draw .expand {
+  font-size: 12px;
+  color: grey;
+}
+
+.ui.mini.popup.ngm-slice-to-draw {
+  padding: 0;
+}
+
+.ngm-slice-to-draw .content {
+  padding: 10px;
+}
+
+.ngm-slice-to-draw .content.minimized {
+  padding: 4px 2px 2px 4px;
+}
+
+.ngm-slice-to-draw .content > button {
   width: 215px;
 }
 

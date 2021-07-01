@@ -19,19 +19,25 @@ class NgmSlicer extends LitElementI18n {
      * @type {import('../../slicer/Slicer').default}
      */
     this.slicer = null;
+    this.popupMinimized = false;
   }
 
   firstUpdated() {
     this.transformPopup = $(this.querySelector('.ngm-box-slice-btn')).popup({
       popup: $(this.querySelector('.ngm-slice-to-draw')),
       on: 'click',
-      position: 'left',
+      position: 'top left',
       closable: false
     });
     if (this.slicer.active && this.slicingType === 'view-box') {
       // wait until all buttons loaded to have correct position
-      setTimeout(() => this.transformPopup.popup('show'), 500);
+      setTimeout(() => this.transformPopup.popup('show'), 1000);
     }
+  }
+
+  updated() {
+    if (this.transformPopup)
+      this.transformPopup.popup('reposition');
   }
 
   toggleSlicer(type) {
@@ -73,6 +79,11 @@ class NgmSlicer extends LitElementI18n {
     this.dispatchEvent(new CustomEvent('createrectangle'));
   }
 
+  toggleMinimize() {
+    this.popupMinimized = !this.popupMinimized;
+    this.requestUpdate();
+  }
+
   render() {
     if (this.slicer) {
       return html`
@@ -92,16 +103,20 @@ class NgmSlicer extends LitElementI18n {
           @pointerdown="${() => this.toggleSlicer('view-box')}">
           <i class="cube icon"></i>
         </button>
-        <div class="ui mini basic popup ngm-slice-to-draw">
-          <div>
-            <i class="lightbulb icon"></i>
-            <label>${i18next.t('nav_box_slice_transform_hint')}</label>
+        <div class="ui mini popup ngm-slice-to-draw">
+          <div class="content ${this.popupMinimized ? 'minimized' : ''}">
+            <i class="${!this.popupMinimized ? 'minus' : 'expand alternate'} icon" @click="${this.toggleMinimize}"></i>
+            ${this.popupMinimized ? '' : html`
+              <div class="description">
+                <i class="lightbulb icon"></i>
+                <label>${i18next.t('nav_box_slice_transform_hint')}</label>
+              </div>
+              <button
+                class="ui tiny button"
+                @click="${this.addCurrentBoxToToolbox}">
+                ${i18next.t('nav_box_slice_transform_btn')}
+              </button>`}
           </div>
-          <button
-            class="ui tiny button"
-            @click="${this.addCurrentBoxToToolbox}">
-            ${i18next.t('nav_box_slice_transform_btn')}
-          </button>
         </div>
       `;
     } else {
