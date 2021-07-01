@@ -86,6 +86,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
     this.restrictedEditing = false;
     this.colorBeforeHighlight = DEFAULT_AOI_COLOR;
+    this.addedNewArea = false;
   }
 
   firstUpdated() {
@@ -100,6 +101,15 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     super.update(changedProperties);
   }
 
+  updated() {
+    if (this.addedNewArea) {
+      this.addedNewArea = false;
+      this.querySelectorAll('.ngm-aoi-areas .active').forEach(el => el.classList.remove('active'));
+      const lastChild = this.querySelector('.ngm-aoi-areas').lastElementChild;
+      lastChild.querySelector('.title').classList.add('active');
+      lastChild.querySelector('.content').classList.add('active');
+    }
+  }
 
   disconnectedCallback() {
     if (this.screenSpaceEventHandler) {
@@ -446,10 +456,13 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
     this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
-    this.interestAreasDataSource.entities.collectionChanged.addEventListener(() => {
+    this.interestAreasDataSource.entities.collectionChanged.addEventListener((collection, added) => {
       this.viewer.scene.requestRender();
       this.requestUpdate();
       this.setStoredAoi(this.entitiesList_);
+      if (added.length) {
+        this.addedNewArea = true;
+      }
     });
     this.sectionImageUrl = null;
     this.swissforagesModalOptions = {
@@ -476,11 +489,11 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       area: measurements.area,
       perimeter: measurements.perimeter,
       sidesLength: measurements.sidesLength,
-      numberOfSegments: measurements.segmentsNumber,
+      numberOfSegments: measurements.numberOfSegments,
       type: type,
       clampPoint: true
     };
-    this.areasCounter_[type] = this.areasCounter_[type] + 1;
+    this.increaseAreasCounter(type);
     this.addAreaEntity(attributes);
     this.enableToolButtons();
   }
@@ -1001,20 +1014,13 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       };
     }
     const positions = type === 'line' ? entity.polyline.positions.getValue() : entity.polygon.hierarchy.getValue().positions;
-    const distances = [];
-    positions.forEach((p, key) => {
-      if (key > 0) {
-        distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
-      }
-    });
-
-    const measurements = getMeasurements(positions, distances, type);
+    const measurements = getMeasurements(positions, type);
     return {
       ...props,
       type: type,
       area: measurements.area,
       perimeter: measurements.perimeter,
-      numberOfSegments: measurements.segmentsNumber,
+      numberOfSegments: measurements.numberOfSegments,
       sidesLength: measurements.sidesLength,
     };
   }
@@ -1220,6 +1226,10 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       entity.polylineVolume.material = color;
       entity.polylineVolume.outlineColor = color;
     }
+  }
+
+  increaseAreasCounter(type) {
+    this.areasCounter_[type] += 1;
   }
 
 

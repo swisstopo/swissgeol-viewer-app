@@ -2,6 +2,7 @@ import {html} from 'lit-element';
 import i18next from 'i18next';
 import {LitElementI18n} from '../../i18n.js';
 import {syncSliceParam} from '../../permalink';
+import $ from '../../jquery';
 
 class NgmSlicer extends LitElementI18n {
 
@@ -18,6 +19,25 @@ class NgmSlicer extends LitElementI18n {
      * @type {import('../../slicer/Slicer').default}
      */
     this.slicer = null;
+    this.popupMinimized = false;
+  }
+
+  firstUpdated() {
+    this.transformPopup = $(this.querySelector('.ngm-box-slice-btn')).popup({
+      popup: $(this.querySelector('.ngm-slice-to-draw')),
+      on: 'click',
+      position: 'top left',
+      closable: false
+    });
+    if (this.slicer.active && this.slicingType === 'view-box') {
+      // wait until all buttons loaded to have correct position
+      setTimeout(() => this.transformPopup.popup('show'), 1000);
+    }
+  }
+
+  updated() {
+    if (this.transformPopup)
+      this.transformPopup.popup('reposition');
   }
 
   toggleSlicer(type) {
@@ -43,6 +63,7 @@ class NgmSlicer extends LitElementI18n {
 
   onDeactivation() {
     syncSliceParam();
+    this.transformPopup.popup('hide');
     this.requestUpdate();
   }
 
@@ -52,6 +73,15 @@ class NgmSlicer extends LitElementI18n {
 
   get slicingEnabled() {
     return this.slicer.active;
+  }
+
+  addCurrentBoxToToolbox() {
+    this.dispatchEvent(new CustomEvent('createrectangle'));
+  }
+
+  toggleMinimize() {
+    this.popupMinimized = !this.popupMinimized;
+    this.requestUpdate();
   }
 
   render() {
@@ -69,10 +99,25 @@ class NgmSlicer extends LitElementI18n {
           data-tooltip=${i18next.t('nav_box_slice_hint')}
           data-position="left center"
           data-variation="mini"
-          class="ui compact mini icon button ${this.slicingEnabled && this.slicingType === 'view-box' ? 'grey' : ''}"
+          class="ui compact mini icon button ngm-box-slice-btn ${this.slicingEnabled && this.slicingType === 'view-box' ? 'grey' : ''}"
           @pointerdown="${() => this.toggleSlicer('view-box')}">
           <i class="cube icon"></i>
         </button>
+        <div class="ui mini popup ngm-slice-to-draw">
+          <div class="content ${this.popupMinimized ? 'minimized' : ''}">
+            <i class="${!this.popupMinimized ? 'minus' : 'expand alternate'} icon" @click="${this.toggleMinimize}"></i>
+            ${this.popupMinimized ? '' : html`
+              <div class="description">
+                <i class="lightbulb icon"></i>
+                <label>${i18next.t('nav_box_slice_transform_hint')}</label>
+              </div>
+              <button
+                class="ui tiny button"
+                @click="${this.addCurrentBoxToToolbox}">
+                ${i18next.t('nav_box_slice_transform_btn')}
+              </button>`}
+          </div>
+        </div>
       `;
     } else {
       return html``;

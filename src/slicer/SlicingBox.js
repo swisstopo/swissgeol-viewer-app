@@ -197,6 +197,7 @@ export default class SlicingBox extends SlicingToolBase {
           bothSideMove = true;
         }
         this.bbox.height = boxHeight < SLICING_BOX_MIN_SIZE ? SLICING_BOX_MIN_SIZE : boxHeight;
+        this.bbox.lowerLimit = Cartographic.fromCartesian(this.bbox.center).height - this.bbox.height / 2;
         side === 'down' ? this.downPlane.distance += moveAmount : this.upPlane.distance -= moveAmount;
         break;
       }

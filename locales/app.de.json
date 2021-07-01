@@ -91,6 +91,8 @@
   "lyr_voxel_visp_logk_label": "Visp: Hydraulische Leifähigkeit",
   "lyr_water_tunnel_label": "Wassertunnel",
   "nav_box_slice_hint": "3D-Szene aufschneiden (Box)",
+  "nav_box_slice_transform_btn": "",
+  "nav_box_slice_transform_hint": "",
   "nav_camera_height_label": "Kamerahöhe",
   "nav_camera_position_label": "Koord.: {{coordinates}}<br/>H: {{height}} m / Richt: {{angle}}° / Neig: {{pitch}}°",
   "nav_cesium_compass_hint": "Anklicken und ziehen, um Kamera zu drehen oder zu kippen",

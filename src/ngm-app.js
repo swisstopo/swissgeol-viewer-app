@@ -36,6 +36,7 @@ import QueryManager from './query/QueryManager';
 
 import {initAnalytics} from './analytics.js';
 import {initSentry} from './sentry.js';
+import {getMeasurements} from './cesiumutils';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -257,6 +258,32 @@ class NgmApp extends LitElementI18n {
     initAnalytics(event.detail.allowed);
   }
 
+  onCreateRectangle() {
+    const aoi = this.querySelector('ngm-aoi-drawer');
+    const bbox = this.slicer_.slicingBox.bbox;
+    const type = 'rectangle';
+    const positions = [
+      bbox.corners.bottomRight,
+      bbox.corners.bottomLeft,
+      bbox.corners.topLeft,
+      bbox.corners.topRight
+    ];
+    aoi.increaseAreasCounter(type);
+    aoi.addAreaEntity({
+      type: type,
+      positions: positions,
+      volumeHeightLimits: {
+        height: bbox.height,
+        lowerLimit: bbox.lowerLimit
+      },
+      volumeShowed: true,
+      ...getMeasurements(positions, type)
+    });
+    this.slicer_.active = false;
+    this.querySelector('#ngm-toolbox > .title').classList.add('active');
+    this.querySelector('#ngm-toolbox > .content').classList.add('active');
+  }
+
   render() {
     return html`
       <header>
@@ -308,6 +335,7 @@ class NgmApp extends LitElementI18n {
               <ngm-navigation-widgets
                 .viewer=${this.viewer}
                 .slicer=${this.slicer_}
+                @createrectangle=${this.onCreateRectangle}
                 data-fs='no'>
               </ngm-navigation-widgets>
               <ngm-full-screen-view></ngm-full-screen-view>
