@@ -56,6 +56,7 @@ export default class SlicingBox extends SlicingToolBase {
       [this.bbox.corners.bottomRight, this.bbox.corners.topRight],
       [this.bbox.corners.topLeft, this.bbox.corners.bottomLeft],
     ];
+    this.options.lowerLimit = this.bbox.lowerLimit;
     this.updateSidePlanes();
 
     this.downPlane = Plane.fromPointNormal(this.boxCenter, Cartesian3.UNIT_Z);
