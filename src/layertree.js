@@ -667,6 +667,23 @@ const subsurface = {
         },
       ]
     },
+    {
+      label: t('lyr_3d_model_label'),
+      children: [
+        {
+          type: LAYER_TYPES.tiles3d,
+          assetId: 493224,
+          label: t('lyr_3d_model_berne_label'),
+          layer: '3d_model_berne',
+          transparency: DEFAULT_LAYER_TRANSPARENCY,
+          pickable: true,
+          zoomToBbox: true,
+          propsOrder: ['3DBern-Unit', '3DBern-Link', '3DBern-Lithology', '3DBern-TectonicUnit',
+          '3DBern-ChronoB-T', '3DBern-OrigDesc', '3DBern-Version', '3DBern-Aothor', '3DBern-Purpose',
+          '3DBern-Download'],
+        },
+      ]
+    },
   ]
 };
 
