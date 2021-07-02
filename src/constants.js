@@ -79,8 +79,8 @@ export const SLICE_BOX_ARROWS_OUTSIDE = [
     {side: 'up', oppositeSide: 'down', uri: './images/arrowA.glb'}
 ];
 
-export const SLICING_BOX_HEIGHT = 10000;
-export const SLICING_BOX_LOWER_LIMIT = -5000;
+export const SLICING_BOX_HEIGHT = DEFAULT_VOLUME_HEIGHT_LIMITS.height;
+export const SLICING_BOX_LOWER_LIMIT = DEFAULT_VOLUME_HEIGHT_LIMITS.lowerLimit;
 export const SLICING_BOX_MIN_SIZE = 450;
 export const SLICING_GEOMETRY_COLOR = Color.WHITE;
 export const DEFAULT_CONFIG_FOR_SLICING_ARROW = {

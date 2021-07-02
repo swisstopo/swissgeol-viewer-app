@@ -3,7 +3,6 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../../i18n.js';
 import $ from '../../jquery';
 import '../ngm-i18n-content.js';
-import {Cartographic} from 'cesium';
 
 class NgmToolboxSlicer extends LitElementI18n {
 
@@ -88,10 +87,10 @@ class NgmToolboxSlicer extends LitElementI18n {
     let lowerLimit = undefined;
     let height = undefined;
     if (this.type === 'rectangle') {
-      const bboxCorners = this.slicer.slicingTool.bbox.corners;
-      const bboxCenter = Cartographic.fromCartesian(this.slicer.slicingTool.bbox.center);
-      height = this.slicer.slicingTool.bbox.height;
-      lowerLimit = bboxCenter.height - (height / 2);
+      const bbox = this.slicer.slicingTool.bbox;
+      const bboxCorners = bbox.corners;
+      height = bbox.height;
+      lowerLimit = bbox.lowerLimit - bbox.altitude;
       positions = [bboxCorners.bottomLeft, bboxCorners.bottomRight, bboxCorners.topRight, bboxCorners.topLeft];
     }
     this.onDisableSlicing(positions, lowerLimit, height);
