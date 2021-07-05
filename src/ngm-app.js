@@ -274,7 +274,7 @@ class NgmApp extends LitElementI18n {
       positions: positions,
       volumeHeightLimits: {
         height: bbox.height,
-        lowerLimit: bbox.lowerLimit
+        lowerLimit: bbox.lowerLimit - bbox.altitude
       },
       volumeShowed: true,
       ...getMeasurements(positions, type)
