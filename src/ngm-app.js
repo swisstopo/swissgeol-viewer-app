@@ -153,7 +153,6 @@ class NgmApp extends LitElementI18n {
 
     const sideBar = this.querySelector('ngm-left-side-bar');
 
-    addMantelEllipsoid(viewer);
     setupSearch(viewer, this.querySelector('ga-search'), sideBar);
   }
 
@@ -172,6 +171,8 @@ class NgmApp extends LitElementI18n {
    */
   startCesiumLoadingProcess(viewer) {
     const globe = viewer.scene.globe;
+
+    addMantelEllipsoid(viewer);
 
     // Temporarily increasing the maximum screen space error to load low LOD tiles.
     const searchParams = new URLSearchParams(document.location.search);

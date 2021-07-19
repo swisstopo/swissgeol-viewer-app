@@ -45,6 +45,4 @@ A few URL parameters will modify the behaviour of the viewer:
 
 ## Notes
 
-Lava texture CC0 by https://opengameart.org/content/template-orange-texture-pack
-
 Keyboard layout made with [keyboard-layout-editor](http://www.keyboard-layout-editor.com/) and [json to import](https://jira.camptocamp.com/secure/attachment/42145/keyboard-layout_upd.json)
