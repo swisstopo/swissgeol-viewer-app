@@ -31,7 +31,7 @@ export default class EarthquakeVisualizer {
   }
 
   async showEarthquakes() {
-    fetch('https://download.swissgeol.ch/earthquakes/earthquakes.txt').then(response => {
+    fetch(this.config.downloadUrl).then(response => {
       response.text().then(text => {
         parseEarthquakeData(text).map(data => {
           const size = Number(data.Magnitude.split(' ')[0]) * EARTHQUAKE_SPHERE_SIZE_COEF;
