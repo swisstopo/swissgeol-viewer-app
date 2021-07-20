@@ -218,7 +218,7 @@
   "tbx_website_label": "Website URL",
   "tracking_agree_btn_label": "Agreed",
   "tracking_deny_btn_label": "Continue without data acquisition",
-  "tracking_text": "In order to be able to adjust our web offer optimally to your needs, we use the analysis tools Google Analytics, Hotjar and Sentry. With it, your activities on the website are recorded in an anonymous form. Therefore, no personal data are transmitted or stored. If you do not agree to this, you can stop the data collection by these tools and still use this website without restrictions. You will find further information on our page <a target='_blank' href='legal/legal_en.html'>Legal framework.</a>",
+  "tracking_text": "To enable us to optimally tailor our website to your needs, we use the analysis tools Google Analytics, Hotjar and Sentry. Your behaviour on the website is recorded in anonymised form. No personal data is transmitted or stored. If you do not wish to consent to this, you can stop data collection by analysis tools and still use this website without restrictions. You can find more information about this on our <a target='_blank' href='legal/legal_en.html'>Legal framework page.</a>",
   "welcome_copy_btn_label": "Copy the link",
   "welcome_copy_guide": "Press Ctrl+C to copy",
   "welcome_get_shortlink_error": "An error occurred and the shortlink cannot be created, please try again later.",
