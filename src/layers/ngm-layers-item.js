@@ -3,6 +3,7 @@ import {html} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import $ from '../jquery';
+import {LAYER_TYPES} from '../constants.js';
 
 
 export class LayerTreeItem extends LitElementI18n {
@@ -116,7 +117,7 @@ export class LayerTreeItem extends LitElementI18n {
                 @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
           <i class="angle up icon"></i>
         </button>
-        ${this.config.downloadUrl ?
+        ${this.config.downloadUrl && this.config.type !== LAYER_TYPES.earthquakes ?
           html`
             <button class="ui button"
                     data-tooltip=${i18next.t('dtd_download_hint')}

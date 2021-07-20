@@ -31,7 +31,7 @@ export default class EarthquakeVisualizer {
   }
 
   async showEarthquakes() {
-    fetch('https://download.swissgeol.ch/earthquakes/earthquakes.txt').then(response => {
+    fetch(this.config.downloadUrl).then(response => {
       response.text().then(text => {
         parseEarthquakeData(text).map(data => {
           const size = Number(data.Magnitude.split(' ')[0]) * EARTHQUAKE_SPHERE_SIZE_COEF;
@@ -43,6 +43,7 @@ export default class EarthquakeVisualizer {
           const position = Cartesian3.fromDegrees(longitude, latitude, -depthMeters);
           const cameraDistance = size * 4;
           const zoomHeadingPitchRange = new HeadingPitchRange(0, CMath.toRadians(25), cameraDistance);
+          data['Details'] = this.config.detailsUrl;
           this.boundingRectangle.west = Math.min(CMath.toRadians(longitude), this.boundingRectangle.west);
           this.boundingRectangle.south = Math.min(CMath.toRadians(latitude), this.boundingRectangle.south);
           this.boundingRectangle.east = Math.max(CMath.toRadians(longitude), this.boundingRectangle.east);

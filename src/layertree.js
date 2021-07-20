@@ -68,6 +68,7 @@ const CONSOLIDATED_ORDER = ['Name', 'Horizon', 'HARMOS-ORIGINAL', ...DOWNLOAD_PR
 const FAULTS_ORDER = ['Name', 'Source', 'Status', 'Type', 'Version', ...DOWNLOAD_PROP_ORDER];
 const TEMPERATURE_HORIZON_ORDER = ['name', 'temp_c'];
 const TEMPERATURE_HORIZON_BGL_ORDER = ['name', 'temp_c', 'depth_bgl'];
+const EARTHQUAKES_PROP_ORDER = ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'];
 
 const t = a => a;
 const geo_map_series = {
@@ -388,7 +389,20 @@ const natural_hazard = {
       visible: false,
       displayed: true,
       transparency: DEFAULT_LAYER_TRANSPARENCY,
-      propsOrder: ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'],
+      propsOrder: EARTHQUAKES_PROP_ORDER,
+      downloadUrl: 'https://download.swissgeol.ch/earthquakes/earthquakes_last_90d.txt',
+      detailsUrl: 'http://www.seismo.ethz.ch/en/earthquakes/switzerland/last-90-days',
+    },
+    {
+      type: LAYER_TYPES.earthquakes,
+      label: t('lyr_historical_earthquakes_label'),
+      layer: 'historical_earthquakes',
+      visible: false,
+      displayed: false,
+      transparency: DEFAULT_LAYER_TRANSPARENCY,
+      propsOrder: EARTHQUAKES_PROP_ORDER,
+      downloadUrl: 'https://download.swissgeol.ch/earthquakes/earthquakes_magnitude_gt_3.txt',
+      detailsUrl: 'http://www.seismo.ethz.ch',
     },
   ]
 };
