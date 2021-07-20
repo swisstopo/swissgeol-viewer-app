@@ -43,6 +43,7 @@ export default class EarthquakeVisualizer {
           const position = Cartesian3.fromDegrees(longitude, latitude, -depthMeters);
           const cameraDistance = size * 4;
           const zoomHeadingPitchRange = new HeadingPitchRange(0, CMath.toRadians(25), cameraDistance);
+          data['Details'] = this.config.detailsUrl;
           this.boundingRectangle.west = Math.min(CMath.toRadians(longitude), this.boundingRectangle.west);
           this.boundingRectangle.south = Math.min(CMath.toRadians(latitude), this.boundingRectangle.south);
           this.boundingRectangle.east = Math.max(CMath.toRadians(longitude), this.boundingRectangle.east);

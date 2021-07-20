@@ -391,6 +391,7 @@ const natural_hazard = {
       transparency: DEFAULT_LAYER_TRANSPARENCY,
       propsOrder: EARTHQUAKES_PROP_ORDER,
       downloadUrl: 'https://download.swissgeol.ch/earthquakes/earthquakes_last_90d.txt',
+      detailsUrl: 'http://www.seismo.ethz.ch/en/earthquakes/switzerland/last-90-days',
     },
     {
       type: LAYER_TYPES.earthquakes,
@@ -401,6 +402,7 @@ const natural_hazard = {
       transparency: DEFAULT_LAYER_TRANSPARENCY,
       propsOrder: EARTHQUAKES_PROP_ORDER,
       downloadUrl: 'https://download.swissgeol.ch/earthquakes/earthquakes_magnitude_gt_3.txt',
+      detailsUrl: 'http://www.seismo.ethz.ch',
     },
   ]
 };

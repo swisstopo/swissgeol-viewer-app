@@ -31,7 +31,6 @@ export function parseEarthquakeData(data) {
           break;
       }
     }
-    earthquakeData['Details'] = 'http://www.seismo.ethz.ch/en/earthquakes/switzerland/last-90-days';
     return earthquakeData;
   }).filter(ed => !!ed.Latitude && ed.Latitude.length && !!ed.Longitude && ed.Longitude.length && !ed.Depthkm.startsWith('NaN'));
 }
