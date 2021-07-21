@@ -1,4 +1,4 @@
-import {SWITZERLAND_RECTANGLE} from './constants.js';
+import {SWITZERLAND_RECTANGLE, MANTEL_COLOR} from './constants.js';
 
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import RequestScheduler from 'cesium/Source/Core/RequestScheduler';
@@ -9,7 +9,6 @@ import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Color from 'cesium/Source/Core/Color';
 import Ion from 'cesium/Source/Core/Ion';
-import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
@@ -256,10 +255,9 @@ export function addMantelEllipsoid(viewer) {
     position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
     ellipsoid: {
       radii: mantelRadii,
-      material: 'images/temp_lava.jpg'
+      material: MANTEL_COLOR,
     }
   });
-  entity.ellipsoid.material.repeat = new Cartesian2(40, 40);
 
   if (!noLimit) {
     new LimitCameraHeightToDepth(viewer.scene, mantelDepth);

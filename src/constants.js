@@ -35,6 +35,8 @@ export const ATTRIBUTE_VALUE_PARAM = 'attribute_value';
 export const ZOOM_TO_PARAM = 'zoom_to';
 export const SLICE_PARAM = 'slice';
 
+export const MANTEL_COLOR = Color.fromCssColorString('#383838');
+
 export const DEFAULT_AOI_COLOR = Color.BLUE;
 export const AOI_LINE_ALPHA = 0.8;
 export const AOI_POLYGON_ALPHA = 0.3;
