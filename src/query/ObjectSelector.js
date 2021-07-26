@@ -3,7 +3,6 @@ import {
   AOI_DATASOURCE_NAME,
   DRILL_PICK_LENGTH,
   DRILL_PICK_LIMIT,
-  LAYER_TYPES,
   OBJECT_HIGHLIGHT_COLOR, OBJECT_ZOOMTO_RADIUS
 } from '../constants';
 import {
@@ -87,14 +86,15 @@ export default class ObjectSelector {
     const orderedProps = sortPropertyNames(Object.keys(props), props.propsOrder);
     attributes.properties = orderedProps.map((key) => [key, props[key]]);
     const aoiDataSource = this.viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
-    const earthquakesDataSource = this.viewer.dataSources.getByName(LAYER_TYPES.earthquakes)[0];
+    const earthquakesDataSources = this.viewer.dataSources.getByName('earthquakes').concat(
+      this.viewer.dataSources.getByName('historical_earthquakes'));
 
     attributes.zoom = () => this.viewer.zoomTo(entity, props.zoomHeadingPitchRange);
 
     if (aoiDataSource.entities.contains(entity)) {
       const aoiElement = document.querySelector('ngm-aoi-drawer');
       attributes = aoiElement.getInfoProps({...props, name: entity.name});
-    } else if (earthquakesDataSource && earthquakesDataSource.entities.contains(entity)) {
+    } else if (earthquakesDataSources.some((e) => e.entities.contains(entity))) {
       this.toggleEarthquakeHighlight(entity);
     }
 
