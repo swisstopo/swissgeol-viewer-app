@@ -94,7 +94,7 @@ export default class ObjectSelector {
     if (aoiDataSource.entities.contains(entity)) {
       const aoiElement = document.querySelector('ngm-aoi-drawer');
       attributes = aoiElement.getInfoProps({...props, name: entity.name});
-    } else if (earthquakesDataSources.some((e) => {return e.entities.contains(entity);})) {
+    } else if (earthquakesDataSources.some((e) => e.entities.contains(entity))) {
       this.toggleEarthquakeHighlight(entity);
     }
 
