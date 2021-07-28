@@ -194,6 +194,14 @@ export function setupViewer(container, rethrowRenderErrors) {
   viewer.scene.postProcessStages.add(fog);
   scene.postRender.addEventListener(scene => {
     fog.enabled = scene.cameraUnderground;
+
+    if (scene.cameraUnderground) {
+      globe.undergroundColor = Color.BLACK;
+      globe.undergroundColorAlphaByDistance.nearValue = 0.5;
+      globe.undergroundColorAlphaByDistance.farValue = 0.0;
+    } else {
+      globe.undergroundColor = undefined;
+    }
   });
 
   const enableWireframe = searchParams.has('inspector_wireframe');
