@@ -295,7 +295,7 @@ export function moveSlicingBoxCorners(position1, position2, oppositePosition1, o
   return bothSideMove;
 }
 
-function calculateBoxHeight(height, lowerLimit, area, altitude) {
+export function calculateBoxHeight(height, lowerLimit, area, altitude) {
   // values from https://jira.camptocamp.com/browse/GSNGM-567
   if (area <= 0.005) {
     height = 300;

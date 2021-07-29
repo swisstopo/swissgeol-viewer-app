@@ -40,6 +40,7 @@ import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {SwissforagesService} from './SwissforagesService';
 import Cartographic from 'cesium/Source/Core/Cartographic';
+import {calculateBoxHeight} from '../slicer/helper';
 
 
 import {clickOnElement, coordinatesToBbox, parseJson} from '../utils.js';
@@ -845,7 +846,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         type: type,
         volumeShowed:
           typeof attributes.volumeShowed === 'boolean' ? attributes.volumeShowed : attributes.volumeShowed === 'true',
-        volumeHeightLimits: attributes.volumeHeightLimits || DEFAULT_VOLUME_HEIGHT_LIMITS,
+        volumeHeightLimits: attributes.volumeHeightLimits || null,
         description: attributes.description || '',
         image: attributes.image || '',
         website: attributes.website || ''
@@ -1029,6 +1030,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     const entity = this.interestAreasDataSource.entities.getById(id);
     const type = entity.properties.type.getValue();
     let positions;
+    let volumeHeightLimits = DEFAULT_VOLUME_HEIGHT_LIMITS;
     if (type === 'line') {
       positions = [...entity.polyline.positions.getValue()];
       entity.polyline.show = false;
@@ -1036,12 +1038,20 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       positions = [...entity.polygon.hierarchy.getValue().positions];
       positions.push(positions[0]);
       entity.polygon.show = false;
+      if (type === 'rectangle') {
+        const side1Distance = Cartesian3.distance(positions[0], positions[1]);
+        const side2Distance = Cartesian3.distance(positions[1], positions[2]);
+        const area = (side1Distance / 1000) * (side2Distance / 1000);
+        volumeHeightLimits = calculateBoxHeight(volumeHeightLimits.height, volumeHeightLimits.lowerLimit, area);
+      }
     }
 
     if (!entity.properties.volumeShowed || !entity.properties.volumeHeightLimits) {
-      entity.properties.addProperty('volumeHeightLimits', DEFAULT_VOLUME_HEIGHT_LIMITS);
+      entity.properties.addProperty('volumeHeightLimits', volumeHeightLimits);
       entity.properties.addProperty('volumeShowed', true);
     } else {
+      if (!entity.properties.volumeHeightLimits.getValue())
+        entity.properties.volumeHeightLimits = volumeHeightLimits;
       entity.properties.volumeShowed = true;
     }
 
