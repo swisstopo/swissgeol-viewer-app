@@ -181,6 +181,9 @@ export function setupViewer(container, rethrowRenderErrors) {
   globe.showGroundAtmosphere = false;
   globe.showWaterEffect = false;
   globe.backFaceCulling = false;
+  globe.undergroundColor = Color.BLACK;
+  globe.undergroundColorAlphaByDistance.nearValue = 0.5;
+  globe.undergroundColorAlphaByDistance.farValue = 0.0;
 
   const fog = new PostProcessStage({
     fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
