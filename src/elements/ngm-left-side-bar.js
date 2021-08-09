@@ -404,7 +404,7 @@ class LeftSideBar extends LitElementI18n {
       displayed: true,
       transparency: DEFAULT_LAYER_TRANSPARENCY
     };
-    config.load = () => this.addLayer(layer);
+    config.load = () => this.addLayer(config);
     return config;
   }
 
