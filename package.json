@@ -22,7 +22,7 @@
     "@geoblocks/ga-search": "0.0.20",
     "@sentry/browser": "^6.2.5",
     "@webcomponents/webcomponentsjs": "^2.5.0",
-    "cesium": "^1.80.0",
+    "cesium": "^1.84.0",
     "event-target-shim": "^6.0.2",
     "fomantic-ui-css": "^2.8.7",
     "i18next": "^20.2.1",
