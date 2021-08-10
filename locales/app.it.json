@@ -93,6 +93,7 @@
   "lyr_voxel_visp_litho_label": "",
   "lyr_voxel_visp_logk_label": "",
   "lyr_water_tunnel_label": "",
+  "nav_box_show_slice_box": "",
   "nav_box_slice_hint": "",
   "nav_box_slice_transform_btn": "",
   "nav_box_slice_transform_hint": "",

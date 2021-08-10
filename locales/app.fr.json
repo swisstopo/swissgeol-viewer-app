@@ -93,6 +93,7 @@
   "lyr_voxel_visp_litho_label": "Visp: Lithologie",
   "lyr_voxel_visp_logk_label": "Visp: Conductivité hydraulique",
   "lyr_water_tunnel_label": "Tunnel d'eau",
+  "nav_box_show_slice_box": "",
   "nav_box_slice_hint": "Coupez la scène 3D (box)",
   "nav_box_slice_transform_btn": "Ajouter à la 'boîte à outils'",
   "nav_box_slice_transform_hint": "Vous voulez réutiliser cette boîte ? Vous pouvez l'ajouter à votre boîte à outils !",

@@ -25,6 +25,7 @@ import SlicingToolBase from './SlicingToolBase';
  * @property [{boolean} negate - slice direction for line slicing]
  * @property [{number} lowerLimit - lower limit for box slicing]
  * @property [{number} height - box height for box slicing]
+ * @property [{boolean} showBox - box and arrows visibility]
  * @property [{function} deactivationCallback - calls on slicing deactivation]
  * @property [{function} activationCallback - calls on slicing activation]
  * @property [{SyncBoxPlanesCallback} syncBoxPlanesCallback - calls on synchronization of box planes]
@@ -133,6 +134,11 @@ export default class Slicer {
         }
       });
     }
+  }
+
+  toggleBoxVisibility(show) {
+    if (!this.slicingBox) return;
+    this.slicingBox.toggleBoxVisibility(show);
   }
 
 

@@ -288,6 +288,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                   .lowerLimit=${i.volumeHeightLimits ? i.volumeHeightLimits.lowerLimit : undefined}
                   .height=${i.volumeHeightLimits ? i.volumeHeightLimits.height : undefined}
                   .type=${i.type}
+                  .showBox=${i.showSlicingBox}
                   .onEnableSlicing=${() => this.onEnableSlicing(i.id, i.type)}
                   .onDisableSlicing=${(positions, lowerLimit, height) => this.onDisableSlicing(i.id, i.type, positions, lowerLimit, height)}
                 ></ngm-toolbox-slicer>`
@@ -583,6 +584,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         website: val.properties.website ? val.properties.website.getValue() : '',
         swissforagesId: val.properties.swissforagesId ? val.properties.swissforagesId.getValue() : undefined,
         depth: val.properties.depth ? val.properties.depth.getValue() : undefined,
+        showSlicingBox: val.properties.showSlicingBox ? val.properties.showSlicingBox.getValue() : undefined,
       };
       const colorBeforeHighlight = !this.selectedArea_ || val.id !== this.selectedArea_.id ? undefined : this.colorBeforeHighlight;
       if (val.billboard) {
@@ -829,6 +831,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
        pointSymbol: (optional) string,
        color: (optional) Color,
        clampPoint: (optional) Boolean,
+       showSlicingBox: (optional) Boolean,
    * }
    */
   addAreaEntity(attributes) {
@@ -890,6 +893,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
           hierarchy: attributes.positions,
           material: material,
         };
+        entityAttrs.properties.showSlicingBox = typeof attributes.showSlicingBox === 'boolean' ? attributes.showSlicingBox : true;
       } else if (type === 'line') {
         entityAttrs.polyline = {
           positions: attributes.positions,

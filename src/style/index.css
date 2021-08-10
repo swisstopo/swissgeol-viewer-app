@@ -387,15 +387,19 @@ ngm-layer-legend-container > ngm-layer-legend {
   padding: 0;
 }
 
-.ngm-slice-to-draw .content {
+.ngm-slice-to-draw .body {
   padding: 10px;
 }
 
-.ngm-slice-to-draw .content.minimized {
+.ngm-slice-to-draw .body.minimized {
   padding: 4px 2px 2px 4px;
 }
 
 .ngm-slice-to-draw .content > button {
   width: 215px;
+}
+
+.ngm-slice-to-draw .content > .checkbox {
+  margin-bottom: 5px;
 }
 

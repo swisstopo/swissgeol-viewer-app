@@ -206,4 +206,8 @@ export default class SlicerArrows {
       this.viewer.canvas.style.cursor = '';
     }
   }
+
+  toggleArrowsVisibility(show) {
+    this.arrowsList.forEach(arrow => this.arrows[arrow.side].show = show);
+  }
 }

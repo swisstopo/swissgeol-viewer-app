@@ -13,6 +13,7 @@ class NgmToolboxSlicer extends LitElementI18n {
       lowerLimit: {type: Number},
       height: {type: Number},
       type: {type: String},
+      showBox: {type: Boolean},
       onEnableSlicing: {type: Function},
       onDisableSlicing: {type: Function}
     };
@@ -28,6 +29,7 @@ class NgmToolboxSlicer extends LitElementI18n {
 
     this.sliceSide = 'left';
     this.sliceEnabled = false;
+    this.showBox = true;
   }
 
   firstUpdated() {
@@ -52,6 +54,8 @@ class NgmToolboxSlicer extends LitElementI18n {
         }
       }
     });
+    if (this.type === 'rectangle')
+      $(this.querySelector('.ui.checkbox')).checkbox(this.showBox ? 'check' : 'uncheck');
   }
 
   toggleSlicer(value) {
@@ -72,6 +76,7 @@ class NgmToolboxSlicer extends LitElementI18n {
           lowerLimit: this.lowerLimit,
           height: this.height,
           negate: this.sliceSide === 'right',
+          showBox: this.showBox,
           deactivationCallback: () => this.onDeactivation()
         };
       }
@@ -96,6 +101,11 @@ class NgmToolboxSlicer extends LitElementI18n {
     this.onDisableSlicing(positions, lowerLimit, height);
     this.sliceEnabled = false;
     this.requestUpdate();
+  }
+
+  onShowBoxChange(event) {
+    this.showBox = event.target.checked;
+    this.slicer.toggleBoxVisibility(this.showBox);
   }
 
   render() {
@@ -134,6 +144,11 @@ class NgmToolboxSlicer extends LitElementI18n {
               </div>
             </div>
           </div>
+          ${this.type === 'rectangle' ? html`
+            <div class="ui checkbox">
+              <input type="checkbox" @change="${this.onShowBoxChange}">
+              <label>${i18next.t('nav_box_show_slice_box')}</label>
+            </div>` : ''}
         </div>
       `;
     } else {

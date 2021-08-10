@@ -259,7 +259,7 @@ class NgmApp extends LitElementI18n {
     initAnalytics(event.detail.allowed);
   }
 
-  onCreateRectangle() {
+  onCreateRectangle(event) {
     const aoi = this.querySelector('ngm-aoi-drawer');
     const bbox = this.slicer_.slicingBox.bbox;
     const type = 'rectangle';
@@ -278,6 +278,7 @@ class NgmApp extends LitElementI18n {
         lowerLimit: bbox.lowerLimit - bbox.altitude
       },
       volumeShowed: true,
+      showSlicingBox: event.detail.showSlicingBox,
       ...getMeasurements(positions, type)
     });
     this.slicer_.active = false;

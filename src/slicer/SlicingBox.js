@@ -114,6 +114,8 @@ export default class SlicingBox extends SlicingToolBase {
     executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlanes(primitive));
     this.syncPlanes();
 
+    if (typeof options.showBox === 'boolean')
+      this.toggleBoxVisibility(options.showBox);
     this.viewer.scene.requestRender();
   }
 
@@ -256,16 +258,7 @@ export default class SlicingBox extends SlicingToolBase {
         this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.basePath], tileCenter);
       }
     });
-    if (this.options.syncBoxPlanesCallback) {
-      const boxCenter = Cartographic.fromCartesian(this.boxCenter);
-      const planesInfo = {
-        type: this.options.type,
-        slicePoints: Object.values(this.bbox.corners),
-        lowerLimit: boxCenter.height - this.bbox.height / 2,
-        height: this.bbox.height
-      };
-      this.options.syncBoxPlanesCallback(planesInfo);
-    }
+    this.onBoxPlanesChange();
   }
 
   updateSidePlanes() {
@@ -274,5 +267,26 @@ export default class SlicingBox extends SlicingToolBase {
     this.rightPlane = planeFromTwoPoints(this.bbox.corners.bottomRight, this.bbox.corners.topRight, this.options.negate);
     this.leftPlane = planeFromTwoPoints(this.bbox.corners.topLeft, this.bbox.corners.bottomLeft, this.options.negate);
     this.sidePlanes = [this.backPlane, this.leftPlane, this.frontPlane, this.rightPlane];
+  }
+
+  toggleBoxVisibility(show) {
+    if (!this.slicingBoxEntity) return;
+    this.slicingBoxEntity.show = show;
+    this.slicerArrows.toggleArrowsVisibility(show);
+    this.onBoxPlanesChange();
+    this.viewer.scene.requestRender();
+  }
+
+  onBoxPlanesChange() {
+    if (!this.options || !this.options.syncBoxPlanesCallback) return;
+    const boxCenter = Cartographic.fromCartesian(this.boxCenter);
+    const planesInfo = {
+      type: this.options.type,
+      slicePoints: Object.values(this.bbox.corners),
+      lowerLimit: boxCenter.height - this.bbox.height / 2,
+      height: this.bbox.height,
+      showBox: this.slicingBoxEntity.show
+    };
+    this.options.syncBoxPlanesCallback(planesInfo);
   }
 }
