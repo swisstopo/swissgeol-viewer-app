@@ -33,8 +33,7 @@ A few URL parameters will modify the behaviour of the viewer:
 - `assetIds` display some additional Cesium ION 3dtilesets (coma separated list of CesiumIon ids)
 - `initialScreenSpaceError` define the visual quality (default: 10000)
 - `maximumScreenSpaceError` define the visual quality (default: 2.0 except for localhost which is 20.0)
-- `ownterrain=false` disables the Swisstopo terrain (mind that their is only data in the swissrectangle)
-  `ownterrain=cli_2m` use the 2m terrain generated using Cesium CLI (for testing only)
+- `ownterrain=false` disables the terrain (mind that their is only data in the swissrectangle)
   `ownterrain=cli_ticino_0.5m`' use the 0.5m terrain generated using Cesium CLI (for testing only - only around Ticino)
   `ownterrain=cli_walensee_0.5m`' use the 0.5m terrain generated using Cesium CLI (for testing only - only around Walensee)
 - `swissrectangle=false` do not restrict rendering to the Swiss rectangle
