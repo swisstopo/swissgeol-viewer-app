@@ -395,11 +395,11 @@ class LeftSideBar extends LitElementI18n {
     this.requestUpdate();
   }
 
-  createSearchLayer(title, layer) {
+  createSearchLayer(title, layername) {
     const config = {
       type: LAYER_TYPES.swisstopoWMTS,
       label: title,
-      layer: layer,
+      layer: layername,
       visible: true,
       displayed: true,
       transparency: DEFAULT_LAYER_TRANSPARENCY
