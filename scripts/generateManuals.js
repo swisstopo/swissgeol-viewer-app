@@ -1,17 +1,21 @@
-const fs = require('fs');
-const path = require('path');
+import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'fs';
+import {dirname, resolve} from 'path';
+import {fileURLToPath} from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const languages = ['en', 'de'];
 const tagPrefix = 'localetag_'; // update html if changed
 
 (async () => {
   try {
-    const buffer = await fs.readFileSync(path.resolve(__dirname, '../manuals/manual_base.html'));
+    const buffer = await readFileSync(resolve(__dirname, '../manuals/manual_base.html'));
     await Promise.all(languages.map(async (lang) => {
       console.log(`Generating manual html for ${lang}`);
 
       let html = buffer.toString('utf8');
-      const manualLocale = require(path.resolve(__dirname, `../manuals/locales/${lang}.json`));
+      const manualLocaleBuffer = await readFileSync(resolve(__dirname, `../manuals/locales/${lang}.json`));
+      const manualLocale = JSON.parse(manualLocaleBuffer.toString('utf8'));
       manualLocale.forEach(t => {
         if (html.includes(`${tagPrefix}${t.tag}`)) {
           html = html.replace(new RegExp(`${tagPrefix}${t.tag}(?!(_|[a-zA-Z]))`, 'gi'), t.text);
@@ -33,12 +37,12 @@ const tagPrefix = 'localetag_'; // update html if changed
         process.exit(1);
       }
 
-      const dir = path.resolve(__dirname, '../manuals/dist');
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
+      const dir = resolve(__dirname, '../manuals/dist');
+      if (!existsSync(dir)) {
+        mkdirSync(dir);
       }
 
-      return await fs.writeFileSync(path.resolve(__dirname, `${dir}/manual_${lang}.html`), html);
+      return await writeFileSync(resolve(__dirname, `${dir}/manual_${lang}.html`), html);
     }));
     process.exit(0);
   } catch (e) {
