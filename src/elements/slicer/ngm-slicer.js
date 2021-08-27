@@ -82,14 +82,13 @@ class NgmSlicer extends LitElementI18n {
   }
 
   addCurrentBoxToToolbox() {
-    this.dispatchEvent(new CustomEvent('createrectangle', {detail: {showSlicingBox: this.showBox}}));
+    this.dispatchEvent(new CustomEvent('createrectangle', {detail: {showSlicingBox: this.showBox}, bubbles: true}));
   }
 
   toggleMinimize() {
     this.popupMinimized = !this.popupMinimized;
     this.requestUpdate();
     this.showBoxCheckbox.checkbox(this.showBox ? 'check' : 'uncheck');
-    console.log(this.showBoxCheckbox);
   }
 
   onShowBoxChange(event) {

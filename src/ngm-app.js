@@ -135,8 +135,7 @@ class NgmApp extends LitElementI18n {
         ...this.slicer_.sliceOptions, ...sliceOptions,
         syncBoxPlanesCallback: (sliceInfo) => syncSliceParam(sliceInfo),
         deactivationCallback: () => {
-          syncSliceParam();
-          this.querySelector('ngm-slicer').requestUpdate();
+          this.querySelector('ngm-slicer').onDeactivation();
         }
       };
       this.slicer_.active = true;

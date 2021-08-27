@@ -60,11 +60,7 @@ class NgmNavigationWidgets extends LitElementI18n {
           <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
           <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
           <ngm-nadir-view .scene="${this.viewer.scene}"></ngm-nadir-view>
-          <ngm-slicer
-            .slicer="${this.slicer}"
-            @createrectangle=${e =>
-              this.dispatchEvent(new CustomEvent('createrectangle', {detail: {showSlicingBox: e.detail.showSlicingBox}}))}>
-          </ngm-slicer>
+          <ngm-slicer .slicer="${this.slicer}"></ngm-slicer>
           <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
         </div>
       `;

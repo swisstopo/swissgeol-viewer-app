@@ -15,7 +15,8 @@ class NgmToolboxSlicer extends LitElementI18n {
       type: {type: String},
       showBox: {type: Boolean},
       onEnableSlicing: {type: Function},
-      onDisableSlicing: {type: Function}
+      onDisableSlicing: {type: Function},
+      onShowSlicingBoxChange: {type: Function}
     };
   }
 
@@ -106,6 +107,7 @@ class NgmToolboxSlicer extends LitElementI18n {
   onShowBoxChange(event) {
     this.showBox = event.target.checked;
     this.slicer.toggleBoxVisibility(this.showBox);
+    this.onShowSlicingBoxChange(this.showBox);
   }
 
   render() {

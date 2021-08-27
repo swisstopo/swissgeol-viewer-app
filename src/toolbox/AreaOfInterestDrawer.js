@@ -291,6 +291,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                   .showBox=${i.showSlicingBox}
                   .onEnableSlicing=${() => this.onEnableSlicing(i.id, i.type)}
                   .onDisableSlicing=${(positions, lowerLimit, height) => this.onDisableSlicing(i.id, i.type, positions, lowerLimit, height)}
+                  .onShowSlicingBoxChange=${(value) => this.onShowSlicingBoxChange(i.id, value)}
                 ></ngm-toolbox-slicer>`
               : ''}
             ${i.type === 'rectangle' ?
@@ -584,7 +585,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
         website: val.properties.website ? val.properties.website.getValue() : '',
         swissforagesId: val.properties.swissforagesId ? val.properties.swissforagesId.getValue() : undefined,
         depth: val.properties.depth ? val.properties.depth.getValue() : undefined,
-        showSlicingBox: val.properties.showSlicingBox ? val.properties.showSlicingBox.getValue() : undefined,
+        showSlicingBox: val.properties.showSlicingBox ? val.properties.showSlicingBox.getValue() : true,
       };
       const colorBeforeHighlight = !this.selectedArea_ || val.id !== this.selectedArea_.id ? undefined : this.colorBeforeHighlight;
       if (val.billboard) {
@@ -713,6 +714,9 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     const extendedData = entity.kml && entity.kml.extendedData ? entity.kml.extendedData : {};
     Object.getOwnPropertyNames(extendedData).forEach(prop => {
       extendedData[prop] = parseJson(extendedData[prop].value) || extendedData[prop].value;
+      if (extendedData[prop] === 'false' || extendedData[prop] === 'true') {
+        extendedData[prop] = extendedData[prop] === 'true';
+      }
     });
     if (extendedData.type && AVAILABLE_AOI_TYPES.includes(extendedData.type)) {
       type = extendedData.type;
@@ -840,15 +844,14 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     const entityAttrs = {
       id: attributes.id || undefined,
       name: attributes.name || `${name} ${this.areasCounter_[type]}`,
-      show: typeof attributes.show === 'boolean' ? attributes.show : true,
+      show: attributes.show,
       properties: {
         area: attributes.area,
         perimeter: attributes.perimeter,
         numberOfSegments: attributes.numberOfSegments,
         sidesLength: attributes.sidesLength || [],
         type: type,
-        volumeShowed:
-          typeof attributes.volumeShowed === 'boolean' ? attributes.volumeShowed : attributes.volumeShowed === 'true',
+        volumeShowed: !!attributes.volumeShowed,
         volumeHeightLimits: attributes.volumeHeightLimits || null,
         description: attributes.description || '',
         image: attributes.image || '',
@@ -893,7 +896,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
           hierarchy: attributes.positions,
           material: material,
         };
-        entityAttrs.properties.showSlicingBox = typeof attributes.showSlicingBox === 'boolean' ? attributes.showSlicingBox : true;
+        entityAttrs.properties.showSlicingBox = attributes.showSlicingBox;
       } else if (type === 'line') {
         entityAttrs.polyline = {
           positions: attributes.positions,
@@ -1206,6 +1209,11 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
     entity.show = true;
     this.enableToolButtons();
+  }
+
+  onShowSlicingBoxChange(id, value) {
+    const entity = this.interestAreasDataSource.entities.getById(id);
+    entity.properties.showSlicingBox = value;
   }
 
   onColorChange(id, type, color) {
