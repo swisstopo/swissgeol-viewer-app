@@ -22,6 +22,7 @@ export default class LayerTree extends LitElementI18n {
    *
    * @param {*} config
    * @param {number} idx
+   * @param {number} len
    */
   createLayerTemplate(config, idx, len) {
     const upClassMap = {disabled: (idx === 0)};
@@ -58,7 +59,7 @@ export default class LayerTree extends LitElementI18n {
 
   // builds ui structure of layertree and makes render
   render() {
-    const len = this.layers.length;
+    const len = this.layers ? this.layers.length : 0;
     const reverse = [...this.layers].reverse();
     return html`
       <div class="ui segment">

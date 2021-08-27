@@ -148,3 +148,7 @@ ngm-point-edit ngm-geom-configuration {
 .ngm-swissforages-modal .content.mini {
   height: auto;
 }
+
+.ngm-slice-tools-popup > .checkbox {
+  margin-top: 5px;
+}

@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../../i18n.js';
 import {syncSliceParam} from '../../permalink';
 import $ from '../../jquery';
+import 'fomantic-ui-css/components/checkbox';
 
 class NgmSlicer extends LitElementI18n {
 
@@ -20,6 +21,7 @@ class NgmSlicer extends LitElementI18n {
      */
     this.slicer = null;
     this.popupMinimized = false;
+    this.showBox = true;
   }
 
   firstUpdated() {
@@ -32,7 +34,10 @@ class NgmSlicer extends LitElementI18n {
     if (this.slicer.active && this.slicingType === 'view-box') {
       // wait until all buttons loaded to have correct position
       setTimeout(() => this.transformPopup.popup('show'), 1000);
+
+      this.showBox = this.slicer.sliceOptions.showBox;
     }
+    this.showBoxCheckbox = $(this.querySelector('.ui.checkbox')).checkbox(this.showBox ? 'check' : 'uncheck');
   }
 
   updated() {
@@ -47,6 +52,7 @@ class NgmSlicer extends LitElementI18n {
     if (!active || boxOptionChanged) {
       this.slicer.sliceOptions = {
         type: type,
+        showBox: this.showBox,
         deactivationCallback: () => this.onDeactivation(),
         syncBoxPlanesCallback: (sliceInfo) => syncSliceParam(sliceInfo)
       };
@@ -76,12 +82,18 @@ class NgmSlicer extends LitElementI18n {
   }
 
   addCurrentBoxToToolbox() {
-    this.dispatchEvent(new CustomEvent('createrectangle'));
+    this.dispatchEvent(new CustomEvent('createrectangle', {detail: {showSlicingBox: this.showBox}, bubbles: true}));
   }
 
   toggleMinimize() {
     this.popupMinimized = !this.popupMinimized;
     this.requestUpdate();
+    this.showBoxCheckbox.checkbox(this.showBox ? 'check' : 'uncheck');
+  }
+
+  onShowBoxChange(event) {
+    this.showBox = event.target.checked;
+    this.slicer.toggleBoxVisibility(this.showBox);
   }
 
   render() {
@@ -104,9 +116,13 @@ class NgmSlicer extends LitElementI18n {
           <i class="cube icon"></i>
         </button>
         <div class="ui mini popup ngm-slice-to-draw">
-          <div class="content ${this.popupMinimized ? 'minimized' : ''}">
+          <div class="body ${this.popupMinimized ? 'minimized' : ''}">
             <i class="${!this.popupMinimized ? 'minus' : 'expand alternate'} icon" @click="${this.toggleMinimize}"></i>
-            ${this.popupMinimized ? '' : html`
+            <div ?hidden="${this.popupMinimized}" class="content">
+              <div class="ui checkbox">
+                <input type="checkbox" @change="${this.onShowBoxChange}">
+                <label>${i18next.t('nav_box_show_slice_box')}</label>
+              </div>
               <div class="description">
                 <i class="lightbulb icon"></i>
                 <label>${i18next.t('nav_box_slice_transform_hint')}</label>
@@ -115,7 +131,8 @@ class NgmSlicer extends LitElementI18n {
                 class="ui tiny button"
                 @click="${this.addCurrentBoxToToolbox}">
                 ${i18next.t('nav_box_slice_transform_btn')}
-              </button>`}
+              </button>
+            </div>
           </div>
         </div>
       `;
