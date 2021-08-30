@@ -1,21 +1,24 @@
-const CopyPlugin = require('copy-webpack-plugin');
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import CopyPlugin from 'copy-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import {resolve, dirname, join} from 'path';
+import {fileURLToPath} from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const cesiumSource = __dirname + '/node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
 
-module.exports = {
+export default {
   mode: 'development',
   resolve: {
     alias: {
-      cesium: path.resolve(__dirname, 'node_modules/cesium'),
+      cesium: resolve(__dirname, 'node_modules/cesium'),
       // we need the aliases below for CSS :( don't know why
-      './cesium/Build': path.resolve(__dirname, 'node_modules/cesium/Build'),
-      './cesium': path.resolve(__dirname, 'node_modules/cesium/Source'),
-      './fomantic-ui-css': path.resolve(__dirname, 'node_modules/fomantic-ui-css'),
-      './images': path.resolve(__dirname, 'src/images'),
-      './typeface-source-sans-pro': path.resolve(__dirname, 'node_modules/typeface-source-sans-pro'),
+      './cesium/Build': resolve(__dirname, 'node_modules/cesium/Build'),
+      './cesium': resolve(__dirname, 'node_modules/cesium/Source'),
+      './fomantic-ui-css': resolve(__dirname, 'node_modules/fomantic-ui-css'),
+      './images': resolve(__dirname, 'src/images'),
+      './typeface-source-sans-pro': resolve(__dirname, 'node_modules/typeface-source-sans-pro'),
     }
   },
   output: {
@@ -40,7 +43,7 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: join(__dirname, 'dist'),
     compress: true,
     port: 8000,
     watchOptions: {
