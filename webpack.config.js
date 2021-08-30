@@ -28,6 +28,12 @@ export default {
   module: {
     rules: [
       {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false
+        }
+      },
+      {
         test: /\.js$/,
         use: ["source-map-loader"],
         enforce: "pre"
