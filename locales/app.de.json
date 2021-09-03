@@ -93,7 +93,7 @@
   "lyr_voxel_visp_litho_label": "Visp: Lithologie",
   "lyr_voxel_visp_logk_label": "Visp: Hydraulische Leifähigkeit",
   "lyr_water_tunnel_label": "Wassertunnel",
-  "nav_box_show_slice_box": "",
+  "nav_box_show_slice_box": "Slicing-Box und Pfeile anzeigen",
   "nav_box_slice_hint": "3D-Szene aufschneiden (Box)",
   "nav_box_slice_transform_btn": "Zum 'Werkzeugkasten' hinzufügen",
   "nav_box_slice_transform_hint": "Möchten Sie diese Box wiederverwenden? Sie können sie zu Ihrem Werkzeugkasten hinzufügen!",
