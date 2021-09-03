@@ -3,8 +3,10 @@ import {SWITZERLAND_RECTANGLE} from './constants.js';
 import UrlTemplateImageryProvider from 'cesium/Source/Scene/UrlTemplateImageryProvider';
 import ImageryLayer from 'cesium/Source/Scene/ImageryLayer';
 import Credit from 'cesium/Source/Core/Credit';
+import i18next from 'i18next';
+import WebMapServiceImageryProvider from 'cesium/Source/Scene/WebMapServiceImageryProvider';
 
-const layerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}';
+const wmtsLayerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}';
 
 /**
  * @param {string} layer Layer identifier
@@ -16,25 +18,43 @@ export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
     getLayersConfig().then(layersConfig => {
       const config = layersConfig[layer];
       if (config) {
-        if (config.type === 'wmts') {
-          const url = layerUrlTemplate
-            .replace('{layer}', config.serverLayerName)
-            .replace('{timestamp}', config.timestamps[0])
-            .replace('{format}', config.format);
-
-          const imageryProvider = new UrlTemplateImageryProvider({
+        let imageryProvider;
+        switch (config.type) {
+          case 'wmts': {
+            const url = wmtsLayerUrlTemplate
+              .replace('{layer}', config.serverLayerName)
+              .replace('{timestamp}', config.timestamps[0])
+              .replace('{format}', config.format);
+            imageryProvider = new UrlTemplateImageryProvider({
+              url: url,
+              rectangle: rectangle,
+              credit: new Credit(config.attribution)
+            });
+            break;
+          }
+        case 'wms': {
+          const url = 'https://wms{s}.geo.admin.ch?version=1.3.0';
+          imageryProvider = new WebMapServiceImageryProvider({
             url: url,
+            parameters: {
+              FORMAT: config.format,
+              TRANSPARENT: true,
+              LANG: i18next.language,
+            },
+            subdomains: '0123',
+            layers: config.serverLayerName,
             rectangle: rectangle,
             credit: new Credit(config.attribution)
           });
-          const imageryLayer = new ImageryLayer(imageryProvider, {
-            alpha: config.opacity
-          });
-
-          resolve(imageryLayer);
-        } else {
+          break;
+        }
+        default:
           reject(`unsupported layer type: ${config.type}`);
         }
+        const imageryLayer = new ImageryLayer(imageryProvider, {
+          alpha: config.opacity
+        });
+        resolve(imageryLayer);
       } else {
         reject(`layer not found: ${layer}`);
       }
@@ -80,7 +100,7 @@ export function getLayersConfig() {
  * @return {ImageryLayer}
  */
 export function addSwisstopoLayer(viewer, layer, format, timestamp = 'current') {
-  const url = layerUrlTemplate
+  const url = wmtsLayerUrlTemplate
     .replace('{layer}', layer)
     .replace('{timestamp}', timestamp)
     .replace('{format}', format);

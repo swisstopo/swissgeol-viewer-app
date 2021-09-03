@@ -33,6 +33,9 @@ Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhN
 
 Object.assign(RequestScheduler.requestsByServer, {
   'wmts.geo.admin.ch:443': 18,
+  'wms0.geo.admin.ch:443': 9,
+  'wms1.geo.admin.ch:443': 9,
+  'wms2.geo.admin.ch:443': 9,
   'vectortiles0.geo.admin.ch:443': 18
 });
 
