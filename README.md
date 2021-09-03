@@ -40,6 +40,7 @@ A few URL parameters will modify the behaviour of the viewer:
 - `norequestrendermode` disable the resource optimizations (will use 100% CPU)
 - `inspector` display the Cesium Inspector widget
 - `inspector_wireframe` enable the wireframe mode
+- `preserveDrawingBuffer` allow to read canvas from the DOM, probably helping hotjar record the canvas
 
 
 ## Notes
