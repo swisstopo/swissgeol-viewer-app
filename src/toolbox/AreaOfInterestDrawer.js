@@ -373,8 +373,8 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                     }}"></textarea>
               </div>
             </div>
-            <div class="ngm-volume-limits-input"
-                 ?hidden=${this.isVolumeInputsHidden()}>
+            ${this.isVolumeInputsHidden() ? '' : html`
+            <div class="ngm-volume-limits-input">
               <div>
                 <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
                 <div class="ui mini input right labeled">
@@ -396,6 +396,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                 </div>
               </div>
             </div>
+            `}
             <ngm-geom-configuration
               ?hidden=${i.type === 'point'}
               .iconClass=${i.type === 'line' ? 'route' : 'vector square'}
