@@ -139,7 +139,6 @@ export function setupViewer(container, rethrowRenderErrors) {
     imageryProvider: firstImageryProvider,
     useBrowserRecommendedResolution: true,
     terrainProvider: terrainProvider,
-    terrainExaggeration: terrainExaggeration,
     requestRenderMode: requestRenderMode,
     // maximumRenderTimeChange: 10,
   });
@@ -150,6 +149,7 @@ export function setupViewer(container, rethrowRenderErrors) {
   enableCenterOfRotate(viewer);
 
   const globe = scene.globe;
+  globe.terrainExaggeration = terrainExaggeration;
 
   if (searchParams.get('swissrectangle') !== 'false') {
     const rectangle = Rectangle.fromDegrees(
