@@ -111,11 +111,15 @@ export function setupViewer(container, rethrowRenderErrors) {
     url: terrainUrl
   });
 
+  const webgl = {
+    powerPreference: 'high-performance'
+  };
+  if (searchParams.has('preserveDrawingBuffer')) {
+    webgl.preserveDrawingBuffer = true;
+  }
   const viewer = new Viewer(container, {
     contextOptions: {
-      webgl: {
-        powerPreference: 'high-performance'
-      }
+      webgl
     },
     showRenderLoopErrors: rethrowRenderErrors,
     animation: false,
@@ -135,7 +139,6 @@ export function setupViewer(container, rethrowRenderErrors) {
     imageryProvider: firstImageryProvider,
     useBrowserRecommendedResolution: true,
     terrainProvider: terrainProvider,
-    terrainExaggeration: terrainExaggeration,
     requestRenderMode: requestRenderMode,
     // maximumRenderTimeChange: 10,
   });
@@ -146,6 +149,7 @@ export function setupViewer(container, rethrowRenderErrors) {
   enableCenterOfRotate(viewer);
 
   const globe = scene.globe;
+  globe.terrainExaggeration = terrainExaggeration;
 
   if (searchParams.get('swissrectangle') !== 'false') {
     const rectangle = Rectangle.fromDegrees(
