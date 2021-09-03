@@ -93,7 +93,7 @@
   "lyr_voxel_visp_litho_label": "Visp: Lithology",
   "lyr_voxel_visp_logk_label": "Visp: Hydraulic conductivity",
   "lyr_water_tunnel_label": "Water tunnel",
-  "nav_box_show_slice_box": "Show sides and arrows",
+  "nav_box_show_slice_box": "Show slicing box and arrows",
   "nav_box_slice_hint": "Slice 3D-scene (box)",
   "nav_box_slice_transform_btn": "Add to 'toolbox'",
   "nav_box_slice_transform_hint": "Do you want to re-use this box? You can add it to your toolbox!",
