@@ -20,7 +20,7 @@ export function setupSearch(viewer, element, layerTree) {
     element.filterResults = result => {
       if (result.properties && result.properties.origin === 'layer') {
         const layerConfig = layersConfig[result.properties.layer];
-        return !!layerConfig && layerConfig.type === 'wmts';
+        return !!layerConfig && (layerConfig.type === 'wmts' || layerConfig.type === 'wms');
       } else {
         return true;
       }
