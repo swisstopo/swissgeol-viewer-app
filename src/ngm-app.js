@@ -284,7 +284,7 @@ class NgmApp extends LitElementI18n {
     return html`
       <header>
         <a id="ngm-home-link" href=""><img class="logo" src="src/images/logo-CH.svg"></a>
-        <ga-search class="ui small left icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
+        <ga-search class="ui big icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
           <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
           <i class="search icon"></i>
           <ul class="search-results"></ul>
