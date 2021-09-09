@@ -83,7 +83,7 @@ header {
 
 header > a > .logo {
   margin-right: 80px;
-  margin-left: 40px;
+  margin-left: 10px;
   margin-bottom: 10px;
 }
 
@@ -220,25 +220,6 @@ cesium-view-cube {
 
 .ui.buttons .grey.button > .icon.horizontal-layer:before {
   content: svg-load('../images/horizontal-layer.svg', fill=#fff);
-}
-
-#cesium.full-active:after,
-body:after { /* Beta label */
-  content: "beta";
-  position: fixed;
-  width: 80px;
-  height: 25px;
-  background: #ff0000;
-  top: 7px;
-  left: -20px;
-  text-align: center;
-  font-size: 13px;
-  font-family: sans-serif;
-  text-transform: uppercase;
-  font-weight: bold;
-  color: #fff;
-  line-height: 27px;
-  transform: rotate(-45deg);
 }
 
 .ngm-header-links {
