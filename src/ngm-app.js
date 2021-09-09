@@ -6,7 +6,6 @@ import './elements/ngm-slow-loading';
 import './elements/ngm-navigation-widgets';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
-import './elements/ngm-review-window';
 import './elements/ngm-feature-height';
 import './elements/ngm-auth';
 import './elements/ngm-drop-files';
@@ -343,11 +342,6 @@ class NgmApp extends LitElementI18n {
             </div>
             <ngm-object-information></ngm-object-information>
             <ngm-layer-legend-container></ngm-layer-legend-container>
-            <ngm-review-window
-              .hideReviewWindow=${localStorageController.hideReviewWindowValue}
-              @review_window_changed=${localStorageController.updateReviewWindowState};
-              data-fs='no'>
-            </ngm-review-window>
           </div>
           <div class='footer'>
             <div class='ui horizontal link list'>

@@ -1,15 +1,10 @@
 const LOCALSTORAGE_AOI_KEY = 'aoi';
 const LOCALSTORAGE_WELCOME_KEY = 'hideWelcome';
-const LOCALSTORAGE_REVIEW_KEY = 'hideReviewWindow';
 const LOCALSTORAGE_CATALOG_KEY = 'hideCatalogWindow';
 
 export class LocalStorageController {
   get hideWelcomeValue() {
     return localStorage.getItem(LOCALSTORAGE_WELCOME_KEY) === 'true';
-  }
-
-  get hideReviewWindowValue() {
-    return localStorage.getItem(LOCALSTORAGE_REVIEW_KEY) === 'true';
   }
 
   get hideCatalogValue() {
@@ -36,10 +31,5 @@ export class LocalStorageController {
 
   setAoiInStorage(areas) {
     localStorage.setItem(LOCALSTORAGE_AOI_KEY, JSON.stringify(areas));
-  }
-
-  updateReviewWindowState() {
-    const newValue = localStorage.getItem(LOCALSTORAGE_REVIEW_KEY) !== 'true';
-    localStorage.setItem(LOCALSTORAGE_REVIEW_KEY, newValue);
   }
 }

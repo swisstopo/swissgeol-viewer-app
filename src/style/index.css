@@ -278,8 +278,7 @@ ngm-slow-loading > .ui.inverted.segment {
   z-index: 1001 !important;
 }
 
-ngm-slow-loading > .ui.inverted.segment,
-ngm-review-window > .ui.inverted.segment {
+ngm-slow-loading > .ui.inverted.segment {
   position: absolute;
   padding: 5px;
   z-index: 1;
@@ -289,8 +288,7 @@ ngm-review-window > .ui.inverted.segment {
   margin: 6px;
 }
 
-ngm-slow-loading .ui.inverted.accordion > .title,
-ngm-review-window .ui.inverted.accordion > .title {
+ngm-slow-loading .ui.inverted.accordion > .title {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -300,18 +298,6 @@ ngm-review-window .ui.inverted.accordion > .title {
 
 ngm-slow-loading .ui.inverted.accordion > .content {
   text-align: left;
-}
-
-ngm-review-window > .ui.inverted.segment {
-  right: 245px;
-}
-
-ngm-review-window .ui.inverted.accordion > .content {
-  text-align: right;
-}
-
-ngm-review-window a {
-  color: #ff0000;
 }
 
 ngm-full-screen-view {
