@@ -225,11 +225,6 @@ class NgmApp extends LitElementI18n {
 
     viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
-    i18next.on('languageChanged', (lang) => {
-      this.querySelector('#ngm-help-btn').href =
-        lang === 'de' ? './manuals/manual_de.html' : './manuals/manual_en.html';
-    });
-
     i18next.on('initialized', () => {
       this.showSlowLoadingWindow();
     });
@@ -288,27 +283,25 @@ class NgmApp extends LitElementI18n {
   render() {
     return html`
       <header>
-        <a id="ngm-home-link" href=""><img class="logo" src="src/images/logo-CH.svg"></a>
-        <ga-search class="ui small left icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
+        <a class="home-link" id="ngm-home-link" href=""><img class="logo" src="src/images/logo-CH.svg"></a>
+        <ga-search class="ui big icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
           <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
           <i class="search icon"></i>
           <ul class="search-results"></ul>
         </ga-search>
         <div style="flex: auto;"></div>
-        <div class="ngm-header-links">
-          <div id="langs" class="ui horizontal selection list"></div>
-          <a id="ngm-help-btn" href="/manuals/manual_en.html" target="_blank">${i18next.t('header_help_link')}</a>
-          <ngm-auth
-            endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
-            clientId='6brvjsufv7fdubr12r9u0gajnj'
-            @refresh=${(evt) => {
-              this.authenticated = evt.detail.authenticated;
-              this.userGroups = evt.detail.groups;
-            }}
-          ></ngm-auth>
-        </div>
       </header>
       <main>
+        <!-- FIXME: move ngm-auth inside the left panel -->
+        <ngm-auth style='display: none'
+          endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
+          clientId='6brvjsufv7fdubr12r9u0gajnj'
+          @refresh=${(evt) => {
+            this.authenticated = evt.detail.authenticated;
+            this.userGroups = evt.detail.groups;
+          }}
+        ></ngm-auth>
+
         <ngm-drop-files @filedrop="${event => this.onFileDrop(event.detail.file)}"
                         .target="${document.body}"></ngm-drop-files>
         <ngm-loading-mask></ngm-loading-mask>

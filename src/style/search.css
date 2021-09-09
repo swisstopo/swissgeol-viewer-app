@@ -4,6 +4,16 @@ ga-search {
   align-self: center;
 }
 
+/* FIXME: overwrite for all input ? */
+ga-search.ui.input > input {
+  background-color: #f1f3f5;
+  border: none;
+}
+ga-search.ui.input > input:focus {
+  background-color: #c6f6f9;
+  border-bottom: 2px solid #68d9e7;
+}
+
 /* FIXME: use existing fomantic component */
 ga-search > .search-results {
   z-index: 2 !important;

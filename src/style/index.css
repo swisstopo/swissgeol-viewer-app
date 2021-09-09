@@ -81,10 +81,14 @@ header {
   background-color: #fff;
 }
 
-header > a > .logo {
+header > .home-link {
+  display: flex;
+  align-items: center;
+}
+
+header > .home-link > .logo {
   margin-right: 80px;
   margin-left: 40px;
-  margin-bottom: 10px;
 }
 
 #outdated-browser {
@@ -239,17 +243,6 @@ body:after { /* Beta label */
   color: #fff;
   line-height: 27px;
   transform: rotate(-45deg);
-}
-
-.ngm-header-links {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.ngm-header-links a {
-  color: #ff0000;
 }
 
 .no-pointer-events {
