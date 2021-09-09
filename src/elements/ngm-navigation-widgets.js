@@ -5,7 +5,6 @@ import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';
 import './ngm-keyboard-info-popup.js';
 import './ngm-nadir-view.js';
-import './ngm-camera-information.js';
 import './slicer/ngm-slicer.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
@@ -30,9 +29,6 @@ class NgmNavigationWidgets extends LitElementI18n {
   render() {
     if (this.viewer) {
       return html`
-        <ngm-camera-information
-          .scene="${this.viewer.scene}" class="item">
-        </ngm-camera-information>
         <div class="ngm-navigation-buttons">
           <div id="compass-info-popup"></div>
           <cesium-view-cube .scene="${this.viewer.scene}"></cesium-view-cube>

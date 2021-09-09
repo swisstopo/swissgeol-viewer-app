@@ -11,6 +11,7 @@ import './elements/ngm-auth';
 import './elements/ngm-drop-files';
 import './elements/ngm-tracking-consent';
 import './elements/ngm-layer-legend-container';
+import './elements/ngm-camera-information.js';
 
 import {
   DEFAULT_VIEW,
@@ -289,6 +290,7 @@ class NgmApp extends LitElementI18n {
           <ul class="search-results"></ul>
         </ga-search>
         <div style="flex: auto;"></div>
+        <ngm-camera-information .viewer="${this.viewer}"></ngm-camera-information>
       </header>
       <main>
         <!-- FIXME: move ngm-auth elsewhere  -->

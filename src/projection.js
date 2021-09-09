@@ -42,11 +42,11 @@ const swissIntegerFormat = new Intl.NumberFormat('de-CH', {
 
 /**
  * @param {import('cesium/Source/Core/Cartographic').default} carto
- * @return {string}
+ * @return {Array<string>}
  */
 export function formatCartographicAs2DLv95(carto) {
   return proj4('EPSG:4326', 'EPSG:2056', [
     carto.longitude * 180 / Math.PI,
     carto.latitude * 180 / Math.PI,
-  ]).map(Math.round).map(swissIntegerFormat.format).join(', ');
+  ]).map(Math.round).map(swissIntegerFormat.format);
 }

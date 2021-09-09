@@ -1,12 +1,13 @@
 ngm-camera-information {
-  width: 230px;
-  background-color: lightgray;
   display: flex;
-  justify-content: space-around;
   align-items: center;
-  font-size: 12px;
+  width: 260px;
 }
 
-ngm-camera-information .ui.icon.button {
-  margin: 0;
+ngm-camera-information table tbody td {
+  padding: 0 12px;
+}
+
+ngm-camera-information table .value {
+  font-weight: 600;
 }

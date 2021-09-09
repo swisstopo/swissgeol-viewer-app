@@ -4,13 +4,12 @@ import {LitElementI18n} from '../i18n.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import {unsafeHTML} from 'lit-html/directives/unsafe-html.js';
 import {formatCartographicAs2DLv95} from '../projection.js';
-import './ngm-position-edit.js';
 
 class NgmCameraInformation extends LitElementI18n {
 
   static get properties() {
     return {
-      scene: {type: Object},
+      viewer: {type: Object},
       elevation: {type: Number},
       heading: {type: Number},
       coordinates: {type: String},
@@ -19,6 +18,8 @@ class NgmCameraInformation extends LitElementI18n {
 
   constructor() {
     super();
+
+    this.viewer = null;
 
     /**
      * @type {import('cesium/Source/Scene/Scene').default}
@@ -38,7 +39,8 @@ class NgmCameraInformation extends LitElementI18n {
   }
 
   updated() {
-    if (this.scene && !this.unlistenPostRender) {
+    if (this.viewer && !this.unlistenPostRender) {
+      this.scene = this.viewer.scene;
       this.unlistenPostRender = this.scene.postRender.addEventListener(() => this.updateFromCamera());
     }
   }
@@ -72,8 +74,26 @@ class NgmCameraInformation extends LitElementI18n {
       }
 
       return html`
-         ${unsafeHTML(i18next.t('nav_camera_position_label', {coordinates, height, angle, pitch}))}
-        <ngm-position-edit .scene="${this.scene}"></ngm-position-edit>
+        <table class="">
+          <tbody>
+            <tr>
+              <td>Coordinates</td>
+              <td>Height</td>
+              <td class="value">${height} m</td>
+            </tr>
+            <tr>
+              <td class="value">${coordinates[0]}</td>
+              <td>Angle</td>
+              <td class="value">${angle}°</td>
+            </tr>
+            <tr>
+              <td class="value">${coordinates[1]}</td>
+              <td>Pitch</td>
+              <td class="value">${pitch}°</td>
+            </tr>
+          </tbody>
+        </table>
+         <!-- ${unsafeHTML(i18next.t('nav_camera_position_label', {coordinates, height, angle, pitch}))} -->
       `;
     } else {
       return html``;
