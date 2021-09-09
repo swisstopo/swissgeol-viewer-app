@@ -222,17 +222,6 @@ cesium-view-cube {
   content: svg-load('../images/horizontal-layer.svg', fill=#fff);
 }
 
-.ngm-header-links {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.ngm-header-links a {
-  color: #ff0000;
-}
-
 .no-pointer-events {
   pointer-events: none;
 }
