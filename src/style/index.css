@@ -63,6 +63,17 @@ body, .ui.button, .ui.accordion .title:not(.ui), .ui.input > input {
   font-family: 'Source Sans Pro', sans-serif;
 }
 
+.ui.input > input, .ui.input textarea {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border: none;
+  border-bottom: 2px solid #54a8bb;
+}
+.ui.input > input:focus, .ui.input textarea:focus {
+  background: #c6f6f9;
+  border-bottom: 2px solid #54a8bb;
+}
+
 a {
   text-decoration: none;
 }

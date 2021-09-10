@@ -4,6 +4,10 @@ ga-search {
   align-self: center;
 }
 
+ga-search.ui.input > input {
+  background: #f1f3f5;
+}
+
 /* FIXME: use existing fomantic component */
 ga-search > .search-results {
   z-index: 2 !important;
@@ -31,5 +35,5 @@ ga-search > .search-results > .autocomplete-result .highlight {
 ga-search > .search-results > .autocomplete-result[aria-selected=true],
 ga-search > .search-results > .autocomplete-result:hover {
   cursor: pointer;
-  background-color: rgba(0,0,0,.05);
+  background-color: #c6f6f9;
 }
