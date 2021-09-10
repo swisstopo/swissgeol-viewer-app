@@ -18,12 +18,12 @@ export class LocalStorageController {
 
   updateWelcomePanelState() {
     const newValue = localStorage.getItem(LOCALSTORAGE_WELCOME_KEY) !== 'true';
-    localStorage.setItem(LOCALSTORAGE_WELCOME_KEY, newValue);
+    localStorage.setItem(LOCALSTORAGE_WELCOME_KEY, newValue.toString());
   }
 
   toggleCatalogState() {
     const newValue = localStorage.getItem(LOCALSTORAGE_CATALOG_KEY) !== 'true';
-    localStorage.setItem(LOCALSTORAGE_CATALOG_KEY, newValue);
+    localStorage.setItem(LOCALSTORAGE_CATALOG_KEY, newValue.toString());
   }
 
   getStoredAoi() {
@@ -34,12 +34,12 @@ export class LocalStorageController {
     return [];
   }
 
-  setAoiInStorage(areas) {
+  setAoiInStorage(areas: Object) {
     localStorage.setItem(LOCALSTORAGE_AOI_KEY, JSON.stringify(areas));
   }
 
   updateReviewWindowState() {
     const newValue = localStorage.getItem(LOCALSTORAGE_REVIEW_KEY) !== 'true';
-    localStorage.setItem(LOCALSTORAGE_REVIEW_KEY, newValue);
+    localStorage.setItem(LOCALSTORAGE_REVIEW_KEY, newValue.toString());
   }
 }

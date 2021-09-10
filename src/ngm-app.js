@@ -27,7 +27,7 @@ import i18next from 'i18next';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 
-import {LocalStorageController} from './LocalStorageController.js';
+import {LocalStorageController} from './LocalStorageController';
 import {getZoomToPosition} from './permalink';
 import Slicer from './slicer/Slicer.js';
 
