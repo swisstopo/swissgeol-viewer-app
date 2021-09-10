@@ -92,6 +92,10 @@ header {
   background-color: #fff;
 }
 
+header > * {
+  display: flex;
+}
+
 header > a > .logo {
   margin-right: 80px;
   margin-left: 10px;
