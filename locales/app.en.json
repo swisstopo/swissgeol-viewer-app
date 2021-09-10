@@ -1,4 +1,8 @@
 {
+  "camera_position_angle_label": "Angle",
+  "camera_position_coordinates_label": "Coordinates",
+  "camera_position_height_label": "Height",
+  "camera_position_pitch_label": "Pitch",
   "disclaimer_href": "https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright",
   "disclaimer_text": "Copyright & data protection",
   "drop_file_message": "Drop files here",
@@ -96,7 +100,6 @@
   "nav_box_slice_transform_btn": "Add to 'toolbox'",
   "nav_box_slice_transform_hint": "Do you want to re-use this box? You can add it to your toolbox!",
   "nav_camera_height_label": "Camera Height",
-  "nav_camera_position_label": "Coords: {{coordinates}}<br/>H: {{height}} m / Dir: {{angle}}° / Tilt: {{pitch}}°",
   "nav_cesium_compass_hint": "Click and drag to rotate or tilt the camera",
   "nav_coordinates_label": "Coordinates",
   "nav_down_btn_hint": "Move Down",

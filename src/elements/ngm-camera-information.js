@@ -77,23 +77,22 @@ class NgmCameraInformation extends LitElementI18n {
         <table class="">
           <tbody>
             <tr>
-              <td>Coordinates</td>
-              <td>Height</td>
+              <td>${i18next.t('camera_position_coordinates_label')}</td>
+              <td>${i18next.t('camera_position_height_label')}</td>
               <td class="value">${height} m</td>
             </tr>
             <tr>
               <td class="value">${coordinates[0]}</td>
-              <td>Angle</td>
+              <td>${i18next.t('camera_position_angle_label')}</td>
               <td class="value">${angle}°</td>
             </tr>
             <tr>
               <td class="value">${coordinates[1]}</td>
-              <td>Pitch</td>
+              <td>${i18next.t('camera_position_pitch_label')}</td>
               <td class="value">${pitch}°</td>
             </tr>
           </tbody>
         </table>
-         <!-- ${unsafeHTML(i18next.t('nav_camera_position_label', {coordinates, height, angle, pitch}))} -->
       `;
     } else {
       return html``;

@@ -1,4 +1,8 @@
 {
+  "camera_position_angle_label": "",
+  "camera_position_coordinates_label": "",
+  "camera_position_height_label": "",
+  "camera_position_pitch_label": "",
   "disclaimer_href": "https://www.geo.admin.ch/fr/about-swiss-geoportal/impressum.html#copyright",
   "disclaimer_text": "Conditions d'utilisation",
   "drop_file_message": "Déposez les fichiers ici",
@@ -96,7 +100,6 @@
   "nav_box_slice_transform_btn": "Ajouter à la 'boîte à outils'",
   "nav_box_slice_transform_hint": "Vous voulez réutiliser cette boîte ? Vous pouvez l'ajouter à votre boîte à outils !",
   "nav_camera_height_label": "Altitude de la caméra",
-  "nav_camera_position_label": "Coord. : {{coordinates}}<br/>Alt: {{height}} m / Dir: {{angle}}° / Incl: {{pitch}}°",
   "nav_cesium_compass_hint": "Cliquez et faites glisser pour tourner ou incliner la caméra",
   "nav_coordinates_label": "Coordonnées",
   "nav_down_btn_hint": "Descendre",
