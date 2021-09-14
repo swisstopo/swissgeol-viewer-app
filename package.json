@@ -21,7 +21,7 @@
     "@geoblocks/cesium-compass": "0.3.0",
     "@geoblocks/cesium-view-cube": "0.0.1",
     "@geoblocks/ga-search": "0.0.20",
-    "@sentry/browser": "^6.11.0",
+    "@sentry/browser": "^6.12.0",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "cesium": "^1.84.0",
     "event-target-shim": "^6.0.2",
