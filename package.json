@@ -45,6 +45,7 @@
     "@babel/preset-env": "^7.15.6",
     "@rollup/plugin-commonjs": "^18.1.0",
     "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-typescript": "^8.2.5",
     "autoprefixer": "^10.3.4",
     "buffer": "6.0.3",
     "chai": "^4.3.4",

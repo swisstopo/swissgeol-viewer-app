@@ -12,6 +12,7 @@ import cssimport from 'postcss-import';
 import postcssurl from 'postcss-url';
 import autoprefixer from 'autoprefixer';
 // import rollupStripPragma from 'rollup-plugin-strip-pragma';
+import typescript from '@rollup/plugin-typescript';
 
 const cesiumSource = __dirname + '/node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
@@ -24,6 +25,7 @@ const config = {
     format: 'esm',
   }],
   plugins: [
+    typescript(),
     postcss({
       minimize: true,
       inject: false,
@@ -95,6 +97,7 @@ if (process.env.mode === 'production') {
         ]
       ],
       // exclude: 'node_modules/**'
+      extensions: ['.js', '.ts'],
       exclude: ['node_modules/cesium/**', 'node_modules/core-js/**', 'node_modules/@babel/**'],
     }),
 
