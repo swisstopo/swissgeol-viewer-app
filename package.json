@@ -21,7 +21,7 @@
     "@geoblocks/cesium-compass": "0.3.0",
     "@geoblocks/cesium-view-cube": "0.0.1",
     "@geoblocks/ga-search": "0.0.20",
-    "@sentry/browser": "^6.11.0",
+    "@sentry/browser": "^6.12.0",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "cesium": "^1.84.0",
     "event-target-shim": "^6.0.2",
@@ -73,7 +73,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "source-map-loader": "^2.0.2",
     "stream-to-promise": "^3.0.0",
-    "webpack": "^5.51.1",
+    "webpack": "^5.52.1",
     "webpack-cli": "^4.8.0",
     "webpack-dev-server": "^3.11.2"
   }
