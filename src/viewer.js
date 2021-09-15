@@ -36,6 +36,7 @@ Object.assign(RequestScheduler.requestsByServer, {
   'wms0.geo.admin.ch:443': 9,
   'wms1.geo.admin.ch:443': 9,
   'wms2.geo.admin.ch:443': 9,
+  'wms3.geo.admin.ch:443': 9,
   'vectortiles0.geo.admin.ch:443': 18
 });
 

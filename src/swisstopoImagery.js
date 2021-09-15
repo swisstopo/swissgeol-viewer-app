@@ -43,6 +43,7 @@ export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
             },
             subdomains: '0123',
             layers: config.serverLayerName,
+            maximumLevel: 16,
             rectangle: rectangle,
             credit: new Credit(config.attribution)
           });
