@@ -11,7 +11,6 @@
   <link href="bundle.css" rel="stylesheet">
 
   <meta name="description" content="swissgeol.ch is the 3D subsurface viewer of the Swiss Confederation. Geoscientific information below the terrain of Switzerland can be combined with geographic information above terrain.">
-
   <title>swissgeol</title>
 </head>
 
@@ -28,21 +27,21 @@
         <p>Please try with the latest version of Chrome, Firefox, Safari or Edge</p>
       </div>
     </div>
-
   </div>
 
-  <ngm-app>
-  </ngm-app>
-  <script type="module" id="app-script" crossorigin="use-credentials"></script>
-  <script type="module">
-    const debug = !location.search.includes('prod') && (location.search.includes('debug') || location.hostname === 'localhost');
-    const script = document.querySelector('#app-script');
-    script.src = debug ? 'bundle.debug.js' : 'bundle.min.js';
-  </script>
+  <ngm-app></ngm-app>
+
   <script nomodule>
     document.querySelector('#outdated-browser').style.display = '';
     document.querySelector('#loader').style.display = 'none';
   </script>
+  <script type="module">
+    const debug = !location.search.includes('prod') && (location.search.includes('debug') || location.hostname === 'localhost');
+    const script = document.querySelector('#app-script');
+    const l = document.location;
+    script.src = `${l.origin}${l.pathname}${debug ? 'bundle.debug.js' : 'bundle.min.js'}`;
+  </script>
+  <script type="module" id="app-script" crossorigin="use-credentials"></script>
 </body>
 
 </html>

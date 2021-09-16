@@ -11,6 +11,7 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 export default {
   mode: 'development',
   resolve: {
+    extensions: ['.ts', '.js'],
     alias: {
       cesium: resolve(__dirname, 'node_modules/cesium'),
       // we need the aliases below for CSS :( don't know why
@@ -46,15 +47,23 @@ export default {
         test: /\.css$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
     ],
   },
+  watchOptions: {
+    poll: true
+  },
   devServer: {
-    contentBase: join(__dirname, 'dist'),
+    static: {
+      directory: join(__dirname, 'dist'),
+    },
     compress: true,
     port: 8000,
-    watchOptions: {
-      poll: true
-    }
+
   },
   plugins: [
     new CopyPlugin({
