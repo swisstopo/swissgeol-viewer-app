@@ -2,6 +2,7 @@
   "disclaimer_href": "https://www.geo.admin.ch/en/about-swiss-geoportal/impressum.html#copyright",
   "disclaimer_text": "Copyright & data protection",
   "drop_file_message": "Drop files here",
+  "dtd_add_own_kml": "Add your own KML",
   "dtd_areal_map_label": "Aerial map",
   "dtd_background_map_label": "Background map",
   "dtd_disclaimer_hint": "Go to geocat.ch",

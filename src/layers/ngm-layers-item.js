@@ -32,6 +32,7 @@ export class LayerTreeItem extends LitElementI18n {
 
   connectedCallback() {
     super.connectedCallback();
+    if (!this.actions || !this.actions.listenForEvent) return;
     this.loading = 0;
     const callback = (pending, processing) => {
       this.loading = pending + processing;
@@ -98,25 +99,30 @@ export class LayerTreeItem extends LitElementI18n {
                     data-tooltip=${i18next.t('dtd_zoom_to_hint')}
                     data-position="top left"
                     data-variation="mini"
-                    @mouseenter=${() => this.actions.showBoundingBox(this.config)}
-                    @mouseleave=${() => this.actions.hideBoundingBox()}
+                    @mouseenter=${() => {
+                      if (this.actions && this.actions.showBoundingBox) this.actions.showBoundingBox(this.config);
+                    }}
+                    @mouseleave=${() => {
+                      if (this.actions && this.actions.hideBoundingBox) this.actions.hideBoundingBox();
+                    }}
                     @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
               <i class="search plus icon"></i>
             </button>` : ''}
-        <button class="ui button ${classMap(this.downClassMap)}"
-                data-tooltip=${i18next.t('dtd_layer_down_label')}
-                data-position="top center"
-                data-variation="mini"
-                @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
-          <i class="angle down icon"></i>
-        </button>
-        <button class="ui button ${classMap(this.upClassMap)}"
-                data-tooltip=${i18next.t('dtd_layer_up_label')}
-                data-position="top center"
-                data-variation="mini"
-                @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
-          <i class="angle up icon"></i>
-        </button>
+        ${!this.config.hideUpDown ? html`
+          <button class="ui button ${classMap(this.downClassMap)}"
+                  data-tooltip=${i18next.t('dtd_layer_down_label')}
+                  data-position="top center"
+                  data-variation="mini"
+                  @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
+            <i class="angle down icon"></i>
+          </button>
+          <button class="ui button ${classMap(this.upClassMap)}"
+                  data-tooltip=${i18next.t('dtd_layer_up_label')}
+                  data-position="top center"
+                  data-variation="mini"
+                  @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
+            <i class="angle up icon"></i>
+          </button>` : ''}
         ${this.config.downloadUrl && this.config.type !== LAYER_TYPES.earthquakes ?
           html`
             <button class="ui button"
