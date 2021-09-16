@@ -19,24 +19,28 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 
 const rollupOptions = {
   input: 'index.html',
+  preserveSignatures: true,
+  output: {
+    preserveModules: true,
+  },
   plugins: [
-    postcss({
-      minimize: true,
-      inject: false,
-      // extract: 'bundle.css',
-      plugins: [
-        inlinesvg(),
-        cssimport({
-          plugins: [
-            postcssurl([
-              {filter: '**/*.+(woff|woff2)', url: (asset) => `fonts/${path.basename(asset.url)}`},
-            ])
-          ]
-        }),
-        autoprefixer()
-      ]
-    }),
-    json(),
+    // postcss({
+    //   minimize: true,
+    //   inject: true,
+    //   // extract: 'bundle.css',
+    //   plugins: [
+    //     inlinesvg(),
+    //     cssimport({
+    //       plugins: [
+    //         postcssurl([
+    //           {filter: '**/*.+(woff|woff2)', url: (asset) => `fonts/${path.basename(asset.url)}`},
+    //         ])
+    //       ]
+    //     }),
+    //     autoprefixer()
+    //   ]
+    // }),
+    // json(),
     resolve({
       browser: true,
     }),
