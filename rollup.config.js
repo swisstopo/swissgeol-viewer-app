@@ -64,7 +64,12 @@ const config = {
       ],
       // exclude: 'node_modules/**'
       extensions: ['ts', 'js'],
-      exclude: ['node_modules/cesium/**', 'node_modules/core-js/**', 'node_modules/@babel/**'],
+      exclude: [
+        'node_modules/cesium/**',
+        'node_modules/core-js/**',
+        'node_modules/@babel/**',
+        'node_modules/**' // yes, this is eXtreme excluding (includes aws-sdk)
+      ],
     }),
     copy({
       targets: [
