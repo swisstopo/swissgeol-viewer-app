@@ -6,8 +6,8 @@ import {createZipFromData, createDataGenerator} from '../src/download.js';
 import {containsXY, filterCsvString, areBboxIntersectings} from '../src/utils.js';
 
 // see https://stackoverflow.com/questions/58668361/how-can-i-convert-an-async-iterator-to-an-array
-async function toArray(asyncIterator) {
-  const arr = [];
+async function toArray<T>(asyncIterator: AsyncIterable<T>): Promise<T[]> {
+  const arr: T[] = [];
   for await (const i of asyncIterator) arr.push(i);
   return arr;
 }
