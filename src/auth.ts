@@ -6,13 +6,13 @@ const cognitoAccessToken = 'cognito_access_token';
 
 interface AuthUser {
   name: string;
-  'cognito:groups': string;
+  'cognito:groups': string[];
 }
 
 let _AWSCredentials: CognitoIdentityCredentialProvider|null = null;
 export default class Auth {
 
-  static initialize() {
+  static initialize(): void {
     if (window.location.hash.startsWith('#')) {
       // https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
       const response = window.location.hash.substring(1);
@@ -49,7 +49,7 @@ export default class Auth {
     return undefined; // FIXME: ugly
   }
 
-  static state(state?: string) {
+  static state(state?: string): string {
     if (state !== undefined) {
       localStorage.setItem(cognitoState, state);
     }
@@ -64,20 +64,18 @@ export default class Auth {
     return JSON.parse(value);
   }
 
-  /**
-   * @return {string[]}
-   */
-  static getGroups() {
+
+    static getGroups(): string[] {
     const user = this.getUser();
     return user ? user['cognito:groups'] : [];
   }
 
-  static setUser(user: String|number) {
+  static setUser(user: string|number): void {
     const value = JSON.stringify(user);
     localStorage.setItem(cognitoUser, value);
   }
 
-  static logout() {
+  static logout(): void {
     localStorage.removeItem(cognitoUser);
     localStorage.removeItem(cognitoState);
     localStorage.removeItem(cognitoAccessToken);
@@ -85,15 +83,15 @@ export default class Auth {
     _AWSCredentials = null;
   }
 
-  static getAccessToken() {
+  static getAccessToken(): string|null {
     return localStorage.getItem(cognitoAccessToken);
   }
 
-  static setAccessToken(token: string) {
+  static setAccessToken(token: string): void {
     localStorage.setItem(cognitoAccessToken, token);
   }
 
-  static async waitForAuthenticate() {
+  static async waitForAuthenticate(): Promise<void> {
     while (localStorage.getItem(cognitoUser) === null) {
       await new Promise<void>((resolve) => {
         setTimeout(() => resolve(), 20);

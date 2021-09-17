@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "eslint src/ test/",
+    "lint": "eslint src/ test/ --ext .ts",
     "extract-from-assets": "node scripts/get_assets_properties.js src/assets_properties.js",
     "extract-i18n": "i18next -c i18next-parser.config.cjs",
     "start": "npm run webpack-start",
@@ -47,6 +47,8 @@
     "@rollup/plugin-json": "^4.1.0",
     "@types/chai": "^4.2.21",
     "@types/mocha": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
     "autoprefixer": "^10.3.4",
     "chai": "^4.3.4",
     "copy-webpack-plugin": "^9.0.1",
