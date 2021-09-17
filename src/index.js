@@ -1,6 +1,6 @@
 import './style/index.css';
 
-import Auth from './auth.js';
+import Auth from './auth.ts';
 
 import './ngm-app.js';
 
