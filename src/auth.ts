@@ -49,7 +49,7 @@ export default class Auth {
     return undefined; // FIXME: ugly
   }
 
-  static state(state?: string): string {
+  static state(state?: string): string|null {
     if (state !== undefined) {
       localStorage.setItem(cognitoState, state);
     }
@@ -98,5 +98,4 @@ export default class Auth {
       });
     }
   }
-
 }

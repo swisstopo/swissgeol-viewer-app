@@ -15,11 +15,12 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": false
   },
   "types": ["mocha"],
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts", "src/**/*.js", "test/**/*.js"],
   "exclude": []
 }
