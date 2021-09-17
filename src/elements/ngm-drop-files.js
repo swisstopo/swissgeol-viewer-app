@@ -58,7 +58,7 @@ class NgmDropFiles extends LitElementI18n {
   /**
    * @param {DragEvent} event
    */
-   onDragLeave(event) {
+  onDragLeave(event) {
     if (event.target === this.dimmer) {
       cancel(event);
       this.active = false;
@@ -67,14 +67,16 @@ class NgmDropFiles extends LitElementI18n {
 
   /**
    * @param {DragEvent} event
+   * @param {'toolbox'|'model'} type
    */
-   onDrop(event) {
+  onDrop(event, type) {
     cancel(event);
     this.active = false;
     for (const file of event.dataTransfer.files) {
       this.dispatchEvent(new CustomEvent('filedrop', {
         detail: {
-          file
+          file,
+          type
         }
       }));
     }
@@ -82,8 +84,15 @@ class NgmDropFiles extends LitElementI18n {
 
   render() {
     return html`
-      <div class="ui page dimmer ${classMap({active: this.active})}" @drop="${event => this.onDrop(event)}" @dragleave="${event => this.onDragLeave(event)}">
-        <div class="content"><h1>${i18next.t('drop_file_message')}</h1></div>
+      <div class="ui page dimmer ${classMap({active: this.active})}"
+           @drop="${event => this.onDrop(event, 'model')}"
+           @dragleave="${event => this.onDragLeave(event)}">
+        <div class="content"><h1>${i18next.t('drop_file_models_message')}</h1></div>
+      </div>
+      <div class="ui page dimmer ${classMap({active: this.active})}"
+           @drop="${event => this.onDrop(event, 'toolbox')}"
+           @dragleave="${event => this.onDragLeave(event)}">
+        <div class="content"><h1>${i18next.t('drop_file_toolbox_message')}</h1></div>
       </div>
     `;
   }

@@ -10,7 +10,7 @@ export default class LayerTree extends LitElementI18n {
   static get properties() {
     return {
       actions: {type: Object},
-      layers: {type: Object},
+      layers: {type: Array},
     };
   }
 

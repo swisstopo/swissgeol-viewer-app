@@ -4,6 +4,7 @@ import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import {showError, showWarning} from '../message';
 
 export default class LayersUpload extends LitElementI18n {
   constructor() {
@@ -38,9 +39,12 @@ export default class LayersUpload extends LitElementI18n {
     this.viewer.scene.requestRender();
   }
 
-  async uploadKml(evt) {
-    const file = evt.target ? evt.target.files[0] : null;
-    if (file) {
+  async uploadKml(file) {
+    if (!file) {
+      showWarning(i18next.t('dtd_no_file_to_upload_warn'));
+      return;
+    }
+    try {
       const kmlDataSource = await KmlDataSource.load(file, {
         camera: this.viewer.scene.camera,
         canvas: this.viewer.scene.canvas
@@ -53,23 +57,24 @@ export default class LayersUpload extends LitElementI18n {
         }
         uploadedLayer.entities.add(ent);
       });
+      // name used as id for datasource
       uploadedLayer.name = `${name}_${new Date().getTime()}`;
       await this.viewer.dataSources.add(uploadedLayer);
-      this.uploadedLayers.push({
+      // done like this to have correct rerender of component
+      this.uploadedLayers = [...this.uploadedLayers, {
         label: name,
         promise: uploadedLayer,
         zoomToBbox: true,
         hideUpDown: true,
         visible: true
-      });
+      }];
       this.requestUpdate();
-
-      // todo don't know why it not updates automatically on prop change
-      if (this.querySelector('ngm-layers'))
-        this.querySelector('ngm-layers').requestUpdate();
-
       this.viewer.zoomTo(uploadedLayer);
+    } catch (e) {
+      console.error(e);
+      showError(i18next.t('dtd_cant_upload_kml_error'));
     }
+
   }
 
   render() {
@@ -81,7 +86,7 @@ export default class LayersUpload extends LitElementI18n {
         ${i18next.t('dtd_add_own_kml')}
       </button>
       <input class="ngm-upload-kml" type='file' accept=".kml,.KML" hidden
-             @change=${(e) => this.uploadKml(e)}/>
+             @change=${(e) => this.uploadKml(e.target ? e.target.files[0] : null)}/>
       ${this.uploadedLayers.length ? html`
         <ngm-layers
           @removeDisplayedLayer=${this.onLayerRemove}
