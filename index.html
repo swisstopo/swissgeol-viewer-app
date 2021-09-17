@@ -37,7 +37,9 @@
     const debug = !location.search.includes('prod') && (location.search.includes('debug') || location.hostname === 'localhost');
     const script = document.querySelector('#app-script');
     const l = document.location;
-    script.src = `${l.origin}${l.pathname}${debug ? 'bundle.debug.js' : 'bundle.min.js'}`;
+    const li = l.pathname.lastIndexOf('/');
+    const path = li != -1 ? l.pathname.substring(0, li) : l.pathname;
+    script.src = `${l.origin}${path}/${debug ? 'bundle.debug.js' : 'bundle.min.js'}`;
   </script>
   <script type="module" id="app-script" crossorigin="use-credentials"></script>
 </body>
