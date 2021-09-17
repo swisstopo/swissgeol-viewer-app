@@ -65,6 +65,10 @@ export default class Slicer {
     this.julianDate = new JulianDate();
   }
 
+  get active() {
+    return this.sliceActive;
+  }
+
   set active(value) {
     const globe = this.viewer.scene.globe;
     if (value) {
@@ -115,10 +119,6 @@ export default class Slicer {
 
   set options(options) {
     this.sliceOptions = options;
-  }
-
-  get active() {
-    return this.sliceActive;
   }
 
   get options() {

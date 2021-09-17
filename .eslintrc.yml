@@ -35,3 +35,4 @@ rules:
   space-in-parens: error
   space-infix-ops: error
   "@typescript-eslint/no-explicit-any": off
+  "@typescript-eslint/no-empty-function": off
