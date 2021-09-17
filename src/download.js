@@ -13,7 +13,7 @@ import {coordinatesToBbox, areBboxIntersectings, filterCsvString} from './utils.
  * @typedef {Object} DataSpec
  * @property {string} layer
  * @property {string} url
- * @property {('csv'|'indexed_download')} type
+ * @property {string} type
  */
 
 /**
@@ -111,7 +111,7 @@ export async function* createIndexedDataGenerator(indices, spec, bbox, fetcher) 
  *
  * @param {DataSpec[]} specs
  * @param {number[]} bbox
- * @param {fetch} fetcher
+ * @param {fetch|null} fetcher
  * @yields {DataPiece}
  */
 export async function* createDataGenerator(specs, bbox, fetcher = fetch) {

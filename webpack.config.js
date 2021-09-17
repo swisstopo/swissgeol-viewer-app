@@ -7,10 +7,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const cesiumSource = __dirname + '/node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
+const devMode = process.env.NODE_ENV !== "production";
 
 export default {
-  mode: 'development',
+  mode: devMode ? 'development' : 'production',
   resolve: {
+    extensions: ['.ts', '.js'],
     alias: {
       cesium: resolve(__dirname, 'node_modules/cesium'),
       // we need the aliases below for CSS :( don't know why
@@ -40,21 +42,30 @@ export default {
       },
       {
         test: /\.(png|jpe?g|gif|svg|ttf|woff2|woff|eot)$/i,
-        use: [{loader: 'file-loader', },],
+        type: "asset",
       },
       {
         test: /\.css$/i,
+        //use: [devMode ? "style-loader" : MiniCssExtractPlugin.loader, 'css-loader'],
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
     ],
   },
+  watchOptions: {
+    poll: true
+  },
   devServer: {
-    contentBase: join(__dirname, 'dist'),
+    static: {
+      directory: join(__dirname, 'dist'),
+    },
     compress: true,
     port: 8000,
-    watchOptions: {
-      poll: true
-    }
+
   },
   plugins: [
     new CopyPlugin({

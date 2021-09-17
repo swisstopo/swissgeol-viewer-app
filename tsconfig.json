@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "esnext",
+    "lib": ["es2017", "dom", "dom.iterable"],
+    "declaration": true,
+    "outDir": "./types",
+    "rootDir": "./src",
+    "strict": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": false
+  },
+  "types": ["mocha"],
+  "include": ["src/**/*.ts", "test/**/*.ts", "src/**/*.js", "test/**/*.js"],
+  "exclude": []
+}
