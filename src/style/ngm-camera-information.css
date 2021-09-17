@@ -1,5 +1,6 @@
 ngm-camera-information {
   width: 260px;
+  margin-left: auto;
 }
 
 ngm-camera-information table tbody td {

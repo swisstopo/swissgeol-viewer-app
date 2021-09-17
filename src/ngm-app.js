@@ -289,7 +289,6 @@ class NgmApp extends LitElementI18n {
           <i class="search icon"></i>
           <ul class="search-results"></ul>
         </ga-search>
-        <div style="flex: auto;"></div>
         <ngm-camera-information .viewer="${this.viewer}"></ngm-camera-information>
       </header>
       <main>

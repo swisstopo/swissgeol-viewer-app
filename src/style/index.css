@@ -81,9 +81,11 @@ a {
 
 header {
   display: flex;
-  flex-shrink: 0;
   padding: 10px;
+  height: 88px;
+  box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 1;
 }
 
 header > * {
@@ -91,7 +93,7 @@ header > * {
 }
 
 header > a > .logo {
-  margin-right: 80px;
+  margin-right: 10px;
   margin-left: 10px;
 }
 

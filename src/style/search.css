@@ -1,7 +1,10 @@
 
 ga-search {
-  width: 600px;
   align-self: center;
+  flex: 2;
+  max-width: 496px;
+  height: 56px;
+  /*padding-left: 88px;*/
 }
 
 ga-search.ui.input > input {
