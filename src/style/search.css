@@ -4,7 +4,7 @@ ga-search {
   flex: 2;
   max-width: 496px;
   height: 56px;
-  /*padding-left: 88px;*/
+  padding-left: 88px;
 }
 
 ga-search.ui.input > input {
@@ -39,4 +39,9 @@ ga-search > .search-results > .autocomplete-result[aria-selected=true],
 ga-search > .search-results > .autocomplete-result:hover {
   cursor: pointer;
   background-color: #c6f6f9;
+}
+
+ga-search.ui.icon.input i.search.icon {
+  color: #0b7285;
+  opacity: 1;
 }
