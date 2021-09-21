@@ -2,6 +2,7 @@ import {html} from 'lit-element';
 import Auth from '../auth.ts';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
+import auth from '../store/auth';
 
 
 /**
@@ -12,7 +13,6 @@ class NgmAuth extends LitElementI18n {
   static get properties() {
     return {
       user: {type: Object},
-      userGroups: {type: Object},
 
       // OAuth2 parameters
       endpoint: {type: String},
@@ -25,12 +25,19 @@ class NgmAuth extends LitElementI18n {
 
   constructor() {
     super();
-    this.user = Auth.getUser();
-    this.userGroups = Auth.getGroups();
+    this.user = null;
     this.updateLogoutTimeout_(this.user);
     this.responseType = 'token';
     this.redirectUri = `${location.origin}${location.pathname}`;
     this.scope = 'openid+profile';
+    auth.getUser().subscribe(user => {
+      this.user = user;
+      this.updateLogoutTimeout_(this.user);
+      if (this.popup) {
+        this.popup.close();
+        this.popup = null;
+      }
+    });
   }
 
   /**
@@ -64,31 +71,14 @@ class NgmAuth extends LitElementI18n {
       + `&state=${Auth.state()}`;
 
     // open the authentication popup
-    const popup = window.open(url);
-
+    this.popup = window.open(url);
     // wait for the user to be authenticated
     await Auth.waitForAuthenticate();
     Auth.initialize();
-    this.user = Auth.getUser();
-    this.userGroups = Auth.getGroups();
-    console.assert(this.user);
-    this.updateLogoutTimeout_(this.user);
-
-    // close the authentication popup
-    popup.close();
-
-    this.dispatchEvent(new CustomEvent('refresh', {detail: {
-      authenticated: true,
-      groups: this.userGroups,
-    }}));
   }
 
   logout() {
     Auth.logout();
-    this.user = null;
-    this.updateLogoutTimeout_();
-
-    this.dispatchEvent(new CustomEvent('refresh', {detail: {authenticated: false}}));
   }
 
   render() {

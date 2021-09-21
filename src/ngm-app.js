@@ -92,8 +92,6 @@ class NgmApp extends LitElementI18n {
       viewer: {type: Object, attribute: false},
       mapChooser: {type: Object, attribute: false},
       slicer_: {type: Object, attribute: false},
-      authenticated: {type: Boolean, attribute: false},
-      userGroups: {type: Object, attribute: false},
     };
   }
 
@@ -144,9 +142,6 @@ class NgmApp extends LitElementI18n {
     // setup web components
     this.mapChooser = setupBaseLayers(viewer);
     this.viewer = viewer;
-    const auth = this.querySelector('ngm-auth');
-    this.authenticated = !!auth.user;
-    this.userGroups = auth.userGroups;
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(this.viewer, this.querySelector('ngm-object-information'));
 
@@ -301,10 +296,6 @@ class NgmApp extends LitElementI18n {
           <ngm-auth
             endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
             clientId='6brvjsufv7fdubr12r9u0gajnj'
-            @refresh=${(evt) => {
-              this.authenticated = evt.detail.authenticated;
-              this.userGroups = evt.detail.groups;
-            }}
           ></ngm-auth>
         </div>
       </header>
@@ -313,8 +304,6 @@ class NgmApp extends LitElementI18n {
                         .target="${document.body}"></ngm-drop-files>
         <ngm-loading-mask></ngm-loading-mask>
         <ngm-left-side-bar
-          .authenticated=${this.authenticated}
-          .userGroups=${this.userGroups}
           @welcome_panel_changed=${localStorageController.updateWelcomePanelState}
           .hideWelcome=${localStorageController.hideWelcomeValue}
           .hideCatalog=${localStorageController.hideCatalogValue}

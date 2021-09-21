@@ -1,15 +1,31 @@
-import {CognitoIdentityCredentialProvider, CognitoIdentityCredentials, fromCognitoIdentityPool} from '@aws-sdk/credential-provider-cognito-identity';
+import {
+  CognitoIdentityCredentialProvider,
+  CognitoIdentityCredentials,
+  fromCognitoIdentityPool
+} from '@aws-sdk/credential-provider-cognito-identity';
 import {CognitoIdentityClient} from '@aws-sdk/client-cognito-identity';
+import auth from './store/auth';
+
 const cognitoState = 'cognito_state';
 const cognitoUser = 'cognito_user';
 const cognitoAccessToken = 'cognito_access_token';
 
-interface AuthUser {
-  name: string;
+export interface AuthUser {
+  username: string;
   'cognito:groups': string[];
+  auth_time: number
+  client_id: string
+  exp: number
+  iat: number
+  iss: string
+  jti: string
+  scope: string
+  sub: string
+  token_use: string
+
 }
 
-let _AWSCredentials: CognitoIdentityCredentialProvider|null = null;
+let _AWSCredentials: CognitoIdentityCredentialProvider | null = null;
 export default class Auth {
 
   static initialize(): void {
@@ -18,7 +34,7 @@ export default class Auth {
       const response = window.location.hash.substring(1);
       const params = new URLSearchParams(response);
       if (params.has('access_token') && params.has('id_token') &&
-          params.get('token_type') === 'Bearer' && params.get('state') === this.state()) {
+        params.get('token_type') === 'Bearer' && params.get('state') === this.state()) {
         localStorage.setItem('rawCognitoResponse', response);
         const token = params.get('access_token') || '';
         const payload = atob(token.split('.')[1]);
@@ -26,6 +42,8 @@ export default class Auth {
         this.setUser(claims);
         this.setAccessToken(params.get('id_token') || '');
       }
+    } else if (this.getUser()) {
+      this.setUser(this.getUser());
     }
 
     const accessToken = this.getAccessToken();
@@ -42,14 +60,14 @@ export default class Auth {
     }
   }
 
-  static getCredentialsPromise(): Promise<CognitoIdentityCredentials>|undefined {
+  static getCredentialsPromise(): Promise<CognitoIdentityCredentials> | undefined {
     if (_AWSCredentials) {
       return _AWSCredentials();
     }
     return undefined; // FIXME: ugly
   }
 
-  static state(state?: string): string|null {
+  static state(state?: string): string | null {
     if (state !== undefined) {
       localStorage.setItem(cognitoState, state);
     }
@@ -64,13 +82,8 @@ export default class Auth {
     return JSON.parse(value);
   }
 
-
-    static getGroups(): string[] {
-    const user = this.getUser();
-    return user ? user['cognito:groups'] : [];
-  }
-
-  static setUser(user: string|number): void {
+  static setUser(user: AuthUser): void {
+    auth.setUser(user);
     const value = JSON.stringify(user);
     localStorage.setItem(cognitoUser, value);
   }
@@ -80,10 +93,11 @@ export default class Auth {
     localStorage.removeItem(cognitoState);
     localStorage.removeItem(cognitoAccessToken);
     localStorage.removeItem('rawCognitoResponse');
+    auth.setUser(null);
     _AWSCredentials = null;
   }
 
-  static getAccessToken(): string|null {
+  static getAccessToken(): string | null {
     return localStorage.getItem(cognitoAccessToken);
   }
 

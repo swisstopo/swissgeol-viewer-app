@@ -22,6 +22,7 @@ import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../message';
 import {createDataGenerator, createZipFromData} from '../download.js';
 import {saveAs} from 'file-saver';
+import auth from '../store/auth';
 import './ngm-share-link.js';
 
 const WELCOME_PANEL = 'welcome-panel';
@@ -41,6 +42,20 @@ class LeftSideBar extends LitElementI18n {
      * @type {import('../MapChooser').default}
      */
     this.mapChooser = null;
+
+    auth.getUser().subscribe({
+      next: (user) => {
+        if (!user && this.activeLayers) {
+          // user logged out, remove restricted layers.
+          const restricted = this.activeLayers.filter(config => config.restricted);
+          restricted.forEach(config => {
+            const idx = this.activeLayers.indexOf(config);
+            this.activeLayers.splice(idx, 1);
+            this.removeLayer(config);
+          });
+        }
+      }
+    });
   }
 
   static get properties() {
@@ -52,8 +67,6 @@ class LeftSideBar extends LitElementI18n {
       hideWelcome: {type: Boolean},
       hideCatalog: {type: Boolean},
       mapChooser: {type: Object},
-      authenticated: {type: Boolean},
-      userGroups: {type: Object},
       slicer: {type: Object},
       globeQueueLength_: {type: Number, attribut: false},
       localStorageController: {type: Object},
@@ -93,7 +106,6 @@ class LeftSideBar extends LitElementI18n {
         <div class="content ngm-layer-content ${!this.hideCatalog ? 'active' : ''}">
           <ngm-catalog
             .layers=${this.catalogLayers}
-            .userGroups=${this.userGroups}
             @layerclick=${this.onCatalogLayerClicked}
           >
           </ngm-catalog>
@@ -280,16 +292,6 @@ class LeftSideBar extends LitElementI18n {
     if (this.viewer) {
       !this.accordionInited && this.initBarAccordions();
       !this.zoomedToPosition && this.zoomToPermalinkObject();
-    }
-
-    if (changedProperties.has('authenticated') && !this.authenticated) {
-      // user logged out, remove restricted layers.
-      const restricted = this.activeLayers.filter(config => config.restricted);
-      restricted.forEach(config => {
-        const idx = this.activeLayers.indexOf(config);
-        this.activeLayers.splice(idx, 1);
-        this.removeLayer(config);
-      });
     }
 
     if (this.querySelector('ngm-aoi-drawer') && !this.queryManager.toolboxElement) {
