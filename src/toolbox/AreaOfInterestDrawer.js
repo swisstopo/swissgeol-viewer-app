@@ -43,7 +43,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {calculateBoxHeight} from '../slicer/helper';
 
 
-import {clickOnElement, coordinatesToBbox, parseJson} from '../utils.js';
+import {clickOnElement, coordinatesToBbox, parseJson} from '../utils.ts';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';

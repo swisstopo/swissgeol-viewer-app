@@ -15,17 +15,13 @@ import './elements/ngm-layer-legend-container';
 
 import {
   DEFAULT_VIEW,
-  SWITZERLAND_RECTANGLE,
 } from './constants.js';
 
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
 
 import {getCameraView, getSliceParam, syncCamera, syncSliceParam} from './permalink.js';
-import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import i18next from 'i18next';
-import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
-import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
 
 import {LocalStorageController} from './LocalStorageController.js';
 import {getZoomToPosition} from './permalink';
@@ -42,29 +38,6 @@ const SKIP_STEP2_TIMEOUT = 5000;
 
 const localStorageController = new LocalStorageController();
 const isLocalhost = document.location.hostname === 'localhost';
-
-async function zoomTo(viewer, config) {
-  const p = await config.promise;
-  if (p.boundingSphere) {
-    const switzerlandBS = BoundingSphere.fromRectangle3D(SWITZERLAND_RECTANGLE, Ellipsoid.WGS84);
-    let radiusCoef = switzerlandBS.radius / p.boundingSphere.radius;
-    radiusCoef = radiusCoef > 3 ? 3 : radiusCoef;
-    let boundingSphere = p.boundingSphere;
-    const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, radiusCoef * p.boundingSphere.radius);
-    if (radiusCoef <= 1) {
-      zoomHeadingPitchRange.range = p.boundingSphere.radius * 0.8;
-      zoomHeadingPitchRange.heading = Math.PI / 2;
-      boundingSphere = switzerlandBS;
-    }
-    viewer.camera.flyToBoundingSphere(boundingSphere, {
-      duration: 0,
-      offset: zoomHeadingPitchRange
-    });
-  } else {
-    viewer.zoomTo(p);
-  }
-}
-
 
 const onStep1Finished = (globe, searchParams) => {
   let sse = 2;
@@ -304,18 +277,15 @@ class NgmApp extends LitElementI18n {
                         .target="${document.body}"></ngm-drop-files>
         <ngm-loading-mask></ngm-loading-mask>
         <ngm-left-side-bar
-          @welcome_panel_changed=${localStorageController.updateWelcomePanelState}
-          .hideWelcome=${localStorageController.hideWelcomeValue}
-          .hideCatalog=${localStorageController.hideCatalogValue}
-          @catalog_panel_changed=${localStorageController.toggleCatalogState}
-          .zoomTo=${zoomTo}
-          .localStorageController=${localStorageController}
-          @layeradded=${this.onLayerAdded}
-          @showLayerLegend=${this.onShowLayerLegend}
           .slicer=${this.slicer_}
           .viewer=${this.viewer}
           .mapChooser=${this.mapChooser}
           .queryManager=${this.queryManager}
+          .localStorageController=${localStorageController}
+          @welcome_panel_changed=${localStorageController.updateWelcomePanelState}
+          @catalog_panel_changed=${localStorageController.toggleCatalogState}
+          @layeradded=${this.onLayerAdded}
+          @showLayerLegend=${this.onShowLayerLegend}
           class='left sidebar'>
         </ngm-left-side-bar>
         <div class='map'>
