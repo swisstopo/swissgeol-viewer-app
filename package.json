@@ -16,8 +16,8 @@
     "check-ut": "node_modules/.bin/tsc src/test/*.ts src/test/*.js  --noEmit --allowJs --skipLibCheck --esModuleInterop true --target es2018 --moduleResolution node",
     "ut": "mocha --exit",
     "test": "npm run ut && npm run check",
-    "cypress:open": "cypress open --config-file false",
-    "cypress:run": "cypress run --config-file false"
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.31.0",
@@ -64,6 +64,7 @@
     "css-loader": "^6.2.0",
     "cypress": "^8.4.1",
     "eslint": "^7.32.0",
+    "eslint-plugin-cypress": "^2.12.1",
     "file-loader": "^6.2.0",
     "file-saver": "^2.0.5",
     "i18next-parser": "^4.7.0",
