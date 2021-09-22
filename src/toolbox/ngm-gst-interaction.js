@@ -14,6 +14,7 @@ import '../elements/ngm-i18n-content.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
+import MainStore from '../store/main';
 
 /**
  * @typedef {"point" | "line" | "rectangle"} GeometryType
@@ -23,7 +24,6 @@ class NgmGstInteraction extends LitElementI18n {
 
   static get properties() {
     return {
-      viewer: {type: Object},
       gstExtent: {type: Object},
       geometryType: {type: String},
       depth: {type: Number},
@@ -38,7 +38,8 @@ class NgmGstInteraction extends LitElementI18n {
     /**
      * @type {import('cesium/Source/Widgets/Viewer/Viewer').default}
      */
-    this.viewer;
+    this.viewer = null;
+    MainStore.getViewer().subscribe(viewer => this.viewer = viewer);
 
     /**
      * @type {GeometryType}

@@ -52,6 +52,8 @@ import './ngm-swissforages-modal.js';
 import './ngm-swissforages-interaction.js';
 import '../elements/ngm-geom-configuration.js';
 import LocalStorageController from '../LocalStorageController';
+import MainStore from '../store/main';
+import SlicerStore from '../store/slicer';
 
 const fileUploadInputId = 'fileUpload';
 
@@ -60,9 +62,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   static get properties() {
     return {
-      viewer: {type: Object},
       selectedArea_: {type: Object},
-      slicer: {type: Object},
       queryManager: {type: Object},
       downloadActiveDataEnabled: {type: Boolean}
     };
@@ -85,6 +85,12 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.restrictedEditing = false;
     this.colorBeforeHighlight = DEFAULT_AOI_COLOR;
     this.addedNewArea = false;
+
+    MainStore.getViewer().subscribe(viewer => this.viewer = viewer);
+    SlicerStore.getRectangleToCreate.subscribe(conf => {
+      this.increaseAreasCounter(conf.type);
+      this.addAreaEntity(conf);
+    });
   }
 
   firstUpdated() {
@@ -261,7 +267,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
             ${i.type !== 'polygon' ?
               html`
                 <ngm-gst-interaction
-                  .viewer=${this.viewer}
                   .positions=${i.positions}
                   .geometryType=${i.type}
                   .parentElement=${this}>
@@ -271,7 +276,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               .item=${i}
               .service=${this.swissforagesService}
               .dataSource=${this.interestAreasDataSource}
-              .viewer=${this.viewer}
               .updateModalOptions=${(options => {
                 this.swissforagesModalOptions = options;
                 this.requestUpdate();
@@ -280,7 +284,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
             ${i.type === 'line' || i.type === 'rectangle' ?
               html`
                 <ngm-toolbox-slicer
-                  .slicer=${this.slicer}
                   .positions=${i.positions}
                   .lowerLimit=${i.volumeHeightLimits ? i.volumeHeightLimits.lowerLimit : undefined}
                   .height=${i.volumeHeightLimits ? i.volumeHeightLimits.height : undefined}
@@ -402,7 +405,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
             ></ngm-geom-configuration>
             <ngm-point-edit
               ?hidden=${i.type !== 'point'}
-              .viewer=${this.viewer}
               .position=${i.positions[0]}
               .depth=${i.depth}
               .volumeShowed=${i.volumeShowed}

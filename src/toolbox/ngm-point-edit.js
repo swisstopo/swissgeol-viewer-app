@@ -11,13 +11,13 @@ import CesiumMath from 'cesium/Source/Core/Math';
 import {AOI_COLORS, AOI_POINT_SYMBOLS} from '../constants';
 import {updateBoreholeHeights} from './helpers';
 import JulianDate from 'cesium/Source/Core/JulianDate';
+import MainStore from '../store/main';
 
 
 class NgmPointEdit extends LitElementI18n {
 
   static get properties() {
     return {
-      viewer: {type: Object},
       position: {type: Object},
       entity: {type: Object},
       depth: {type: Number},
@@ -38,6 +38,8 @@ class NgmPointEdit extends LitElementI18n {
     this.minDepth = -30000;
     this.maxDepth = 30000;
     this.julianDate = new JulianDate();
+    this.viewer = null;
+    MainStore.getViewer().subscribe(viewer => this.viewer = viewer);
   }
 
   updated() {

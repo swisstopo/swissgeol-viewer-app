@@ -3,12 +3,13 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../../i18n.js';
 import $ from '../../jquery';
 import '../ngm-i18n-content.js';
+import MainStore from '../../store/main';
+import SlicerStore from '../../store/slicer';
 
 class NgmToolboxSlicer extends LitElementI18n {
 
   static get properties() {
     return {
-      slicer: {type: Object},
       positions: {type: Array},
       lowerLimit: {type: Number},
       height: {type: Number},
@@ -26,7 +27,8 @@ class NgmToolboxSlicer extends LitElementI18n {
     /**
      * @type {Slicer}
      */
-    this.slicer;
+    this.slicer = null;
+    SlicerStore.getSlicer().subscribe(slicer => this.slicer = slicer);
 
     this.sliceSide = 'left';
     this.sliceEnabled = false;

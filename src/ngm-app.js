@@ -30,7 +30,8 @@ import QueryManager from './query/QueryManager';
 
 import {initAnalytics} from './analytics.js';
 import {initSentry} from './sentry.js';
-import {getMeasurements} from './cesiumutils';
+import MainStore from './store/main';
+import SlicerStore from './store/slicer';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -59,7 +60,6 @@ class NgmApp extends LitElementI18n {
    */
   static get properties() {
     return {
-      viewer: {type: Object, attribute: false},
       mapChooser: {type: Object, attribute: false},
       slicer_: {type: Object, attribute: false},
     };
@@ -68,7 +68,6 @@ class NgmApp extends LitElementI18n {
   constructor() {
     super();
     this.slicer_ = null;
-    this.viewer = null;
     this.mapChooser = null;
   }
 
@@ -77,7 +76,7 @@ class NgmApp extends LitElementI18n {
    */
   onLayerAdded(evt) {
     const layer = evt.detail.layer;
-    if (layer.backgroundId !== undefined) {
+    if (layer.backgroundId !== undefined && this.mapChooser.element) {
       this.mapChooser.selectMap(layer.backgroundId);
     }
     if (this.slicer_ && this.slicer_.active) {
@@ -108,12 +107,13 @@ class NgmApp extends LitElementI18n {
       };
       this.slicer_.active = true;
     }
+    SlicerStore.setSlicer(this.slicer_);
 
     // setup web components
     this.mapChooser = setupBaseLayers(viewer);
-    this.viewer = viewer;
+    MainStore.setMapChooser(this.mapChooser);
     // Handle queries (local and Swisstopo)
-    this.queryManager = new QueryManager(this.viewer, this.querySelector('ngm-object-information'));
+    this.queryManager = new QueryManager(viewer, this.querySelector('ngm-object-information'));
 
     const sideBar = this.querySelector('ngm-left-side-bar');
 
@@ -190,6 +190,8 @@ class NgmApp extends LitElementI18n {
 
     viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
+    MainStore.setViewer(viewer);
+
     i18next.on('languageChanged', (lang) => {
       this.querySelector('#ngm-help-btn').href =
         lang === 'de' ? './manuals/manual_de.html' : './manuals/manual_en.html';
@@ -223,33 +225,6 @@ class NgmApp extends LitElementI18n {
     initAnalytics(event.detail.allowed);
   }
 
-  onCreateRectangle(event) {
-    const aoi = this.querySelector('ngm-aoi-drawer');
-    const bbox = this.slicer_.slicingBox.bbox;
-    const type = 'rectangle';
-    const positions = [
-      bbox.corners.bottomRight,
-      bbox.corners.bottomLeft,
-      bbox.corners.topLeft,
-      bbox.corners.topRight
-    ];
-    aoi.increaseAreasCounter(type);
-    aoi.addAreaEntity({
-      type: type,
-      positions: positions,
-      volumeHeightLimits: {
-        height: bbox.height,
-        lowerLimit: bbox.lowerLimit - bbox.altitude
-      },
-      volumeShowed: true,
-      showSlicingBox: event.detail.showSlicingBox,
-      ...getMeasurements(positions, type)
-    });
-    this.slicer_.active = false;
-    this.querySelector('#ngm-toolbox > .title').classList.add('active');
-    this.querySelector('#ngm-toolbox > .content').classList.add('active');
-  }
-
   render() {
     return html`
       <header>
@@ -274,9 +249,6 @@ class NgmApp extends LitElementI18n {
                         .target="${document.body}"></ngm-drop-files>
         <ngm-loading-mask></ngm-loading-mask>
         <ngm-left-side-bar
-          .slicer=${this.slicer_}
-          .viewer=${this.viewer}
-          .mapChooser=${this.mapChooser}
           .queryManager=${this.queryManager}
           @layeradded=${this.onLayerAdded}
           @showLayerLegend=${this.onShowLayerLegend}
@@ -286,12 +258,7 @@ class NgmApp extends LitElementI18n {
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
             <div class='navigation-widgets'>
-              <ngm-navigation-widgets
-                .viewer=${this.viewer}
-                .slicer=${this.slicer_}
-                @createrectangle=${this.onCreateRectangle}
-                data-fs='no'>
-              </ngm-navigation-widgets>
+              <ngm-navigation-widgets data-fs='no'></ngm-navigation-widgets>
               <ngm-full-screen-view></ngm-full-screen-view>
             </div>
             <ngm-object-information></ngm-object-information>
@@ -301,9 +268,7 @@ class NgmApp extends LitElementI18n {
           </div>
           <div class='footer'>
             <div class='ui horizontal link list'>
-              <ngm-feature-height class='item'
-                                  .viewer=${this.viewer}
-              ></ngm-feature-height>
+              <ngm-feature-height class='item'></ngm-feature-height>
             </div>
             <div style='flex: auto;'></div>
             <div class='ui horizontal link list'>

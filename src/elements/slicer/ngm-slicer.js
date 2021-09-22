@@ -4,15 +4,10 @@ import {LitElementI18n} from '../../i18n.js';
 import {syncSliceParam} from '../../permalink';
 import $ from '../../jquery';
 import 'fomantic-ui-css/components/checkbox';
+import SlicerStore from '../../store/slicer';
+import {getMeasurements} from '../../cesiumutils';
 
 class NgmSlicer extends LitElementI18n {
-
-  static get properties() {
-    return {
-      slicer: {type: Object},
-    };
-  }
-
   constructor() {
     super();
 
@@ -20,29 +15,33 @@ class NgmSlicer extends LitElementI18n {
      * @type {import('../../slicer/Slicer').default}
      */
     this.slicer = null;
+    SlicerStore.getSlicer().subscribe(slicer => {
+      this.slicer = slicer;
+      this.requestUpdate();
+    });
+
     this.popupMinimized = false;
     this.showBox = true;
-  }
-
-  firstUpdated() {
-    this.transformPopup = $(this.querySelector('.ngm-box-slice-btn')).popup({
-      popup: $(this.querySelector('.ngm-slice-to-draw')),
-      on: 'click',
-      position: 'top left',
-      closable: false
-    });
-    if (this.slicer.active && this.slicingType === 'view-box') {
-      // wait until all buttons loaded to have correct position
-      setTimeout(() => this.transformPopup.popup('show'), 1000);
-
-      this.showBox = this.slicer.sliceOptions.showBox;
-    }
-    this.showBoxCheckbox = $(this.querySelector('.ui.checkbox')).checkbox(this.showBox ? 'check' : 'uncheck');
   }
 
   updated() {
     if (this.transformPopup)
       this.transformPopup.popup('reposition');
+    else if (this.slicer) {
+      this.transformPopup = $(this.querySelector('.ngm-box-slice-btn')).popup({
+        popup: $(this.querySelector('.ngm-slice-to-draw')),
+        on: 'click',
+        position: 'top left',
+        closable: false
+      });
+      if (this.slicer.active && this.slicingType === 'view-box') {
+        // wait until all buttons loaded to have correct position
+        setTimeout(() => this.transformPopup.popup('show'), 1000);
+
+        this.showBox = this.slicer.sliceOptions.showBox;
+      }
+      this.showBoxCheckbox = $(this.querySelector('.ui.checkbox')).checkbox(this.showBox ? 'check' : 'uncheck');
+    }
   }
 
   toggleSlicer(type) {
@@ -82,7 +81,26 @@ class NgmSlicer extends LitElementI18n {
   }
 
   addCurrentBoxToToolbox() {
-    this.dispatchEvent(new CustomEvent('createrectangle', {detail: {showSlicingBox: this.showBox}, bubbles: true}));
+    const bbox = this.slicer.slicingBox.bbox;
+    const positions = [
+      bbox.corners.bottomRight,
+      bbox.corners.bottomLeft,
+      bbox.corners.topLeft,
+      bbox.corners.topRight
+    ];
+    const type = 'rectangle';
+    SlicerStore.setRectangleToCreate({
+      type: type,
+      positions: positions,
+      volumeHeightLimits: {
+        height: bbox.height,
+        lowerLimit: bbox.lowerLimit - bbox.altitude
+      },
+      volumeShowed: true,
+      showSlicingBox: this.showBox,
+      ...getMeasurements(positions, type)
+    });
+    this.slicer.active = false;
   }
 
   toggleMinimize() {
