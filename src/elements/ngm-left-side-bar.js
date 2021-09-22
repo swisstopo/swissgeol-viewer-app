@@ -392,7 +392,8 @@ class LeftSideBar extends LitElementI18n {
       layer: layername,
       visible: true,
       displayed: true,
-      transparency: DEFAULT_LAYER_TRANSPARENCY
+      transparency: DEFAULT_LAYER_TRANSPARENCY,
+      queryType: 'geoadmin'
     };
     config.load = () => this.addLayer(config);
     return config;

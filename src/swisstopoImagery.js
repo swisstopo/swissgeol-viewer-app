@@ -34,25 +34,25 @@ export function getSwisstopoImagery(layer, maximumLevel = 16, rectangle = SWITZE
             });
             break;
           }
-        case 'wms': {
-          const url = 'https://wms{s}.geo.admin.ch?version=1.3.0';
-          imageryProvider = new WebMapServiceImageryProvider({
-            url: url,
-            parameters: {
-              FORMAT: config.format,
-              TRANSPARENT: true,
-              LANG: i18next.language,
-            },
-            subdomains: '0123',
-            layers: config.serverLayerName,
-            maximumLevel: maximumLevel,
-            rectangle: rectangle,
-            credit: new Credit(config.attribution)
-          });
-          break;
-        }
-        default:
-          reject(`unsupported layer type: ${config.type}`);
+          case 'wms': {
+            const url = 'https://wms{s}.geo.admin.ch?version=1.3.0';
+            imageryProvider = new WebMapServiceImageryProvider({
+              url: url,
+              parameters: {
+                FORMAT: config.format,
+                TRANSPARENT: true,
+                LANG: i18next.language,
+              },
+              subdomains: '0123',
+              layers: config.serverLayerName,
+              maximumLevel: maximumLevel,
+              rectangle: rectangle,
+              credit: new Credit(config.attribution)
+            });
+            break;
+          }
+          default:
+            reject(`unsupported layer type: ${config.type}`);
         }
         const imageryLayer = new ImageryLayer(imageryProvider, {
           alpha: config.opacity
@@ -116,8 +116,8 @@ export function addSwisstopoLayer(viewer, layer, format, maximumLevel, timestamp
       credit: new Credit('swisstopo'),
       url: url
     }), {
-      show: false
-    });
+    show: false
+  });
   viewer.scene.imageryLayers.add(imageryLayer);
 
   return imageryLayer;
