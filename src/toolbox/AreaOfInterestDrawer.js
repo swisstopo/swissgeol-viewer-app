@@ -51,6 +51,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-swissforages-modal.js';
 import './ngm-swissforages-interaction.js';
 import '../elements/ngm-geom-configuration.js';
+import LocalStorageController from '../LocalStorageController';
 
 const fileUploadInputId = 'fileUpload';
 
@@ -62,8 +63,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       viewer: {type: Object},
       selectedArea_: {type: Object},
       slicer: {type: Object},
-      setStoredAoi: {type: Object},
-      getStoredAoi: {type: Object},
       queryManager: {type: Object},
       downloadActiveDataEnabled: {type: Boolean}
     };
@@ -71,8 +70,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   constructor() {
     super();
-    this.getStoredAoi = null;
-    this.setStoredAoi = null;
     this.minVolumeHeight = 1;
     this.maxVolumeHeight = 30000;
     this.minVolumeLowerLimit = -30000;
@@ -91,7 +88,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   firstUpdated() {
-    this.addStoredAreas(this.getStoredAoi());
+    this.addStoredAreas(LocalStorageController.getStoredAoi());
   }
 
   update(changedProperties) {
@@ -374,28 +371,28 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               </div>
             </div>
             ${this.isVolumeInputsHidden() ? '' : html`
-            <div class="ngm-volume-limits-input">
-              <div>
-                <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
-                <div class="ui mini input right labeled">
-                  <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
-                         class=${`ngm-lower-limit-input-${index}`}
-                         .value="${this.volumeHeightLimits.lowerLimit}"
-                         @input="${this.onVolumeHeightLimitsChange.bind(this, index)}">
-                  <label class="ui label">m</label>
+              <div class="ngm-volume-limits-input">
+                <div>
+                  <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
+                  <div class="ui mini input right labeled">
+                    <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
+                           class=${`ngm-lower-limit-input-${index}`}
+                           .value="${this.volumeHeightLimits.lowerLimit}"
+                           @input="${this.onVolumeHeightLimitsChange.bind(this, index)}">
+                    <label class="ui label">m</label>
+                  </div>
+                </div>
+                <div>
+                  <label>${i18next.t('tbx_volume_height_label')}:</label></br>
+                  <div class="ui mini input right labeled">
+                    <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
+                           class=${`ngm-volume-height-input-${index}`}
+                           .value="${this.volumeHeightLimits.height}"
+                           @change="${this.onVolumeHeightLimitsChange.bind(this, index)}">
+                    <label class="ui label">m</label>
+                  </div>
                 </div>
               </div>
-              <div>
-                <label>${i18next.t('tbx_volume_height_label')}:</label></br>
-                <div class="ui mini input right labeled">
-                  <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
-                         class=${`ngm-volume-height-input-${index}`}
-                         .value="${this.volumeHeightLimits.height}"
-                         @change="${this.onVolumeHeightLimitsChange.bind(this, index)}">
-                  <label class="ui label">m</label>
-                </div>
-              </div>
-            </div>
             `}
             <ngm-geom-configuration
               ?hidden=${i.type === 'point'}
@@ -463,7 +460,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.interestAreasDataSource.entities.collectionChanged.addEventListener((collection, added) => {
       this.viewer.scene.requestRender();
       this.requestUpdate();
-      this.setStoredAoi(this.entitiesList_);
+      LocalStorageController.setAoiInStorage(this.entitiesList_);
       if (added.length) {
         this.addedNewArea = true;
       }

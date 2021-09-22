@@ -22,8 +22,6 @@ import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
 
 import {getCameraView, getSliceParam, syncCamera, syncSliceParam} from './permalink.js';
 import i18next from 'i18next';
-
-import {LocalStorageController} from './LocalStorageController.js';
 import {getZoomToPosition} from './permalink';
 import Slicer from './slicer/Slicer.js';
 
@@ -36,7 +34,6 @@ import {getMeasurements} from './cesiumutils';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
-const localStorageController = new LocalStorageController();
 const isLocalhost = document.location.hostname === 'localhost';
 
 const onStep1Finished = (globe, searchParams) => {
@@ -281,9 +278,6 @@ class NgmApp extends LitElementI18n {
           .viewer=${this.viewer}
           .mapChooser=${this.mapChooser}
           .queryManager=${this.queryManager}
-          .localStorageController=${localStorageController}
-          @welcome_panel_changed=${localStorageController.updateWelcomePanelState}
-          @catalog_panel_changed=${localStorageController.toggleCatalogState}
           @layeradded=${this.onLayerAdded}
           @showLayerLegend=${this.onShowLayerLegend}
           class='left sidebar'>
@@ -302,10 +296,7 @@ class NgmApp extends LitElementI18n {
             </div>
             <ngm-object-information></ngm-object-information>
             <ngm-layer-legend-container></ngm-layer-legend-container>
-            <ngm-review-window
-              .hideReviewWindow=${localStorageController.hideReviewWindowValue}
-              @review_window_changed=${localStorageController.updateReviewWindowState};
-              data-fs='no'>
+            <ngm-review-window data-fs='no'>
             </ngm-review-window>
           </div>
           <div class='footer'>

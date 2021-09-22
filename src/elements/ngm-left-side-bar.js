@@ -25,6 +25,7 @@ import {saveAs} from 'file-saver';
 import auth from '../store/auth';
 import './ngm-share-link.js';
 import {zoomTo} from '../utils';
+import LocalStorageController from '../LocalStorageController';
 
 const WELCOME_PANEL = 'welcome-panel';
 const CATALOG_PANEL = 'catalog-panel';
@@ -67,7 +68,6 @@ class LeftSideBar extends LitElementI18n {
       mapChooser: {type: Object},
       slicer: {type: Object},
       globeQueueLength_: {type: Number, attribut: false},
-      localStorageController: {type: Object},
       queryManager: {type: Object},
     };
   }
@@ -82,11 +82,11 @@ class LeftSideBar extends LitElementI18n {
 
     return html`
       <div class="ui styled accordion" id="${WELCOME_PANEL}">
-        <div class="title ${!this.localStorageController.hideWelcomeValue ? 'active' : ''}">
+        <div class="title ${!LocalStorageController.hideWelcomeValue ? 'active' : ''}">
           <i class="dropdown icon"></i>
           ${i18next.t('welcome_label')}
         </div>
-        <div class="content ${!this.localStorageController.hideWelcomeValue ? 'active' : ''}">
+        <div class="content ${!LocalStorageController.hideWelcomeValue ? 'active' : ''}">
           <div>${i18next.t('welcome_text')}</div>
           <div class="ui tertiary center aligned segment">
             <i class="ui lightbulb icon"></i>
@@ -97,11 +97,11 @@ class LeftSideBar extends LitElementI18n {
       </div>
 
       <div class="ui styled accordion" id="${CATALOG_PANEL}">
-        <div class="title ngmlightgrey ${!this.localStorageController.hideCatalogValue ? 'active' : ''}">
+        <div class="title ngmlightgrey ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
           <i class="dropdown icon"></i>
           ${i18next.t('lyr_geocatalog_label')}
         </div>
-        <div class="content ngm-layer-content ${!this.localStorageController.hideCatalogValue ? 'active' : ''}">
+        <div class="content ngm-layer-content ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
           <ngm-catalog
             .layers=${this.catalogLayers}
             @layerclick=${this.onCatalogLayerClicked}
@@ -142,8 +142,6 @@ class LeftSideBar extends LitElementI18n {
           <ngm-aoi-drawer
             .viewer=${this.viewer}
             .slicer=${this.slicer}
-            .getStoredAoi=${this.localStorageController.getStoredAoi}
-            .setStoredAoi=${this.localStorageController.setAoiInStorage}
             .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
             .queryManager=${this.queryManager}
             @downloadActiveData=${evt => this.downloadActiveData(evt)}
@@ -412,13 +410,13 @@ class LeftSideBar extends LitElementI18n {
     switch (element.id) {
       case WELCOME_PANEL: {
         accordion(element, {
-          onChange: () => this.dispatchEvent(new CustomEvent('welcome_panel_changed'))
+          onChange: () => LocalStorageController.updateWelcomePanelState()
         });
         break;
       }
       case CATALOG_PANEL: {
         accordion(element, {
-          onChange: () => this.dispatchEvent(new CustomEvent('catalog_panel_changed'))
+          onChange: () => LocalStorageController.toggleCatalogState()
         });
         break;
       }
