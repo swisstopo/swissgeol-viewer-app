@@ -11,7 +11,7 @@ import CesiumMath from 'cesium/Source/Core/Math';
 import {AOI_COLORS, AOI_POINT_SYMBOLS} from '../constants';
 import {updateBoreholeHeights} from './helpers';
 import JulianDate from 'cesium/Source/Core/JulianDate';
-import MainStore from '../store/main';
+import MainStore from '../store/main.ts';
 
 
 class NgmPointEdit extends LitElementI18n {

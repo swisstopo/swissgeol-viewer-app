@@ -8,7 +8,7 @@ import {lv95ToDegrees} from '../projection';
 import {showWarning} from '../message';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
-import MainStore from '../store/main';
+import MainStore from '../store/main.ts';
 
 class NgmSwissforagesInteraction extends LitElementI18n {
 

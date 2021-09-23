@@ -5,7 +5,7 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/slider.js';
 import './ngm-map-chooser.js';
 import {getMapTransparencyParam, syncMapTransparencyParam} from '../permalink.js';
-import MainStore from '../store/main';
+import MainStore from '../store/main.ts';
 
 class NgmMapConfiguration extends LitElementI18n {
 

@@ -11,7 +11,7 @@ import './slicer/ngm-slicer.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {SWITZERLAND_RECTANGLE} from '../constants.js';
-import MainStore from '../store/main';
+import MainStore from '../store/main.ts';
 
 class NgmNavigationWidgets extends LitElementI18n {
 

@@ -4,7 +4,7 @@ import {
   fromCognitoIdentityPool
 } from '@aws-sdk/credential-provider-cognito-identity';
 import {CognitoIdentityClient} from '@aws-sdk/client-cognito-identity';
-import auth from './store/auth';
+import auth from './store/auth.ts';
 
 const cognitoState = 'cognito_state';
 const cognitoUser = 'cognito_user';

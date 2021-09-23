@@ -1,5 +1,5 @@
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {executeForAllPrimitives} from '../utils';
+import {executeForAllPrimitives} from '../utils.ts';
 import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 import SlicingToolBase from './SlicingToolBase';

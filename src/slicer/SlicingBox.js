@@ -1,5 +1,5 @@
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import {executeForAllPrimitives} from '../utils';
+import {executeForAllPrimitives} from '../utils.ts';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
 import {

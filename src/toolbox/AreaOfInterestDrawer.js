@@ -52,10 +52,10 @@ import './ngm-swissforages-modal.js';
 import './ngm-swissforages-interaction.js';
 import '../elements/ngm-geom-configuration.js';
 import LocalStorageController from '../LocalStorageController';
-import MainStore from '../store/main';
-import SlicerStore from '../store/slicer';
-import QueryStore from '../store/query';
-import DrawStore from '../store/draw';
+import MainStore from '../store/main.ts';
+import SlicerStore from '../store/slicer.ts';
+import QueryStore from '../store/query.ts';
+import DrawStore from '../store/draw.ts';
 
 const fileUploadInputId = 'fileUpload';
 

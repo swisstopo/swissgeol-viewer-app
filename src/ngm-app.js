@@ -31,8 +31,8 @@ import QueryManager from './query/QueryManager';
 import {initAnalytics} from './analytics.js';
 import {initSentry} from './sentry.js';
 import {showWarning} from './message';
-import MainStore from './store/main';
-import SlicerStore from './store/slicer';
+import MainStore from './store/main.ts';
+import SlicerStore from './store/slicer.ts';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 

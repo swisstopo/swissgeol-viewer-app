@@ -22,13 +22,13 @@ import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../message';
 import {createDataGenerator, createZipFromData} from '../download.js';
 import {saveAs} from 'file-saver';
-import auth from '../store/auth';
+import auth from '../store/auth.ts';
 import './ngm-share-link.js';
 import '../layers/ngm-layers-upload';
-import {zoomTo} from '../utils';
+import {zoomTo} from '../utils.ts';
 import LocalStorageController from '../LocalStorageController';
-import MainStore from '../store/main';
-import SlicerStore from '../store/slicer';
+import MainStore from '../store/main.ts';
+import SlicerStore from '../store/slicer.ts';
 
 const WELCOME_PANEL = 'welcome-panel';
 const CATALOG_PANEL = 'catalog-panel';

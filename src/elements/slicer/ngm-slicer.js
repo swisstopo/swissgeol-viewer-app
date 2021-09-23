@@ -4,7 +4,7 @@ import {LitElementI18n} from '../../i18n.js';
 import {syncSliceParam} from '../../permalink';
 import $ from '../../jquery';
 import 'fomantic-ui-css/components/checkbox';
-import SlicerStore from '../../store/slicer';
+import SlicerStore from '../../store/slicer.ts';
 import {getMeasurements} from '../../cesiumutils';
 
 class NgmSlicer extends LitElementI18n {
