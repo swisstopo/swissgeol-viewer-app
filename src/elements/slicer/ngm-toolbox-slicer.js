@@ -3,7 +3,6 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../../i18n.js';
 import $ from '../../jquery';
 import '../ngm-i18n-content.js';
-import MainStore from '../../store/main';
 import SlicerStore from '../../store/slicer';
 
 class NgmToolboxSlicer extends LitElementI18n {

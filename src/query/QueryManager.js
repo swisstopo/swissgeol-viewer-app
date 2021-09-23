@@ -8,7 +8,6 @@ import Entity from 'cesium/Source/DataSources/Entity';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import MainStore from '../store/main';
 import DrawStore from '../store/draw';
 import QueryStore from '../store/query';
 
