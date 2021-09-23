@@ -101,7 +101,7 @@ header > a > .logo {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: url('images/outdated-background.png');
+  background-image: url('../images/outdated-background.png');
   background-repeat: no-repeat;
   background-position: center;
   background-color: #fafafb;
@@ -368,4 +368,3 @@ ngm-layer-legend-container > ngm-layer-legend {
 .ngm-slice-to-draw .content > .checkbox {
   margin-bottom: 5px;
 }
-

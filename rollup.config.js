@@ -11,7 +11,6 @@ import inlinesvg from 'postcss-inline-svg';
 import cssimport from 'postcss-import';
 import postcssurl from 'postcss-url';
 import autoprefixer from 'autoprefixer';
-// import rollupStripPragma from 'rollup-plugin-strip-pragma';
 
 const cesiumSource = __dirname + '/node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
@@ -41,21 +40,37 @@ const config = {
       ]
     }),
     json(),
-    // {
-    //   transform ( code, id ) {
-    //     console.log( id );
-    //     //console.log( code );
-    //     // not returning anything, so doesn't affect bundle
-    //   }
-    // },
-    // disabled since it breaks sourcemaps
-    // rollupStripPragma({
-    //   pragmas: ['debug']
-    // }),
     resolve({
       browser: true,
     }),
     commonjs(),
+    babel({
+      externalHelpers: false,
+      babelrc: false,
+      // this is duplicated in .browserlistrc
+      // https://babeljs.io/docs/en/options#targets
+      targets: "last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions, Edge 18",
+      presets: [
+        '@babel/preset-typescript',
+        [
+          '@babel/preset-env', {
+            //debug: true, // disable to get debug information
+            modules: false,
+
+            useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
+            corejs: { version: 3, proposals: false },
+          }
+        ]
+      ],
+      // exclude: 'node_modules/**'
+      extensions: ['ts', 'js'],
+      exclude: [
+        'node_modules/cesium/**',
+        'node_modules/core-js/**',
+        'node_modules/@babel/**',
+        'node_modules/**' // yes, this is eXtreme excluding (includes aws-sdk)
+      ],
+    }),
     copy({
       targets: [
         { src: 'index.html', dest: 'dist/' },
@@ -80,26 +95,6 @@ const config = {
 };
 
 if (process.env.mode === 'production') {
-  config.plugins.push(...[
-    babel({
-      externalHelpers: false,
-      babelrc: false,
-      presets: [
-        [
-          '@babel/preset-env', {
-            //debug: true, // disable to get debug information
-            modules: false,
-            useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
-            corejs: { version: 3, proposals: false },
-          }
-        ]
-      ],
-      // exclude: 'node_modules/**'
-      exclude: ['node_modules/cesium/**', 'node_modules/core-js/**', 'node_modules/@babel/**'],
-    }),
-
-  ]);
-
   config.output.push({
     file: 'dist/bundle.min.js',
     sourcemap: true,

@@ -23,6 +23,7 @@ import {showWarning} from '../message';
 import {createDataGenerator, createZipFromData} from '../download.js';
 import {saveAs} from 'file-saver';
 import './ngm-share-link.js';
+import '../layers/ngm-layers-upload';
 
 const WELCOME_PANEL = 'welcome-panel';
 const CATALOG_PANEL = 'catalog-panel';
@@ -113,6 +114,7 @@ class LeftSideBar extends LitElementI18n {
             .actions=${this.layerActions}
             @zoomTo=${evt => this.zoomTo(this.viewer, evt.detail)}>
           </ngm-layers>
+          <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
           <h5 class="ui horizontal divider header">
             ${i18next.t('dtd_background_map_label')}
             <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">

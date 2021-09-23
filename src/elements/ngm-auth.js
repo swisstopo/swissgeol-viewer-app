@@ -1,5 +1,5 @@
 import {html} from 'lit-element';
-import Auth from '../auth.js';
+import Auth from '../auth.ts';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 

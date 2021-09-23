@@ -2,12 +2,12 @@
 
 import assert from 'assert';
 import {assert as chaiAssert} from 'chai';
-import {createZipFromData, createDataGenerator} from '../src/download.js';
-import {containsXY, filterCsvString, areBboxIntersectings} from '../src/utils.js';
+import {createZipFromData, createDataGenerator} from '../download.js';
+import {containsXY, filterCsvString, areBboxIntersectings} from '../utils.js';
 
 // see https://stackoverflow.com/questions/58668361/how-can-i-convert-an-async-iterator-to-an-array
-async function toArray(asyncIterator) {
-  const arr = [];
+async function toArray<T>(asyncIterator: AsyncIterable<T>): Promise<T[]> {
+  const arr: T[] = [];
   for await (const i of asyncIterator) arr.push(i);
   return arr;
 }
@@ -109,7 +109,7 @@ describe('Download', () => {
           return Promise.resolve(csvString);
         }
       };
-      const fetcher = () => Promise.resolve(fakeFetchResult);
+      const fetcher = (() => Promise.resolve(fakeFetchResult)) as unknown as typeof fetch;
       const spec = {
         type: 'csv',
         url: 'blabla://some.url/and_path/the_csv.csv',
@@ -136,14 +136,15 @@ describe('Download', () => {
           return Promise.resolve(new ArrayBuffer(5));
         }
       };
-      const fetcher = url => {
+      const fetcher = (url => {
         if (url === 'blabla://some.url/and_path/the_index.json') {
           return Promise.resolve(fakeIndexFetchResult);
         } else if (url === 'blabla://some.url/and_path/Aaretal.ts') {
           return Promise.resolve(fakeTSFetchResult);
         }
         chaiAssert.fail('Fetcher: unknown URL ' + url);
-      };
+      }) as unknown as typeof fetch;
+
       const spec = {
         type: 'indexed_download',
         url: 'blabla://some.url/and_path/the_index.json',

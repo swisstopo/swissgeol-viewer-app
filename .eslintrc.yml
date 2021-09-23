@@ -1,8 +1,15 @@
 env:
   browser: true
   es6: true
+
+root: true
+parser: "@typescript-eslint/parser"
+plugins:
+  - "@typescript-eslint"
 extends:
-  eslint:recommended
+  - eslint:recommended
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:@typescript-eslint/recommended
 parserOptions:
   ecmaVersion: 2018
   sourceType: module
@@ -27,3 +34,5 @@ rules:
   space-before-blocks: error
   space-in-parens: error
   space-infix-ops: error
+  "@typescript-eslint/no-explicit-any": off
+  "@typescript-eslint/no-empty-function": off

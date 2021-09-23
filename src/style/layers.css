@@ -78,4 +78,15 @@ ngm-layers .ui.segment {
   padding: 5px 5px;
 }
 
+ngm-layers-upload {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+ngm-layers-upload ngm-layers {
+  margin-top: 10px;
+}
+
 
