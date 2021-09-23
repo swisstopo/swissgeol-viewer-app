@@ -24,6 +24,7 @@ import {createDataGenerator, createZipFromData} from '../download.js';
 import {saveAs} from 'file-saver';
 import auth from '../store/auth';
 import './ngm-share-link.js';
+import '../layers/ngm-layers-upload';
 import {zoomTo} from '../utils';
 import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
@@ -120,6 +121,7 @@ class LeftSideBar extends LitElementI18n {
             @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
             @layerChanged=${this.onLayerChanged}>
           </ngm-layers>
+          <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
           <h5 class="ui horizontal divider header">
             ${i18next.t('dtd_background_map_label')}
             <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
