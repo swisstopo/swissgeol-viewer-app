@@ -5,18 +5,9 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/slider.js';
 import './ngm-map-chooser.js';
 import {getMapTransparencyParam, syncMapTransparencyParam} from '../permalink.js';
+import MainStore from '../store/main.ts';
 
 class NgmMapConfiguration extends LitElementI18n {
-
-  /**
-   * @type {import('lit-element').PropertyDeclarations}
-   */
-  static get properties() {
-    return {
-      viewer: {type: Object},
-      mapChooser: {type: Object}
-    };
-  }
 
   constructor() {
     super();
@@ -25,6 +16,12 @@ class NgmMapConfiguration extends LitElementI18n {
      */
     this.viewer = null;
     this.mapChooser = null;
+
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.mapChooser.subscribe(chooser => {
+      this.mapChooser = chooser;
+      this.requestUpdate();
+    });
   }
 
 

@@ -18,7 +18,7 @@ jsdom('', {url: url + token + type + state + idToken});
 global.localStorage = window.localStorage;
 
 // load the component
-import Auth from '../auth.js';
+import Auth from '../auth.ts';
 
 describe('Auth', () => {
 

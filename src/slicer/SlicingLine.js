@@ -1,5 +1,5 @@
 import {getOrthogonalViewPoints, planeFromTwoPoints} from '../cesiumutils';
-import {executeForAllPrimitives} from '../utils';
+import {executeForAllPrimitives} from '../utils.ts';
 import {createClippingPlanes, getClippingPlaneFromSegment} from './helper';
 import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';

@@ -1,9 +1,18 @@
 import {html} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
+import auth from '../store/auth.ts';
 
 
 class Catalog extends LitElementI18n {
+
+  constructor() {
+    super();
+    this.userGroups = null;
+    auth.user.subscribe((user) => {
+      this.userGroups = user ? user['cognito:groups'] : [];
+    });
+  }
 
   static get properties() {
     return {
@@ -25,26 +34,26 @@ class Catalog extends LitElementI18n {
 
   getCategoryTemplate(category) {
     return html`
-    <div class="ui styled ngm-layers-categories accordion">
-      <div class="title ngm-layer-title">
-        <i class="dropdown icon"></i>
-        ${i18next.t(category.label)}
-      </div>
-      <div class="content ngm-layer-content">
-        ${category.children.map(c => this.getCategoryOrLayerTemplate(c))}
-      </div>
-    </div>`;
+      <div class="ui styled ngm-layers-categories accordion">
+        <div class="title ngm-layer-title">
+          <i class="dropdown icon"></i>
+          ${i18next.t(category.label)}
+        </div>
+        <div class="content ngm-layer-content">
+          ${category.children.map(c => this.getCategoryOrLayerTemplate(c))}
+        </div>
+      </div>`;
   }
 
   getLayerTemplate(layer) {
     return html`
       <div class="ui checkbox ngm-displayed-container" @click=${() => {
-      this.dispatchEvent(new CustomEvent('layerclick', {
-        detail: {
-          layer
-        }
-      }));
-    }}>
+        this.dispatchEvent(new CustomEvent('layerclick', {
+          detail: {
+            layer
+          }
+        }));
+      }}>
         <input
           class="ngm-layer-checkbox"
           type="checkbox"
