@@ -30,7 +30,6 @@ import QueryManager from './query/QueryManager';
 
 import {initAnalytics} from './analytics.js';
 import {initSentry} from './sentry.js';
-import {getMeasurements} from './cesiumutils';
 import {showWarning} from './message';
 import MainStore from './store/main';
 import SlicerStore from './store/slicer';
