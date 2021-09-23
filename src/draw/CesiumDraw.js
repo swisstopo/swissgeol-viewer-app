@@ -12,7 +12,6 @@ import Intersections2D from 'cesium/Source/Core/Intersections2D';
 import {getDimensionLabel} from './helpers.js';
 import {getMeasurements} from '../cesiumutils.js';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import DrawStore from '../store/draw';
 
 /**
  * @typedef {"point" | "line" | "polygon" | "rectangle"} ShapeType
@@ -101,7 +100,7 @@ export class CesiumDraw extends EventTarget {
       }
       this.eventHandler_ = undefined;
     }
-    DrawStore.setDrawState(value);
+    this.dispatchEvent(new CustomEvent('statechanged', {detail: {active: value}}));
   }
 
   activateEditing() {
@@ -169,7 +168,11 @@ export class CesiumDraw extends EventTarget {
     this.activePoints_.pop();
     let positions = this.activePoints_;
     if ((this.type === 'polygon' || this.type === 'rectangle') && positions.length < 3) {
-      DrawStore.setDrawError(this.ERROR_TYPES.needMorePoints);
+      this.dispatchEvent(new CustomEvent('drawerror', {
+        detail: {
+          error: this.ERROR_TYPES.needMorePoints
+        }
+      }));
       return;
     }
     if (this.type === 'point') {
@@ -188,11 +191,13 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.scene.requestRender();
 
     const measurements = getMeasurements(positions, this.type);
-    DrawStore.triggerDrawEnd({
-      positions: positions,
-      type: this.type,
-      measurements: measurements
-    });
+    this.dispatchEvent(new CustomEvent('drawend', {
+      detail: {
+        positions: positions,
+        type: this.type,
+        measurements: measurements
+      }
+    }));
 
     this.removeSketches();
   }
@@ -532,7 +537,7 @@ export class CesiumDraw extends EventTarget {
         this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
       }
     }
-    DrawStore.triggerLeftDown();
+    this.dispatchEvent(new CustomEvent('leftdown'));
   }
 
   /**
@@ -604,7 +609,7 @@ export class CesiumDraw extends EventTarget {
     this.moveEntity = false;
     this.leftPressedPixel_ = undefined;
     this.sketchPoint_ = undefined;
-    DrawStore.triggerLeftUp();
+    this.dispatchEvent(new CustomEvent('leftup'));
   }
 
   /**

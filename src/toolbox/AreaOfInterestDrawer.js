@@ -439,21 +439,24 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
     this.editedBackup = undefined;
 
-    DrawStore.drawState.subscribe(() => this.requestUpdate());
-    DrawStore.drawEnd.subscribe((info) => this.endDrawing_(info));
-    DrawStore.drawError.subscribe(error => {
-      if (this.draw_.ERROR_TYPES.needMorePoints === error) {
+    this.draw_.addEventListener('statechanged', (evt) => {
+      DrawStore.setDrawState(evt.detail.active);
+      this.requestUpdate();
+    });
+    this.draw_.addEventListener('drawend', (evt) => this.endDrawing_(evt.detail));
+    this.draw_.addEventListener('drawerror', evt => {
+      if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
         showWarning(i18next.t('tbx_error_need_more_points_warning'));
       }
     });
-    DrawStore.leftDown.subscribe(() => {
+    this.draw_.addEventListener('leftdown', () => {
       const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
       const type = this.draw_.entityForEdit.properties.type.getValue();
       if (volumeShowedProp && volumeShowedProp.getValue() && type !== 'point') {
         this.draw_.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
       }
     });
-    DrawStore.leftUp.subscribe(() => {
+    this.draw_.addEventListener('leftup', () => {
       const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
       const type = this.draw_.entityForEdit.properties.type.getValue();
       if (type === 'point') {

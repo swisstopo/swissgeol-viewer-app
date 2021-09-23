@@ -188,6 +188,7 @@ class NgmApp extends LitElementI18n {
     setupI18n();
     const cesiumContainer = this.querySelector('#cesium');
     const viewer = setupViewer(cesiumContainer, isLocalhost);
+    this.viewer = viewer;
     window['viewer'] = viewer; // for debugging
 
     this.startCesiumLoadingProcess(viewer);
@@ -282,7 +283,7 @@ class NgmApp extends LitElementI18n {
           </div>
           <div class='footer'>
             <div class='ui horizontal link list'>
-              <ngm-feature-height class='item'></ngm-feature-height>
+              <ngm-feature-height .viewer=${this.viewer} class='item'></ngm-feature-height>
             </div>
             <div style='flex: auto;'></div>
             <div class='ui horizontal link list'>
