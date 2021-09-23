@@ -58,7 +58,7 @@ export default class LayersUpload extends LitElementI18n {
         uploadedLayer.entities.add(ent);
       });
       // name used as id for datasource
-      uploadedLayer.name = `${name}_${new Date().getTime()}`;
+      uploadedLayer.name = `${name}_${Date.now()}`;
       await this.viewer.dataSources.add(uploadedLayer);
       // done like this to have correct rerender of component
       this.uploadedLayers = [...this.uploadedLayers, {
