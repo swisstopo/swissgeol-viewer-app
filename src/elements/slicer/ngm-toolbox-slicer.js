@@ -28,7 +28,7 @@ class NgmToolboxSlicer extends LitElementI18n {
      * @type {Slicer}
      */
     this.slicer = null;
-    SlicerStore.getSlicer().subscribe(slicer => this.slicer = slicer);
+    SlicerStore.slicer.subscribe(slicer => this.slicer = slicer);
 
     this.sliceSide = 'left';
     this.sliceEnabled = false;

@@ -9,7 +9,7 @@ class Catalog extends LitElementI18n {
   constructor() {
     super();
     this.userGroups = null;
-    auth.getUser().subscribe((user) => {
+    auth.user.subscribe((user) => {
       this.userGroups = user ? user['cognito:groups'] : [];
     });
   }

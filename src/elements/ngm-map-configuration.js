@@ -17,8 +17,8 @@ class NgmMapConfiguration extends LitElementI18n {
     this.viewer = null;
     this.mapChooser = null;
 
-    MainStore.getViewer().subscribe(viewer => this.viewer = viewer);
-    MainStore.getMapChooser().subscribe(chooser => {
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.mapChooser.subscribe(chooser => {
       this.mapChooser = chooser;
       this.requestUpdate();
     });

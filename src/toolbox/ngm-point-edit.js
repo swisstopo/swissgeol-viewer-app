@@ -39,7 +39,7 @@ class NgmPointEdit extends LitElementI18n {
     this.maxDepth = 30000;
     this.julianDate = new JulianDate();
     this.viewer = null;
-    MainStore.getViewer().subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
   }
 
   updated() {

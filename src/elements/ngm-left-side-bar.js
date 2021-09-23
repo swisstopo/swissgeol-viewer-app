@@ -41,9 +41,9 @@ class LeftSideBar extends LitElementI18n {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
-    MainStore.getViewer().subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
 
-    auth.getUser().subscribe((user) => {
+    auth.user.subscribe((user) => {
       if (!user && this.activeLayers) {
         // user logged out, remove restricted layers.
         const restricted = this.activeLayers.filter(config => config.restricted);
@@ -54,7 +54,7 @@ class LeftSideBar extends LitElementI18n {
         });
       }
     });
-    SlicerStore.getRectangleToCreate.subscribe(() => {
+    SlicerStore.rectangleToCreate.subscribe(() => {
       this.querySelector(`#${TOOLBOX} > .title`).classList.add('active');
       this.querySelector(`#${TOOLBOX} > .content`).classList.add('active');
     });
@@ -70,7 +70,7 @@ class LeftSideBar extends LitElementI18n {
   }
 
   render() {
-    if (!this.viewer || !this.queryManager) {
+    if (!this.queryManager) {
       return '';
     }
 
@@ -138,7 +138,6 @@ class LeftSideBar extends LitElementI18n {
         <div class="content">
           <ngm-aoi-drawer
             .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
-            .queryManager=${this.queryManager}
             @downloadActiveData=${evt => this.downloadActiveData(evt)}
           >
           </ngm-aoi-drawer>
@@ -280,13 +279,9 @@ class LeftSideBar extends LitElementI18n {
   }
 
   updated(changedProperties) {
-    if (this.viewer && this.queryManager) {
+    if (this.queryManager) {
       !this.accordionInited && this.initBarAccordions();
       !this.zoomedToPosition && this.zoomToPermalinkObject();
-    }
-
-    if (this.querySelector('ngm-aoi-drawer') && !this.queryManager.toolboxElement) {
-      this.queryManager.toolboxElement = this.querySelector('ngm-aoi-drawer');
     }
 
     super.updated(changedProperties);

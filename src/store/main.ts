@@ -3,22 +3,22 @@ import {Viewer} from 'cesium';
 import MapChooser from '../MapChooser';
 
 export default class MainStore {
-  private static viewer = new BehaviorSubject<Viewer | null>(null)
-  private static mapChooser = new BehaviorSubject<MapChooser | null>(null)
+  private static viewerSubject = new BehaviorSubject<Viewer | null>(null)
+  private static mapChooserSubject = new BehaviorSubject<MapChooser | null>(null)
 
-  static getViewer(): BehaviorSubject<Viewer | null> {
-    return this.viewer;
+  static get viewer(): BehaviorSubject<Viewer | null> {
+    return this.viewerSubject;
   }
 
   static setViewer(value: Viewer): void {
-    this.viewer.next(value);
+    this.viewerSubject.next(value);
   }
 
-  static getMapChooser(): BehaviorSubject<MapChooser | null> {
-    return this.mapChooser;
+  static get mapChooser(): BehaviorSubject<MapChooser | null> {
+    return this.mapChooserSubject;
   }
 
   static setMapChooser(value: MapChooser): void {
-    this.mapChooser.next(value);
+    this.mapChooserSubject.next(value);
   }
 }

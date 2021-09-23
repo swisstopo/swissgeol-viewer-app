@@ -54,6 +54,8 @@ import '../elements/ngm-geom-configuration.js';
 import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
 import SlicerStore from '../store/slicer';
+import QueryStore from '../store/query';
+import DrawStore from '../store/draw';
 
 const fileUploadInputId = 'fileUpload';
 
@@ -63,7 +65,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   static get properties() {
     return {
       selectedArea_: {type: Object},
-      queryManager: {type: Object},
       downloadActiveDataEnabled: {type: Boolean}
     };
   }
@@ -86,10 +87,15 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.colorBeforeHighlight = DEFAULT_AOI_COLOR;
     this.addedNewArea = false;
 
-    MainStore.getViewer().subscribe(viewer => this.viewer = viewer);
-    SlicerStore.getRectangleToCreate.subscribe(conf => {
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    SlicerStore.rectangleToCreate.subscribe(conf => {
       this.increaseAreasCounter(conf.type);
       this.addAreaEntity(conf);
+    });
+    QueryStore.objectInfo.subscribe(info => {
+      if (!info) {
+        this.deselectArea();
+      }
     });
   }
 
@@ -433,21 +439,21 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
     this.editedBackup = undefined;
 
-    this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
-    this.draw_.addEventListener('statechanged', () => this.requestUpdate());
-    this.draw_.addEventListener('drawerror', evt => {
-      if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
+    DrawStore.drawState.subscribe(() => this.requestUpdate());
+    DrawStore.drawEnd.subscribe((info) => this.endDrawing_(info));
+    DrawStore.drawError.subscribe(error => {
+      if (this.draw_.ERROR_TYPES.needMorePoints === error) {
         showWarning(i18next.t('tbx_error_need_more_points_warning'));
       }
     });
-    this.draw_.addEventListener('leftdown', () => {
+    DrawStore.leftDown.subscribe(() => {
       const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
       const type = this.draw_.entityForEdit.properties.type.getValue();
       if (volumeShowedProp && volumeShowedProp.getValue() && type !== 'point') {
         this.draw_.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
       }
     });
-    this.draw_.addEventListener('leftup', () => {
+    DrawStore.leftUp.subscribe(() => {
       const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
       const type = this.draw_.entityForEdit.properties.type.getValue();
       if (type === 'point') {
@@ -480,13 +486,13 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.aoiInited = true;
   }
 
-  endDrawing_(event) {
+  endDrawing_(info) {
     this.draw_.active = false;
     this.draw_.clear();
 
-    const positions = event.detail.positions;
-    const measurements = event.detail.measurements;
-    const type = event.detail.type;
+    const positions = info.positions;
+    const measurements = info.measurements;
+    const type = info.type;
     const attributes = {
       positions: positions,
       area: measurements.area,
@@ -550,7 +556,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (this.selectedArea_) {
       this.updateHighlight(this.selectedArea_, false);
       this.selectedArea_ = null;
-      this.queryManager.hideObjectInformation();
+      QueryStore.setObjectInfo(null);
     }
   }
 
@@ -927,7 +933,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   showAreaInfo(areaAttrs) {
-    this.queryManager.showObjectInformation(this.getInfoProps(areaAttrs));
+    QueryStore.setObjectInfo(this.getInfoProps(areaAttrs));
     this.pickArea_(areaAttrs.id);
   }
 

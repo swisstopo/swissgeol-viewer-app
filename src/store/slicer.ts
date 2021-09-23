@@ -2,22 +2,22 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import Slicer from '../slicer/Slicer';
 
 export default class SlicerStore {
-  private static slicer = new BehaviorSubject<Slicer | null>(null)
-  private static rectangleToCreate = new Subject<any>()
+  private static slicerSubject = new BehaviorSubject<Slicer | null>(null)
+  private static rtcSubject = new Subject<any>()
 
-  static getSlicer(): BehaviorSubject<Slicer | null> {
-    return this.slicer;
+  static get slicer(): BehaviorSubject<Slicer | null> {
+    return this.slicerSubject;
   }
 
   static setSlicer(value: Slicer): void {
-    this.slicer.next(value);
+    this.slicerSubject.next(value);
   }
 
-  static get getRectangleToCreate(): Subject<any> {
-    return this.rectangleToCreate;
+  static get rectangleToCreate(): Subject<any> {
+    return this.rtcSubject;
   }
 
   static setRectangleToCreate(value: Slicer): void {
-    this.rectangleToCreate.next(value);
+    this.rtcSubject.next(value);
   }
 }

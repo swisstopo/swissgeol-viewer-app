@@ -113,7 +113,7 @@ class NgmApp extends LitElementI18n {
     this.mapChooser = setupBaseLayers(viewer);
     MainStore.setMapChooser(this.mapChooser);
     // Handle queries (local and Swisstopo)
-    this.queryManager = new QueryManager(viewer, this.querySelector('ngm-object-information'));
+    this.queryManager = new QueryManager(viewer);
 
     const sideBar = this.querySelector('ngm-left-side-bar');
 

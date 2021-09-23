@@ -8,18 +8,19 @@ import Entity from 'cesium/Source/DataSources/Entity';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
+import MainStore from '../store/main';
+import DrawStore from '../store/draw';
+import QueryStore from '../store/query';
 
 
 export default class QueryManager {
-  constructor(viewer, objectInfoElement) {
+  constructor(viewer) {
     this.objectSelector = new ObjectSelector(viewer);
     this.swisstopoIndentify = new SwisstopoIdentify();
     this.viewer = viewer;
     this.scene = viewer.scene;
     this.enabled = true;
     this.highlightEntity = null;
-    this.toolboxElement = null;
-    this.objectInfoElement = objectInfoElement;
     viewer.screenSpaceEventHandler.setInputAction(click => this.onclick(click), ScreenSpaceEventType.LEFT_CLICK);
   }
 
@@ -62,9 +63,7 @@ export default class QueryManager {
 
   async onclick(click) {
     this.unhighlight();
-    if (this.toolboxElement)
-      this.toolboxElement.deselectArea();
-    if (!this.enabled || (this.toolboxElement && this.toolboxElement.drawState)) {
+    if (!this.enabled || DrawStore.drawStateValue) {
       this.hideObjectInformation();
       return;
     }
@@ -97,6 +96,7 @@ export default class QueryManager {
     const coordinates = geometry.coordinates;
     switch (geometry.type) {
       case 'MultiPolygon':
+      case 'Polygon':
         this.highlightPolygon(coordinates);
         break;
       case 'MultiLineString':
@@ -112,21 +112,31 @@ export default class QueryManager {
   }
 
   highlightPolygon(coordinates) {
-    const entity = new Entity();
-    coordinates[0].forEach(coords => {
+    coordinates = coordinates[0];
+    if (!coordinates.length) return;
+    let entity;
+    const createPolygon = (coords) => {
       const convertedCoords = coords.map(c => {
         const degCoords = lv95ToDegrees(c);
         return Cartesian3.fromDegrees(degCoords[0], degCoords[1]);
       });
-
-      const ent = new Entity({
+      return new Entity({
         polygon: {
           hierarchy: convertedCoords,
           material: OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7)
         }
       });
-      entity.merge(ent);
-    });
+    };
+    if (typeof coordinates[0][0] === 'number') {
+      //for polygon
+      entity = createPolygon(coordinates);
+    } else {
+      //for multipolygon
+      entity = new Entity();
+      coordinates.forEach(coords => {
+        entity.merge(createPolygon(coords));
+      });
+    }
     this.viewer.entities.add(entity);
     this.highlightEntity = entity;
   }
@@ -185,11 +195,11 @@ export default class QueryManager {
   }
 
   showObjectInformation(attributes) {
-    this.objectInfoElement.open(attributes);
+    QueryStore.setObjectInfo(attributes);
   }
 
   hideObjectInformation() {
-    this.objectInfoElement.close();
+    QueryStore.setObjectInfo(null);
   }
 }
 

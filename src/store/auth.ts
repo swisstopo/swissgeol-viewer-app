@@ -2,13 +2,13 @@ import {BehaviorSubject} from 'rxjs';
 import {AuthUser} from '../auth';
 
 export default class AuthStore {
-  private static user = new BehaviorSubject<AuthUser | null>(null);
+  private static userSubject = new BehaviorSubject<AuthUser | null>(null);
 
-  static getUser(): BehaviorSubject<AuthUser | null> {
-    return this.user;
+  static get user(): BehaviorSubject<AuthUser | null> {
+    return this.userSubject;
   }
 
   static setUser(user: AuthUser | null): void {
-    this.user.next(user);
+    this.userSubject.next(user);
   }
 }

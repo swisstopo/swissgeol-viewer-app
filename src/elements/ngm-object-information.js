@@ -3,6 +3,8 @@ import draggable from './draggable.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {unsafeHTML} from 'lit-html/directives/unsafe-html';
+import MainStore from '../store/main';
+import QueryStore from '../store/query';
 
 class NgmObjectInformation extends LitElementI18n {
 
@@ -17,6 +19,16 @@ class NgmObjectInformation extends LitElementI18n {
     super();
     this.opened = false;
 
+    QueryStore.objectInfo.subscribe(info => {
+      if (info) {
+        this.info = info;
+        this.opened = !!info;
+      } else if (this.opened) {
+        this.opened = false;
+        this.info = null;
+      }
+    });
+
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         this.opened = false;
@@ -29,18 +41,6 @@ class NgmObjectInformation extends LitElementI18n {
       allowFrom: '.header'
     });
     super.connectedCallback();
-  }
-
-  open(info) {
-    this.info = info;
-    this.opened = !!info;
-  }
-
-  close() {
-    if (this.opened) {
-      this.opened = false;
-      this.info = null;
-    }
   }
 
   render() {

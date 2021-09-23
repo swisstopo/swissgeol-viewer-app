@@ -15,7 +15,7 @@ class NgmSlicer extends LitElementI18n {
      * @type {import('../../slicer/Slicer').default}
      */
     this.slicer = null;
-    SlicerStore.getSlicer().subscribe(slicer => {
+    SlicerStore.slicer.subscribe(slicer => {
       this.slicer = slicer;
       this.requestUpdate();
     });

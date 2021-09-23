@@ -19,7 +19,7 @@ class NgmSwissforagesInteraction extends LitElementI18n {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
-    MainStore.getViewer().subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
   }
 
   static get properties() {

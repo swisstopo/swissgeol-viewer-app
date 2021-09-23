@@ -25,7 +25,7 @@ class NgmFeatureHeight extends LitElementI18n {
      * @type {import('cesium/Source/Widgets/Viewer/Viewer').default}
      */
     this.viewer = null;
-    MainStore.getViewer().subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
 
     this.height = undefined;
     this.eventHandler = undefined;

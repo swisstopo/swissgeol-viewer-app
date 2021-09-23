@@ -30,7 +30,7 @@ class NgmAuth extends LitElementI18n {
     this.responseType = 'token';
     this.redirectUri = `${location.origin}${location.pathname}`;
     this.scope = 'openid+profile';
-    auth.getUser().subscribe(user => {
+    auth.user.subscribe(user => {
       this.user = user;
       this.updateLogoutTimeout_(this.user);
       if (this.popup) {
