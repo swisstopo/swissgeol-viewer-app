@@ -11,14 +11,13 @@ import './slicer/ngm-slicer.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {SWITZERLAND_RECTANGLE} from '../constants.js';
+import MainStore from '../store/main.ts';
 
 class NgmNavigationWidgets extends LitElementI18n {
 
   static get properties() {
     return {
-      viewer: {type: Object},
       minimapExpanded: {type: Boolean},
-      slicer: {type: Object}
     };
   }
 
@@ -29,6 +28,7 @@ class NgmNavigationWidgets extends LitElementI18n {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
   }
 
   render() {
@@ -60,7 +60,7 @@ class NgmNavigationWidgets extends LitElementI18n {
           <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
           <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
           <ngm-nadir-view .scene="${this.viewer.scene}"></ngm-nadir-view>
-          <ngm-slicer .slicer="${this.slicer}"></ngm-slicer>
+          <ngm-slicer></ngm-slicer>
           <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
         </div>
       `;

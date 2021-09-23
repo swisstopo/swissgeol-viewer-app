@@ -8,6 +8,7 @@ import {lv95ToDegrees} from '../projection';
 import {showWarning} from '../message';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
+import MainStore from '../store/main.ts';
 
 class NgmSwissforagesInteraction extends LitElementI18n {
 
@@ -18,13 +19,13 @@ class NgmSwissforagesInteraction extends LitElementI18n {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
   }
 
   static get properties() {
     return {
       item: {type: Object},
       service: {type: Object},
-      viewer: {type: Object},
       dataSource: {type: Object},
       updateModalOptions: {type: Object},
     };

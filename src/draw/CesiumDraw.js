@@ -100,7 +100,7 @@ export class CesiumDraw extends EventTarget {
       }
       this.eventHandler_ = undefined;
     }
-    this.dispatchEvent(new CustomEvent('statechanged'));
+    this.dispatchEvent(new CustomEvent('statechanged', {detail: {active: value}}));
   }
 
   activateEditing() {

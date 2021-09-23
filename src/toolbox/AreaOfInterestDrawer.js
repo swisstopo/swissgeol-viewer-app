@@ -43,7 +43,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {calculateBoxHeight} from '../slicer/helper';
 
 
-import {clickOnElement, coordinatesToBbox, parseJson} from '../utils.js';
+import {clickOnElement, coordinatesToBbox, parseJson} from '../utils.ts';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';
@@ -51,6 +51,11 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-swissforages-modal.js';
 import './ngm-swissforages-interaction.js';
 import '../elements/ngm-geom-configuration.js';
+import LocalStorageController from '../LocalStorageController';
+import MainStore from '../store/main.ts';
+import SlicerStore from '../store/slicer.ts';
+import QueryStore from '../store/query.ts';
+import DrawStore from '../store/draw.ts';
 
 const fileUploadInputId = 'fileUpload';
 
@@ -59,20 +64,13 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   static get properties() {
     return {
-      viewer: {type: Object},
       selectedArea_: {type: Object},
-      slicer: {type: Object},
-      setStoredAoi: {type: Object},
-      getStoredAoi: {type: Object},
-      queryManager: {type: Object},
       downloadActiveDataEnabled: {type: Boolean}
     };
   }
 
   constructor() {
     super();
-    this.getStoredAoi = null;
-    this.setStoredAoi = null;
     this.minVolumeHeight = 1;
     this.maxVolumeHeight = 30000;
     this.minVolumeLowerLimit = -30000;
@@ -88,10 +86,21 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.restrictedEditing = false;
     this.colorBeforeHighlight = DEFAULT_AOI_COLOR;
     this.addedNewArea = false;
+
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    SlicerStore.rectangleToCreate.subscribe(conf => {
+      this.increaseAreasCounter(conf.type);
+      this.addAreaEntity(conf);
+    });
+    QueryStore.objectInfo.subscribe(info => {
+      if (!info) {
+        this.deselectArea();
+      }
+    });
   }
 
   firstUpdated() {
-    this.addStoredAreas(this.getStoredAoi());
+    this.addStoredAreas(LocalStorageController.getStoredAoi());
   }
 
   update(changedProperties) {
@@ -264,7 +273,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
             ${i.type !== 'polygon' ?
               html`
                 <ngm-gst-interaction
-                  .viewer=${this.viewer}
                   .positions=${i.positions}
                   .geometryType=${i.type}
                   .parentElement=${this}>
@@ -274,7 +282,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               .item=${i}
               .service=${this.swissforagesService}
               .dataSource=${this.interestAreasDataSource}
-              .viewer=${this.viewer}
               .updateModalOptions=${(options => {
                 this.swissforagesModalOptions = options;
                 this.requestUpdate();
@@ -283,7 +290,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
             ${i.type === 'line' || i.type === 'rectangle' ?
               html`
                 <ngm-toolbox-slicer
-                  .slicer=${this.slicer}
                   .positions=${i.positions}
                   .lowerLimit=${i.volumeHeightLimits ? i.volumeHeightLimits.lowerLimit : undefined}
                   .height=${i.volumeHeightLimits ? i.volumeHeightLimits.height : undefined}
@@ -374,28 +380,28 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
               </div>
             </div>
             ${this.isVolumeInputsHidden() ? '' : html`
-            <div class="ngm-volume-limits-input">
-              <div>
-                <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
-                <div class="ui mini input right labeled">
-                  <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
-                         class=${`ngm-lower-limit-input-${index}`}
-                         .value="${this.volumeHeightLimits.lowerLimit}"
-                         @input="${this.onVolumeHeightLimitsChange.bind(this, index)}">
-                  <label class="ui label">m</label>
+              <div class="ngm-volume-limits-input">
+                <div>
+                  <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
+                  <div class="ui mini input right labeled">
+                    <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
+                           class=${`ngm-lower-limit-input-${index}`}
+                           .value="${this.volumeHeightLimits.lowerLimit}"
+                           @input="${this.onVolumeHeightLimitsChange.bind(this, index)}">
+                    <label class="ui label">m</label>
+                  </div>
+                </div>
+                <div>
+                  <label>${i18next.t('tbx_volume_height_label')}:</label></br>
+                  <div class="ui mini input right labeled">
+                    <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
+                           class=${`ngm-volume-height-input-${index}`}
+                           .value="${this.volumeHeightLimits.height}"
+                           @change="${this.onVolumeHeightLimitsChange.bind(this, index)}">
+                    <label class="ui label">m</label>
+                  </div>
                 </div>
               </div>
-              <div>
-                <label>${i18next.t('tbx_volume_height_label')}:</label></br>
-                <div class="ui mini input right labeled">
-                  <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
-                         class=${`ngm-volume-height-input-${index}`}
-                         .value="${this.volumeHeightLimits.height}"
-                         @change="${this.onVolumeHeightLimitsChange.bind(this, index)}">
-                  <label class="ui label">m</label>
-                </div>
-              </div>
-            </div>
             `}
             <ngm-geom-configuration
               ?hidden=${i.type === 'point'}
@@ -405,7 +411,6 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
             ></ngm-geom-configuration>
             <ngm-point-edit
               ?hidden=${i.type !== 'point'}
-              .viewer=${this.viewer}
               .position=${i.positions[0]}
               .depth=${i.depth}
               .volumeShowed=${i.volumeShowed}
@@ -434,8 +439,11 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
 
     this.editedBackup = undefined;
 
-    this.draw_.addEventListener('drawend', this.endDrawing_.bind(this));
-    this.draw_.addEventListener('statechanged', () => this.requestUpdate());
+    this.draw_.addEventListener('statechanged', (evt) => {
+      DrawStore.setDrawState(evt.detail.active);
+      this.requestUpdate();
+    });
+    this.draw_.addEventListener('drawend', (evt) => this.endDrawing_(evt.detail));
     this.draw_.addEventListener('drawerror', evt => {
       if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
         showWarning(i18next.t('tbx_error_need_more_points_warning'));
@@ -463,7 +471,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.interestAreasDataSource.entities.collectionChanged.addEventListener((collection, added) => {
       this.viewer.scene.requestRender();
       this.requestUpdate();
-      this.setStoredAoi(this.entitiesList_);
+      LocalStorageController.setAoiInStorage(this.entitiesList_);
       if (added.length) {
         this.addedNewArea = true;
       }
@@ -481,13 +489,13 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.aoiInited = true;
   }
 
-  endDrawing_(event) {
+  endDrawing_(info) {
     this.draw_.active = false;
     this.draw_.clear();
 
-    const positions = event.detail.positions;
-    const measurements = event.detail.measurements;
-    const type = event.detail.type;
+    const positions = info.positions;
+    const measurements = info.measurements;
+    const type = info.type;
     const attributes = {
       positions: positions,
       area: measurements.area,
@@ -551,7 +559,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (this.selectedArea_) {
       this.updateHighlight(this.selectedArea_, false);
       this.selectedArea_ = null;
-      this.queryManager.hideObjectInformation();
+      QueryStore.setObjectInfo(null);
     }
   }
 
@@ -928,7 +936,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   showAreaInfo(areaAttrs) {
-    this.queryManager.showObjectInformation(this.getInfoProps(areaAttrs));
+    QueryStore.setObjectInfo(this.getInfoProps(areaAttrs));
     this.pickArea_(areaAttrs.id);
   }
 

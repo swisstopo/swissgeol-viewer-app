@@ -13,15 +13,15 @@ export default class MapChooser {
     this.selectedMap = this.getInitialMap();
 
     i18next.on('languageChanged', () => {
-      this.mapChooser.choices = this.choices;
+      this.element.choices = this.choices;
     });
   }
 
   initMapChooser(element) {
-    this.mapChooser = element;
-    this.mapChooser.choices = this.choices;
-    this.mapChooser.active = this.selectedMap;
-    this.mapChooser.addEventListener('change', (event) => this.selectMap(event.detail.active.id));
+    this.element = element;
+    this.element.choices = this.choices;
+    this.element.active = this.selectedMap;
+    this.element.addEventListener('change', (event) => this.selectMap(event.detail.active.id));
   }
 
   /**
@@ -42,7 +42,7 @@ export default class MapChooser {
    */
   selectMap(active) {
     const mapConfig = this.config.find(map => map.id === active);
-    this.mapChooser.active = mapConfig;
+    this.element.active = mapConfig;
     this.selectedMap.layers.forEach(layer => layer.show = false);
     mapConfig.layers.forEach(layer => layer.show = true);
     this.selectedMap = mapConfig;

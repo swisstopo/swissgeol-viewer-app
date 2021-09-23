@@ -22,8 +22,13 @@ import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../message';
 import {createDataGenerator, createZipFromData} from '../download.js';
 import {saveAs} from 'file-saver';
+import auth from '../store/auth.ts';
 import './ngm-share-link.js';
 import '../layers/ngm-layers-upload';
+import {zoomTo} from '../utils.ts';
+import LocalStorageController from '../LocalStorageController';
+import MainStore from '../store/main.ts';
+import SlicerStore from '../store/slicer.ts';
 
 const WELCOME_PANEL = 'welcome-panel';
 const CATALOG_PANEL = 'catalog-panel';
@@ -37,33 +42,36 @@ class LeftSideBar extends LitElementI18n {
      * @type {import('cesium').Viewer}
      */
     this.viewer = null;
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
 
-    /**
-     * @type {import('../MapChooser').default}
-     */
-    this.mapChooser = null;
+    auth.user.subscribe((user) => {
+      if (!user && this.activeLayers) {
+        // user logged out, remove restricted layers.
+        const restricted = this.activeLayers.filter(config => config.restricted);
+        restricted.forEach(config => {
+          const idx = this.activeLayers.indexOf(config);
+          this.activeLayers.splice(idx, 1);
+          this.removeLayer(config);
+        });
+      }
+    });
+    SlicerStore.rectangleToCreate.subscribe(() => {
+      this.querySelector(`#${TOOLBOX} > .title`).classList.add('active');
+      this.querySelector(`#${TOOLBOX} > .content`).classList.add('active');
+    });
   }
 
   static get properties() {
     return {
-      viewer: {type: Object},
-      zoomTo: {type: Object},
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
-      hideWelcome: {type: Boolean},
-      hideCatalog: {type: Boolean},
-      mapChooser: {type: Object},
-      authenticated: {type: Boolean},
-      userGroups: {type: Object},
-      slicer: {type: Object},
-      globeQueueLength_: {type: Number, attribut: false},
-      localStorageController: {type: Object},
       queryManager: {type: Object},
+      globeQueueLength_: {type: Number, attribute: false},
     };
   }
 
   render() {
-    if (!this.viewer) {
+    if (!this.queryManager) {
       return '';
     }
 
@@ -72,11 +80,11 @@ class LeftSideBar extends LitElementI18n {
 
     return html`
       <div class="ui styled accordion" id="${WELCOME_PANEL}">
-        <div class="title ${!this.hideWelcome ? 'active' : ''}">
+        <div class="title ${!LocalStorageController.hideWelcomeValue ? 'active' : ''}">
           <i class="dropdown icon"></i>
           ${i18next.t('welcome_label')}
         </div>
-        <div class="content ${!this.hideWelcome ? 'active' : ''}">
+        <div class="content ${!LocalStorageController.hideWelcomeValue ? 'active' : ''}">
           <div>${i18next.t('welcome_text')}</div>
           <div class="ui tertiary center aligned segment">
             <i class="ui lightbulb icon"></i>
@@ -87,14 +95,13 @@ class LeftSideBar extends LitElementI18n {
       </div>
 
       <div class="ui styled accordion" id="${CATALOG_PANEL}">
-        <div class="title ngmlightgrey ${!this.hideCatalog ? 'active' : ''}">
+        <div class="title ngmlightgrey ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
           <i class="dropdown icon"></i>
           ${i18next.t('lyr_geocatalog_label')}
         </div>
-        <div class="content ngm-layer-content ${!this.hideCatalog ? 'active' : ''}">
+        <div class="content ngm-layer-content ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
           <ngm-catalog
             .layers=${this.catalogLayers}
-            .userGroups=${this.userGroups}
             @layerclick=${this.onCatalogLayerClicked}
           >
           </ngm-catalog>
@@ -108,11 +115,11 @@ class LeftSideBar extends LitElementI18n {
         </div>
         <div class="content active">
           <ngm-layers
-            @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
-            @layerChanged=${this.onLayerChanged}
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
-            @zoomTo=${evt => this.zoomTo(this.viewer, evt.detail)}>
+            @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
+            @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
+            @layerChanged=${this.onLayerChanged}>
           </ngm-layers>
           <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
           <h5 class="ui horizontal divider header">
@@ -121,7 +128,7 @@ class LeftSideBar extends LitElementI18n {
               <span class="small_load_counter">${this.globeQueueLength_}</span>
             </div>
           </h5>
-          <ngm-map-configuration .viewer=${this.viewer} .mapChooser=${this.mapChooser}></ngm-map-configuration>
+          <ngm-map-configuration></ngm-map-configuration>
         </div>
       </div>
 
@@ -132,12 +139,7 @@ class LeftSideBar extends LitElementI18n {
         </div>
         <div class="content">
           <ngm-aoi-drawer
-            .viewer=${this.viewer}
-            .slicer=${this.slicer}
-            .getStoredAoi=${this.localStorageController.getStoredAoi}
-            .setStoredAoi=${this.localStorageController.setAoiInStorage}
             .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
-            .queryManager=${this.queryManager}
             @downloadActiveData=${evt => this.downloadActiveData(evt)}
           >
           </ngm-aoi-drawer>
@@ -266,7 +268,7 @@ class LeftSideBar extends LitElementI18n {
 
   update(changedProperties) {
     if (this.viewer && !this.layerActions) {
-      this.layerActions = new LayersActions(this.viewer, this.mapChooser);
+      this.layerActions = new LayersActions(this.viewer);
       if (!this.catalogLayers) {
         this.catalogLayers = [...defaultLayerTree];
         this.initializeActiveLayers();
@@ -279,23 +281,9 @@ class LeftSideBar extends LitElementI18n {
   }
 
   updated(changedProperties) {
-    if (this.viewer) {
+    if (this.queryManager) {
       !this.accordionInited && this.initBarAccordions();
       !this.zoomedToPosition && this.zoomToPermalinkObject();
-    }
-
-    if (changedProperties.has('authenticated') && !this.authenticated) {
-      // user logged out, remove restricted layers.
-      const restricted = this.activeLayers.filter(config => config.restricted);
-      restricted.forEach(config => {
-        const idx = this.activeLayers.indexOf(config);
-        this.activeLayers.splice(idx, 1);
-        this.removeLayer(config);
-      });
-    }
-
-    if (this.querySelector('ngm-aoi-drawer') && !this.queryManager.toolboxElement) {
-      this.queryManager.toolboxElement = this.querySelector('ngm-aoi-drawer');
     }
 
     super.updated(changedProperties);
@@ -414,13 +402,13 @@ class LeftSideBar extends LitElementI18n {
     switch (element.id) {
       case WELCOME_PANEL: {
         accordion(element, {
-          onChange: () => this.dispatchEvent(new CustomEvent('welcome_panel_changed'))
+          onChange: () => LocalStorageController.updateWelcomePanelState()
         });
         break;
       }
       case CATALOG_PANEL: {
         accordion(element, {
-          onChange: () => this.dispatchEvent(new CustomEvent('catalog_panel_changed'))
+          onChange: () => LocalStorageController.toggleCatalogState()
         });
         break;
       }

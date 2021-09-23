@@ -1,4 +1,6 @@
 import CSVParser from 'papaparse';
+import {SWITZERLAND_RECTANGLE} from './constants.js';
+import {Viewer, Ellipsoid, HeadingPitchRange, BoundingSphere} from 'cesium';
 
 /**
  * @return {URLSearchParams}
@@ -18,7 +20,7 @@ export function setURLSearchParams(params) {
  * @param {string} id
  */
 export function clickOnElement(id) {
-  document.getElementById(id).click();
+  document.getElementById(id)?.click();
 }
 
 /**
@@ -143,4 +145,26 @@ export function interpolateBetweenNumbers(min, max, percent) {
 export function getPercent(min, max, value) {
   const diff = max - min;
   return value / diff * 100;
+}
+
+export async function zoomTo(viewer: Viewer, config): Promise<void> {
+  const p = await config.promise;
+  if (p.boundingSphere) {
+    const switzerlandBS = BoundingSphere.fromRectangle3D(SWITZERLAND_RECTANGLE, Ellipsoid.WGS84);
+    let radiusCoef = switzerlandBS.radius / p.boundingSphere.radius;
+    radiusCoef = radiusCoef > 3 ? 3 : radiusCoef;
+    let boundingSphere = p.boundingSphere;
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, radiusCoef * p.boundingSphere.radius);
+    if (radiusCoef <= 1) {
+      zoomHeadingPitchRange.range = p.boundingSphere.radius * 0.8;
+      zoomHeadingPitchRange.heading = Math.PI / 2;
+      boundingSphere = switzerlandBS;
+    }
+    viewer.camera.flyToBoundingSphere(boundingSphere, {
+      duration: 0,
+      offset: zoomHeadingPitchRange
+    });
+  } else {
+    viewer.zoomTo(p);
+  }
 }

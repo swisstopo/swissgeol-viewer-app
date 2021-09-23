@@ -12,8 +12,8 @@
     "rollup-start": "npm run build-static && rollup --environment SERVE:true -c --watch --no-treeshake",
     "build": "rm -rf dist/* && npm run build-static && rollup --environment mode:production -c && bash scripts/create_versions.sh",
     "check": "npm run check-main && npm run check-ut",
-    "check-main": "node_modules/.bin/tsc src/index.js --noEmit --allowJs --skipLibCheck",
-    "check-ut": "node_modules/.bin/tsc src/test/*.ts src/test/*.js  --noEmit --allowJs --skipLibCheck --esModuleInterop true",
+    "check-main": "node_modules/.bin/tsc src/index.js --noEmit --allowJs --skipLibCheck --target es2018 --moduleResolution node",
+    "check-ut": "node_modules/.bin/tsc src/test/*.ts src/test/*.js  --noEmit --allowJs --skipLibCheck --esModuleInterop true --target es2018 --moduleResolution node",
     "ut": "mocha --exit",
     "test": "npm run ut && npm run check"
   },
@@ -40,6 +40,7 @@
     "loc-i18next": "^0.1.4",
     "papaparse": "^5.3.1",
     "proj4": "^2.7.5",
+    "rxjs": "^7.3.0",
     "typeface-source-sans-pro": "1.1.13"
   },
   "devDependencies": {

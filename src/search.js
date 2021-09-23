@@ -1,7 +1,7 @@
 import '@geoblocks/ga-search';
 
 import {getLayersConfig} from './swisstopoImagery.js';
-import {escapeRegExp} from './utils.js';
+import {escapeRegExp} from './utils.ts';
 
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import Cartographic from 'cesium/Source/Core/Cartographic';
