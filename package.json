@@ -22,6 +22,7 @@
     "@aws-sdk/client-s3": "^3.31.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.31.0",
     "@aws-sdk/s3-request-presigner": "^3.31.0",
+    "@fontsource/inter": "^4.5.0",
     "@geoblocks/cesium-compass": "0.3.0",
     "@geoblocks/cesium-view-cube": "0.0.1",
     "@geoblocks/ga-search": "0.0.20",
@@ -39,8 +40,7 @@
     "lit-html": "^1.4.1",
     "loc-i18next": "^0.1.4",
     "papaparse": "^5.3.1",
-    "proj4": "^2.7.5",
-    "typeface-source-sans-pro": "1.1.13"
+    "proj4": "^2.7.5"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",

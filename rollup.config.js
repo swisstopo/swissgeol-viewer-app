@@ -82,7 +82,7 @@ const config = {
         { src: cesiumSource + '/Widgets', dest: 'dist/' },
         { src: cesiumSource + '/ThirdParty/', dest: 'dist/' },
         { src: 'src/images', dest: 'dist/' },
-        { src: 'node_modules/typeface-source-sans-pro/files/*', dest: 'dist/fonts/' },
+        { src: 'node_modules/@fontsource/inter/files/*', dest: 'dist/fonts/' },
         { src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', dest: 'dist/fonts/' },
         { src: 'node_modules/@webcomponents/webcomponentsjs/*', dest: 'dist/webcomponentsjs/' },
         { src: 'manuals/dist/*', dest: 'dist/manuals/' },

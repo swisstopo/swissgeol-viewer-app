@@ -1,4 +1,4 @@
-@import 'typeface-source-sans-pro/index.css';
+@import '@fontsource/inter/index.css';
 
 @import 'fomantic-ui-css/components/reset.css';
 @import 'fomantic-ui-css/components/message.css';
@@ -60,7 +60,7 @@ body {
 
 /* FIXME: create a fomantic-ui build with the correct font */
 body, .ui.button, .ui.accordion .title:not(.ui), .ui.input > input {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .ui.input > input, .ui.input textarea {

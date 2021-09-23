@@ -20,7 +20,7 @@ export default {
       './cesium': resolve(__dirname, 'node_modules/cesium/Source'),
       './fomantic-ui-css': resolve(__dirname, 'node_modules/fomantic-ui-css'),
       './images': resolve(__dirname, 'src/images'),
-      './typeface-source-sans-pro': resolve(__dirname, 'node_modules/typeface-source-sans-pro'),
+      './@fontsource/inter': resolve(__dirname, 'node_modules@fontsource/inter'),
     }
   },
   output: {
@@ -79,7 +79,7 @@ export default {
         { from: cesiumSource + '/Widgets/', to: 'Widgets/' },
         { from: cesiumSource + '/ThirdParty/', to: 'ThirdParty/' },
         { from: 'src/images/', to: 'images/' },
-        { from: 'node_modules/typeface-source-sans-pro/files/*', to: 'fonts/[name][ext]' },
+        { from: 'node_modules/@fontsource/inter/files/*', to: 'fonts/[name][ext]' },
         { from: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', to: 'fonts/[name][ext]' },
         { from: 'node_modules/@webcomponents/webcomponentsjs/*', to: 'webcomponentsjs/[name][ext]' },
         { from: 'manuals/dist/', to: './manuals/' },
