@@ -123,7 +123,7 @@ export function createSwisstopoWMTSImageryLayer(viewer, config) {
     viewer.scene.imageryLayers.add(layer);
   };
 
-  return getSwisstopoImagery(config.layer).then(l => {
+  return getSwisstopoImagery(config.layer, config.maximumLevel).then(l => {
     layer = l;
     viewer.scene.imageryLayers.add(layer);
     layer.alpha = 1 - config.transparency || 0;

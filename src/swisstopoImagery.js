@@ -10,10 +10,11 @@ const wmtsLayerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{t
 
 /**
  * @param {string} layer Layer identifier
+ * @param {number} [maximumLevel]
  * @param {import('cesium/Source/Core/Rectangle').default} [rectangle]
  * @return {Promise<ImageryLayer>}
  */
-export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
+export function getSwisstopoImagery(layer, maximumLevel = 16, rectangle = SWITZERLAND_RECTANGLE) {
   return new Promise((resolve, reject) => {
     getLayersConfig().then(layersConfig => {
       const config = layersConfig[layer];
@@ -27,6 +28,7 @@ export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
               .replace('{format}', config.format);
             imageryProvider = new UrlTemplateImageryProvider({
               url: url,
+              maximumLevel: maximumLevel,
               rectangle: rectangle,
               credit: new Credit(config.attribution)
             });
@@ -43,7 +45,7 @@ export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
             },
             subdomains: '0123',
             layers: config.serverLayerName,
-            maximumLevel: 16,
+            maximumLevel: maximumLevel,
             rectangle: rectangle,
             credit: new Credit(config.attribution)
           });
@@ -97,10 +99,11 @@ export function getLayersConfig() {
  * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  * @param {string} layer
  * @param {'png' | 'jpeg'} format
+ * @param {number} maximumLevel
  * @param {string} timestamp
  * @return {ImageryLayer}
  */
-export function addSwisstopoLayer(viewer, layer, format, timestamp = 'current') {
+export function addSwisstopoLayer(viewer, layer, format, maximumLevel, timestamp = 'current') {
   const url = wmtsLayerUrlTemplate
     .replace('{layer}', layer)
     .replace('{timestamp}', timestamp)
@@ -109,6 +112,7 @@ export function addSwisstopoLayer(viewer, layer, format, timestamp = 'current') 
   const imageryLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
       rectangle: SWITZERLAND_RECTANGLE,
+      maximumLevel: maximumLevel,
       credit: new Credit('swisstopo'),
       url: url
     }), {
