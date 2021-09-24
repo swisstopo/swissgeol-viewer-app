@@ -21,14 +21,12 @@ export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
         let imageryProvider;
         switch (config.type) {
           case 'wmts': {
-            console.assert(Array.isArray(config.resolutions));
             const url = wmtsLayerUrlTemplate
               .replace('{layer}', config.serverLayerName)
               .replace('{timestamp}', config.timestamps[0])
               .replace('{format}', config.format);
             imageryProvider = new UrlTemplateImageryProvider({
               url: url,
-              maximumLevel: config.resolutions.length,
               rectangle: rectangle,
               credit: new Credit(config.attribution)
             });
