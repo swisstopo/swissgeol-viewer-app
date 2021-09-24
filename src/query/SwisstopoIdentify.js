@@ -2,7 +2,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {radiansToLv95} from '../projection';
 
 const getIdentifyUrl = ({geom2056, lang, layers}) =>
-  `https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=${geom2056}&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1916,516,96&lang=${lang}&layers=all:${layers}&limit=1&returnGeometry=true&sr=2056&tolerance=0`;
+  `https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=${geom2056}&geometryFormat=geojson&geometryType=esriGeometryPoint&mapExtent=0,0,100,100&imageDisplay=100,100,100&lang=${lang}&layers=all:${layers}&limit=1&returnGeometry=true&sr=2056&tolerance=50`;
 const getPopupUrl = ({layerBodId, featureId, lang}) =>
   `https://api3.geo.admin.ch/rest/services/api/MapServer/${layerBodId}/${featureId}/htmlPopup?lang=${lang}`;
 
