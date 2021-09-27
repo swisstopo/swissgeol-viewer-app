@@ -29,15 +29,16 @@ export function setupSearch(viewer, element, layerTree) {
 
   // add icon before the label in the result list
   element.renderResult = (result, label) => {
-    let iconName;
+    let imgName;
     if (result.properties) {
       // from geoadmin
-      iconName = result.properties.origin === 'layer' ? 'layer group' : 'map pin';
-    } else {
-      // from cesium entities
-      iconName = 'cube';
+      imgName = result.properties.origin === 'layer' ? 'i_layer' : 'i_place';
     }
-    return `<i class="${iconName} grey icon"></i> ${label}`;
+    // else {
+    //   // from cesium entities
+    //   iconName = 'cube'; // todo
+    // }
+    return `<img src='./images/${imgName}.svg' alt=""/> ${label} `;
   };
 
   // location search result
@@ -96,5 +97,23 @@ export function setupSearch(viewer, element, layerTree) {
     },
     getResultValue: result => result.label
   };
+
+  const icon = element.querySelector('.ngm-search-icon-container');
+  const input = element.querySelector('input');
+  icon.addEventListener('click', () => {
+    if (icon.classList.contains('ngm-search-icon')) return;
+    input.value = '';
+    icon.classList.remove('ngm-close-icon');
+    icon.classList.add('ngm-search-icon');
+  });
+  input.addEventListener('input', evt => {
+    if (evt.target.value && icon.classList.contains('ngm-search-icon')) {
+      icon.classList.remove('ngm-search-icon');
+      icon.classList.add('ngm-close-icon');
+    } else if (!evt.target.value) {
+      icon.classList.remove('ngm-close-icon');
+      icon.classList.add('ngm-search-icon');
+    }
+  });
 
 }
