@@ -76,10 +76,10 @@ export default class QueryManager {
 
     // we only search the remote Swisstopo service when there was no result for the local search.
     if (attributesEmpty && pickedPosition) {
-      // find the first queryable swisstopo layer
-      const config = this.searchableLayers.find(config => config.queryType === 'geoadmin');
-      if (config) {
-        const result = await this.querySwisstopo(pickedPosition, config.layer);
+      // find all queryable swisstopo layers
+      const layers = this.searchableLayers.filter(config => config.queryType === 'geoadmin').map(config => config.layer);
+      if (layers && layers.length > 0) {
+        const result = await this.querySwisstopo(pickedPosition, layers);
         attributes = result || attributes;
       }
     }
