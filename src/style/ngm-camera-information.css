@@ -1,12 +1,47 @@
 ngm-camera-information {
-  width: 260px;
-  margin-left: auto;
+  width: 328px;
+  height: 57px;
+  margin-left: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-self: center;
+  color: #212529;
+  text-align: left;
+  font: normal normal normal 14px/20px Inter;
+  letter-spacing: 0;
 }
 
-ngm-camera-information table tbody td {
-  padding: 0 12px;
+ngm-camera-information .ngm-nci-value {
+  font: normal normal 600 14px/20px Inter;
 }
 
-ngm-camera-information table .value {
-  font-weight: 600;
+.ngm-nci-map {
+  margin-right: 17px;
+}
+
+.ngm-nci-position {
+  width: 83px;
+  margin-right: 8px;
+}
+
+.ngm-nci-direction {
+  width: 196px;
+  display: flex;
+}
+
+.ngm-nci-direction > div:nth-child(2) {
+  text-align: end;
+  margin-left: 20px;
+}
+
+ngm-camera-information > img {
+  width: 24px;
+}
+
+@media (max-width: 1193px) {
+  .ngm-nci-direction,
+  .ngm-nci-position {
+    display: none;
+  }
 }

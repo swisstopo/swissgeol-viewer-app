@@ -73,25 +73,29 @@ class NgmCameraInformation extends LitElementI18n {
       }
 
       return html`
-        <table class="">
-          <tbody>
-            <tr>
-              <td>${i18next.t('camera_position_coordinates_label')}</td>
-              <td>${i18next.t('camera_position_height_label')}</td>
-              <td class="value">${height} m</td>
-            </tr>
-            <tr>
-              <td class="value">${coordinates[0]}</td>
-              <td>${i18next.t('camera_position_angle_label')}</td>
-              <td class="value">${angle}°</td>
-            </tr>
-            <tr>
-              <td class="value">${coordinates[1]}</td>
-              <td>${i18next.t('camera_position_pitch_label')}</td>
-              <td class="value">${pitch}°</td>
-            </tr>
-          </tbody>
-        </table>
+        <img class="ngm-nci-map" src="../images/i_switzerland.svg"/>
+        <div class="ngm-nci-position">
+          <label>${i18next.t('camera_position_coordinates_label')}</label>
+          <label class="ngm-nci-value">${coordinates[0]}</label>
+          <label class="ngm-nci-value">${coordinates[0]}</label>
+        </div>
+        <div class="ngm-nci-direction">
+          <div>
+            <div>${i18next.t('camera_position_height_label')}</div>
+            <div>${i18next.t('camera_position_angle_label')}</div>
+            <div>${i18next.t('camera_position_pitch_label')}</div>
+          </div>
+          <div>
+            <div class="ngm-nci-value">${height}</div>
+            <div class="ngm-nci-value">${angle}</div>
+            <div class="ngm-nci-value">${pitch}</div>
+          </div>
+          <div>
+            <div class="ngm-nci-value">&nbsp;m</div>
+            <div class="ngm-nci-value">°</div>
+            <div class="ngm-nci-value">°</div>
+          </div>
+        </div>
       `;
     } else {
       return html``;
