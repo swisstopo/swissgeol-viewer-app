@@ -1,5 +1,5 @@
 import ObjectSelector from './ObjectSelector';
-import SwisstopoIdentify from './SwisstopoIdentify';
+import SwisstopoIdentify from './SwisstopoIdentify.ts';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import i18next from 'i18next';
 import {OBJECT_HIGHLIGHT_COLOR} from '../constants';
@@ -29,10 +29,9 @@ export default class QueryManager {
 
   async querySwisstopo(pickedPosition, layers) {
     const lang = i18next.language;
-    const identifyData = await this.swisstopoIndentify.identify(pickedPosition, layers, lang);
-    if (identifyData) {
-      const {layerBodId, featureId} = identifyData;
-      let popupContent = await this.swisstopoIndentify.getPopupForFeature(layerBodId, featureId, lang);
+    const identifyResult = await this.swisstopoIndentify.identify(pickedPosition, layers, lang);
+    if (identifyResult) {
+      let popupContent = await this.swisstopoIndentify.getPopupForFeature(identifyResult.layerBodId, identifyResult.featureId, lang);
       if (popupContent) {
         popupContent = popupContent.replace(/cell-left/g, 'key')
           .replace(/<td>/g, '<td class="value">')
@@ -40,7 +39,7 @@ export default class QueryManager {
       }
 
       const onshow = () => {
-        this.highlightSelectedArea(identifyData.geometry);
+        this.highlightSelectedArea(identifyResult.geometry);
       };
       const onhide = () => {
         this.unhighlight();

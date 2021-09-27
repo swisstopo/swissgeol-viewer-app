@@ -1,4 +1,5 @@
 import Cartographic from 'cesium/Source/Core/Cartographic';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {radiansToLv95} from '../projection';
 
 const getIdentifyUrl = ({geom2056, lang, layers}) =>
@@ -7,15 +8,20 @@ const getPopupUrl = ({layerBodId, featureId, lang}) =>
   `https://api3.geo.admin.ch/rest/services/api/MapServer/${layerBodId}/${featureId}/htmlPopup?lang=${lang}`;
 
 
+export interface IdentifyResult {
+  layerBodId: string;
+  featureId: string;
+}
+
 export default class SwisstopoIdentify {
 
   /**
-   * @param {import ('cesium/Source/Core/Cartesian3.js').default} position
+   * @param {Cartesian3} position
    * @param {Array<string>} layers
    * @param {string} lang
-   * @return {Promise<Object>} the popup text
+   * @return {Promise<IdentifyResult | void>} the popup text
    */
-  async identify(position, layers, lang) {
+  async identify(position: Cartesian3, layers: Array<string>, lang: string): Promise<IdentifyResult | void> {
     const carto = Cartographic.fromCartesian(position);
     const geom2056 = radiansToLv95([carto.longitude, carto.latitude]);
     const url = getIdentifyUrl({geom2056, lang, layers});
@@ -31,7 +37,7 @@ export default class SwisstopoIdentify {
    * @param {string} lang
    * @return {Promise<string>} the popup text
    */
-  async getPopupForFeature(layerBodId, featureId, lang) {
+  async getPopupForFeature(layerBodId: string, featureId: string, lang: string): Promise<string> {
     const url = getPopupUrl({layerBodId, featureId, lang});
     return fetch(url)
       .then(response => response.text());
