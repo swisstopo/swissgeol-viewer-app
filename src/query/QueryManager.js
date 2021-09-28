@@ -77,7 +77,7 @@ export default class QueryManager {
     if (attributesEmpty && pickedPosition) {
       // find all queryable swisstopo layers
       const layers = this.searchableLayers.filter(config => config.queryType === 'geoadmin').map(config => config.layer);
-      if (layers && layers.length > 0) {
+      if (layers.length > 0) {
         const result = await this.querySwisstopo(pickedPosition, layers);
         attributes = result || attributes;
       }
