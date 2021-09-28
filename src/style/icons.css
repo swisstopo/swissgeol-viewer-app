@@ -1,15 +1,7 @@
 .ngm-search-icon {
-  background-image: url('../images/icon_search.svg');
+  background-image: url('./images/icon_search.svg');
 }
 
 .ngm-close-icon {
-  background-image: url('../images/i_close.svg');
-}
-
-.ngm-place-icon {
-  background-image: url('../images/i_place.svg');
-}
-
-.ngm-layer-icon {
-  background-image: url('../images/i_layer.svg');
+  background-image: url('./images/i_close.svg');
 }

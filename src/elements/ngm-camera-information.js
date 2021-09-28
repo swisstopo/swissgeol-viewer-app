@@ -73,7 +73,7 @@ class NgmCameraInformation extends LitElementI18n {
       }
 
       return html`
-        <img class="ngm-nci-map" src="../images/i_switzerland.svg"/>
+        <img class="ngm-nci-map" src="src/images/i_switzerland.svg"/>
         <div class="ngm-nci-position">
           <label>${i18next.t('camera_position_coordinates_label')}</label>
           <label class="ngm-nci-value">${coordinates[0]}</label>
