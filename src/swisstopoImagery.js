@@ -10,10 +10,11 @@ const wmtsLayerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{t
 
 /**
  * @param {string} layer Layer identifier
+ * @param {number} [maximumLevel]
  * @param {import('cesium/Source/Core/Rectangle').default} [rectangle]
  * @return {Promise<ImageryLayer>}
  */
-export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
+export function getSwisstopoImagery(layer, maximumLevel = 16, rectangle = SWITZERLAND_RECTANGLE) {
   return new Promise((resolve, reject) => {
     getLayersConfig().then(layersConfig => {
       const config = layersConfig[layer];
@@ -27,30 +28,31 @@ export function getSwisstopoImagery(layer, rectangle = SWITZERLAND_RECTANGLE) {
               .replace('{format}', config.format);
             imageryProvider = new UrlTemplateImageryProvider({
               url: url,
+              maximumLevel: maximumLevel,
               rectangle: rectangle,
               credit: new Credit(config.attribution)
             });
             break;
           }
-        case 'wms': {
-          const url = 'https://wms{s}.geo.admin.ch?version=1.3.0';
-          imageryProvider = new WebMapServiceImageryProvider({
-            url: url,
-            parameters: {
-              FORMAT: config.format,
-              TRANSPARENT: true,
-              LANG: i18next.language,
-            },
-            subdomains: '0123',
-            layers: config.serverLayerName,
-            maximumLevel: 16,
-            rectangle: rectangle,
-            credit: new Credit(config.attribution)
-          });
-          break;
-        }
-        default:
-          reject(`unsupported layer type: ${config.type}`);
+          case 'wms': {
+            const url = 'https://wms{s}.geo.admin.ch?version=1.3.0';
+            imageryProvider = new WebMapServiceImageryProvider({
+              url: url,
+              parameters: {
+                FORMAT: config.format,
+                TRANSPARENT: true,
+                LANG: i18next.language,
+              },
+              subdomains: '0123',
+              layers: config.serverLayerName,
+              maximumLevel: maximumLevel,
+              rectangle: rectangle,
+              credit: new Credit(config.attribution)
+            });
+            break;
+          }
+          default:
+            reject(`unsupported layer type: ${config.type}`);
         }
         const imageryLayer = new ImageryLayer(imageryProvider, {
           alpha: config.opacity
@@ -97,10 +99,11 @@ export function getLayersConfig() {
  * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
  * @param {string} layer
  * @param {'png' | 'jpeg'} format
+ * @param {number} maximumLevel
  * @param {string} timestamp
  * @return {ImageryLayer}
  */
-export function addSwisstopoLayer(viewer, layer, format, timestamp = 'current') {
+export function addSwisstopoLayer(viewer, layer, format, maximumLevel, timestamp = 'current') {
   const url = wmtsLayerUrlTemplate
     .replace('{layer}', layer)
     .replace('{timestamp}', timestamp)
@@ -109,11 +112,12 @@ export function addSwisstopoLayer(viewer, layer, format, timestamp = 'current') 
   const imageryLayer = new ImageryLayer(
     new UrlTemplateImageryProvider({
       rectangle: SWITZERLAND_RECTANGLE,
+      maximumLevel: maximumLevel,
       credit: new Credit('swisstopo'),
       url: url
     }), {
-      show: false
-    });
+    show: false
+  });
   viewer.scene.imageryLayers.add(imageryLayer);
 
   return imageryLayer;

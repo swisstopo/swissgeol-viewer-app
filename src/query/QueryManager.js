@@ -1,5 +1,5 @@
 import ObjectSelector from './ObjectSelector';
-import SwisstopoIdentify from './SwisstopoIdentify';
+import SwisstopoIdentify from './SwisstopoIdentify.ts';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import i18next from 'i18next';
 import {OBJECT_HIGHLIGHT_COLOR} from '../constants';
@@ -29,10 +29,9 @@ export default class QueryManager {
 
   async querySwisstopo(pickedPosition, layers) {
     const lang = i18next.language;
-    const identifyData = await this.swisstopoIndentify.identify(pickedPosition, layers, lang);
-    if (identifyData) {
-      const {layerBodId, featureId} = identifyData;
-      let popupContent = await this.swisstopoIndentify.getPopupForFeature(layerBodId, featureId, lang);
+    const identifyResult = await this.swisstopoIndentify.identify(pickedPosition, layers, lang);
+    if (identifyResult) {
+      let popupContent = await this.swisstopoIndentify.getPopupForFeature(identifyResult.layerBodId, identifyResult.featureId, lang);
       if (popupContent) {
         popupContent = popupContent.replace(/cell-left/g, 'key')
           .replace(/<td>/g, '<td class="value">')
@@ -40,7 +39,7 @@ export default class QueryManager {
       }
 
       const onshow = () => {
-        this.highlightSelectedArea(identifyData.geometry);
+        this.highlightSelectedArea(identifyResult.geometry);
       };
       const onhide = () => {
         this.unhighlight();
@@ -76,10 +75,10 @@ export default class QueryManager {
 
     // we only search the remote Swisstopo service when there was no result for the local search.
     if (attributesEmpty && pickedPosition) {
-      // find the first queryable swisstopo layer
-      const config = this.searchableLayers.find(config => config.queryType === 'geoadmin');
-      if (config) {
-        const result = await this.querySwisstopo(pickedPosition, config.layer);
+      // find all queryable swisstopo layers
+      const layers = this.searchableLayers.filter(config => config.queryType === 'geoadmin').map(config => config.layer);
+      if (layers.length > 0) {
+        const result = await this.querySwisstopo(pickedPosition, layers);
         attributes = result || attributes;
       }
     }

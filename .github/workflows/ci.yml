@@ -37,6 +37,11 @@ jobs:
       - name: Test
         run: npm run test
 
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          command: npm run test:e2e
+
       - name: Build
         env:
           RELEASE_NAME: ${scripts/get_github_name.sh}
