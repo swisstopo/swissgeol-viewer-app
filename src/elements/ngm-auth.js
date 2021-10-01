@@ -3,6 +3,7 @@ import Auth from '../auth.ts';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import auth from '../store/auth.ts';
+import {classMap} from 'lit-html/directives/class-map.js';
 
 
 /**
@@ -82,11 +83,12 @@ class NgmAuth extends LitElementI18n {
   }
 
   render() {
-    if (!this.user) {
-      return html`<a @click=${this.login}>${i18next.t('header_login_label')}</a>`;
-    } else {
-      return html`${this.user.username} <a @click=${this.logout}>${i18next.t('header_logout_label')}</a>`;
-    }
+    return html`
+      <div class="ngm-user ${classMap({'ngm-active-section': this.user})}"
+           @click=${!this.user ? this.login : this.logout}>
+        <div class="ngm-user-icon"></div>
+        ${!this.user ? i18next.t('lsb_login') : i18next.t('lsb_logout')}
+      </div>`;
   }
 
   createRenderRoot() {

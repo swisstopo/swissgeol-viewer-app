@@ -10,7 +10,6 @@ import {getLayerParams, syncLayersParam, getAssetIds, getAttribute} from '../per
 import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
-import $ from '../jquery.js';
 import './ngm-map-configuration.js';
 import {getZoomToPosition} from '../permalink';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
@@ -25,16 +24,16 @@ import {saveAs} from 'file-saver';
 import auth from '../store/auth.ts';
 import './ngm-share-link.js';
 import '../layers/ngm-layers-upload';
-import {zoomTo} from '../utils.ts';
 import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main.ts';
 import SlicerStore from '../store/slicer.ts';
+import {classMap} from 'lit-html/directives/class-map.js';
+import {zoomTo} from '../utils.ts';
+import $ from '../jquery';
 
-const WELCOME_PANEL = 'welcome-panel';
-const CATALOG_PANEL = 'catalog-panel';
 const TOOLBOX = 'ngm-toolbox';
 
-class LeftSideBar extends LitElementI18n {
+class SideBar extends LitElementI18n {
 
   constructor() {
     super();
@@ -66,6 +65,7 @@ class LeftSideBar extends LitElementI18n {
       catalogLayers: {type: Object},
       activeLayers: {type: Object},
       queryManager: {type: Object},
+      activePanel: {type: String, attribute: false},
       globeQueueLength_: {type: Number, attribute: false},
     };
   }
@@ -79,96 +79,111 @@ class LeftSideBar extends LitElementI18n {
       .filter(config => config.visible && !config.noQuery);
 
     return html`
-      <div class="ui styled accordion" id="${WELCOME_PANEL}">
-        <div class="title ${!LocalStorageController.hideWelcomeValue ? 'active' : ''}">
-          <i class="dropdown icon"></i>
-          ${i18next.t('welcome_label')}
-        </div>
-        <div class="content ${!LocalStorageController.hideWelcomeValue ? 'active' : ''}">
-          <div>${i18next.t('welcome_text')}</div>
-          <div class="ui tertiary center aligned segment">
-            <i class="ui lightbulb icon"></i>
-            ${i18next.t('welcome_instructions')}
+      <div class="ngm-menu">
+        <div class="ngm-menu-1">
+          <div class="ngm-dashboard ${classMap({'ngm-active-section': this.activePanel === 'dashboard'})}"
+               @click=${() => this.togglePanel('dashboard')}>
+            <div class="ngm-dashboard-icon"></div>
+            ${i18next.t('lsb_dashboard')}
           </div>
-          <ngm-share-link></ngm-share-link>
+          <div class="ngm-data ${classMap({'ngm-active-section': this.activePanel === 'data'})}"
+               @click=${() => this.togglePanel('data')}>
+            <div class="ngm-data-icon"></div>
+            ${i18next.t('lsb_data')}
+          </div>
+          <div class="ngm-tools ${classMap({'ngm-active-section': this.activePanel === 'tools'})}"
+               @click=${() => this.togglePanel('tools')}>
+            <div class="ngm-tools-icon"></div>
+            ${i18next.t('lsb_tools')}
+          </div>
+          <div class="ngm-share ${classMap({'ngm-active-section': this.activePanel === 'share'})}"
+               @click=${() => this.togglePanel('share')}>
+            <div class="ngm-share-icon"></div>
+            ${i18next.t('lsb_share')}
+          </div>
+        </div>
+        <div class="ngm-menu-2">
+          <ngm-auth class="ngm-user"
+                    endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
+                    clientId='6brvjsufv7fdubr12r9u0gajnj'
+          ></ngm-auth>
+          <div class="ngm-help" @click=${() => this.querySelector('.ngm-help-link').click()}>
+            <div class="ngm-help-icon"></div>
+            ${i18next.t('lsb_help')}
+            <a href="/manuals/manual_en.html" target="_blank" .hidden="true" class="ngm-help-link"></a>
+          </div>
+          <div class="ngm-settings ${classMap({'ngm-active-section': this.activePanel === 'settings'})}"
+               @click=${() => this.togglePanel('settings')}>
+            <div class="ngm-settings-icon"></div>
+            ${i18next.t('lsb_settings')}
+          </div>
+          <div class="ngm-nav-close ${classMap({'ngm-disabled': !this.activePanel})}"
+               @click=${() => this.togglePanel('')}>
+            <div class="ngm-nav-close-icon"></div>
+            ${i18next.t('lsb_close')}
+          </div>
         </div>
       </div>
-
-      <div class="ui styled accordion" id="${CATALOG_PANEL}">
-        <div class="title ngmlightgrey ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
-          <i class="dropdown icon"></i>
-          ${i18next.t('lyr_geocatalog_label')}
+      <div .hidden=${!this.activePanel}
+           class="ngm-side-bar-panel ${classMap({'ngm-large-panel': this.activePanel === 'dashboard'})}">
+        <div class="ngm-panel-header">
+          ${i18next.t(`lsb_${this.activePanel}`)}
+          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
-        <div class="content ngm-layer-content ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
-          <ngm-catalog
-            .layers=${this.catalogLayers}
-            @layerclick=${this.onCatalogLayerClicked}
-          >
-          </ngm-catalog>
-        </div>
-      </div>
-
-      <div class="ui styled accordion">
-        <div class="title ngmverylightgrey active">
-          <i class="dropdown icon"></i>
-          ${i18next.t('dtd_displayed_data_label')}
-        </div>
-        <div class="content active">
-          <ngm-layers
-            .layers=${this.activeLayers}
-            .actions=${this.layerActions}
-            @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
-            @removeDisplayedLayer=${this.onRemoveDisplayedLayer}
-            @layerChanged=${this.onLayerChanged}>
-          </ngm-layers>
-          <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
-          <h5 class="ui horizontal divider header">
-            ${i18next.t('dtd_background_map_label')}
-            <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
-              <span class="small_load_counter">${this.globeQueueLength_}</span>
+        <div .hidden=${this.activePanel !== 'data'} class="ngm-data-container">
+          <div class="ui styled accordion">
+            <div class="title ngmlightgrey ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
+              <i class="dropdown icon"></i>
+              ${i18next.t('lyr_geocatalog_label')}
             </div>
-          </h5>
-          <ngm-map-configuration></ngm-map-configuration>
-        </div>
-      </div>
+            <div class="content ngm-layer-content ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
+              <ngm-catalog
+                .layers=${this.catalogLayers}
+                @layerclick=${evt => this.onCatalogLayerClicked(evt)}
+              >
+              </ngm-catalog>
+            </div>
+          </div>
 
-      <div class="ui styled accordion" id="${TOOLBOX}">
-        <div class="title ngmmidgrey">
-          <i class="dropdown icon"></i>
-          ${i18next.t('tbx_toolbox_label')}
-        </div>
-        <div class="content">
-          <ngm-aoi-drawer
-            .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
-            @downloadActiveData=${evt => this.downloadActiveData(evt)}
-          >
-          </ngm-aoi-drawer>
-        </div>
-      </div>
-
-      <div class="ui styled accordion">
-        <div class="title ngmmidgrey">
-          <i class="dropdown icon"></i>
-          ${i18next.t('external_tools_label')}
-        </div>
-        <div class="content">
-          <div class="ui link list">
-            <a class="item" target="_blank" href="https://swissforages.ch/">
-              <button class="ui icon button">
-                <i class="pencil ruler icon"></i>
-              </button>
-              swissforages.ch
-            </a>
-            <a class="item" target="_blank" href="https://www.strati.ch/">
-              <button class="ui icon button">
-                <i class="receipt icon"></i>
-              </button>
-              strati.ch
-            </a>
+          <div class="ui styled accordion">
+            <div class="title ngmverylightgrey active">
+              <i class="dropdown icon"></i>
+              ${i18next.t('dtd_displayed_data_label')}
+            </div>
+            <div class="content active">
+              <ngm-layers
+                .layers=${this.activeLayers}
+                .actions=${this.layerActions}
+                @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
+                @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
+                @layerChanged=${() => this.onLayerChanged()}>
+              </ngm-layers>
+              <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
+              <h5 class="ui horizontal divider header">
+                ${i18next.t('dtd_background_map_label')}
+                <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
+                  <span class="small_load_counter">${this.globeQueueLength_}</span>
+                </div>
+              </h5>
+              <ngm-map-configuration></ngm-map-configuration>
+            </div>
           </div>
         </div>
+        <ngm-aoi-drawer .hidden=${this.activePanel !== 'tools'}
+                        .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
+                        @downloadActiveData=${evt => this.downloadActiveData(evt)}>
+        </ngm-aoi-drawer>
+        <ngm-share-link .hidden=${this.activePanel !== 'share'}></ngm-share-link>
       </div>
     `;
+  }
+
+  togglePanel(panelName) {
+    if (this.activePanel === panelName) {
+      this.activePanel = null;
+      return;
+    }
+    this.activePanel = panelName;
   }
 
   get activeLayersForDownload() {
@@ -282,8 +297,26 @@ class LeftSideBar extends LitElementI18n {
 
   updated(changedProperties) {
     if (this.queryManager) {
-      !this.accordionInited && this.initBarAccordions();
       !this.zoomedToPosition && this.zoomToPermalinkObject();
+
+      // todo remove after panel UI update
+      if (!this.accordionInited && this.activePanel === 'data') {
+        const panelElement = this.querySelector('.ngm-data-container');
+
+        if (panelElement) {
+          for (let i = 0; i < panelElement.childElementCount; i++) {
+            const element = panelElement.children.item(i);
+            if (element && element.classList.contains('accordion')) {
+              $(element).accordion(Object.assign({
+                duration: 150
+              }, {
+                onChange: () => LocalStorageController.toggleCatalogState()
+              }));
+            }
+          }
+          this.accordionInited = true;
+        }
+      }
     }
 
     super.updated(changedProperties);
@@ -399,52 +432,6 @@ class LeftSideBar extends LitElementI18n {
     return config;
   }
 
-  accordionFactory(element) {
-    switch (element.id) {
-      case WELCOME_PANEL: {
-        accordion(element, {
-          onChange: () => LocalStorageController.updateWelcomePanelState()
-        });
-        break;
-      }
-      case CATALOG_PANEL: {
-        accordion(element, {
-          onChange: () => LocalStorageController.toggleCatalogState()
-        });
-        break;
-      }
-      case TOOLBOX: {
-        accordion(element, {
-          animateChildren: false,
-          onClosing: () => {
-            const aoiElement = this.querySelector('ngm-aoi-drawer');
-            aoiElement.cancelDraw();
-          },
-          onOpening: () => {
-            const aoiElement = this.querySelector('ngm-aoi-drawer');
-            aoiElement.cancelDraw();
-          }
-        });
-        break;
-      }
-      default:
-        accordion(element);
-    }
-  }
-
-  initBarAccordions() {
-    const sideBarElement = document.querySelector('ngm-left-side-bar');
-
-    for (let i = 0; i < sideBarElement.childElementCount; i++) {
-      const element = sideBarElement.children.item(i);
-      if (element.classList.contains('accordion')) {
-        this.accordionFactory(element);
-      }
-    }
-
-    this.accordionInited = true;
-  }
-
   zoomToPermalinkObject() {
     this.zoomedToPosition = true;
     const zoomToPosition = getZoomToPosition();
@@ -513,11 +500,5 @@ class LeftSideBar extends LitElementI18n {
   }
 }
 
-function accordion(element, options = {}) {
-  return $(element).accordion(Object.assign({
-    duration: 150
-  }, options));
-}
 
-
-customElements.define('ngm-left-side-bar', LeftSideBar);
+customElements.define('ngm-side-bar', SideBar);

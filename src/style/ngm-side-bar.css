@@ -1,0 +1,151 @@
+ngm-side-bar {
+  display: flex;
+}
+
+.ngm-menu,
+.ngm-menu-1,
+.ngm-menu-2,
+.ngm-menu-1 > div,
+.ngm-menu-2 > div,
+ngm-auth > .ngm-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.ngm-menu {
+  width: 80px;
+  justify-content: space-between;
+  font: normal normal normal 12px/15px Inter;
+  color: #222529;
+  background-color: #FFFFFF;
+}
+
+.ngm-menu-1 {
+  margin-top: 24px;
+}
+
+.ngm-menu-2 {
+  margin-bottom: 40px;
+}
+
+.ngm-menu-1 > div,
+.ngm-menu-2 > div,
+.ngm-menu-2 > ngm-auth {
+  margin-bottom: 28px;
+  cursor: pointer;
+}
+
+.ngm-menu-2 > .ngm-nav-close {
+  margin-bottom: 0;
+}
+
+.ngm-menu-1 > div > div:nth-child(1),
+.ngm-menu-2 > div > div:nth-child(1),
+ngm-auth .ngm-user-icon {
+  margin-bottom: 5px;
+  background-color: #030303;
+}
+
+.ngm-menu-1 > div:hover > div:nth-child(1),
+.ngm-menu-2 > div:hover > div:nth-child(1),
+ngm-auth:hover .ngm-user-icon {
+  background-color: #FF0000;
+}
+
+.ngm-menu-1 > div:hover,
+.ngm-menu-2 > div:hover,
+ngm-auth:hover {
+  color: #FF0000;
+}
+
+.ngm-side-bar-panel {
+  width: 250px;
+  height: 100%;
+  max-width: 1028px;
+  background-color: #F1F3F5;
+  box-shadow: 4px 0 4px #00000029;
+  padding: 10px;
+  position: absolute;
+  margin-left: 80px;
+  z-index: 1;
+}
+
+.ngm-side-bar-panel.ngm-large-panel {
+  width: calc(100vw - 144px);
+}
+
+.ngm-panel-header {
+  height: 34px;
+  border-bottom: 2px solid #DFE2E6;
+  display: flex;
+  align-items: center;
+  font: normal normal bold 14px/20px Inter;
+  color: #212529;
+}
+
+.ngm-panel-header .ngm-close-icon {
+  width: 24px;
+  height: 24px;
+  background-color: #000000;
+  margin-left: auto;
+}
+
+.ngm-panel-header .ngm-close-icon:hover {
+  background-color: #A83526;
+}
+
+.ngm-menu-1 > div.ngm-active-section > div:nth-child(1),
+.ngm-menu-2 > div.ngm-active-section > div:nth-child(1),
+.ngm-menu-2 > ngm-auth .ngm-active-section > div:nth-child(1) {
+  background-color: #B9271A;
+}
+
+.ngm-menu-1 > div.ngm-active-section,
+.ngm-menu-2 > div.ngm-active-section,
+.ngm-menu-2 > ngm-auth .ngm-active-section {
+  color: #B9271A;
+}
+
+@media (max-height: 630px) {
+  .ngm-menu {
+    width: 100%;
+    height: 72px;
+    position: absolute;
+    z-index: 9999;
+    bottom: 0;
+  }
+
+  .ngm-menu,
+  .ngm-menu-1,
+  .ngm-menu-2 {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ngm-menu-1,
+  .ngm-menu-2 {
+    align-items: end;
+    margin: 0;
+    height: 50px;
+  }
+
+  .ngm-menu-1 > div,
+  .ngm-menu-2 > div,
+  .ngm-menu-2 > ngm-auth {
+    margin-bottom: 0;
+    margin-right: 24px;
+  }
+
+  .ngm-side-bar-panel {
+    margin-left: 0;
+    height: calc(100vh - 160px);
+  }
+
+  .ngm-side-bar-panel.ngm-large-panel {
+    width: calc(100vw - 64px);
+  }
+}
+

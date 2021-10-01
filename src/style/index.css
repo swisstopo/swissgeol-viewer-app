@@ -43,6 +43,7 @@
 @import 'ngm-tracking-consent.css';
 @import 'ngm-layer-legend.css';
 @import 'icons.css';
+@import 'ngm-side-bar.css';
 
 [hidden] {
   display: none !important;
@@ -75,16 +76,16 @@ header {
   height: 88px;
   box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  z-index: 1;
+  z-index: 2;
 }
 
 header > * {
   display: flex;
 }
 
-header > a > .logo {
-  margin-right: 102px;
+header > a {
   margin-left: 10px;
+  margin-right: 102px;
 }
 
 #outdated-browser {
@@ -199,27 +200,8 @@ cesium-view-cube {
   --cesium-view-cube-fill-color: rgba(224, 225, 226, 0.8);
 }
 
-.sidebar {
-  width: 300px;
-  overflow-y: auto;
-  overflow-x: inherit;
-  height: 100%;
-}
-
-.sidebar.left {
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-}
-
 .ui.checkbox label {
   cursor: pointer;
-}
-
-.ui.buttons .button > .icon.horizontal-layer:before {
-  content: svg-load('../images/horizontal-layer.svg', fill=#000);
-}
-
-.ui.buttons .grey.button > .icon.horizontal-layer:before {
-  content: svg-load('../images/horizontal-layer.svg', fill=#fff);
 }
 
 .no-pointer-events {
@@ -304,6 +286,10 @@ ngm-slicer {
   display: flex;
 }
 
+.ui.input.ngm-share-link input {
+  width: 100px;
+}
+
 ngm-layer-legend-container {
   position: absolute;
   width: 100%;
@@ -357,4 +343,16 @@ ngm-layer-legend-container > ngm-layer-legend {
 
 .ngm-slice-to-draw .content > .checkbox {
   margin-bottom: 5px;
+}
+
+@media (max-width: 710px) {
+  header > a {
+    margin-right: 30px;
+  }
+}
+
+@media (max-height: 630px) {
+  .map {
+    margin-bottom: 72px;
+  }
 }

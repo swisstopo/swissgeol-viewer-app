@@ -46,11 +46,12 @@ ga-search.ui.input > input::-webkit-search-results-decoration {
 .ngm-search-icon-container {
   width: 30px;
   height: 56px;
-  background-repeat: no-repeat;
-  background-position: center;
+  display: flex;
+  align-items: center;
   position: absolute;
   right: 12px;
   color: #66D9E8;
+  background-color: #0b7285;
 }
 
 .ngm-search-icon-container.ngm-close-icon {

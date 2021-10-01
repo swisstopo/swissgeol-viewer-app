@@ -56,11 +56,12 @@ import MainStore from '../store/main.ts';
 import SlicerStore from '../store/slicer.ts';
 import QueryStore from '../store/query.ts';
 import DrawStore from '../store/draw.ts';
+import $ from '../jquery';
 
 const fileUploadInputId = 'fileUpload';
 
 
-class NgmAreaOfInterestDrawer extends LitElementI18n {
+export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   static get properties() {
     return {
@@ -118,6 +119,26 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
       const lastChild = this.querySelector('.ngm-aoi-areas').lastElementChild;
       lastChild.querySelector('.title').classList.add('active');
       lastChild.querySelector('.content').classList.add('active');
+    }
+
+    if (!this.accordionInited) {
+      for (let i = 0; i < this.childElementCount; i++) {
+        const element = this.children.item(i);
+        if (element && element.classList.contains('accordion')) {
+          $(element).accordion(Object.assign({
+            duration: 150
+          }, {
+            animateChildren: false,
+            onClosing: () => {
+              this.cancelDraw();
+            },
+            onOpening: () => {
+              this.cancelDraw();
+            }
+          }));
+          this.accordionInited = true;
+        }
+      }
     }
   }
 

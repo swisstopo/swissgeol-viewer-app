@@ -44,4 +44,8 @@ ngm-camera-information > img {
   .ngm-nci-position {
     display: none;
   }
+
+  .ngm-nci-map {
+    margin-right: 0;
+  }
 }

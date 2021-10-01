@@ -1,19 +1,10 @@
 const LOCALSTORAGE_AOI_KEY = 'aoi';
-const LOCALSTORAGE_WELCOME_KEY = 'hideWelcome';
 const LOCALSTORAGE_CATALOG_KEY = 'hideCatalogWindow';
 
 export default class LocalStorageController {
-  static get hideWelcomeValue() {
-    return localStorage.getItem(LOCALSTORAGE_WELCOME_KEY) === 'true';
-  }
 
   static get hideCatalogValue() {
     return localStorage.getItem(LOCALSTORAGE_CATALOG_KEY) === 'true';
-  }
-
-  static updateWelcomePanelState() {
-    const newValue = localStorage.getItem(LOCALSTORAGE_WELCOME_KEY) !== 'true';
-    localStorage.setItem(LOCALSTORAGE_WELCOME_KEY, newValue);
   }
 
   static toggleCatalogState() {

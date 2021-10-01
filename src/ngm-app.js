@@ -1,7 +1,7 @@
 import {LitElementI18n} from './i18n';
 import {html} from 'lit-html';
 import './elements/ngm-loading-mask';
-import './elements/ngm-left-side-bar';
+import './elements/ngm-side-bar';
 import './elements/ngm-slow-loading';
 import './elements/ngm-navigation-widgets';
 import './elements/ngm-full-screen-view';
@@ -116,7 +116,7 @@ class NgmApp extends LitElementI18n {
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(viewer);
 
-    const sideBar = this.querySelector('ngm-left-side-bar');
+    const sideBar = this.querySelector('ngm-side-bar');
 
     setupSearch(viewer, this.querySelector('ga-search'), sideBar);
   }
@@ -247,24 +247,14 @@ class NgmApp extends LitElementI18n {
         <ngm-camera-information .viewer="${this.viewer}"></ngm-camera-information>
       </header>
       <main>
-        <!-- FIXME: move ngm-auth elsewhere  -->
-        <ngm-auth style="display: none"
-          endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
-          clientId='6brvjsufv7fdubr12r9u0gajnj'
-          @refresh=${(evt) => {
-            this.authenticated = evt.detail.authenticated;
-            this.userGroups = evt.detail.groups;
-          }}
-        ></ngm-auth>
         <ngm-drop-files @filedrop="${event => this.onFileDrop(event.detail.file, event.detail.type)}"
                         .target="${document.body}"></ngm-drop-files>
         <ngm-loading-mask></ngm-loading-mask>
-        <ngm-left-side-bar
+        <ngm-side-bar
           .queryManager=${this.queryManager}
           @layeradded=${this.onLayerAdded}
-          @showLayerLegend=${this.onShowLayerLegend}
-          class='left sidebar'>
-        </ngm-left-side-bar>
+          @showLayerLegend=${this.onShowLayerLegend}>
+        </ngm-side-bar>
         <div class='map'>
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
@@ -274,16 +264,6 @@ class NgmApp extends LitElementI18n {
             </div>
             <ngm-object-information></ngm-object-information>
             <ngm-layer-legend-container></ngm-layer-legend-container>
-          </div>
-          <div class='footer'>
-            <div class='ui horizontal link list'>
-              <ngm-feature-height .viewer=${this.viewer} class='item'></ngm-feature-height>
-            </div>
-            <div style='flex: auto;'></div>
-            <div class='ui horizontal link list'>
-              <a class='item' target='_blank' href='https://www.geologieportal.ch'>www.geologieportal.ch</a>
-              <a class='item' target='_blank' href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
-            </div>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
         </div>
