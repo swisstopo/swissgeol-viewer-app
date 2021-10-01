@@ -44,6 +44,7 @@
 @import 'ngm-layer-legend.css';
 @import 'icons.css';
 @import 'ngm-side-bar.css';
+@import 'ngm-nav-tools.css';
 
 [hidden] {
   display: none !important;
@@ -164,40 +165,6 @@ ngm-app {
 
 :lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en {
   font-weight: bold;
-}
-
-.navigation-widgets {
-  position: absolute;
-  z-index: 1;
-  right: 0;
-  margin: 6px;
-}
-
-.navigation-widgets, ngm-navigation-widgets, .ngm-navigation-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-ngm-navigation-widgets {
-  align-items: flex-end;
-  width: 0;
-}
-
-.navigation-widgets .ui.button, ngm-elevator-buttons {
-  margin: .5em 0 0 0;
-}
-
-cesium-compass {
-  width: 98px;
-  height: 98px;
-  --cesium-compass-stroke-color: rgba(0, 0, 0, 0.6);
-  --cesium-compass-fill-color: rgb(224, 225, 226);
-}
-
-cesium-view-cube {
-  --cesium-view-cube-stroke-color: rgba(0, 0, 0, 0.6);
-  --cesium-view-cube-fill-color: rgba(224, 225, 226, 0.8);
 }
 
 .ui.checkbox label {

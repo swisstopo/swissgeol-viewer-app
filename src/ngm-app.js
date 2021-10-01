@@ -12,6 +12,7 @@ import './elements/ngm-drop-files';
 import './elements/ngm-tracking-consent';
 import './elements/ngm-layer-legend-container';
 import './elements/ngm-camera-information.js';
+import './elements/ngm-nav-tools.ts';
 
 import {
   DEFAULT_VIEW,
@@ -258,17 +259,20 @@ class NgmApp extends LitElementI18n {
         <div class='map'>
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
-            <div class='navigation-widgets'>
-              <ngm-navigation-widgets data-fs='no'></ngm-navigation-widgets>
-              <ngm-full-screen-view></ngm-full-screen-view>
-            </div>
             <ngm-object-information></ngm-object-information>
+            <ngm-nav-tools .scene=${this.viewer?.scene}></ngm-nav-tools>
             <ngm-layer-legend-container></ngm-layer-legend-container>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
         </div>
       </main>
     `;
+
+    // todo clean up
+    // <div className='navigation-widgets'>
+    //   <ngm-navigation-widgets data-fs='no'></ngm-navigation-widgets>
+    //   <ngm-full-screen-view></ngm-full-screen-view>
+    // </div>
   }
 
   createRenderRoot() {
