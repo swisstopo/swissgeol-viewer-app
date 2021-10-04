@@ -7,7 +7,7 @@ import {Event, Scene} from 'cesium';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
-  @property({type: Object}) scene = null
+  @property({type: Object}) scene: Scene | null = null
   @property({type: Number, attribute: false}) moveAmount = 200
   private zoomingIn = false
   private zoomingOut = false
@@ -47,14 +47,14 @@ export class NgmNavTools extends LitElementI18n {
   startZoomIn(event) {
     if (!this.scene) return;
     this.zoomingIn = true;
-    (<Scene> this.scene).requestRender();
+    this.scene.requestRender();
     event.preventDefault();
   }
 
   startZoomOut(event) {
     if (!this.scene) return;
     this.zoomingOut = true;
-    (<Scene> this.scene).requestRender();
+    this.scene.requestRender();
     event.preventDefault();
   }
 
@@ -65,7 +65,7 @@ export class NgmNavTools extends LitElementI18n {
 
   flyToHome() {
     if (!this.scene) return;
-    (<Scene> this.scene).camera.flyTo(DEFAULT_VIEW);
+    this.scene.camera.flyTo(DEFAULT_VIEW);
   }
 
   render() {

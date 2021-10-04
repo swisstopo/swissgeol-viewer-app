@@ -1,13 +1,6 @@
 ngm-nav-tools {
   width: 44px;
   height: 170px;
-  background: #F1F3F5;
-  box-shadow: 4px 4px 2px #00000029;
-  border-radius: 8px;
-  position: absolute;
-  z-index: 2;
-  padding: 5px;
-  top: 98px;
   right: 10px;
 }
 
@@ -29,15 +22,6 @@ ngm-nav-tools {
 
 .ngm-nav-buttons > div:active {
   background-color: #B9271A;
-}
-
-.ngm-drag-area {
-  height: 32px;
-}
-
-.ngm-drag-area > div {
-  border: 1px solid #DFE2E6;
-  margin-top: 2px;
 }
 
 /* Old styles for navigation widgets */

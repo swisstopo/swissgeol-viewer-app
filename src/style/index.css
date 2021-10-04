@@ -45,6 +45,7 @@
 @import 'icons.css';
 @import 'ngm-side-bar.css';
 @import 'ngm-nav-tools.css';
+@import 'ngm-minimap.css';
 
 [hidden] {
   display: none !important;
@@ -310,6 +311,25 @@ ngm-layer-legend-container > ngm-layer-legend {
 
 .ngm-slice-to-draw .content > .checkbox {
   margin-bottom: 5px;
+}
+
+.ngm-floating-window {
+  background: #F1F3F5;
+  box-shadow: 4px 4px 2px #00000029;
+  border-radius: 8px;
+  position: absolute;
+  z-index: 2;
+  padding: 5px;
+  top: 98px;
+}
+
+.ngm-floating-window .ngm-drag-area {
+  height: 32px;
+}
+
+.ngm-floating-window .ngm-drag-area > div {
+  border: 1px solid #DFE2E6;
+  margin-top: 2px;
 }
 
 @media (max-width: 710px) {

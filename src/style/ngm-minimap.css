@@ -1,0 +1,8 @@
+ngm-minimap {
+  display: flex;
+  flex-direction: column;
+}
+
+.ngm-floating-window div.ngm-drag-area {
+  height: auto;
+}

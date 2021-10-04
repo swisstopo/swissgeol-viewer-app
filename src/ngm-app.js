@@ -13,6 +13,7 @@ import './elements/ngm-tracking-consent';
 import './elements/ngm-layer-legend-container';
 import './elements/ngm-camera-information.js';
 import './elements/ngm-nav-tools.ts';
+import './elements/ngm-minimap.ts';
 
 import {
   DEFAULT_VIEW,
@@ -260,7 +261,8 @@ class NgmApp extends LitElementI18n {
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
             <ngm-object-information></ngm-object-information>
-            <ngm-nav-tools .scene=${this.viewer?.scene}></ngm-nav-tools>
+            <ngm-nav-tools class="ngm-floating-window" .scene=${this.viewer?.scene}></ngm-nav-tools>
+            <ngm-minimap class="ngm-floating-window" .scene=${this.viewer?.scene}></ngm-minimap>
             <ngm-layer-legend-container></ngm-layer-legend-container>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
