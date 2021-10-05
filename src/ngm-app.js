@@ -35,6 +35,7 @@ import {initSentry} from './sentry.js';
 import {showWarning} from './message';
 import MainStore from './store/main.ts';
 import SlicerStore from './store/slicer.ts';
+import {classMap} from 'lit-html/directives/class-map.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -65,6 +66,7 @@ class NgmApp extends LitElementI18n {
     return {
       mapChooser: {type: Object, attribute: false},
       slicer_: {type: Object, attribute: false},
+      showMinimap: {type: Boolean, attribute: false},
     };
   }
 
@@ -72,6 +74,7 @@ class NgmApp extends LitElementI18n {
     super();
     this.slicer_ = null;
     this.mapChooser = null;
+    this.showMinimap = false;
   }
 
   /**
@@ -246,6 +249,8 @@ class NgmApp extends LitElementI18n {
           <div class="ngm-search-icon-container ngm-search-icon"></div>
           <ul class="search-results"></ul>
         </ga-search>
+        <div class="ngm-map-icon ${classMap({'ngm-map-active': this.showMinimap})}"
+             @click=${() => this.showMinimap = !this.showMinimap}></div>
         <ngm-camera-information .viewer="${this.viewer}"></ngm-camera-information>
       </header>
       <main>
@@ -262,7 +267,8 @@ class NgmApp extends LitElementI18n {
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
             <ngm-object-information></ngm-object-information>
             <ngm-nav-tools class="ngm-floating-window" .scene=${this.viewer?.scene}></ngm-nav-tools>
-            <ngm-minimap class="ngm-floating-window" .scene=${this.viewer?.scene}></ngm-minimap>
+            <ngm-minimap class="ngm-floating-window" .viewer=${this.viewer} .hidden=${!this.showMinimap}
+                         @close=${() => this.showMinimap = false}></ngm-minimap>
             <ngm-layer-legend-container></ngm-layer-legend-container>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>

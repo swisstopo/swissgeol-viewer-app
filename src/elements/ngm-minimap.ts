@@ -1,5 +1,5 @@
-import {customElement, html, LitElement, property} from 'lit-element';
-import {Event, Scene} from 'cesium';
+import {customElement, html, property} from 'lit-element';
+import {Event, Viewer} from 'cesium';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
@@ -7,10 +7,13 @@ import {styleMap} from 'lit-html/directives/style-map';
 import {SWITZERLAND_RECTANGLE, MINIMAP_EXTENT} from '../constants';
 import {repeat} from 'lit-html/directives/repeat.js';
 import draggable from './draggable';
+import './ngm-nadir-view.ts';
+import i18next from 'i18next';
+import {LitElementI18n} from '../i18n';
 
 @customElement('ngm-minimap')
-export class NgmMinimap extends LitElement {
-  @property({type: Object}) scene: Scene | null = null
+export class NgmMinimap extends LitElementI18n {
+  @property({type: Object}) viewer: Viewer | null = null
   private unlistenPostRender: Event.RemoveCallback | null = null
   private moveMarker = false
   private left = 0
@@ -34,8 +37,8 @@ export class NgmMinimap extends LitElement {
   }
 
   updated() {
-    if (this.scene && !this.unlistenPostRender) {
-      this.unlistenPostRender = this.scene.postRender.addEventListener(() => {
+    if (this.viewer && !this.unlistenPostRender) {
+      this.unlistenPostRender = this.viewer.scene.postRender.addEventListener(() => {
         this.updateFromCamera();
       });
     }
@@ -67,9 +70,9 @@ export class NgmMinimap extends LitElement {
   }
 
   updateFromCamera() {
-    if (!this.scene) return;
-    const cameraRect = this.scene.camera.computeViewRectangle(this.scene.globe.ellipsoid, new Rectangle());
-    const position = this.scene.camera.positionCartographic;
+    if (!this.viewer) return;
+    const cameraRect = this.viewer.scene.camera.computeViewRectangle(this.viewer.scene.globe.ellipsoid, new Rectangle());
+    const position = this.viewer.scene.camera.positionCartographic;
     let lon = CesiumMath.toDegrees(position.longitude);
     let lat = CesiumMath.toDegrees(position.latitude);
     if (cameraRect) {
@@ -82,19 +85,20 @@ export class NgmMinimap extends LitElement {
     }
     this.left = (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
     this.bottom = (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
-    this.heading = this.scene.camera.heading;
+    this.heading = this.viewer.scene.camera.heading;
 
     this.requestUpdate();
   }
 
   moveCamera(evtX, evtY) {
-    if (!this.scene) return;
+    if (!this.viewer) return;
     const boundingRect = this.getBoundingClientRect();
-    const cameraRect = this.scene.camera.computeViewRectangle(this.scene.globe.ellipsoid, new Rectangle());
+    const camera = this.viewer.scene.camera;
+    const cameraRect = camera.computeViewRectangle(this.viewer.scene.globe.ellipsoid, new Rectangle());
     let pinchScaleW = 1;
     let pinchScaleH = 1;
     if (cameraRect) {
-      const position = this.scene.camera.positionCartographic;
+      const position = camera.positionCartographic;
       pinchScaleW = cameraRect.west > position.longitude ? position.longitude / cameraRect.west : 1;
       pinchScaleH = cameraRect.south > position.latitude ? position.latitude / cameraRect.south : 1;
     }
@@ -109,7 +113,7 @@ export class NgmMinimap extends LitElement {
     const height = CesiumMath.toRadians(MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]) * bottom + bottomDiff;
     const lon = (width + SWITZERLAND_RECTANGLE.west) * pinchScaleW;
     const lat = (height + SWITZERLAND_RECTANGLE.south) * pinchScaleH;
-    this.scene.camera.position = Cartesian3.fromRadians(lon, lat, this.scene.camera.positionCartographic.height);
+    camera.position = Cartesian3.fromRadians(lon, lat, camera.positionCartographic.height);
   }
 
   connectedCallback() {
@@ -121,11 +125,16 @@ export class NgmMinimap extends LitElement {
 
   render() {
     return html`
+      <div class="ngm-minimap-header">
+        ${i18next.t('minimap_orientation')}
+        <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
+      </div>
       <div>
         <div style=${styleMap(this.markerStyle)} @mousedown="${() => this.moveMarker = true}">
           <img src="./images/mapMarker.svg" draggable="false" class="ngm-map-marker">
         </div>
         <img src="./images/overview.svg" draggable="false" class="ngm-map-overview">
+        <ngm-nadir-view .viewer=${this.viewer}></ngm-nadir-view>
       </div>
       <div class="ngm-drag-area">
         ${repeat(new Array(5), () => html`

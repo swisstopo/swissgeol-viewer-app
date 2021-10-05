@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><defs><style>.a{fill:#0b7285;}.b{fill:none;}</style></defs><g transform="translate(-353.133 -217.643)"><path class="a" d="M370.18,237.886l-3-5-1.5,3.757h-6.5l-.955-4.776-5.092,1.273,6.249-12.5h12.4l1,4H377v7h-4.323Zm-9.36-3.243h3.5l2.5-6.244,3,5,1.5-3.756H375v-3h-3.781l-1-4h-9.6l-3.751,7.5,2.908-.727Z"/></g><rect class="b" width="24" height="24"/></svg>
+<svg id="i_switzerland" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <g id="Gruppe_1509" data-name="Gruppe 1509" transform="translate(-353.133 -217.643)">
+    <path id="Pfad_2225" data-name="Pfad 2225" d="M370.18,237.886l-3-5-1.5,3.757h-6.5l-.955-4.776-5.092,1.273,6.249-12.5h12.4l1,4H377v7h-4.323Zm-9.36-3.243h3.5l2.5-6.244,3,5,1.5-3.756H375v-3h-3.781l-1-4h-9.6l-3.751,7.5,2.908-.727Z" fill="#0b7285"/>
+  </g>
+  <rect id="Rechteck_1964" data-name="Rechteck 1964" width="24" height="24" fill="none"/>
+</svg>

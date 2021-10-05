@@ -84,3 +84,10 @@
   mask: url('./images/i_zoom_minus.svg') no-repeat center;
   -webkit-mask: url('./images/i_zoom_minus.svg') no-repeat center;
 }
+
+.ngm-map-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_switzerland.svg') no-repeat center;
+  -webkit-mask: url('./images/i_switzerland.svg') no-repeat center;
+}

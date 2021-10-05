@@ -1,7 +1,6 @@
 ngm-camera-information {
   max-width: 328px;
   height: 57px;
-  margin-left: auto;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -14,10 +13,6 @@ ngm-camera-information {
 
 ngm-camera-information .ngm-nci-value {
   font: normal normal 600 14px/20px Inter;
-}
-
-.ngm-nci-map {
-  margin-right: 17px;
 }
 
 .ngm-nci-position {
@@ -43,9 +38,5 @@ ngm-camera-information > img {
   .ngm-nci-direction,
   .ngm-nci-position {
     display: none;
-  }
-
-  .ngm-nci-map {
-    margin-right: 0;
   }
 }

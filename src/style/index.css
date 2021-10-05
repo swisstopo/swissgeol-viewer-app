@@ -46,6 +46,7 @@
 @import 'ngm-side-bar.css';
 @import 'ngm-nav-tools.css';
 @import 'ngm-minimap.css';
+@import 'header.css';
 
 [hidden] {
   display: none !important;
@@ -69,25 +70,6 @@ body, .ui.button, .ui.accordion .title:not(.ui), .ui.input > input {
 
 a {
   text-decoration: none;
-}
-
-
-header {
-  display: flex;
-  padding: 10px;
-  height: 88px;
-  box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  z-index: 2;
-}
-
-header > * {
-  display: flex;
-}
-
-header > a {
-  margin-left: 10px;
-  margin-right: 102px;
 }
 
 #outdated-browser {
@@ -330,12 +312,6 @@ ngm-layer-legend-container > ngm-layer-legend {
 .ngm-floating-window .ngm-drag-area > div {
   border: 1px solid #DFE2E6;
   margin-top: 2px;
-}
-
-@media (max-width: 710px) {
-  header > a {
-    margin-right: 30px;
-  }
 }
 
 @media (max-height: 630px) {
