@@ -16,7 +16,7 @@ const cesiumSource = __dirname + '/node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
 
 const config = {
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: [{
     file: 'dist/bundle.debug.js',
     sourcemap: true,

@@ -4,3 +4,5 @@
 src/environment.js
 manuals/dist
 /types
+/docs
+/secrets.txt

@@ -1,23 +1,27 @@
 import {getOrthogonalViewPoints, planeFromTwoPoints} from '../cesiumutils';
 import {executeForAllPrimitives} from '../utils.ts';
-import {createClippingPlanes, getClippingPlaneFromSegment} from './helper';
-import SlicingToolBase from './SlicingToolBase';
+import {createClippingPlanes, getClippingPlaneFromSegment} from './helper.ts';
+import SlicingToolBase from './SlicingToolBase.ts';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import Plane from 'cesium/Source/Core/Plane';
+
+export interface SlicingLineOptions {
+  slicePoints: any[],
+  negate: boolean | undefined,
+}
 
 export default class SlicingLine extends SlicingToolBase {
-  constructor(viewer) {
-    super(viewer);
-    this.options = null;
-  }
+  options: SlicingLineOptions | null = null;
+  plane: Plane | null = null;
 
-  activate(options) {
+  activate(options: SlicingLineOptions) {
     this.options = options;
-    if (!this.options.slicePoints || this.options.slicePoints.length !== 2) {
+    if (!options.slicePoints || options.slicePoints.length !== 2) {
       const points = getOrthogonalViewPoints(this.viewer);
-      this.options.slicePoints = [points[0], points[1]];
+      options.slicePoints = [points[0], points[1]];
     }
-    this.plane = planeFromTwoPoints(this.options.slicePoints[0], this.options.slicePoints[1], this.options.negate);
+    this.plane = planeFromTwoPoints(options.slicePoints[0], options.slicePoints[1], options.negate);
     this.viewer.scene.globe.clippingPlanes = createClippingPlanes([this.plane]);
     executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlanes(primitive));
   }
@@ -28,8 +32,8 @@ export default class SlicingLine extends SlicingToolBase {
   }
 
   addClippingPlanes(primitive) {
-    if (!primitive.root || !primitive.boundingSphere) return;
-    const planeNormal = this.plane.normal;
+    if (!primitive.root || !primitive.boundingSphere || !this.options) return;
+    const planeNormal = this.plane!.normal;
     const p1 = this.options.slicePoints[0];
     const p2 = this.options.slicePoints[1];
     const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;

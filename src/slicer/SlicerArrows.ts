@@ -9,36 +9,78 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import {getDirectionFromPoints} from '../cesiumutils';
+import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import DataSource from 'cesium/Source/DataSources/DataSource';
+import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
+import Quaternion from 'cesium/Source/Core/Quaternion';
+import ShadowMode from 'cesium/Source/Scene/ShadowMode';
 
-/**
- * @typedef {object} ArrowListItem
- * @property {string} side - arrow position label
- * @property {string} uri - path to model
- * @property {string} [oppositeSide - opposite arrow position label]
- * @property {string} [position - arrow position. Required if 'positionUpdateCallback' is not provided]
- * @property {string} [oppositePosition - position to create move axis. Required if no opposite arrow]
- */
+interface ArrowListItem {
+  // arrow position label
+  side: string,
+  // path to model
+  uri: string,
+  // opposite arrow position label
+  oppositeSide?: string,
+  // arrow position. Required if 'positionUpdateCallback' is not provided
+  position?: string,
+  // position to create move axis. Required if no opposite arrow
+  oppositePosition?: string
+}
 
-/**
- * @typedef {object} ArrowConfiguration
- * @property {number} [minimumPixelSize - specifying the approximate minimum pixel size of the model regardless of zoom]
- * @property {number} [scale - specifying a uniform linear scale]
- * @property {number} [maximumScale - the maximum scale size of a model. An upper limit for minimumPixelSize]
- * @property {shadows} [shadowMode - specifying whether the model casts or receives shadows from light sources]
- * @property {ColorBlendMode} [colorBlendMode - specifying how the color blends with the model]
- * @property {Color} [color - specifying the Color that blends with the model's rendered color.]
- * @property {Quaternion} [orientation - entity orientation.]
- */
+interface ArrowConfiguration {
+  // specifying the approximate minimum pixel size of the model regardless of zoom
+  minimumPixelSize?: number,
+  // specifying a uniform linear scale]specifying a uniform linear scale
+  scale?: number,
+  // the maximum scale size of a model. An upper limit for minimumPixelSize
+  maximumScale?: number,
+  // specifying whether the model casts or receives shadows from light sources
+  shadowMode?: ShadowMode,
+  // specifying how the color blends with the model
+  colorBlendMode?: ColorBlendMode,
+  // specifying the Color that blends with the model's rendered color.
+  color: Color,
+  // Entity orientation
+  orientation?: Quaternion,
+}
 
-/**
- * @typedef {object} SlicerArrowOptions
- * @property {ArrowListItem[]} arrowsList
- * @property {ArrowConfiguration} [arrowConfiguration]
- * @property {(function(string): Cartesian3)} [positionUpdateCallback - entity position callback]
- * @property {(function(string, number, Cartesian3): void)} [moveCallback - calls on arrow move]
- */
+export interface SlicerArrowOptions {
+  arrowsList: ArrowListItem[],
+  arrowConfiguration?: ArrowConfiguration,
+  // entity position callback
+  positionUpdateCallback: (string) => Cartesian3,
+  // calls on arrow move
+  moveCallback: (string, number, Cartesian3) => void,
+}
+
 
 export default class SlicerArrows {
+  viewer: Viewer;
+  dataSource: DataSource;
+  moveCallback: (string, number, Cartesian3) => void;
+  positionUpdateCallback: (string) => Cartesian3;
+  arrowsList: ArrowListItem[];
+  julianDate = new JulianDate();
+  selectedArrow: Entity | null = null;
+  arrowConfiguration: ArrowConfiguration;
+
+  enableInputs_ = true;
+
+  scratchBoundingSphere_ = new BoundingSphere();
+  scratchArrowPosition2d_ = new Cartesian2();
+  scratchOppositeArrowPosition2d_ = new Cartesian2();
+  scratchAxisVector2d_ = new Cartesian2();
+  scratchMouseMoveVector_ = new Cartesian2();
+  scratchObjectMoveVector2d_ = new Cartesian2();
+  scratchNewArrowPosition2d_ = new Cartesian2();
+  scratchAxisVector3d_ = new Cartesian3();
+
+  eventHandler_: (ScreenSpaceEventHandler | null) = null;
+  highlightedArrow: Entity | undefined = undefined;
+  arrows: Record<string, Entity> = {};
+
+
   /**
    * Creates one or more entities and handle their move.
    * @param {Viewer} viewer
@@ -51,21 +93,7 @@ export default class SlicerArrows {
     this.moveCallback = options.moveCallback;
     this.positionUpdateCallback = options.positionUpdateCallback;
     this.arrowsList = options.arrowsList;
-    this.julianDate = new JulianDate();
-    this.selectedArrow = null;
     this.arrowConfiguration = options.arrowConfiguration || DEFAULT_CONFIG_FOR_SLICING_ARROW;
-
-    this.eventHandler_ = null;
-    this.enableInputs_ = true;
-
-    this.scratchBoundingSphere_ = new BoundingSphere();
-    this.scratchArrowPosition2d_ = new Cartesian2();
-    this.scratchOppositeArrowPosition2d_ = new Cartesian2();
-    this.scratchAxisVector2d_ = new Cartesian2();
-    this.scratchMouseMoveVector_ = new Cartesian2();
-    this.scratchObjectMoveVector2d_ = new Cartesian2();
-    this.scratchNewArrowPosition2d_ = new Cartesian2();
-    this.scratchAxisVector3d_ = new Cartesian3();
   }
 
   show() {
@@ -104,20 +132,21 @@ export default class SlicerArrows {
   onMouseMove(movement) {
     if (this.selectedArrow) {
       const scene = this.viewer.scene;
-      const side = this.selectedArrow.properties.side.getValue();
+      const properties = this.selectedArrow.properties!;
+      const side: string = properties.side.getValue();
       // get second position to create move axis
-      let oppositePosition3d = undefined;
-      if (this.selectedArrow.properties.oppositeSide) {
-        const oppositeSide = this.selectedArrow.properties.oppositeSide.getValue();
+      let oppositePosition3d: Cartesian3;
+      if (properties.oppositeSide) {
+        const oppositeSide: string = properties.oppositeSide.getValue();
         const oppositeArrow = this.arrows[oppositeSide];
-        oppositePosition3d = oppositeArrow.position.getValue(this.julianDate);
-      } else if (this.selectedArrow.properties.oppositePosition) {
-        oppositePosition3d = this.selectedArrow.properties.oppositePosition.getValue();
+        oppositePosition3d = oppositeArrow.position!.getValue(this.julianDate);
+      } else if (properties.oppositePosition) {
+        oppositePosition3d = properties.oppositePosition.getValue();
       } else {
         throw new Error('Move axis can\'t be created. Second position missing');
       }
 
-      const arrowPosition3d = this.selectedArrow.position.getValue(this.julianDate);
+      const arrowPosition3d = this.selectedArrow.position!.getValue(this.julianDate);
       scene.cartesianToCanvasCoordinates(arrowPosition3d, this.scratchArrowPosition2d_);
       scene.cartesianToCanvasCoordinates(oppositePosition3d, this.scratchOppositeArrowPosition2d_);
 
@@ -162,7 +191,7 @@ export default class SlicerArrows {
   }
 
   createMoveArrows() {
-    const arrowEntityTemplate = {
+    const arrowEntityTemplate: Entity.ConstructorOptions = {
       orientation: this.arrowConfiguration.orientation,
       model: this.arrowConfiguration,
       properties: {}
@@ -170,8 +199,8 @@ export default class SlicerArrows {
     this.arrows = {};
     this.arrowsList.forEach(arrow => {
       const arrowEntityOptions = arrowEntityTemplate;
-      arrowEntityOptions.properties.side = arrow.side;
-      arrowEntityOptions.model.uri = arrow.uri;
+      arrowEntityOptions.properties!.side = arrow.side;
+      arrowEntityOptions.model!.uri = arrow.uri;
       if (this.positionUpdateCallback) {
         arrowEntityOptions.position = new CallbackProperty(() => this.positionUpdateCallback(arrow.side), false);
       } else {

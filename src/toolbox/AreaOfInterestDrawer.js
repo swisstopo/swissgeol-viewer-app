@@ -40,7 +40,7 @@ import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {SwissforagesService} from './SwissforagesService';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {calculateBoxHeight} from '../slicer/helper';
+import {calculateBoxHeight} from '../slicer/helper.ts';
 
 
 import {clickOnElement, coordinatesToBbox, parseJson} from '../utils.ts';

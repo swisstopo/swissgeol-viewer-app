@@ -23,7 +23,7 @@ import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
 import {getCameraView, getSliceParam, syncCamera, syncSliceParam} from './permalink.js';
 import i18next from 'i18next';
 import {getZoomToPosition} from './permalink';
-import Slicer from './slicer/Slicer.js';
+import Slicer from './slicer/Slicer.ts';
 
 import {setupI18n} from './i18n.js';
 import QueryManager from './query/QueryManager';
