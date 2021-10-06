@@ -23,38 +23,3 @@ ngm-nav-tools {
 .ngm-nav-buttons > div:active {
   background-color: #B9271A;
 }
-
-/* Old styles for navigation widgets */
-/*.navigation-widgets {*/
-/*  position: absolute;*/
-/*  z-index: 1;*/
-/*  right: 0;*/
-/*  margin: 6px;*/
-/*}*/
-
-/*.navigation-widgets, ngm-navigation-widgets, .ngm-navigation-buttons {*/
-/*  display: flex;*/
-/*  flex-direction: column;*/
-/*  align-items: center;*/
-/*}*/
-
-/*ngm-navigation-widgets {*/
-/*  align-items: flex-end;*/
-/*  width: 0;*/
-/*}*/
-
-/*.navigation-widgets .ui.button, ngm-elevator-buttons {*/
-/*  margin: .5em 0 0 0;*/
-/*}*/
-
-/*cesium-compass {*/
-/*  width: 98px;*/
-/*  height: 98px;*/
-/*  --cesium-compass-stroke-color: rgba(0, 0, 0, 0.6);*/
-/*  --cesium-compass-fill-color: rgb(224, 225, 226);*/
-/*}*/
-
-/*cesium-view-cube {*/
-/*  --cesium-view-cube-stroke-color: rgba(0, 0, 0, 0.6);*/
-/*  --cesium-view-cube-fill-color: rgba(224, 225, 226, 0.8);*/
-/*}*/

@@ -275,12 +275,6 @@ class NgmApp extends LitElementI18n {
         </div>
       </main>
     `;
-
-    // todo clean up
-    // <div className='navigation-widgets'>
-    //   <ngm-navigation-widgets data-fs='no'></ngm-navigation-widgets>
-    //   <ngm-full-screen-view></ngm-full-screen-view>
-    // </div>
   }
 
   createRenderRoot() {

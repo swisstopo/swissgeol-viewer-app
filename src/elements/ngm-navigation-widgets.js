@@ -9,7 +9,6 @@ import {LitElementI18n} from '../i18n.js';
 import MainStore from '../store/main.ts';
 
 class NgmNavigationWidgets extends LitElementI18n {
-
   constructor() {
     super();
     /**
@@ -19,6 +18,7 @@ class NgmNavigationWidgets extends LitElementI18n {
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
   }
 
+  // todo reuse or remove
   render() {
     if (this.viewer) {
       return html`
