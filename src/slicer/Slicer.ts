@@ -1,49 +1,91 @@
+import {Viewer} from 'cesium';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+// @ts-ignore TS2691
 import {executeForAllPrimitives} from '../utils.ts';
+// @ts-ignore TS2691
 import SlicingBox from './SlicingBox.ts';
+// @ts-ignore TS2691
 import SlicingLine from './SlicingLine.ts';
+// @ts-ignore TS2691
 import SlicingToolBase from './SlicingToolBase.ts';
 
-/**
- * @typedef {object} BoxSliceInfo
- * @property {'box'|'view-box'} type - slice type
- * @property {Cartesian3[]} slicePoints - box corner positions
- * @property {Number} lowerLimit - lower limit of the box
- * @property {Number} height - height of the box
- */
-
-/**
- * @callback SyncBoxPlanesCallback
- * @param {BoxSliceInfo} sliceInfo
- */
-
-/**
- * @typedef {object} SliceOptions
- * @property {'box'|'view-box'|'line'|'view-line'} type - slice type
- * @property [{Cartesian3[]} slicePoints - points for line slicing. Required with 'line' type]
- * @property [{boolean} negate - slice direction for line slicing]
- * @property [{number} lowerLimit - lower limit for box slicing]
- * @property [{number} height - box height for box slicing]
- * @property [{boolean} showBox - box and arrows visibility]
- * @property [{function} deactivationCallback - calls on slicing deactivation]
- * @property [{function} activationCallback - calls on slicing activation]
- * @property [{SyncBoxPlanesCallback} syncBoxPlanesCallback - calls on synchronization of box planes]
- */
+interface BoxSliceInfo {
+  /**
+   * slice type
+   */
+  type: 'box' | 'view-box',
+  /**
+   * box corner positions
+   */
+  slicePoints: Cartesian3[],
+  /**
+   * lower limit of the box
+   */
+  lowerLimit: number,
+  /**
+   * height of the box
+   */
+  height: number,
+}
 
 
-const DEFAULT_SLICE_OPTIONS = {
+interface SliceOptions {
+  /**
+   * Slice type.
+   */
+  type?: 'box'|'view-box'|'line'|'view-line',
+  /**
+   * points for line slicing. Required with 'line' type
+   */
+  slicePoints?: Cartesian3[],
+  /**
+   *
+   */
+  negate?: boolean,
+  /**
+   *  lower limit for box slicing
+   */
+  lowerLimit?: number,
+  /**
+   * box height for box slicing
+   */
+  height?: number,
+  /**
+   * box and arrows visibility
+   */
+   showBox?: boolean,
+  /**
+   * calls on slicing deactivation
+   */
+   deactivationCallback?: () => void,
+  /**
+   * calls on slicing activation
+   */
+   activationCallback?: () => void,
+   /**
+    * calls on synchronization of box planes
+    */
+   syncBoxPlanesCallback?: () => void,
+}
+
+
+const DEFAULT_SLICE_OPTIONS: SliceOptions = {
   type: undefined,
   slicePoints: [],
   negate: false,
-  activationCallback: () => {
-  },
-  deactivationCallback: () => {
-  },
-  syncBoxPlanesCallback: () => {
-  }
 };
 
 export default class Slicer {
+
+  viewer: Viewer;
+  slicingBox: SlicingBox;
+  slicingLine: SlicingLine;
+  sliceOptions: SliceOptions;
+  slicerDataSource: CustomDataSource;
+  sliceActive: boolean;
+  slicingTool: SlicingToolBase;
+
   /**
    * @param {Viewer} viewer
    */
@@ -88,6 +130,7 @@ export default class Slicer {
 
       if (globe.clippingPlanes) {
         globe.clippingPlanes.enabled = false;
+        // @ts-ignore
         globe.clippingPlanes = undefined;
       }
 

@@ -5,7 +5,6 @@ import {
 } from '@aws-sdk/credential-provider-cognito-identity';
 import {CognitoIdentityClient} from '@aws-sdk/client-cognito-identity';
 // todo we have conflict between build and start
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import auth from './store/auth.ts';
 
