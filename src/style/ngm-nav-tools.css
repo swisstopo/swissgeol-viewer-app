@@ -10,6 +10,7 @@ ngm-nav-tools {
   align-items: center;
   justify-content: space-around;
   height: 132px;
+  cursor: pointer;
 }
 
 .ngm-nav-buttons > div {

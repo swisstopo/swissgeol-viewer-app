@@ -1,4 +1,4 @@
-import {customElement, html, property} from 'lit-element';
+import {customElement, html, property, state} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
 import {setCameraHeight} from '../cesiumutils.js';
 
@@ -9,12 +9,12 @@ import {Event, Viewer} from 'cesium';
 @customElement('ngm-nadir-view')
 export class NgmNadirView extends LitElementI18n {
   @property({type: Object}) viewer: Viewer | null = null
-  @property({type: Object, attribute: false}) unlistenPostRender: Event.RemoveCallback | null = null
-  @property({type: Boolean, attribute: false}) active = false
-  @property({type: Number, attribute: false}) pitch: number | undefined = undefined
-  @property({type: Number, attribute: false}) height: number | undefined = undefined
-  @property({type: Number, attribute: false}) heading: number | undefined = undefined
-  @property({type: Number, attribute: false}) currentHeading = 0
+  @state() unlistenPostRender: Event.RemoveCallback | null = null
+  @state() active = false
+  @state() pitch: number | undefined = undefined
+  @state() height: number | undefined = undefined
+  @state() heading: number | undefined = undefined
+  @state() currentHeading = 0
 
   updated() {
     if (this.viewer && !this.unlistenPostRender) {
@@ -56,7 +56,7 @@ export class NgmNadirView extends LitElementI18n {
   }
 
   toggle() {
-    if (!this.viewer || !this.viewer) return;
+    if (!this.viewer) return;
     const camera = this.viewer.scene.camera;
 
     if (this.active) {

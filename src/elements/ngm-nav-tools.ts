@@ -1,14 +1,13 @@
 import {LitElementI18n} from '../i18n';
-import {customElement, html, property} from 'lit-element';
+import {customElement, html, property, state} from 'lit-element';
 import draggable from './draggable';
-import {repeat} from 'lit-html/directives/repeat.js';
 import {DEFAULT_VIEW} from '../constants';
 import {Event, Scene} from 'cesium';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
   @property({type: Object}) scene: Scene | null = null
-  @property({type: Number, attribute: false}) moveAmount = 200
+  @state() moveAmount = 200
   private zoomingIn = false
   private zoomingOut = false
   private unlistenFromPostRender: Event.RemoveCallback | null = null
@@ -77,8 +76,11 @@ export class NgmNavTools extends LitElementI18n {
         <div class="ngm-zoom-m-icon" @pointerdown=${e => this.startZoomOut(e)}></div>
       </div>
       <div class="ngm-drag-area">
-        ${repeat(new Array(5), () => html`
-          <div></div>`)}
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
       </div>
     `;
   }

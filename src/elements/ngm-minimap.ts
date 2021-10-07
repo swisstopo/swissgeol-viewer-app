@@ -1,11 +1,10 @@
-import {customElement, html, property} from 'lit-element';
+import {customElement, html, state, property} from 'lit-element';
 import {Event, Viewer} from 'cesium';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {styleMap} from 'lit-html/directives/style-map';
 import {SWITZERLAND_RECTANGLE, MINIMAP_EXTENT} from '../constants';
-import {repeat} from 'lit-html/directives/repeat.js';
 import draggable from './draggable';
 import './ngm-nadir-view.ts';
 import i18next from 'i18next';
@@ -14,14 +13,15 @@ import {LitElementI18n} from '../i18n';
 @customElement('ngm-minimap')
 export class NgmMinimap extends LitElementI18n {
   @property({type: Object}) viewer: Viewer | null = null
+  @state() moveMarker = false
+  @state() left = 0
+  @state() bottom = 0
+  @state() widthScale = 0
+  @state() heading = 0
   private unlistenPostRender: Event.RemoveCallback | null = null
-  private moveMarker = false
-  private left = 0
-  private bottom = 0
-  private widthScale = 0
-  private heading = 0
 
-  firstUpdated() {
+  constructor() {
+    super();
     this.addEventListener('mousemove', (evt: any) => {
       if (this.moveMarker && evt.target && evt.target.classList.contains('ngm-map-marker')) {
         this.moveCamera(evt.x, evt.y);
@@ -58,7 +58,7 @@ export class NgmMinimap extends LitElementI18n {
     const maxWidth = 70;
     markerWidth = Math.min(Math.max(markerWidth, 35), maxWidth);
     this.left = Math.min(Math.max(this.left, 0.02), 0.98);
-    this.bottom = Math.min(Math.max(this.bottom, 0.22), 0.91);
+    this.bottom = Math.min(Math.max(this.bottom, 0.22), 0.74);
 
     return {
       position: 'absolute',
@@ -86,8 +86,6 @@ export class NgmMinimap extends LitElementI18n {
     this.left = (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
     this.bottom = (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
     this.heading = this.viewer.scene.camera.heading;
-
-    this.requestUpdate();
   }
 
   moveCamera(evtX, evtY) {
@@ -129,16 +127,19 @@ export class NgmMinimap extends LitElementI18n {
         ${i18next.t('minimap_orientation')}
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
-      <div>
+      <div class="ngm-minimap-container">
         <div style=${styleMap(this.markerStyle)} @mousedown="${() => this.moveMarker = true}">
-          <img src="./images/mapMarker.svg" draggable="false" class="ngm-map-marker">
+          <img src="./images/mapMarker.svg" class="ngm-map-marker">
         </div>
-        <img src="./images/overview.svg" draggable="false" class="ngm-map-overview">
+        <img src="./images/overview.svg" class="ngm-map-overview">
         <ngm-nadir-view .viewer=${this.viewer}></ngm-nadir-view>
       </div>
       <div class="ngm-drag-area">
-        ${repeat(new Array(5), () => html`
-          <div></div>`)}
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
       </div>
     `;
   }

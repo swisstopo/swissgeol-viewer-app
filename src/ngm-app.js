@@ -75,6 +75,8 @@ class NgmApp extends LitElementI18n {
     this.slicer_ = null;
     this.mapChooser = null;
     this.showMinimap = false;
+    // disable drag events to avoid appearing of drag&drop zone
+    this.addEventListener('dragstart', e => e.preventDefault());
   }
 
   /**
