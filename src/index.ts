@@ -1,7 +1,6 @@
 import './style/index.css';
 
-// @ts-ignore TS2691
-import Auth from './auth.ts';
+import Auth from './auth';
 
 import './ngm-app.js';
 

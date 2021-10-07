@@ -23,7 +23,7 @@ import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
 import {getCameraView, getSliceParam, syncCamera, syncSliceParam} from './permalink.js';
 import i18next from 'i18next';
 import {getZoomToPosition} from './permalink';
-import Slicer from './slicer/Slicer.ts';
+import Slicer from './slicer/Slicer';
 
 import {setupI18n} from './i18n.js';
 import QueryManager from './query/QueryManager';
@@ -31,8 +31,8 @@ import QueryManager from './query/QueryManager';
 import {initAnalytics} from './analytics.js';
 import {initSentry} from './sentry.js';
 import {showWarning} from './message';
-import MainStore from './store/main.ts';
-import SlicerStore from './store/slicer.ts';
+import MainStore from './store/main';
+import SlicerStore from './store/slicer';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 

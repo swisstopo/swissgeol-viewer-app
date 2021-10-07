@@ -7,9 +7,9 @@ import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
  */
 export default class SlicingToolBase {
   viewer: Viewer;
-  dataSource: DataSource;
+  dataSource?: DataSource;
 
-  constructor(viewer, dataSource) {
+  constructor(viewer: Viewer, dataSource?: DataSource) {
     this.viewer = viewer;
     this.dataSource = dataSource;
   }

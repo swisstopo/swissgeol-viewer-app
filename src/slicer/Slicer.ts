@@ -1,14 +1,10 @@
 import {Viewer} from 'cesium';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-// @ts-ignore TS2691
-import {executeForAllPrimitives} from '../utils.ts';
-// @ts-ignore TS2691
-import SlicingBox from './SlicingBox.ts';
-// @ts-ignore TS2691
-import SlicingLine from './SlicingLine.ts';
-// @ts-ignore TS2691
-import SlicingToolBase from './SlicingToolBase.ts';
+import {executeForAllPrimitives} from '../utils';
+import SlicingBox from './SlicingBox';
+import SlicingLine from './SlicingLine';
+import SlicingToolBase from './SlicingToolBase';
 
 
 interface SliceOptions {

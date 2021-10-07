@@ -40,10 +40,10 @@ import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {SwissforagesService} from './SwissforagesService';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {calculateBoxHeight} from '../slicer/helper.ts';
+import {calculateBoxHeight} from '../slicer/helper';
 
 
-import {clickOnElement, coordinatesToBbox, parseJson} from '../utils.ts';
+import {clickOnElement, coordinatesToBbox, parseJson} from '../utils';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';
@@ -52,10 +52,10 @@ import './ngm-swissforages-modal.js';
 import './ngm-swissforages-interaction.js';
 import '../elements/ngm-geom-configuration.js';
 import LocalStorageController from '../LocalStorageController';
-import MainStore from '../store/main.ts';
-import SlicerStore from '../store/slicer.ts';
-import QueryStore from '../store/query.ts';
-import DrawStore from '../store/draw.ts';
+import MainStore from '../store/main';
+import SlicerStore from '../store/slicer';
+import QueryStore from '../store/query';
+import DrawStore from '../store/draw';
 
 const fileUploadInputId = 'fileUpload';
 

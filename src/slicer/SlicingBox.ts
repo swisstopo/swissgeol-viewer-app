@@ -1,7 +1,7 @@
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import {executeForAllPrimitives} from '../utils.ts';
+import {executeForAllPrimitives} from '../utils';
 import JulianDate from 'cesium/Source/Core/JulianDate';
-import SlicerArrows from './SlicerArrows.ts';
+import SlicerArrows from './SlicerArrows';
 import {
   applyOffsetToPlane,
   BBox,
@@ -9,7 +9,7 @@ import {
   getBboxFromViewRatio,
   getClippingPlaneFromSegment,
   getOffsetFromBbox, moveSlicingBoxCorners
-} from './helper.ts';
+} from './helper';
 import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {
@@ -22,7 +22,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {
   pickCenterOnEllipsoid, planeFromTwoPoints, projectPointOnSegment, updateHeightForCartesianPositions
 } from '../cesiumutils';
-import SlicingToolBase from './SlicingToolBase.ts';
+import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import CornerType from 'cesium/Source/Core/CornerType';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';

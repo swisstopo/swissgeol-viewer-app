@@ -1,5 +1,5 @@
 import ObjectSelector from './ObjectSelector';
-import SwisstopoIdentify from './SwisstopoIdentify.ts';
+import SwisstopoIdentify from './SwisstopoIdentify';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import i18next from 'i18next';
 import {OBJECT_HIGHLIGHT_COLOR} from '../constants';
@@ -8,8 +8,8 @@ import Entity from 'cesium/Source/DataSources/Entity';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import DrawStore from '../store/draw.ts';
-import QueryStore from '../store/query.ts';
+import DrawStore from '../store/draw';
+import QueryStore from '../store/query';
 
 
 export default class QueryManager {
