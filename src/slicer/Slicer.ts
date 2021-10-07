@@ -10,25 +10,6 @@ import SlicingLine from './SlicingLine.ts';
 // @ts-ignore TS2691
 import SlicingToolBase from './SlicingToolBase.ts';
 
-interface BoxSliceInfo {
-  /**
-   * slice type
-   */
-  type: 'box' | 'view-box',
-  /**
-   * box corner positions
-   */
-  slicePoints: Cartesian3[],
-  /**
-   * lower limit of the box
-   */
-  lowerLimit: number,
-  /**
-   * height of the box
-   */
-  height: number,
-}
-
 
 interface SliceOptions {
   /**
