@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - new_ui
     tags:
       - "int_*"
       # - "prod_*" # prod is deployed through the branch, not the tag
@@ -11,6 +12,7 @@ on:
     branches:
       - master
       - next-prod
+      - new_ui
 
 env:
   IN_CI: "1"
