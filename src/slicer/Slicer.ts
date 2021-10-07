@@ -6,6 +6,25 @@ import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 import SlicingToolBase from './SlicingToolBase';
 
+interface BoxSliceInfo {
+  /**
+   * slice type
+   */
+  type: 'box' | 'view-box',
+  /**
+   * box corner positions
+   */
+  slicePoints: Cartesian3[],
+  /**
+   * lower limit of the box
+   */
+  lowerLimit: number,
+  /**
+   * height of the box
+   */
+  height: number,
+}
+
 
 interface SliceOptions {
   /**
