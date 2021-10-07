@@ -23,9 +23,9 @@ interface ArrowListItem {
   // opposite arrow position label
   oppositeSide?: string,
   // arrow position. Required if 'positionUpdateCallback' is not provided
-  position?: string,
+  position?: Cartesian3,
   // position to create move axis. Required if no opposite arrow
-  oppositePosition?: string
+  oppositePosition?: Cartesian3
 }
 
 interface ArrowConfiguration {
@@ -56,8 +56,8 @@ export interface SlicerArrowOptions {
 
 
 export default class SlicerArrows {
-  viewer: Viewer;
-  dataSource: DataSource;
+  viewer!: Viewer;
+  dataSource!: DataSource;
   moveCallback: (string, number, Cartesian3) => void;
   positionUpdateCallback: (string) => Cartesian3;
   arrowsList: ArrowListItem[];
@@ -175,6 +175,7 @@ export default class SlicerArrows {
 
       // directly update arrow position if position callback not provided
       if (!this.positionUpdateCallback) {
+        // @ts-ignore 2322
         this.selectedArrow.position = newArrowPosition3d;
       }
       if (this.moveCallback) {
@@ -192,6 +193,7 @@ export default class SlicerArrows {
 
   createMoveArrows() {
     const arrowEntityTemplate: Entity.ConstructorOptions = {
+      // @ts-ignore 2322
       orientation: this.arrowConfiguration.orientation,
       model: this.arrowConfiguration,
       properties: {}
@@ -199,17 +201,20 @@ export default class SlicerArrows {
     this.arrows = {};
     this.arrowsList.forEach(arrow => {
       const arrowEntityOptions = arrowEntityTemplate;
-      arrowEntityOptions.properties!.side = arrow.side;
+      const properties = arrowEntityOptions.properties;
+      if (!properties) return;
+      properties!.side = arrow.side;
       arrowEntityOptions.model!.uri = arrow.uri;
       if (this.positionUpdateCallback) {
+        // @ts-ignore 2322
         arrowEntityOptions.position = new CallbackProperty(() => this.positionUpdateCallback(arrow.side), false);
       } else {
         arrowEntityOptions.position = arrow.position;
       }
       if (arrow.oppositeSide) {
-        arrowEntityOptions.properties.oppositeSide = arrow.oppositeSide;
+        properties.oppositeSide = arrow.oppositeSide;
       } else if (arrow.oppositePosition) {
-        arrowEntityOptions.properties.oppositePosition = arrow.oppositePosition;
+        properties.oppositePosition = arrow.oppositePosition;
       }
       this.arrows[arrow.side] = new Entity(arrowEntityOptions);
       this.dataSource.entities.add(this.arrows[arrow.side]);
@@ -222,6 +227,7 @@ export default class SlicerArrows {
     if (isModelPicked && pickedObject.id.properties && pickedObject.id.properties.side) {
       this.highlightedArrow = pickedObject.id;
       this.viewer.canvas.style.cursor = 'pointer';
+      // @ts-ignore 2322
       this.highlightedArrow.model.color = Color.YELLOW;
     } else {
       this.unhighlightArrow();
@@ -229,7 +235,8 @@ export default class SlicerArrows {
   }
 
   unhighlightArrow() {
-    if (this.highlightedArrow) {
+    if (this.highlightedArrow?.model) {
+      // @ts-ignore 2322
       this.highlightedArrow.model.color = SLICING_GEOMETRY_COLOR;
       this.highlightedArrow = undefined;
       this.viewer.canvas.style.cursor = '';

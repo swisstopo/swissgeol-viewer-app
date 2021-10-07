@@ -27,6 +27,8 @@ import Matrix4 from 'cesium/Source/Core/Matrix4';
 import CornerType from 'cesium/Source/Core/CornerType';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Entity from 'cesium/Source/DataSources/Entity';
+import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import DataSource from 'cesium/Source/DataSources/DataSource';
 
 export interface SlicingBoxOptions {
   type: string | undefined,
@@ -34,14 +36,20 @@ export interface SlicingBoxOptions {
   negate: boolean | undefined,
   // activationCallback: Function,
   // deactivationCallback: Function,
-  // syncBoxPlanesCallback: Function,
+  syncBoxPlanesCallback: (SlicingBoxOptions) => void,
   lowerLimit: number,
   height: number,
   showBox: boolean | undefined,
 }
 
+/**
+ * This is a tool to cut the globe and models according to a box.
+ * Either the interior or the exterior of the box is displayed.
+ * Cutting is achieved by using Cesium slicing planes.
+ */
 export default class SlicingBox extends SlicingToolBase {
 
+  dataSource: DataSource;
   options: SlicingBoxOptions | null = null;
   offsets: Record<string, Cartesian3> = {};
   backPlane: Plane | null = null;
@@ -70,6 +78,10 @@ export default class SlicingBox extends SlicingToolBase {
   modelMatrix:Matrix4 | null = null;
   sidePlanes: Plane[] = [];
 
+  constructor(viewer: Viewer, dataSource: DataSource) {
+    super(viewer);
+    this.dataSource = dataSource;
+  }
 
   activate(options: SlicingBoxOptions): void {
     this.options = options;

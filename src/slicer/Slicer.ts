@@ -6,25 +6,6 @@ import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 import SlicingToolBase from './SlicingToolBase';
 
-interface BoxSliceInfo {
-  /**
-   * slice type
-   */
-  type: 'box' | 'view-box',
-  /**
-   * box corner positions
-   */
-  slicePoints: Cartesian3[],
-  /**
-   * lower limit of the box
-   */
-  lowerLimit: number,
-  /**
-   * height of the box
-   */
-  height: number,
-}
-
 
 interface SliceOptions {
   /**
@@ -80,7 +61,7 @@ export default class Slicer {
   sliceOptions: SliceOptions;
   slicerDataSource: CustomDataSource;
   sliceActive: boolean;
-  slicingTool: SlicingToolBase;
+  slicingTool: SlicingToolBase | null;
 
   /**
    * @param {Viewer} viewer
@@ -165,7 +146,7 @@ export default class Slicer {
   applyClippingPlanesToTileset(tileset) {
     if (tileset.readyPromise) {
       tileset.readyPromise.then(primitive => {
-        if (!primitive.clippingPlanes) {
+        if (!primitive.clippingPlanes && this.slicingTool) {
           this.slicingTool.addClippingPlanes(primitive);
         }
       });

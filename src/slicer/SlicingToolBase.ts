@@ -1,4 +1,3 @@
-import DataSource from 'cesium/Source/DataSources/DataSource';
 import Primitive from 'cesium/Source/Scene/Primitive';
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 
@@ -7,11 +6,9 @@ import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
  */
 export default class SlicingToolBase {
   viewer: Viewer;
-  dataSource?: DataSource;
 
-  constructor(viewer: Viewer, dataSource?: DataSource) {
+  constructor(viewer: Viewer) {
     this.viewer = viewer;
-    this.dataSource = dataSource;
   }
 
   activate(_options) {
