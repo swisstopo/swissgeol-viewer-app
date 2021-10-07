@@ -3,7 +3,7 @@ module.exports = {
   locales: ['de', 'fr', 'it', 'en'],
   defaultNamespace: 'app',
 
-  input: ['index.html', 'src/**/*.js'],
+  input: ['index.html', 'src/**/*.js', 'src/**/*.ts'],
   output: 'locales/$NAMESPACE.$LOCALE.json',
 
   createOldCatalogs: false,

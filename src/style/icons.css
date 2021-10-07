@@ -63,3 +63,31 @@
   mask: url('./images/i_navigation_closed.svg') no-repeat center;
   -webkit-mask: url('./images/i_navigation_closed.svg') no-repeat center;
 }
+
+.ngm-zoom-p-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_zoom_plus.svg') no-repeat center;
+  -webkit-mask: url('./images/i_zoom_plus.svg') no-repeat center;
+}
+
+.ngm-zoom-o-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_zoom_origin.svg') no-repeat center;
+  -webkit-mask: url('./images/i_zoom_origin.svg') no-repeat center;
+}
+
+.ngm-zoom-m-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_zoom_minus.svg') no-repeat center;
+  -webkit-mask: url('./images/i_zoom_minus.svg') no-repeat center;
+}
+
+.ngm-map-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_switzerland.svg') no-repeat center;
+  -webkit-mask: url('./images/i_switzerland.svg') no-repeat center;
+}

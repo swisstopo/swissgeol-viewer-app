@@ -1,17 +1,14 @@
 import {html} from 'lit-element';
 import '@geoblocks/cesium-compass';
 import '@geoblocks/cesium-view-cube';
-import './ngm-zoom-buttons.js';
 import './ngm-elevator-buttons.js';
 import './ngm-keyboard-info-popup.js';
-import './ngm-nadir-view.js';
 import './slicer/ngm-slicer.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import MainStore from '../store/main.ts';
 
 class NgmNavigationWidgets extends LitElementI18n {
-
   constructor() {
     super();
     /**
@@ -21,6 +18,7 @@ class NgmNavigationWidgets extends LitElementI18n {
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
   }
 
+  // todo reuse or remove
   render() {
     if (this.viewer) {
       return html`
@@ -32,9 +30,7 @@ class NgmNavigationWidgets extends LitElementI18n {
                           data-position="left center"
                           data-variation="mini"
           ></cesium-compass>
-          <ngm-zoom-buttons .scene="${this.viewer.scene}"></ngm-zoom-buttons>
           <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
-          <ngm-nadir-view .scene="${this.viewer.scene}"></ngm-nadir-view>
           <ngm-slicer></ngm-slicer>
           <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
         </div>

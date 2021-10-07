@@ -6,6 +6,8 @@ export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 
 export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS);
 
+export const MINIMAP_EXTENT = [5.910642046, 45.791912227, 10.554524194, 47.804750923];
+
 export const DEFAULT_VIEW = {
   destination: Cartesian3.fromDegrees(
     6.06749, 43.77784, 204227),

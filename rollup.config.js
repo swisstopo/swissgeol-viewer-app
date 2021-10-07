@@ -50,6 +50,9 @@ const config = {
       // this is duplicated in .browserlistrc
       // https://babeljs.io/docs/en/options#targets
       targets: "last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions, Edge 18",
+      plugins: [
+        ['@babel/plugin-proposal-decorators', { "legacy": true }]
+      ],
       presets: [
         '@babel/preset-typescript',
         [

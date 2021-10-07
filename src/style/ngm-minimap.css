@@ -1,0 +1,69 @@
+ngm-minimap {
+  display: flex;
+  flex-direction: column;
+  right: 64px;
+}
+
+ngm-minimap.ngm-floating-window {
+  padding: 10px 12px 8px 12px;
+}
+
+.ngm-compass {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FFFFFF;
+  border-radius: 25px;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  bottom: 34px;
+}
+
+.ngm-minimap-header {
+  height: 32px;
+  border-bottom: 2px solid #DFE2E6;
+  display: flex;
+  align-items: center;
+  font: normal normal bold 14px/24px Inter;
+  letter-spacing: 0.14px;
+  color: #212529;
+  margin-bottom: 8px;
+  padding-bottom: 10px;
+}
+
+.ngm-minimap-container {
+  cursor: pointer;
+}
+
+.ngm-minimap-container .ngm-map-marker {
+  cursor: grab;
+}
+
+.ngm-minimap-container .ngm-map-marker:active {
+  cursor: grabbing;
+}
+
+.ngm-minimap-header .ngm-close-icon {
+  width: 24px;
+  height: 24px;
+  background-color: #000000;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.ngm-compass-arrow > div.ngm-compass-arrow-top {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 12px solid #FF0000;
+}
+
+.ngm-compass-arrow > div.ngm-compass-arrow-bottom {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 12px solid #DEE2E6;
+}
+
+.ngm-floating-window div.ngm-drag-area {
+  height: auto;
+}

@@ -1,0 +1,45 @@
+header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  height: 88px;
+  box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+header > * {
+  display: flex;
+}
+
+header > a {
+  margin-left: 10px;
+  margin-right: 102px;
+}
+
+.ngm-map-icon {
+  margin-right: 17px;
+  background-color: #0b7285;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.ngm-map-icon.ngm-map-active {
+  background-color: #B9271A;
+}
+
+.ngm-map-icon:hover {
+  background-color: #FF0000;
+}
+
+@media (max-width: 710px) {
+  header > a {
+    margin-right: 30px;
+  }
+}
+
+@media (max-width: 1193px) {
+  .ngm-map-icon {
+    margin-right: 0;
+  }
+}

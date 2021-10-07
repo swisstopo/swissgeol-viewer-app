@@ -44,6 +44,9 @@
 @import 'ngm-layer-legend.css';
 @import 'icons.css';
 @import 'ngm-side-bar.css';
+@import 'ngm-nav-tools.css';
+@import 'ngm-minimap.css';
+@import 'header.css';
 
 [hidden] {
   display: none !important;
@@ -69,23 +72,12 @@ a {
   text-decoration: none;
 }
 
-
-header {
-  display: flex;
-  padding: 10px;
-  height: 88px;
-  box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  z-index: 2;
-}
-
-header > * {
-  display: flex;
-}
-
-header > a {
-  margin-left: 10px;
-  margin-right: 102px;
+div, img {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
 
 #outdated-browser {
@@ -164,40 +156,6 @@ ngm-app {
 
 :lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en {
   font-weight: bold;
-}
-
-.navigation-widgets {
-  position: absolute;
-  z-index: 1;
-  right: 0;
-  margin: 6px;
-}
-
-.navigation-widgets, ngm-navigation-widgets, .ngm-navigation-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-ngm-navigation-widgets {
-  align-items: flex-end;
-  width: 0;
-}
-
-.navigation-widgets .ui.button, ngm-elevator-buttons {
-  margin: .5em 0 0 0;
-}
-
-cesium-compass {
-  width: 98px;
-  height: 98px;
-  --cesium-compass-stroke-color: rgba(0, 0, 0, 0.6);
-  --cesium-compass-fill-color: rgb(224, 225, 226);
-}
-
-cesium-view-cube {
-  --cesium-view-cube-stroke-color: rgba(0, 0, 0, 0.6);
-  --cesium-view-cube-fill-color: rgba(224, 225, 226, 0.8);
 }
 
 .ui.checkbox label {
@@ -345,10 +303,23 @@ ngm-layer-legend-container > ngm-layer-legend {
   margin-bottom: 5px;
 }
 
-@media (max-width: 710px) {
-  header > a {
-    margin-right: 30px;
-  }
+.ngm-floating-window {
+  background: #F1F3F5;
+  box-shadow: 4px 4px 2px #00000029;
+  border-radius: 8px;
+  position: absolute;
+  z-index: 2;
+  padding: 5px;
+  top: 98px;
+}
+
+.ngm-floating-window .ngm-drag-area {
+  height: 32px;
+}
+
+.ngm-floating-window .ngm-drag-area > div {
+  border: 1px solid #DFE2E6;
+  margin-top: 2px;
 }
 
 @media (max-height: 630px) {
