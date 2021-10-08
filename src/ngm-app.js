@@ -20,7 +20,7 @@ import {
 } from './constants.js';
 
 import {setupSearch} from './search.js';
-import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.js';
+import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.ts';
 
 import {getCameraView, getSliceParam, syncCamera, syncSliceParam} from './permalink.js';
 import i18next from 'i18next';
@@ -270,8 +270,10 @@ class NgmApp extends LitElementI18n {
             <ngm-object-information></ngm-object-information>
             <ngm-nav-tools class="ngm-floating-window" .scene=${this.viewer?.scene}></ngm-nav-tools>
             <ngm-minimap class="ngm-floating-window" .viewer=${this.viewer} .hidden=${!this.showMinimap}
-                         @close=${() => this.showMinimap = false}></ngm-minimap>
+                         @close=${() => this.showMinimap = false}>
+            </ngm-minimap>
             <ngm-layer-legend-container></ngm-layer-legend-container>
+            <ngm-map-chooser class="ngm-bg-chooser-map" .open=${false}></ngm-map-chooser>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
         </div>

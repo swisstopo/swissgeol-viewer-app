@@ -14,7 +14,9 @@ import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import SingleTileImageryProvider from 'cesium/Source/Scene/SingleTileImageryProvider';
-import MapChooser from './MapChooser';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import MapChooser from './MapChooser.ts';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import PostProcessStage from 'cesium/Source/Scene/PostProcessStage';
@@ -25,6 +27,7 @@ import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
 import Transforms from 'cesium/Source/Core/Transforms';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
+import {ImageryLayer} from 'cesium';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -75,10 +78,20 @@ const FOG_FRAGMENT_SHADER_SOURCE = `
       gl_FragColor = alphaBlend(undergroundColor, sceneColor);
   }`;
 
-/**
- * @param {Element} container
- */
-export function setupViewer(container, rethrowRenderErrors) {
+interface EmptyLayer {
+  layer: { show: boolean }
+}
+
+export interface BaseLayerConfig {
+  id: string
+  labelKey: string;
+  backgroundImgSrc: string
+  layers?: ImageryLayer[] | EmptyLayer[]
+  default?: boolean
+  hasAlphaChannel?: boolean
+}
+
+export function setupViewer(container: Element, rethrowRenderErrors) {
 
   // The first layer of Cesium is special; using a 1x1 transparent image to workaround it.
   // See https://github.com/AnalyticalGraphicsInc/cesium/issues/1323 for details.
@@ -119,6 +132,8 @@ export function setupViewer(container, rethrowRenderErrors) {
     powerPreference: 'high-performance'
   };
   if (searchParams.has('preserveDrawingBuffer')) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     webgl.preserveDrawingBuffer = true;
   }
   const viewer = new Viewer(container, {
@@ -218,7 +233,7 @@ export function setupViewer(container, rethrowRenderErrors) {
   return viewer;
 }
 
-function enableCenterOfRotate(viewer) {
+function enableCenterOfRotate(viewer: Viewer) {
   const scene = viewer.scene;
   const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
   scene.camera.constrainedAxis = new Cartesian3(0, 0, 1);
@@ -247,10 +262,7 @@ function enableCenterOfRotate(viewer) {
   }, ScreenSpaceEventType.LEFT_UP, KeyboardEventModifier.CTRL);
 }
 
-/**
- * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
- */
-export function addMantelEllipsoid(viewer) {
+export function addMantelEllipsoid(viewer: Viewer) {
   // Add Mantel ellipsoid
   const earthRadii = Ellipsoid.WGS84.radii.clone();
   const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
@@ -281,45 +293,29 @@ export function addMantelEllipsoid(viewer) {
 
   let usedUndergroundValue = !viewer.scene.cameraUnderground;
   viewer.scene.postRender.addEventListener((scene) => {
+    if (!entity.ellipsoid) return;
     if (scene.cameraUnderground && !usedUndergroundValue) {
-      entity.ellipsoid.radii = mantelRadii;
+      (<any>entity.ellipsoid.radii) = mantelRadii;
       usedUndergroundValue = true;
     } else if (!scene.cameraUnderground && usedUndergroundValue) {
-      entity.ellipsoid.radii = mantelRadiiAboveTerrain;
+      (<any>entity.ellipsoid.radii) = mantelRadiiAboveTerrain;
       usedUndergroundValue = false;
     }
   });
 }
 
-/**
- * @typedef {Object} BaseLayerConfig
- * @property {string} id
- * @property {string} labelKey
- * @property {string} backgroundImgSrc
- * @property {Boolean=} default
- * @property {Boolean=} hasAlphaChannel
- * @property {Array<import('cesium/Source/Scene/ImageryLayer').default>} layers
- */
-
-
-/**
- * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
- */
-export function setupBaseLayers(viewer) {
+export function setupBaseLayers(viewer: Viewer) {
   const arealLayer = 'ch.swisstopo.swissimage';
   const greyLayer = 'ch.swisstopo.pixelkarte-grau';
 
-  const emptyLayer = {
+  const emptyLayer: EmptyLayer = {
     layer: {
       show: false
     }
   };
   const t = a => a;
 
-  /**
-   * @type {Array<BaseLayerConfig>}
-   */
-  const mapsConfig = [
+  const mapsConfig: BaseLayerConfig[] = [
     {
       id: arealLayer,
       labelKey: t('dtd_areal_map_label'),
