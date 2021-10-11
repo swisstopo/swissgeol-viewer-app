@@ -26,7 +26,7 @@ export class NgmMapChooser extends LitElement {
     return html`
       <div class="ngm-map-preview ${classMap({active: !!(this.active && mapConfig.id === this.active.id)})}"
            @click=${() => this.active = mapConfig}>
-        <img src=${mapConfig.backgroundImgSrc}/>
+        <img src=${mapConfig.backgroundImgSrc}>
       </div>`;
   }
 

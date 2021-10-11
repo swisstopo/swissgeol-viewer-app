@@ -49,9 +49,9 @@ const config = {
       babelrc: false,
       // this is duplicated in .browserlistrc
       // https://babeljs.io/docs/en/options#targets
-      targets: "last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions, Edge 18",
+      targets: 'last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions, Edge 18',
       plugins: [
-        ['@babel/plugin-proposal-decorators', { "legacy": true }]
+        ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, legacy: false}]
       ],
       presets: [
         '@babel/preset-typescript',
@@ -61,7 +61,7 @@ const config = {
             modules: false,
 
             useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
-            corejs: { version: 3, proposals: false },
+            corejs: {version: 3, proposals: false},
           }
         ]
       ],
@@ -76,21 +76,21 @@ const config = {
     }),
     copy({
       targets: [
-        { src: 'index.html', dest: 'dist/' },
-        { src: 'src', dest: 'dist/' },
-        { src: 'locales', dest: 'dist/' },
-        { src: 'robots.txt', dest: 'dist/' },
-        { src: cesiumSource + '/' + cesiumWorkers, dest: 'dist/' },
-        { src: cesiumSource + '/Assets', dest: 'dist/' },
-        { src: cesiumSource + '/Widgets', dest: 'dist/' },
-        { src: cesiumSource + '/ThirdParty/', dest: 'dist/' },
-        { src: 'src/images', dest: 'dist/' },
-        { src: 'node_modules/@fontsource/inter/files/*', dest: 'dist/fonts/' },
-        { src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', dest: 'dist/fonts/' },
-        { src: 'node_modules/@webcomponents/webcomponentsjs/*', dest: 'dist/webcomponentsjs/' },
-        { src: 'manuals/dist/*', dest: 'dist/manuals/' },
-        { src: 'manuals/images/', dest: 'dist/manuals/' },
-        { src: 'manuals/style.css', dest: 'dist/manuals/' },
+        {src: 'index.html', dest: 'dist/'},
+        {src: 'src', dest: 'dist/'},
+        {src: 'locales', dest: 'dist/'},
+        {src: 'robots.txt', dest: 'dist/'},
+        {src: cesiumSource + '/' + cesiumWorkers, dest: 'dist/'},
+        {src: cesiumSource + '/Assets', dest: 'dist/'},
+        {src: cesiumSource + '/Widgets', dest: 'dist/'},
+        {src: cesiumSource + '/ThirdParty/', dest: 'dist/'},
+        {src: 'src/images', dest: 'dist/'},
+        {src: 'node_modules/@fontsource/inter/files/*', dest: 'dist/fonts/'},
+        {src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', dest: 'dist/fonts/'},
+        {src: 'node_modules/@webcomponents/webcomponentsjs/*', dest: 'dist/webcomponentsjs/'},
+        {src: 'manuals/dist/*', dest: 'dist/manuals/'},
+        {src: 'manuals/images/', dest: 'dist/manuals/'},
+        {src: 'manuals/style.css', dest: 'dist/manuals/'},
       ]
     }),
 
