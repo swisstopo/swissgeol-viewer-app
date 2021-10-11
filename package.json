@@ -14,7 +14,7 @@
     "check": "npm run check-main && npm run check-ut",
     "check-main": "node_modules/.bin/tsc src/index.ts --noEmit --allowJs --skipLibCheck --target es2018 --moduleResolution node",
     "check-ut": "node_modules/.bin/tsc src/test/*.ts src/test/*.js  --noEmit --allowJs --skipLibCheck --esModuleInterop true --target es2018 --moduleResolution node",
-    "ut": "mocha --exit",
+    "ut": "mocha --exit --experimental-specifier-resolution=node",
     "test": "npm run ut && npm run check",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
