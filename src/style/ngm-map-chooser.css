@@ -93,3 +93,9 @@
   background-color: #DEE2E6;
 }
 
+@media (max-height: 630px) {
+  .ngm-bg-chooser-map {
+    bottom: 80px;
+  }
+}
+

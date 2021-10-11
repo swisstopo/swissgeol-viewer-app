@@ -119,6 +119,7 @@ class NgmApp extends LitElementI18n {
 
     // setup web components
     this.mapChooser = setupBaseLayers(viewer);
+    this.mapChooser.addMapChooser(this.querySelector('ngm-map-chooser'));
     MainStore.setMapChooser(this.mapChooser);
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(viewer);
@@ -221,6 +222,14 @@ class NgmApp extends LitElementI18n {
     const origin = window.location.origin;
     const pathname = window.location.pathname;
     this.querySelector('#ngm-home-link').href = `${origin}${pathname}`;
+
+    window.addEventListener('resize', () => {
+      this.querySelectorAll('.ngm-floating-window').forEach(flWin => {
+        if (flWin.interaction) {
+          flWin.interaction.reflow({name: 'drag', axis: 'xy'});
+        }
+      });
+    });
   }
 
   showSlowLoadingWindow() {
@@ -273,7 +282,7 @@ class NgmApp extends LitElementI18n {
                          @close=${() => this.showMinimap = false}>
             </ngm-minimap>
             <ngm-layer-legend-container></ngm-layer-legend-container>
-            <ngm-map-chooser class="ngm-bg-chooser-map" .open=${false}></ngm-map-chooser>
+            <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
         </div>

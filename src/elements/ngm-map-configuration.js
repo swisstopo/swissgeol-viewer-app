@@ -43,7 +43,7 @@ class NgmMapConfiguration extends LitElementI18n {
 
 
   firstUpdated() {
-    this.mapChooser.initMapChooser(document.querySelectorAll('ngm-map-chooser'));
+    this.mapChooser.addMapChooser(this.querySelector('ngm-map-chooser'));
 
     const transparencyParam = getMapTransparencyParam();
     const transparency = !isNaN(transparencyParam) ? 1 - transparencyParam : 0.6;
@@ -65,7 +65,7 @@ class NgmMapConfiguration extends LitElementI18n {
         <label>${i18next.t('dtd_transparency_label')}</label>
         <div class="ui grey small slider"></div>
       </div>
-      `;
+    `;
   }
 
   createRenderRoot() {

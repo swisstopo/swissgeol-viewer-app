@@ -5,7 +5,7 @@ import interact from 'interactjs';
  * @param {Interact.DraggableOptions} options
  */
 export default function draggable(target, options = {}) {
-  interact(target).draggable(Object.assign({
+  return interact(target).draggable(Object.assign({
     onmove: translate,
     // keep the element within the area of it's parent
     modifiers: [
@@ -14,7 +14,6 @@ export default function draggable(target, options = {}) {
       })
     ]
   }, options));
-
 }
 
 /**

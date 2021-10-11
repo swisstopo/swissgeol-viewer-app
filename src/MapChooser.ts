@@ -20,13 +20,11 @@ export default class MapChooser {
     });
   }
 
-  initMapChooser(elements) {
-    this.elements = elements;
-    this.elements.forEach(el => {
-      el.choices = this.choices;
-      el.active = this.selectedMap;
-      el.addEventListener('change', (event) => this.selectMap((<CustomEvent>event).detail.active.id));
-    });
+  addMapChooser(element) {
+    this.elements.push(element);
+    element.choices = this.choices;
+    element.active = this.selectedMap;
+    element.addEventListener('change', (event) => this.selectMap((<CustomEvent>event).detail.active.id));
   }
 
   getInitialMap(): BaseLayerConfig {

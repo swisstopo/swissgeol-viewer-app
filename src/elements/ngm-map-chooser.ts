@@ -1,4 +1,4 @@
-import {customElement, html, LitElement, property} from 'lit-element';
+import {customElement, html, LitElement, property, state} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map';
 import {BaseLayerConfig} from '../viewer';
 
@@ -6,7 +6,12 @@ import {BaseLayerConfig} from '../viewer';
 export class NgmMapChooser extends LitElement {
   @property({type: Array}) choices: BaseLayerConfig[] = []
   @property({type: Object}) active: BaseLayerConfig | undefined = undefined
-  @property({type: Boolean}) open = true
+  @property({type: Boolean}) initiallyOpened = true
+  @state() open = true
+
+  protected firstUpdated() {
+    this.open = this.initiallyOpened;
+  }
 
   updated() {
     this.dispatchEvent(new CustomEvent('change', {
