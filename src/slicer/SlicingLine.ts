@@ -58,9 +58,8 @@ export default class SlicingLine extends SlicingToolBase {
     if (Matrix4.equals(primitive.root.transform, Matrix4.IDENTITY)) {
       this.addClippingPlanesFromSphere(primitive);
       return;
-    } else {
-      console.log('A transform is used in this tileset');
     }
+    console.log('A transform is used in this tileset');
     const planeNormal = this.plane!.normal;
     const p1 = this.options.slicePoints[0];
     const p2 = this.options.slicePoints[1];
@@ -68,7 +67,6 @@ export default class SlicingLine extends SlicingToolBase {
     const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
     const tileCenter = Cartesian3.equals(transformCenter, Cartesian3.ZERO) ? primitive.boundingSphere.center : transformCenter;
     const plane = getClippingPlaneFromSegmentWithTricks(p1, p2, tileCenter, mapRect, planeNormal);
-    console.log('addClippingPlane using tricks', plane, primitive.boundingSphere.center, transformCenter, primitive.root.transform);
     if (this.options.negate) {
       plane.normal.x *= -1;
       plane.normal.y *= -1;

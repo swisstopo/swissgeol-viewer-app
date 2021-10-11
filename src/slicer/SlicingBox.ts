@@ -31,11 +31,9 @@ import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import DataSource from 'cesium/Source/DataSources/DataSource';
 
 export interface SlicingBoxOptions {
-  type: string | undefined,
-  slicePoints: any[],
+  type: 'box' | 'view-box' | undefined,
+  slicePoints: Cartesian3[],
   negate: boolean | undefined,
-  // activationCallback: Function,
-  // deactivationCallback: Function,
   syncBoxPlanesCallback: (SlicingBoxOptions) => void,
   lowerLimit: number,
   height: number,

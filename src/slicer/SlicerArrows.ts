@@ -65,18 +65,18 @@ export default class SlicerArrows {
   selectedArrow: Entity | null = null;
   arrowConfiguration: ArrowConfiguration;
 
-  enableInputs_ = true;
+  private enableInputs = true;
 
-  scratchBoundingSphere_ = new BoundingSphere();
-  scratchArrowPosition2d_ = new Cartesian2();
-  scratchOppositeArrowPosition2d_ = new Cartesian2();
-  scratchAxisVector2d_ = new Cartesian2();
-  scratchMouseMoveVector_ = new Cartesian2();
-  scratchObjectMoveVector2d_ = new Cartesian2();
-  scratchNewArrowPosition2d_ = new Cartesian2();
-  scratchAxisVector3d_ = new Cartesian3();
+  private scratchBoundingSphere_ = new BoundingSphere();
+  private scratchArrowPosition2d_ = new Cartesian2();
+  private scratchOppositeArrowPosition2d_ = new Cartesian2();
+  private scratchAxisVector2d_ = new Cartesian2();
+  private scratchMouseMoveVector_ = new Cartesian2();
+  private scratchObjectMoveVector2d_ = new Cartesian2();
+  private scratchNewArrowPosition2d_ = new Cartesian2();
+  private scratchAxisVector3d_ = new Cartesian3();
 
-  eventHandler_: (ScreenSpaceEventHandler | null) = null;
+  private eventHandler: (ScreenSpaceEventHandler | null) = null;
   highlightedArrow: Entity | undefined = undefined;
   arrows: Record<string, Entity> = {};
 
@@ -98,16 +98,16 @@ export default class SlicerArrows {
 
   show() {
     this.createMoveArrows();
-    this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer.canvas);
-    this.eventHandler_.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
-    this.eventHandler_.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
-    this.eventHandler_.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
+    this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+    this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
+    this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
+    this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
   }
 
   hide() {
-    if (this.eventHandler_) {
-      this.eventHandler_.destroy();
-      this.eventHandler_ = null;
+    if (this.eventHandler) {
+      this.eventHandler.destroy();
+      this.eventHandler = null;
     }
   }
 
@@ -116,7 +116,7 @@ export default class SlicerArrows {
     const isModelPicked = pickedObject && pickedObject.id && pickedObject.id.model;
     if (isModelPicked && pickedObject.id.properties && pickedObject.id.properties.side) {
       this.selectedArrow = pickedObject.id;
-      this.enableInputs_ = this.viewer.scene.screenSpaceCameraController.enableInputs;
+      this.enableInputs = this.viewer.scene.screenSpaceCameraController.enableInputs;
       this.viewer.scene.screenSpaceCameraController.enableInputs = false;
     }
   }
@@ -124,7 +124,7 @@ export default class SlicerArrows {
   onLeftUp() {
     if (this.selectedArrow) {
       this.selectedArrow = null;
-      this.viewer.scene.screenSpaceCameraController.enableInputs = this.enableInputs_;
+      this.viewer.scene.screenSpaceCameraController.enableInputs = this.enableInputs;
     }
     this.unhighlightArrow();
   }
