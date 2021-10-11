@@ -7,7 +7,29 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const cesiumSource = __dirname + '/node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
-const devMode = process.env.NODE_ENV !== "production";
+const devMode = process.env.NODE_ENV !== 'production';
+
+
+const presets = [
+  '@babel/preset-typescript',
+  [
+    '@babel/preset-env', {
+      'useBuiltIns': 'entry',
+      'corejs': {
+        'version': 3
+      },
+      'targets': {
+        'browsers': ['chrome 94']
+      }
+    }
+  ]
+],
+plugins = [
+  '@babel/plugin-proposal-nullish-coalescing-operator',
+  '@babel/plugin-syntax-dynamic-import',
+  '@babel/proposal-class-properties'
+];
+
 
 export default {
   mode: devMode ? 'development' : 'production',
@@ -37,12 +59,12 @@ export default {
       },
       {
         test: /\.js$/,
-        use: ["source-map-loader"],
-        enforce: "pre"
+        use: ['source-map-loader'],
+        enforce: 'pre'
       },
       {
         test: /\.(png|jpe?g|gif|svg|ttf|woff2|woff|eot)$/i,
-        type: "asset",
+        type: 'asset',
       },
       {
         test: /\.css$/i,
@@ -51,7 +73,13 @@ export default {
       },
       {
         test: /\.ts$/,
-        use: 'ts-loader',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: presets,
+            plugins: plugins,
+          }
+        },
         exclude: /node_modules/,
       },
     ],

@@ -1,7 +1,7 @@
 import {html} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
-import auth from '../store/auth.ts';
+import auth from '../store/auth';
 
 
 class Catalog extends LitElementI18n {

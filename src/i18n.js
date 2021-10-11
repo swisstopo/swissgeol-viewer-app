@@ -4,7 +4,7 @@ import Backend from 'i18next-xhr-backend';
 import {render} from 'lit-html';
 import {html, LitElement} from 'lit-element';
 import {SUPPORTED_LANGUAGES} from './constants.js';
-import {getURLSearchParams, setURLSearchParams} from './utils.ts';
+import {getURLSearchParams, setURLSearchParams} from './utils';
 
 
 class LanguageDetector {

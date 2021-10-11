@@ -1,7 +1,7 @@
 import Math from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
-import {getURLSearchParams, parseJson, setURLSearchParams} from './utils.ts';
+import {getURLSearchParams, parseJson, setURLSearchParams} from './utils';
 import {
   LAYERS_TRANSPARENCY_URL_PARAM,
   LAYERS_URL_PARAM,

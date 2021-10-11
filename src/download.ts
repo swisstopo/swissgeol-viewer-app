@@ -1,5 +1,5 @@
 import JSZip from 'jszip/dist/jszip.js';
-import {coordinatesToBbox, areBboxIntersectings, filterCsvString} from './utils.ts';
+import {coordinatesToBbox, areBboxIntersectings, filterCsvString} from './utils';
 
 
 /**
