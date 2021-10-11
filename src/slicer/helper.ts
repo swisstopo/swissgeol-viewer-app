@@ -361,9 +361,10 @@ export function createCPCModelMatrixFromSphere(primitive: Cesium3DTileset): Matr
   const localMatrix = Matrix4.multiply(toLocalMatrix, globalMatrix, new Matrix4());
   let modelMatrix = localMatrix; // a transform from world coordinates to the tileset local reference system
 
-  // We rely on private property
-  console.assert(primitive._initialClippingPlanesOriginMatrix);
-  const inverseReference = Matrix4.inverse(primitive._initialClippingPlanesOriginMatrix, new Matrix4());
+  // @ts-ignore we rely on private property
+  const icpom = primitive._initialClippingPlanesOriginMatrix;
+  console.assert(icpom);
+  const inverseReference = Matrix4.inverse(icpom, new Matrix4());
   modelMatrix = Matrix4.multiply(inverseReference, modelMatrix, new Matrix4());
 
   return modelMatrix;

@@ -93,6 +93,7 @@ describe('Download', () => {
 
   describe('createDataGenerator', () => {
     it('empty specs', async () => {
+      // @ts-ignore
       const data = await toArray(createDataGenerator([], [0, 1, 2, 3], null));
       chaiAssert.isEmpty(data);
     });

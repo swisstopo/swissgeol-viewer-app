@@ -20,7 +20,7 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../message';
-import {createDataGenerator, createZipFromData} from '../download.js';
+import {createDataGenerator, createZipFromData} from '../download';
 import {saveAs} from 'file-saver';
 import auth from '../store/auth';
 import './ngm-share-link.js';
