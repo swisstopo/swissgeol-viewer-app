@@ -7,7 +7,7 @@ import {
   BBox,
   createClippingPlanes, getBboxFromRectangle,
   getBboxFromViewRatio,
-  getClippingPlaneFromSegment,
+  getClippingPlaneFromSegmentWithTricks,
   getOffsetFromBbox, moveSlicingBoxCorners
 } from './helper';
 import {Plane} from 'cesium';
@@ -196,7 +196,7 @@ export default class SlicingBox extends SlicingToolBase {
     this.planesPositions!.forEach(positions => {
       const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
       const plane = planeFromTwoPoints(positions[0], positions[1], false);
-      const p = getClippingPlaneFromSegment(positions[0], positions[1], center, mapRect, plane.normal);
+      const p = getClippingPlaneFromSegmentWithTricks(positions[0], positions[1], center, mapRect, plane.normal);
       if (this.options!.negate) {
         Cartesian3.negate(p.normal, p.normal);
         p.distance *= -1;

@@ -95,7 +95,7 @@ const crossScratch = new Cartesian3();
  * @param {Cartesian3} mapPlaneNormal - globe plane normal (can be get using 'planeFromTwoPoints')
  * @return {module:cesium.ClippingPlane}
  */
-export function getClippingPlaneFromSegment(start, end, tileCenter, mapRect, mapPlaneNormal) {
+export function getClippingPlaneFromSegmentWithTricks(start, end, tileCenter, mapRect, mapPlaneNormal) {
   const plane = new ClippingPlane(Cartesian3.UNIT_X, 0);
   // map vectors need for computation of plane rotation
   const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect));
