@@ -3,11 +3,13 @@ import {customElement, html, property, state} from 'lit-element';
 import draggable from './draggable';
 import {DEFAULT_VIEW} from '../constants';
 import {Event, Scene} from 'cesium';
+import {Interactable} from '@interactjs/types';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
   @property({type: Object}) scene: Scene | null = null
   @state() moveAmount = 200
+  @state() interaction: Interactable | null = null
   private zoomingIn = false
   private zoomingOut = false
   private unlistenFromPostRender: Event.RemoveCallback | null = null
@@ -29,7 +31,7 @@ export class NgmNavTools extends LitElementI18n {
 
   connectedCallback() {
     document.addEventListener('pointerup', this.stopZoomFunction);
-    draggable(this, {
+    this.interaction = draggable(this, {
       allowFrom: '.ngm-drag-area'
     });
     super.connectedCallback();

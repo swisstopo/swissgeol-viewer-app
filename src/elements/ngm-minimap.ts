@@ -9,10 +9,12 @@ import draggable from './draggable';
 import './ngm-nadir-view.ts';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
+import {Interactable} from '@interactjs/types';
 
 @customElement('ngm-minimap')
 export class NgmMinimap extends LitElementI18n {
   @property({type: Object}) viewer: Viewer | null = null
+  @state() interaction: Interactable | null = null
   @state() moveMarker = false
   @state() left = 0
   @state() bottom = 0
@@ -115,7 +117,7 @@ export class NgmMinimap extends LitElementI18n {
   }
 
   connectedCallback() {
-    draggable(this, {
+    this.interaction = draggable(this, {
       allowFrom: '.ngm-drag-area'
     });
     super.connectedCallback();

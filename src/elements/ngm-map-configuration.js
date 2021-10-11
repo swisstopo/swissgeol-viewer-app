@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/slider.js';
-import './ngm-map-chooser.js';
+import './ngm-map-chooser.ts';
 import {getMapTransparencyParam, syncMapTransparencyParam} from '../permalink.js';
 import MainStore from '../store/main.ts';
 
@@ -43,7 +43,7 @@ class NgmMapConfiguration extends LitElementI18n {
 
 
   firstUpdated() {
-    this.mapChooser.initMapChooser(this.querySelector('ngm-map-chooser'));
+    this.mapChooser.addMapChooser(this.querySelector('ngm-map-chooser'));
 
     const transparencyParam = getMapTransparencyParam();
     const transparency = !isNaN(transparencyParam) ? 1 - transparencyParam : 0.6;
@@ -65,7 +65,7 @@ class NgmMapConfiguration extends LitElementI18n {
         <label>${i18next.t('dtd_transparency_label')}</label>
         <div class="ui grey small slider"></div>
       </div>
-      `;
+    `;
   }
 
   createRenderRoot() {
