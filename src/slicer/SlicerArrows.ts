@@ -53,7 +53,7 @@ export interface SlicerArrowOptions {
   positionUpdateCallback: (string) => Cartesian3,
   // calls on arrow move
   moveCallback: (string, number, Cartesian3) => void,
-  bbox: any
+  bbox: BBox
 }
 
 

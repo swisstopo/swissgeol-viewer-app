@@ -216,19 +216,19 @@ export default class SlicingBox extends SlicingToolBase {
     const corners = bbox!.corners;
     switch (side) {
       case 'left': {
-        moveSlicingBoxCorners(corners.topLeft, corners.bottomLeft, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.bottomLeft, corners.topRight, corners.bottomRight, moveVector);
         break;
       }
       case 'right': {
-        moveSlicingBoxCorners(corners.topRight, corners.bottomRight, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.topRight, corners.bottomRight, corners.topLeft, corners.bottomLeft, moveVector);
         break;
       }
       case 'front': {
-        moveSlicingBoxCorners(corners.topLeft, corners.topRight, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.topRight, corners.bottomLeft, corners.bottomRight, moveVector);
         break;
       }
       case 'back': {
-        moveSlicingBoxCorners(corners.bottomLeft, corners.bottomRight, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.bottomLeft, corners.bottomRight, corners.topLeft, corners.topRight, moveVector);
         break;
       }
       case 'up':

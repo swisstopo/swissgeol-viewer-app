@@ -7,7 +7,7 @@ import {
   projectPointOntoVector,
 } from '../cesiumutils';
 import Rectangle from 'cesium/Source/Core/Rectangle';
-import {SLICING_BOX_HEIGHT, SLICING_BOX_LOWER_LIMIT} from '../constants';
+import {SLICING_BOX_HEIGHT, SLICING_BOX_LOWER_LIMIT, SLICING_BOX_MIN_SIZE} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
 import {HeadingPitchRoll, Transforms} from 'cesium';
@@ -301,10 +301,25 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit = SLICING_BOX
 
 /**
  * Moves box corners onMouse move
+ * @param position1
+ * @param position2
+ * @param oppositePosition1
+ * @param oppositePosition2
+ * @param moveVector
+ * @return {boolean}
  */
-export function moveSlicingBoxCorners(position1: Cartesian3, position2: Cartesian3, moveVector: Cartesian3) {
+export function moveSlicingBoxCorners(position1, position2, oppositePosition1, oppositePosition2, moveVector) {
+  let bothSideMove = false;
+  const initialDistance = Cartesian3.distance(position1, oppositePosition1);
   Cartesian3.add(position1, moveVector, position1);
   Cartesian3.add(position2, moveVector, position2);
+  const newDistance = Cartesian3.distance(position1, oppositePosition1);
+  if (initialDistance > newDistance && newDistance < SLICING_BOX_MIN_SIZE) {
+    Cartesian3.add(oppositePosition1, moveVector, oppositePosition1);
+    Cartesian3.add(oppositePosition2, moveVector, oppositePosition2);
+    bothSideMove = true;
+  }
+  return bothSideMove;
 }
 
 export function calculateBoxHeight(height, lowerLimit, area, altitude?) {
