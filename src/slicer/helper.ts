@@ -13,6 +13,8 @@ import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection
 import {HeadingPitchRoll, Transforms} from 'cesium';
 import {getPercent, interpolateBetweenNumbers} from '../utils';
 import Quaternion from 'cesium/Source/Core/Quaternion';
+import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
+import ApproximateTerrainHeights from 'cesium/Source/Core/ApproximateTerrainHeights';
 
 
 export interface BBox {
@@ -332,4 +334,37 @@ export function calculateBoxHeight(height, lowerLimit, area, altitude?) {
   }
   if (altitude) lowerLimit += altitude;
   return {lowerLimit, height};
+}
+
+/**
+ * Create a clipping plane in world coordinate and set an inverse transform
+ * so that it is viewed in the local coordinates system defined by the tileset
+ * bounding sphere center. The system is not based on an ENU frame when this
+ * center is below the ground (to match Cesium behaviour, see comments in addClippingPlanes).
+ * @param primitive
+ */
+export function createCPCModelMatrixFromSphere(primitive: Cesium3DTileset): Matrix4 {
+  // Figure out whether we need to orient using an ENU frame or not
+  const clippingCenter = primitive.boundingSphere.center;
+  const clippingCarto = Cartographic.fromCartesian(clippingCenter);
+  console.log('Add planes from sphere', clippingCarto, primitive);
+  let globalMatrix = Matrix4.IDENTITY;
+  if (clippingCarto && (clippingCarto.height > ApproximateTerrainHeights._defaultMinTerrainHeight)) {
+    globalMatrix = Transforms.eastNorthUpToFixedFrame(clippingCenter);
+    console.log('BS above terrain, assuming an ENU frame orientation');
+  } else {
+    console.log('BS under terrain, assuming a cartesian orientation');
+  }
+
+  // @ts-ignore clippingPlanesOriginMatrix is private?
+  const toLocalMatrix = Matrix4.inverse(primitive.clippingPlanesOriginMatrix, new Matrix4());
+  const localMatrix = Matrix4.multiply(toLocalMatrix, globalMatrix, new Matrix4());
+  let modelMatrix = localMatrix; // a transform from world coordinates to the tileset local reference system
+
+  // We rely on private property
+  console.assert(primitive._initialClippingPlanesOriginMatrix);
+  const inverseReference = Matrix4.inverse(primitive._initialClippingPlanesOriginMatrix, new Matrix4());
+  modelMatrix = Matrix4.multiply(inverseReference, modelMatrix, new Matrix4());
+
+  return modelMatrix;
 }

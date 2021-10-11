@@ -1,15 +1,12 @@
 import {getOrthogonalViewPoints, planeFromTwoPoints} from '../cesiumutils';
 import {executeForAllPrimitives} from '../utils';
-import {createClippingPlanes, getClippingPlaneFromSegmentWithTricks} from './helper';
+import {createClippingPlanes, getClippingPlaneFromSegmentWithTricks, createCPCModelMatrixFromSphere} from './helper';
 import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Plane from 'cesium/Source/Core/Plane';
 import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
-import Transforms from 'cesium/Source/Core/Transforms';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import ApproximateTerrainHeights from 'cesium/Source/Core/ApproximateTerrainHeights';
 
 export interface SlicingLineOptions {
   /**
@@ -87,33 +84,13 @@ export default class SlicingLine extends SlicingToolBase {
    * @param primitive
    */
   addClippingPlanesFromSphere(primitive: Cesium3DTileset) {
-    // Figure out whether we need to orient using an ENU frame or not
-    const clippingCenter = primitive.boundingSphere.center;
-    const clippingCarto = Cartographic.fromCartesian(clippingCenter);
-    console.log('Add planes from sphere', clippingCarto, primitive);
-    let globalMatrix = Matrix4.IDENTITY;
-    if (clippingCarto && (clippingCarto.height > ApproximateTerrainHeights._defaultMinTerrainHeight)) {
-      globalMatrix = Transforms.eastNorthUpToFixedFrame(clippingCenter);
-      console.log('BS above terrain, assuming an ENU frame orientation');
-    } else {
-      console.log('BS under terrain, assuming a cartesian orientation');
-    }
-
-    // @ts-ignore clippingPlanesOriginMatrix is private?
-    const toLocalMatrix = Matrix4.inverse(primitive.clippingPlanesOriginMatrix, new Matrix4());
-    const localMatrix = Matrix4.multiply(toLocalMatrix, globalMatrix, new Matrix4());
+    const modelMatrix = createCPCModelMatrixFromSphere(primitive);
     const cpc = new ClippingPlaneCollection({
-      modelMatrix: localMatrix, // a transform from world coordinates to the tileset local reference system
+      modelMatrix: modelMatrix, // a transform from world coordinates to the tileset local reference system
       planes: [Plane.clone(this.plane!)], // plane in world coordinates
       edgeWidth: 1.0,
       unionClippingRegions: false,
     });
-
-    // We rely on private property
-    console.assert(primitive._initialClippingPlanesOriginMatrix);
-    const inverseReference = Matrix4.inverse(primitive._initialClippingPlanesOriginMatrix, new Matrix4());
-    cpc.modelMatrix = Matrix4.multiply(inverseReference, cpc.modelMatrix, new Matrix4());
-
     primitive.clippingPlanes = cpc;
   }
 }
