@@ -14,7 +14,7 @@ ENV="$1"
 
 if [ "$ENV" = "prod-viewer" ]
 then
-    DESTINATION="s3://$PROD_BUCKET"
+    DESTINATION="s3://$PROD_VIEWER_BUCKET"
 fi
 
 if [ "$ENV" = "prod" ]

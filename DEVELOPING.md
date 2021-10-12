@@ -53,7 +53,7 @@ scripts/deploy_to_prod_viewer.sh
 [ $? -eq 0 ] && echo OK || echo failed
 ```
 
-* Check the site is upgraded: https://test.swissgeol.ch/versions.json
+* Check the site is upgraded: https://test.viewer.swissgeol.ch/versions.json
 
 
 ## i18n: add new string to translate
