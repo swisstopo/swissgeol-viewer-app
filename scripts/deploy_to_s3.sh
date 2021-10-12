@@ -6,10 +6,16 @@ DEV_BUCKET="ngmpub-dev-bgdi-ch"
 INT_BUCKET="ngmpub-int-bgdi-ch"
 PROD_BUCKET="ngmpub-prod-bgdi-ch"
 REVIEW_BUCKET="ngmpub-review-bgdi-ch"
+PROD_VIEWER_BUCKET="ngmpub-prod-viewer-bgdi-ch"
 CACHE_CONTROL="${CACHE_CONTROL:-no-cache}"
 S3_CMD="${S3_CMD:-aws s3}"
 
 ENV="$1"
+
+if [ "$ENV" = "prod-viewer" ]
+then
+    DESTINATION="s3://$PROD_BUCKET"
+fi
 
 if [ "$ENV" = "prod" ]
 then

@@ -2,6 +2,7 @@
 
 DEV_BRANCH="master"
 PROD_BRANCH="prod"
+PROD_VIEWER_BRANCH="prod-viewer"
 DEPLOY_TO_S3="${DEPLOY_TO_S3:-scripts/deploy_to_s3.sh}"
 
 echo ref $GITHUB_REF
@@ -69,6 +70,12 @@ then
     $DEPLOY_TO_S3 prod
     exit $?
   fi
+  if [ "$NAME" = "$PROD_VIEWER_BRANCH" ]
+  then
+    $DEPLOY_TO_S3 prod-viewer
+    exit $?
+  fi
+
 
   $DEPLOY_TO_S3 review $NAME
   exit $?
