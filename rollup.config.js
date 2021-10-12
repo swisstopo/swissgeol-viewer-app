@@ -14,9 +14,10 @@ import autoprefixer from 'autoprefixer';
 
 const cesiumSource = __dirname + '/node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
+const extensions = ['.ts', '.js'];
 
 const config = {
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: [{
     file: 'dist/bundle.debug.js',
     sourcemap: true,
@@ -41,6 +42,7 @@ const config = {
     }),
     json(),
     resolve({
+      extensions: extensions,
       browser: true,
     }),
     commonjs(),
@@ -66,7 +68,7 @@ const config = {
         ]
       ],
       // exclude: 'node_modules/**'
-      extensions: ['ts', 'js'],
+      extensions: extensions,
       exclude: [
         'node_modules/cesium/**',
         'node_modules/core-js/**',

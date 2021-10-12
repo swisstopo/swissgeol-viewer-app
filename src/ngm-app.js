@@ -12,20 +12,20 @@ import './elements/ngm-drop-files';
 import './elements/ngm-tracking-consent';
 import './elements/ngm-layer-legend-container';
 import './elements/ngm-camera-information.js';
-import './elements/ngm-nav-tools.ts';
-import './elements/ngm-minimap.ts';
+import './elements/ngm-nav-tools';
+import './elements/ngm-minimap';
 
 import {
   DEFAULT_VIEW,
 } from './constants.js';
 
 import {setupSearch} from './search.js';
-import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer.ts';
+import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer';
 
 import {getCameraView, getSliceParam, syncCamera, syncSliceParam} from './permalink.js';
 import i18next from 'i18next';
 import {getZoomToPosition} from './permalink';
-import Slicer from './slicer/Slicer.js';
+import Slicer from './slicer/Slicer';
 
 import {setupI18n} from './i18n.js';
 import QueryManager from './query/QueryManager';
@@ -33,8 +33,8 @@ import QueryManager from './query/QueryManager';
 import {initAnalytics} from './analytics.js';
 import {initSentry} from './sentry.js';
 import {showWarning} from './message';
-import MainStore from './store/main.ts';
-import SlicerStore from './store/slicer.ts';
+import MainStore from './store/main';
+import SlicerStore from './store/slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;

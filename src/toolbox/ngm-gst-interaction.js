@@ -14,7 +14,7 @@ import '../elements/ngm-i18n-content.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
-import MainStore from '../store/main.ts';
+import MainStore from '../store/main';
 
 /**
  * @typedef {"point" | "line" | "rectangle"} GeometryType

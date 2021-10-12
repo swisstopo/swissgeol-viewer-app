@@ -2,7 +2,7 @@
 
 import assert from 'assert';
 import {assert as chaiAssert} from 'chai';
-import {createZipFromData, createDataGenerator} from '../download.js';
+import {createZipFromData, createDataGenerator} from '../download';
 import {containsXY, filterCsvString, areBboxIntersectings} from '../utils.js';
 
 // see https://stackoverflow.com/questions/58668361/how-can-i-convert-an-async-iterator-to-an-array
@@ -93,6 +93,7 @@ describe('Download', () => {
 
   describe('createDataGenerator', () => {
     it('empty specs', async () => {
+      // @ts-ignore
       const data = await toArray(createDataGenerator([], [0, 1, 2, 3], null));
       chaiAssert.isEmpty(data);
     });

@@ -16,7 +16,7 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import SingleTileImageryProvider from 'cesium/Source/Scene/SingleTileImageryProvider';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import MapChooser from './MapChooser.ts';
+import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import PostProcessStage from 'cesium/Source/Scene/PostProcessStage';

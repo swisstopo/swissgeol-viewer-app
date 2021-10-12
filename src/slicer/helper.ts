@@ -11,7 +11,34 @@ import {SLICING_BOX_HEIGHT, SLICING_BOX_LOWER_LIMIT, SLICING_BOX_MIN_SIZE} from 
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
 import {HeadingPitchRoll, Transforms} from 'cesium';
-import {getPercent, interpolateBetweenNumbers} from '../utils.ts';
+import {getPercent, interpolateBetweenNumbers} from '../utils';
+import Quaternion from 'cesium/Source/Core/Quaternion';
+import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
+import ApproximateTerrainHeights from 'cesium/Source/Core/ApproximateTerrainHeights';
+
+
+export interface BBox {
+  center: Cartesian3,
+  width: number,
+  length: number,
+  height: number,
+  lowerLimit: number,
+  altitude: number,
+  corners: {
+    bottomRight: Cartesian3,
+    bottomLeft: Cartesian3,
+    topRight: Cartesian3,
+    topLeft: Cartesian3,
+  },
+  orientation?: Quaternion
+}
+
+interface SliceCorners {
+  topLeft: Cartesian3,
+  bottomLeft: Cartesian3,
+  topRight: Cartesian3,
+  bottomRight: Cartesian3,
+}
 
 /**
  * @param primitive
@@ -70,7 +97,7 @@ const crossScratch = new Cartesian3();
  * @param {Cartesian3} mapPlaneNormal - globe plane normal (can be get using 'planeFromTwoPoints')
  * @return {module:cesium.ClippingPlane}
  */
-export function getClippingPlaneFromSegment(start, end, tileCenter, mapRect, mapPlaneNormal) {
+export function getClippingPlaneFromSegmentWithTricks(start, end, tileCenter, mapRect, mapPlaneNormal) {
   const plane = new ClippingPlane(Cartesian3.UNIT_X, 0);
   // map vectors need for computation of plane rotation
   const mapNorthwest = Cartographic.toCartesian(Rectangle.northwest(mapRect));
@@ -134,9 +161,8 @@ export function createClippingPlanes(planes, unionClippingRegions = true) {
  * Returns bbox for box slicing from according to provided view ratio
  * @param {Viewer} viewer
  * @param {number} ratio
- * @return {{center: Cartesian3, width: number, length: number, height: number}}
  */
-export function getBboxFromViewRatio(viewer, ratio) {
+export function getBboxFromViewRatio(viewer, ratio): BBox {
   const sceneCenter = pickCenter(viewer.scene);
   let slicingCenter = Cartographic.fromCartesian(sceneCenter);
   const mapRect = viewer.scene.globe.cartographicLimitRectangle;
@@ -182,7 +208,7 @@ export function getBboxFromViewRatio(viewer, ratio) {
   cartCenter.height = height / 2 + lowerLimit;
 
   return {
-    center: Cartographic.toCartesian(cartCenter, null, center),
+    center: Cartographic.toCartesian(cartCenter, undefined, center),
     width: width,
     length: length,
     height: height,
@@ -206,28 +232,29 @@ const lineVectorScratch = new Cartesian3();
  * @param {Cartesian3[]} positions
  * @param {Number} [lowerLimit]
  * @param {Number} [height]
- * @return {{center: Cartesian3, width: number, length: number, height: number}}
+ * @return {{center: Cartesian3, width: number, length: number, height: number, lowerLimit: number, altitude: number, corners: any, orientation: Quaternion}}
  */
 export function getBboxFromRectangle(viewer, positions, lowerLimit = SLICING_BOX_LOWER_LIMIT, height = SLICING_BOX_HEIGHT) {
-  const cartographicPosition = positions.map(p => Cartographic.fromCartesian(p));
+  const cartoPositions = positions.map(p => Cartographic.fromCartesian(p));
 
   // search for two positions with smallest longitude (left)
-  const leftPositions = [cartographicPosition.reduce((a, b) => a.longitude < b.longitude ? a : b)];
-  cartographicPosition.splice(cartographicPosition.indexOf(leftPositions[0]), 1);
-  leftPositions.push(cartographicPosition.reduce((a, b) => a.longitude < b.longitude ? a : b));
-  cartographicPosition.splice(cartographicPosition.indexOf(leftPositions[1]), 1);
+  const leftPositions = [cartoPositions.reduce((a, b) => a.longitude < b.longitude ? a : b)];
+  cartoPositions.splice(cartoPositions.indexOf(leftPositions[0]), 1);
+  leftPositions.push(cartoPositions.reduce((a, b) => a.longitude < b.longitude ? a : b));
+  cartoPositions.splice(cartoPositions.indexOf(leftPositions[1]), 1);
   // two other is right
-  const rightPosition = cartographicPosition;
+  const rightPosition = cartoPositions;
   // set rectangle positions to bbox corners according to positions on map
-  const sliceCorners = {
+  const cartoSliceCorners = {
     topLeft: leftPositions[0].latitude > leftPositions[1].latitude ? leftPositions[0] : leftPositions[1],
     bottomLeft: leftPositions[0].latitude < leftPositions[1].latitude ? leftPositions[0] : leftPositions[1],
     topRight: rightPosition[0].latitude > rightPosition[1].latitude ? rightPosition[0] : rightPosition[1],
     bottomRight: rightPosition[0].latitude < rightPosition[1].latitude ? rightPosition[0] : rightPosition[1]
   };
-  for (const key in sliceCorners) {
-    sliceCorners[key].height = 0;
-    sliceCorners[key] = Cartographic.toCartesian(sliceCorners[key]);
+  cartoPositions.forEach(c => c.height = 0);
+  const sliceCorners = {} as SliceCorners;
+  for (const key in cartoSliceCorners) {
+    sliceCorners[key] = Cartographic.toCartesian(cartoSliceCorners[key]);
   }
 
   const center = Cartesian3.midpoint(sliceCorners.topLeft, sliceCorners.bottomRight, new Cartesian3());
@@ -295,7 +322,7 @@ export function moveSlicingBoxCorners(position1, position2, oppositePosition1, o
   return bothSideMove;
 }
 
-export function calculateBoxHeight(height, lowerLimit, area, altitude) {
+export function calculateBoxHeight(height, lowerLimit, area, altitude?) {
   // values from https://jira.camptocamp.com/browse/GSNGM-567
   if (area <= 0.005) {
     height = 300;
@@ -307,4 +334,38 @@ export function calculateBoxHeight(height, lowerLimit, area, altitude) {
   }
   if (altitude) lowerLimit += altitude;
   return {lowerLimit, height};
+}
+
+/**
+ * Create a clipping plane in world coordinate and set an inverse transform
+ * so that it is viewed in the local coordinates system defined by the tileset
+ * bounding sphere center. The system is not based on an ENU frame when this
+ * center is below the ground (to match Cesium behaviour, see comments in addClippingPlanes).
+ * @param primitive
+ */
+export function createCPCModelMatrixFromSphere(primitive: Cesium3DTileset): Matrix4 {
+  // Figure out whether we need to orient using an ENU frame or not
+  const clippingCenter = primitive.boundingSphere.center;
+  const clippingCarto = Cartographic.fromCartesian(clippingCenter);
+  console.log('Add planes from sphere', clippingCarto, primitive);
+  let globalMatrix = Matrix4.IDENTITY;
+  if (clippingCarto && (clippingCarto.height > ApproximateTerrainHeights._defaultMinTerrainHeight)) {
+    globalMatrix = Transforms.eastNorthUpToFixedFrame(clippingCenter);
+    console.log('BS above terrain, assuming an ENU frame orientation');
+  } else {
+    console.log('BS under terrain, assuming a cartesian orientation');
+  }
+
+  // @ts-ignore clippingPlanesOriginMatrix is private?
+  const toLocalMatrix = Matrix4.inverse(primitive.clippingPlanesOriginMatrix, new Matrix4());
+  const localMatrix = Matrix4.multiply(toLocalMatrix, globalMatrix, new Matrix4());
+  let modelMatrix = localMatrix; // a transform from world coordinates to the tileset local reference system
+
+  // @ts-ignore we rely on private property
+  const icpom = primitive._initialClippingPlanesOriginMatrix;
+  console.assert(icpom);
+  const inverseReference = Matrix4.inverse(icpom, new Matrix4());
+  modelMatrix = Matrix4.multiply(inverseReference, modelMatrix, new Matrix4());
+
+  return modelMatrix;
 }

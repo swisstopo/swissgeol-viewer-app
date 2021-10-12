@@ -1,8 +1,8 @@
 import {html} from 'lit-element';
-import Auth from '../auth.ts';
+import Auth from '../auth';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
-import auth from '../store/auth.ts';
+import auth from '../store/auth';
 import {classMap} from 'lit-html/directives/class-map.js';
 
 

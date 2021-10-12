@@ -54,6 +54,7 @@ export function pickCenter(scene) {
 }
 
 /**
+ * Return the position of the point, on the ellipsoid at the center of the Cesium viewport.
  * @param {import('cesium/Source/Scene/Scene').default} scene
  * @return {Cartesian3 | undefined}
  */
@@ -202,22 +203,13 @@ export function updateHeightForCartesianPositions(positions, height, scene) {
  * @return {Plane}
  */
 export function planeFromTwoPoints(point1, point2, negate = false) {
-  const center = Cartesian3.midpoint(point1, point2, new Cartesian3());
-  const cartographicPoint1 = Cartographic.fromCartesian(point1);
-  const cartographicPoint2 = Cartographic.fromCartesian(point2);
-  // for correct tilt
-  cartographicPoint1.height = cartographicPoint1.height + 10000;
-  cartographicPoint2.height = cartographicPoint2.height - 10000;
-  const cartPoint1 = Cartographic.toCartesian(cartographicPoint1);
-  const cartPoint2 = Cartographic.toCartesian(cartographicPoint2);
-  const vector1 = Cartesian3.subtract(center, cartPoint1, new Cartesian3());
-  const vector2 = Cartesian3.subtract(cartPoint2, cartPoint1, new Cartesian3());
-  const cross = Cartesian3.cross(vector1, vector2, new Cartesian3());
+  const p1p2 = Cartesian3.subtract(point2, point1, new Cartesian3());
+  const cross = Cartesian3.cross(point1, p1p2, new Cartesian3());
   const normal = Cartesian3.normalize(cross, new Cartesian3());
   if (negate) {
     Cartesian3.negate(normal, normal);
   }
-  return Plane.fromPointNormal(center, normal);
+  return Plane.fromPointNormal(point1, normal);
 }
 
 /**

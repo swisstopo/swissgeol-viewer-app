@@ -1,13 +1,17 @@
+import Primitive from 'cesium/Source/Scene/Primitive';
+import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+
 /**
- * Interface for slicing tools.
+ * Base class for slicing tools.
  */
 export default class SlicingToolBase {
-  constructor(viewer, dataSource) {
+  viewer: Viewer;
+
+  constructor(viewer: Viewer) {
     this.viewer = viewer;
-    this.dataSource = dataSource;
   }
 
-  activate() {
+  activate(_options) {
     throw new Error('This method is required for slicing tools.');
   }
 
@@ -15,7 +19,7 @@ export default class SlicingToolBase {
     throw new Error('This method is required for slicing tools.');
   }
 
-  addClippingPlanes() {
+  addClippingPlanes(_primitive: Primitive) {
     throw new Error('This method is required for slicing tools.');
   }
 }

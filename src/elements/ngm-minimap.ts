@@ -6,7 +6,7 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {styleMap} from 'lit-html/directives/style-map';
 import {SWITZERLAND_RECTANGLE, MINIMAP_EXTENT} from '../constants';
 import draggable from './draggable';
-import './ngm-nadir-view.ts';
+import './ngm-nadir-view';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
 import {Interactable} from '@interactjs/types';

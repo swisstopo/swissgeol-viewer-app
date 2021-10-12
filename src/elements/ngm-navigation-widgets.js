@@ -6,7 +6,8 @@ import './ngm-keyboard-info-popup.js';
 import './slicer/ngm-slicer.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
-import MainStore from '../store/main.ts';
+import {SWITZERLAND_RECTANGLE} from '../constants.js';
+import MainStore from '../store/main';
 
 class NgmNavigationWidgets extends LitElementI18n {
   constructor() {

@@ -19,16 +19,16 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../message';
-import {createDataGenerator, createZipFromData} from '../download.js';
+import {createDataGenerator, createZipFromData} from '../download';
 import {saveAs} from 'file-saver';
-import auth from '../store/auth.ts';
+import auth from '../store/auth';
 import './ngm-share-link.js';
 import '../layers/ngm-layers-upload';
 import LocalStorageController from '../LocalStorageController';
-import MainStore from '../store/main.ts';
-import SlicerStore from '../store/slicer.ts';
+import MainStore from '../store/main';
+import SlicerStore from '../store/slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {zoomTo} from '../utils.ts';
+import {zoomTo} from '../utils';
 import $ from '../jquery';
 
 const TOOLBOX = 'ngm-toolbox';
