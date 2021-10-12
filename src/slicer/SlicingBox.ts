@@ -6,6 +6,7 @@ import {
   applyOffsetToPlane,
   BBox,
   createClippingPlanes, getBboxFromRectangle,
+  createCPCModelMatrixFromSphere,
   getBboxFromViewRatio,
   getClippingPlaneFromSegmentWithTricks,
   getOffsetFromBbox, moveSlicingBoxCorners
@@ -29,6 +30,7 @@ import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Entity from 'cesium/Source/DataSources/Entity';
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import DataSource from 'cesium/Source/DataSources/DataSource';
+import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
 
 export interface SlicingBoxOptions {
   type: 'box' | 'view-box' | undefined,
@@ -189,20 +191,33 @@ export default class SlicingBox extends SlicingToolBase {
       this.zPlanes!.forEach(plane => clippingPlanes.add(Plane.transform(plane, this.modelMatrix!)));
   }
 
-  updateBoxTileClippingPlanes(clippingPlanes, offset, center) {
+  updateBoxTileClippingPlanes(primitive: Cesium3DTileset, offset, center) {
+    const clippingPlanes = primitive.clippingPlanes;
     if (!clippingPlanes) return;
     clippingPlanes.removeAll();
+    const negate = this.options!.negate;
+    let modelMatrix: Matrix4;
+    if (negate && primitive.root && Matrix4.equals(primitive.root.transform, Matrix4.IDENTITY)) {
+      modelMatrix = createCPCModelMatrixFromSphere(primitive);
+      clippingPlanes.modelMatrix = modelMatrix;
+      clippingPlanes.unionClippingRegions = !negate; // workaround disappearing plane
+    }
     this.planesPositions!.forEach(positions => {
       const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
       const plane = planeFromTwoPoints(positions[0], positions[1], false);
-      const p = getClippingPlaneFromSegmentWithTricks(positions[0], positions[1], center, mapRect, plane.normal);
-      if (this.options!.negate) {
+      let p: Plane;
+      if (!modelMatrix) {
+        p = getClippingPlaneFromSegmentWithTricks(positions[0], positions[1], center, mapRect, plane.normal);
+      } else {
+        p = Plane.clone(plane);
+      }
+      if (negate) {
         Cartesian3.negate(p.normal, p.normal);
         p.distance *= -1;
       }
       clippingPlanes.add(p);
     });
-    if (!this.options!.negate) {
+    if (!negate) {
       this.zPlanes!.forEach(plane => {
         plane = offset ? applyOffsetToPlane(plane, offset) : plane;
         clippingPlanes.add(plane);
@@ -300,7 +315,7 @@ export default class SlicingBox extends SlicingToolBase {
       if (primitive.root && primitive.boundingSphere) {
         const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
         const tileCenter = Cartesian3.equals(transformCenter, Cartesian3.ZERO) ? primitive.boundingSphere.center : transformCenter;
-        this.updateBoxTileClippingPlanes(primitive.clippingPlanes, this.offsets[primitive.basePath], tileCenter);
+        this.updateBoxTileClippingPlanes(primitive, this.offsets[primitive.basePath], tileCenter);
       }
     });
     this.onBoxPlanesChange();
