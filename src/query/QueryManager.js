@@ -29,7 +29,8 @@ export default class QueryManager {
 
   async querySwisstopo(pickedPosition, layers) {
     const lang = i18next.language;
-    const identifyResult = await this.swisstopoIdentify.identify(pickedPosition, layers, lang);
+    // layer list is reversed to match the display order on map
+    const identifyResult = await this.swisstopoIdentify.identify(pickedPosition, layers.slice().reverse(), lang);
     if (identifyResult) {
       let popupContent = await this.swisstopoIdentify.getPopupForFeature(identifyResult.layerBodId, identifyResult.featureId, lang);
       if (popupContent) {
