@@ -73,7 +73,7 @@ export default class SlicingBox extends SlicingToolBase {
 
   slicerArrows: SlicerArrows | null = null;
   slicingBoxEntity: Entity | null = null;
-  modelMatrix:Matrix4 | null = null;
+  modelMatrix: Matrix4 | null = null;
   sidePlanes: Plane[] = [];
 
   constructor(viewer: Viewer, dataSource: DataSource) {
@@ -110,7 +110,8 @@ export default class SlicingBox extends SlicingToolBase {
         moveCallback: (side, moveAmount, moveVector) => this.onPlaneMove(side, moveAmount, moveVector),
         positionUpdateCallback: (side: string) => this.arrowPositionCallback(side),
         arrowsList: this.options.negate ? SLICE_BOX_ARROWS_INSIDE : SLICE_BOX_ARROWS_OUTSIDE,
-        arrowConfiguration: {...DEFAULT_CONFIG_FOR_SLICING_ARROW, orientation: this.bbox.orientation}
+        arrowConfiguration: {...DEFAULT_CONFIG_FOR_SLICING_ARROW, orientation: this.bbox.orientation},
+        bbox: this.bbox
       });
     this.slicerArrows.show();
 

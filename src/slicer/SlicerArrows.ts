@@ -8,12 +8,13 @@ import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import {getDirectionFromPoints} from '../cesiumutils';
+import {getDirectionFromPoints, updateHeightForCartesianPositions} from '../cesiumutils';
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import DataSource from 'cesium/Source/DataSources/DataSource';
 import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
 import Quaternion from 'cesium/Source/Core/Quaternion';
 import ShadowMode from 'cesium/Source/Scene/ShadowMode';
+import {BBox} from './helper';
 
 interface ArrowListItem {
   // arrow position label
@@ -52,6 +53,7 @@ export interface SlicerArrowOptions {
   positionUpdateCallback: (string) => Cartesian3,
   // calls on arrow move
   moveCallback: (string, number, Cartesian3) => void,
+  bbox: BBox
 }
 
 
@@ -79,6 +81,7 @@ export default class SlicerArrows {
   private eventHandler: (ScreenSpaceEventHandler | null) = null;
   highlightedArrow: Entity | undefined = undefined;
   arrows: Record<string, Entity> = {};
+  bbox: BBox | null = null;
 
 
   /**
@@ -94,6 +97,7 @@ export default class SlicerArrows {
     this.positionUpdateCallback = options.positionUpdateCallback;
     this.arrowsList = options.arrowsList;
     this.arrowConfiguration = options.arrowConfiguration || DEFAULT_CONFIG_FOR_SLICING_ARROW;
+    this.bbox = options.bbox;
   }
 
   show() {
@@ -168,7 +172,8 @@ export default class SlicerArrows {
       // calculate Cartesian3 position of arrow
       const scalarDirection = (1 / scalar2d) * Math.abs(scalar2d);
       const scalar3d = distance / Cartesian3.distance(arrowPosition3d, oppositePosition3d) * scalarDirection;
-      Cartesian3.subtract(oppositePosition3d, arrowPosition3d, this.scratchAxisVector3d_);
+
+      this.updateAxisVector(arrowPosition3d, oppositePosition3d);
 
       const objectMoveVector3d = Cartesian3.multiplyByScalar(this.scratchAxisVector3d_, scalar3d, new Cartesian3());
       const newArrowPosition3d = Cartesian3.add(arrowPosition3d, objectMoveVector3d, new Cartesian3());
@@ -245,5 +250,30 @@ export default class SlicerArrows {
 
   toggleArrowsVisibility(show) {
     this.arrowsList.forEach(arrow => this.arrows[arrow.side].show = show);
+  }
+
+  updateAxisVector(arrowPosition3d, oppositePosition3d) {
+    let positions: Cartesian3[] = [];
+    const corners = this.bbox!.corners;
+    switch (this.selectedArrow!.properties!.side.getValue()) {
+      case 'right':
+        positions = updateHeightForCartesianPositions([corners.bottomLeft, corners.bottomRight], 0);
+        Cartesian3.subtract(positions[0], positions[1], this.scratchAxisVector3d_);
+        break;
+      case 'left':
+        positions = updateHeightForCartesianPositions([corners.bottomLeft, corners.bottomRight], 0);
+        Cartesian3.subtract(positions[1], positions[0], this.scratchAxisVector3d_);
+        break;
+      case 'front':
+        positions = updateHeightForCartesianPositions([corners.topLeft, corners.bottomLeft], 0);
+        Cartesian3.subtract(positions[1], positions[0], this.scratchAxisVector3d_);
+        break;
+      case 'back':
+        positions = updateHeightForCartesianPositions([corners.topLeft, corners.bottomLeft], 0);
+        Cartesian3.subtract(positions[0], positions[1], this.scratchAxisVector3d_);
+        break;
+      default:
+        Cartesian3.subtract(oppositePosition3d, arrowPosition3d, this.scratchAxisVector3d_);
+    }
   }
 }
