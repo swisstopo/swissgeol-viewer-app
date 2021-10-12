@@ -12,4 +12,4 @@ make dist
 scripts/deploy_to_s3.sh prod-viewer
 git tag $PROD_TAG -m $PROD_TAG
 git push origin $PROD_TAG
-git push origin prod-viewer
+git push -f origin $PROD_TAG:origin/prod-viewer
