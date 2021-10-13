@@ -36,6 +36,26 @@ scripts/deploy_to_prod.sh
 
 * Check the site is upgraded: https://beta.swissgeol.ch/versions.json
 
+
+## Deploy to prod-viewer (from local machine)
+```bash
+RELEASE_NAME="RELEASE_NAME_FOR_SENTRY" npm run build
+
+export VERSION="THE_TAG_YOU_WANT_DEPLOYED"
+
+git checkout $VERSION
+# use gopass to export the S3 access key and secret
+export AWS_REGION=eu-west-1
+export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
+export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
+
+scripts/deploy_to_prod_viewer.sh
+[ $? -eq 0 ] && echo OK || echo failed
+```
+
+* Check the site is upgraded: https://test.viewer.swissgeol.ch/versions.json
+
+
 ## i18n: add new string to translate
 
 The [i18next](https://www.i18next.com/) library is used to localize the application.
