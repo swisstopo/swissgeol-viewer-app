@@ -181,9 +181,10 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType, useAlt
  * @param {Array<Cartesian3>} positions
  * @param {number} height
  * @param {import('cesium/Source/Scene/Scene').default} [scene]
+ * @param {boolean} assignBack assign value to initial position
  * @return {Array<Cartesian3>}
  */
-export function updateHeightForCartesianPositions(positions, height, scene) {
+export function updateHeightForCartesianPositions(positions, height, scene, assignBack = false) {
   return positions.map(p => {
     const cartographicPosition = Cartographic.fromCartesian(p);
     cartographicPosition.height = height;
@@ -191,7 +192,7 @@ export function updateHeightForCartesianPositions(positions, height, scene) {
       const altitude = scene.globe.getHeight(cartographicPosition) || 0;
       cartographicPosition.height += altitude;
     }
-    return Cartographic.toCartesian(cartographicPosition);
+    return assignBack ? Cartographic.toCartesian(cartographicPosition, undefined, p) : Cartographic.toCartesian(cartographicPosition);
   });
 }
 
@@ -252,6 +253,7 @@ export function extendKmlWithProperties(kml, entities) {
 const scratchVector1 = new Cartesian3();
 const scratchVector2 = new Cartesian3();
 const scratchProjectionVector = new Cartesian3();
+
 /**
  * Calculates point projection on vector from provided points
  * @param vectorPoint1
@@ -269,6 +271,7 @@ export function projectPointOntoVector(vectorPoint1, vectorPoint2, pointToProjec
 
 const minDifferenceScratch = new Cartesian3();
 const maxDifferenceScratch = new Cartesian3();
+
 /**
  * Wrapper for Cartesian3.lerp. Computes position on segment.
  * @param position
@@ -312,6 +315,7 @@ export function projectPointOnSegment(point, startPoint, endPoint, start, end, h
 }
 
 const axisScratch = new Cartesian3();
+
 /**
  * Returns 1 if 'to' point on left-bottom side of 'from' point or -1 if vice-versa
  * @param {Cartesian3} from
@@ -326,6 +330,7 @@ export function getDirectionFromPoints(from, to) {
 
 const westPointScratch = new Cartesian3();
 const eastPointScratch = new Cartesian3();
+
 /**
  * Returns vector orthogonal to view vector (vector from camera position to position on map)
  * https://user-images.githubusercontent.com/51954170/108503213-abff8580-72bc-11eb-8b75-3385b5fd171e.png

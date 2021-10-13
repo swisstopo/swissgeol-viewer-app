@@ -231,19 +231,19 @@ export default class SlicingBox extends SlicingToolBase {
     const corners = bbox!.corners;
     switch (side) {
       case 'left': {
-        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.bottomLeft, corners.topRight, corners.bottomRight, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.bottomLeft, corners.topRight, corners.bottomRight, this.rightPlane, moveVector);
         break;
       }
       case 'right': {
-        bothSideMove = moveSlicingBoxCorners(corners.topRight, corners.bottomRight, corners.topLeft, corners.bottomLeft, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.topRight, corners.bottomRight, corners.topLeft, corners.bottomLeft, this.leftPlane, moveVector);
         break;
       }
       case 'front': {
-        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.topRight, corners.bottomLeft, corners.bottomRight, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.topRight, corners.bottomLeft, corners.bottomRight, this.backPlane, moveVector);
         break;
       }
       case 'back': {
-        bothSideMove = moveSlicingBoxCorners(corners.bottomLeft, corners.bottomRight, corners.topLeft, corners.topRight, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.bottomLeft, corners.bottomRight, corners.topLeft, corners.topRight, this.frontPlane, moveVector);
         break;
       }
       case 'up':
@@ -260,6 +260,7 @@ export default class SlicingBox extends SlicingToolBase {
         break;
       }
     }
+    updateHeightForCartesianPositions(Object.values(corners), 0, undefined, true);
     bbox.width = Cartesian3.distance(corners.topLeft, corners.bottomLeft);
     bbox.length = Cartesian3.distance(corners.bottomRight, corners.bottomLeft);
     if (!bothSideMove) {
