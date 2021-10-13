@@ -54,7 +54,7 @@ then
 fi
 
 # the DEV_BRANCH branch is deployed to the dev environment
-# the PROD_BRANCH branch is deployed to the production environment
+# the PROD_VIEWER and PROD branches are not deployed by this script
 # all the other branches are deployed to the review environment
 if [ -n "$BRANCH_NAME" ]
 then
@@ -67,12 +67,12 @@ then
   fi
   if [ "$NAME" = "$PROD_BRANCH" ]
   then
-    $DEPLOY_TO_S3 prod
+    echo "No automatic deployement for this branch"
     exit $?
   fi
   if [ "$NAME" = "$PROD_VIEWER_BRANCH" ]
   then
-    $DEPLOY_TO_S3 prod-viewer
+    echo "No automatic deployement for this branch"
     exit $?
   fi
 
