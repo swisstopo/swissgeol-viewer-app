@@ -13,6 +13,10 @@ ngm-nav-tools {
   cursor: pointer;
 }
 
+ngm-nav-tools.ngm-floating-window {
+  padding: 5px;
+}
+
 .ngm-nav-buttons > div {
   background-color: #0B7285;
 }

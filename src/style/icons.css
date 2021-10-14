@@ -91,3 +91,31 @@
   mask: url('./images/i_switzerland.svg') no-repeat center;
   -webkit-mask: url('./images/i_switzerland.svg') no-repeat center;
 }
+
+.ngm-cam-icon {
+  width: 24px;
+  height: 14px;
+  mask: url('./images/i_cam.svg') no-repeat center;
+  -webkit-mask: url('./images/i_cam.svg') no-repeat center;
+}
+
+.ngm-cam-h-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_cam_height.svg') no-repeat center;
+  -webkit-mask: url('./images/i_cam_height.svg') no-repeat center;
+}
+
+.ngm-cam-d-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_cam_angle.svg') no-repeat center;
+  -webkit-mask: url('./images/i_cam_angle.svg') no-repeat center;
+}
+
+.ngm-cam-t-icon {
+  width: 24px;
+  height: 22px;
+  mask: url('./images/i_cam_tilt.svg') no-repeat center;
+  -webkit-mask: url('./images/i_cam_tilt.svg') no-repeat center;
+}

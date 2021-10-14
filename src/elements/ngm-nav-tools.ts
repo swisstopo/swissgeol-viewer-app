@@ -76,6 +76,7 @@ export class NgmNavTools extends LitElementI18n {
         <div class="ngm-zoom-p-icon" @pointerdown=${e => this.startZoomIn(e)}></div>
         <div class="ngm-zoom-o-icon" @click=${() => this.flyToHome()}></div>
         <div class="ngm-zoom-m-icon" @pointerdown=${e => this.startZoomOut(e)}></div>
+        <div class="ngm-cam-icon" @pointerdown=${e => this.startZoomOut(e)}></div>
       </div>
       <div class="ngm-drag-area">
         <div></div>

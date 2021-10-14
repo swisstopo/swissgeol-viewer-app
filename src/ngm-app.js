@@ -14,6 +14,7 @@ import './elements/ngm-layer-legend-container';
 import './elements/ngm-camera-information.js';
 import './elements/ngm-nav-tools';
 import './elements/ngm-minimap';
+import './elements/ngm-cam-configuration';
 
 import {
   DEFAULT_VIEW,
@@ -281,6 +282,7 @@ class NgmApp extends LitElementI18n {
             <ngm-minimap class="ngm-floating-window" .viewer=${this.viewer} .hidden=${!this.showMinimap}
                          @close=${() => this.showMinimap = false}>
             </ngm-minimap>
+            <ngm-cam-configuration class="ngm-floating-window" .viewer=${this.viewer}></ngm-cam-configuration>
             <ngm-layer-legend-container></ngm-layer-legend-container>
             <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
           </div>

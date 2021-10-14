@@ -125,7 +125,7 @@ export class NgmMinimap extends LitElementI18n {
 
   render() {
     return html`
-      <div class="ngm-minimap-header">
+      <div class="ngm-floating-window-header">
         ${i18next.t('minimap_orientation')}
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
