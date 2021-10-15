@@ -85,7 +85,7 @@ class NgmCameraInformation extends LitElementI18n {
             <div>${i18next.t('camera_position_pitch_label')}</div>
           </div>
           <div>
-            <div class="ngm-nci-value">${height}</div>
+            <div class="ngm-nci-value ngm-nci-height">${height}</div>
             <div class="ngm-nci-value">${angle}</div>
             <div class="ngm-nci-value">${pitch}</div>
           </div>
