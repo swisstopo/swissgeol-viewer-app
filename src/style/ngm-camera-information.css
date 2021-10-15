@@ -15,6 +15,10 @@ ngm-camera-information .ngm-nci-value {
   font: normal normal 600 14px/20px Inter;
 }
 
+.ngm-nci-height {
+  min-width: 6em;
+}
+
 .ngm-nci-position {
   width: 83px;
   margin-right: 8px;
