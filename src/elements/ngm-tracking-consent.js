@@ -35,15 +35,10 @@ class NgmTrackingConsent extends LitElementI18n {
       return html`
         <div class="ui fluid card">
           <div class="content">
-            <div class="ui info icon message">
-              <i class="info icon"></i>
-              <div class="content">
-                ${unsafeHTML(i18next.t('tracking_text'))}
-              </div>
-            </div>
+            ${unsafeHTML(i18next.t('tracking_text'))}
           </div>
-          <div class="extra content">
-            <button class="ui button green" @click="${() => this.saveResponse(true)}">
+          <div class="content">
+            <button class="ui button" @click="${() => this.saveResponse(true)}">
               ${i18next.t('tracking_agree_btn_label')}
               </button>
             <button class="ui button" @click="${() => this.saveResponse(false)}">

@@ -2,5 +2,23 @@ ngm-tracking-consent {
   position: absolute;
   left: 50%;
   transform: translate(-50%, 0);
-  bottom: 0;
+  bottom: 6px;
+}
+
+ngm-tracking-consent .ui.card {
+  background-color: #c5f6fa;
+  color: #212529;
+  box-shadow: 4px 4px 2px #00000029;
+}
+
+ngm-tracking-consent .ui.card > .content {
+  border-top: none
+}
+
+ngm-tracking-consent .ui.button,
+ngm-tracking-consent .ui.button:hover {
+  background-color: #0b7285;
+  color: #fff;
+  text-shadow: none;
+  background-image: none;
 }
