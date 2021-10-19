@@ -1,7 +1,7 @@
 ngm-minimap {
   display: flex;
   flex-direction: column;
-  right: 64px;
+  right: 268px;
 }
 
 .ngm-compass {

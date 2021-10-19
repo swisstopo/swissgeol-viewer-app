@@ -3,6 +3,7 @@ ngm-cam-configuration {
   color: #495057;
   text-align: left;
   letter-spacing: 0;
+  right: 64px;
 }
 
 .ngm-cam-container > div {
@@ -15,6 +16,15 @@ ngm-cam-configuration {
 
 .ngm-cam-container > div > div:first-child {
   background-color: #0B7285;
+  cursor: pointer;
+}
+
+.ngm-cam-container > div > div:first-child:hover {
+  background-color: #FE0F17;
+}
+
+.ngm-cam-container > div > div.ngm-active-icon {
+  background-color: #B9271A;
 }
 
 .ngm-cam-conf-slider > div:first-child {
@@ -29,6 +39,12 @@ ngm-cam-configuration {
 .ngm-cam-coord {
   display: flex;
   flex-direction: column;
+}
+
+.ngm-cam-coord > .ngm-coords {
+  font: normal normal bold 15px/24px Inter;
+  letter-spacing: 0.16px;
+  color: #222529;
 }
 
 .ngm-cam-conf-slider,

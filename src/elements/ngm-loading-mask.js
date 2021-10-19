@@ -4,7 +4,7 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/progress.js';
 
 
-class NgmLoadingMask extends LitElement {
+export class NgmLoadingMask extends LitElement {
 
   static get properties() {
     return {

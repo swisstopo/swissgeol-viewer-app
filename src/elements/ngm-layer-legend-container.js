@@ -2,7 +2,7 @@ import {LitElement} from 'lit-element';
 import {html} from 'lit-html';
 import './ngm-layer-legend.js';
 
-class NgmLayerLegendContainer extends LitElement {
+export class NgmLayerLegendContainer extends LitElement {
 
   constructor() {
     super();
