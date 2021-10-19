@@ -10,7 +10,7 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT, SLICING_BOX_LOWER_LIMIT, SLICING_BOX_MIN_SIZE} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
-import {HeadingPitchRoll, Transforms} from 'cesium';
+import {HeadingPitchRoll, Plane, Transforms} from 'cesium';
 import {getPercent, interpolateBetweenNumbers} from '../utils';
 import Quaternion from 'cesium/Source/Core/Quaternion';
 import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
@@ -301,20 +301,20 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit = SLICING_BOX
 
 /**
  * Moves box corners onMouse move
- * @param position1
- * @param position2
- * @param oppositePosition1
- * @param oppositePosition2
- * @param moveVector
- * @return {boolean}
  */
-export function moveSlicingBoxCorners(position1, position2, oppositePosition1, oppositePosition2, moveVector) {
+export function moveSlicingBoxCorners(
+  position1: Cartesian3,
+  position2: Cartesian3,
+  oppositePosition1: Cartesian3,
+  oppositePosition2: Cartesian3,
+  oppositePlane: Plane,
+  moveVector: Cartesian3): boolean {
   let bothSideMove = false;
-  const initialDistance = Cartesian3.distance(position1, oppositePosition1);
   Cartesian3.add(position1, moveVector, position1);
   Cartesian3.add(position2, moveVector, position2);
   const newDistance = Cartesian3.distance(position1, oppositePosition1);
-  if (initialDistance > newDistance && newDistance < SLICING_BOX_MIN_SIZE) {
+  const direction = Plane.getPointDistance(oppositePlane, position1);
+  if (direction < 0 || newDistance < SLICING_BOX_MIN_SIZE) {
     Cartesian3.add(oppositePosition1, moveVector, oppositePosition1);
     Cartesian3.add(oppositePosition2, moveVector, oppositePosition2);
     bothSideMove = true;
