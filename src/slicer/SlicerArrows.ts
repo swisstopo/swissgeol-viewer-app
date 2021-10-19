@@ -76,7 +76,7 @@ export default class SlicerArrows {
   private scratchMouseMoveVector_ = new Cartesian2();
   private scratchObjectMoveVector2d_ = new Cartesian2();
   private scratchNewArrowPosition2d_ = new Cartesian2();
-  private scratchAxisVector3d_ = new Cartesian3();
+  private axisVector3d = new Cartesian3();
   private scratchLeft = new Cartesian3();
   private scratchRight = new Cartesian3();
   private scratchTop = new Cartesian3();
@@ -179,7 +179,7 @@ export default class SlicerArrows {
 
       this.updateAxisVector(arrowPosition3d, oppositePosition3d);
 
-      const objectMoveVector3d = Cartesian3.multiplyByScalar(this.scratchAxisVector3d_, scalar3d, new Cartesian3());
+      const objectMoveVector3d = Cartesian3.multiplyByScalar(this.axisVector3d, scalar3d, new Cartesian3());
       const newArrowPosition3d = Cartesian3.add(arrowPosition3d, objectMoveVector3d, new Cartesian3());
 
       // directly update arrow position if position callback not provided
@@ -270,19 +270,19 @@ export default class SlicerArrows {
     }
     switch (type) {
       case 'right':
-        Cartesian3.subtract(this.scratchLeft, this.scratchRight, this.scratchAxisVector3d_);
+        Cartesian3.subtract(this.scratchLeft, this.scratchRight, this.axisVector3d);
         break;
       case 'left':
-        Cartesian3.subtract(this.scratchRight, this.scratchLeft, this.scratchAxisVector3d_);
+        Cartesian3.subtract(this.scratchRight, this.scratchLeft, this.axisVector3d);
         break;
       case 'front':
-        Cartesian3.subtract(this.scratchBottom, this.scratchTop, this.scratchAxisVector3d_);
+        Cartesian3.subtract(this.scratchBottom, this.scratchTop, this.axisVector3d);
         break;
       case 'back':
-        Cartesian3.subtract(this.scratchTop, this.scratchBottom, this.scratchAxisVector3d_);
+        Cartesian3.subtract(this.scratchTop, this.scratchBottom, this.axisVector3d);
         break;
       default:
-        Cartesian3.subtract(oppositePosition3d, arrowPosition3d, this.scratchAxisVector3d_);
+        Cartesian3.subtract(oppositePosition3d, arrowPosition3d, this.axisVector3d);
     }
   }
 }
