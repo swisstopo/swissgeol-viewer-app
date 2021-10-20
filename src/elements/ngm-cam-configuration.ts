@@ -48,8 +48,8 @@ export class NgmCamConfiguration extends LitElementI18n {
     {
       labelTag: 'camera_position_angle_label',
       iconClass: () => classMap({'ngm-cam-d-icon': true, 'ngm-active-icon': this.lockType === 'angle'}),
-      minValue: -175,
-      maxValue: 175,
+      minValue: -179,
+      maxValue: 180,
       step: 1,
       style: () => this.getSliderStyle(this.heading, 180),
       getValue: () => this.heading,
@@ -60,8 +60,8 @@ export class NgmCamConfiguration extends LitElementI18n {
     {
       labelTag: 'camera_position_pitch_label',
       iconClass: () => classMap({'ngm-cam-t-icon': true, 'ngm-active-icon': this.lockType === 'pitch'}),
-      minValue: -85,
-      maxValue: 85,
+      minValue: -90,
+      maxValue: 90,
       step: 1,
       style: () => this.getSliderStyle(this.pitch, 90),
       getValue: () => this.pitch,
