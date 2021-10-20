@@ -1,4 +1,4 @@
-import {SWITZERLAND_RECTANGLE, MANTEL_COLOR} from './constants.js';
+import {SWITZERLAND_RECTANGLE, MANTEL_COLOR} from './constants';
 
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import RequestScheduler from 'cesium/Source/Core/RequestScheduler';

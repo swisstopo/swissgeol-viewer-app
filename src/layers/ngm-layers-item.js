@@ -3,7 +3,7 @@ import {html} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import $ from '../jquery';
-import {LAYER_TYPES} from '../constants.js';
+import {LAYER_TYPES} from '../constants';
 
 
 export class LayerTreeItem extends LitElementI18n {

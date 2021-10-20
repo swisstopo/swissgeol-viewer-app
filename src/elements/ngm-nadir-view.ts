@@ -29,13 +29,6 @@ export class NgmNadirView extends LitElementI18n {
     super.disconnectedCallback();
   }
 
-
-  get arrowStyle() {
-    return {
-      transform: `rotate(${this.currentHeading}rad)`,
-    };
-  }
-
   get compassStyle() {
     const angle = this.currentHeading * 180 / Math.PI;
     return {
@@ -98,7 +91,7 @@ export class NgmNadirView extends LitElementI18n {
     if (this.viewer) {
       return html`
         <div class="ngm-compass" style=${styleMap(this.compassStyle)} @click=${this.toggle}>
-          <div class="ngm-compass-arrow" style=${styleMap(this.arrowStyle)}>
+          <div class="ngm-compass-arrow">
             <div class="ngm-compass-arrow-top"></div>
             <div class="ngm-compass-arrow-bottom"></div>
           </div>

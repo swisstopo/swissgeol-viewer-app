@@ -3,7 +3,7 @@ import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime} from './helpers.js';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import CMath from 'cesium/Source/Core/Math';
-import {LAYER_TYPES} from '../constants.js';
+import {LAYER_TYPES} from '../constants';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 

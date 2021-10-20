@@ -11,6 +11,14 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
 import {Interactable} from '@interactjs/types';
 
+// calculate difference between minimap extent and container
+const width = CesiumMath.toRadians(MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
+const height = CesiumMath.toRadians(MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
+const west = CesiumMath.toRadians(MINIMAP_EXTENT[0]) - width / 228 * 12;
+const south = CesiumMath.toRadians(MINIMAP_EXTENT[1]) - height / 99 * 24;
+const east = CesiumMath.toRadians(MINIMAP_EXTENT[2]) + width / 228 * 12;
+const north = CesiumMath.toRadians(MINIMAP_EXTENT[3]) + height / 99 * 36;
+
 @customElement('ngm-minimap')
 export class NgmMinimap extends LitElementI18n {
   @property({type: Object}) viewer: Viewer | null = null
@@ -24,14 +32,14 @@ export class NgmMinimap extends LitElementI18n {
 
   constructor() {
     super();
-    this.addEventListener('mousemove', (evt: any) => {
-      if (this.moveMarker && evt.target && evt.target.classList.contains('ngm-map-marker')) {
-        this.moveCamera(evt.x, evt.y);
+    this.addEventListener('mousemove', (evt: MouseEvent) => {
+      if (this.moveMarker && evt.target && (evt.target as Element).classList.contains('ngm-cam-icon')) {
+        this.moveCamera(evt.x, evt.y, 'mousemove');
       }
     });
-    this.addEventListener('click', (evt: any) => {
-      if (!this.moveMarker && evt.target && evt.target.classList.contains('ngm-map-overview')) {
-        this.moveCamera(evt.x, evt.y);
+    this.addEventListener('click', (evt: MouseEvent) => {
+      if (!this.moveMarker && evt.target && (evt.target as Element).classList.contains('ngm-map-overview')) {
+        this.moveCamera(evt.x, evt.y, 'click');
       }
     });
     this.addEventListener('mouseup', () => this.moveMarker = false);
@@ -54,20 +62,19 @@ export class NgmMinimap extends LitElementI18n {
   }
 
   get markerStyle() {
-    // calculate width according to current view
-    let markerWidth = this.clientWidth * this.widthScale;
+    const markerWidth = 24;
     // apply restriction
-    const maxWidth = 70;
-    markerWidth = Math.min(Math.max(markerWidth, 35), maxWidth);
-    this.left = Math.min(Math.max(this.left, 0.02), 0.98);
-    this.bottom = Math.min(Math.max(this.bottom, 0.22), 0.74);
+    this.left = Math.min(Math.max(this.left, 0.1), 0.98);
+    this.bottom = Math.min(Math.max(this.bottom, 0.2), 0.98);
 
     return {
       position: 'absolute',
-      left: `calc(${this.left * 100}% - ${markerWidth / 2}px)`,
+      left: `calc(${this.left * 100}% - ${markerWidth}px)`,
       bottom: `calc(${this.bottom * 100}% - ${markerWidth / 2}px)`,
       transform: `rotate(${this.heading}rad)`,
-      width: `${markerWidth}px`
+      transformOrigin: 'right center',
+      width: `${markerWidth}px`,
+      height: `${markerWidth}px`,
     };
   }
 
@@ -80,19 +87,16 @@ export class NgmMinimap extends LitElementI18n {
     if (cameraRect) {
       this.widthScale = cameraRect.width / SWITZERLAND_RECTANGLE.width;
       // fixes camera position when low pitch and zoomed out
-      const cameraWest = CesiumMath.toDegrees(cameraRect.west);
-      const cameraSouth = CesiumMath.toDegrees(cameraRect.south);
-      lon = Math.max(lon, cameraWest);
-      lat = Math.max(lat, cameraSouth);
+      lon = Math.max(lon, CesiumMath.toDegrees(cameraRect.west));
+      lat = Math.max(lat, CesiumMath.toDegrees(cameraRect.south));
     }
     this.left = (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
     this.bottom = (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
-    this.heading = this.viewer.scene.camera.heading;
+    this.heading = this.viewer.scene.camera.heading - 1.57;
   }
 
-  moveCamera(evtX, evtY) {
+  moveCamera(evtX: number, evtY: number, evtType: string) {
     if (!this.viewer) return;
-    const boundingRect = this.getBoundingClientRect();
     const camera = this.viewer.scene.camera;
     const cameraRect = camera.computeViewRectangle(this.viewer.scene.globe.ellipsoid, new Rectangle());
     let pinchScaleW = 1;
@@ -103,16 +107,15 @@ export class NgmMinimap extends LitElementI18n {
       pinchScaleH = cameraRect.south > position.latitude ? position.latitude / cameraRect.south : 1;
     }
     // calculate left, bottom percentage from event
-    const left = (evtX - boundingRect.left) / (boundingRect.right - boundingRect.left);
-    const bottom = (evtY - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
-    // calculate difference between minimap extent and map
-    const leftDiff = CesiumMath.toRadians(MINIMAP_EXTENT[0]) - SWITZERLAND_RECTANGLE.west;
-    const bottomDiff = CesiumMath.toRadians(MINIMAP_EXTENT[1]) - SWITZERLAND_RECTANGLE.south;
+    const boundingRect = this.getBoundingClientRect();
+    const x = evtType === 'mousemove' ? evtX + Math.sin(camera.heading) * 12 : evtX;
+    const y = evtType === 'mousemove' ? evtY - Math.cos(camera.heading) * 12 : evtY;
+    const left = (x - boundingRect.left) / (boundingRect.right - boundingRect.left);
+    const bottom = (y - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
+
     // get distance to point in radians
-    const width = CesiumMath.toRadians(MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]) * left + leftDiff;
-    const height = CesiumMath.toRadians(MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]) * bottom + bottomDiff;
-    const lon = (width + SWITZERLAND_RECTANGLE.west) * pinchScaleW;
-    const lat = (height + SWITZERLAND_RECTANGLE.south) * pinchScaleH;
+    const lon = (west + (east - west) * left) * pinchScaleW;
+    const lat = (south + (north - south) * bottom) * pinchScaleH;
     camera.position = Cartesian3.fromRadians(lon, lat, camera.positionCartographic.height);
   }
 
@@ -130,10 +133,8 @@ export class NgmMinimap extends LitElementI18n {
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
       <div class="ngm-minimap-container">
-        <div style=${styleMap(this.markerStyle)} @mousedown="${() => this.moveMarker = true}">
-          <img src="./images/mapMarker.svg" class="ngm-map-marker">
-        </div>
         <img src="./images/overview.svg" class="ngm-map-overview">
+        <div class="ngm-cam-icon" style=${styleMap(this.markerStyle)} @mousedown="${() => this.moveMarker = true}"></div>
         <ngm-nadir-view .viewer=${this.viewer}></ngm-nadir-view>
       </div>
       <div class="ngm-drag-area">

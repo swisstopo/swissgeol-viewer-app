@@ -23,7 +23,7 @@ import {
   HIGHLIGHTED_AOI_COLOR,
   AOI_POLYGON_ALPHA,
   AOI_LINE_ALPHA
-} from '../constants.js';
+} from '../constants';
 import {getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
 import {showWarning} from '../message.js';
 import {LitElementI18n} from '../i18n';

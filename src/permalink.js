@@ -10,7 +10,7 @@ import {
   MAP_URL_PARAM,
   MAP_TRANSPARENCY_URL_PARAM,
   ATTRIBUTE_KEY_PARAM, ATTRIBUTE_VALUE_PARAM, ZOOM_TO_PARAM, SLICE_PARAM
-} from './constants.js';
+} from './constants';
 
 export function getCameraView() {
   let destination;

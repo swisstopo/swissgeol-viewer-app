@@ -1,5 +1,5 @@
 import CSVParser from 'papaparse';
-import {SWITZERLAND_RECTANGLE} from './constants.js';
+import {SWITZERLAND_RECTANGLE} from './constants';
 import {Viewer, Ellipsoid, HeadingPitchRange, BoundingSphere} from 'cesium';
 
 /**

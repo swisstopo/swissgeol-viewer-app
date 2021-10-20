@@ -4,7 +4,7 @@ import '../toolbox/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
-import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants.js';
+import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants';
 import defaultLayerTree from '../layertree.js';
 import {getLayerParams, syncLayersParam, getAssetIds, getAttribute} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
