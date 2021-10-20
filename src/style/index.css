@@ -47,6 +47,8 @@
 @import 'ngm-nav-tools.css';
 @import 'ngm-minimap.css';
 @import 'header.css';
+@import 'ngm-cam-configuration.css';
+@import 'ngm-slider.css';
 
 [hidden] {
   display: none !important;
@@ -309,8 +311,8 @@ ngm-layer-legend-container > ngm-layer-legend {
   border-radius: 8px;
   position: absolute;
   z-index: 2;
-  padding: 5px;
   top: 98px;
+  padding: 10px 12px 8px 12px;
 }
 
 .ngm-floating-window .ngm-drag-area {
@@ -320,6 +322,31 @@ ngm-layer-legend-container > ngm-layer-legend {
 .ngm-floating-window .ngm-drag-area > div {
   border: 1px solid #DFE2E6;
   margin-top: 2px;
+}
+
+.ngm-floating-window-header {
+  height: 32px;
+  border-bottom: 2px solid #DFE2E6;
+  display: flex;
+  align-items: center;
+  font: normal normal bold 14px/24px Inter;
+  letter-spacing: 0.14px;
+  color: #212529;
+  margin-bottom: 8px;
+  padding-bottom: 10px;
+}
+
+.ngm-floating-window-header .ngm-close-icon {
+  width: 24px;
+  height: 24px;
+  background-color: #000000;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.ngm-divider {
+  width: 100%;
+  border: 1px solid #E0E3E6;
 }
 
 @media (max-height: 630px) {

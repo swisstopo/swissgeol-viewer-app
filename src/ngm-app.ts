@@ -1,8 +1,6 @@
 import {LitElementI18n} from './i18n';
 import {html} from 'lit-html';
-import './elements/ngm-loading-mask';
 import './elements/ngm-side-bar';
-import './elements/ngm-slow-loading';
 import './elements/ngm-navigation-widgets';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
@@ -10,10 +8,10 @@ import './elements/ngm-feature-height';
 import './elements/ngm-auth';
 import './elements/ngm-drop-files';
 import './elements/ngm-tracking-consent';
-import './elements/ngm-layer-legend-container';
 import './elements/ngm-camera-information.js';
 import './elements/ngm-nav-tools';
 import './elements/ngm-minimap';
+import './elements/ngm-cam-configuration';
 
 import {
   DEFAULT_VIEW,
@@ -36,6 +34,15 @@ import {showWarning} from './message';
 import MainStore from './store/main';
 import SlicerStore from './store/slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
+import {customElement, state} from 'lit-element';
+import MapChooser from './MapChooser';
+import {NgmLayerLegendContainer} from './elements/ngm-layer-legend-container';
+import {NgmSlowLoading} from './elements/ngm-slow-loading';
+import {NgmSlicer} from './elements/slicer/ngm-slicer';
+import {NgmAreaOfInterestDrawer} from './toolbox/AreaOfInterestDrawer';
+import LayersUpload from './layers/ngm-layers-upload';
+import {NgmLoadingMask} from './elements/ngm-loading-mask';
+import {Viewer} from 'cesium';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -57,24 +64,17 @@ const onStep1Finished = (globe, searchParams) => {
  * - wiring the attributes of all top-level components;
  * - distribute events vertically between components (non hierarchical).
  */
-class NgmApp extends LitElementI18n {
-
-  /**
-   * @type {import('lit-element').PropertyDeclarations}
-   */
-  static get properties() {
-    return {
-      mapChooser: {type: Object, attribute: false},
-      slicer_: {type: Object, attribute: false},
-      showMinimap: {type: Boolean, attribute: false},
-    };
-  }
+@customElement('ngm-app')
+export class NgmApp extends LitElementI18n {
+  @state() mapChooser: MapChooser | undefined;
+  @state() slicer_: Slicer | undefined;
+  @state() showMinimap = false;
+  @state() showCamConfig = false;
+  private viewer: Viewer | undefined
+  private queryManager: QueryManager | undefined
 
   constructor() {
     super();
-    this.slicer_ = null;
-    this.mapChooser = null;
-    this.showMinimap = false;
     // disable drag events to avoid appearing of drag&drop zone
     this.addEventListener('dragstart', e => e.preventDefault());
   }
@@ -84,49 +84,49 @@ class NgmApp extends LitElementI18n {
    */
   onLayerAdded(evt) {
     const layer = evt.detail.layer;
-    if (layer.backgroundId !== undefined && this.mapChooser.element) {
-      this.mapChooser.selectMap(layer.backgroundId);
+    if (layer.backgroundId !== undefined && this.mapChooser!.elements) {
+      this.mapChooser!.selectMap(layer.backgroundId);
     }
-    if (this.slicer_ && this.slicer_.active) {
+    if (this.slicer_ && this.slicer_!.active) {
       if (layer && layer.promise) {
-        this.slicer_.applyClippingPlanesToTileset(layer.promise);
+        this.slicer_!.applyClippingPlanesToTileset(layer.promise);
       }
     }
   }
 
   onShowLayerLegend(event) {
-    this.querySelector('ngm-layer-legend-container').showLegend(event.detail.config);
+    (<NgmLayerLegendContainer> this.querySelector('ngm-layer-legend-container')).showLegend(event.detail.config);
   }
 
   onStep2Finished({loadingMask, viewer}) {
     loadingMask.active = false;
     const loadingTime = performance.now() / 1000;
     console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
-    this.querySelector('ngm-slow-loading').style.display = 'none';
+    (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
     this.slicer_ = new Slicer(viewer);
     const sliceOptions = getSliceParam();
     if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
-      this.slicer_.sliceOptions = {
-        ...this.slicer_.sliceOptions, ...sliceOptions,
+      this.slicer_!.sliceOptions = {
+        ...this.slicer_!.sliceOptions, ...sliceOptions,
         syncBoxPlanesCallback: (sliceInfo) => syncSliceParam(sliceInfo),
         deactivationCallback: () => {
-          this.querySelector('ngm-slicer').onDeactivation();
+          (<NgmSlicer> this.querySelector('ngm-slicer')).onDeactivation();
         }
       };
-      this.slicer_.active = true;
+      this.slicer_!.active = true;
     }
     SlicerStore.setSlicer(this.slicer_);
 
     // setup web components
     this.mapChooser = setupBaseLayers(viewer);
-    this.mapChooser.addMapChooser(this.querySelector('.ngm-bg-chooser-map'));
+    this.mapChooser!.addMapChooser(this.querySelector('.ngm-bg-chooser-map'));
     MainStore.setMapChooser(this.mapChooser);
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(viewer);
 
     const sideBar = this.querySelector('ngm-side-bar');
 
-    setupSearch(viewer, this.querySelector('ga-search'), sideBar);
+    setupSearch(viewer, this.querySelector('ga-search')!, sideBar);
   }
 
 
@@ -136,7 +136,7 @@ class NgmApp extends LitElementI18n {
    */
   onFileDrop(file, type) {
     if (type === 'toolbox') {
-      const aoi = this.querySelector('ngm-aoi-drawer');
+      const aoi: NgmAreaOfInterestDrawer = this.querySelector('ngm-aoi-drawer')!;
       if (file.name.toLowerCase().endsWith('.kml')) {
         aoi.uploadKml(file);
       } else if (file.name.toLowerCase().endsWith('.gpx')) {
@@ -144,7 +144,7 @@ class NgmApp extends LitElementI18n {
       }
     } else if (type === 'model') {
       if (file.name.toLowerCase().endsWith('.kml')) {
-        const kmlUpload = this.querySelector('ngm-layers-upload');
+        const kmlUpload: LayersUpload = this.querySelector('ngm-layers-upload')!;
         kmlUpload.uploadKml(file);
       } else {
         showWarning(i18next.t('dtd_file_not_kml'));
@@ -165,7 +165,7 @@ class NgmApp extends LitElementI18n {
     globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') || '2000');
 
     let currentStep = 1;
-    const loadingMask = this.querySelector('ngm-loading-mask');
+    const loadingMask: NgmLoadingMask = this.querySelector('ngm-loading-mask')!;
     const unlisten = globe.tileLoadProgressEvent.addEventListener(queueLength => {
       loadingMask.message = queueLength;
       if (currentStep === 1 && globe.tilesLoaded) {
@@ -194,7 +194,7 @@ class NgmApp extends LitElementI18n {
 
   firstUpdated() {
     setupI18n();
-    const cesiumContainer = this.querySelector('#cesium');
+    const cesiumContainer = this.querySelector('#cesium')!;
     const viewer = setupViewer(cesiumContainer, isLocalhost);
     this.viewer = viewer;
     window['viewer'] = viewer; // for debugging
@@ -221,10 +221,10 @@ class NgmApp extends LitElementI18n {
 
     const origin = window.location.origin;
     const pathname = window.location.pathname;
-    this.querySelector('#ngm-home-link').href = `${origin}${pathname}`;
+    (<any> this.querySelector('#ngm-home-link')).href = `${origin}${pathname}`;
 
     window.addEventListener('resize', () => {
-      this.querySelectorAll('.ngm-floating-window').forEach(flWin => {
+      (<any> this.querySelectorAll('.ngm-floating-window')).forEach(flWin => {
         if (flWin.interaction) {
           flWin.interaction.reflow({name: 'drag', axis: 'xy'});
         }
@@ -234,13 +234,13 @@ class NgmApp extends LitElementI18n {
 
   showSlowLoadingWindow() {
     const timeout = 10000;
-    const loadingMask = this.querySelector('ngm-loading-mask');
+    const loadingMask: NgmLoadingMask = this.querySelector('ngm-loading-mask')!;
     if (loadingMask.active && performance.now() > timeout) {
-      this.querySelector('ngm-slow-loading').style.display = 'block';
+      (<NgmSlowLoading> this.querySelector('ngm-slow-loading'))!.style.display = 'block';
     } else {
       setTimeout(() => {
         if (loadingMask.active) {
-          this.querySelector('ngm-slow-loading').style.display = 'block';
+          (<NgmSlowLoading> this.querySelector('ngm-slow-loading'))!.style.display = 'block';
         }
       }, timeout - performance.now());
     }
@@ -277,10 +277,17 @@ class NgmApp extends LitElementI18n {
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
             <ngm-object-information></ngm-object-information>
-            <ngm-nav-tools class="ngm-floating-window" .scene=${this.viewer?.scene}></ngm-nav-tools>
+            <ngm-nav-tools class="ngm-floating-window" .scene=${this.viewer?.scene} .showCamConfig=${this.showCamConfig}
+                           @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}>
+            </ngm-nav-tools>
             <ngm-minimap class="ngm-floating-window" .viewer=${this.viewer} .hidden=${!this.showMinimap}
                          @close=${() => this.showMinimap = false}>
             </ngm-minimap>
+            <ngm-cam-configuration class="ngm-floating-window"
+                                   .hidden=${!this.showCamConfig}
+                                   .viewer=${this.viewer}
+                                   @close=${() => this.showCamConfig = false}>
+            </ngm-cam-configuration>
             <ngm-layer-legend-container></ngm-layer-legend-container>
             <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
           </div>
@@ -294,5 +301,3 @@ class NgmApp extends LitElementI18n {
     return this;
   }
 }
-
-customElements.define('ngm-app', NgmApp);

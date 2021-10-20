@@ -7,7 +7,7 @@ import 'fomantic-ui-css/components/checkbox';
 import SlicerStore from '../../store/slicer';
 import {getMeasurements} from '../../cesiumutils';
 
-class NgmSlicer extends LitElementI18n {
+export class NgmSlicer extends LitElementI18n {
   constructor() {
     super();
 

@@ -4,7 +4,7 @@ import {html} from 'lit-element';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 
-class NgmSlowLoading extends LitElementI18n {
+export class NgmSlowLoading extends LitElementI18n {
 
   firstUpdated() {
     $(this.querySelector('.accordion')).accordion({

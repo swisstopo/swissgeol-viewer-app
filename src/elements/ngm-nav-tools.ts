@@ -4,10 +4,12 @@ import draggable from './draggable';
 import {DEFAULT_VIEW} from '../constants';
 import {Event, Scene} from 'cesium';
 import {Interactable} from '@interactjs/types';
+import {classMap} from 'lit-html/directives/class-map.js';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
   @property({type: Object}) scene: Scene | null = null
+  @property({type: Boolean}) showCamConfig = false
   @state() moveAmount = 200
   @state() interaction: Interactable | null = null
   private zoomingIn = false
@@ -76,6 +78,10 @@ export class NgmNavTools extends LitElementI18n {
         <div class="ngm-zoom-p-icon" @pointerdown=${e => this.startZoomIn(e)}></div>
         <div class="ngm-zoom-o-icon" @click=${() => this.flyToHome()}></div>
         <div class="ngm-zoom-m-icon" @pointerdown=${e => this.startZoomOut(e)}></div>
+        <div class="ngm-divider"></div>
+        <div class="ngm-cam-icon ${classMap({'ngm-active-icon': this.showCamConfig})}"
+             @click=${() => this.dispatchEvent(new CustomEvent('togglecamconfig'))}>
+        </div>
       </div>
       <div class="ngm-drag-area">
         <div></div>

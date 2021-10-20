@@ -1,4 +1,5 @@
 {
+  "cam_configuration_header": "Camera configuration",
   "camera_position_angle_label": "Angle",
   "camera_position_coordinates_label": "Coordinates",
   "camera_position_height_label": "Height",
