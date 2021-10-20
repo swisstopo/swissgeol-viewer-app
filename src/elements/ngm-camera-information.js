@@ -76,7 +76,7 @@ class NgmCameraInformation extends LitElementI18n {
         <div class="ngm-nci-position">
           <label>${i18next.t('camera_position_coordinates_label')}</label>
           <label class="ngm-nci-value">${coordinates[0]}</label>
-          <label class="ngm-nci-value">${coordinates[0]}</label>
+          <label class="ngm-nci-value">${coordinates[1]}</label>
         </div>
         <div class="ngm-nci-direction">
           <div>
