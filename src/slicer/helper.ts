@@ -41,34 +41,6 @@ interface SliceCorners {
 }
 
 /**
- * @param primitive
- * @param bbox
- * @return {Cartesian3}
- */
-export function getOffsetFromBbox(primitive, bbox) {
-  const primitiveCenter = primitive.boundingSphere.center;
-  const corners = bbox.corners;
-  const tileCenterAxisX = projectPointOntoVector(corners.topLeft, corners.topRight, primitiveCenter);
-  const centerAxisX = Cartesian3.midpoint(corners.topLeft, corners.topRight, new Cartesian3());
-  const x = Cartesian3.distance(centerAxisX, tileCenterAxisX) * getDirectionFromPoints(centerAxisX, tileCenterAxisX);
-
-  const tileCenterAxisY = projectPointOntoVector(corners.bottomRight, corners.topRight, primitiveCenter);
-  const centerAxisY = Cartesian3.midpoint(corners.bottomRight, corners.topRight, new Cartesian3());
-  const y = Cartesian3.distance(centerAxisY, tileCenterAxisY) * getDirectionFromPoints(tileCenterAxisY, centerAxisY);
-
-  let z;
-  const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
-  const transformCartographic = Cartographic.fromCartesian(transformCenter);
-  if (transformCartographic) {
-    z = transformCartographic.height;
-  } else {
-    const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
-    z = boundingSphereCartographic.height;
-  }
-  return new Cartesian3(x, y, z * -1);
-}
-
-/**
  * Computes offset between two positions
  * @param {Cartesian3} position
  * @param {Cartesian3} targetPosition
@@ -128,20 +100,6 @@ export function getClippingPlaneFromSegmentWithTricks(start, end, tileCenter, ma
   plane.distance = getPositionsOffset(tileCenter, center, mapPlaneNormal);
 
   return plane;
-}
-
-/**
- * @param {ClippingPlane} plane
- * @param {Cartesian3} offset
- * @return {ClippingPlane}
- */
-export function applyOffsetToPlane(plane, offset) {
-  const planeCopy = ClippingPlane.clone(plane);
-  const normal = Cartesian3.clone(planeCopy.normal);
-  Cartesian3.multiplyByScalar(normal, -1, normal);
-  const normalizedOffset = Cartesian3.multiplyComponents(offset, normal, new Cartesian3());
-  planeCopy.distance += normalizedOffset.x + normalizedOffset.y + normalizedOffset.z;
-  return planeCopy;
 }
 
 /**

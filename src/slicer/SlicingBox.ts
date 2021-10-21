@@ -3,13 +3,12 @@ import {executeForAllPrimitives} from '../utils';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
 import {
-  applyOffsetToPlane,
   BBox,
   createClippingPlanes, getBboxFromRectangle,
   createCPCModelMatrixFromSphere,
   getBboxFromViewRatio,
   getClippingPlaneFromSegmentWithTricks,
-  getOffsetFromBbox, moveSlicingBoxCorners
+  moveSlicingBoxCorners
 } from './helper';
 import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
@@ -51,7 +50,6 @@ export default class SlicingBox extends SlicingToolBase {
 
   dataSource: DataSource;
   options: SlicingBoxOptions | null = null;
-  offsets: Record<string, Cartesian3> = {};
   backPlane: Plane | null = null;
   frontPlane: Plane | null = null;
   leftPlane: Plane | null = null;
@@ -163,7 +161,6 @@ export default class SlicingBox extends SlicingToolBase {
 
   deactivate() {
     this.options = null;
-    this.offsets = {};
     this.backPlane = null;
     this.frontPlane = null;
     this.leftPlane = null;
@@ -174,7 +171,6 @@ export default class SlicingBox extends SlicingToolBase {
 
   addClippingPlanes(primitive) {
     if (!primitive.root || !primitive.boundingSphere) return;
-    this.offsets[primitive.basePath] = getOffsetFromBbox(primitive, this.bbox);
     const planes = [...this.sidePlanes];
     if (!this.options!.negate) {
       planes.push(...this.zPlanes!);
@@ -191,16 +187,18 @@ export default class SlicingBox extends SlicingToolBase {
       this.zPlanes!.forEach(plane => clippingPlanes.add(Plane.transform(plane, this.modelMatrix!)));
   }
 
-  updateBoxTileClippingPlanes(primitive: Cesium3DTileset, offset, center) {
+  updateBoxTileClippingPlanes(primitive: Cesium3DTileset, center) {
     const clippingPlanes = primitive.clippingPlanes;
     if (!clippingPlanes) return;
     clippingPlanes.removeAll();
     const negate = this.options!.negate;
     let modelMatrix: Matrix4;
-    if (negate && primitive.root && Matrix4.equals(primitive.root.transform, Matrix4.IDENTITY)) {
+    if (primitive.root && Matrix4.equals(primitive.root.transform, Matrix4.IDENTITY)) {
       modelMatrix = createCPCModelMatrixFromSphere(primitive);
       clippingPlanes.modelMatrix = modelMatrix;
-      clippingPlanes.unionClippingRegions = !negate; // workaround disappearing plane
+    } else if (primitive.root && !Matrix4.equals(primitive.root.transform, Matrix4.IDENTITY)) {
+      modelMatrix = Matrix4.inverse(primitive.root.transform, new Matrix4());
+      clippingPlanes.modelMatrix = modelMatrix;
     }
     this.planesPositions!.forEach(positions => {
       const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
@@ -219,7 +217,9 @@ export default class SlicingBox extends SlicingToolBase {
     });
     if (!negate) {
       this.zPlanes!.forEach(plane => {
-        plane = offset ? applyOffsetToPlane(plane, offset) : plane;
+        const height = new Cartesian3(0.0, 0.0, Cartographic.fromCartesian(center).height);
+        plane = Plane.transform(plane, Matrix4.inverse(Matrix4.fromTranslation(height), new Matrix4()));
+        plane = Plane.transform(plane, Matrix4.inverse(modelMatrix, new Matrix4()));
         clippingPlanes.add(plane);
       });
     }
@@ -231,19 +231,19 @@ export default class SlicingBox extends SlicingToolBase {
     const corners = bbox!.corners;
     switch (side) {
       case 'left': {
-        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.bottomLeft, corners.topRight, corners.bottomRight, this.rightPlane, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.bottomLeft, corners.topRight, corners.bottomRight, this.rightPlane!, moveVector);
         break;
       }
       case 'right': {
-        bothSideMove = moveSlicingBoxCorners(corners.topRight, corners.bottomRight, corners.topLeft, corners.bottomLeft, this.leftPlane, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.topRight, corners.bottomRight, corners.topLeft, corners.bottomLeft, this.leftPlane!, moveVector);
         break;
       }
       case 'front': {
-        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.topRight, corners.bottomLeft, corners.bottomRight, this.backPlane, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.topLeft, corners.topRight, corners.bottomLeft, corners.bottomRight, this.backPlane!, moveVector);
         break;
       }
       case 'back': {
-        bothSideMove = moveSlicingBoxCorners(corners.bottomLeft, corners.bottomRight, corners.topLeft, corners.topRight, this.frontPlane, moveVector);
+        bothSideMove = moveSlicingBoxCorners(corners.bottomLeft, corners.bottomRight, corners.topLeft, corners.topRight, this.frontPlane!, moveVector);
         break;
       }
       case 'up':
@@ -316,7 +316,7 @@ export default class SlicingBox extends SlicingToolBase {
       if (primitive.root && primitive.boundingSphere) {
         const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
         const tileCenter = Cartesian3.equals(transformCenter, Cartesian3.ZERO) ? primitive.boundingSphere.center : transformCenter;
-        this.updateBoxTileClippingPlanes(primitive, this.offsets[primitive.basePath], tileCenter);
+        this.updateBoxTileClippingPlanes(primitive, tileCenter);
       }
     });
     this.onBoxPlanesChange();
