@@ -1,4 +1,4 @@
-import {SWITZERLAND_RECTANGLE} from './constants.js';
+import {SWITZERLAND_RECTANGLE} from './constants';
 
 import UrlTemplateImageryProvider from 'cesium/Source/Scene/UrlTemplateImageryProvider';
 import ImageryLayer from 'cesium/Source/Scene/ImageryLayer';

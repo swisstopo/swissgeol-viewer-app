@@ -4,7 +4,7 @@ import GeoJsonDataSource from 'cesium/Source/DataSources/GeoJsonDataSource';
 import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
 import Cesium3DTileStyle from 'cesium/Source/Scene/Cesium3DTileStyle';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
-import {LAYER_TYPES} from '../constants.js';
+import {LAYER_TYPES} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {isLabelOutlineEnabled} from '../permalink.js';
 import LabelStyle from 'cesium/Source/Scene/LabelStyle';

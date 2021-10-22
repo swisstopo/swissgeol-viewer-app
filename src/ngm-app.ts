@@ -15,7 +15,7 @@ import './elements/ngm-cam-configuration';
 
 import {
   DEFAULT_VIEW,
-} from './constants.js';
+} from './constants';
 
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer';

@@ -1,6 +1,6 @@
 import {syncLayersParam} from '../permalink.js';
 import {calculateRectangle, getBoxFromRectangle, calculateBox} from './helpers.js';
-import {LAYER_TYPES} from '../constants.js';
+import {LAYER_TYPES} from '../constants';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import Cartographic from 'cesium/Source/Core/Cartographic';

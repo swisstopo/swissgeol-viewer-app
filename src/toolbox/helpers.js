@@ -1,6 +1,6 @@
 import {
   CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD
-} from '../constants.js';
+} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 
 export function getUploadedEntityType(entity) {
