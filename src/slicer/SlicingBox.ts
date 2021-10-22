@@ -200,8 +200,8 @@ export default class SlicingBox extends SlicingToolBase {
       modelMatrix = Matrix4.inverse(primitive.root.transform, new Matrix4());
       clippingPlanes.modelMatrix = modelMatrix;
     }
+    const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
     this.planesPositions!.forEach(positions => {
-      const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
       const plane = planeFromTwoPoints(positions[0], positions[1], false);
       let p: Plane;
       if (!modelMatrix) {
@@ -217,7 +217,8 @@ export default class SlicingBox extends SlicingToolBase {
     });
     if (!negate) {
       this.zPlanes!.forEach(plane => {
-        const height = new Cartesian3(0.0, 0.0, Cartographic.fromCartesian(center).height);
+        // fixme find way to calculate offset
+        const height = new Cartesian3(0.0, 0.0, Cartographic.fromCartesian(center).height + 130);
         plane = Plane.transform(plane, Matrix4.inverse(Matrix4.fromTranslation(height), new Matrix4()));
         plane = Plane.transform(plane, Matrix4.inverse(modelMatrix, new Matrix4()));
         clippingPlanes.add(plane);

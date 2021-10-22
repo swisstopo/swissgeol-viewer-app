@@ -209,9 +209,9 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit = SLICING_BOX
     topRight: rightPosition[0].latitude > rightPosition[1].latitude ? rightPosition[0] : rightPosition[1],
     bottomRight: rightPosition[0].latitude < rightPosition[1].latitude ? rightPosition[0] : rightPosition[1]
   };
-  cartoPositions.forEach(c => c.height = 0);
   const sliceCorners = {} as SliceCorners;
   for (const key in cartoSliceCorners) {
+    cartoSliceCorners[key].height = 0;
     sliceCorners[key] = Cartographic.toCartesian(cartoSliceCorners[key]);
   }
 
@@ -305,13 +305,9 @@ export function createCPCModelMatrixFromSphere(primitive: Cesium3DTileset): Matr
   // Figure out whether we need to orient using an ENU frame or not
   const clippingCenter = primitive.boundingSphere.center;
   const clippingCarto = Cartographic.fromCartesian(clippingCenter);
-  console.log('Add planes from sphere', clippingCarto, primitive);
   let globalMatrix = Matrix4.IDENTITY;
   if (clippingCarto && (clippingCarto.height > ApproximateTerrainHeights._defaultMinTerrainHeight)) {
     globalMatrix = Transforms.eastNorthUpToFixedFrame(clippingCenter);
-    console.log('BS above terrain, assuming an ENU frame orientation');
-  } else {
-    console.log('BS under terrain, assuming a cartesian orientation');
   }
 
   // @ts-ignore clippingPlanesOriginMatrix is private?
