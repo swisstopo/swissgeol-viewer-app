@@ -12,7 +12,13 @@ ngm-tracking-consent .ui.card {
 }
 
 ngm-tracking-consent .ui.card > .content {
+  font-weight: bold;
+  padding: 16px;
   border-top: none
+}
+
+ngm-tracking-consent .ui.card > .content a {
+  color: #0C7285;
 }
 
 ngm-tracking-consent .ui.button,
