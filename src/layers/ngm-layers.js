@@ -75,6 +75,7 @@ export default class LayerTree extends LitElementI18n {
   // changes layer position in 'Displayed Layers'
   moveLayer(config, delta) {
     this.actions.moveLayer(this.layers, config, delta);
+    this.dispatchEvent(new CustomEvent('layerChanged'));
     this.requestUpdate();
   }
 }

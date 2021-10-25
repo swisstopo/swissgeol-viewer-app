@@ -10,7 +10,7 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT, SLICING_BOX_LOWER_LIMIT, SLICING_BOX_MIN_SIZE} from '../constants';
 import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
-import {HeadingPitchRoll, Transforms} from 'cesium';
+import {HeadingPitchRoll, Plane, Transforms} from 'cesium';
 import {getPercent, interpolateBetweenNumbers} from '../utils';
 import Quaternion from 'cesium/Source/Core/Quaternion';
 import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
@@ -38,34 +38,6 @@ interface SliceCorners {
   bottomLeft: Cartesian3,
   topRight: Cartesian3,
   bottomRight: Cartesian3,
-}
-
-/**
- * @param primitive
- * @param bbox
- * @return {Cartesian3}
- */
-export function getOffsetFromBbox(primitive, bbox) {
-  const primitiveCenter = primitive.boundingSphere.center;
-  const corners = bbox.corners;
-  const tileCenterAxisX = projectPointOntoVector(corners.topLeft, corners.topRight, primitiveCenter);
-  const centerAxisX = Cartesian3.midpoint(corners.topLeft, corners.topRight, new Cartesian3());
-  const x = Cartesian3.distance(centerAxisX, tileCenterAxisX) * getDirectionFromPoints(centerAxisX, tileCenterAxisX);
-
-  const tileCenterAxisY = projectPointOntoVector(corners.bottomRight, corners.topRight, primitiveCenter);
-  const centerAxisY = Cartesian3.midpoint(corners.bottomRight, corners.topRight, new Cartesian3());
-  const y = Cartesian3.distance(centerAxisY, tileCenterAxisY) * getDirectionFromPoints(tileCenterAxisY, centerAxisY);
-
-  let z;
-  const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
-  const transformCartographic = Cartographic.fromCartesian(transformCenter);
-  if (transformCartographic) {
-    z = transformCartographic.height;
-  } else {
-    const boundingSphereCartographic = Cartographic.fromCartesian(primitive.boundingSphere.center);
-    z = boundingSphereCartographic.height;
-  }
-  return new Cartesian3(x, y, z * -1);
 }
 
 /**
@@ -128,20 +100,6 @@ export function getClippingPlaneFromSegmentWithTricks(start, end, tileCenter, ma
   plane.distance = getPositionsOffset(tileCenter, center, mapPlaneNormal);
 
   return plane;
-}
-
-/**
- * @param {ClippingPlane} plane
- * @param {Cartesian3} offset
- * @return {ClippingPlane}
- */
-export function applyOffsetToPlane(plane, offset) {
-  const planeCopy = ClippingPlane.clone(plane);
-  const normal = Cartesian3.clone(planeCopy.normal);
-  Cartesian3.multiplyByScalar(normal, -1, normal);
-  const normalizedOffset = Cartesian3.multiplyComponents(offset, normal, new Cartesian3());
-  planeCopy.distance += normalizedOffset.x + normalizedOffset.y + normalizedOffset.z;
-  return planeCopy;
 }
 
 /**
@@ -251,9 +209,9 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit = SLICING_BOX
     topRight: rightPosition[0].latitude > rightPosition[1].latitude ? rightPosition[0] : rightPosition[1],
     bottomRight: rightPosition[0].latitude < rightPosition[1].latitude ? rightPosition[0] : rightPosition[1]
   };
-  cartoPositions.forEach(c => c.height = 0);
   const sliceCorners = {} as SliceCorners;
   for (const key in cartoSliceCorners) {
+    cartoSliceCorners[key].height = 0;
     sliceCorners[key] = Cartographic.toCartesian(cartoSliceCorners[key]);
   }
 
@@ -301,20 +259,20 @@ export function getBboxFromRectangle(viewer, positions, lowerLimit = SLICING_BOX
 
 /**
  * Moves box corners onMouse move
- * @param position1
- * @param position2
- * @param oppositePosition1
- * @param oppositePosition2
- * @param moveVector
- * @return {boolean}
  */
-export function moveSlicingBoxCorners(position1, position2, oppositePosition1, oppositePosition2, moveVector) {
+export function moveSlicingBoxCorners(
+  position1: Cartesian3,
+  position2: Cartesian3,
+  oppositePosition1: Cartesian3,
+  oppositePosition2: Cartesian3,
+  oppositePlane: Plane,
+  moveVector: Cartesian3): boolean {
   let bothSideMove = false;
-  const initialDistance = Cartesian3.distance(position1, oppositePosition1);
   Cartesian3.add(position1, moveVector, position1);
   Cartesian3.add(position2, moveVector, position2);
   const newDistance = Cartesian3.distance(position1, oppositePosition1);
-  if (initialDistance > newDistance && newDistance < SLICING_BOX_MIN_SIZE) {
+  const direction = Plane.getPointDistance(oppositePlane, position1);
+  if (direction < 0 || newDistance < SLICING_BOX_MIN_SIZE) {
     Cartesian3.add(oppositePosition1, moveVector, oppositePosition1);
     Cartesian3.add(oppositePosition2, moveVector, oppositePosition2);
     bothSideMove = true;
@@ -347,13 +305,9 @@ export function createCPCModelMatrixFromSphere(primitive: Cesium3DTileset): Matr
   // Figure out whether we need to orient using an ENU frame or not
   const clippingCenter = primitive.boundingSphere.center;
   const clippingCarto = Cartographic.fromCartesian(clippingCenter);
-  console.log('Add planes from sphere', clippingCarto, primitive);
   let globalMatrix = Matrix4.IDENTITY;
   if (clippingCarto && (clippingCarto.height > ApproximateTerrainHeights._defaultMinTerrainHeight)) {
     globalMatrix = Transforms.eastNorthUpToFixedFrame(clippingCenter);
-    console.log('BS above terrain, assuming an ENU frame orientation');
-  } else {
-    console.log('BS under terrain, assuming a cartesian orientation');
   }
 
   // @ts-ignore clippingPlanesOriginMatrix is private?

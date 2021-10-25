@@ -76,7 +76,11 @@ export default class SlicerArrows {
   private scratchMouseMoveVector_ = new Cartesian2();
   private scratchObjectMoveVector2d_ = new Cartesian2();
   private scratchNewArrowPosition2d_ = new Cartesian2();
-  private scratchAxisVector3d_ = new Cartesian3();
+  private axisVector3d = new Cartesian3();
+  private scratchLeft = new Cartesian3();
+  private scratchRight = new Cartesian3();
+  private scratchTop = new Cartesian3();
+  private scratchBottom = new Cartesian3();
 
   private eventHandler: (ScreenSpaceEventHandler | null) = null;
   highlightedArrow: Entity | undefined = undefined;
@@ -175,7 +179,7 @@ export default class SlicerArrows {
 
       this.updateAxisVector(arrowPosition3d, oppositePosition3d);
 
-      const objectMoveVector3d = Cartesian3.multiplyByScalar(this.scratchAxisVector3d_, scalar3d, new Cartesian3());
+      const objectMoveVector3d = Cartesian3.multiplyByScalar(this.axisVector3d, scalar3d, new Cartesian3());
       const newArrowPosition3d = Cartesian3.add(arrowPosition3d, objectMoveVector3d, new Cartesian3());
 
       // directly update arrow position if position callback not provided
@@ -253,27 +257,32 @@ export default class SlicerArrows {
   }
 
   updateAxisVector(arrowPosition3d, oppositePosition3d) {
-    let positions: Cartesian3[] = [];
     const corners = this.bbox!.corners;
-    switch (this.selectedArrow!.properties!.side.getValue()) {
+    const type = this.selectedArrow!.properties!.side.getValue();
+    if (type === 'left' || type === 'right') {
+      Cartesian3.midpoint(corners.bottomLeft, corners.topLeft, this.scratchLeft);
+      Cartesian3.midpoint(corners.bottomRight, corners.topRight, this.scratchRight);
+      updateHeightForCartesianPositions([this.scratchLeft, this.scratchRight], 0, undefined, true);
+    } else {
+      Cartesian3.midpoint(corners.topLeft, corners.topRight, this.scratchTop);
+      Cartesian3.midpoint(corners.bottomLeft, corners.bottomRight, this.scratchBottom);
+      updateHeightForCartesianPositions([this.scratchTop, this.scratchBottom], 0, undefined, true);
+    }
+    switch (type) {
       case 'right':
-        positions = updateHeightForCartesianPositions([corners.bottomLeft, corners.bottomRight], 0);
-        Cartesian3.subtract(positions[0], positions[1], this.scratchAxisVector3d_);
+        Cartesian3.subtract(this.scratchLeft, this.scratchRight, this.axisVector3d);
         break;
       case 'left':
-        positions = updateHeightForCartesianPositions([corners.bottomLeft, corners.bottomRight], 0);
-        Cartesian3.subtract(positions[1], positions[0], this.scratchAxisVector3d_);
+        Cartesian3.subtract(this.scratchRight, this.scratchLeft, this.axisVector3d);
         break;
       case 'front':
-        positions = updateHeightForCartesianPositions([corners.topLeft, corners.bottomLeft], 0);
-        Cartesian3.subtract(positions[1], positions[0], this.scratchAxisVector3d_);
+        Cartesian3.subtract(this.scratchBottom, this.scratchTop, this.axisVector3d);
         break;
       case 'back':
-        positions = updateHeightForCartesianPositions([corners.topLeft, corners.bottomLeft], 0);
-        Cartesian3.subtract(positions[0], positions[1], this.scratchAxisVector3d_);
+        Cartesian3.subtract(this.scratchTop, this.scratchBottom, this.axisVector3d);
         break;
       default:
-        Cartesian3.subtract(oppositePosition3d, arrowPosition3d, this.scratchAxisVector3d_);
+        Cartesian3.subtract(oppositePosition3d, arrowPosition3d, this.axisVector3d);
     }
   }
 }

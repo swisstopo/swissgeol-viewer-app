@@ -15,7 +15,7 @@ import QueryStore from '../store/query';
 export default class QueryManager {
   constructor(viewer) {
     this.objectSelector = new ObjectSelector(viewer);
-    this.swisstopoIndentify = new SwisstopoIdentify();
+    this.swisstopoIdentify = new SwisstopoIdentify();
     this.viewer = viewer;
     this.scene = viewer.scene;
     this.enabled = true;
@@ -29,9 +29,11 @@ export default class QueryManager {
 
   async querySwisstopo(pickedPosition, layers) {
     const lang = i18next.language;
-    const identifyResult = await this.swisstopoIndentify.identify(pickedPosition, layers, lang);
+    const distance = Cartesian3.distance(this.scene.camera.position, pickedPosition);
+    // layer list is reversed to match the display order on map
+    const identifyResult = await this.swisstopoIdentify.identify(pickedPosition, distance, layers.slice().reverse(), lang);
     if (identifyResult) {
-      let popupContent = await this.swisstopoIndentify.getPopupForFeature(identifyResult.layerBodId, identifyResult.featureId, lang);
+      let popupContent = await this.swisstopoIdentify.getPopupForFeature(identifyResult.layerBodId, identifyResult.featureId, lang);
       if (popupContent) {
         popupContent = popupContent.replace(/cell-left/g, 'key')
           .replace(/<td>/g, '<td class="value">')
