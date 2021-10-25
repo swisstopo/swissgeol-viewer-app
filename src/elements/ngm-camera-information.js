@@ -56,7 +56,8 @@ class NgmCameraInformation extends LitElementI18n {
     let altitude = this.scene.globe.getHeight(camera.positionCartographic);
     altitude = altitude ? altitude : 0;
     this.elevation = camera.positionCartographic.height - altitude;
-    this.heading = CesiumMath.toDegrees(camera.heading);
+    const heading = CesiumMath.toDegrees(camera.heading);
+    this.heading = heading > 180 ? heading - 360 : heading;
     this.pitch = CesiumMath.toDegrees(camera.pitch);
     this.coordinates = formatCartographicAs2DLv95(camera.positionCartographic);
   }
