@@ -11,7 +11,7 @@ ga-search.ui.input > input {
   background: #f1f3f5;
   color: #000000;
   font-size: 16px;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 4px;
 }
 
@@ -27,8 +27,8 @@ ga-search.ui.input > input:focus,
 ga-search.ui.input > input:hover {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
-  border: none;
-  border-bottom: 2px solid #66D9E8;
+  border-color: transparent;
+  border-bottom-color: #66D9E8;
 }
 
 ga-search.ui.input > input:focus,
