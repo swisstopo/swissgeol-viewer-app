@@ -384,7 +384,7 @@ class NgmAreaOfInterestDrawer extends LitElementI18n {
                 <div>
                   <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
                   <div class="ui mini input right labeled">
-                    <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
+                    <input type="number" step="10" min="${this.minVolumeLowerLimit}" max="${this.maxVolumeLowerLimit}"
                            class=${`ngm-lower-limit-input-${index}`}
                            .value="${this.volumeHeightLimits.lowerLimit}"
                            @input="${this.onVolumeHeightLimitsChange.bind(this, index)}">
