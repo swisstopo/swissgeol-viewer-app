@@ -37,7 +37,7 @@ class NgmObjectInformation extends LitElementI18n {
 
   connectedCallback() {
     draggable(this, {
-      allowFrom: '.header'
+      allowFrom: '.drag-handle'
     });
     super.connectedCallback();
   }
@@ -56,14 +56,14 @@ class NgmObjectInformation extends LitElementI18n {
                 return html`
                   <tr class="top aligned">
                     <td class="key">${i18next.t(`assets:${key}`)}</td>
-                    <td class="val"><a href="${value}" target="_blank" rel="noopener">${value.split('/').pop()}</a></td>
+                    <td class="value"><a href="${value}" target="_blank" rel="noopener">${value.split('/').pop()}</a></td>
                   </tr>
                 `;
               } else {
                 return html`
                   <tr class="top aligned">
                     <td class="key">${i18next.t(`assets:${key}`)}</td>
-                    <td class="val">${value}</td>
+                    <td class="value">${value}</td>
                   </tr>
                 `;
               }
@@ -79,20 +79,25 @@ class NgmObjectInformation extends LitElementI18n {
       }
 
       return html`
-        <div class="ui segment" ?hidden="${!this.opened}">
-          <div class="header">
-            <div class="ui horizontal link list">
-              <a class="item" href="#"><i @click="${() => this.opened = false}" class="times icon"></i></a>
-            </div>
-            <div ?hidden="${!this.info.zoom}">
-              <button @click="${this.info.zoom}" class="ui right floated mini basic labeled icon button">
-                <i class="search plus icon"></i>${i18next.t('obj_info_zoom_to_object_btn_label')}
-              </button>
-            </div>
+        <div class="ngm-floating-window drag-handle" ?hidden="${!this.opened}">
+          <div class="ngm-floating-window-header">
+            <div class="ngm-close-icon" @click=${() => this.opened = false}></div>
           </div>
-          <div class="ui divider"></div>
+          <div class="htmlpopup-header" ?hidden="${!this.info.zoom}">
+              <button @click="${this.info.zoom}" class="ui right labeled icon button">
+                <i class="right search plus icon"></i>
+                ${i18next.t('obj_info_zoom_to_object_btn_label')}
+              </button>
+          </div>
           <div class="content-container">
             ${content}
+          </div>
+          <div class="ngm-drag-area drag-handle">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
         </div>
       `;
