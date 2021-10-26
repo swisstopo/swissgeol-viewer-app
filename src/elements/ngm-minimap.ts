@@ -118,7 +118,7 @@ export class NgmMinimap extends LitElementI18n {
 
   connectedCallback() {
     this.interaction = draggable(this, {
-      allowFrom: '.ngm-drag-area'
+      allowFrom: '.drag-handle'
     });
     super.connectedCallback();
   }
@@ -130,7 +130,7 @@ export class NgmMinimap extends LitElementI18n {
 
   render() {
     return html`
-      <div class="ngm-floating-window-header">
+      <div class="ngm-floating-window-header drag-handle">
         ${i18next.t('minimap_orientation')}
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
@@ -141,7 +141,7 @@ export class NgmMinimap extends LitElementI18n {
         </div>
         <ngm-nadir-view .viewer=${this.viewer}></ngm-nadir-view>
       </div>
-      <div class="ngm-drag-area">
+      <div class="ngm-drag-area drag-handle">
         <div></div>
         <div></div>
         <div></div>

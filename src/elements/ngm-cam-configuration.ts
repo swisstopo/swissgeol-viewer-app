@@ -73,7 +73,7 @@ export class NgmCamConfiguration extends LitElementI18n {
 
   connectedCallback() {
     this.interaction = draggable(this, {
-      allowFrom: '.ngm-drag-area'
+      allowFrom: '.drag-handle'
     });
     super.connectedCallback();
   }
@@ -215,7 +215,7 @@ export class NgmCamConfiguration extends LitElementI18n {
 
   render() {
     return html`
-      <div class="ngm-floating-window-header">
+      <div class="ngm-floating-window-header drag-handle">
         ${i18next.t('cam_configuration_header')}
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
@@ -245,7 +245,7 @@ export class NgmCamConfiguration extends LitElementI18n {
           </div>
         </div>
       </div>
-      <div class="ngm-drag-area">
+      <div class="ngm-drag-area drag-handle">
         <div></div>
         <div></div>
         <div></div>
