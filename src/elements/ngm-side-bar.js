@@ -126,11 +126,11 @@ class SideBar extends LitElementI18n {
       </div>
       <div .hidden=${!this.activePanel}
            class="ngm-side-bar-panel ${classMap({'ngm-large-panel': this.activePanel === 'dashboard'})}">
-        <div class="ngm-panel-header">
-          ${i18next.t(`lsb_${this.activePanel}`)}
-          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
-        </div>
         <div .hidden=${this.activePanel !== 'data'} class="ngm-data-container">
+          <div class="ngm-panel-header">
+            ${i18next.t(`lsb_${this.activePanel}`)}
+            <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+          </div>
           <div class="ui styled accordion">
             <div class="title ngmlightgrey ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
               <i class="dropdown icon"></i>
@@ -169,11 +169,22 @@ class SideBar extends LitElementI18n {
             </div>
           </div>
         </div>
-        <ngm-aoi-drawer .hidden=${this.activePanel !== 'tools'}
-                        .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
-                        @downloadActiveData=${evt => this.downloadActiveData(evt)}>
-        </ngm-aoi-drawer>
-        <ngm-share-link .hidden=${this.activePanel !== 'share'}></ngm-share-link>
+        <div .hidden=${this.activePanel !== 'tools'}>
+          <div class="ngm-panel-header">
+            ${i18next.t('lsb_tools')}
+            <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+          </div>
+          <ngm-aoi-drawer .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
+                          @downloadActiveData=${evt => this.downloadActiveData(evt)}>
+          </ngm-aoi-drawer>
+        </div>
+        <div .hidden=${this.activePanel !== 'share'}>
+          <div class="ngm-panel-header">
+            ${i18next.t('lsb_share')}
+            <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+          </div>
+          <ngm-share-link></ngm-share-link>
+        </div>
       </div>
     `;
   }
