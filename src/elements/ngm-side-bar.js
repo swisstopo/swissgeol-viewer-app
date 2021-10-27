@@ -132,35 +132,9 @@ class SideBar extends LitElementI18n {
           </div>
           <div class="ui styled accordion">
             <div class="content ngm-layer-content">
-              <ngm-catalog
-                .layers=${this.catalogLayers}
-                @layerclick=${evt => this.onCatalogLayerClicked(evt)}
-              >
+              <ngm-catalog .layers=${this.catalogLayers}
+                            @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
               </ngm-catalog>
-            </div>
-          </div>
-
-          <div class="ui styled accordion">
-            <div class="title ngmverylightgrey active">
-              <i class="dropdown icon"></i>
-              ${i18next.t('dtd_displayed_data_label')}
-            </div>
-            <div class="content active">
-              <ngm-layers
-                .layers=${this.activeLayers}
-                .actions=${this.layerActions}
-                @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
-                @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
-                @layerChanged=${() => this.onLayerChanged()}>
-              </ngm-layers>
-              <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
-              <h5 class="ui horizontal divider header">
-                ${i18next.t('dtd_background_map_label')}
-                <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
-                  <span class="small_load_counter">${this.globeQueueLength_}</span>
-                </div>
-              </h5>
-              <ngm-map-configuration></ngm-map-configuration>
             </div>
           </div>
         </div>
@@ -179,6 +153,31 @@ class SideBar extends LitElementI18n {
             <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
           </div>
           <ngm-share-link></ngm-share-link>
+        </div>
+      </div>
+      <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
+        <div class="ngm-panel-header">
+          ${i18next.t('dtd_displayed_data_label')}
+          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+        </div>
+        <div class="ui styled accordion">
+          <div class="content active">
+            <ngm-layers
+              .layers=${this.activeLayers}
+              .actions=${this.layerActions}
+              @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
+              @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
+              @layerChanged=${() => this.onLayerChanged()}>
+            </ngm-layers>
+            <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
+            <h5 class="ui horizontal divider header">
+              ${i18next.t('dtd_background_map_label')}
+              <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
+                <span class="small_load_counter">${this.globeQueueLength_}</span>
+              </div>
+            </h5>
+            <ngm-map-configuration></ngm-map-configuration>
+          </div>
         </div>
       </div>
     `;

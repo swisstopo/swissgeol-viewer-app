@@ -76,6 +76,11 @@ ngm-auth:hover {
   width: calc(100vw - 144px);
 }
 
+.ngm-side-bar-panel.ngm-extension-panel {
+  width: 528px;
+  left: 250px;
+}
+
 .ngm-panel-header {
   height: 34px;
   border-bottom: 2px solid #DFE2E6;
