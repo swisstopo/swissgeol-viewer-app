@@ -24,7 +24,6 @@ import {saveAs} from 'file-saver';
 import auth from '../store/auth';
 import './ngm-share-link.js';
 import '../layers/ngm-layers-upload';
-import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
 import SlicerStore from '../store/slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
@@ -128,15 +127,11 @@ class SideBar extends LitElementI18n {
            class="ngm-side-bar-panel ${classMap({'ngm-large-panel': this.activePanel === 'dashboard'})}">
         <div .hidden=${this.activePanel !== 'data'} class="ngm-data-container">
           <div class="ngm-panel-header">
-            ${i18next.t(`lsb_${this.activePanel}`)}
+            ${i18next.t('lyr_geocatalog_label')}
             <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
           </div>
           <div class="ui styled accordion">
-            <div class="title ngmlightgrey ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
-              <i class="dropdown icon"></i>
-              ${i18next.t('lyr_geocatalog_label')}
-            </div>
-            <div class="content ngm-layer-content ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
+            <div class="content ngm-layer-content">
               <ngm-catalog
                 .layers=${this.catalogLayers}
                 @layerclick=${evt => this.onCatalogLayerClicked(evt)}
@@ -321,7 +316,7 @@ class SideBar extends LitElementI18n {
               $(element).accordion(Object.assign({
                 duration: 150
               }, {
-                onChange: () => LocalStorageController.toggleCatalogState()
+                onChange: () => true
               }));
             }
           }

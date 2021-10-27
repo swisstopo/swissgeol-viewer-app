@@ -1,16 +1,6 @@
 const LOCALSTORAGE_AOI_KEY = 'aoi';
-const LOCALSTORAGE_CATALOG_KEY = 'hideCatalogWindow';
 
 export default class LocalStorageController {
-
-  static get hideCatalogValue() {
-    return localStorage.getItem(LOCALSTORAGE_CATALOG_KEY) === 'true';
-  }
-
-  static toggleCatalogState() {
-    const newValue = localStorage.getItem(LOCALSTORAGE_CATALOG_KEY) !== 'true';
-    localStorage.setItem(LOCALSTORAGE_CATALOG_KEY, newValue);
-  }
 
   static getStoredAoi() {
     const storedAoi = localStorage.getItem(LOCALSTORAGE_AOI_KEY);
