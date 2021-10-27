@@ -17,6 +17,7 @@ class NgmObjectInformation extends LitElementI18n {
   constructor() {
     super();
     this.opened = false;
+    this.hidden = !this.opened;
 
     QueryStore.objectInfo.subscribe(info => {
       if (info) {
@@ -77,28 +78,27 @@ class NgmObjectInformation extends LitElementI18n {
       if (!this.opened && this.info.onhide) {
         this.info.onhide();
       }
+      this.hidden = !this.opened;
 
       return html`
-        <div class="ngm-floating-window" ?hidden="${!this.opened}">
-          <div class="ngm-floating-window-header drag-handle">
-            <div class="ngm-close-icon" @click=${() => this.opened = false}></div>
-          </div>
-          <div class="htmlpopup-header" ?hidden="${!this.info.zoom}">
-              <button @click="${this.info.zoom}" class="ui right labeled icon button">
-                <i class="right search plus icon"></i>
-                ${i18next.t('obj_info_zoom_to_object_btn_label')}
-              </button>
-          </div>
-          <div class="content-container">
-            ${content}
-          </div>
-          <div class="ngm-drag-area drag-handle">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
+        <div class="ngm-floating-window-header drag-handle">
+          <div class="ngm-close-icon" @click=${() => this.opened = false}></div>
+        </div>
+        <div class="htmlpopup-header" ?hidden="${!this.info.zoom}">
+          <button @click="${this.info.zoom}" class="ui button">
+            ${i18next.t('obj_info_zoom_to_object_btn_label')}
+            <div class="ngm-zoom-plus-icon"></div>
+          </button>
+        </div>
+        <div class="content-container">
+          ${content}
+        </div>
+        <div class="ngm-drag-area drag-handle">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
       `;
     } else {

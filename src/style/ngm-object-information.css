@@ -15,16 +15,30 @@ ngm-object-information .htmlpopup-header {
   margin-bottom: 8px;
 }
 
-ngm-object-information .ui.button, .ui.button:active, .ui.button:focus {
+ngm-object-information .ui.button,
+ngm-object-information .ui.button:active,
+ngm-object-information .ui.button:focus {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   color: white;
   background-color: #357183;
   width: 208px;
   height: 36px;
+  letter-spacing: 0.25px;
+}
+
+ngm-object-information .ngm-zoom-plus-icon {
+  background-color: white;
+}
+
+ngm-object-information .ui.button:hover .ngm-zoom-plus-icon {
+  background-color: #357183;
 }
 
 ngm-object-information .ui.button:hover {
-  color: #C5F6FA;
-  background-color: #357183;
+  color: #357183;
+  background-color: #C5F6FA;
 }
 
 ngm-object-information .ui.labeled.icon.button > .icon {
@@ -61,7 +75,7 @@ ngm-object-information .ui.table .value {
   padding-right: 8px !important;
 }
 
-ngm-object-information .ui.table .value a{
+ngm-object-information .ui.table .value a {
   color: #357183;
 }
 
@@ -77,5 +91,5 @@ ngm-object-information .content-container {
   margin-bottom: 10px;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 526px;
+  max-height: 505px;
 }
