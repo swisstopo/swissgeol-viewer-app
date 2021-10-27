@@ -79,8 +79,8 @@ class NgmObjectInformation extends LitElementI18n {
       }
 
       return html`
-        <div class="ngm-floating-window drag-handle" ?hidden="${!this.opened}">
-          <div class="ngm-floating-window-header">
+        <div class="ngm-floating-window" ?hidden="${!this.opened}">
+          <div class="ngm-floating-window-header drag-handle">
             <div class="ngm-close-icon" @click=${() => this.opened = false}></div>
           </div>
           <div class="htmlpopup-header" ?hidden="${!this.info.zoom}">
