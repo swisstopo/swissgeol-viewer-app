@@ -52,8 +52,7 @@ export default class LayerTree extends LitElementI18n {
         .downClassMap=${downClassMap}
       >
       </ngm-layers-item>
-      ${idx !== 0 ? html`
-        <div class="ui divider"></div>` : ''}
+      <div class="ui divider"></div>
     `;
   }
 
@@ -62,13 +61,11 @@ export default class LayerTree extends LitElementI18n {
     const len = this.layers ? this.layers.length : 0;
     const reverse = [...this.layers].reverse();
     return html`
-      <div class="ui segment">
-        ${repeat(
-          reverse,
-          config => config.label,
-          (config, idx) => this.createLayerTemplate(config, idx, len)
-        )}
-      </div>
+      ${repeat(
+        reverse,
+        config => config.label,
+        (config, idx) => this.createLayerTemplate(config, idx, len)
+      )}
     `;
   }
 

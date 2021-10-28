@@ -35,10 +35,10 @@ export default class LayersAction {
     this.viewer.scene.requestRender();
   }
 
-  changeTransparency(config, value) {
-    const transparency = Number(value);
-    config.setTransparency(transparency);
-    config.transparency = transparency;
+  changeOpacity(config, value) {
+    const opacity = Number(value);
+    config.setOpacity(opacity);
+    config.opacity = opacity;
     this.viewer.scene.requestRender();
   }
 

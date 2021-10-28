@@ -34,7 +34,7 @@ class Catalog extends LitElementI18n {
 
   getCategoryTemplate(category) {
     return html`
-      <div class="ui styled ngm-layers-categories accordion">
+      <div class="ui accordion ngm-layers-categories">
         <div class="title ngm-layer-title">
           <i class="dropdown icon"></i>
           ${i18next.t(category.label)}
