@@ -119,3 +119,10 @@
   mask: url('./images/i_cam_tilt.svg') no-repeat center;
   -webkit-mask: url('./images/i_cam_tilt.svg') no-repeat center;
 }
+
+.ngm-zoom-plus-icon {
+  width: 20px;
+  height: 20px;
+  mask: url('./images/i_heranzoomen.svg') no-repeat center;
+  -webkit-mask: url('./images/i_heranzoomen.svg') no-repeat center;
+}

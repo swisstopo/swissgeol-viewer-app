@@ -276,7 +276,7 @@ export class NgmApp extends LitElementI18n {
         <div class='map'>
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
-            <ngm-object-information></ngm-object-information>
+            <ngm-object-information class="ngm-floating-window" ></ngm-object-information>
             <ngm-nav-tools class="ngm-floating-window" .scene=${this.viewer?.scene} .showCamConfig=${this.showCamConfig}
                            @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}>
             </ngm-nav-tools>

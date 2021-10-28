@@ -1,33 +1,85 @@
-
 ngm-object-information {
   position: absolute;
   z-index: 2;
-  margin: 6px;
-  right: 0;
+  right: 268px;
+  width: 528px;
+  max-height: 643px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
-ngm-object-information .header {
+ngm-object-information .htmlpopup-header {
+  font-weight: bold;
+  border-bottom: 2px solid #DFE2E6;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+ngm-object-information .ui.button,
+ngm-object-information .ui.button:active,
+ngm-object-information .ui.button:focus {
   display: flex;
-  align-items: flex-end;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  background-color: #357183;
+  width: 208px;
+  height: 36px;
+  letter-spacing: 0.25px;
 }
 
-ngm-object-information .ui.table {
-  margin-top: 0;
+ngm-object-information .ngm-zoom-plus-icon {
+  background-color: white;
+}
+
+ngm-object-information .ui.button:hover .ngm-zoom-plus-icon {
+  background-color: #357183;
+}
+
+ngm-object-information .ui.button:hover {
+  color: #357183;
+  background-color: #C5F6FA;
+}
+
+ngm-object-information .ui.labeled.icon.button > .icon {
+  padding-top: 8px;
+  font-size: 20px;
+}
+
+ngm-object-information .ui.small.table {
+  font-size: unset;
+}
+
+ngm-object-information .ui.basic.table {
+  background-color: #F8F9FA;
+  border-spacing: 4px;
+  border-collapse: collapse;
+}
+
+ngm-object-information .ui.basic.table tbody tr {
+  border-bottom-width: 4px;
+  border-bottom-color: #F1F3F5;
 }
 
 ngm-object-information .ui.table .key {
-  font-weight: 600;
+  padding-left: 8px !important;
+  vertical-align: top;
 }
 
-ngm-object-information .ui.table .val {
+ngm-object-information .ui.table .value {
   min-width: 160px;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: bold;
+  padding-right: 8px !important;
 }
 
-ngm-object-information .ui.table .val img {
+ngm-object-information .ui.table .value a {
+  color: #357183;
+}
+
+ngm-object-information .ui.table .value img {
   max-width: 200px;
 }
 
@@ -36,7 +88,8 @@ ngm-object-information .ui.divider {
 }
 
 ngm-object-information .content-container {
+  margin-bottom: 10px;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 65vh;
+  max-height: 505px;
 }
