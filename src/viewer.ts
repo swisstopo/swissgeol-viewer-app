@@ -248,7 +248,6 @@ function enableCenterOfRotate(viewer: Viewer) {
       }];
     }
   }, ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.CTRL);
-  eventHandler.setInputAction(() => scene.camera.lookAtTransform(Matrix4.IDENTITY), ScreenSpaceEventType.LEFT_UP);
   eventHandler.setInputAction(() => {
     scene.camera.setView({
       orientation: {
@@ -260,6 +259,9 @@ function enableCenterOfRotate(viewer: Viewer) {
   eventHandler.setInputAction(() => {
     scene.camera.lookAtTransform(Matrix4.IDENTITY);
   }, ScreenSpaceEventType.LEFT_UP, KeyboardEventModifier.CTRL);
+  document.addEventListener('keyup', (evt) => {
+    if (evt.key === 'Control') scene.camera.lookAtTransform(Matrix4.IDENTITY);
+  });
 }
 
 export function addMantelEllipsoid(viewer: Viewer) {

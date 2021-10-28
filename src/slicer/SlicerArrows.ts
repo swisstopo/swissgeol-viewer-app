@@ -15,6 +15,7 @@ import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
 import Quaternion from 'cesium/Source/Core/Quaternion';
 import ShadowMode from 'cesium/Source/Scene/ShadowMode';
 import {BBox} from './helper';
+import {debounce} from '../utils';
 
 interface ArrowListItem {
   // arrow position label
@@ -108,7 +109,7 @@ export default class SlicerArrows {
     this.createMoveArrows();
     this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
     this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
-    this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
+    this.eventHandler.setInputAction(debounce((evt) => this.onMouseMove(evt), 250), ScreenSpaceEventType.MOUSE_MOVE);
     this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
   }
 
@@ -126,6 +127,7 @@ export default class SlicerArrows {
       this.selectedArrow = pickedObject.id;
       this.enableInputs = this.viewer.scene.screenSpaceCameraController.enableInputs;
       this.viewer.scene.screenSpaceCameraController.enableInputs = false;
+      this.eventHandler!.setInputAction((evt) => this.onMouseMove(evt), ScreenSpaceEventType.MOUSE_MOVE);
     }
   }
 
@@ -133,6 +135,8 @@ export default class SlicerArrows {
     if (this.selectedArrow) {
       this.selectedArrow = null;
       this.viewer.scene.screenSpaceCameraController.enableInputs = this.enableInputs;
+      // for better performance
+      this.eventHandler!.setInputAction(debounce((evt) => this.onMouseMove(evt), 250), ScreenSpaceEventType.MOUSE_MOVE);
     }
     this.unhighlightArrow();
   }
