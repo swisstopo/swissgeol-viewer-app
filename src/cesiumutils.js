@@ -68,6 +68,19 @@ export function pickCenterOnEllipsoid(scene) {
 }
 
 /**
+ * Return the position of the point, on the map or object at the center of the Cesium viewport.
+ * @param {import('cesium/Source/Scene/Scene').default} scene
+ * @return {Cartesian3 | undefined}
+ */
+export function pickCenterOnMapOrObject(scene) {
+  const windowPosition = new Cartesian2(
+    scene.canvas.clientWidth / 2,
+    scene.canvas.clientHeight / 2
+  );
+  return scene.pickPosition(windowPosition);
+}
+
+/**
  * @param {import('cesium/Source/Scene/Camera').default} camera
  * @param {number} angle
  */
