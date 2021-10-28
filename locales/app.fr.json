@@ -133,6 +133,8 @@
   "nav_not_full_screen_view_hint": "Quitter la vue plein écran",
   "nav_object_height_label": "Altitude de l'objet",
   "nav_slice_hint": "Coupez la scène 3D",
+  "nav_tools_ctrl_disable_warn": "",
+  "nav_tools_out_glob_warn": "",
   "nav_up_btn_hint": "Monter",
   "nav_view_angle_label": "Direction de la vue",
   "nav_view_tilt_label": "Inclinaison de la vue",
