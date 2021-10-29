@@ -382,3 +382,23 @@ export function getOrthogonalViewPoints(viewer) {
   Cartesian3.add(center, orthogonalVector, right);
   return updateHeightForCartesianPositions([left, right], 0);
 }
+
+/**
+ * Computes the east-north-up difference between two points.
+ * @param {Cartesian3} left
+ * @param {Cartesian3} right
+ * @returns {Cartesian3}
+ */
+export function eastNorthUp(left, right) {
+  const leftCartographic = Cartographic.fromCartesian(left);
+  const rightCartographic = Cartographic.fromCartesian(right);
+  const leftUp = Cartesian3.fromRadians(rightCartographic.longitude, leftCartographic.latitude);
+  const rightDown = Cartesian3.fromRadians(rightCartographic.longitude, rightCartographic.latitude);
+  const isEast = rightCartographic.longitude > leftCartographic.longitude;
+  const isNorth = rightCartographic.latitude > leftCartographic.latitude;
+  return new Cartesian3(
+    Cartesian3.distance(left, leftUp) * (isEast ? 1 : -1),
+    Cartesian3.distance(leftUp, rightDown) * (isNorth ? 1 : -1),
+    rightCartographic.height - leftCartographic.height
+  );
+}

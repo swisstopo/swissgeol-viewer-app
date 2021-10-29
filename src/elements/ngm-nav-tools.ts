@@ -3,11 +3,16 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import draggable from './draggable';
 import {DEFAULT_VIEW} from '../constants';
-import {Cartesian3, Entity, Event, Scene, Transforms, Viewer} from 'cesium';
+import {
+  Cartesian3,
+  Entity,
+  Event, Matrix4,
+  Scene, Transforms,
+  Viewer
+} from 'cesium';
 import {Interactable} from '@interactjs/types';
 import {classMap} from 'lit/directives/class-map.js';
-import {pickCenterOnMapOrObject} from '../cesiumutils';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
+import {eastNorthUp, pickCenterOnMapOrObject} from '../cesiumutils';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import {showWarning} from '../message';
@@ -117,18 +122,23 @@ export class NgmNavTools extends LitElementI18n {
     }
     this.showRefPoint = true;
     this.refIcon.position = <any>center;
+    const cam = this.viewer!.camera;
     this.refIcon.show = true;
-    const transform = Transforms.eastNorthUpToFixedFrame(center);
-    this.viewer!.scene.camera.lookAtTransform(transform);
-    document.addEventListener('keyup', this.ctrlListener);
+    this.refIcon.viewFrom = <any>eastNorthUp(center, cam.position);
+    if (!position) {
+      const transform = Transforms.eastNorthUpToFixedFrame(center);
+      cam.lookAtTransform(transform);
+    }
+    document.addEventListener('keydown', this.ctrlListener);
 
   }
 
   removeReference() {
-    document.removeEventListener('keyup', this.ctrlListener);
+    document.removeEventListener('keydown', this.ctrlListener);
     this.showRefPoint = false;
     this.refIcon.show = false;
     this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
+    this.viewer!.trackedEntity = undefined;
   }
 
   ctrlListener = (evt) => {
@@ -142,6 +152,8 @@ export class NgmNavTools extends LitElementI18n {
     if (pickedObject && pickedObject.id && pickedObject.id.id === this.refIcon.id) {
       this.viewer!.scene.screenSpaceCameraController.enableInputs = false;
       this.eventHandler!.setInputAction(event => this.onMoveRef(event), ScreenSpaceEventType.MOUSE_MOVE);
+      this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
+      this.viewer!.trackedEntity = undefined;
       this.moveRef = true;
     }
   }
@@ -149,6 +161,7 @@ export class NgmNavTools extends LitElementI18n {
   onLeftUp() {
     if (!this.moveRef) return;
     this.moveRef = false;
+    this.viewer!.trackedEntity = this.refIcon;
     this.viewer!.scene.screenSpaceCameraController.enableInputs = true;
     // for better performance
     this.eventHandler!.setInputAction(debounce(event => this.onMoveRef(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
