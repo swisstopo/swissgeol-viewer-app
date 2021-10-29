@@ -1,4 +1,4 @@
-import {html} from 'lit-element';
+import {customElement, html, property} from 'lit-element';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import $ from '../jquery';
@@ -12,33 +12,30 @@ import {AOI_COLORS, AOI_POINT_SYMBOLS} from '../constants';
 import {updateBoreholeHeights} from './helpers';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import MainStore from '../store/main';
+import {Entity, Viewer} from 'cesium';
 
-
-class NgmPointEdit extends LitElementI18n {
-
-  static get properties() {
-    return {
-      position: {type: Object},
-      entity: {type: Object},
-      depth: {type: Number},
-      volumeShowed: {type: Boolean},
-      restricted: {type: Boolean},
-    };
-  }
+@customElement('ngm-point-edit')
+export class NgmPointEdit extends LitElementI18n {
+  @property({type: Object}) position: Cartesian3 | undefined
+  @property({type: Object}) entity: Entity | undefined
+  @property({type: Number}) depth = 0
+  @property({type: Boolean}) volumeShowed = false
+  @property({type: Boolean}) restricted = false
+  xValue = 0;
+  yValue = 0;
+  heightValue = 0;
+  coordsStep = 0.001;
+  coordsType: 'lv95' | 'wsg84' = 'wsg84';
+  minHeight = -30000;
+  maxHeight = 30000;
+  minDepth = -30000;
+  maxDepth = 30000;
+  private julianDate: JulianDate = new JulianDate();
+  private viewer: Viewer | null = null;
+  private dropdownInited = false;
 
   constructor() {
     super();
-    this.xValue = 0;
-    this.yValue = 0;
-    this.heightValue = 0;
-    this.coordsStep = 0.001;
-    this.coordsType = 'wsg84';
-    this.minHeight = -30000;
-    this.maxHeight = 30000;
-    this.minDepth = -30000;
-    this.maxDepth = 30000;
-    this.julianDate = new JulianDate();
-    this.viewer = null;
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
   }
 
@@ -69,18 +66,18 @@ class NgmPointEdit extends LitElementI18n {
   }
 
   updateInputValues() {
-    const cartographicPosition = Cartographic.fromCartesian(this.position);
-    const coordinates = prepareCoordinatesForUi(this.viewer.scene, cartographicPosition, this.coordsType);
+    const cartographicPosition = Cartographic.fromCartesian(this.position!);
+    const coordinates = prepareCoordinatesForUi(this.viewer!.scene, cartographicPosition, this.coordsType);
     this.xValue = coordinates.x;
     this.yValue = coordinates.y;
     this.heightValue = coordinates.height;
   }
 
   onPositionChange() {
-    if (this.restricted) return;
-    this.xValue = Number(this.querySelector('.ngm-coord-x-input').value);
-    this.yValue = Number(this.querySelector('.ngm-coord-y-input').value);
-    const heightValue = Number(this.querySelector('.ngm-height-input').value);
+    if (this.restricted || !this.entity) return;
+    this.xValue = Number((<HTMLInputElement> this.querySelector('.ngm-coord-x-input'))!.value);
+    this.yValue = Number((<HTMLInputElement> this.querySelector('.ngm-coord-y-input'))!.value);
+    const heightValue = Number((<HTMLInputElement> this.querySelector('.ngm-height-input'))!.value);
     this.heightValue = CesiumMath.clamp(heightValue, this.minHeight, this.maxHeight);
     let lon = this.xValue;
     let lat = this.yValue;
@@ -93,25 +90,27 @@ class NgmPointEdit extends LitElementI18n {
     const cartesianPosition = Cartesian3.fromDegrees(lon, lat, height);
     this.position = cartesianPosition;
     this.updateInputValues();
-    this.entity.position = cartesianPosition;
+    this.entity.position = <any>cartesianPosition;
     updateBoreholeHeights(this.entity, this.julianDate);
-    this.viewer.scene.requestRender();
+    this.viewer!.scene.requestRender();
   }
 
   onDepthChange(event) {
-    if (this.restricted) return;
+    if (this.restricted || !this.entity) return;
     const depth = Number(event.target.value);
     this.depth = depth;
-    this.entity.properties.depth = depth;
+    this.entity.properties!.depth = depth;
     updateBoreholeHeights(this.entity, this.julianDate);
   }
 
   onColorChange(color) {
+    if (!this.entity || !this.entity.billboard) return;
     this.entity.billboard.color = color;
   }
 
   onSymbolChange(image) {
-    this.entity.billboard.image = `./images/${image}`;
+    if (!this.entity || !this.entity.billboard) return;
+    this.entity.billboard.image = <any>`./images/${image}`;
   }
 
   render() {
@@ -147,11 +146,11 @@ class NgmPointEdit extends LitElementI18n {
         </div>
 
         <ngm-geom-configuration
-            .iconClass=${'map marker alternate'}
-            .colors="${AOI_COLORS}"
-            .symbols="${AOI_POINT_SYMBOLS}"
-            .onColorChange="${color => this.onColorChange(color)}"
-            .onSymbolChange="${symbol => this.onSymbolChange(symbol)}"
+          .iconClass= ${'map marker alternate'}
+          .colors="${AOI_COLORS}"
+          .symbols="${AOI_POINT_SYMBOLS}"
+          .onColorChange="${color => this.onColorChange(color)}"
+          .onSymbolChange="${symbol => this.onSymbolChange(symbol)}"
         ></ngm-geom-configuration>
 
         <div ?hidden="${!this.volumeShowed}">
@@ -172,5 +171,3 @@ class NgmPointEdit extends LitElementI18n {
     return this;
   }
 }
-
-customElements.define('ngm-point-edit', NgmPointEdit);

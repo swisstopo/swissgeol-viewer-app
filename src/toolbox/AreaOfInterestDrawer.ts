@@ -24,7 +24,7 @@ import {
   AOI_POLYGON_ALPHA,
   AOI_LINE_ALPHA
 } from '../constants';
-import {getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
+import {getUploadedEntityType, updateBoreholeHeights} from './helpers';
 import {showWarning} from '../message.js';
 import {LitElementI18n} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -44,12 +44,12 @@ import {calculateBoxHeight} from '../slicer/helper';
 
 
 import {clickOnElement, coordinatesToBbox, parseJson} from '../utils';
-import './ngm-gst-interaction.js';
-import './ngm-point-edit.js';
+import './ngm-gst-interaction';
+import './ngm-point-edit';
 import '../elements/slicer/ngm-toolbox-slicer.js';
 import {classMap} from 'lit-html/directives/class-map.js';
-import './ngm-swissforages-modal.js';
-import './ngm-swissforages-interaction.js';
+import './ngm-swissforages-modal';
+import './ngm-swissforages-interaction';
 import '../elements/ngm-geom-configuration.js';
 import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
@@ -74,7 +74,7 @@ interface AreasCounter {
   polygon: number;
 }
 
-interface AoiAttributes {
+export interface AoiAttributes {
   id?: string;
   name?: string;
   show?: boolean;
@@ -557,6 +557,12 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.aoiInited = true;
   }
 
+  // required for gst
+  showSectionModal(imageUrl) {
+    this.sectionImageUrl = imageUrl;
+    this.requestUpdate();
+  }
+
   endDrawing_(info) {
     if (!this.draw) return;
     this.draw.active = false;
@@ -644,7 +650,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.updateHighlight(this.selectedArea_, true);
   }
 
-  get entitiesList_() {
+  get entitiesList_(): AoiAttributes[] {
     return this.interestAreasDataSource.entities.values.map(val => {
       const item = {
         id: val.id,

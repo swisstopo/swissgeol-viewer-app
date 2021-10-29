@@ -1,6 +1,6 @@
-import {html} from 'lit-element';
+import {customElement, html, property} from 'lit-element';
 import {degreesToLv95, round} from '../projection.js';
-import {borehole, verticalCrossSection, horizontalCrossSection} from '../gst.js';
+import {borehole, verticalCrossSection, horizontalCrossSection} from '../gst';
 import {showError, showWarning} from '../message.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
@@ -9,51 +9,35 @@ import Color from 'cesium/Source/Core/Color';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 
-import './ngm-gst-modal.js';
+import './ngm-gst-modal';
 import '../elements/ngm-i18n-content.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
 import MainStore from '../store/main';
+import {Cartesian3, Viewer} from 'cesium';
 
-/**
- * @typedef {"point" | "line" | "rectangle"} GeometryType
- */
+export type OutputFormat = 'pdf' | 'png' | 'svg';
 
-class NgmGstInteraction extends LitElementI18n {
-
-  static get properties() {
-    return {
-      gstExtent: {type: Object},
-      geometryType: {type: String},
-      depth: {type: Number},
-      positions: {type: Array},
-      parentElement: {type: Object}
-    };
-  }
+@customElement('ngm-gst-interaction')
+export class NgmGstInteraction extends LitElementI18n {
+  @property({type: Object}) gstExtent: KmlDataSource | undefined
+  @property({type: String}) geometryType: 'point' | 'line' | 'rectangle' | '' = ''
+  @property({type: Number}) depth = 0
+  @property({type: Array}) positions: Cartesian3[] | null = null
+  @property({type: Object}) parentElement
+  private viewer: Viewer | null = null
+  private minDepth_ = -6000;
+  private maxDepth_ = 1000;
+  private outputFormat: OutputFormat = 'pdf';
+  private abortController = new AbortController();
+  private extentInited = false;
 
   constructor() {
     super();
-
-    /**
-     * @type {import('cesium/Source/Widgets/Viewer/Viewer').default}
-     */
-    this.viewer = null;
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
-
-    /**
-     * @type {GeometryType}
-     */
-    this.geometryType;
-
-    this.minDepth_ = -6000;
-    this.maxDepth_ = 1000;
     this.depth = -1500;
-    this.outputFormat = 'pdf';
 
-    this.positions = null;
-
-    this.abortController = new AbortController();
     document.addEventListener('keydown', event => {
       if (event.code === 'Escape') {
         this.abortController.abort();
@@ -112,15 +96,15 @@ class NgmGstInteraction extends LitElementI18n {
     this.viewer.dataSources.add(this.gstExtent);
     this.gstExtent.show = false;
     const entity = this.gstExtent.entities.values.find(ent => !!ent.polygon);
-    if (entity) {
-      entity.polygon.fill = true;
-      entity.polygon.material = Color.RED.withAlpha(0.25);
+    if (entity && entity.polygon) {
+      entity.polygon.fill = <any>true;
+      entity.polygon.material = <any>Color.RED.withAlpha(0.25);
     }
   }
 
   getGST() {
     if (this.hasValidParams()) {
-      const coordinates = this.positions.map(position => {
+      const coordinates = this.positions!.map(position => {
         const cartographicPosition = Cartographic.fromCartesian(position);
         const lon = CesiumMath.toDegrees(cartographicPosition.longitude);
         const lat = CesiumMath.toDegrees(cartographicPosition.latitude);
@@ -147,6 +131,7 @@ class NgmGstInteraction extends LitElementI18n {
           if (err.name === 'AbortError') {
             showWarning(i18next.t('tbx_request_aborted_warning'));
           } else {
+            console.error(err);
             showError(`${err.name}: ${err.message}`);
           }
         })
@@ -160,10 +145,10 @@ class NgmGstInteraction extends LitElementI18n {
     const buttons = this.querySelectorAll('.buttons button');
 
     if (loading) {
-      this.viewer.canvas.style.cursor = 'wait';
+      this.viewer!.canvas.style.cursor = 'wait';
       buttons.forEach(button => button.classList.add('disabled'));
     } else {
-      this.viewer.canvas.style.cursor = 'default';
+      this.viewer!.canvas.style.cursor = 'default';
       buttons.forEach(button => button.classList.remove('disabled'));
     }
   }
@@ -189,44 +174,44 @@ class NgmGstInteraction extends LitElementI18n {
   }
 
   switchExtent(show) {
-    this.gstExtent.show = show;
-    this.viewer.scene.requestRender();
+    this.gstExtent!.show = show;
+    this.viewer!.scene.requestRender();
   }
 
   render() {
     return html`
-        <div class="ngm-gst-btns-container">
-            <div class="ui tiny buttons">
-                <button class="ui button ngm-create-section ${this.hasValidParams() ? '' : 'disabled'}"
-                        @click=${this.getGST}>
-                        ${i18next.t('tbx_create_section_label')}
-                </button>
-                <button class="ui icon button ngm-tools-btn"><i class="tools icon"></i></button>
-            </div>
+      <div class="ngm-gst-btns-container">
+        <div class="ui tiny buttons">
+          <button class="ui button ngm-create-section ${this.hasValidParams() ? '' : 'disabled'}"
+                  @click=${this.getGST}>
+            ${i18next.t('tbx_create_section_label')}
+          </button>
+          <button class="ui icon button ngm-tools-btn"><i class="tools icon"></i></button>
         </div>
-        <div class="ui mini popup ngm-section-configuration">
-            ${this.geometryType === 'rectangle' ?
-            html`<label>${i18next.t('tbx_cross_sections_depth_label')}</label>
-                  <div class="ui tiny form depth">
-                      <div class="field">
-                        <input type="number"
-                          .value="${this.depth}"
-                          @change="${this.onDepthChange}"
-                          min="${this.minDepth_}"
-                          max="${this.maxDepth_}"
-                          step="100"
-                        >
-                        <div class="ui small error message">
-                          <p>${i18next.t('tbx_depth_warning', {minDepth: this.minDepth_, maxDepth: this.maxDepth_})}</p>
-                        </div>
-                      </div>
-                  </div>` : ''}
-            <label>${i18next.t('tbx_cross_sections_format_label')}</label>
-            <div class="ui fluid selection mini dropdown ngm-section-format">
-                <div class="text"></div>
-                <i class="dropdown icon"></i>
+      </div>
+      <div class="ui mini popup ngm-section-configuration">
+        ${this.geometryType === 'rectangle' ?
+          html`<label>${i18next.t('tbx_cross_sections_depth_label')}</label>
+          <div class="ui tiny form depth">
+            <div class="field">
+              <input type="number"
+                     .value="${this.depth}"
+                     @change="${this.onDepthChange}"
+                     min="${this.minDepth_}"
+                     max="${this.maxDepth_}"
+                     step="100"
+              >
+              <div class="ui small error message">
+                <p>${i18next.t('tbx_depth_warning', {minDepth: this.minDepth_, maxDepth: this.maxDepth_})}</p>
+              </div>
             </div>
+          </div>` : ''}
+        <label>${i18next.t('tbx_cross_sections_format_label')}</label>
+        <div class="ui fluid selection mini dropdown ngm-section-format">
+          <div class="text"></div>
+          <i class="dropdown icon"></i>
         </div>
+      </div>
     `;
   }
 
@@ -235,5 +220,3 @@ class NgmGstInteraction extends LitElementI18n {
     return this;
   }
 }
-
-customElements.define('ngm-gst-interaction', NgmGstInteraction);
