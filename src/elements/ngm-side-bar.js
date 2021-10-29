@@ -1,6 +1,6 @@
 import {html} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
-import '../toolbox/AreaOfInterestDrawer.js';
+import '../toolbox/AreaOfInterestDrawer.ts';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';

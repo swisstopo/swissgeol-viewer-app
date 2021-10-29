@@ -4,14 +4,14 @@ import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import GpxDataSource from '../GpxDataSource.js';
 import i18next from 'i18next';
-import {getMeasurements, cartesianToDegrees, extendKmlWithProperties} from '../cesiumutils.js';
+import {getMeasurements, cartesianToDegrees, extendKmlWithProperties, getValueOrUndefined} from '../cesiumutils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
-import {exportKml} from 'cesium';
+import {Entity, Event, exportKml, exportKmlResultKml, Viewer} from 'cesium';
 import {saveAs} from 'file-saver';
 
-import {html} from 'lit-element';
+import {customElement, html, property} from 'lit-element';
 
 import {
   AOI_DATASOURCE_NAME,
@@ -58,36 +58,91 @@ import QueryStore from '../store/query';
 import DrawStore from '../store/draw';
 import $ from '../jquery';
 
+interface SwissforagesModalOptions {
+  name: string | undefined;
+  id: string | undefined;
+  position: undefined;
+  onLoggedIn: void | undefined;
+  onSwissforagesBoreholeCreated: void | undefined;
+  show: boolean
+}
+
+interface AreasCounter {
+  line: number;
+  point: number;
+  rectangle: number;
+  polygon: number;
+}
+
+interface AoiAttributes {
+  id?: string;
+  name?: string;
+  show?: boolean;
+  positions: Array<Cartesian3>;
+  area?: string | number;
+  perimeter?: string | number;
+  sidesLength?: Array<string | number>;
+  numberOfSegments?: number;
+  type: 'point' | 'line' | 'rectangle' | 'polygon';
+  description?: string;
+  image?: string;
+  website?: string;
+  pointSymbol?: string;
+  color?: Color;
+  clampPoint?: boolean;
+  showSlicingBox?: boolean;
+  volumeShowed?: boolean;
+  volumeHeightLimits?: { lowerLimit: number, height: number };
+  swissforagesId?: string;
+  depth?: number
+}
+
 const fileUploadInputId = 'fileUpload';
+const DEFAULT_SWISSFORAGES_MODAL_OPTIONS = {
+  name: undefined,
+  id: undefined,
+  position: undefined,
+  onLoggedIn: undefined,
+  onSwissforagesBoreholeCreated: undefined,
+  show: false
+};
 
+const DEFAULT_AREAS_COUNTER = {
+  line: 0,
+  point: 0,
+  rectangle: 0,
+  polygon: 0
+};
 
+@customElement('ngm-aoi-drawer')
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
-
-  static get properties() {
-    return {
-      selectedArea_: {type: Object},
-      downloadActiveDataEnabled: {type: Boolean}
-    };
-  }
+  @property({type: Object}) selectedArea_: Entity | undefined
+  @property({type: Boolean}) downloadActiveDataEnabled = false
+  minVolumeHeight = 1;
+  maxVolumeHeight = 30000;
+  minVolumeLowerLimit = -30000;
+  maxVolumeLowerLimit = 30000;
+  julianDate = new JulianDate();
+  swissforagesService = new SwissforagesService();
+  viewer: Viewer | null = null;
+  aoiSupportDatasource: CustomDataSource = new CustomDataSource('aoiSupportDatasource');
+  interestAreasDataSource: CustomDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
+  restrictedEditing = false;
+  colorBeforeHighlight: Color = DEFAULT_AOI_COLOR;
+  addedNewArea = false;
+  aoiInited = false;
+  accordionInited = false;
+  private areasCounter: AreasCounter = DEFAULT_AREAS_COUNTER
+  private screenSpaceEventHandler: ScreenSpaceEventHandler | undefined;
+  private draw: CesiumDraw | undefined;
+  private swissforagesModalOptions: SwissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS
+  private sectionImageUrl: string | undefined;
+  private editedBackup;
+  private areasClickable = false;
+  private unlistenEditPostRender: Event.RemoveCallback | undefined
 
   constructor() {
     super();
-    this.minVolumeHeight = 1;
-    this.maxVolumeHeight = 30000;
-    this.minVolumeLowerLimit = -30000;
-    this.maxVolumeLowerLimit = 30000;
-    this.julianDate = new JulianDate();
-    this.swissforagesService = new SwissforagesService();
-    /**
-     * @type {import('cesium').Viewer}
-     */
-    this.viewer = null;
-    this.aoiSupportDatasource = new CustomDataSource('aoiSupportDatasource');
-    this.interestAreasDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
-    this.restrictedEditing = false;
-    this.colorBeforeHighlight = DEFAULT_AOI_COLOR;
-    this.addedNewArea = false;
-
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
     SlicerStore.rectangleToCreate.subscribe(conf => {
       this.increaseAreasCounter(conf.type);
@@ -105,9 +160,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   update(changedProperties) {
-    if (!this.aoiInited && this.viewer) {
-      this.initAoi();
-    }
+    this.initAoi();
 
     super.update(changedProperties);
   }
@@ -116,9 +169,9 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (this.addedNewArea) {
       this.addedNewArea = false;
       this.querySelectorAll('.ngm-aoi-areas .active').forEach(el => el.classList.remove('active'));
-      const lastChild = this.querySelector('.ngm-aoi-areas').lastElementChild;
-      lastChild.querySelector('.title').classList.add('active');
-      lastChild.querySelector('.content').classList.add('active');
+      const lastChild = this.querySelector('.ngm-aoi-areas')!.lastElementChild!;
+      lastChild.querySelector('.title')!.classList.add('active');
+      lastChild.querySelector('.content')!.classList.add('active');
     }
 
     if (!this.accordionInited) {
@@ -153,7 +206,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     return html`
       <label>${i18next.t('tbx_drawing_tools_label')}</label>
       <div class="ui fluid compact tiny icon buttons ngm-aoi-buttons"
-           ?hidden=${this.draw_.active && !this.draw_.entityForEdit}>
+           ?hidden=${this.draw!.active && !this.draw!.entityForEdit}>
         <button class="ui button"
                 data-tooltip=${i18next.t('tbx_add_point_btn_label')}
                 data-variation="mini"
@@ -200,7 +253,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       <input id="${fileUploadInputId}" type='file' accept=".kml,.KML,.gpx,.GPX" hidden
              @change=${this.uploadFile_.bind(this)}/>
       <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container"
-           ?hidden=${!this.draw_.active || this.draw_.entityForEdit}>
+           ?hidden=${!this.draw!.active || this.draw!.entityForEdit}>
         <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}
         </button>
         <button class="ui button ngm-help-btn"
@@ -316,7 +369,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
                   .height=${i.volumeHeightLimits ? i.volumeHeightLimits.height : undefined}
                   .type=${i.type}
                   .showBox=${i.showSlicingBox}
-                  .onEnableSlicing=${() => this.onEnableSlicing(i.id, i.type)}
+                  .onEnableSlicing=${() => this.onEnableSlicing(i.id)}
                   .onDisableSlicing=${(positions, lowerLimit, height) => this.onDisableSlicing(i.id, i.type, positions, lowerLimit, height)}
                   .onShowSlicingBoxChange=${(value) => this.onShowSlicingBoxChange(i.id, value)}
                 ></ngm-toolbox-slicer>`
@@ -343,7 +396,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
               : ''}
           </div>
 
-          <div class="ngm-aoi-edit" ?hidden=${!this.draw_.entityForEdit || this.draw_.entityForEdit.id !== i.id}>
+          <div class="ngm-aoi-edit" ?hidden=${!this.draw!.entityForEdit || this.draw!.entityForEdit.id !== i.id}>
             <div class="ui mini basic fluid buttons ngm-aoi-tooltip-container">
               <button class="ui button basic primary"
                       @click=${this.saveEditing.bind(this)}>${i18next.t('tbx_save_editing_btn_label')}
@@ -435,7 +488,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
               .position=${i.positions[0]}
               .depth=${i.depth}
               .volumeShowed=${i.volumeShowed}
-              .entity=${this.draw_.entityForEdit}
+              .entity=${this.draw!.entityForEdit}
               .restricted=${!!i.swissforagesId}>
             </ngm-point-edit>
           </div>
@@ -443,81 +496,76 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   initAoi() {
-    this.selectedArea_ = null;
-    this.areasCounter_ = {
+    if (this.aoiInited || !this.viewer) return;
+    this.selectedArea_ = undefined;
+    this.areasCounter = {
       line: 0,
       point: 0,
       rectangle: 0,
       polygon: 0
     };
     this.areasClickable = true;
-    this.draw_ = new CesiumDraw(this.viewer, 'polygon', {
+    this.draw = new CesiumDraw(this.viewer, 'polygon', {
       fillColor: DEFAULT_AOI_COLOR
     });
-    this.draw_.active = false;
+    this.draw.active = false;
     this.viewer.dataSources.add(this.interestAreasDataSource);
     this.viewer.dataSources.add(this.aoiSupportDatasource);
 
     this.editedBackup = undefined;
 
-    this.draw_.addEventListener('statechanged', (evt) => {
-      DrawStore.setDrawState(evt.detail.active);
+    this.draw.addEventListener('statechanged', (evt) => {
+      DrawStore.setDrawState((<CustomEvent>evt).detail.active);
       this.requestUpdate();
     });
-    this.draw_.addEventListener('drawend', (evt) => this.endDrawing_(evt.detail));
-    this.draw_.addEventListener('drawerror', evt => {
-      if (this.draw_.ERROR_TYPES.needMorePoints === evt.detail.error) {
+    this.draw.addEventListener('drawend', (evt) => this.endDrawing_((<CustomEvent>evt).detail));
+    this.draw.addEventListener('drawerror', evt => {
+      if (this.draw!.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
         showWarning(i18next.t('tbx_error_need_more_points_warning'));
       }
     });
-    this.draw_.addEventListener('leftdown', () => {
-      const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
-      const type = this.draw_.entityForEdit.properties.type.getValue();
+    this.draw.addEventListener('leftdown', () => {
+      const volumeShowedProp = this.draw!.entityForEdit.properties.volumeShowed;
+      const type = this.draw!.entityForEdit.properties.type.getValue();
       if (volumeShowedProp && volumeShowedProp.getValue() && type !== 'point') {
-        this.draw_.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
+        this.draw!.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
       }
     });
-    this.draw_.addEventListener('leftup', () => {
-      const volumeShowedProp = this.draw_.entityForEdit.properties.volumeShowed;
-      const type = this.draw_.entityForEdit.properties.type.getValue();
+    this.draw.addEventListener('leftup', () => {
+      const volumeShowedProp = this.draw!.entityForEdit.properties.volumeShowed;
+      const type = this.draw!.entityForEdit.properties.type.getValue();
       if (type === 'point') {
-        updateBoreholeHeights(this.draw_.entityForEdit, this.julianDate);
+        updateBoreholeHeights(this.draw!.entityForEdit, this.julianDate);
       } else if (volumeShowedProp && volumeShowedProp.getValue()) {
-        this.updateEntityVolume(this.draw_.entityForEdit.id);
+        this.updateEntityVolume(this.draw!.entityForEdit.id);
       }
     });
 
-    this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+    this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
     this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
-    this.interestAreasDataSource.entities.collectionChanged.addEventListener((collection, added) => {
-      this.viewer.scene.requestRender();
+    this.interestAreasDataSource.entities.collectionChanged.addEventListener((_collection, added) => {
+      this.viewer!.scene.requestRender();
       this.requestUpdate();
       LocalStorageController.setAoiInStorage(this.entitiesList_);
       if (added.length) {
         this.addedNewArea = true;
       }
     });
-    this.sectionImageUrl = null;
-    this.swissforagesModalOptions = {
-      name: undefined,
-      id: undefined,
-      position: undefined,
-      onLoggedIn: undefined,
-      onSwissforagesBoreholeCreated: undefined,
-      show: false
-    };
+    this.sectionImageUrl = undefined;
+    this.swissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS;
 
     this.aoiInited = true;
   }
 
   endDrawing_(info) {
-    this.draw_.active = false;
-    this.draw_.clear();
+    if (!this.draw) return;
+    this.draw.active = false;
+    this.draw.clear();
 
     const positions = info.positions;
     const measurements = info.measurements;
     const type = info.type;
-    const attributes = {
+    const attributes: AoiAttributes = {
       positions: positions,
       area: measurements.area,
       perimeter: measurements.perimeter,
@@ -532,31 +580,31 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   cancelDraw() {
-    if (!this.draw_.active && !this.restrictedEditing) return;
+    if (!this.draw || (!this.draw.active && !this.restrictedEditing)) return;
     if (this.editedBackup) {
-      this.draw_.entityForEdit.properties = this.editedBackup.properties;
-      if (this.draw_.type === 'point') {
-        this.draw_.entityForEdit.position = this.editedBackup.positions;
-        this.draw_.entityForEdit.billboard.color = this.editedBackup.color;
-        this.draw_.entityForEdit.billboard.image = this.editedBackup.image;
-      } else if (this.draw_.type === 'line') {
-        this.draw_.entityForEdit.polyline.positions = this.editedBackup.positions;
-        this.draw_.entityForEdit.polyline.material = this.editedBackup.color;
+      this.draw.entityForEdit.properties = this.editedBackup.properties;
+      if (this.draw.type === 'point') {
+        this.draw.entityForEdit.position = this.editedBackup.positions;
+        this.draw.entityForEdit.billboard.color = this.editedBackup.color;
+        this.draw.entityForEdit.billboard.image = this.editedBackup.image;
+      } else if (this.draw.type === 'line') {
+        this.draw.entityForEdit.polyline.positions = this.editedBackup.positions;
+        this.draw.entityForEdit.polyline.material = this.editedBackup.color;
       } else {
-        this.draw_.entityForEdit.polygon.hierarchy = this.editedBackup.positions;
-        this.draw_.entityForEdit.polygon.material = this.editedBackup.color;
+        this.draw.entityForEdit.polygon.hierarchy = this.editedBackup.positions;
+        this.draw.entityForEdit.polygon.material = this.editedBackup.color;
       }
-      if (this.editedBackup.properties.volumeShowed && this.draw_.entityForEdit.polylineVolume) {
-        this.updateEntityVolume(this.draw_.entityForEdit.id);
-        this.draw_.entityForEdit.polylineVolume.outlineColor = this.editedBackup.color;
-        this.draw_.entityForEdit.polylineVolume.material = this.editedBackup.color;
+      if (this.editedBackup.properties.volumeShowed && this.draw.entityForEdit.polylineVolume) {
+        this.updateEntityVolume(this.draw.entityForEdit.id);
+        this.draw.entityForEdit.polylineVolume.outlineColor = this.editedBackup.color;
+        this.draw.entityForEdit.polylineVolume.material = this.editedBackup.color;
       }
-      this.draw_.entityForEdit.name = this.editedBackup.name;
+      this.draw.entityForEdit.name = this.editedBackup.name;
     }
     this.editedBackup = undefined;
-    this.draw_.active = false;
+    this.draw.active = false;
     this.restrictedEditing = false;
-    this.draw_.clear();
+    this.draw.clear();
     if (this.unlistenEditPostRender) {
       this.unlistenEditPostRender();
     }
@@ -564,8 +612,8 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   onClick_(click) {
-    if (!this.draw_.active && this.areasClickable) {
-      const pickedObject = this.viewer.scene.pick(click.position);
+    if (!this.draw!.active && this.areasClickable) {
+      const pickedObject = this.viewer!.scene.pick(click.position);
       if (pickedObject && pickedObject.id) { // to prevent error on tileset click
         if (this.interestAreasDataSource.entities.contains(pickedObject.id)) {
           this.pickArea_(pickedObject.id.id);
@@ -579,7 +627,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   deselectArea() {
     if (this.selectedArea_) {
       this.updateHighlight(this.selectedArea_, false);
-      this.selectedArea_ = null;
+      this.selectedArea_ = undefined;
       QueryStore.setObjectInfo(null);
     }
   }
@@ -603,24 +651,26 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         name: val.name,
         show: val.isShowing,
         positions: this.getAreaPositions(val),
-        area: val.properties.area ? val.properties.area.getValue() : undefined,
-        perimeter: val.properties.perimeter ? val.properties.perimeter.getValue() : undefined,
-        sidesLength: val.properties.sidesLength ? val.properties.sidesLength.getValue() : undefined,
-        numberOfSegments: val.properties.numberOfSegments ? val.properties.numberOfSegments.getValue() : undefined,
-        type: val.properties.type ? val.properties.type.getValue() : undefined,
-        volumeShowed: val.properties.volumeShowed ? val.properties.volumeShowed.getValue() : undefined,
-        volumeHeightLimits: val.properties.volumeHeightLimits ? val.properties.volumeHeightLimits.getValue() : undefined,
-        description: val.properties.description ? val.properties.description.getValue() : '',
-        image: val.properties.image ? val.properties.image.getValue() : '',
-        website: val.properties.website ? val.properties.website.getValue() : '',
-        swissforagesId: val.properties.swissforagesId ? val.properties.swissforagesId.getValue() : undefined,
-        depth: val.properties.depth ? val.properties.depth.getValue() : undefined,
-        showSlicingBox: val.properties.showSlicingBox ? val.properties.showSlicingBox.getValue() : true,
+        area: getValueOrUndefined(val.properties!.area),
+        perimeter: getValueOrUndefined(val.properties!.perimeter),
+        sidesLength: getValueOrUndefined(val.properties!.sidesLength),
+        numberOfSegments: getValueOrUndefined(val.properties!.numberOfSegments),
+        type: getValueOrUndefined(val.properties!.type),
+        volumeShowed: getValueOrUndefined(val.properties!.volumeShowed),
+        volumeHeightLimits: getValueOrUndefined(val.properties!.volumeHeightLimits),
+        description: getValueOrUndefined(val.properties!.description),
+        image: getValueOrUndefined(val.properties!.image),
+        website: getValueOrUndefined(val.properties!.website),
+        swissforagesId: getValueOrUndefined(val.properties!.swissforagesId),
+        depth: getValueOrUndefined(val.properties!.depth),
+        showSlicingBox: getValueOrUndefined(val.properties!.showSlicingBox),
+        color: undefined,
+        pointSymbol: undefined
       };
       const colorBeforeHighlight = !this.selectedArea_ || val.id !== this.selectedArea_.id ? undefined : this.colorBeforeHighlight;
       if (val.billboard) {
-        item.color = colorBeforeHighlight || val.billboard.color.getValue(this.julianDate);
-        item.pointSymbol = val.billboard.image.getValue(this.julianDate);
+        item.color = colorBeforeHighlight || val.billboard.color!.getValue(this.julianDate);
+        item.pointSymbol = val.billboard.image!.getValue(this.julianDate);
       } else if (val.polyline) {
         item.color = colorBeforeHighlight || val.polyline.material.getValue(this.julianDate).color;
       } else if (val.polygon) {
@@ -643,7 +693,8 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   onShowHideEntityClick_(evt, id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
-    entity.show = evt.target.checked;
+    if (entity)
+      entity.show = evt.target.checked;
   }
 
   onRemoveEntityClick_(id) {
@@ -654,14 +705,14 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   onAddAreaClick_(type) {
-    this.draw_.type = type;
-    this.draw_.active = true;
+    this.draw!.type = type;
+    this.draw!.active = true;
     this.disableToolButtons();
   }
 
   flyToArea(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
-    if (!entity.isShowing) {
+    if (entity && !entity.isShowing) {
       entity.show = true;
     }
     const positions = this.getAreaPositions(entity);
@@ -669,7 +720,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     let range = boundingSphere.radius > 1000 ? boundingSphere.radius * 2 : boundingSphere.radius * 5;
     if (range < 1000) range = 1000; // if less than 1000 it goes inside terrain
     const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 2), range);
-    this.viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
+    this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
       duration: 0,
       offset: zoomHeadingPitchRange
     });
@@ -693,8 +744,8 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   async uploadKml(file) {
     const kmlDataSource = await KmlDataSource.load(file, {
-      camera: this.viewer.scene.camera,
-      canvas: this.viewer.scene.canvas,
+      camera: this.viewer!.scene.camera,
+      canvas: this.viewer!.scene.canvas,
       clampToGround: true
     });
 
@@ -717,12 +768,12 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (!atLeastOneValid) {
       showWarning(i18next.t('tbx_unsupported_kml_warning'));
     } else {
-      this.viewer.zoomTo(entities);
+      this.viewer!.zoomTo(entities);
     }
   }
 
   async uploadGpx(file) {
-    const gpxDataSource = await GpxDataSource.load(file, {
+    const gpxDataSource: CustomDataSource = <any> await GpxDataSource.load(file, {
       clampToGround: true
     });
     const entities = gpxDataSource.entities.values;
@@ -787,8 +838,8 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       if (!area.positions) return;
       const splittedName = area.name.split(' ');
       const areaNumber = Number(splittedName[1]);
-      if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.areasCounter_[area.type]) {
-        this.areasCounter_[area.type] = areaNumber;
+      if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.areasCounter[area.type]) {
+        this.areasCounter[area.type] = areaNumber;
       }
       this.addAreaEntity(area);
     });
@@ -825,6 +876,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   getIconClass(id, inverted = false) {
     const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity || !entity.properties) return;
     const type = entity.properties.type ? entity.properties.type.getValue() : undefined;
     let volume = entity.properties.volumeShowed ? entity.properties.volumeShowed.getValue() : undefined;
     const swissforagesId = entity.properties.swissforagesId ? entity.properties.swissforagesId.getValue() : undefined;
@@ -848,32 +900,13 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   /**
    * Adds AOI entity to data source
-   * @param attributes:
-   * {
-       id: string,
-       name: (optional) string,
-       show: boolean,
-       positions: Array<Cartesian3>,
-       area: (optional) string | number,
-       perimeter: (optional) string | number,
-       sidesLength: (optional) Array<string | number>,
-       numberOfSegments: (optional) number,
-       type: string<point | line | rectangle | polygon>
-       description: string,
-       image: string,
-       website: string,
-       pointSymbol: (optional) string,
-       color: (optional) Color,
-       clampPoint: (optional) Boolean,
-       showSlicingBox: (optional) Boolean,
-   * }
    */
-  addAreaEntity(attributes) {
+  addAreaEntity(attributes: AoiAttributes) {
     const type = attributes.type;
     const name = type.charAt(0).toUpperCase() + type.slice(1);
-    const entityAttrs = {
+    const entityAttrs: Entity.ConstructorOptions = {
       id: attributes.id || undefined,
-      name: attributes.name || `${name} ${this.areasCounter_[type]}`,
+      name: attributes.name || `${name} ${this.areasCounter[type]}`,
       show: attributes.show,
       properties: {
         area: attributes.area,
@@ -904,8 +937,9 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         disableDepthTestDistance: 0,
         heightReference: HeightReference.RELATIVE_TO_GROUND
       };
-      entityAttrs.properties.swissforagesId = attributes.swissforagesId;
-      entityAttrs.properties.depth = attributes.depth || 400;
+      entityAttrs.properties!.swissforagesId = attributes.swissforagesId;
+      attributes.depth = attributes.depth || 400;
+      entityAttrs.properties!.depth = attributes.depth;
       const height = Cartographic.fromCartesian(entityAttrs.position).height;
       entityAttrs.ellipse = {
         show: !!attributes.swissforagesId || !!attributes.volumeShowed,
@@ -923,10 +957,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         DEFAULT_AOI_COLOR.withAlpha(AOI_POLYGON_ALPHA);
       if (type === 'rectangle' || type === 'polygon') {
         entityAttrs.polygon = {
-          hierarchy: attributes.positions,
+          hierarchy: <any>attributes.positions,
           material: material,
         };
-        entityAttrs.properties.showSlicingBox = attributes.showSlicingBox;
+        entityAttrs.properties!.showSlicingBox = attributes.showSlicingBox;
       } else if (type === 'line') {
         entityAttrs.polyline = {
           positions: attributes.positions,
@@ -945,15 +979,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       };
     }
     const entity = this.interestAreasDataSource.entities.add(entityAttrs);
-    if (entityAttrs.properties.volumeShowed) {
+    if (entityAttrs.properties!.volumeShowed) {
       this.updateEntityVolume(entity.id);
     }
     return entity;
-  }
-
-  showSectionModal(imageUrl) {
-    this.sectionImageUrl = imageUrl;
-    this.requestUpdate();
   }
 
   showAreaInfo(areaAttrs) {
@@ -968,21 +997,22 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   get drawState() {
-    return this.draw_.active;
+    return this.draw && this.draw.active;
   }
 
   editAreaPosition(id, restrictedPoint = false) {
     this.deselectArea();
     this.disableToolButtons();
     const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity || !entity.properties || !this.draw) return;
     const type = entity.properties.type.getValue();
     if (!entity.isShowing) {
       entity.show = !entity.isShowing;
     }
 
-    this.draw_.entityForEdit = entity;
-    this.draw_.type = type;
-    this.draw_.active = !restrictedPoint;
+    this.draw.entityForEdit = entity;
+    this.draw.type = type;
+    this.draw.active = !restrictedPoint;
     this.restrictedEditing = restrictedPoint;
 
     this.editedBackup = {
@@ -991,32 +1021,33 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     };
 
     if (type === 'point') {
-      const position = entity.position.getValue(this.julianDate);
+      const position = entity.position!.getValue(this.julianDate);
       this.editedBackup.positions = Cartesian3.clone(position);
-      this.editedBackup.color = entity.billboard.color.getValue(this.julianDate);
-      this.editedBackup.image = entity.billboard.image.getValue(this.julianDate);
+      this.editedBackup.color = entity.billboard!.color!.getValue(this.julianDate);
+      this.editedBackup.image = entity.billboard!.image!.getValue(this.julianDate);
     } else if (type === 'line') {
-      this.editedBackup.positions = entity.polyline.positions.getValue().map(p => Cartesian3.clone(p));
-      this.editedBackup.color = entity.polyline.material.getValue(this.julianDate).color;
+      this.editedBackup.positions = entity.polyline!.positions!.getValue(this.julianDate).map(p => Cartesian3.clone(p));
+      this.editedBackup.color = entity.polyline!.material.getValue(this.julianDate).color;
     } else {
-      const hierarchy = entity.polygon.hierarchy.getValue();
+      const hierarchy = entity.polygon!.hierarchy!.getValue(this.julianDate);
       // this is hackish: the hierarchy should not be stored as a positions.
       this.editedBackup.positions = {
         positions: hierarchy.positions.map(p => Cartesian3.clone(p)),
         holes: hierarchy.holes ? hierarchy.holes.map(p => Cartesian3.clone(p)) : []
       };
-      this.editedBackup.color = entity.polygon.material.getValue(this.julianDate).color;
+      this.editedBackup.color = entity.polygon!.material.getValue(this.julianDate).color;
     }
   }
 
   saveEditing() {
+    if (!this.draw) return;
     this.editedBackup = undefined;
-    const type = this.draw_.entityForEdit.properties.type.getValue();
-    this.draw_.entityForEdit.properties = this.getAreaProperties(this.draw_.entityForEdit, type);
+    const type = this.draw.entityForEdit.properties.type.getValue();
+    this.draw.entityForEdit.properties = this.getAreaProperties(this.draw.entityForEdit, type);
     this.cancelDraw();
   }
 
-  disableToolButtons(skipSliceBtn) {
+  disableToolButtons(skipSliceBtn?: boolean) {
     this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
       .forEach(button => {
         const classList = button.classList;
@@ -1065,16 +1096,17 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   updateEntityVolume(id, showHint = false) {
     const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity || !entity.properties) return;
     const type = entity.properties.type.getValue();
     let positions;
     let volumeHeightLimits = DEFAULT_VOLUME_HEIGHT_LIMITS;
     if (type === 'line') {
-      positions = [...entity.polyline.positions.getValue()];
-      entity.polyline.show = false;
+      positions = [...entity.polyline!.positions!.getValue(this.julianDate)];
+      entity.polyline!.show = <any>false;
     } else if (type !== 'point') {
-      positions = [...entity.polygon.hierarchy.getValue().positions];
+      positions = [...entity.polygon!.hierarchy!.getValue(this.julianDate).positions];
       positions.push(positions[0]);
-      entity.polygon.show = false;
+      entity.polygon!.show = <any>false;
       if (type === 'rectangle') {
         const side1Distance = Cartesian3.distance(positions[0], positions[1]);
         const side2Distance = Cartesian3.distance(positions[1], positions[2]);
@@ -1093,11 +1125,11 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
 
     if (type === 'point') {
-      entity.ellipse.show = true;
+      entity.ellipse!.show = <any>true;
       updateBoreholeHeights(entity, this.julianDate);
     } else {
       this.updateVolumePositions(entity, positions);
-      entity.polylineVolume.show = true;
+      entity.polylineVolume!.show = <any>true;
     }
 
     if (showHint) {
@@ -1107,21 +1139,22 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   hideVolume(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity) return;
     if (entity.billboard) {
-      entity.ellipse.show = false;
+      entity.ellipse!.show = <any>false;
     } else {
       if (entity.polyline) {
-        entity.polyline.show = true;
+        entity.polyline!.show = <any>true;
       } else {
-        entity.polygon.show = true;
+        entity.polygon!.show = <any>true;
       }
-      entity.polylineVolume.show = false;
+      entity.polylineVolume!.show = <any>false;
     }
-    entity.properties.volumeShowed = false;
+    entity.properties!.volumeShowed = <any>false;
   }
 
   get volumeHeightLimits() {
-    const entity = this.draw_.entityForEdit;
+    const entity = this.draw!.entityForEdit;
     if (!entity || !entity.properties.volumeHeightLimits) {
       return DEFAULT_VOLUME_HEIGHT_LIMITS;
     }
@@ -1129,16 +1162,16 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   onVolumeHeightLimitsChange(index) {
-    if (!this.draw_.entityForEdit) {
+    if (!this.draw || !this.draw.entityForEdit) {
       return;
     }
-    const entity = this.draw_.entityForEdit;
-    const limitInput = this.querySelector(`.ngm-lower-limit-input-${index}`);
-    const heightInput = this.querySelector(`.ngm-volume-height-input-${index}`);
+    const entity = this.draw.entityForEdit;
+    const limitInput: HTMLInputElement = this.querySelector(`.ngm-lower-limit-input-${index}`)!;
+    const heightInput: HTMLInputElement = this.querySelector(`.ngm-volume-height-input-${index}`)!;
     const lowerLimit = CesiumMath.clamp(Number(limitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
     const height = CesiumMath.clamp(Number(heightInput.value), this.minVolumeHeight, this.maxVolumeHeight);
-    limitInput.value = lowerLimit;
-    heightInput.value = height;
+    limitInput.value = lowerLimit.toString();
+    heightInput.value = height.toString();
     entity.properties.volumeHeightLimits = {lowerLimit, height};
     const positions = entity.polylineVolume.positions.getValue();
     this.updateVolumePositions(entity, positions);
@@ -1149,7 +1182,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     let midLowerLimit = 0;
     positions.forEach(p => {
       const cartographicPosition = Cartographic.fromCartesian(p);
-      const altitude = this.viewer.scene.globe.getHeight(cartographicPosition) || 0;
+      const altitude = this.viewer!.scene.globe.getHeight(cartographicPosition) || 0;
       midLowerLimit += volumeHeightLimits.lowerLimit + altitude;
     });
     midLowerLimit /= positions.length;
@@ -1163,14 +1196,14 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   onNameInputChange(index) {
-    const nameElem = this.querySelector(`.ngm-aoi-name-input-${index}`);
-    const entity = this.draw_.entityForEdit;
+    const nameElem: HTMLInputElement = this.querySelector(`.ngm-aoi-name-input-${index}`)!;
+    const entity = this.draw!.entityForEdit;
     entity.name = nameElem.value;
   }
 
   onDescriptionChange(index) {
-    const descriptionElem = this.querySelector(`.ngm-aoi-description-${index}`);
-    const entity = this.draw_.entityForEdit;
+    const descriptionElem: HTMLInputElement = this.querySelector(`.ngm-aoi-description-${index}`)!;
+    const entity = this.draw!.entityForEdit;
     if (entity.properties.description) {
       entity.properties.description = descriptionElem.value;
     } else {
@@ -1179,8 +1212,8 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   onImageChange(index) {
-    const imageElem = this.querySelector(`.ngm-aoi-image-${index}`);
-    const entity = this.draw_.entityForEdit;
+    const imageElem: HTMLInputElement = this.querySelector(`.ngm-aoi-image-${index}`)!;
+    const entity = this.draw!.entityForEdit;
     if (entity.properties.image) {
       entity.properties.image = imageElem.value;
     } else {
@@ -1189,8 +1222,8 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   onWebsiteChange(index) {
-    const websiteElem = this.querySelector(`.ngm-aoi-website-${index}`);
-    const entity = this.draw_.entityForEdit;
+    const websiteElem: HTMLInputElement = this.querySelector(`.ngm-aoi-website-${index}`)!;
+    const entity = this.draw!.entityForEdit;
     if (entity.properties.website) {
       entity.properties.website = websiteElem.value;
     } else {
@@ -1205,8 +1238,11 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         visibleGeometries.add(ent);
       }
     });
-    const exportResult = await exportKml({entities: visibleGeometries, time: this.julianDate});
-    let kml = exportResult.kml;
+    const exportResult: exportKmlResultKml = <exportKmlResultKml> await exportKml({
+      entities: visibleGeometries,
+      time: this.julianDate
+    });
+    let kml: string = exportResult.kml;
     kml = extendKmlWithProperties(kml, visibleGeometries);
     const blob = new Blob([kml], {type: 'text/xml'});
     saveAs(blob, 'swissgeol_geometries.kml');
@@ -1217,7 +1253,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   isVolumeInputsHidden() {
-    const entity = this.draw_.entityForEdit;
+    const entity = this.draw!.entityForEdit;
     if (!entity) return true;
     const volumeShowed = entity.properties.volumeShowed && entity.properties.volumeShowed.getValue();
     const type = entity.properties.type.getValue();
@@ -1226,15 +1262,17 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   onEnableSlicing(id) {
     const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity) return;
     entity.show = false;
     this.disableToolButtons(true);
   }
 
   onDisableSlicing(id, type, positions, lowerLimit, height) {
     const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity) return;
     if (type === 'rectangle') {
-      entity.polygon.hierarchy = {positions};
-      entity.properties.volumeHeightLimits = {lowerLimit, height};
+      entity.polygon!.hierarchy = <any>{positions};
+      entity.properties!.volumeHeightLimits = {lowerLimit, height};
       this.updateEntityVolume(id);
     }
     entity.show = true;
@@ -1243,16 +1281,18 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   onShowSlicingBoxChange(id, value) {
     const entity = this.interestAreasDataSource.entities.getById(id);
-    entity.properties.showSlicingBox = value;
+    if (!entity) return;
+    entity.properties!.showSlicingBox = value;
   }
 
   onColorChange(id, type, color) {
     color = color.withAlpha(0.3);
     const entity = this.interestAreasDataSource.entities.getById(id);
+    if (!entity) return;
     if (type === 'line') {
-      entity.polyline.material = color;
+      entity.polyline!.material = color;
     } else {
-      entity.polygon.material = color;
+      entity.polygon!.material = color;
     }
     if (entity.polylineVolume) {
       entity.polylineVolume.material = color;
@@ -1288,7 +1328,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   increaseAreasCounter(type) {
-    this.areasCounter_[type] += 1;
+    this.areasCounter[type] += 1;
   }
 
 
@@ -1305,5 +1345,3 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
 }
-
-customElements.define('ngm-aoi-drawer', NgmAreaOfInterestDrawer);
