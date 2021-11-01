@@ -268,11 +268,12 @@ export function moveSlicingBoxCorners(
   oppositePlane: Plane,
   moveVector: Cartesian3): boolean {
   let bothSideMove = false;
+  const distance = Cartesian3.distance(position1, oppositePosition1);
   Cartesian3.add(position1, moveVector, position1);
   Cartesian3.add(position2, moveVector, position2);
   const newDistance = Cartesian3.distance(position1, oppositePosition1);
   const direction = Plane.getPointDistance(oppositePlane, position1);
-  if (direction < 0 || newDistance < SLICING_BOX_MIN_SIZE) {
+  if (direction < 0 || (newDistance < SLICING_BOX_MIN_SIZE && newDistance < distance)) {
     Cartesian3.add(oppositePosition1, moveVector, oppositePosition1);
     Cartesian3.add(oppositePosition2, moveVector, oppositePosition2);
     bothSideMove = true;
