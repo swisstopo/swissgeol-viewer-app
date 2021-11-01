@@ -2,7 +2,7 @@ import {writeFile} from 'fs';
 import {S3Client, GetObjectCommand} from '@aws-sdk/client-s3';
 import streamToPromise from 'stream-to-promise';
 import fetch from 'node-fetch';
-import layertree from '../src/layertree.js';
+import layertree from '../src/layertree';
 
 const output = process.argv[2];
 

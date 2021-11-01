@@ -1,6 +1,6 @@
 import {syncLayersParam} from '../permalink.js';
 import {calculateRectangle, getBoxFromRectangle, calculateBox} from './helpers.js';
-import {LAYER_TYPES} from '../constants';
+import {LayerType} from '../constants';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import Cartographic from 'cesium/Source/Core/Cartographic';
@@ -91,7 +91,7 @@ export default class LayersAction {
 
     // FIXME: this is nonsensical, all imageries should be handled
     // permute imageries order
-    if (config.type === LAYER_TYPES.swisstopoWMTS && otherConfig.type === LAYER_TYPES.swisstopoWMTS) {
+    if (config.type === LayerType.swisstopoWMTS && otherConfig.type === LayerType.swisstopoWMTS) {
       const imageries = this.viewer.scene.imageryLayers;
       config.promise.then(i => {
         if (delta < 0) {

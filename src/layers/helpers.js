@@ -4,7 +4,7 @@ import GeoJsonDataSource from 'cesium/Source/DataSources/GeoJsonDataSource';
 import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
 import Cesium3DTileStyle from 'cesium/Source/Scene/Cesium3DTileStyle';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
-import {LAYER_TYPES} from '../constants';
+import {LayerType} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {isLabelOutlineEnabled} from '../permalink.js';
 import LabelStyle from 'cesium/Source/Scene/LabelStyle';
@@ -134,10 +134,10 @@ export function createSwisstopoWMTSImageryLayer(viewer, config) {
 
 export function createCesiumObject(viewer, config, tileLoadCallback) {
   const factories = {
-    [LAYER_TYPES.ionGeoJSON]: createIonGeoJSONFromConfig,
-    [LAYER_TYPES.tiles3d]: create3DTilesetFromConfig,
-    [LAYER_TYPES.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
-    [LAYER_TYPES.earthquakes]: createEarthquakeFromConfig,
+    [LayerType.ionGeoJSON]: createIonGeoJSONFromConfig,
+    [LayerType.tiles3d]: create3DTilesetFromConfig,
+    [LayerType.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
+    [LayerType.earthquakes]: createEarthquakeFromConfig,
   };
   return factories[config.type](viewer, config, tileLoadCallback);
 }

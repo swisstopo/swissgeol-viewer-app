@@ -1,11 +1,11 @@
 import {html} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
 import '../toolbox/AreaOfInterestDrawer.js';
-import '../layers/ngm-layers.js';
-import '../layers/ngm-catalog.js';
+import '../layers/ngm-layers';
+import '../layers/ngm-catalog';
 import LayersActions from '../layers/LayersActions.js';
-import {DEFAULT_LAYER_OPACITY, LAYER_TYPES} from '../constants';
-import defaultLayerTree from '../layertree.js';
+import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
+import defaultLayerTree from '../layertree';
 import {getLayerParams, syncLayersParam, getAssetIds, getAttribute} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
@@ -245,7 +245,7 @@ class SideBar extends LitElementI18n {
 
     assetIds.forEach(assetId => {
       const layer = {
-        type: LAYER_TYPES.tiles3d,
+        type: LayerType.tiles3d,
         assetId: assetId,
         label: assetId,
         layer: assetId,
@@ -396,7 +396,7 @@ class SideBar extends LitElementI18n {
     }
 
     if (layer) { // for layers added before
-      if (layer.type === LAYER_TYPES.swisstopoWMTS) {
+      if (layer.type === LayerType.swisstopoWMTS) {
         const index = this.activeLayers.indexOf(layer);
         this.activeLayers.splice(index, 1);
         layer.remove();
@@ -417,7 +417,7 @@ class SideBar extends LitElementI18n {
 
   createSearchLayer(title, layername) {
     const config = {
-      type: LAYER_TYPES.swisstopoWMTS,
+      type: LayerType.swisstopoWMTS,
       label: title,
       layer: layername,
       visible: true,

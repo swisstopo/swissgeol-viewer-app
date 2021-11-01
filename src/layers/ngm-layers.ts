@@ -1,18 +1,15 @@
-import {html} from 'lit-element';
+import {customElement, html, property} from 'lit-element';
 import {repeat} from 'lit-html/directives/repeat.js';
 
 import {LitElementI18n} from '../i18n.js';
+import {LayerTreeNode} from '../layertree';
 
 import './ngm-layers-item.js';
 
+@customElement('ngm-layers')
 export default class LayerTree extends LitElementI18n {
-
-  static get properties() {
-    return {
-      actions: {type: Object},
-      layers: {type: Array},
-    };
-  }
+  @property({type: Array}) layers: LayerTreeNode[] | undefined;
+  @property({type: Object}) actions: any;
 
   createRenderRoot() {
     return this;
@@ -24,7 +21,7 @@ export default class LayerTree extends LitElementI18n {
    * @param {number} idx
    * @param {number} len
    */
-  createLayerTemplate(config, idx, len) {
+  createLayerTemplate(config, idx: number, len: number) {
     const upClassMap = {disabled: (idx === 0)};
     idx = len - 1 - idx; // we want to create in reverse order
     const downClassMap = {disabled: idx === 0};
@@ -59,7 +56,7 @@ export default class LayerTree extends LitElementI18n {
   // builds ui structure of layertree and makes render
   render() {
     const len = this.layers ? this.layers.length : 0;
-    const reverse = [...this.layers].reverse();
+    const reverse = [...this.layers!].reverse();
     return html`
       ${repeat(
         reverse,
@@ -76,5 +73,3 @@ export default class LayerTree extends LitElementI18n {
     this.requestUpdate();
   }
 }
-
-customElements.define('ngm-layers', LayerTree);

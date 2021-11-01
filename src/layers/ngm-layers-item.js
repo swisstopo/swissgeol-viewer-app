@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import {html} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {LAYER_TYPES} from '../constants';
+import {LayerType} from '../constants';
 
 
 export class LayerTreeItem extends LitElementI18n {
@@ -87,7 +87,7 @@ export class LayerTreeItem extends LitElementI18n {
             @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
             ${i18next.t('dtd_layer_up_label')}
           </div>` : ''}
-        ${this.config.downloadUrl && this.config.type !== LAYER_TYPES.earthquakes ? html`
+        ${this.config.downloadUrl && this.config.type !== LayerType.earthquakes ? html`
           <div class="item"
             @click=${() => window.open(this.config.downloadUrl)}>
             ${i18next.t('dtd_download_hint')}

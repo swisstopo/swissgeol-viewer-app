@@ -1,12 +1,48 @@
-export const LAYER_TYPES = {
-  swisstopoWMTS: 'swisstopoWMTS',
-  tiles3d: '3dtiles',
-  ionGeoJSON: 'ionGeoJSON',
-  earthquakes: 'earthquakes',
-};
+export interface LayerTreeNode {
+  type?: LayerType;
+  layer?: string;
+  label: string;
+  assetId?: number;
+  propsOrder?: string[];
+  url?: string;
+  detailsUrl?: string;
+  downloadUrl?: string;
+  downloadDataType?: string;
+  downloadDataPath?: string;
+  geocatId?: string;
+  // A "displayed" layer appears in the list of active layers.
+  displayed?: boolean;
+  // A "visible" layer is actually shown on the globe.
+  // Normally, visible => displayed
+  visible?: boolean;
+  pickable?: boolean;
+  zoomToBbox?: boolean;
+  opacity?: number;
+  opacityDisabled?: boolean
+  style?: unknown;
+  legend?: string;
+  backgroundId?: string;
+  maximumLevel?: number;
+  queryType?: string;
+  noQuery?: boolean;
+  restricted?: string;
+  aws_s3_bucket?: string;
+  aws_s3_key?: string;
+  children?: LayerTreeNode[];
+}
+
+export enum LayerType {
+  swisstopoWMTS = 'swisstopoWMTS',
+  tiles3d = '3dtiles',
+  ionGeoJSON = 'ionGeoJSON',
+  earthquakes = 'earthquakes',
+}
 
 export const DEFAULT_LAYER_OPACITY = 1;
 
+const t = (a: string) => a;
+
+// Styles
 const LAS_POINT_CLOUD_STYLE = {
   pointSize: 5
 };
@@ -59,6 +95,8 @@ const SWISSTOPO_LABEL_STYLE = {
   }
 };
 
+
+// Property orders
 const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
 const DOWNLOAD_ROOT_GEOMOL = 'https://download.swissgeol.ch/geomol/';
 const DOWNLOAD_ROOT_VOXEL = 'https://download.swissgeol.ch/voxel/';
@@ -70,15 +108,16 @@ const TEMPERATURE_HORIZON_ORDER = ['name', 'temp_c'];
 const TEMPERATURE_HORIZON_BGL_ORDER = ['name', 'temp_c', 'depth_bgl'];
 const EARTHQUAKES_PROP_ORDER = ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'];
 
-const t = a => a;
-const geo_map_series = {
+
+// Layers
+const geo_map_series: LayerTreeNode = {
   label: t('lyr_geological_map_series_label'),
   children: [
     {
       label: t('lyr_geological_maps_label'),
       children: [
         {
-          type: LAYER_TYPES.swisstopoWMTS,
+          type: LayerType.swisstopoWMTS,
           label: t('lyr_swisstopo_geologie_geocover_label'),
           layer: 'ch.swisstopo.geologie-geocover',
           maximumLevel: 16,
@@ -89,7 +128,7 @@ const geo_map_series = {
           geocatId: '2467ab13-e794-4c13-8c55-59fe276398c5',
         },
         {
-          type: LAYER_TYPES.swisstopoWMTS,
+          type: LayerType.swisstopoWMTS,
           label: t('lyr_swisstopo_geologie_geology_500_label'),
           layer: 'ch.swisstopo.geologie-geologische_karte',
           maximumLevel: 18,
@@ -100,7 +139,7 @@ const geo_map_series = {
           geocatId: 'ca917a71-dcc9-44b6-8804-823c694be516',
         },
         {
-          type: LAYER_TYPES.swisstopoWMTS,
+          type: LayerType.swisstopoWMTS,
           label: t('lyr_swisstopo_geologie_tectonics_500_label'),
           layer: 'ch.swisstopo.geologie-tektonische_karte',
           maximumLevel: 18,
@@ -111,7 +150,7 @@ const geo_map_series = {
           geocatId: 'a4cdef47-505e-41ab-b6a7-ad5b92d80e41',
         },
         {
-          type: LAYER_TYPES.swisstopoWMTS,
+          type: LayerType.swisstopoWMTS,
           label: t('lyr_swisstopo_geologie_last_iceage_max_map500_label'),
           layer: 'ch.swisstopo.geologie-eiszeit-lgm-raster',
           maximumLevel: 18,
@@ -125,14 +164,15 @@ const geo_map_series = {
     },
   ]
 };
-const geo_base = {
+
+const geo_base: LayerTreeNode = {
   label: t('lyr_geological_bases_label'),
   children: [
     {
       label: t('lyr_boreholes_label'),
       children: [
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 287568,
           label: t('lyr_boreholes_public_label'),
           layer: 'boreholes',
@@ -150,7 +190,7 @@ const geo_base = {
           geocatId: '3996dfad-69dd-418f-a4e6-5f32b96c760a',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           label: t('lyr_boreholes_private_label'),
           layer: 'boreholes_authenticated',
           opacity: DEFAULT_LAYER_OPACITY,
@@ -167,7 +207,7 @@ const geo_base = {
       label: t('lyr_cross_section_label'),
       children: [
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 376868,
           label: t('lyr_cross_section_ga25_pixel_label'),
           layer: 'cross_section_ga25_pixel',
@@ -183,7 +223,7 @@ const geo_base = {
           geocatId: '97197401-6019-49b0-91d6-eaf35d57529c',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 68881,
           label: t('lyr_cross_section_ga25_label'),
           layer: 'cross_section',
@@ -195,7 +235,7 @@ const geo_base = {
           geocatId: 'd1912e80-59c8-4dc5-a1f2-67c42d2ff473',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 452436,
           label: t('lyr_cross_section_geomol_label'),
           layer: 'cross_section_geomol',
@@ -207,7 +247,7 @@ const geo_base = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Cross-Sections.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 472446,
           label: t('lyr_cross_section_geoquat_label'),
           layer: 'cross_section_geoquat',
@@ -221,35 +261,17 @@ const geo_base = {
         }
       ]
     },
-//    {
-//      label: t('lyr_geophysics_label'),
-//      children: [
-//        {
-//          type: LAYER_TYPES.tiles3d,
-//          assetId: 249376,
-//          label: t('lyr_seismic_transects_label'),
-//          layer: 'seismic_transects',
-//          opacity: DEFAULT_LAYER_OPACITY,
-//          backgroundId: 'lakes_rivers_map',
-//          pickable: true,
-//          visible: false,
-//          displayed: false,
-//          propsOrder: ['Line', 'Owner', 'Public', 'SRD', 'AcqYear', 'Length', 'data_link'],
-//          geocatId: '62f8d10b-f65b-4902-967e-bd4f972b56e9',
-//        },
-//      ]
-//    }
   ]
 };
 
-const geo_energy = {
+const geo_energy: LayerTreeNode = {
   label: t('lyr_geo_energy_label'),
   children: [
     {
       label: t('lyr_geothermal_energy_label'),
       children: [
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 139225,
           label: t('lyr_temperature_model_label'),
@@ -259,7 +281,7 @@ const geo_energy = {
           geocatId: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251747,
           label: t('lyr_temperature_horizon_tomm_label'),
           layer: 'temperature_horizon_tomm',
@@ -269,7 +291,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-temperatur_top_omm',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251782,
           label: t('lyr_temperature_horizon_tuma_label'),
           layer: 'temperature_horizon_tuma',
@@ -279,7 +301,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-temperatur_top_omalm',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251781,
           label: t('lyr_temperature_horizon_tmus_label'),
           layer: 'temperature_horizon_tmus',
@@ -289,7 +311,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-temperatur_top_muschelkalk',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251756,
           label: t('lyr_temperature_500_bgl_label'),
           layer: 'temperature_500_bgl',
@@ -299,7 +321,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_500',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251788,
           label: t('lyr_temperature_1000_bgl_label'),
           layer: 'temperature_1000_bgl',
@@ -309,7 +331,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_1000',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251790,
           label: t('lyr_temperature_1500_bgl_label'),
           layer: 'temperature_1500_bgl',
@@ -319,7 +341,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_1500',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251786,
           label: t('lyr_temperature_2000_bgl_label'),
           layer: 'temperature_2000_bgl',
@@ -329,7 +351,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_2000',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251785,
           label: t('lyr_temperature_3000_bgl_label'),
           layer: 'temperature_3000_bgl',
@@ -339,7 +361,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_3000',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251789,
           label: t('lyr_temperature_4000_bgl_label'),
           layer: 'temperature_4000_bgl',
@@ -349,7 +371,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_4000',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251755,
           label: t('lyr_temperature_isotherm_60c_label'),
           layer: 'temperature_isotherm_60c',
@@ -359,7 +381,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-isotherme_60',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251787,
           label: t('lyr_temperature_isotherm_100c_label'),
           layer: 'temperature_isotherm_100c',
@@ -369,7 +391,7 @@ const geo_energy = {
           legend: 'ch.swisstopo.geologie-geomol-isotherme_100',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 251783,
           label: t('lyr_temperature_isotherm_150c_label'),
           layer: 'temperature_isotherm_150c',
@@ -383,11 +405,11 @@ const geo_energy = {
   ]
 };
 
-const natural_hazard = {
+const natural_hazard: LayerTreeNode = {
   label: t('lyr_natural_hazard_label'),
   children: [
     {
-      type: LAYER_TYPES.earthquakes,
+      type: LayerType.earthquakes,
       label: t('lyr_earthquakes_label'),
       layer: 'earthquakes',
       visible: false,
@@ -398,7 +420,7 @@ const natural_hazard = {
       detailsUrl: 'http://www.seismo.ethz.ch/en/earthquakes/switzerland/last-90-days',
     },
     {
-      type: LAYER_TYPES.earthquakes,
+      type: LayerType.earthquakes,
       label: t('lyr_historical_earthquakes_label'),
       layer: 'historical_earthquakes',
       visible: false,
@@ -411,14 +433,14 @@ const natural_hazard = {
   ]
 };
 
-const subsurface = {
+const subsurface: LayerTreeNode = {
   label: t('lyr_subsurface_label'),
   children: [
     {
       label: t('lyr_unconsolidated_rocks_label'),
       children: [
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 474235,
           label: t('lyr_voxel_aaretal_litho_label'),
@@ -429,7 +451,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 474238,
           label: t('lyr_voxel_aaretal_logk_label'),
@@ -440,7 +462,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 474233,
           label: t('lyr_voxel_birrfeld_litho_label'),
@@ -451,7 +473,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 474239,
           label: t('lyr_voxel_birrfeld_logk_label'),
@@ -462,7 +484,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 474234,
           label: t('lyr_voxel_geneva_litho_label'),
@@ -473,7 +495,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 474237,
           label: t('lyr_voxel_geneva_logk_label'),
@@ -484,7 +506,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 474231,
           label: t('lyr_voxel_visp_litho_label'),
@@ -495,7 +517,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           style: LAS_POINT_CLOUD_STYLE,
           assetId: 474240,
           label: t('lyr_voxel_visp_logk_label'),
@@ -511,7 +533,7 @@ const subsurface = {
       label: t('lyr_top_bedrock_surface_label'),
       children: [
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267898,
           label: t('lyr_top_bedrock_label'),
           layer: 'top_bedrock',
@@ -527,7 +549,7 @@ const subsurface = {
       label: t('lyr_consolidated_rocks_label'),
       children: [
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267959,
           label: t('lyr_top_omm_label'),
           layer: 'top_omm',
@@ -537,7 +559,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267961,
           label: t('lyr_top_usm_label'),
           layer: 'top_usm',
@@ -547,7 +569,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerFreshwaterMolasse.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267966,
           label: t('lyr_top_umm_label'),
           layer: 'top_umm',
@@ -557,7 +579,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMarineMolasse.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267954,
           label: t('lyr_base_cenozoic_label'),
           layer: 'base_cenozoic',
@@ -567,7 +589,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Cenozoic.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267958,
           label: t('lyr_top_cretaceous_label'),
           layer: 'top_cretaceous',
@@ -577,7 +599,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Cretaceous.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267962,
           label: t('lyr_top_upper_malm_label'),
           layer: 'top_upper_malm',
@@ -587,7 +609,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMalm.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267963,
           label: t('lyr_top_lower_malm_label'),
           layer: 'top_lower_malm',
@@ -597,7 +619,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMalm.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267957,
           label: t('lyr_top_dogger_label'),
           layer: 'top_dogger',
@@ -607,7 +629,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Dogger.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267899,
           label: t('lyr_top_lias_label'),
           layer: 'top_lias',
@@ -617,7 +639,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Lias.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267960,
           label: t('lyr_top_keuper_label'),
           layer: 'top_keuper',
@@ -627,7 +649,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Keuper.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267953,
           label: t('lyr_top_muschelkalk_label'),
           layer: 'top_muschelkalk',
@@ -637,7 +659,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Muschelkalk.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267952,
           label: t('lyr_base_mesozoic_label'),
           layer: 'base_mesozoic',
@@ -647,7 +669,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Mesozoic.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267965,
           label: t('lyr_base_permocarboniferous'),
           layer: 'base_permocarboniferous',
@@ -657,7 +679,7 @@ const subsurface = {
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous.zip'
         },
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267964,
           label: t('lyr_base_permocarboniferous_supposed'),
           layer: 'base_permocarboniferous_supposed',
@@ -672,7 +694,7 @@ const subsurface = {
       label: t('lyr_fault_zones_label'),
       children: [
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 267872,
           label: t('lyr_faults_geomol_label'),
           layer: 'faults_geomol',
@@ -689,7 +711,7 @@ const subsurface = {
       label: t('lyr_3d_model_label'),
       children: [
         {
-          type: LAYER_TYPES.tiles3d,
+          type: LayerType.tiles3d,
           assetId: 493224,
           label: t('lyr_3d_model_berne_label'),
           layer: '3d_model_berne',
@@ -697,19 +719,19 @@ const subsurface = {
           pickable: true,
           zoomToBbox: true,
           propsOrder: ['3DBern-Unit', '3DBern-Link', '3DBern-Lithology', '3DBern-TectonicUnit',
-          '3DBern-ChronoB-T', '3DBern-OrigDesc', '3DBern-Version', '3DBern-Aothor', '3DBern-Purpose',
-          '3DBern-Download'],
+            '3DBern-ChronoB-T', '3DBern-OrigDesc', '3DBern-Version', '3DBern-Aothor', '3DBern-Purpose',
+            '3DBern-Download'],
         },
       ]
     },
   ]
 };
 
-const man_made_objects = {
+const man_made_objects: LayerTreeNode = {
   label: t('lyr_man_made_objects_label'),
   children: [
     {
-      type: LAYER_TYPES.tiles3d,
+      type: LayerType.tiles3d,
       assetId: 244982,
       label: t('lyr_road_tunnel_label'),
       layer: 'road_tunnel',
@@ -718,7 +740,7 @@ const man_made_objects = {
       geocatId: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
     },
     {
-      type: LAYER_TYPES.tiles3d,
+      type: LayerType.tiles3d,
       assetId: 244984,
       label: t('lyr_rail_tunnel_label'),
       layer: 'rail_tunnel',
@@ -727,7 +749,7 @@ const man_made_objects = {
       geocatId: '4897848c-3777-4636-9c7e-16ef91c723f6',
     },
     {
-      type: LAYER_TYPES.tiles3d,
+      type: LayerType.tiles3d,
       assetId: 244985,
       label: t('lyr_water_tunnel_label'),
       layer: 'water_tunnel',
@@ -736,7 +758,7 @@ const man_made_objects = {
       geocatId: '71ee97cb-91f8-427d-b217-f293a0a9760a',
     },
     {
-      type: LAYER_TYPES.tiles3d,
+      type: LayerType.tiles3d,
       url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20190924/tileset.json',
       label: t('lyr_swiss_buildings_label'),
       layer: 'ch.swisstopo.swisstlm3d.3d',
@@ -747,11 +769,11 @@ const man_made_objects = {
   ]
 };
 
-const background = {
+const background: LayerTreeNode = {
   label: t('lyr_background_label'),
   children: [
     {
-      type: LAYER_TYPES.tiles3d,
+      type: LayerType.tiles3d,
       url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
       label: t('lyr_swissnames_label'),
       style: SWISSTOPO_LABEL_STYLE,
@@ -763,10 +785,7 @@ const background = {
 };
 
 
-// A "displayed" layer appears in the list of active layers.
-// A "visible" layer is actually shown on the globe.
-// Normally, visible => displayed
-const defaultLayerTree = [
+const defaultLayerTree: LayerTreeNode[] = [
   geo_map_series,
   geo_base,
   geo_energy,

@@ -30,7 +30,6 @@ ngm-layers-item > div:first-child {
 }
 
 ngm-layers-item > .ui.dropdown {
-  float: right;
   /* float: right; */
 }
 
@@ -54,6 +53,78 @@ ngm-layers-upload {
 
 ngm-layers-upload ngm-layers {
   margin-top: 10px;
+}
+
+ngm-catalog .ngm-layers-categories {
+  margin: 0 !important;
+}
+
+ngm-catalog .ngm-layer-content {
+  padding: 0 !important;
+}
+
+.ngm-layer-title {
+  display: flex;
+  align-items: center;
+  color: #212529;
+}
+
+.ngm-dropdown-icon {
+  background-color: #0B7285;
+}
+
+.ngm-layer-title label {
+  margin-left: 5px;
+}
+
+.ngm-layer-title.first-level {
+  font-weight: bold;
+}
+
+ngm-catalog .active, .ngm-displayed-container .displayed {
+  color: #A83526 !important;
+}
+
+.ngm-displayed-container {
+  margin-left: 4px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.ngm-layer-title.active .ngm-dropdown-icon {
+  background-color: #A83526;
+  transform: rotate(90deg);
+}
+
+.ngm-layer-title:hover, .ngm-displayed-container:hover label {
+  color: #FF0000 !important;
+}
+
+.ngm-layer-title:hover .ngm-dropdown-icon{
+  background-color: #FF0000;
+}
+
+ngm-catalog .ui.checkbox input[type="checkbox"] {
+  appearance: none;
+  opacity: 1 !important;
+  background-color: #F1F3F5;
+  border: 2px solid #0B7285;
+  border-radius: 3px;
+}
+
+ngm-catalog .ngm-displayed-container:hover input[type="checkbox"] {
+  border: 2px solid #FF0000;
+}
+
+ngm-catalog .ui.checkbox input[type="checkbox"]:checked {
+  background-color: #A83526;
+  border: 2px solid #A83526;
+}
+
+ngm-catalog .ngm-displayed-container:hover input[type="checkbox"]:checked {
+  background-color: #FF0000;
+  border: 2px solid #FF0000;
 }
 
 .ngm-extension-panel .ui.divider {

@@ -48,13 +48,13 @@ const SKIP_STEP2_TIMEOUT = 5000;
 
 const isLocalhost = document.location.hostname === 'localhost';
 
-const onStep1Finished = (globe, searchParams) => {
+const onStep1Finished = (globe, searchParams: URLSearchParams) => {
   let sse = 2;
   if (isLocalhost) {
     sse = 20;
   }
   if (searchParams.has('maximumScreenSpaceError')) {
-    sse = parseFloat(searchParams.get('maximumScreenSpaceError'));
+    sse = parseFloat(searchParams.get('maximumScreenSpaceError')!);
   }
   globe.maximumScreenSpaceError = sse;
 };
@@ -106,8 +106,8 @@ export class NgmApp extends LitElementI18n {
     this.slicer_ = new Slicer(viewer);
     const sliceOptions = getSliceParam();
     if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
-      this.slicer_!.sliceOptions = {
-        ...this.slicer_!.sliceOptions, ...sliceOptions,
+      this.slicer_.sliceOptions = {
+        ...this.slicer_.sliceOptions, ...sliceOptions,
         syncBoxPlanesCallback: (sliceInfo) => syncSliceParam(sliceInfo),
         deactivationCallback: () => {
           (<NgmSlicer> this.querySelector('ngm-slicer')).onDeactivation();
@@ -119,7 +119,7 @@ export class NgmApp extends LitElementI18n {
 
     // setup web components
     this.mapChooser = setupBaseLayers(viewer);
-    this.mapChooser!.addMapChooser(this.querySelector('.ngm-bg-chooser-map'));
+    this.mapChooser.addMapChooser(this.querySelector('.ngm-bg-chooser-map')!);
     MainStore.setMapChooser(this.mapChooser);
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(viewer);
