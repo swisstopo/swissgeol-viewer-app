@@ -83,7 +83,7 @@ export function syncLayersParam(activeLayers) {
   activeLayers.forEach(l => {
     if (!l.customAsset) {
       layerNames.push(l.layer);
-      layersTransparency.push(isNaN(l.opacity) ? 0 : 1 - l.opacity);
+      layersTransparency.push(isNaN(l.opacity) ? 0 : (1 - l.opacity).toFixed(2));
       layersVisibility.push(l.visible);
     }
   });
@@ -130,7 +130,7 @@ export function getMapParam() {
 
 export function syncMapOpacityParam(opacity) {
   const params = getURLSearchParams();
-  params.set(MAP_TRANSPARENCY_URL_PARAM, 1 - opacity);
+  params.set(MAP_TRANSPARENCY_URL_PARAM, (1 - opacity).toFixed(2));
   setURLSearchParams(params);
 }
 

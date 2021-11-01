@@ -64,7 +64,7 @@ export class NgmMapConfiguration extends LitElementI18n {
       </div>
       <ngm-map-chooser></ngm-map-chooser>
       <div class="ui divider"></div>
-      <ngm-layers-item>
+      <div class="ngm-base-layer">
         <div class="ngm-layer-icon ${classMap({'ngm-visible-icon': this.mapChooser!.selectedMap.id !== 'empty_map', 'ngm-invisible-icon': this.mapChooser!.selectedMap.id === 'empty_map'})}"
               @click=${this.changeVisibility}></div>
         <div class="ngm-displayed-slider">
@@ -78,7 +78,7 @@ export class NgmMapConfiguration extends LitElementI18n {
                 value=${!isNaN(this.opacity) ? this.opacity : 0.4}
                 @input=${this.updateOpacity}/>
         </div>
-      </ngm-layers-item>
+      </div>
     `;
   }
 

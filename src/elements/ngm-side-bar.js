@@ -123,54 +123,51 @@ class SideBar extends LitElementI18n {
           </div>
         </div>
       </div>
-      <div .hidden=${!this.activePanel}
-           class="ngm-side-bar-panel ${classMap({'ngm-large-panel': this.activePanel === 'dashboard'})}">
-        <div .hidden=${this.activePanel !== 'data'} class="ngm-data-container">
-          <div class="ngm-panel-header">
-            ${i18next.t('lyr_geocatalog_label')}
-            <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
-          </div>
-          <ngm-catalog class="ui accordion" .layers=${this.catalogLayers}
-                            @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
-          </ngm-catalog>
-        </div>
-        <div .hidden=${this.activePanel !== 'tools'}>
-          <div class="ngm-panel-header">
-            ${i18next.t('lsb_tools')}
-            <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
-          </div>
-          <ngm-aoi-drawer .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
-                          @downloadActiveData=${evt => this.downloadActiveData(evt)}>
-          </ngm-aoi-drawer>
-        </div>
-        <div .hidden=${this.activePanel !== 'share'}>
-          <div class="ngm-panel-header">
-            ${i18next.t('lsb_share')}
-            <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
-          </div>
-          <ngm-share-link></ngm-share-link>
-        </div>
+      <div .hidden=${this.activePanel !== 'dashboard'} class="ngm-side-bar-panel ngm-large-panel">
       </div>
-      <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
-        <div class="ngm-panel-header">
-          ${i18next.t('dtd_displayed_data_label')}
+      <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-layer-catalog">
+        <div class="ngm-panel-header">${i18next.t('lyr_geocatalog_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
-        <ngm-layers
-          .layers=${this.activeLayers}
-          .actions=${this.layerActions}
-          @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
-          @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
-          @layerChanged=${() => this.onLayerChanged()}>
-        </ngm-layers>
-        <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
-        <h5 class="ui header">
-          ${i18next.t('dtd_background_map_label')}
-          <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
-            <span class="small_load_counter">${this.globeQueueLength_}</span>
-          </div>
-        </h5>
-        <ngm-map-configuration></ngm-map-configuration>
+        <ngm-catalog class="ui accordion" .layers=${this.catalogLayers}
+                      @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
+        </ngm-catalog>
+      </div>
+      <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
+        <div class="ngm-panel-header">${i18next.t('lsb_tools')}
+          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+        </div>
+        <ngm-aoi-drawer .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
+                        @downloadActiveData=${evt => this.downloadActiveData(evt)}>
+        </ngm-aoi-drawer>
+      </div>
+      <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel">
+        <div class="ngm-panel-header">${i18next.t('lsb_share')}
+          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+        </div>
+        <ngm-share-link></ngm-share-link>
+      </div>
+      <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
+        <div class="ngm-panel-header">${i18next.t('dtd_displayed_data_label')}
+          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+        </div>
+        <div class="ngm-panel-content">
+          <ngm-layers
+            .layers=${this.activeLayers}
+            .actions=${this.layerActions}
+            @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
+            @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
+            @layerChanged=${() => this.onLayerChanged()}>
+          </ngm-layers>
+          <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
+          <h5 class="ui header">
+            ${i18next.t('dtd_background_map_label')}
+            <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
+              <span class="small_load_counter">${this.globeQueueLength_}</span>
+            </div>
+          </h5>
+          <ngm-map-configuration></ngm-map-configuration>
+        </div>
       </div>
     `;
   }
@@ -298,7 +295,7 @@ class SideBar extends LitElementI18n {
 
       // todo remove after panel UI update
       if (!this.accordionInited && this.activePanel === 'data') {
-        const panelElement = this.querySelector('.ngm-data-container');
+        const panelElement = this.querySelector('.ngm-layer-catalog');
 
         if (panelElement) {
           for (let i = 0; i < panelElement.childElementCount; i++) {
