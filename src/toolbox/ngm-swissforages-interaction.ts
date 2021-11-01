@@ -10,7 +10,7 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
 import MainStore from '../store/main';
 import {Viewer} from 'cesium';
-import {AoiAttributes} from './AreaOfInterestDrawer';
+import {AoiAttributes} from './ngm-aoi-drawer';
 import {SwissforagesService} from './SwissforagesService';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 

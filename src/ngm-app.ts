@@ -39,7 +39,7 @@ import MapChooser from './MapChooser';
 import {NgmLayerLegendContainer} from './elements/ngm-layer-legend-container';
 import {NgmSlowLoading} from './elements/ngm-slow-loading';
 import {NgmSlicer} from './elements/slicer/ngm-slicer';
-import {NgmAreaOfInterestDrawer} from './toolbox/AreaOfInterestDrawer';
+import {NgmAreaOfInterestDrawer} from './toolbox/ngm-aoi-drawer';
 import LayersUpload from './layers/ngm-layers-upload';
 import {NgmLoadingMask} from './elements/ngm-loading-mask';
 import {Viewer} from 'cesium';

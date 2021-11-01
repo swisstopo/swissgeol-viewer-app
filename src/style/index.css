@@ -32,7 +32,7 @@
 @import 'search.css';
 @import 'ngm-object-information.css';
 @import 'ngm-gst-modal.css';
-@import 'ngm-toolbox.css';
+@import 'ngm-aoi-drawer.css';
 @import 'keyboard-navigation.css';
 @import 'layers.css';
 @import 'ngm-map-configuration.css';
@@ -49,6 +49,7 @@
 @import 'header.css';
 @import 'ngm-cam-configuration.css';
 @import 'ngm-slider.css';
+@import 'ngm-toolbox.css';
 
 [hidden] {
   display: none !important;

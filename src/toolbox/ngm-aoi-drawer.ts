@@ -11,7 +11,7 @@ import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
 import {Entity, Event, exportKml, exportKmlResultKml, Viewer} from 'cesium';
 import {saveAs} from 'file-saver';
 
-import {customElement, html, property} from 'lit-element';
+import {customElement, html, property, state} from 'lit-element';
 
 import {
   AOI_DATASOURCE_NAME,
@@ -116,8 +116,8 @@ const DEFAULT_AREAS_COUNTER = {
 
 @customElement('ngm-aoi-drawer')
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
-  @property({type: Object}) selectedArea_: Entity | undefined
   @property({type: Boolean}) downloadActiveDataEnabled = false
+  @state() selectedArea: Entity | undefined
   minVolumeHeight = 1;
   maxVolumeHeight = 30000;
   minVolumeLowerLimit = -30000;
@@ -129,7 +129,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   interestAreasDataSource: CustomDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
   restrictedEditing = false;
   colorBeforeHighlight: Color = DEFAULT_AOI_COLOR;
-  addedNewArea = false;
   aoiInited = false;
   accordionInited = false;
   private areasCounter: AreasCounter = DEFAULT_AREAS_COUNTER
@@ -140,6 +139,12 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   private editedBackup;
   private areasClickable = false;
   private unlistenEditPostRender: Event.RemoveCallback | undefined
+  private drawGeometries = [
+    {labelTag: 'tbx_add_point_btn_label', type: 'point', icon: 'ngm-point-draw-icon'},
+    {labelTag: 'tbx_add_line_btn_label', type: 'line', icon: 'ngm-line-draw-icon'},
+    {labelTag: 'tbx_add_polygon_area_btn_label', type: 'polygon', icon: 'ngm-polygon-draw-icon'},
+    {labelTag: 'tbx_add_rect_area_btn_label', type: 'rectangle', icon: 'ngm-rectangle-draw-icon'},
+  ]
 
   constructor() {
     super();
@@ -166,14 +171,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   updated() {
-    if (this.addedNewArea) {
-      this.addedNewArea = false;
-      this.querySelectorAll('.ngm-aoi-areas .active').forEach(el => el.classList.remove('active'));
-      const lastChild = this.querySelector('.ngm-aoi-areas')!.lastElementChild!;
-      lastChild.querySelector('.title')!.classList.add('active');
-      lastChild.querySelector('.content')!.classList.add('active');
-    }
-
     if (!this.accordionInited) {
       for (let i = 0; i < this.childElementCount; i++) {
         const element = this.children.item(i);
@@ -204,73 +201,42 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   getTemplate() {
     return html`
-      <label>${i18next.t('tbx_drawing_tools_label')}</label>
-      <div class="ui fluid compact tiny icon buttons ngm-aoi-buttons"
-           ?hidden=${this.draw!.active && !this.draw!.entityForEdit}>
-        <button class="ui button"
-                data-tooltip=${i18next.t('tbx_add_point_btn_label')}
-                data-variation="mini"
-                data-position="top left"
-                @click=${this.onAddAreaClick_.bind(this, 'point')}>
-          <i class="map marker alternate icon"></i>
-        </button>
-        <button class="ui button"
-                data-tooltip=${i18next.t('tbx_add_line_btn_label')}
-                data-variation="mini"
-                data-position="top center"
-                @click=${this.onAddAreaClick_.bind(this, 'line')}>
-          <i class="route icon"></i>
-        </button>
-        <button class="ui button"
-                data-tooltip=${i18next.t('tbx_add_polygon_area_btn_label')}
-                data-variation="mini"
-                data-position="top center"
-                @click=${this.onAddAreaClick_.bind(this, 'polygon')}>
-          <i class="draw polygon icon"></i>
-        </button>
-        <button class="ui button"
-                data-tooltip=${i18next.t('tbx_add_rect_area_btn_label')}
-                data-variation="mini"
-                data-position="top center"
-                @click=${this.onAddAreaClick_.bind(this, 'rectangle')}>
-          <i class="vector square icon"></i>
-        </button>
-        <button class="ui button"
-                data-tooltip=${i18next.t('tbx_upload_btn_label')}
-                data-variation="mini"
-                data-position="top right"
-                @click=${clickOnElement.bind(null, fileUploadInputId)}>
-          <i class="file upload icon"></i>
-        </button>
-        <button class="ui button ${classMap({disabled: !this.atLeastOneEntityVisible})}"
-                data-tooltip=${i18next.t('tbx_download_btn_label')}
-                data-variation="mini"
-                data-position="top right"
-                @click=${this.downloadVisibleGeometries}>
-          <i class="download icon"></i>
-        </button>
+      <div class="ngm-draw-list">
+        ${this.drawGeometries.map(it => html`
+          <div class="ngm-draw-list-item ${classMap({'active': this.draw!.active && it.type === this.draw!.type})}"
+               @click=${() => this.onAddAreaClick(it.type)}>
+            <div class=${it.icon}></div>
+            <div>${i18next.t(it.labelTag)}</div>
+          </div>
+          <div ?hidden=${!this.draw!.active || it.type !== this.draw!.type} class="ngm-draw-hint">
+            ${i18next.t('tbx_area_of_interest_add_hint')}
+            <div class="ngm-info-icon"></div>
+          </div>`)}
+        <div class="ngm-draw-list-item" @click=${clickOnElement.bind(null, fileUploadInputId)}>
+          <div class="ngm-file-upload-icon"></div>
+          <div>${i18next.t('tbx_upload_btn_label')}</div>
+        </div>
+        <!-- todo disabled for now -->
+        <div hidden class="ngm-draw-list-item ${classMap({disabled: !this.atLeastOneEntityVisible})}"
+             @click=${this.downloadVisibleGeometries}>
+          <div class="ngm-file-upload-icon"></div>
+          <div>${i18next.t('tbx_download_btn_label')}</div>
+        </div>
       </div>
       <input id="${fileUploadInputId}" type='file' accept=".kml,.KML,.gpx,.GPX" hidden
              @change=${this.uploadFile_.bind(this)}/>
-      <div class="ui tiny basic fluid buttons ngm-aoi-tooltip-container"
-           ?hidden=${!this.draw!.active || this.draw!.entityForEdit}>
-        <button class="ui button" @click=${this.cancelDraw.bind(this)}>${i18next.t('tbx_cancel_area_btn_label')}
-        </button>
-        <button class="ui button ngm-help-btn"
-                data-tooltip=${i18next.t('tbx_area_of_interest_add_hint')}
-                data-variation="tiny"
-                data-position="top right">
-          <i class="question circle outline icon"></i>
-        </button>
+      <div class="ngm-divider"></div>
+      <div class="ngm-geom-label">${i18next.t('tbx_my_geometries')}</div>
+      <div class="ngm-geom-list">
+        ${this.entitiesList_.map((i) => html`
+          <div class="ngm-geom-item ${classMap({active: Boolean(this.selectedArea && this.selectedArea.id === i.id)})}"
+               @click=${() => this.flyToArea(i.id)}>
+            ${i.name}
+            <div class="ngm-action-menu-icon"></div>
+          </div>
+        `)}
       </div>
 
-      <label>${i18next.t('tbx_analysis_tools_label')}</label>
-      <div class="ui vertical accordion ngm-aoi-areas" ?hidden=${!this.entitiesList_ || !this.entitiesList_.length}>
-        ${this.aoiListTemplate()}
-      </div>
-      <div ?hidden=${this.entitiesList_ && !!this.entitiesList_.length} class="ui tertiary center aligned segment">
-        <span>${i18next.t('tbx_area_of_interest_empty_hint')}</span>
-      </div>
       <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
       <ngm-swissforages-modal
         .service="${this.swissforagesService}"
@@ -279,7 +245,8 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     `;
   }
 
-  createButtonsFields(i) {
+
+  /*createButtonsFields(i) {
     return html`
       <div class="ngm-btns-field">
         <div class="ui tiny fluid compact icon buttons ngm-aoi-buttons">
@@ -329,9 +296,9 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
           ><i class="trash alternate outline icon"></i></button>
         </div>
       </div>`;
-  }
+  }*/
 
-  aoiListTemplate() {
+  /*aoiListTemplate() {
     return this.entitiesList_.map((i, index) =>
       html`
         <div class="item">
@@ -493,11 +460,11 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
             </ngm-point-edit>
           </div>
         </div>`);
-  }
+  }*/
 
   initAoi() {
     if (this.aoiInited || !this.viewer) return;
-    this.selectedArea_ = undefined;
+    this.selectedArea = undefined;
     this.areasCounter = {
       line: 0,
       point: 0,
@@ -543,13 +510,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
     this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
-    this.interestAreasDataSource.entities.collectionChanged.addEventListener((_collection, added) => {
+    this.interestAreasDataSource.entities.collectionChanged.addEventListener((_collection) => {
       this.viewer!.scene.requestRender();
       this.requestUpdate();
       LocalStorageController.setAoiInStorage(this.entitiesList_);
-      if (added.length) {
-        this.addedNewArea = true;
-      }
     });
     this.sectionImageUrl = undefined;
     this.swissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS;
@@ -582,7 +546,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     };
     this.increaseAreasCounter(type);
     this.addAreaEntity(attributes);
-    this.enableToolButtons();
   }
 
   cancelDraw() {
@@ -614,7 +577,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (this.unlistenEditPostRender) {
       this.unlistenEditPostRender();
     }
-    this.enableToolButtons();
   }
 
   onClick_(click) {
@@ -623,7 +585,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       if (pickedObject && pickedObject.id) { // to prevent error on tileset click
         if (this.interestAreasDataSource.entities.contains(pickedObject.id)) {
           this.pickArea_(pickedObject.id.id);
-        } else if (this.selectedArea_) {
+        } else if (this.selectedArea) {
           this.deselectArea();
         }
       }
@@ -631,23 +593,23 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   deselectArea() {
-    if (this.selectedArea_) {
-      this.updateHighlight(this.selectedArea_, false);
-      this.selectedArea_ = undefined;
+    if (this.selectedArea) {
+      this.updateHighlight(this.selectedArea, false);
+      this.selectedArea = undefined;
       QueryStore.setObjectInfo(null);
     }
   }
 
   pickArea_(id) {
-    if (this.selectedArea_ && this.selectedArea_.id === id) {
+    if (this.selectedArea && this.selectedArea.id === id) {
       return;
     }
     const entity = this.interestAreasDataSource.entities.getById(id);
-    if (this.selectedArea_) {
+    if (this.selectedArea) {
       this.deselectArea();
     }
-    this.selectedArea_ = entity;
-    this.updateHighlight(this.selectedArea_, true);
+    this.selectedArea = entity;
+    this.updateHighlight(this.selectedArea, true);
   }
 
   get entitiesList_(): AoiAttributes[] {
@@ -673,7 +635,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         color: undefined,
         pointSymbol: undefined
       };
-      const colorBeforeHighlight = !this.selectedArea_ || val.id !== this.selectedArea_.id ? undefined : this.colorBeforeHighlight;
+      const colorBeforeHighlight = !this.selectedArea || val.id !== this.selectedArea.id ? undefined : this.colorBeforeHighlight;
       if (val.billboard) {
         item.color = colorBeforeHighlight || val.billboard.color!.getValue(this.julianDate);
         item.pointSymbol = val.billboard.image!.getValue(this.julianDate);
@@ -704,16 +666,20 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   onRemoveEntityClick_(id) {
-    if (this.selectedArea_ && id === this.selectedArea_.id) {
+    if (this.selectedArea && id === this.selectedArea.id) {
       this.deselectArea();
     }
     this.interestAreasDataSource.entities.removeById(id);
   }
 
-  onAddAreaClick_(type) {
+  private onAddAreaClick(type) {
+    const currentType = this.draw!.type;
+    if (this.draw!.active) {
+      this.cancelDraw();
+      if (currentType === type) return;
+    }
     this.draw!.type = type;
     this.draw!.active = true;
-    this.disableToolButtons();
   }
 
   flyToArea(id) {
@@ -1008,7 +974,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   editAreaPosition(id, restrictedPoint = false) {
     this.deselectArea();
-    this.disableToolButtons();
     const entity = this.interestAreasDataSource.entities.getById(id);
     if (!entity || !entity.properties || !this.draw) return;
     const type = entity.properties.type.getValue();
@@ -1051,21 +1016,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     const type = this.draw.entityForEdit.properties.type.getValue();
     this.draw.entityForEdit.properties = this.getAreaProperties(this.draw.entityForEdit, type);
     this.cancelDraw();
-  }
-
-  disableToolButtons(skipSliceBtn?: boolean) {
-    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
-      .forEach(button => {
-        const classList = button.classList;
-        if (!skipSliceBtn || (!classList.contains('ngm-slice-tools-btn') && !classList.contains('ngm-slice-off-btn'))) {
-          classList.add('ngm-disabled');
-        }
-      });
-  }
-
-  enableToolButtons() {
-    this.querySelectorAll('.ngm-aoi-areas .ngm-aoi-content button')
-      .forEach(button => button.classList.remove('ngm-disabled'));
   }
 
   /**
@@ -1270,7 +1220,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     const entity = this.interestAreasDataSource.entities.getById(id);
     if (!entity) return;
     entity.show = false;
-    this.disableToolButtons(true);
   }
 
   onDisableSlicing(id, type, positions, lowerLimit, height) {
@@ -1282,7 +1231,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       this.updateEntityVolume(id);
     }
     entity.show = true;
-    this.enableToolButtons();
   }
 
   onShowSlicingBoxChange(id, value) {

@@ -149,6 +149,8 @@
   "slow_connection_latest_stable_version": "Latest stable version",
   "slow_connection_text": "The application seems to load very slowly.",
   "slow_connection_text_2": "To get the best experience with swissgeol, please make sure that you have a good internet connection and you are using one of the following browsers in its most up-to-date version:",
+  "tbx_draw": "Draw",
+  "tbx_my_geometries": "My Geometries",
   "tbx_add_line_btn_label": "Draw line",
   "tbx_add_point_btn_label": "Draw point",
   "tbx_add_polygon_area_btn_label": "Draw polygon",

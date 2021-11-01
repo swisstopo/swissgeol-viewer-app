@@ -1,154 +1,25 @@
-.ngm-help-btn.ui.button {
-  width: 0;
-  padding: 0;
-}
-
-.ngm-help-btn.ui.button > i.icon {
-  margin: 0 !important;
-}
-
-.ngm-aoi-tooltip-container [data-tooltip]:after {
-  width: 250px;
-  text-align: center;
-  white-space: normal;
-}
-
-.ngm-aoi-title {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  font-weight: normal;
-}
-
-.ui.accordion.ngm-aoi-areas {
-  margin: 0;
-}
-
-.ui.accordion.ngm-aoi-areas .title {
+.ngm-draw-list-item,
+.ngm-tools-list-item {
   display: flex;
-  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
-}
-
-.ngm-aoi-content .ui.buttons {
-  flex: auto;
-  margin-bottom: 5px;
-}
-
-.ngm-aoi-buttons.ui.buttons {
-  margin-bottom: 5px;
-}
-
-.ngm-aoi-content {
-  padding: 10px 5px !important;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
   align-items: center;
-  background-color: #f3f3f3;
+  color: #212529;
+  text-align: left;
+  font: normal normal bold 14px/20px Inter;
+  letter-spacing: 0;
+  padding: 14px 0;
 }
 
-.ngm-btns-field,
-ngm-gst-interaction,
-ngm-toolbox-slicer,
-ngm-swissforages-interaction{
-  width: 100%;
+.ngm-draw-list-item:hover,
+.ngm-tools-list-item:hover {
+  color: #FF0000;
 }
 
-.ngm-btns-field,
-.ngm-slice-btns-container,
-.ngm-gst-btns-container,
-.ngm-swissforages-btns-container {
-  display: flex;
-  justify-content: center;
-  margin: 5px 0;
+.ngm-draw-list-item div:nth-child(2),
+.ngm-tools-list-item div:nth-child(2) {
+  margin-left: 12px;
 }
 
-.ngm-slice-btns-container > .tiny.buttons > button:first-child,
-.ngm-swissforages-btns-container > .tiny.buttons > button:first-child,
-.ngm-gst-btns-container > .tiny.buttons > button:first-child {
-  flex: 3;
-}
-
-.ngm-slice-btns-container .ui.buttons .ui.button > i.icon.ngm-slice-warn {
-  margin-left: 15px;
-}
-
-.ngm-volume-limits-input {
-  display: flex;
-  justify-content: space-evenly;
-}
-
-.ngm-aoi-edit {
-  padding: 0 10px 10px 10px;
-  background-color: #f3f3f3;
-}
-
-.ngm-aoi-edit .ui.buttons button.ui.button {
-  background-color: white;
-}
-
-.ngm-aoi-edit input {
-  width: 85px;
-}
-
-.ngm-aoi-input-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.ngm-aoi-input-container textarea {
-  width: 100%;
-}
-
-.ngm-aoi-symbol-selector,
-.ngm-aoi-color-selector {
-  display: flex;
-  border-radius: 5px;
-  padding: 2px;
-  background-color: #e0e1e2;
-  margin-bottom: 2px;
-}
-
-.ngm-aoi-color-container {
-  width: 20px;
-  height: 20px;
-  border-radius: 20px;
-  border: 1px solid #80808040;
-  margin: 1px;
-}
-
-.ngm-aoi-symbol-selector img {
-  width: 32px;
-  height: 32px;
-}
-
-ngm-geom-configuration {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 5px;
-}
-
-ngm-point-edit ngm-geom-configuration {
-  margin-top: -35px;
-}
-
-.ngm-disabled,
-.ui.button.ngm-disabled {
-  cursor: default;
-  opacity: 0.45 !important;
-  background-image: none;
-  box-shadow: none;
-  pointer-events: none !important;
-}
-
-.ngm-swissforages-modal .content.large {
-  height: 80vh;
-}
-
-.ngm-swissforages-modal .content.mini {
-  height: auto;
-}
-
-.ngm-slice-tools-popup > .checkbox {
-  margin-top: 5px;
+.ngm-draw-list-item:hover div:nth-child(1),
+.ngm-tools-list-item:hover div:nth-child(1) {
+  background-color: #FF0000;
 }
