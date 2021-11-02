@@ -159,7 +159,6 @@ class SideBar extends LitElementI18n {
             @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
             @layerChanged=${() => this.onLayerChanged()}>
           </ngm-layers>
-          <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
           <h5 class="ui header">
             ${i18next.t('dtd_background_map_label')}
             <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
@@ -167,6 +166,8 @@ class SideBar extends LitElementI18n {
             </div>
           </h5>
           <ngm-map-configuration></ngm-map-configuration>
+          <div class="ui divider"></div>
+          <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
         </div>
       </div>
     `;

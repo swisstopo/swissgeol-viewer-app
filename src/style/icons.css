@@ -161,3 +161,10 @@
   mask: url('./images/i_action_menu.svg') no-repeat center;
   -webkit-mask: url('./images/i_action_menu.svg') no-repeat center;
 }
+
+.ngm-upload-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_upload.svg') no-repeat center;
+  -webkit-mask: url('./images/i_upload.svg') no-repeat center;
+}

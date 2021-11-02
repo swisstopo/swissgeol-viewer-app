@@ -2,14 +2,14 @@ import i18next from 'i18next';
 import {customElement, html, property} from 'lit-element';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {LayerType} from '../constants';
+import {LayerType, DEFAULT_LAYER_OPACITY} from '../constants';
 import $ from '../jquery.js';
 import {LayerTreeNode} from '../layertree';
 
 export interface Config extends LayerTreeNode {
-  setOpacity: any;
+  load?: any;
+  setOpacity?: any;
   hideUpDown: any;
-  load(): any;
   promise: any
 }
 
@@ -66,7 +66,7 @@ export class LayerTreeItem extends LitElementI18n {
     this.dispatchEvent(new CustomEvent('removeDisplayedLayer'));
   }
 
-  showLayerLegend(config) {
+  showLayerLegend(config: Config) {
     this.dispatchEvent(new CustomEvent('showLayerLegend', {
       bubbles: true,
       detail: {
@@ -102,6 +102,9 @@ export class LayerTreeItem extends LitElementI18n {
   }
 
   render() {
+    if (!this.config.opacity) {
+      this.config.opacity = DEFAULT_LAYER_OPACITY;
+    }
     return html`
       <div class="ngm-layer-icon ${classMap({'ngm-visible-icon': !!this.config.visible, 'ngm-invisible-icon': !this.config.visible})}"
           @click=${this.changeVisibility}></div>

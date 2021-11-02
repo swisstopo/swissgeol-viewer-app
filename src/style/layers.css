@@ -74,15 +74,31 @@ ngm-layers-item .ui.dropdown .menu .item:hover {
   background-color: #C5F6FA;
 }
 
-ngm-layers-upload {
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-  margin-bottom: 10px;
+.ngm-panel-content .ui.header {
+  margin-top: 7px;
 }
 
-ngm-layers-upload ngm-layers {
-  margin-top: 10px;
+ngm-layers-upload button {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.25px;
+  font-weight: bold;
+  color: #0B7285;
+  border: 2px dashed #0B7285;
+  margin-top: 9px;
+  padding-left: 10px;
+  height: 46px;
+  width: 100%;
+}
+
+ngm-layers-upload .ngm-upload-icon {
+  pointer-events: none;
+  background-color: #0B7285;
+  margin-top: 0;
+  margin-left: 12px;
+  width: 20px;
+  height: 20px;
 }
 
 ngm-catalog .ngm-layers-categories {
@@ -160,7 +176,7 @@ ngm-catalog .ngm-displayed-container:hover input[type="checkbox"]:checked {
 }
 
 .ngm-extension-panel .ui.divider {
-  margin-top: 12px;
+  margin-top: 15px;
   margin-bottom: 8px;
   border-top: 1px solid #DFE2E6 !important;
   border-bottom: 1px solid #DFE2E6 !important;
