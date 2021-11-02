@@ -7,6 +7,11 @@ import './ngm-layers-item.js';
 
 export default class LayerTree extends LitElementI18n {
 
+  constructor() {
+    super();
+    this.layers = [];
+  }
+
   static get properties() {
     return {
       actions: {type: Object},

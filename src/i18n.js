@@ -22,7 +22,7 @@ class LanguageDetector {
 
     const lang = getURLSearchParams().get('lang');
     // get language from url
-    if (this.languageUtils.isWhitelisted(lang)) {
+    if (this.languageUtils.isSupportedCode(lang)) {
       language = lang;
     } else {
       // fallback to browser's language
@@ -33,7 +33,7 @@ class LanguageDetector {
         languages.push(navigator.language);
       }
       for (const l of languages) {
-        if (this.languageUtils.isWhitelisted(l)) {
+        if (this.languageUtils.isSupportedCode(l)) {
           language = l;
           break;
         }
@@ -54,7 +54,7 @@ export function setupI18n() {
   i18next.use(Backend).use(LanguageDetector).init({
     ns: ['app', 'assets'],
     defaultNS: 'app',
-    whitelist: SUPPORTED_LANGUAGES,
+    supportedLngs: SUPPORTED_LANGUAGES,
     nonExplicitWhitelist: true,
     returnEmptyString: false,
     fallbackLng: 'en',
