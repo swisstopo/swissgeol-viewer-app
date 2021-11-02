@@ -8,13 +8,13 @@ import {Event, Viewer} from 'cesium';
 
 @customElement('ngm-nadir-view')
 export class NgmNadirView extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null
-  @state() unlistenPostRender: Event.RemoveCallback | null = null
-  @state() active = false
-  @state() pitch: number | undefined = undefined
-  @state() height: number | undefined = undefined
-  @state() heading: number | undefined = undefined
-  @state() currentHeading = 0
+  @property({type: Object}) viewer: Viewer | null = null;
+  @state() unlistenPostRender: Event.RemoveCallback | null = null;
+  @state() active = false;
+  @state() pitch: number | undefined = undefined;
+  @state() height: number | undefined = undefined;
+  @state() heading: number | undefined = undefined;
+  @state() currentHeading = 0;
 
   updated() {
     if (this.viewer && !this.unlistenPostRender) {

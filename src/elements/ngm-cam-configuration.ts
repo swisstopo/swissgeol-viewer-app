@@ -14,24 +14,24 @@ import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
 
 @customElement('ngm-cam-configuration')
 export class NgmCamConfiguration extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null
-  @state() scene: Scene | null = null
-  @state() interaction: Interactable | null = null
-  @state() unlistenPostRender: Event.RemoveCallback | null = null
-  @state() heading = 0
-  @state() elevation = 0
-  @state() pitch = 0
-  @state() coordinates: string[] = []
-  @state() lockType = ''
+  @property({type: Object}) viewer: Viewer | null = null;
+  @state() scene: Scene | null = null;
+  @state() interaction: Interactable | null = null;
+  @state() unlistenPostRender: Event.RemoveCallback | null = null;
+  @state() heading = 0;
+  @state() elevation = 0;
+  @state() pitch = 0;
+  @state() coordinates: string[] = [];
+  @state() lockType = '';
   // always use the 'de-CH' locale to always have the simple tick as thousands separator
   private integerFormat = new Intl.NumberFormat('de-CH', {
     maximumFractionDigits: 0
   });
   private handler: ScreenSpaceEventHandler | undefined;
-  private lockMove = false
-  private lockMoveStartPosition: Cartesian2 = new Cartesian2()
-  private lockMovePosition: Cartesian2 = new Cartesian2()
-  private removeOnTick: Event.RemoveCallback | undefined
+  private lockMove = false;
+  private lockMoveStartPosition: Cartesian2 = new Cartesian2();
+  private lockMovePosition: Cartesian2 = new Cartesian2();
+  private removeOnTick: Event.RemoveCallback | undefined;
   private configurations = [
     {
       labelTag: 'camera_position_height_label',
@@ -69,7 +69,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       onChange: (evt) => this.updatePitch(Number(evt.target.value)),
       lock: () => this.toggleLock('pitch')
     },
-  ]
+  ];
 
   connectedCallback() {
     this.interaction = draggable(this, {

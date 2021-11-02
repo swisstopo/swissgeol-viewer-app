@@ -8,14 +8,14 @@ import {classMap} from 'lit-html/directives/class-map.js';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
-  @property({type: Object}) scene: Scene | null = null
-  @property({type: Boolean}) showCamConfig = false
-  @state() moveAmount = 200
-  @state() interaction: Interactable | null = null
-  private zoomingIn = false
-  private zoomingOut = false
-  private unlistenFromPostRender: Event.RemoveCallback | null = null
-  private stopZoomFunction: () => void = () => this.stopZoom()
+  @property({type: Object}) scene: Scene | null = null;
+  @property({type: Boolean}) showCamConfig = false;
+  @state() moveAmount = 200;
+  @state() interaction: Interactable | null = null;
+  private zoomingIn = false;
+  private zoomingOut = false;
+  private unlistenFromPostRender: Event.RemoveCallback | null = null;
+  private stopZoomFunction: () => void = () => this.stopZoom();
 
   updated() {
     if (this.scene && !this.unlistenFromPostRender) {

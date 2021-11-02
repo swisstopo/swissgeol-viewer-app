@@ -70,8 +70,8 @@ export class NgmApp extends LitElementI18n {
   @state() slicer_: Slicer | undefined;
   @state() showMinimap = false;
   @state() showCamConfig = false;
-  private viewer: Viewer | undefined
-  private queryManager: QueryManager | undefined
+  private viewer: Viewer | undefined;
+  private queryManager: QueryManager | undefined;
 
   constructor() {
     super();

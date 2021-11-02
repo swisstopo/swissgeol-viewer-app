@@ -21,13 +21,13 @@ const north = CesiumMath.toRadians(MINIMAP_EXTENT[3]) + height / 99 * 36;
 
 @customElement('ngm-minimap')
 export class NgmMinimap extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null
-  @state() interaction: Interactable | null = null
-  @state() moveMarker = false
-  @state() left = 0
-  @state() bottom = 0
-  @state() heading = 0
-  private unlistenPostRender: Event.RemoveCallback | null = null
+  @property({type: Object}) viewer: Viewer | null = null;
+  @state() interaction: Interactable | null = null;
+  @state() moveMarker = false;
+  @state() left = 0;
+  @state() bottom = 0;
+  @state() heading = 0;
+  private unlistenPostRender: Event.RemoveCallback | null = null;
 
   constructor() {
     super();
