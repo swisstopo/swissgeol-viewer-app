@@ -15,18 +15,20 @@ import Matrix3 from 'cesium/Source/Core/Matrix3';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cesium3DTileColorBlendMode from 'cesium/Source/Scene/Cesium3DTileColorBlendMode';
 import AmazonS3Resource from '../AmazonS3Resource.js';
+import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import {Config} from './ngm-layers-item.js';
 
-export function createEarthquakeFromConfig(viewer, config) {
+export function createEarthquakeFromConfig(viewer: Viewer, config: Config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer, config);
   if (config.visible) {
     earthquakeVisualizer.setVisible(true);
   }
   config.setVisibility = visible => earthquakeVisualizer.setVisible(visible);
-  config.setOpacity = opacity => earthquakeVisualizer.setOpacity(opacity);
+  config.setOpacity = (opacity: number) => earthquakeVisualizer.setOpacity(opacity);
   return earthquakeVisualizer;
 }
 
-export function createIonGeoJSONFromConfig(viewer, config) {
+export function createIonGeoJSONFromConfig(viewer: Viewer, config) {
   return IonResource.fromAssetId(config.assetId)
     .then(resource => GeoJsonDataSource.load(resource))
     .then(dataSource => {
@@ -37,8 +39,8 @@ export function createIonGeoJSONFromConfig(viewer, config) {
     });
 }
 
-export function create3DTilesetFromConfig(viewer, config, tileLoadCallback) {
-  let resource;
+export function create3DTilesetFromConfig(viewer: Viewer, config: Config, tileLoadCallback) {
+  let resource: string | Promise<IonResource> | AmazonS3Resource;
   if (config.aws_s3_bucket && config.aws_s3_key) {
     resource = new AmazonS3Resource({
       bucket: config.aws_s3_bucket,
@@ -47,14 +49,14 @@ export function create3DTilesetFromConfig(viewer, config, tileLoadCallback) {
   } else if (config.url) {
     resource = config.url;
   } else {
-    resource = IonResource.fromAssetId(config.assetId);
+    resource = IonResource.fromAssetId(config.assetId!);
   }
 
   const tileset = new Cesium3DTileset({
     url: resource,
     show: !!config.visible,
     backFaceCulling: false,
-    maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16 // 16 - default value
+    maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
   });
 
   if (config.style) {
@@ -63,7 +65,8 @@ export function create3DTilesetFromConfig(viewer, config, tileLoadCallback) {
     }
     tileset.style = new Cesium3DTileStyle(config.style);
   }
-  tileset.pickable = config.pickable !== undefined ? config.pickable : false;
+  // FIXME: wtf
+  // tileset.pickable = config.pickable !== undefined ? config.pickable : false;
   viewer.scene.primitives.add(tileset);
 
   config.setVisibility = visible => {
@@ -82,7 +85,7 @@ export function create3DTilesetFromConfig(viewer, config, tileLoadCallback) {
         tileset.style = new Cesium3DTileStyle({...style, color});
       }
     };
-    config.setOpacity(!isNaN(config.opacity) ? config.opacity : 1);
+    config.setOpacity(config.opacity ? config.opacity : 1);
   }
 
   if (tileLoadCallback) {
@@ -107,8 +110,8 @@ export function create3DTilesetFromConfig(viewer, config, tileLoadCallback) {
   return tileset;
 }
 
-export function createSwisstopoWMTSImageryLayer(viewer, config) {
-  let layer = null;
+export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: Config) {
+  let layer = {} as any;
   config.setVisibility = visible => layer.show = !!visible;
   config.setOpacity = opacity => layer.alpha = opacity;
   config.remove = () => viewer.scene.imageryLayers.remove(layer, false);
@@ -122,7 +125,7 @@ export function createSwisstopoWMTSImageryLayer(viewer, config) {
     viewer.scene.imageryLayers.add(layer);
   };
 
-  return getSwisstopoImagery(config.layer, config.maximumLevel).then(l => {
+  return getSwisstopoImagery(config.layer!, config.maximumLevel).then(l => {
     layer = l;
     viewer.scene.imageryLayers.add(layer);
     layer.alpha = config.opacity || 1;
@@ -132,17 +135,17 @@ export function createSwisstopoWMTSImageryLayer(viewer, config) {
 }
 
 
-export function createCesiumObject(viewer, config, tileLoadCallback) {
+export function createCesiumObject(viewer: Viewer, config: Config, tileLoadCallback) {
   const factories = {
     [LayerType.ionGeoJSON]: createIonGeoJSONFromConfig,
     [LayerType.tiles3d]: create3DTilesetFromConfig,
     [LayerType.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
     [LayerType.earthquakes]: createEarthquakeFromConfig,
   };
-  return factories[config.type](viewer, config, tileLoadCallback);
+  return factories[config.type!](viewer, config, tileLoadCallback);
 }
 
-function styleColorParser(style) {
+function styleColorParser(style: any) {
   const propertyName = style.color ? 'color' : 'labelColor';
   let colorType = style[propertyName].slice(0, style[propertyName].indexOf('('));
   const lastIndex = colorType === 'rgba' ? style[propertyName].lastIndexOf(',') : style[propertyName].indexOf(')');
@@ -151,14 +154,8 @@ function styleColorParser(style) {
   return {propertyName, colorType, colorValue};
 }
 
-/**
- * Returns box sizes
- * @param {Rectangle} rectangle
- * @param {number} height
- * @param {Cartesian3} [result]
- * @returns {Cartesian3}
- */
-export function getBoxFromRectangle(rectangle, height, result = new Cartesian3()) {
+
+export function getBoxFromRectangle(rectangle: Rectangle, height: number, result: Cartesian3 = new Cartesian3()): Cartesian3 {
   const sw = Cartographic.toCartesian(Rectangle.southwest(rectangle, new Cartographic()));
   const se = Cartographic.toCartesian(Rectangle.southeast(rectangle, new Cartographic()));
   const nw = Cartographic.toCartesian(Rectangle.northwest(rectangle, new Cartographic()));
@@ -170,13 +167,8 @@ export function getBoxFromRectangle(rectangle, height, result = new Cartesian3()
 
 /**
  * Returns rectangle from width height and center point
- * @param {number} width
- * @param {number} height
- * @param {Cartesian3} center
- * @param {Rectangle} [result]
- * @returns {Rectangle}
  */
-export function calculateRectangle(width, height, center, result = new Rectangle()) {
+export function calculateRectangle(width: number, height: number, center: Cartesian3, result: Rectangle = new Rectangle()): Rectangle {
   const w = new Cartesian3(center.x, center.y - width / 2, center.z);
   result.west = Ellipsoid.WGS84.cartesianToCartographic(w).longitude;
   const s = new Cartesian3(center.x + height / 2, center.y, center.z);
@@ -191,12 +183,8 @@ export function calculateRectangle(width, height, center, result = new Rectangle
 
 /**
  * Calculates box from bounding volume
- * @param {Matrix3} halfAxes
- * @param {Number} boundingSphereRadius
- * @param {Cartesian3} [result]
- * @returns {Cartesian3}
  */
-export function calculateBox(halfAxes, boundingSphereRadius, result = new Cartesian3()) {
+export function calculateBox(halfAxes: Matrix3, boundingSphereRadius: number, result: Cartesian3 = new Cartesian3()): Cartesian3 {
   const absMatrix = Matrix3.abs(halfAxes, new Matrix3());
   for (let i = 0; i < 3; i++) {
     const column = Matrix3.getColumn(absMatrix, i, new Cartesian3());

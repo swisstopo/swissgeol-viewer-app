@@ -1,17 +1,20 @@
 import {syncLayersParam} from '../permalink.js';
-import {calculateRectangle, getBoxFromRectangle, calculateBox} from './helpers.js';
+import {calculateRectangle, getBoxFromRectangle, calculateBox} from './helpers';
 import {LayerType} from '../constants';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import Color from 'cesium/Source/Core/Color';
+import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import {ImageryLayer} from 'cesium';
+import {Config} from './ngm-layers-item.js';
 
 
 export default class LayersAction {
-  /**
-   * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
-   */
-  constructor(viewer) {
+  viewer: Viewer;
+  boundingBoxEntity: any;
+
+  constructor(viewer: Viewer) {
     this.viewer = viewer;
     this.boundingBoxEntity = this.viewer.entities.add({
       position: Cartesian3.ZERO,
@@ -29,20 +32,19 @@ export default class LayersAction {
     });
   }
 
-  changeVisibility(config, checked) {
+  changeVisibility(config: Config, checked: boolean) {
     config.setVisibility(checked);
     config.visible = checked;
     this.viewer.scene.requestRender();
   }
 
-  changeOpacity(config, value) {
-    const opacity = Number(value);
-    config.setOpacity(opacity);
-    config.opacity = opacity;
+  changeOpacity(config: Config, value: number) {
+    config.setOpacity(value);
+    config.opacity = value;
     this.viewer.scene.requestRender();
   }
 
-  async showBoundingBox(config) {
+  async showBoundingBox(config: Config) {
     const p = await config.promise;
     if (p.boundingRectangle) { // earthquakes
       this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
@@ -75,7 +77,7 @@ export default class LayersAction {
   }
 
   // changes layer position in 'Displayed Layers'
-  moveLayer(layers, config, delta) {
+  moveLayer(layers, config: Config, delta: number) {
     console.assert(delta === -1 || delta === 1);
     const previousIndex = layers.indexOf(config);
     const toIndex = previousIndex + delta;
@@ -93,7 +95,7 @@ export default class LayersAction {
     // permute imageries order
     if (config.type === LayerType.swisstopoWMTS && otherConfig.type === LayerType.swisstopoWMTS) {
       const imageries = this.viewer.scene.imageryLayers;
-      config.promise.then(i => {
+      config.promise.then((i: ImageryLayer) => {
         if (delta < 0) {
           imageries.lower(i);
         } else {
@@ -106,7 +108,7 @@ export default class LayersAction {
   }
 
 
-  listenForEvent(config, eventName, callback) {
+  listenForEvent(config: Config, eventName, callback) {
     const stuff = config.promise; // yes, this is not a promise !
     if (stuff[eventName]) {
       console.debug('Adding event', eventName, 'on', config.layer);

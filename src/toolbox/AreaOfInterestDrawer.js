@@ -24,7 +24,7 @@ import {
   AOI_POLYGON_ALPHA,
   AOI_LINE_ALPHA
 } from '../constants';
-import {getUploadedEntityType, updateBoreholeHeights} from './helpers.js';
+import {getUploadedEntityType, updateBoreholeHeights} from './helpers';
 import {showWarning} from '../message.js';
 import {LitElementI18n} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';

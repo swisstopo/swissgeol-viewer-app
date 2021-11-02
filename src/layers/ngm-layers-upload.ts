@@ -7,17 +7,18 @@ import {showError, showWarning} from '../message';
 import {DEFAULT_LAYER_OPACITY} from '../constants';
 import {Config} from './ngm-layers-item';
 import $ from '../jquery.js';
+import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 
 @customElement('ngm-layers-upload')
 export default class LayersUpload extends LitElementI18n {
   @property({type: Array}) uploadedLayers: Config[] = [];
   @property({type: Object}) actions: any;
-  @property({type: Object}) viewer: any;
+  @property({type: Object}) viewer!: Viewer;
 
   constructor() {
     super();
     this.actions = {
-      changeVisibility: (config, visible) => this.changeVisibility(config, visible)
+      changeVisibility: (config: Config, visible: boolean) => this.changeVisibility(config, visible)
     };
   }
 
@@ -29,7 +30,7 @@ export default class LayersUpload extends LitElementI18n {
     this.requestUpdate();
   }
 
-  changeVisibility(config, visible) {
+  changeVisibility(config: Config, visible: boolean) {
     const source = this.viewer.dataSources.getByName(config.promise.name);
     source[0].show = visible;
     this.viewer.scene.requestRender();

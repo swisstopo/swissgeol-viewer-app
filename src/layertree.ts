@@ -19,7 +19,7 @@ export interface LayerTreeNode {
   zoomToBbox?: boolean;
   opacity?: number;
   opacityDisabled?: boolean
-  style?: unknown;
+  style?: any;
   legend?: string;
   backgroundId?: string;
   maximumLevel?: number;

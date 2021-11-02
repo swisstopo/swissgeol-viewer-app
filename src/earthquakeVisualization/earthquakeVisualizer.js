@@ -1,6 +1,6 @@
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime} from './helpers.js';
+import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime} from './helpers';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import CMath from 'cesium/Source/Core/Math';
 import {LayerType} from '../constants';

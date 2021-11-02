@@ -7,7 +7,11 @@ import $ from '../jquery.js';
 import {LayerTreeNode} from '../layertree';
 
 export interface Config extends LayerTreeNode {
+  add?: any;
+  remove?: any;
+  heightOffset?: number;
   load?: any;
+  setVisibility?: any;
   setOpacity?: any;
   hideUpDown: any;
   promise: any
