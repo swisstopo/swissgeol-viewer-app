@@ -60,7 +60,7 @@ export class NgmMapConfiguration extends LitElementI18n {
   render() {
     return html`
       <div class="base-map-labels">
-        <label>${i18next.t('dtd_aerial_base_map')}</label><label>${i18next.t('dtd_grey_base_map')}</label><label>${i18next.t('dtd_hydro_base_map')}</label>
+        <label>${i18next.t('dtd_aerial_map_label')}</label><label>${i18next.t('dtd_grey_map_label')}</label><label>${i18next.t('dtd_lakes_rivers_map_label')}</label>
       </div>
       <ngm-map-chooser></ngm-map-chooser>
       <div class="ui divider"></div>

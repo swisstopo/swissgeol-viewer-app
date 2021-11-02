@@ -318,7 +318,7 @@ export function setupBaseLayers(viewer: Viewer) {
   const mapsConfig: BaseLayerConfig[] = [
     {
       id: arealLayer,
-      labelKey: t('dtd_areal_map_label'),
+      labelKey: t('dtd_aerial_map_label'),
       backgroundImgSrc: 'src/images/arealimage.png',
       layers: [
         addSwisstopoLayer(viewer, arealLayer, 'jpeg', 20)
