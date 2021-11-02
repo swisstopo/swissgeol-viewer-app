@@ -1,4 +1,4 @@
-import {html} from 'lit-element';
+import {html} from 'lit';
 import {LitElementI18n} from '../i18n.js';
 import '../toolbox/AreaOfInterestDrawer.js';
 import '../layers/ngm-layers.js';
@@ -27,7 +27,7 @@ import '../layers/ngm-layers-upload';
 import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
 import SlicerStore from '../store/slicer';
-import {classMap} from 'lit-html/directives/class-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 import {zoomTo} from '../utils';
 import $ from '../jquery';
 

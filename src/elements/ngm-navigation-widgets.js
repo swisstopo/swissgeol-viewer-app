@@ -1,4 +1,4 @@
-import {html} from 'lit-element';
+import {html} from 'lit';
 import '@geoblocks/cesium-compass';
 import '@geoblocks/cesium-view-cube';
 import './ngm-elevator-buttons.js';

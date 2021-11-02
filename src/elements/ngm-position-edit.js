@@ -1,4 +1,4 @@
-import {html} from 'lit-element';
+import {html} from 'lit';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/popup.js';
 import 'fomantic-ui-css/components/dropdown.js';

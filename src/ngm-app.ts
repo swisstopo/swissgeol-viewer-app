@@ -1,5 +1,5 @@
 import {LitElementI18n} from './i18n';
-import {html} from 'lit-html';
+import {html} from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-navigation-widgets';
 import './elements/ngm-full-screen-view';
@@ -33,8 +33,8 @@ import {initSentry} from './sentry.js';
 import {showWarning} from './message';
 import MainStore from './store/main';
 import SlicerStore from './store/slicer';
-import {classMap} from 'lit-html/directives/class-map.js';
-import {customElement, state} from 'lit-element';
+import {classMap} from 'lit/directives/class-map.js';
+import {customElement, state} from 'lit/decorators.js';
 import MapChooser from './MapChooser';
 import {NgmLayerLegendContainer} from './elements/ngm-layer-legend-container';
 import {NgmSlowLoading} from './elements/ngm-slow-loading';

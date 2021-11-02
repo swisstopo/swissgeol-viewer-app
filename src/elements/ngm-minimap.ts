@@ -1,9 +1,10 @@
-import {customElement, html, state, property} from 'lit-element';
+import {html} from 'lit';
+import {customElement, state, property} from 'lit/decorators.js';
 import {Event, Viewer} from 'cesium';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import {styleMap} from 'lit-html/directives/style-map';
+import {styleMap} from 'lit/directives/style-map.js';
 import {MINIMAP_EXTENT} from '../constants';
 import draggable from './draggable';
 import './ngm-nadir-view';

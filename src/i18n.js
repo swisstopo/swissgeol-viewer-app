@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import locI18next from 'loc-i18next';
 import Backend from 'i18next-xhr-backend';
-import {LitElement} from 'lit-element';
+import {LitElement} from 'lit';
 import {SUPPORTED_LANGUAGES} from './constants';
 import {getURLSearchParams, setURLSearchParams} from './utils';
 

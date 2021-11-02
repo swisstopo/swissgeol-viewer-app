@@ -1,5 +1,6 @@
 import {LitElementI18n} from '../i18n';
-import {customElement, html, property, state} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
 import {Interactable} from '@interactjs/types';
@@ -7,8 +8,8 @@ import {Cartesian2, Event, Scene, ScreenSpaceEventHandler, ScreenSpaceEventType,
 import CesiumMath from 'cesium/Source/Core/Math';
 import {formatCartographicAs2DLv95} from '../projection';
 import {setCameraHeight} from '../cesiumutils';
-import {styleMap} from 'lit-html/directives/style-map';
-import {classMap} from 'lit-html/directives/class-map.js';
+import {styleMap} from 'lit/directives/style-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
 

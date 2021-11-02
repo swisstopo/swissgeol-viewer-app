@@ -1,4 +1,4 @@
-import {html} from 'lit-element';
+import {html} from 'lit';
 
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';

@@ -1,10 +1,11 @@
 import {LitElementI18n} from '../i18n';
-import {customElement, html, property, state} from 'lit-element';
+import {customElement, property, state} from 'lit/decorators.js';
+import {html} from 'lit';
 import draggable from './draggable';
 import {DEFAULT_VIEW} from '../constants';
 import {Event, Scene} from 'cesium';
 import {Interactable} from '@interactjs/types';
-import {classMap} from 'lit-html/directives/class-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {

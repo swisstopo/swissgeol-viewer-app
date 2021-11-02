@@ -1,5 +1,5 @@
-import {html} from 'lit-element';
-import {repeat} from 'lit-html/directives/repeat.js';
+import {html} from 'lit';
+import {repeat} from 'lit/directives/repeat.js';
 
 import {LitElementI18n} from '../i18n.js';
 

@@ -1,5 +1,5 @@
 import {LitElementI18n} from '../i18n';
-import {html} from 'lit-element';
+import {html} from 'lit';
 import i18next from 'i18next';
 
 class NgmSymbolSelector extends LitElementI18n {

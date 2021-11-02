@@ -1,6 +1,6 @@
 import {LitElementI18n} from '../i18n';
 import i18next from 'i18next';
-import {html} from 'lit-element';
+import {html} from 'lit';
 import 'fomantic-ui-css/components/accordion.js';
 import $ from '../jquery.js';
 
