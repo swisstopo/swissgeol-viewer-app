@@ -30,17 +30,6 @@
   background-color: #15AABF;
 }
 
-ngm-catalog, .ngm-panel-content {
-  display: flex;
-  flex-direction: column;
-  margin-top: 9px;
-  max-height: calc(100% - 124px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: 40px;
-  /* scrollbar-color: #868E96 #F1F3F5; */
-}
-
 ngm-layers-item, .ngm-base-layer {
   display: flex;
   align-items: center;
@@ -74,10 +63,7 @@ ngm-layers-item .ui.dropdown .menu .item:hover {
   background-color: #C5F6FA;
 }
 
-.ngm-panel-content .ui.header {
-  margin-top: 7px;
-}
-
+/* KML upload */
 ngm-layers-upload button {
   cursor: pointer;
   display: flex;
@@ -101,78 +87,8 @@ ngm-layers-upload .ngm-upload-icon {
   height: 20px;
 }
 
-ngm-catalog .ngm-layers-categories {
-  margin: 0 !important;
-}
-
-ngm-catalog .ngm-layer-content {
-  padding: 0 !important;
-  display: flex;
-  flex-direction: column;
-}
-
-.ngm-layer-title {
-  display: flex;
-  align-items: center;
-  color: #212529;
-}
-
-.ngm-dropdown-icon {
-  background-color: #0B7285;
-}
-
-.ngm-layer-title label {
-  margin-left: 5px;
-}
-
-.ngm-layer-title.first-level {
-  font-weight: bold;
-}
-
-ngm-catalog .active, .ngm-displayed-container .displayed {
-  color: #A83526 !important;
-}
-
-.ngm-displayed-container {
-  margin-left: 4px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  align-items: center;
-}
-
-.ngm-layer-title.active .ngm-dropdown-icon {
-  background-color: #A83526;
-  transform: rotate(90deg);
-}
-
-.ngm-layer-title:hover, .ngm-displayed-container:hover label {
-  color: #FF0000 !important;
-}
-
-.ngm-layer-title:hover .ngm-dropdown-icon{
-  background-color: #FF0000;
-}
-
-ngm-catalog .ui.checkbox input[type="checkbox"] {
-  appearance: none;
-  opacity: 1 !important;
-  background-color: #F1F3F5;
-  border: 2px solid #0B7285;
-  border-radius: 3px;
-}
-
-ngm-catalog .ngm-displayed-container:hover input[type="checkbox"] {
-  border: 2px solid #FF0000;
-}
-
-ngm-catalog .ui.checkbox input[type="checkbox"]:checked {
-  background-color: #A83526;
-  border: 2px solid #A83526;
-}
-
-ngm-catalog .ngm-displayed-container:hover input[type="checkbox"]:checked {
-  background-color: #FF0000;
-  border: 2px solid #FF0000;
+.ngm-extension-panel .ui.header {
+  margin-top: 7px;
 }
 
 .ngm-extension-panel .ui.divider {
@@ -180,4 +96,111 @@ ngm-catalog .ngm-displayed-container:hover input[type="checkbox"]:checked {
   margin-bottom: 8px;
   border-top: 1px solid #DFE2E6 !important;
   border-bottom: 1px solid #DFE2E6 !important;
+}
+
+/* Layer catalog */
+ngm-catalog .ui.accordion, ngm-catalog .ui.accordion .content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+ngm-catalog .ui.accordion .title {
+  display: flex;
+  align-items: center;
+}
+
+ngm-catalog .ui.accordion .title label {
+  cursor: pointer;
+  margin-left: 5px;
+  color: #212529;
+}
+
+ngm-catalog .ui.accordion .title.first-level {
+  font-weight: bold;
+}
+
+ngm-catalog .ui.accordion .title.active label, .ngm-catalog-entry .displayed {
+  color: #A83526 !important;
+}
+
+ngm-catalog .ui.accordion .title:hover label, .ngm-catalog-entry:hover label {
+  color: #FF0000 !important;
+}
+
+/* Dropdown icon */
+ngm-catalog .ui.accordion .ngm-dropdown-icon {
+  background-color: #0B7285;
+}
+
+ngm-catalog .ui.accordion .title.active .ngm-dropdown-icon {
+  background-color: #A83526;
+  transform: rotate(90deg);
+}
+
+ngm-catalog .ui.accordion .title:hover .ngm-dropdown-icon {
+  background-color: #FF0000;
+}
+
+ /* Catalog entry with custom checkbox */
+.ngm-catalog-entry {
+  /* display: block; */
+  position: relative;
+  padding-left: 28px;
+  margin-left: 3px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  /* align-items: center; */
+  cursor: pointer;
+}
+
+/* Hide the browser's default checkbox */
+.ngm-catalog-entry input {
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+/* Custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  height: 18px;
+  width: 18px;
+  border: 2px solid #0B7285;
+  border-radius: 3px;
+}
+
+.ngm-catalog-entry input:checked ~ .checkmark {
+  background-color: #A83526;
+  border: 2px solid #A83526;
+}
+
+.ngm-catalog-entry:hover input ~ .checkmark {
+  border: 2px solid #FF0000;
+}
+
+.ngm-catalog-entry:hover input:checked ~ .checkmark {
+  background-color: #FF0000;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.ngm-catalog-entry input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.ngm-catalog-entry .checkmark:after {
+  left: 4px;
+  top: 0px;
+  width: 5.5px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
 }

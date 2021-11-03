@@ -129,7 +129,7 @@ class SideBar extends LitElementI18n {
         <div class="ngm-panel-header">${i18next.t('lyr_geocatalog_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
-        <ngm-catalog class="ui accordion" .layers=${this.catalogLayers}
+        <ngm-catalog class="ui accordion ngm-panel-content" .layers=${this.catalogLayers}
                       @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
         </ngm-catalog>
       </div>

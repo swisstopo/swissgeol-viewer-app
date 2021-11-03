@@ -30,12 +30,12 @@ export class Catalog extends LitElementI18n {
       ).map(node => this.getCategoryOrLayerTemplate(node, 'second-level'));
 
     return html`
-      <div class="ui accordion ngm-layers-categories">
-        <div class="title ngm-layer-title ${level}">
+      <div class="ui accordion">
+        <div class="title ${level}">
           <div class="ngm-dropdown-icon"></div>
           <label>${i18next.t(category.label)}</label>
         </div>
-        <div class="content ngm-layer-content">
+        <div class="content">
           ${content}
         </div>
       </div>
@@ -44,7 +44,7 @@ export class Catalog extends LitElementI18n {
 
   getLayerTemplate(layer: LayerTreeNode): TemplateResult {
     return html`
-      <div class="ui checkbox ngm-displayed-container"
+      <div class="ngm-catalog-entry"
           @click=${() => {
             this.dispatchEvent(new CustomEvent('layerclick', {
               detail: {
@@ -52,8 +52,8 @@ export class Catalog extends LitElementI18n {
               }
             }));
           }}>
-        <input class="ngm-layer-checkbox" type="checkbox"
-                .checked=${!!layer.visible}>
+        <input type="checkbox" .checked=${!!layer.visible}>
+        <span class="checkmark"></span>
         <label class=${layer.displayed ? 'displayed' : ''}>
           <i class=${layer.restricted ? 'lock icon' : ''}></i>${i18next.t(layer.label)}
         </label>

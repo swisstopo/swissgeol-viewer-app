@@ -103,6 +103,17 @@ ngm-auth:hover {
   background-color: #A83526;
 }
 
+.ngm-panel-content {
+  display: flex;
+  flex-direction: column;
+  margin-top: 9px;
+  max-height: calc(100% - 124px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 40px;
+  /* scrollbar-color: #868E96 #F1F3F5; */
+}
+
 .ngm-menu-1 > div.ngm-active-section > div:nth-child(1),
 .ngm-menu-2 > div.ngm-active-section > div:nth-child(1),
 .ngm-menu-2 > ngm-auth .ngm-active-section > div:nth-child(1) {
