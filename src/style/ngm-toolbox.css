@@ -19,7 +19,122 @@
   margin-left: 12px;
 }
 
+.ngm-slice-side > div:hover > div:nth-child(1),
 .ngm-draw-list-item:hover div:nth-child(1),
 .ngm-tools-list-item:hover div:nth-child(1) {
   background-color: #FF0000;
 }
+
+.ngm-slice-types > .ngm-slice-item:nth-child(1) {
+  margin-top: 12px;
+  height: 36px;
+}
+
+.ngm-slice-item,
+.ngm-geom-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #F8F9FA;
+  color: #0B7285;
+  height: 36px;
+  font: normal normal bold 14px/20px Inter;
+  padding: 10px 8px;
+  margin-bottom: 4px;
+}
+
+.ngm-slice-item {
+  flex-direction: column;
+  align-items: start;
+}
+
+.ngm-slice-side > div:hover,
+.ngm-slice-item:hover > .ngm-slice-label,
+.ngm-geom-item:hover {
+  color: #FF0000;
+}
+
+.ngm-slice-side > div.active,
+.ngm-slice-item.active > .ngm-slice-label,
+.ngm-geom-item.active,
+.ngm-draw-list-item.active {
+  color: #A83526;
+}
+
+.ngm-slice-label {
+  width: 100%;
+  cursor: pointer;
+}
+
+.ngm-slice-item.active {
+  height: auto;
+}
+
+.ngm-slice-to-draw,
+.ngm-draw-hint {
+  background-color: #C5F6FA;
+  color: #212529;
+  box-shadow: 4px 4px 2px #00000029;
+  font: normal normal bold 14px/20px Inter;
+  letter-spacing: 0;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.ngm-slice-type-label,
+.ngm-geom-label {
+  margin-top: 12px;
+  margin-bottom: 16px;
+  font: normal normal 500 14px/20px Inter;
+  color: #212529;
+}
+
+.ngm-slice-side > div.active > div:nth-child(1),
+.ngm-draw-list-item.active div:nth-child(1) {
+  background-color: #A83526;
+}
+
+.ngm-draw-hint > .ngm-info-icon {
+  margin-left: auto;
+}
+
+.ngm-slice-side {
+  display: flex;
+  font: normal normal 500 14px/28px Inter;
+  margin-bottom: 29px;
+}
+
+.ngm-slice-side > div {
+  display: flex;
+  align-items: center;
+}
+
+.ngm-slice-side > div:nth-child(1) {
+  margin-right: 37px;
+}
+
+.ngm-slice-side > div > div:nth-child(1) {
+  margin-right: 13px;
+}
+
+ngm-slicer .ui.button.ngm-transform-btn {
+  display: flex;
+  margin-left: auto;
+  height: 36px;
+  background-color: #0b7285;
+  box-shadow: 0 1px 3px #00000033;
+  color: #fff;
+  vertical-align: middle;
+  letter-spacing: 0.25px;
+}
+
+ngm-slicer .ui.button.ngm-transform-btn:hover {
+  background-color: #D0F5F9;
+  color: #357183;
+}
+
+ngm-slicer .ngm-divider {
+  margin-top: 12px;
+}
+
+

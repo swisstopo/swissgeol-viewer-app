@@ -4,7 +4,7 @@ import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import GpxDataSource from '../GpxDataSource.js';
 import i18next from 'i18next';
-import {getMeasurements, cartesianToDegrees, extendKmlWithProperties, getValueOrUndefined} from '../cesiumutils.js';
+import {getMeasurements, extendKmlWithProperties, getValueOrUndefined} from '../cesiumutils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
@@ -19,7 +19,6 @@ import {
   DEFAULT_VOLUME_HEIGHT_LIMITS,
   AOI_POINT_SYMBOLS,
   AVAILABLE_AOI_TYPES,
-  AOI_COLORS,
   HIGHLIGHTED_AOI_COLOR,
   AOI_POLYGON_ALPHA,
   AOI_LINE_ALPHA
@@ -43,10 +42,10 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {calculateBoxHeight} from '../slicer/helper';
 
 
-import {clickOnElement, coordinatesToBbox, parseJson} from '../utils';
+import {clickOnElement, parseJson} from '../utils';
 import './ngm-gst-interaction';
 import './ngm-point-edit';
-import '../elements/slicer/ngm-toolbox-slicer.js';
+import './ngm-toolbox-slicer.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-swissforages-modal';
 import './ngm-swissforages-interaction';
@@ -56,7 +55,6 @@ import MainStore from '../store/main';
 import SlicerStore from '../store/slicer';
 import QueryStore from '../store/query';
 import DrawStore from '../store/draw';
-import $ from '../jquery';
 
 interface SwissforagesModalOptions {
   name: string | undefined;
@@ -74,7 +72,7 @@ interface AreasCounter {
   polygon: number;
 }
 
-export interface AoiAttributes {
+export interface NgmGeometry {
   id?: string;
   name?: string;
   show?: boolean;
@@ -130,7 +128,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   restrictedEditing = false;
   colorBeforeHighlight: Color = DEFAULT_AOI_COLOR;
   aoiInited = false;
-  accordionInited = false;
   private areasCounter: AreasCounter = DEFAULT_AREAS_COUNTER
   private screenSpaceEventHandler: ScreenSpaceEventHandler | undefined;
   private draw: CesiumDraw | undefined;
@@ -160,36 +157,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     });
   }
 
-  firstUpdated() {
-    this.addStoredAreas(LocalStorageController.getStoredAoi());
-  }
-
   update(changedProperties) {
     this.initAoi();
 
     super.update(changedProperties);
-  }
-
-  updated() {
-    if (!this.accordionInited) {
-      for (let i = 0; i < this.childElementCount; i++) {
-        const element = this.children.item(i);
-        if (element && element.classList.contains('accordion')) {
-          $(element).accordion(Object.assign({
-            duration: 150
-          }, {
-            animateChildren: false,
-            onClosing: () => {
-              this.cancelDraw();
-            },
-            onOpening: () => {
-              this.cancelDraw();
-            }
-          }));
-          this.accordionInited = true;
-        }
-      }
-    }
   }
 
   disconnectedCallback() {
@@ -226,17 +197,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       <input id="${fileUploadInputId}" type='file' accept=".kml,.KML,.gpx,.GPX" hidden
              @change=${this.uploadFile_.bind(this)}/>
       <div class="ngm-divider"></div>
-      <div class="ngm-geom-label">${i18next.t('tbx_my_geometries')}</div>
-      <div class="ngm-geom-list">
-        ${this.entitiesList_.map((i) => html`
-          <div class="ngm-geom-item ${classMap({active: Boolean(this.selectedArea && this.selectedArea.id === i.id)})}"
-               @click=${() => this.flyToArea(i.id)}>
-            ${i.name}
-            <div class="ngm-action-menu-icon"></div>
-          </div>
-        `)}
-      </div>
-
+      <ngm-geometries-list
+        .selectedId=${this.selectedArea ? this.selectedArea.id : ''}
+        @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.flyToArea(evt.detail.id)}>
+      </ngm-geometries-list>
       <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
       <ngm-swissforages-modal
         .service="${this.swissforagesService}"
@@ -514,7 +478,9 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       this.viewer!.scene.requestRender();
       this.requestUpdate();
       LocalStorageController.setAoiInStorage(this.entitiesList_);
+      DrawStore.setGeometries(this.entitiesList_);
     });
+    this.addStoredAreas(LocalStorageController.getStoredAoi());
     this.sectionImageUrl = undefined;
     this.swissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS;
 
@@ -535,7 +501,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     const positions = info.positions;
     const measurements = info.measurements;
     const type = info.type;
-    const attributes: AoiAttributes = {
+    const attributes: NgmGeometry = {
       positions: positions,
       area: measurements.area,
       perimeter: measurements.perimeter,
@@ -612,7 +578,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.updateHighlight(this.selectedArea, true);
   }
 
-  get entitiesList_(): AoiAttributes[] {
+  get entitiesList_(): NgmGeometry[] {
     return this.interestAreasDataSource.entities.values.map(val => {
       const item = {
         id: val.id,
@@ -846,34 +812,11 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     return attributes;
   }
 
-  getIconClass(id, inverted = false) {
-    const entity = this.interestAreasDataSource.entities.getById(id);
-    if (!entity || !entity.properties) return;
-    const type = entity.properties.type ? entity.properties.type.getValue() : undefined;
-    let volume = entity.properties.volumeShowed ? entity.properties.volumeShowed.getValue() : undefined;
-    const swissforagesId = entity.properties.swissforagesId ? entity.properties.swissforagesId.getValue() : undefined;
-    if (inverted) {
-      volume = !volume;
-    }
-    switch (type) {
-      case 'polygon':
-        return volume ? 'cube icon' : 'draw polygon icon';
-      case 'rectangle':
-        return volume ? 'cube icon' : 'vector square icon';
-      case 'line':
-        return volume ? 'map outline icon' : 'route icon';
-      case 'point':
-        return swissforagesId || volume ? 'ruler vertical icon' : 'map marker alternate icon';
-      default:
-        return '';
-    }
-  }
-
 
   /**
    * Adds AOI entity to data source
    */
-  addAreaEntity(attributes: AoiAttributes) {
+  addAreaEntity(attributes: NgmGeometry) {
     const type = attributes.type;
     const name = type.charAt(0).toUpperCase() + type.slice(1);
     const entityAttrs: Entity.ConstructorOptions = {
@@ -960,12 +903,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   showAreaInfo(areaAttrs) {
     QueryStore.setObjectInfo(this.getInfoProps(areaAttrs));
     this.pickArea_(areaAttrs.id);
-  }
-
-  onAreaClick(event) {
-    if (event.target && event.target.type === 'checkbox') {
-      event.cancelBubble = true;
-    }
   }
 
   get drawState() {

@@ -10,13 +10,13 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
 import MainStore from '../store/main';
 import {Viewer} from 'cesium';
-import {AoiAttributes} from './ngm-aoi-drawer';
+import {NgmGeometry} from './ngm-aoi-drawer';
 import {SwissforagesService} from './SwissforagesService';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 
 @customElement('ngm-swissforages-interaction')
 export class NgmSwissforagesInteraction extends LitElementI18n {
-  @property({type: Object}) item: AoiAttributes | undefined
+  @property({type: Object}) item: NgmGeometry | undefined
   @property({type: Object}) service: SwissforagesService | undefined
   @property({type: Object}) dataSource: CustomDataSource | undefined
   @property({type: Function}) updateModalOptions: CallableFunction | undefined

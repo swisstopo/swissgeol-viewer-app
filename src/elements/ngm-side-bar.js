@@ -19,8 +19,6 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../message';
-import {createDataGenerator, createZipFromData} from '../download';
-import {saveAs} from 'file-saver';
 import auth from '../store/auth';
 import './ngm-share-link.js';
 import '../layers/ngm-layers-upload';
@@ -51,11 +49,6 @@ class SideBar extends LitElementI18n {
         });
       }
     });
-    // todo not using now
-    // SlicerStore.rectangleToCreate.subscribe(() => {
-    //   this.querySelector(`#${TOOLBOX} > .title`).classList.add('active');
-    //   this.querySelector(`#${TOOLBOX} > .content`).classList.add('active');
-    // });
   }
 
   static get properties() {
@@ -64,6 +57,7 @@ class SideBar extends LitElementI18n {
       activeLayers: {type: Object},
       queryManager: {type: Object},
       activePanel: {type: String, attribute: false},
+      showHeader: {type: Boolean, attribute: false},
       globeQueueLength_: {type: Number, attribute: false},
     };
   }
@@ -90,7 +84,7 @@ class SideBar extends LitElementI18n {
             ${i18next.t('lsb_data')}
           </div>
           <div class="ngm-tools ${classMap({'ngm-active-section': this.activePanel === 'tools'})}"
-               @click=${() => this.togglePanel('tools')}>
+               @click=${() => this.togglePanel('tools', false)}>
             <div class="ngm-tools-icon"></div>
             ${i18next.t('lsb_tools')}
           </div>
@@ -124,7 +118,7 @@ class SideBar extends LitElementI18n {
       </div>
       <div .hidden=${!this.activePanel}
            class="ngm-side-bar-panel ${classMap({'ngm-large-panel': this.activePanel === 'dashboard'})}">
-        <div class="ngm-panel-header">
+        <div .hidden=${!this.showHeader} class="ngm-panel-header">
           ${i18next.t(`lsb_${this.activePanel}`)}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
@@ -167,13 +161,14 @@ class SideBar extends LitElementI18n {
             </div>
           </div>
         </div>
-        <ngm-tools .hidden=${this.activePanel !== 'tools'}></ngm-tools>
+        <ngm-tools .hidden=${this.activePanel !== 'tools'} @close=${() => this.activePanel = ''}></ngm-tools>
         <ngm-share-link .hidden=${this.activePanel !== 'share'}></ngm-share-link>
       </div>
     `;
   }
 
-  togglePanel(panelName) {
+  togglePanel(panelName, showHeader = true) {
+    this.showHeader = showHeader;
     if (this.activePanel === panelName) {
       this.activePanel = null;
       return;

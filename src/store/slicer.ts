@@ -1,5 +1,6 @@
 import {BehaviorSubject, Subject} from 'rxjs';
 import Slicer from '../slicer/Slicer';
+import {NgmGeometry} from '../toolbox/ngm-aoi-drawer';
 
 export default class SlicerStore {
   private static slicerSubject = new BehaviorSubject<Slicer | null>(null)
@@ -17,7 +18,7 @@ export default class SlicerStore {
     return this.rtcSubject;
   }
 
-  static setRectangleToCreate(value: Slicer): void {
+  static setRectangleToCreate(value: NgmGeometry): void {
     this.rtcSubject.next(value);
   }
 }

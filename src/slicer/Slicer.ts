@@ -43,7 +43,7 @@ interface SliceOptions {
    /**
     * calls on synchronization of box planes
     */
-   syncBoxPlanesCallback?: () => void,
+   syncBoxPlanesCallback?: (sliceInfo) => void,
 }
 
 

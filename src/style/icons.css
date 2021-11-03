@@ -198,3 +198,35 @@
   -webkit-mask: url('./images/i_action_menu.svg') no-repeat center;
   background-color: #0B7285;
 }
+
+.ngm-slicing-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_slicing.svg') no-repeat center;
+  -webkit-mask: url('./images/i_slicing.svg') no-repeat center;
+  background-color: #0B7285;
+}
+
+.ngm-in-box-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_box_inside.svg') no-repeat center;
+  -webkit-mask: url('./images/i_box_inside.svg') no-repeat center;
+  background-color: #0B7285;
+}
+
+.ngm-out-box-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_box_outside.svg') no-repeat center;
+  -webkit-mask: url('./images/i_box_outside.svg') no-repeat center;
+  background-color: #0B7285;
+}
+
+.ngm-back-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_back.svg') no-repeat center;
+  -webkit-mask: url('./images/i_back.svg') no-repeat center;
+  background-color: #000000;
+}

@@ -1,9 +1,9 @@
 import {html} from 'lit-element';
 import i18next from 'i18next';
-import {LitElementI18n} from '../../i18n.js';
-import $ from '../../jquery';
-import '../ngm-i18n-content.js';
-import SlicerStore from '../../store/slicer';
+import {LitElementI18n} from '../i18n.js';
+import $ from '../jquery';
+import '../elements/ngm-i18n-content.js';
+import SlicerStore from '../store/slicer';
 
 class NgmToolboxSlicer extends LitElementI18n {
 
