@@ -1,5 +1,6 @@
 import {LitElementI18n} from '../i18n';
-import {customElement, html, property, state} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
 import {Interactable} from '@interactjs/types';
@@ -7,31 +8,31 @@ import {Cartesian2, Event, Scene, ScreenSpaceEventHandler, ScreenSpaceEventType,
 import CesiumMath from 'cesium/Source/Core/Math';
 import {formatCartographicAs2DLv95} from '../projection';
 import {setCameraHeight} from '../cesiumutils';
-import {styleMap} from 'lit-html/directives/style-map';
-import {classMap} from 'lit-html/directives/class-map.js';
+import {styleMap} from 'lit/directives/style-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
 
 @customElement('ngm-cam-configuration')
 export class NgmCamConfiguration extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null
-  @state() scene: Scene | null = null
-  @state() interaction: Interactable | null = null
-  @state() unlistenPostRender: Event.RemoveCallback | null = null
-  @state() heading = 0
-  @state() elevation = 0
-  @state() pitch = 0
-  @state() coordinates: string[] = []
-  @state() lockType = ''
+  @property({type: Object}) viewer: Viewer | null = null;
+  @state() scene: Scene | null = null;
+  @state() interaction: Interactable | null = null;
+  @state() unlistenPostRender: Event.RemoveCallback | null = null;
+  @state() heading = 0;
+  @state() elevation = 0;
+  @state() pitch = 0;
+  @state() coordinates: string[] = [];
+  @state() lockType = '';
   // always use the 'de-CH' locale to always have the simple tick as thousands separator
   private integerFormat = new Intl.NumberFormat('de-CH', {
     maximumFractionDigits: 0
   });
   private handler: ScreenSpaceEventHandler | undefined;
-  private lockMove = false
-  private lockMoveStartPosition: Cartesian2 = new Cartesian2()
-  private lockMovePosition: Cartesian2 = new Cartesian2()
-  private removeOnTick: Event.RemoveCallback | undefined
+  private lockMove = false;
+  private lockMoveStartPosition: Cartesian2 = new Cartesian2();
+  private lockMovePosition: Cartesian2 = new Cartesian2();
+  private removeOnTick: Event.RemoveCallback | undefined;
   private configurations = [
     {
       labelTag: 'camera_position_height_label',
@@ -69,7 +70,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       onChange: (evt) => this.updatePitch(Number(evt.target.value)),
       lock: () => this.toggleLock('pitch')
     },
-  ]
+  ];
 
   connectedCallback() {
     this.interaction = draggable(this, {

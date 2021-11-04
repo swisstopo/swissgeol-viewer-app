@@ -1,5 +1,5 @@
-import {html, LitElement} from 'lit-element';
-import {classMap} from 'lit-html/directives/class-map';
+import {html, LitElement} from 'lit';
+import {classMap} from 'lit/directives/class-map';
 import $ from '../jquery.js';
 import 'fomantic-ui-css/components/progress.js';
 

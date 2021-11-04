@@ -1,7 +1,7 @@
 import {BehaviorSubject} from 'rxjs';
 
 export default class DrawStore {
-  private static drawStateSubject = new BehaviorSubject<boolean>(false)
+  private static drawStateSubject = new BehaviorSubject<boolean>(false);
 
   static setDrawState(value: boolean): void {
     this.drawStateSubject.next(value);

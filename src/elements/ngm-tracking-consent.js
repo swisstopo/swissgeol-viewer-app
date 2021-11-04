@@ -1,7 +1,7 @@
-import {html} from 'lit-element';
+import {html} from 'lit';
 import {LitElementI18n} from '../i18n';
 import i18next from 'i18next';
-import {unsafeHTML} from 'lit-html/directives/unsafe-html.js';
+import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 const TRACKING_ALLOWED_KEY = 'trackingAllowed';
 
