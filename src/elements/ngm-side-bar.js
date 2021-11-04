@@ -6,7 +6,7 @@ import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
 import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants';
 import defaultLayerTree from '../layertree.js';
-import {getLayerParams, syncLayersParam, getAssetIds, getAttribute} from '../permalink.js';
+import {getLayerParams, syncLayersParam, getAssetIds, getAttribute, getSliceParam} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
@@ -60,6 +60,12 @@ class SideBar extends LitElementI18n {
       showHeader: {type: Boolean, attribute: false},
       globeQueueLength_: {type: Number, attribute: false},
     };
+  }
+
+  firstUpdated() {
+    const sliceOptions = getSliceParam();
+    if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints)
+      this.activePanel = 'tools';
   }
 
   render() {

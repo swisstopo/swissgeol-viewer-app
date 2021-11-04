@@ -230,3 +230,19 @@
   -webkit-mask: url('./images/i_back.svg') no-repeat center;
   background-color: #000000;
 }
+
+.ngm-slice-left-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_slice_left.svg') no-repeat center;
+  -webkit-mask: url('./images/i_slice_left.svg') no-repeat center;
+  background-color: #0B7285;
+}
+
+.ngm-slice-right-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_slice_right.svg') no-repeat center;
+  -webkit-mask: url('./images/i_slice_right.svg') no-repeat center;
+  background-color: #0B7285;
+}

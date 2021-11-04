@@ -302,6 +302,14 @@ ngm-layer-legend-container > ngm-layer-legend {
   border: 1px solid #E0E3E6;
 }
 
+.ngm-disabled {
+  cursor: default;
+  opacity: 0.45 !important;
+  background-image: none;
+  box-shadow: none;
+  pointer-events: none !important;
+}
+
 @media (max-height: 630px) {
   .map {
     margin-bottom: 72px;

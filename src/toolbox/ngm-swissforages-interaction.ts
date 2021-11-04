@@ -11,9 +11,9 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
 import MainStore from '../store/main';
 import {Viewer} from 'cesium';
-import {NgmGeometry} from './ngm-aoi-drawer';
 import {SwissforagesService} from './SwissforagesService';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import {NgmGeometry} from './interfaces';
 
 @customElement('ngm-swissforages-interaction')
 export class NgmSwissforagesInteraction extends LitElementI18n {

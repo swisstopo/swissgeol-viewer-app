@@ -40,7 +40,10 @@ export function executeForAllPrimitives(viewer, functionToExecute) {
   const primitives = viewer.scene.primitives;
   for (let i = 0, ii = primitives.length; i < ii; i++) {
     const primitive = primitives.get(i);
-    functionToExecute(primitive);
+    if (primitive.ready || !primitive.readyPromise)
+      functionToExecute(primitive);
+    else
+      primitive.readyPromise.then(() => functionToExecute(primitive));
   }
 }
 
