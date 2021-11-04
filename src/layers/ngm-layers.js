@@ -1,11 +1,16 @@
-import {html} from 'lit-element';
-import {repeat} from 'lit-html/directives/repeat.js';
+import {html} from 'lit';
+import {repeat} from 'lit/directives/repeat.js';
 
 import {LitElementI18n} from '../i18n.js';
 
 import './ngm-layers-item.js';
 
 export default class LayerTree extends LitElementI18n {
+
+  constructor() {
+    super();
+    this.layers = [];
+  }
 
   static get properties() {
     return {

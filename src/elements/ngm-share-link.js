@@ -1,12 +1,12 @@
 import {LitElementI18n} from '../i18n';
-import {html} from 'lit-element';
+import {html} from 'lit';
 import {showWarning} from '../message';
 import i18next from 'i18next';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
 import './ngm-i18n-content.js';
 import {SHORTLINK_HOST_BY_PAGE_HOST} from '../constants';
-import {classMap} from 'lit-html/directives/class-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 
 class NgmShareLink extends LitElementI18n {
 

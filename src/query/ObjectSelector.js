@@ -13,7 +13,15 @@ import {
 } from './objectInformation';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import {TemplateResult} from 'lit-element';
+
+/**
+ * Wether the passed value follows the lit TemplateResult interface.
+ * @param {unknown} value
+ * @return {boolean}
+ */
+function isTemplateResult(value) {
+  return typeof value === 'object' && value.strings && value.values;
+}
 
 export default class ObjectSelector {
   /**
@@ -101,7 +109,7 @@ export default class ObjectSelector {
     attributes.properties = attributes.properties.filter(value =>
       typeof value[1] === 'number'
       || (typeof value[1] === 'string' && value[1].match(/[A-Z0-9]/gi)) // 'match' uses to avoid empty strings with strange symbols
-      || (typeof value[1] === 'object' && value[1] instanceof TemplateResult)); // for lit-element templates like links or images
+      || isTemplateResult(value[1]));
 
     return attributes;
   }

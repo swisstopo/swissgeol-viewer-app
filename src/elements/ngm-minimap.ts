@@ -1,9 +1,10 @@
-import {customElement, html, state, property} from 'lit-element';
+import {html} from 'lit';
+import {customElement, state, property} from 'lit/decorators.js';
 import {Event, Viewer} from 'cesium';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import {styleMap} from 'lit-html/directives/style-map';
+import {styleMap} from 'lit/directives/style-map.js';
 import {MINIMAP_EXTENT} from '../constants';
 import draggable from './draggable';
 import './ngm-nadir-view';
@@ -21,13 +22,13 @@ const north = CesiumMath.toRadians(MINIMAP_EXTENT[3]) + height / 99 * 36;
 
 @customElement('ngm-minimap')
 export class NgmMinimap extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null
-  @state() interaction: Interactable | null = null
-  @state() moveMarker = false
-  @state() left = 0
-  @state() bottom = 0
-  @state() heading = 0
-  private unlistenPostRender: Event.RemoveCallback | null = null
+  @property({type: Object}) viewer: Viewer | null = null;
+  @state() interaction: Interactable | null = null;
+  @state() moveMarker = false;
+  @state() left = 0;
+  @state() bottom = 0;
+  @state() heading = 0;
+  private unlistenPostRender: Event.RemoveCallback | null = null;
 
   constructor() {
     super();

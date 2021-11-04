@@ -1,20 +1,22 @@
-import {customElement, html, property, state} from 'lit-element';
+import {customElement, property, state} from 'lit/decorators.js';
+import {html} from 'lit';
+
 import {LitElementI18n} from '../i18n.js';
 import {setCameraHeight} from '../cesiumutils.js';
 
 import CesiumMath from 'cesium/Source/Core/Math';
-import {styleMap} from 'lit-html/directives/style-map';
+import {styleMap} from 'lit/directives/style-map.js';
 import {Event, Viewer} from 'cesium';
 
 @customElement('ngm-nadir-view')
 export class NgmNadirView extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null
-  @state() unlistenPostRender: Event.RemoveCallback | null = null
-  @state() active = false
-  @state() pitch: number | undefined = undefined
-  @state() height: number | undefined = undefined
-  @state() heading: number | undefined = undefined
-  @state() currentHeading = 0
+  @property({type: Object}) viewer: Viewer | null = null;
+  @state() unlistenPostRender: Event.RemoveCallback | null = null;
+  @state() active = false;
+  @state() pitch: number | undefined = undefined;
+  @state() height: number | undefined = undefined;
+  @state() heading: number | undefined = undefined;
+  @state() currentHeading = 0;
 
   updated() {
     if (this.viewer && !this.unlistenPostRender) {

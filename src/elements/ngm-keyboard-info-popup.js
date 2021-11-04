@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
-import {html} from 'lit-element';
+import {html} from 'lit';
 import $ from '../jquery.js';
 
 import 'fomantic-ui-css/components/popup.js';

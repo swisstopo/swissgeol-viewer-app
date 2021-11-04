@@ -1,4 +1,4 @@
-import {html} from 'lit-element';
+import {html} from 'lit';
 import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers.js';
@@ -24,7 +24,7 @@ import './ngm-share-link.js';
 import '../layers/ngm-layers-upload';
 import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
-import {classMap} from 'lit-html/directives/class-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 import {zoomTo} from '../utils';
 import $ from '../jquery';
 

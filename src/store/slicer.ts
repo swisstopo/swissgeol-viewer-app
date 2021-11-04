@@ -3,8 +3,8 @@ import Slicer from '../slicer/Slicer';
 import {NgmGeometry} from '../toolbox/ngm-aoi-drawer';
 
 export default class SlicerStore {
-  private static slicerSubject = new BehaviorSubject<Slicer | null>(null)
-  private static rtcSubject = new Subject<any>()
+  private static slicerSubject = new BehaviorSubject<Slicer | null>(null);
+  private static rtcSubject = new Subject<any>();
 
   static get slicer(): BehaviorSubject<Slicer | null> {
     return this.slicerSubject;

@@ -1,9 +1,9 @@
-import {html} from 'lit-element';
+import {html} from 'lit';
 import Auth from '../auth';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import auth from '../store/auth';
-import {classMap} from 'lit-html/directives/class-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 
 
 /**
