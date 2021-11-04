@@ -15,6 +15,7 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import MainStore from '../store/main';
 import {Entity, Viewer} from 'cesium';
 
+// todo reuse or remove
 @customElement('ngm-point-edit')
 export class NgmPointEdit extends LitElementI18n {
   @property({type: Object}) position: Cartesian3 | undefined;

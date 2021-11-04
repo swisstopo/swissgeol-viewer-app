@@ -171,223 +171,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     `;
   }
 
-
-  /*createButtonsFields(i) {
-    return html`
-      <div class="ngm-btns-field">
-        <div class="ui tiny fluid compact icon buttons ngm-aoi-buttons">
-          <button
-            class="ui button"
-            @click=${this.showAreaInfo.bind(this, i)}
-            data-tooltip=${i18next.t('tbx_info_btn_hint')}
-            data-position="top center"
-            data-variation="tiny"
-          ><i class="info circle icon"></i></button>
-          <button
-            class="ui button"
-            @click=${this.flyToArea.bind(this, i.id)}
-            data-tooltip=${i18next.t('tbx_fly_to_btn_hint')}
-            data-position="top center"
-            data-variation="tiny"
-          ><i class="search plus icon"></i></button>
-          <button
-            class="ui button"
-            @click=${this.editAreaPosition.bind(this, i.id, !!i.swissforagesId)}
-            data-tooltip=${i18next.t('tbx_edit_area_hint')}
-            data-position="top center"
-            data-variation="tiny"
-          ><i class="pen icon"></i></button>
-          <button
-            class="ui button"
-            @click=${this.updateEntityVolume.bind(this, i.id, true)}
-            ?hidden=${i.volumeShowed || !!i.swissforagesId}
-            data-tooltip=${i18next.t('tbx_show_volume_btn_label')}
-            data-position="top center"
-            data-variation="tiny"
-          ><i class="${this.getIconClass(i.id, true)}"></i></button>
-          <button
-            class="ui button"
-            @click=${this.hideVolume.bind(this, i.id)}
-            ?hidden=${!i.volumeShowed || !!i.swissforagesId}
-            data-tooltip=${i18next.t('tbx_hide_volume_btn_label')}
-            data-position="top center"
-            data-variation="tiny"
-          ><i class="${this.getIconClass(i.id, true)}"></i></button>
-          <button
-            class="ui button"
-            @click=${this.onRemoveEntityClick_.bind(this, i.id)}
-            data-tooltip=${i18next.t('tbx_remove_btn_hint')}
-            data-position="top center"
-            data-variation="tiny"
-          ><i class="trash alternate outline icon"></i></button>
-        </div>
-      </div>`;
-  }*/
-
-  /*aoiListTemplate() {
-    return this.entitiesList_.map((i, index) =>
-      html`
-        <div class="item">
-          <div class="title" @click=${evt => this.onAreaClick(evt)}>
-            <i class="dropdown icon"></i>
-            <div class="ui checkbox">
-              <input type="checkbox" @input=${evt => this.onShowHideEntityClick_(evt, i.id)} .checked=${i.show}>
-              <label class="ngm-aoi-title"><i class=${this.getIconClass(i.id)}></i>${i.name}</label>
-            </div>
-          </div>
-          <div class="content ngm-aoi-content">
-            ${this.createButtonsFields(i)}
-            ${i.type !== 'polygon' ?
-              html`
-                <ngm-gst-interaction
-                  .positions=${i.positions}
-                  .geometryType=${i.type}
-                  .parentElement=${this}>
-                </ngm-gst-interaction>
-              ` : ''}
-            <ngm-swissforages-interaction
-              .item=${i}
-              .service=${this.swissforagesService}
-              .dataSource=${this.interestAreasDataSource}
-              .updateModalOptions=${(options => {
-                this.swissforagesModalOptions = options;
-                this.requestUpdate();
-              })}>
-            </ngm-swissforages-interaction>
-            ${i.type === 'line' || i.type === 'rectangle' ?
-              html`
-                <ngm-toolbox-slicer
-                  .positions=${i.positions}
-                  .lowerLimit=${i.volumeHeightLimits ? i.volumeHeightLimits.lowerLimit : undefined}
-                  .height=${i.volumeHeightLimits ? i.volumeHeightLimits.height : undefined}
-                  .type=${i.type}
-                  .showBox=${i.showSlicingBox}
-                  .onEnableSlicing=${() => this.onEnableSlicing(i.id)}
-                  .onDisableSlicing=${(positions, lowerLimit, height) => this.onDisableSlicing(i.id, i.type, positions, lowerLimit, height)}
-                  .onShowSlicingBoxChange=${(value) => this.onShowSlicingBoxChange(i.id, value)}
-                ></ngm-toolbox-slicer>`
-              : ''}
-            ${i.type === 'rectangle' ?
-              html`
-                <button class="ui tiny fluid button ${classMap({disabled: !this.downloadActiveDataEnabled})}"
-                        data-position="top left"
-                        data-variation="mini"
-                        @click=${() => {
-                          const rectangle = i.positions.map(cartesianToDegrees);
-                          rectangle.pop();
-                          const bbox = coordinatesToBbox(rectangle);
-                          this.dispatchEvent(new CustomEvent('downloadActiveData', {
-                            detail: {
-                              bbox4326: bbox
-                            }
-                          }));
-                        }
-                        }>
-                  ${i18next.t('tbx_download_data_inside_rectangle_label')}
-                </button>
-              `
-              : ''}
-          </div>
-
-          <div class="ngm-aoi-edit" ?hidden=${!this.draw!.entityForEdit || this.draw!.entityForEdit.id !== i.id}>
-            <div class="ui mini basic fluid buttons ngm-aoi-tooltip-container">
-              <button class="ui button basic primary"
-                      @click=${this.saveEditing.bind(this)}>${i18next.t('tbx_save_editing_btn_label')}
-              </button>
-              <button class="ui button basic grey" @click=${this.cancelDraw.bind(this)}>
-                ${i18next.t('tbx_cancel_area_btn_label')}
-              </button>
-              <button class="ui button basic grey ngm-help-btn"
-                      data-tooltip=${i18next.t('tbx_area_of_interest_edit_hint')}
-                      data-variation="tiny"
-                      data-position="top right">
-                <i class="question circle outline icon"></i>
-              </button>
-            </div>
-            <div class="ngm-aoi-input-container">
-              <label>${i18next.t('tbx_name_label')}:</label>
-              <div class="ui mini input">
-                <input
-                  class=${`ngm-aoi-name-input-${index}`}
-                  type="text" .value="${i.name}"
-                  ?disabled="${!!i.swissforagesId}"
-                  @input="${() => {
-                    if (!i.swissforagesId) this.onNameInputChange(index);
-                  }}">
-              </div>
-            </div>
-            <div class="ngm-aoi-input-container">
-              <label>${i18next.t('tbx_description_label')}:</label>
-              <div class="ui mini input">
-                  <textarea
-                    class=${`ngm-aoi-description-${index}`}
-                    type="text" .value="${i.description}"
-                    @input="${() => this.onDescriptionChange(index)}"></textarea>
-              </div>
-            </div>
-            <div class="ngm-aoi-input-container">
-              <label>${i18next.t('tbx_image_label')}:</label>
-              <div class="ui mini input">
-                  <textarea
-                    class=${`ngm-aoi-image-${index}`}
-                    type="text" .value="${i.image}"
-                    @input="${() => this.onImageChange(index)}"></textarea>
-              </div>
-            </div>
-            <div class="ngm-aoi-input-container">
-              <label>${i18next.t('tbx_website_label')}:</label>
-              <div class="ui mini input">
-                  <textarea
-                    class=${`ngm-aoi-website-${index} ${i.swissforagesId ? 'ngm-disabled' : ''}`}
-                    type="text" .value="${i.website}"
-                    ?disabled=${!!i.swissforagesId}
-                    @input="${() => {
-                      if (!i.swissforagesId) this.onWebsiteChange(index);
-                    }}"></textarea>
-              </div>
-            </div>
-            ${this.isVolumeInputsHidden() ? '' : html`
-              <div class="ngm-volume-limits-input">
-                <div>
-                  <label>${i18next.t('tbx_volume_lower_limit_label')}:</label></br>
-                  <div class="ui mini input right labeled">
-                    <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
-                           class=${`ngm-lower-limit-input-${index}`}
-                           .value="${this.volumeHeightLimits.lowerLimit}"
-                           @input="${this.onVolumeHeightLimitsChange.bind(this, index)}">
-                    <label class="ui label">m</label>
-                  </div>
-                </div>
-                <div>
-                  <label>${i18next.t('tbx_volume_height_label')}:</label></br>
-                  <div class="ui mini input right labeled">
-                    <input type="number" step="10" min="${this.minVolumeHeight}" max="${this.maxVolumeHeight}"
-                           class=${`ngm-volume-height-input-${index}`}
-                           .value="${this.volumeHeightLimits.height}"
-                           @change="${this.onVolumeHeightLimitsChange.bind(this, index)}">
-                    <label class="ui label">m</label>
-                  </div>
-                </div>
-              </div>
-            `}
-            <ngm-geom-configuration
-              ?hidden=${i.type === 'point'}
-              .iconClass=${i.type === 'line' ? 'route' : 'vector square'}
-              .colors=${AOI_COLORS}
-              .onColorChange=${(color => this.onColorChange(i.id, i.type, color))}
-            ></ngm-geom-configuration>
-            <ngm-point-edit
-              ?hidden=${i.type !== 'point'}
-              .position=${i.positions[0]}
-              .depth=${i.depth}
-              .volumeShowed=${i.volumeShowed}
-              .entity=${this.draw!.entityForEdit}
-              .restricted=${!!i.swissforagesId}>
-            </ngm-point-edit>
-          </div>
-        </div>`);
-  }*/
-
   initAoi() {
     if (this.aoiInited || !this.viewer) return;
     this.selectedArea = undefined;
@@ -534,12 +317,14 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.updateHighlight(this.selectedArea, true);
   }
 
+  // todo reuse or remove
   onShowHideEntityClick_(evt, id) {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (entity)
       entity.show = evt.target.checked;
   }
 
+  // todo reuse or remove
   onRemoveEntityClick_(id) {
     if (this.selectedArea && id === this.selectedArea.id) {
       this.deselectArea();
@@ -818,6 +603,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     return this.draw && this.draw.active;
   }
 
+  // todo reuse or remove
   editAreaPosition(id, restrictedPoint = false) {
     this.deselectArea();
     const entity = this.geometriesDataSource!.entities.getById(id);
@@ -896,6 +682,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     };
   }
 
+  // todo reuse or remove
   hideVolume(id) {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (!entity) return;
@@ -920,6 +707,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     return entity.properties.volumeHeightLimits.getValue();
   }
 
+  // todo reuse or remove
   onVolumeHeightLimitsChange(index) {
     if (!this.draw || !this.draw.entityForEdit) {
       return;
@@ -989,10 +777,12 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     saveAs(blob, 'swissgeol_geometries.kml');
   }
 
+  // todo reuse or remove
   // get atLeastOneEntityVisible() {
   //   return !!this.entitiesList_.find(ent => ent.show);
   // }
 
+  // todo reuse or remove
   isVolumeInputsHidden() {
     const entity = this.draw!.entityForEdit;
     if (!entity) return true;
