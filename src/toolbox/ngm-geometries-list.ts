@@ -1,5 +1,6 @@
 import {LitElementI18n} from '../i18n';
-import {customElement, html, property, state} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {NgmGeometry} from './ngm-aoi-drawer';
 import DrawStore from '../store/draw';
@@ -7,8 +8,8 @@ import {classMap} from 'lit-html/directives/class-map.js';
 
 @customElement('ngm-geometries-list')
 export default class NgmGeometriesList extends LitElementI18n {
-  @property({type: String}) selectedId = ''
-  @state() geometries: NgmGeometry[] = []
+  @property({type: String}) selectedId = '';
+  @state() geometries: NgmGeometry[] = [];
 
   constructor() {
     super();

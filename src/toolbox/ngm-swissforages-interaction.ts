@@ -1,5 +1,6 @@
 import {LitElementI18n} from '../i18n';
-import {customElement, html, property} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
 import i18next from 'i18next';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {updateBoreholeHeights} from './helpers';
@@ -16,10 +17,10 @@ import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 
 @customElement('ngm-swissforages-interaction')
 export class NgmSwissforagesInteraction extends LitElementI18n {
-  @property({type: Object}) item: NgmGeometry | undefined
-  @property({type: Object}) service: SwissforagesService | undefined
-  @property({type: Object}) dataSource: CustomDataSource | undefined
-  @property({type: Function}) updateModalOptions: CallableFunction | undefined
+  @property({type: Object}) item: NgmGeometry | undefined;
+  @property({type: Object}) service: SwissforagesService | undefined;
+  @property({type: Object}) dataSource: CustomDataSource | undefined;
+  @property({type: Function}) updateModalOptions: CallableFunction | undefined;
   private julianDate: JulianDate = new JulianDate();
   private viewer: Viewer | null = null;
 

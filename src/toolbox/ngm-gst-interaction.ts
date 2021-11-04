@@ -1,4 +1,5 @@
-import {customElement, html, property} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
 import {degreesToLv95, round} from '../projection.js';
 import {borehole, verticalCrossSection, horizontalCrossSection} from '../gst';
 import {showError, showWarning} from '../message.js';
@@ -21,12 +22,12 @@ export type OutputFormat = 'pdf' | 'png' | 'svg';
 
 @customElement('ngm-gst-interaction')
 export class NgmGstInteraction extends LitElementI18n {
-  @property({type: Object}) gstExtent: KmlDataSource | undefined
-  @property({type: String}) geometryType: 'point' | 'line' | 'rectangle' | '' = ''
-  @property({type: Number}) depth = 0
-  @property({type: Array}) positions: Cartesian3[] | null = null
-  @property({type: Object}) parentElement
-  private viewer: Viewer | null = null
+  @property({type: Object}) gstExtent: KmlDataSource | undefined;
+  @property({type: String}) geometryType: 'point' | 'line' | 'rectangle' | '' = '';
+  @property({type: Number}) depth = 0;
+  @property({type: Array}) positions: Cartesian3[] | null = null;
+  @property({type: Object}) parentElement;
+  private viewer: Viewer | null = null;
   private minDepth_ = -6000;
   private maxDepth_ = 1000;
   private outputFormat: OutputFormat = 'pdf';

@@ -11,7 +11,8 @@ import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
 import {Entity, Event, exportKml, exportKmlResultKml, Viewer} from 'cesium';
 import {saveAs} from 'file-saver';
 
-import {customElement, html, property, state} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
 
 import {
   AOI_DATASOURCE_NAME,
@@ -114,8 +115,8 @@ const DEFAULT_AREAS_COUNTER = {
 
 @customElement('ngm-aoi-drawer')
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
-  @property({type: Boolean}) downloadActiveDataEnabled = false
-  @state() selectedArea: Entity | undefined
+  @property({type: Boolean}) downloadActiveDataEnabled = false;
+  @state() selectedArea: Entity | undefined;
   minVolumeHeight = 1;
   maxVolumeHeight = 30000;
   minVolumeLowerLimit = -30000;
@@ -128,20 +129,20 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   restrictedEditing = false;
   colorBeforeHighlight: Color = DEFAULT_AOI_COLOR;
   aoiInited = false;
-  private areasCounter: AreasCounter = DEFAULT_AREAS_COUNTER
+  private areasCounter: AreasCounter = DEFAULT_AREAS_COUNTER;
   private screenSpaceEventHandler: ScreenSpaceEventHandler | undefined;
   private draw: CesiumDraw | undefined;
-  private swissforagesModalOptions: SwissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS
+  private swissforagesModalOptions: SwissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS;
   private sectionImageUrl: string | undefined;
   private editedBackup;
   private areasClickable = false;
-  private unlistenEditPostRender: Event.RemoveCallback | undefined
+  private unlistenEditPostRender: Event.RemoveCallback | undefined;
   private drawGeometries = [
     {labelTag: 'tbx_add_point_btn_label', type: 'point', icon: 'ngm-point-draw-icon'},
     {labelTag: 'tbx_add_line_btn_label', type: 'line', icon: 'ngm-line-draw-icon'},
     {labelTag: 'tbx_add_polygon_area_btn_label', type: 'polygon', icon: 'ngm-polygon-draw-icon'},
     {labelTag: 'tbx_add_rect_area_btn_label', type: 'rectangle', icon: 'ngm-rectangle-draw-icon'},
-  ]
+  ];
 
   constructor() {
     super();

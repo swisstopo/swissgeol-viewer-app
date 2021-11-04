@@ -1,4 +1,5 @@
-import {customElement, html, state} from 'lit-element';
+import {html} from 'lit';
+import {customElement, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
 import './ngm-aoi-drawer';
 import './ngm-slicer';

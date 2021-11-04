@@ -1,4 +1,5 @@
-import {customElement, html, property} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import $ from '../jquery';
@@ -16,11 +17,11 @@ import {Entity, Viewer} from 'cesium';
 
 @customElement('ngm-point-edit')
 export class NgmPointEdit extends LitElementI18n {
-  @property({type: Object}) position: Cartesian3 | undefined
-  @property({type: Object}) entity: Entity | undefined
-  @property({type: Number}) depth = 0
-  @property({type: Boolean}) volumeShowed = false
-  @property({type: Boolean}) restricted = false
+  @property({type: Object}) position: Cartesian3 | undefined;
+  @property({type: Object}) entity: Entity | undefined;
+  @property({type: Number}) depth = 0;
+  @property({type: Boolean}) volumeShowed = false;
+  @property({type: Boolean}) restricted = false;
   xValue = 0;
   yValue = 0;
   heightValue = 0;

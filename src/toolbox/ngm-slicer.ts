@@ -1,4 +1,5 @@
-import {customElement, html, state} from 'lit-element';
+import {html} from 'lit';
+import {customElement, state} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {syncSliceParam} from '../permalink';
@@ -12,10 +13,10 @@ import {NgmGeometry} from './ngm-aoi-drawer';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
-  @state() slicer: Slicer | null = null
-  @state() showBox = true
+  @state() slicer: Slicer | null = null;
+  @state() showBox = true;
   @state() showBoxCheckbox;
-  @state() negateSlice = false
+  @state() negateSlice = false;
 
 
   constructor() {

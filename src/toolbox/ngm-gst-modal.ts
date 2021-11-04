@@ -1,4 +1,5 @@
-import {customElement, html, property} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 
@@ -8,7 +9,7 @@ import 'fomantic-ui-css/components/modal.js';
 
 @customElement('ngm-gst-modal')
 export class NgmGstModal extends LitElementI18n {
-  @property({type: String}) imageUrl = ''
+  @property({type: String}) imageUrl = '';
   element;
 
   updated() {
