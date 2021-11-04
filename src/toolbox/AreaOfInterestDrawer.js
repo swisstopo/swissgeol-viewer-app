@@ -11,7 +11,7 @@ import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
 import {exportKml} from 'cesium';
 import {saveAs} from 'file-saver';
 
-import {html} from 'lit-element';
+import {html} from 'lit';
 
 import {
   AOI_DATASOURCE_NAME,
@@ -46,7 +46,7 @@ import {clickOnElement, coordinatesToBbox, parseJson} from '../utils';
 import './ngm-gst-interaction.js';
 import './ngm-point-edit.js';
 import '../elements/slicer/ngm-toolbox-slicer.js';
-import {classMap} from 'lit-html/directives/class-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 import './ngm-swissforages-modal.js';
 import './ngm-swissforages-interaction.js';
 import '../elements/ngm-geom-configuration.js';
@@ -113,11 +113,14 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   updated() {
     if (this.addedNewArea) {
-      this.addedNewArea = false;
-      this.querySelectorAll('.ngm-aoi-areas .active').forEach(el => el.classList.remove('active'));
       const lastChild = this.querySelector('.ngm-aoi-areas').lastElementChild;
-      lastChild.querySelector('.title').classList.add('active');
-      lastChild.querySelector('.content').classList.add('active');
+      if (lastChild) {
+        // FIXME: no idea what this condition means
+        this.addedNewArea = false;
+        this.querySelectorAll('.ngm-aoi-areas .active').forEach(el => el.classList.remove('active'));
+        lastChild.querySelector('.title').classList.add('active');
+        lastChild.querySelector('.content').classList.add('active');
+      }
     }
 
     if (!this.accordionInited) {

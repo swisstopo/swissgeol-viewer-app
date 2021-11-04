@@ -1,4 +1,5 @@
-import {customElement, html, property} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';

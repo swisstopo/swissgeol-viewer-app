@@ -1,5 +1,6 @@
-import {customElement, html, property} from 'lit-element';
-import {repeat} from 'lit-html/directives/repeat.js';
+import {html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
+import {repeat} from 'lit/directives/repeat.js';
 import {LitElementI18n} from '../i18n.js';
 import {Config} from './ngm-layers-item';
 // eslint-disable-next-line no-duplicate-imports

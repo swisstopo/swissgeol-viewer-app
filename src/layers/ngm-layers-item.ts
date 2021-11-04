@@ -1,5 +1,6 @@
 import i18next from 'i18next';
-import {customElement, html, property} from 'lit-element';
+import {html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {LayerType, DEFAULT_LAYER_OPACITY} from '../constants';
@@ -129,7 +130,7 @@ export class LayerTreeItem extends LitElementI18n {
         </div>
       </div>
       <div class="ngm-displayed-menu">
-        <div class="ngm-layer-icon ngm-zoom-to-icon" ?hidden=${!this.config.zoomToBbox}
+        <div class="ngm-layer-icon ngm-zoom-plus-icon" ?hidden=${!this.config.zoomToBbox}
               @mouseenter=${() => {
                 if (this.actions && this.actions.showBoundingBox) this.actions.showBoundingBox(this.config);
               }}

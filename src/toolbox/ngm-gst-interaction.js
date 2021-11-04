@@ -1,4 +1,4 @@
-import {html} from 'lit-element';
+import {html} from 'lit';
 import {degreesToLv95, round} from '../projection.js';
 import {borehole, verticalCrossSection, horizontalCrossSection} from '../gst.js';
 import {showError, showWarning} from '../notifications';

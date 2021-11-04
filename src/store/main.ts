@@ -3,8 +3,8 @@ import {Viewer} from 'cesium';
 import MapChooser from '../MapChooser';
 
 export default class MainStore {
-  private static viewerSubject = new BehaviorSubject<Viewer | null>(null)
-  private static mapChooserSubject = new BehaviorSubject<MapChooser | null>(null)
+  private static viewerSubject = new BehaviorSubject<Viewer | null>(null);
+  private static mapChooserSubject = new BehaviorSubject<MapChooser | null>(null);
 
   static get viewer(): BehaviorSubject<Viewer | null> {
     return this.viewerSubject;
