@@ -5,7 +5,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {updateBoreholeHeights} from './helpers';
 import {SWISSFORAGES_EDITOR_URL, SWISSFORAGES_VIEWER_URL} from '../constants';
 import {lv95ToDegrees} from '../projection';
-import {showWarning} from '../message';
+import {showWarning} from '../notifications';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
 import MainStore from '../store/main';

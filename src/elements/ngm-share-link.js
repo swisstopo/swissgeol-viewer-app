@@ -1,6 +1,6 @@
 import {LitElementI18n} from '../i18n';
 import {html} from 'lit-element';
-import {showWarning} from '../message';
+import {showWarning} from '../notifications';
 import i18next from 'i18next';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';

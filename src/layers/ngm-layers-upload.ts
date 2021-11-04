@@ -3,7 +3,7 @@ import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {showError, showWarning} from '../message';
+import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import {DEFAULT_LAYER_OPACITY} from '../constants';
 import {Config} from './ngm-layers-item';
 import $ from '../jquery.js';
@@ -38,9 +38,9 @@ export default class LayersUpload extends LitElementI18n {
 
   async uploadKml(file: File) {
     if (!file) {
-      showWarning(i18next.t('dtd_no_file_to_upload_warn'));
+      showSnackbarInfo(i18next.t('dtd_no_file_to_upload_warn'));
     } else if (!file.name.toLowerCase().endsWith('kml')) {
-      showWarning(i18next.t('dtd_file_not_kml'));
+      showSnackbarInfo(i18next.t('dtd_file_not_kml'));
     } else {
       try {
         const kmlDataSource = await KmlDataSource.load(file, {
@@ -71,7 +71,7 @@ export default class LayersUpload extends LitElementI18n {
         this.viewer.zoomTo(uploadedLayer);
       } catch (e) {
         console.error(e);
-        showError(i18next.t('dtd_cant_upload_kml_error'));
+        showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
       }
     }
   }

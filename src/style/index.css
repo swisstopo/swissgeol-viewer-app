@@ -48,6 +48,7 @@
 @import 'header.css';
 @import 'ngm-cam-configuration.css';
 @import 'ngm-slider.css';
+@import 'notifications.css';
 
 [hidden] {
   display: none !important;

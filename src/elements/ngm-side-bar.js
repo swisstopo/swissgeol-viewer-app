@@ -18,7 +18,7 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
-import {showWarning} from '../message';
+import {showWarning} from '../notifications';
 import {createDataGenerator, createZipFromData} from '../download';
 import {saveAs} from 'file-saver';
 import auth from '../store/auth';

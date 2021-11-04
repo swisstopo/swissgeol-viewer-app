@@ -6,7 +6,7 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';
 import 'fomantic-ui-css/components/dropdown.js';
-import {showWarning} from '../message';
+import {showWarning} from '../notifications';
 
 class NgmSwissforagesModal extends LitElementI18n {
 

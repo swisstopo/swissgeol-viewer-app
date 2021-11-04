@@ -25,7 +25,7 @@ import {
   AOI_LINE_ALPHA
 } from '../constants';
 import {getUploadedEntityType, updateBoreholeHeights} from './helpers';
-import {showWarning} from '../message.js';
+import {showMessage, showWarning} from '../notifications';
 import {LitElementI18n} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
@@ -35,7 +35,6 @@ import {updateHeightForCartesianPositions} from '../cesiumutils';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import CornerType from 'cesium/Source/Core/CornerType';
-import {showMessage} from '../message';
 import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {SwissforagesService} from './SwissforagesService';
