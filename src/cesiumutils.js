@@ -385,6 +385,7 @@ export function getOrthogonalViewPoints(viewer) {
 
 /**
  * Computes the east-north-up difference between two points.
+ * Taken from https://community.cesium.com/t/do-not-move-camera-when-setting-trackedentity/9554/4 to keep the camera centered on target entity
  * @param {Cartesian3} left
  * @param {Cartesian3} right
  * @returns {Cartesian3}

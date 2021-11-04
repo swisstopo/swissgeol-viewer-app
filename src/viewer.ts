@@ -237,6 +237,7 @@ function enableCenterOfRotate(viewer: Viewer) {
   const scene = viewer.scene;
   const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
   scene.camera.constrainedAxis = new Cartesian3(0, 0, 1);
+  // look fix camera on picked position when ctrl pressed
   eventHandler.setInputAction(event => {
     const pickedPosition = scene.pickPosition(event.position);
     if (pickedPosition) {
@@ -248,6 +249,7 @@ function enableCenterOfRotate(viewer: Viewer) {
       }];
     }
   }, ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.CTRL);
+  // move camera around picked position when ctrl pressed
   eventHandler.setInputAction(() => {
     scene.camera.setView({
       orientation: {
@@ -256,9 +258,11 @@ function enableCenterOfRotate(viewer: Viewer) {
       }
     });
   }, ScreenSpaceEventType.MOUSE_MOVE, KeyboardEventModifier.CTRL);
+  // free view if left mouse button released
   eventHandler.setInputAction(() => {
     scene.camera.lookAtTransform(Matrix4.IDENTITY);
   }, ScreenSpaceEventType.LEFT_UP, KeyboardEventModifier.CTRL);
+  // free view if ctrl released
   document.addEventListener('keyup', (evt) => {
     if (evt.key === 'Control') scene.camera.lookAtTransform(Matrix4.IDENTITY);
   });

@@ -96,9 +96,5 @@ ngm-object-information .content-container {
 
 ngm-object-information div.content-container td,
 ngm-object-information div.content-container span {
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -o-user-select: text;
   user-select: text;
 }

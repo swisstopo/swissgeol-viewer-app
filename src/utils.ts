@@ -175,7 +175,10 @@ export function debounce(f, ms) {
     if (isCooldown) return;
     f(...args);
     isCooldown = true;
-    setTimeout(() => isCooldown = false, ms);
+    setTimeout(() => {
+      isCooldown = false;
+      f(...args);
+    }, ms);
   };
 
 }

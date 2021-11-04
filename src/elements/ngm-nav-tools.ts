@@ -21,16 +21,16 @@ import {debounce} from '../utils';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null
-  @property({type: Boolean}) showCamConfig = false
-  @state() moveAmount = 200
-  @state() interaction: Interactable | null = null
-  @state() showRefPoint = false
-  private zoomingIn = false
-  private zoomingOut = false
-  private unlistenFromPostRender: Event.RemoveCallback | null = null
+  @property({type: Object}) viewer: Viewer | null = null;
+  @property({type: Boolean}) showCamConfig = false;
+  @state() moveAmount = 200;
+  @state() interaction: Interactable | null = null;
+  @state() showRefPoint = false;
+  private zoomingIn = false;
+  private zoomingOut = false;
+  private unlistenFromPostRender: Event.RemoveCallback | null = null;
   private eventHandler: ScreenSpaceEventHandler | undefined;
-  private stopZoomFunction: () => void = () => this.stopZoom()
+  private stopZoomFunction: () => void = () => this.stopZoom();
   private refIcon: Entity = new Entity({
     position: Cartesian3.ZERO,
     show: false,
@@ -41,7 +41,7 @@ export class NgmNavTools extends LitElementI18n {
       height: 40,
     }
   });
-  private moveRef = false
+  private moveRef = false;
 
   updated() {
     if (this.viewer && !this.unlistenFromPostRender) {
@@ -105,27 +105,27 @@ export class NgmNavTools extends LitElementI18n {
       this.eventHandler.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
       this.eventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOWN);
       this.eventHandler.removeInputAction(ScreenSpaceEventType.LEFT_UP);
-      this.removeReference();
+      this.removeTargetPoint();
     } else {
-      this.eventHandler.setInputAction(debounce(event => this.onMoveRef(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
+      this.eventHandler.setInputAction(debounce(event => this.onMouseMove(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
       this.eventHandler.setInputAction(event => this.onLeftDown(event), ScreenSpaceEventType.LEFT_DOWN);
       this.eventHandler.setInputAction(() => this.onLeftUp(), ScreenSpaceEventType.LEFT_UP);
-      this.setReference();
+      const position = pickCenterOnMapOrObject(this.viewer!.scene);
+      if (!position) {
+        showWarning(i18next.t('nav_tools_out_glob_warn'));
+        return;
+      }
+      this.addTargetPoint(position, true);
     }
   }
 
-  setReference(position?: Cartesian3) {
-    const center = position || pickCenterOnMapOrObject(this.viewer!.scene);
-    if (!center) {
-      showWarning(i18next.t('nav_tools_out_glob_warn'));
-      return;
-    }
+  addTargetPoint(center: Cartesian3, lookAtTransform = false) {
     this.showRefPoint = true;
     this.refIcon.position = <any>center;
     const cam = this.viewer!.camera;
     this.refIcon.show = true;
     this.refIcon.viewFrom = <any>eastNorthUp(center, cam.position);
-    if (!position) {
+    if (lookAtTransform) {
       const transform = Transforms.eastNorthUpToFixedFrame(center);
       cam.lookAtTransform(transform);
     }
@@ -133,7 +133,7 @@ export class NgmNavTools extends LitElementI18n {
 
   }
 
-  removeReference() {
+  removeTargetPoint() {
     document.removeEventListener('keydown', this.ctrlListener);
     this.showRefPoint = false;
     this.refIcon.show = false;
@@ -143,15 +143,15 @@ export class NgmNavTools extends LitElementI18n {
 
   ctrlListener = (evt) => {
     if (evt.key !== 'Control') return;
-    this.removeReference();
+    this.removeTargetPoint();
     showWarning(i18next.t('nav_tools_ctrl_disable_warn'));
-  }
+  };
 
   onLeftDown(event) {
     const pickedObject = this.viewer!.scene.pick(event.position);
     if (pickedObject && pickedObject.id && pickedObject.id.id === this.refIcon.id) {
       this.viewer!.scene.screenSpaceCameraController.enableInputs = false;
-      this.eventHandler!.setInputAction(event => this.onMoveRef(event), ScreenSpaceEventType.MOUSE_MOVE);
+      this.eventHandler!.setInputAction(event => this.onMouseMove(event), ScreenSpaceEventType.MOUSE_MOVE);
       this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
       this.viewer!.trackedEntity = undefined;
       this.moveRef = true;
@@ -164,14 +164,14 @@ export class NgmNavTools extends LitElementI18n {
     this.viewer!.trackedEntity = this.refIcon;
     this.viewer!.scene.screenSpaceCameraController.enableInputs = true;
     // for better performance
-    this.eventHandler!.setInputAction(debounce(event => this.onMoveRef(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
+    this.eventHandler!.setInputAction(debounce(event => this.onMouseMove(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
   }
 
-  onMoveRef(event) {
+  onMouseMove(event) {
     if (this.moveRef) {
-      const position = Cartesian3.clone(this.viewer!.scene.pickPosition(event.endPosition));
+      const position = this.viewer!.scene.pickPosition(event.endPosition);
       if (!position) return;
-      this.setReference(position);
+      this.addTargetPoint(position);
       this.viewer!.scene.requestRender();
     } else {
       const pickedObject = this.viewer!.scene.pick(event.endPosition);
