@@ -127,6 +127,13 @@
   -webkit-mask: url('./images/i_heranzoomen.svg') no-repeat center;
 }
 
+.ngm-coords-icon {
+  width: 22px;
+  height: 24px;
+  mask: url('./images/i_coordinates.svg') no-repeat center;
+  -webkit-mask: url('./images/i_coordinates.svg') no-repeat center;
+}
+
 .ngm-vector-icon {
   width: 24px;
   height: 24px;

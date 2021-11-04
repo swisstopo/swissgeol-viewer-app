@@ -171,3 +171,17 @@ export async function zoomTo(viewer: Viewer, config): Promise<void> {
     viewer.zoomTo(p);
   }
 }
+
+export function debounce(f, ms) {
+  let isCooldown = false;
+  return (...args) => {
+    if (isCooldown) return;
+    f(...args);
+    isCooldown = true;
+    setTimeout(() => {
+      isCooldown = false;
+      f(...args);
+    }, ms);
+  };
+
+}

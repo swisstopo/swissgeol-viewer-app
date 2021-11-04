@@ -265,7 +265,7 @@ export class NgmApp extends LitElementI18n {
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
             <ngm-object-information class="ngm-floating-window" ></ngm-object-information>
-            <ngm-nav-tools class="ngm-floating-window" .scene=${this.viewer?.scene} .showCamConfig=${this.showCamConfig}
+            <ngm-nav-tools class="ngm-floating-window" .viewer=${this.viewer} .showCamConfig=${this.showCamConfig}
                            @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}>
             </ngm-nav-tools>
             <ngm-minimap class="ngm-floating-window" .viewer=${this.viewer} .hidden=${!this.showMinimap}

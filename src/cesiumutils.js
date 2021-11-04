@@ -68,6 +68,19 @@ export function pickCenterOnEllipsoid(scene) {
 }
 
 /**
+ * Return the position of the point, on the map or object at the center of the Cesium viewport.
+ * @param {import('cesium/Source/Scene/Scene').default} scene
+ * @return {Cartesian3 | undefined}
+ */
+export function pickCenterOnMapOrObject(scene) {
+  const windowPosition = new Cartesian2(
+    scene.canvas.clientWidth / 2,
+    scene.canvas.clientHeight / 2
+  );
+  return scene.pickPosition(windowPosition);
+}
+
+/**
  * @param {import('cesium/Source/Scene/Camera').default} camera
  * @param {number} angle
  */
@@ -372,4 +385,25 @@ export function getOrthogonalViewPoints(viewer) {
 
 export function getValueOrUndefined(prop) {
   return prop ? prop.getValue() : undefined;
+}
+
+/**
+ * Computes the east-north-up difference between two points.
+ * Taken from https://community.cesium.com/t/do-not-move-camera-when-setting-trackedentity/9554/4 to keep the camera centered on target entity
+ * @param {Cartesian3} left
+ * @param {Cartesian3} right
+ * @returns {Cartesian3}
+ */
+export function eastNorthUp(left, right) {
+  const leftCartographic = Cartographic.fromCartesian(left);
+  const rightCartographic = Cartographic.fromCartesian(right);
+  const leftUp = Cartesian3.fromRadians(rightCartographic.longitude, leftCartographic.latitude);
+  const rightDown = Cartesian3.fromRadians(rightCartographic.longitude, rightCartographic.latitude);
+  const isEast = rightCartographic.longitude > leftCartographic.longitude;
+  const isNorth = rightCartographic.latitude > leftCartographic.latitude;
+  return new Cartesian3(
+    Cartesian3.distance(left, leftUp) * (isEast ? 1 : -1),
+    Cartesian3.distance(leftUp, rightDown) * (isNorth ? 1 : -1),
+    rightCartographic.height - leftCartographic.height
+  );
 }
