@@ -10,6 +10,10 @@ export default class MainStore {
     return this.viewerSubject;
   }
 
+  static get viewerValue(): Viewer | null {
+    return this.viewerSubject.getValue();
+  }
+
   static setViewer(value: Viewer): void {
     this.viewerSubject.next(value);
   }

@@ -1,5 +1,6 @@
 import {LitElementI18n} from '../i18n';
 import {html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
 import i18next from 'i18next';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {updateBoreholeHeights} from './helpers';
@@ -9,26 +10,23 @@ import {showWarning} from '../notifications';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
 import MainStore from '../store/main';
+import {Viewer} from 'cesium';
+import {SwissforagesService} from './SwissforagesService';
+import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import {NgmGeometry} from './interfaces';
 
-class NgmSwissforagesInteraction extends LitElementI18n {
+@customElement('ngm-swissforages-interaction')
+export class NgmSwissforagesInteraction extends LitElementI18n {
+  @property({type: Object}) item: NgmGeometry | undefined;
+  @property({type: Object}) service: SwissforagesService | undefined;
+  @property({type: Object}) dataSource: CustomDataSource | undefined;
+  @property({type: Function}) updateModalOptions: CallableFunction | undefined;
+  private julianDate: JulianDate = new JulianDate();
+  private viewer: Viewer | null = null;
 
   constructor() {
     super();
-    this.julianDate = new JulianDate();
-    /**
-     * @type {import('cesium').Viewer}
-     */
-    this.viewer = null;
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
-  }
-
-  static get properties() {
-    return {
-      item: {type: Object},
-      service: {type: Object},
-      dataSource: {type: Object},
-      updateModalOptions: {type: Object},
-    };
   }
 
   firstUpdated() {
@@ -40,13 +38,14 @@ class NgmSwissforagesInteraction extends LitElementI18n {
   }
 
   showSwissforagesModal() {
+    if (!this.item) return;
     if (this.item.swissforagesId) {
       // show
       window.open(`${SWISSFORAGES_EDITOR_URL}${this.item.swissforagesId}`, '_blank');
     } else {
       // create
       const cartographicPosition = Cartographic.fromCartesian(this.item.positions[0]);
-      this.updateModalOptions({
+      this.updateModalOptions!({
         id: this.item.id,
         name: this.item.name,
         position: cartographicPosition,
@@ -59,7 +58,8 @@ class NgmSwissforagesInteraction extends LitElementI18n {
   }
 
   onSwissforagesBoreholeCreated(pointId, boreholeId, depth) {
-    const entity = this.dataSource.entities.getById(pointId);
+    const entity = this.dataSource!.entities.getById(pointId);
+    if (!entity || !entity.properties) return;
     entity.properties.swissforagesId = boreholeId;
     entity.properties.depth = depth;
     updateBoreholeHeights(entity, this.julianDate);
@@ -69,26 +69,27 @@ class NgmSwissforagesInteraction extends LitElementI18n {
     } else {
       entity.properties.addProperty('website', url);
     }
-    entity.ellipse.show = true;
-    this.viewer.scene.requestRender();
+    entity.ellipse!.show = <any>true;
+    this.viewer!.scene.requestRender();
     window.open(`${SWISSFORAGES_EDITOR_URL}${boreholeId}`, '_blank');
-    this.updateModalOptions({
+    this.updateModalOptions!({
       show: false
     });
   }
 
   async syncPointWithSwissforages(id, swissforagesId) {
-    if (!this.service.userToken) {
-      this.updateModalOptions({
+    if (!this.service!.userToken) {
+      this.updateModalOptions!({
         onLoggedIn: () => this.syncPointWithSwissforages(id, swissforagesId),
         show: true
       });
       return;
     }
     try {
-      this.toggleSwissforagesSyncLoader(id);
-      const boreholeData = await this.service.getBoreholeById(swissforagesId);
-      const entity = this.dataSource.entities.getById(id);
+      this.toggleSwissforagesSyncLoader();
+      const boreholeData = await this.service!.getBoreholeById(swissforagesId);
+      const entity = this.dataSource!.entities.getById(id);
+      if (!entity || !entity.properties) return;
       if (boreholeData) {
         entity.properties.depth = boreholeData.length || entity.properties.depth;
         if (boreholeData.location_x && boreholeData.location_y) {
@@ -96,7 +97,7 @@ class NgmSwissforagesInteraction extends LitElementI18n {
           const positionlv95 = lv95ToDegrees([boreholeData.location_x, boreholeData.location_y]);
           const cartographicPosition = Cartographic.fromDegrees(positionlv95[0], positionlv95[1]);
           cartographicPosition.height = height;
-          entity.position = Cartographic.toCartesian(cartographicPosition);
+          entity.position = <any>Cartographic.toCartesian(cartographicPosition);
           updateBoreholeHeights(entity, this.julianDate);
         }
         if (boreholeData.custom && boreholeData.custom.public_name) {
@@ -105,29 +106,31 @@ class NgmSwissforagesInteraction extends LitElementI18n {
         }
       } else {
         showWarning(i18next.t('tbx_swissforages_borehole_not_exists_warning'));
-        entity.ellipse.show = false;
+        entity.ellipse!.show = <any>false;
         entity.properties.swissforagesId = undefined;
       }
       this.toggleSwissforagesSyncLoader();
     } catch (e) {
-      showWarning(e);
+      showWarning(<string>e);
       this.toggleSwissforagesSyncLoader();
     }
   }
 
   toggleSwissforagesSyncLoader() {
     const syncBtnElement = this.querySelector('.ngm-swissforages-sync');
+    if (!syncBtnElement) return;
     syncBtnElement.classList.toggle('disabled');
-    syncBtnElement.querySelector('.dimmer').classList.toggle('active');
+    syncBtnElement.querySelector('.dimmer')!.classList.toggle('active');
   }
 
   onDepthChange(event) {
-    const entity = this.dataSource.entities.getById(this.item.id);
+    const entity = this.dataSource!.entities.getById(<string> this.item!.id);
+    if (!entity || !entity.properties) return;
     entity.properties.depth = Number(event.target.value);
   }
 
   render() {
-    if (this.item.type !== 'point') return '';
+    if (!this.item || this.item.type !== 'point') return '';
     return html`
       <div class="ngm-swissforages-btns-container">
         <div class="ui tiny buttons">
@@ -173,5 +176,3 @@ class NgmSwissforagesInteraction extends LitElementI18n {
     return this;
   }
 }
-
-customElements.define('ngm-swissforages-interaction', NgmSwissforagesInteraction);

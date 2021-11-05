@@ -19,7 +19,7 @@ import {
 import {setupSearch} from './search.js';
 import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer';
 
-import {getCameraView, getSliceParam, syncCamera, syncSliceParam} from './permalink.js';
+import {getCameraView, syncCamera} from './permalink.js';
 import i18next from 'i18next';
 import {getZoomToPosition} from './permalink';
 import Slicer from './slicer/Slicer';
@@ -30,13 +30,14 @@ import QueryManager from './query/QueryManager';
 import {initAnalytics} from './analytics.js';
 import {initSentry} from './sentry.js';
 import MainStore from './store/main';
-import SlicerStore from './store/slicer';
+import ToolboxStore from './store/toolbox';
 import {classMap} from 'lit/directives/class-map.js';
 import {customElement, state} from 'lit/decorators.js';
 import MapChooser from './MapChooser';
 import {NgmLayerLegendContainer} from './elements/ngm-layer-legend-container';
 import {NgmSlowLoading} from './elements/ngm-slow-loading';
-import {NgmSlicer} from './elements/slicer/ngm-slicer';
+import {NgmAreaOfInterestDrawer} from './toolbox/ngm-aoi-drawer';
+import LayersUpload from './layers/ngm-layers-upload';
 import {NgmLoadingMask} from './elements/ngm-loading-mask';
 import {Viewer} from 'cesium';
 
@@ -100,18 +101,7 @@ export class NgmApp extends LitElementI18n {
     console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
     (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
     this.slicer_ = new Slicer(viewer);
-    const sliceOptions = getSliceParam();
-    if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
-      this.slicer_.sliceOptions = {
-        ...this.slicer_.sliceOptions, ...sliceOptions,
-        syncBoxPlanesCallback: (sliceInfo) => syncSliceParam(sliceInfo),
-        deactivationCallback: () => {
-          (<NgmSlicer> this.querySelector('ngm-slicer')).onDeactivation();
-        }
-      };
-      this.slicer_!.active = true;
-    }
-    SlicerStore.setSlicer(this.slicer_);
+    ToolboxStore.setSlicer(this.slicer_);
 
     // setup web components
     this.mapChooser = setupBaseLayers(viewer);
@@ -246,7 +236,7 @@ export class NgmApp extends LitElementI18n {
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
             <ngm-object-information class="ngm-floating-window" ></ngm-object-information>
-            <ngm-nav-tools class="ngm-floating-window" .scene=${this.viewer?.scene} .showCamConfig=${this.showCamConfig}
+            <ngm-nav-tools class="ngm-floating-window" .viewer=${this.viewer} .showCamConfig=${this.showCamConfig}
                            @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}>
             </ngm-nav-tools>
             <ngm-minimap class="ngm-floating-window" .viewer=${this.viewer} .hidden=${!this.showMinimap}

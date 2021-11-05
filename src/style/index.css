@@ -32,7 +32,6 @@
 @import 'search.css';
 @import 'ngm-object-information.css';
 @import 'ngm-gst-modal.css';
-@import 'ngm-toolbox.css';
 @import 'keyboard-navigation.css';
 @import 'layers.css';
 @import 'ngm-map-configuration.css';
@@ -49,6 +48,8 @@
 @import 'ngm-cam-configuration.css';
 @import 'ngm-slider.css';
 @import 'notifications.css';
+@import 'ngm-toolbox.css';
+@import 'ngm-checkbox.css';
 
 [hidden] {
   display: none !important;
@@ -75,10 +76,6 @@ a {
 }
 
 div, img {
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
   user-select: none;
 }
 
@@ -228,11 +225,6 @@ ngm-loading-mask .progress {
   width: 18%;
 }
 
-ngm-slicer {
-  display: flex;
-  flex-direction: column;
-}
-
 .layerloader {
   line-height: 1rem;
 }
@@ -260,49 +252,6 @@ ngm-layer-legend-container {
 
 ngm-layer-legend-container > ngm-layer-legend {
   pointer-events: auto;
-}
-
-.ngm-slice-to-draw .description {
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-}
-
-.ngm-slice-to-draw .lightbulb {
-  font-size: 18px;
-  margin-right: 5px;
-}
-
-.ngm-slice-to-draw .minus {
-  float: right;
-  margin-right: -5px;
-  margin-top: -5px;
-}
-
-.ngm-slice-to-draw .minus,
-.ngm-slice-to-draw .expand {
-  font-size: 12px;
-  color: grey;
-}
-
-.ui.mini.popup.ngm-slice-to-draw {
-  padding: 0;
-}
-
-.ngm-slice-to-draw .body {
-  padding: 10px;
-}
-
-.ngm-slice-to-draw .body.minimized {
-  padding: 4px 2px 2px 4px;
-}
-
-.ngm-slice-to-draw .content > button {
-  width: 215px;
-}
-
-.ngm-slice-to-draw .content > .checkbox {
-  margin-bottom: 5px;
 }
 
 .ngm-floating-window {
@@ -347,6 +296,14 @@ ngm-layer-legend-container > ngm-layer-legend {
 .ngm-divider {
   width: 100%;
   border: 1px solid #E0E3E6;
+}
+
+.ngm-disabled {
+  cursor: default;
+  opacity: 0.45 !important;
+  background-image: none;
+  box-shadow: none;
+  pointer-events: none !important;
 }
 
 @media (max-height: 630px) {

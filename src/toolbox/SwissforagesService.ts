@@ -3,16 +3,22 @@ import {radiansToLv95} from '../projection';
 import i18next from 'i18next';
 import {showWarning} from '../notifications';
 
-export class SwissforagesService {
-  constructor() {
-    this.userToken = undefined;
-    this.workGroupId = undefined;
-    this.headers = new Headers({
-      'bdms-authorization': 'bdms-v1',
-      'Content-Type': 'application/json;charset=UTF-8',
-      'Authorization': '',
-    });
+interface SwissforagesResponse {
+  success: boolean;
+  data: {
+    cid: string
+    mid: string
   }
+}
+
+export class SwissforagesService {
+  userToken: string | undefined;
+  workGroupId: string | undefined;
+  headers = new Headers({
+    'bdms-authorization': 'bdms-v1',
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Authorization': '',
+  });
 
   get requestOptions() {
     return {
@@ -124,7 +130,7 @@ export class SwissforagesService {
   }
 
   async getLocation(position) {
-    let response = undefined;
+    let response: SwissforagesResponse | undefined;
     try {
       const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/geoapi/location`, {
         ...this.requestOptions,

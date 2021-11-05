@@ -11,7 +11,7 @@ interface SliceOptions {
   /**
    * Slice type.
    */
-  type?: 'box'|'view-box'|'line'|'view-line',
+  type?: 'box' | 'view-box' | 'line' | 'view-line',
   /**
    * points for line slicing. Required with 'line' type
    */
@@ -31,19 +31,19 @@ interface SliceOptions {
   /**
    * box and arrows visibility
    */
-   showBox?: boolean,
+  showBox?: boolean,
   /**
    * calls on slicing deactivation
    */
-   deactivationCallback?: () => void,
+  deactivationCallback?: () => void,
   /**
    * calls on slicing activation
    */
-   activationCallback?: () => void,
-   /**
-    * calls on synchronization of box planes
-    */
-   syncBoxPlanesCallback?: () => void,
+  activationCallback?: () => void,
+  /**
+   * calls on synchronization of box planes
+   */
+  syncBoxPlanesCallback?: (sliceInfo) => void,
 }
 
 
@@ -107,8 +107,7 @@ export default class Slicer {
 
       if (globe.clippingPlanes) {
         globe.clippingPlanes.enabled = false;
-        // @ts-ignore
-        globe.clippingPlanes = undefined;
+        globe.clippingPlanes.removeAll();
       }
 
 
@@ -148,6 +147,8 @@ export default class Slicer {
       tileset.readyPromise.then(primitive => {
         if (!primitive.clippingPlanes && this.slicingTool) {
           this.slicingTool.addClippingPlanes(primitive);
+          if (this.sliceOptions.type === 'box' || this.sliceOptions.type === 'view-box')
+            this.slicingBox.syncPlanes();
         }
       });
     }
