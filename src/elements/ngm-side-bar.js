@@ -167,7 +167,8 @@ class SideBar extends LitElementI18n {
             </div>
           </div>
         </div>
-        <ngm-tools .hidden=${this.activePanel !== 'tools'} @close=${() => this.activePanel = ''}></ngm-tools>
+        <ngm-tools .hidden=${this.activePanel !== 'tools'} .toolsHidden=${this.activePanel !== 'tools'}
+                   @close=${() => this.activePanel = ''}></ngm-tools>
         <ngm-share-link .hidden=${this.activePanel !== 'share'}></ngm-share-link>
       </div>
     `;

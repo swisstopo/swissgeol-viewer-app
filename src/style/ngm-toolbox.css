@@ -1,3 +1,10 @@
+ngm-aoi-drawer,
+ngm-slicer {
+  height: calc(100vh - 142px);
+  display: block;
+  overflow-y: auto;
+}
+
 .ngm-draw-list-item,
 .ngm-tools-list-item {
   display: flex;
@@ -68,7 +75,7 @@
   cursor: pointer;
 }
 
-.ngm-geom-item.active,
+ngm-slicer .ngm-geom-item.active,
 .ngm-slice-item.active {
   height: auto;
 }
