@@ -1,30 +1,23 @@
 ngm-height-slider {
   position: absolute;
   z-index: 2;
-  top: 98px;
   right: 25px;
 }
 
 ngm-height-slider input {
   -webkit-appearance: none;
-  /* writing-mode: bt-lr; */
-  /* transform: rotate(270deg); */
-  width: 20px;
-  height: 72vh;
-  background-color: rgba(0, 0, 0, 0);
-  background-image: linear-gradient(
-    rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 16px,
-    #D0F5F9 16px, #D0F5F9 33%,
-    #998675 33%, #998675 33% calc(100% - 16px),
-    rgba(0, 0, 0, 0) calc(100% - 16px)
-  )
+  transform:rotate(270deg);
+  transform-origin: right;
+  width: 72vh;
+  height: 20px;
+  background-image: linear-gradient(to left, #D0F5F9 33%, white 0, white 33%, #998675 33% )
 }
 
 
 ngm-height-slider input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  transform: translate(5px, 0px);
+  transform: rotate(270deg);
   width: 32px;
   height: 32px;
   border: 0;
@@ -35,6 +28,7 @@ ngm-height-slider input::-webkit-slider-thumb {
 ngm-height-slider input::-moz-range-thumb {
   width: 32px;
   height: 32px;
+  transform: rotate(270deg);
   border: 0;
   background: center/100% url('./../images/i_cam_position.svg');
   cursor: pointer;

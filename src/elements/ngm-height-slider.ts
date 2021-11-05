@@ -37,26 +37,26 @@ export class NgmHeightSlider extends LitElementI18n {
   updateCameraHeight(event: Event) {
     if (!this.viewer) return;
     const input = event.target as HTMLInputElement;
-    const height = this.valueToHeight(Number(input.value));
-    setCameraHeight(this.viewer.camera, height);
+    const camera = this.viewer.scene.camera;
+    const altitude = this.viewer.scene.globe.getHeight(camera.positionCartographic) || 0;
+    let height = Math.round(this.valueToHeight(Number(input.value)));
+    const snapDistance = 150; // snap to 0 from 150m/-150m
+    if (height <= snapDistance && height >= -snapDistance) height = 0;
+    height += altitude;
+    setCameraHeight(camera, height);
   }
 
   heightToValue(height: number) {
     const height_km = height / 1000;
-    if (height_km >= 300) {
-      return 3;
-    } else if (height_km >= 0) {
-      return height_km / 300 + 2;
-    } else if (height_km >= -30) {
-      return 2 - -height_km / 30 * 2;
-    } else if (height_km < -30) {
-      return 0;
-    }
+    if (height_km >= 300) return 3;
+    else if (height_km > 0) return height_km / 300 + 2;
+    else if (height_km >= -30) return 2 - -height_km / 30 * 2;
+    else return 0;
   }
 
   valueToHeight(value: number) {
     if (value >= 2) {
-      return 300000 * (value - 2) ;
+      return 300000 * (value - 2);
     } else {
       return -30000 * (1 - value / 2);
     }
@@ -64,9 +64,9 @@ export class NgmHeightSlider extends LitElementI18n {
 
   render() {
     return html`
-      <input type="range" orient="vertical" min="0" max="3" step=0.01
-              value=${this.value}
-              @input=${this.updateCameraHeight}>
+      <input type="range" min="0" max="3" step=0.01
+             .value=${this.value}
+             @input=${this.updateCameraHeight}>
 
     `;
   }
