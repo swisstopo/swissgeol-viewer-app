@@ -339,8 +339,8 @@ export function setupBaseLayers(viewer: Viewer) {
       backgroundImgSrc: 'src/images/lakes_rivers.png',
       hasAlphaChannel: true,
       layers: [
-        addSwisstopoLayer(viewer, 'ch.bafu.vec25-gewaessernetz_2000', 'png', 18, '20070101'),
-        addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', 18, '20070101')
+        addSwisstopoLayer(viewer, 'ch.bafu.vec25-gewaessernetz_2000', 'png', 18),
+        addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', 18)
       ]
     },
     {
