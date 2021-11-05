@@ -66,7 +66,7 @@ export function create3DTilesetFromConfig(viewer: Viewer, config: Config, tileLo
     tileset.style = new Cesium3DTileStyle(config.style);
   }
 
-  tileset.pickable = config.pickable !== undefined ? config.pickable : false;
+  (tileset as any).pickable = config.pickable !== undefined ? config.pickable : false;
   viewer.scene.primitives.add(tileset);
 
   config.setVisibility = visible => {
