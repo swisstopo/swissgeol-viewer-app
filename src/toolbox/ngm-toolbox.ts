@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {customElement, state} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
 import './ngm-aoi-drawer';
 import './ngm-slicer';
@@ -18,6 +18,7 @@ import {getSliceParam} from '../permalink';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
+  @property({type: Boolean}) toolsHidden = true;
   @state() activeTool: 'draw' | 'slicing' | undefined;
   geometriesDataSource: CustomDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
@@ -97,7 +98,8 @@ export class NgmToolbox extends LitElementI18n {
       </div>
       <ngm-aoi-drawer .hidden="${this.activeTool !== 'draw'}"
                       .geometriesDataSource=${this.geometriesDataSource}></ngm-aoi-drawer>
-      <ngm-slicer .hidden="${this.activeTool !== 'slicing'}"
+      <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
+                  .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
                   .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>`;
   }
 

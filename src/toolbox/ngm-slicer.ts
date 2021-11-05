@@ -19,6 +19,7 @@ import MainStore from '../store/main';
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
+  @property({type: Boolean}) slicerHidden = true;
   @state() slicer: Slicer | null = null;
   @state() showBox = true;
   @state() negateSlice = false;
@@ -47,6 +48,12 @@ export class NgmSlicer extends LitElementI18n {
         this.slicer!.active = true;
       }
     });
+  }
+
+  protected update(changedProperties) {
+    if (changedProperties.get('slicerHidden') && !this.slicerHidden && !this.slicer?.active)
+      this.toggleSlicer('view-box');
+    super.update(changedProperties);
   }
 
   toggleSlicer(type?, info?) {

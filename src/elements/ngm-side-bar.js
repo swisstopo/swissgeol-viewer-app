@@ -132,7 +132,7 @@ class SideBar extends LitElementI18n {
         </ngm-catalog>
       </div>
       <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
-        <ngm-tools @close=${() => this.activePanel = ''}></ngm-tools>
+        <ngm-tools .toolsHidden=${this.activePanel !== 'tools'} @close=${() => this.activePanel = ''}></ngm-tools>
       </div>
       <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel">
         <div class="ngm-panel-header">${i18next.t('lsb_share')}
