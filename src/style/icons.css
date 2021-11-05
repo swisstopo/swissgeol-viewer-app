@@ -120,11 +120,39 @@
   -webkit-mask: url('./images/i_cam_tilt.svg') no-repeat center;
 }
 
+.ngm-dropdown-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_menu-1.svg') no-repeat center;
+  -webkit-mask: url('./images/i_menu-1.svg') no-repeat center;
+}
+
+.ngm-visible-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_visible.svg') no-repeat center;
+  -webkit-mask: url('./images/i_visible.svg') no-repeat center;
+}
+
+.ngm-invisible-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_invisible.svg') no-repeat center;
+  -webkit-mask: url('./images/i_invisible.svg') no-repeat center;
+}
+
 .ngm-zoom-plus-icon {
   width: 20px;
   height: 20px;
   mask: url('./images/i_heranzoomen.svg') no-repeat center;
   -webkit-mask: url('./images/i_heranzoomen.svg') no-repeat center;
+}
+
+.ngm-delete-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_delete.svg') no-repeat center;
+  -webkit-mask: url('./images/i_delete.svg') no-repeat center;
 }
 
 .ngm-coords-icon {
@@ -252,4 +280,11 @@
   mask: url('./images/i_slice_right.svg') no-repeat center;
   -webkit-mask: url('./images/i_slice_right.svg') no-repeat center;
   background-color: #0B7285;
+}
+
+.ngm-upload-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_upload.svg') no-repeat center;
+  -webkit-mask: url('./images/i_upload.svg') no-repeat center;
 }

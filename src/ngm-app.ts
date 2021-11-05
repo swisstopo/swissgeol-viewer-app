@@ -6,7 +6,6 @@ import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
 import './elements/ngm-feature-height';
 import './elements/ngm-auth';
-import './elements/ngm-drop-files';
 import './elements/ngm-tracking-consent';
 import './elements/ngm-camera-information.js';
 import './elements/ngm-nav-tools';
@@ -30,7 +29,6 @@ import QueryManager from './query/QueryManager';
 
 import {initAnalytics} from './analytics.js';
 import {initSentry} from './sentry.js';
-import {showWarning} from './message';
 import MainStore from './store/main';
 import ToolboxStore from './store/toolbox';
 import {classMap} from 'lit/directives/class-map.js';
@@ -38,8 +36,6 @@ import {customElement, state} from 'lit/decorators.js';
 import MapChooser from './MapChooser';
 import {NgmLayerLegendContainer} from './elements/ngm-layer-legend-container';
 import {NgmSlowLoading} from './elements/ngm-slow-loading';
-import {NgmAreaOfInterestDrawer} from './toolbox/ngm-aoi-drawer';
-import LayersUpload from './layers/ngm-layers-upload';
 import {NgmLoadingMask} from './elements/ngm-loading-mask';
 import {Viewer} from 'cesium';
 
@@ -47,13 +43,13 @@ const SKIP_STEP2_TIMEOUT = 5000;
 
 const isLocalhost = document.location.hostname === 'localhost';
 
-const onStep1Finished = (globe, searchParams) => {
+const onStep1Finished = (globe, searchParams: URLSearchParams) => {
   let sse = 2;
   if (isLocalhost) {
     sse = 20;
   }
   if (searchParams.has('maximumScreenSpaceError')) {
-    sse = parseFloat(searchParams.get('maximumScreenSpaceError'));
+    sse = parseFloat(searchParams.get('maximumScreenSpaceError')!);
   }
   globe.maximumScreenSpaceError = sse;
 };
@@ -107,7 +103,7 @@ export class NgmApp extends LitElementI18n {
 
     // setup web components
     this.mapChooser = setupBaseLayers(viewer);
-    this.mapChooser!.addMapChooser(this.querySelector('.ngm-bg-chooser-map'));
+    this.mapChooser.addMapChooser(this.querySelector('.ngm-bg-chooser-map')!);
     MainStore.setMapChooser(this.mapChooser);
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(viewer);
@@ -115,29 +111,6 @@ export class NgmApp extends LitElementI18n {
     const sideBar = this.querySelector('ngm-side-bar');
 
     setupSearch(viewer, this.querySelector('ga-search')!, sideBar);
-  }
-
-
-  /**
-   * @param file
-   * @param {'toolbox'|'model'} type
-   */
-  onFileDrop(file, type) {
-    if (type === 'toolbox') {
-      const aoi: NgmAreaOfInterestDrawer = this.querySelector('ngm-aoi-drawer')!;
-      if (file.name.toLowerCase().endsWith('.kml')) {
-        aoi.uploadKml(file);
-      } else if (file.name.toLowerCase().endsWith('.gpx')) {
-        aoi.uploadGpx(file);
-      }
-    } else if (type === 'model') {
-      if (file.name.toLowerCase().endsWith('.kml')) {
-        const kmlUpload: LayersUpload = this.querySelector('ngm-layers-upload')!;
-        kmlUpload.uploadKml(file);
-      } else {
-        showWarning(i18next.t('dtd_file_not_kml'));
-      }
-    }
   }
 
   /**
@@ -176,8 +149,6 @@ export class NgmApp extends LitElementI18n {
         unlisten();
       }
     });
-
-
   }
 
   firstUpdated() {
@@ -253,8 +224,6 @@ export class NgmApp extends LitElementI18n {
         <ngm-camera-information .viewer="${this.viewer}"></ngm-camera-information>
       </header>
       <main>
-        <ngm-drop-files @filedrop="${event => this.onFileDrop(event.detail.file, event.detail.type)}"
-                        .target="${document.body}"></ngm-drop-files>
         <ngm-loading-mask></ngm-loading-mask>
         <ngm-side-bar
           .queryManager=${this.queryManager}

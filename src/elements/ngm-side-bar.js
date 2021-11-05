@@ -1,16 +1,16 @@
 import {html} from 'lit';
 import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
-import '../layers/ngm-layers.js';
-import '../layers/ngm-catalog.js';
-import LayersActions from '../layers/LayersActions.js';
-import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants';
-import defaultLayerTree from '../layertree.js';
+import '../layers/ngm-layers';
+import '../layers/ngm-catalog';
+import LayersActions from '../layers/LayersActions';
+import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
+import defaultLayerTree from '../layertree';
 import {getLayerParams, syncLayersParam, getAssetIds, getAttribute, getSliceParam} from '../permalink.js';
-import {createCesiumObject} from '../layers/helpers.js';
+import {createCesiumObject} from '../layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
-import './ngm-map-configuration.js';
+import './ngm-map-configuration';
 import {getZoomToPosition} from '../permalink';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
@@ -18,11 +18,10 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
-import {showWarning} from '../message';
+import {showWarning} from '../notifications';
 import auth from '../store/auth';
 import './ngm-share-link.js';
 import '../layers/ngm-layers-upload';
-import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
 import {classMap} from 'lit/directives/class-map.js';
 import {zoomTo} from '../utils';
@@ -108,7 +107,7 @@ class SideBar extends LitElementI18n {
           <div class="ngm-help" @click=${() => this.querySelector('.ngm-help-link').click()}>
             <div class="ngm-help-icon"></div>
             ${i18next.t('lsb_help')}
-            <a href="/manuals/manual_en.html" target="_blank" .hidden="true" class="ngm-help-link"></a>
+            <a href="/manuals/manual_en.html" target="_blank" .hidden=${true} class="ngm-help-link"></a>
           </div>
           <div class="ngm-settings ${classMap({'ngm-active-section': this.activePanel === 'settings'})}"
                @click=${() => this.togglePanel('settings')}>
@@ -122,54 +121,47 @@ class SideBar extends LitElementI18n {
           </div>
         </div>
       </div>
-      <div .hidden=${!this.activePanel}
-           class="ngm-side-bar-panel ${classMap({'ngm-large-panel': this.activePanel === 'dashboard'})}">
-        <div .hidden=${!this.showHeader} class="ngm-panel-header">
-          ${i18next.t(`lsb_${this.activePanel}`)}
+      <div .hidden=${this.activePanel !== 'dashboard'} class="ngm-side-bar-panel ngm-large-panel">
+      </div>
+      <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-layer-catalog">
+        <div class="ngm-panel-header">${i18next.t('lyr_geocatalog_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
-        <div .hidden=${this.activePanel !== 'data'} class="ngm-data-container">
-          <div class="ui styled accordion">
-            <div class="title ngmlightgrey ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
-              <i class="dropdown icon"></i>
-              ${i18next.t('lyr_geocatalog_label')}
-            </div>
-            <div class="content ngm-layer-content ${!LocalStorageController.hideCatalogValue ? 'active' : ''}">
-              <ngm-catalog
-                .layers=${this.catalogLayers}
-                @layerclick=${evt => this.onCatalogLayerClicked(evt)}
-              >
-              </ngm-catalog>
-            </div>
-          </div>
-
-          <div class="ui styled accordion">
-            <div class="title ngmverylightgrey active">
-              <i class="dropdown icon"></i>
-              ${i18next.t('dtd_displayed_data_label')}
-            </div>
-            <div class="content active">
-              <ngm-layers
-                .layers=${this.activeLayers}
-                .actions=${this.layerActions}
-                @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
-                @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
-                @layerChanged=${() => this.onLayerChanged()}>
-              </ngm-layers>
-              <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
-              <h5 class="ui horizontal divider header">
-                ${i18next.t('dtd_background_map_label')}
-                <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
-                  <span class="small_load_counter">${this.globeQueueLength_}</span>
-                </div>
-              </h5>
-              <ngm-map-configuration></ngm-map-configuration>
-            </div>
-          </div>
+        <ngm-catalog class="ui accordion ngm-panel-content" .layers=${this.catalogLayers}
+                     @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
+        </ngm-catalog>
+      </div>
+      <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
+        <ngm-tools .toolsHidden=${this.activePanel !== 'tools'} @close=${() => this.activePanel = ''}></ngm-tools>
+      </div>
+      <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel">
+        <div class="ngm-panel-header">${i18next.t('lsb_share')}
+          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
-        <ngm-tools .hidden=${this.activePanel !== 'tools'} .toolsHidden=${this.activePanel !== 'tools'}
-                   @close=${() => this.activePanel = ''}></ngm-tools>
-        <ngm-share-link .hidden=${this.activePanel !== 'share'}></ngm-share-link>
+        <ngm-share-link></ngm-share-link>
+      </div>
+      <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
+        <div class="ngm-panel-header">${i18next.t('dtd_displayed_data_label')}
+          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+        </div>
+        <div class="ngm-panel-content">
+          <ngm-layers
+            .layers=${this.activeLayers}
+            .actions=${this.layerActions}
+            @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
+            @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
+            @layerChanged=${() => this.onLayerChanged()}>
+          </ngm-layers>
+          <h5 class="ui header">
+            ${i18next.t('dtd_background_map_label')}
+            <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
+              <span class="small_load_counter">${this.globeQueueLength_}</span>
+            </div>
+          </h5>
+          <ngm-map-configuration></ngm-map-configuration>
+          <div class="ui divider"></div>
+          <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
+        </div>
       </div>
     `;
   }
@@ -239,20 +231,20 @@ class SideBar extends LitElementI18n {
         layer = this.createSearchLayer(urlLayer.name, urlLayer.name);
       }
       layer.visible = urlLayer.visible;
-      layer.transparency = urlLayer.transparency;
+      layer.opacity = urlLayer.opacity;
       layer.displayed = true;
       activeLayers.push(layer);
     });
 
     assetIds.forEach(assetId => {
       const layer = {
-        type: LAYER_TYPES.tiles3d,
+        type: LayerType.tiles3d,
         assetId: assetId,
         label: assetId,
         layer: assetId,
         visible: true,
         displayed: true,
-        transparencyDisabled: true,
+        opacityDisabled: true,
         pickable: true,
         customAsset: true
       };
@@ -297,19 +289,14 @@ class SideBar extends LitElementI18n {
     if (this.queryManager) {
       !this.zoomedToPosition && this.zoomToPermalinkObject();
 
-      // todo remove after panel UI update
       if (!this.accordionInited && this.activePanel === 'data') {
-        const panelElement = this.querySelector('.ngm-data-container');
+        const panelElement = this.querySelector('.ngm-layer-catalog');
 
         if (panelElement) {
           for (let i = 0; i < panelElement.childElementCount; i++) {
             const element = panelElement.children.item(i);
             if (element && element.classList.contains('accordion')) {
-              $(element).accordion(Object.assign({
-                duration: 150
-              }, {
-                onChange: () => LocalStorageController.toggleCatalogState()
-              }));
+              $(element).accordion({duration: 150});
             }
           }
           this.accordionInited = true;
@@ -397,7 +384,7 @@ class SideBar extends LitElementI18n {
     }
 
     if (layer) { // for layers added before
-      if (layer.type === LAYER_TYPES.swisstopoWMTS) {
+      if (layer.type === LayerType.swisstopoWMTS) {
         const index = this.activeLayers.indexOf(layer);
         this.activeLayers.splice(index, 1);
         layer.remove();
@@ -418,12 +405,12 @@ class SideBar extends LitElementI18n {
 
   createSearchLayer(title, layername) {
     const config = {
-      type: LAYER_TYPES.swisstopoWMTS,
+      type: LayerType.swisstopoWMTS,
       label: title,
       layer: layername,
       visible: true,
       displayed: true,
-      transparency: DEFAULT_LAYER_TRANSPARENCY,
+      opacity: DEFAULT_LAYER_OPACITY,
       queryType: 'geoadmin'
     };
     config.load = () => this.addLayer(config);

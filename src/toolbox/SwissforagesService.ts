@@ -1,7 +1,7 @@
 import {SWISSFORAGES_API_URL} from '../constants';
 import {radiansToLv95} from '../projection';
 import i18next from 'i18next';
-import {showWarning} from '../message';
+import {showWarning} from '../notifications';
 
 interface SwissforagesResponse {
   success: boolean;

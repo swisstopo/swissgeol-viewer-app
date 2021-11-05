@@ -5,6 +5,7 @@ Main prefixes:
 * lyr... = layertree
 * nav... = navigation part
 * dtd... = displayed data
+* lsb... = left side bar
 
 Small parts prefixes:
 * disclaimer... = disclaimer

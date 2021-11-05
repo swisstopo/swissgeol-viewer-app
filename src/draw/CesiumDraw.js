@@ -9,7 +9,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import Intersections2D from 'cesium/Source/Core/Intersections2D';
 
-import {getDimensionLabel} from './helpers.js';
+import {getDimensionLabel} from './helpers';
 import {getMeasurements} from '../cesiumutils.js';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 

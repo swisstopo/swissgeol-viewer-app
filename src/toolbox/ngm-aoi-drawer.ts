@@ -30,7 +30,7 @@ import {
   updateEntityVolume,
   updateVolumePositions
 } from './helpers';
-import {showWarning} from '../message.js';
+import {showWarning} from '../notifications';
 import {LitElementI18n} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';

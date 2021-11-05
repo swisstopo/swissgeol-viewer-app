@@ -1,6 +1,6 @@
 import {Rectangle, Color, Cartesian3, Math as CMath, ShadowMode, ColorBlendMode} from 'cesium';
 
-export {LAYER_TYPES, DEFAULT_LAYER_TRANSPARENCY} from './layertree.js';
+export {LayerType, DEFAULT_LAYER_OPACITY} from './layertree';
 
 export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 
