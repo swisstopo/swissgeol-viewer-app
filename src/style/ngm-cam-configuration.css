@@ -20,11 +20,11 @@ ngm-cam-configuration {
 }
 
 .ngm-cam-container > div > div:first-child:hover {
-  background-color: #FE0F17;
+  background-color: var(--ngm-interaction-hover);
 }
 
 .ngm-cam-container > div > div.ngm-active-icon {
-  background-color: #B9271A;
+  background-color: var(--ngm-interaction-active);
 }
 
 .ngm-cam-conf-slider > div:first-child {

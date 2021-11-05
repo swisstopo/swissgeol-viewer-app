@@ -27,7 +27,7 @@ ngm-nav-tools.ngm-floating-window {
 
 .ngm-nav-buttons > div.ngm-active-icon,
 .ngm-nav-buttons > div:active {
-  background-color: #B9271A;
+  background-color: var(--ngm-interaction-active);
 }
 
 .ngm-nav-buttons .ngm-coords-icon,

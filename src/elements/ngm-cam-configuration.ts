@@ -132,7 +132,7 @@ export class NgmCamConfiguration extends LitElementI18n {
     const perc = Math.round(value / maxValue * 100) / 2;
     const side = value > 0 ? 'left' : 'right';
     return {
-      'background-image': `linear-gradient(to ${side}, white ${50 - perc}%, #B9271A 0, #B9271A 50%, white 50% )`
+      'background-image': `linear-gradient(to ${side}, white ${50 - perc}%, var(--ngm-interaction-active) 0, var(--ngm-interaction-active) 50%, white 50% )`
     };
   }
 
