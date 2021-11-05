@@ -221,7 +221,7 @@ export class NgmSlicer extends LitElementI18n {
               </span>
           <label>${i18next.t('nav_box_show_slice_box')}</label>
         </div>
-        <div class="ngm-slice-to-draw">
+        <div class="ngm-slice-to-draw" ?hidden=${!!options.geom}>
           ${i18next.t('tbx_slice_geom_transform_hint')}
           <button class="ui button ngm-transform-btn" @click=${() => this.addCurrentSliceToToolbox(type)}>
             ${i18next.t('tbx_slice_transform_btn')}
