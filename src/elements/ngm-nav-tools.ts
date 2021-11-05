@@ -15,7 +15,7 @@ import {classMap} from 'lit/directives/class-map.js';
 import {eastNorthUp, pickCenterOnMapOrObject} from '../cesiumutils';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import {showWarning} from '../message';
+import {showWarning} from '../notifications';
 import i18next from 'i18next';
 import {debounce} from '../utils';
 

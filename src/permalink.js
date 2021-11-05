@@ -64,7 +64,7 @@ export function getLayerParams() {
   return layers.map((layer, key) => {
     return {
       name: layer,
-      transparency: Number(layersTransparency[key]),
+      opacity: Number(1 - layersTransparency[key]),
       visible: layersVisibility[key] === 'true',
     };
   });
@@ -83,7 +83,7 @@ export function syncLayersParam(activeLayers) {
   activeLayers.forEach(l => {
     if (!l.customAsset) {
       layerNames.push(l.layer);
-      layersTransparency.push(isNaN(l.transparency) ? 1 : l.transparency);
+      layersTransparency.push(isNaN(l.opacity) ? 0 : (1 - l.opacity).toFixed(2));
       layersVisibility.push(l.visible);
     }
   });
@@ -128,15 +128,15 @@ export function getMapParam() {
   return params.get(MAP_URL_PARAM);
 }
 
-export function syncMapTransparencyParam(transparency) {
+export function syncMapOpacityParam(opacity) {
   const params = getURLSearchParams();
-  params.set(MAP_TRANSPARENCY_URL_PARAM, transparency);
+  params.set(MAP_TRANSPARENCY_URL_PARAM, (1 - opacity).toFixed(2));
   setURLSearchParams(params);
 }
 
-export function getMapTransparencyParam() {
+export function getMapOpacityParam() {
   const params = getURLSearchParams();
-  return Number(params.get(MAP_TRANSPARENCY_URL_PARAM));
+  return 1 - Number(params.get(MAP_TRANSPARENCY_URL_PARAM));
 }
 
 export function getAttribute() {

@@ -38,7 +38,6 @@
 @import 'ngm-camera-information.css';
 @import 'ngm-position-edit.css';
 @import 'ngm-map-chooser.css';
-@import 'ngm-drop-files.css';
 @import 'ngm-tracking-consent.css';
 @import 'ngm-layer-legend.css';
 @import 'icons.css';
@@ -48,6 +47,7 @@
 @import 'header.css';
 @import 'ngm-cam-configuration.css';
 @import 'ngm-slider.css';
+@import 'notifications.css';
 @import 'ngm-toolbox.css';
 @import 'ngm-checkbox.css';
 

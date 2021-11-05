@@ -324,7 +324,7 @@ export function setupBaseLayers(viewer: Viewer) {
   const mapsConfig: BaseLayerConfig[] = [
     {
       id: arealLayer,
-      labelKey: t('dtd_areal_map_label'),
+      labelKey: t('dtd_aerial_map_label'),
       backgroundImgSrc: 'src/images/arealimage.png',
       layers: [
         addSwisstopoLayer(viewer, arealLayer, 'jpeg', 20)
@@ -345,8 +345,8 @@ export function setupBaseLayers(viewer: Viewer) {
       backgroundImgSrc: 'src/images/lakes_rivers.png',
       hasAlphaChannel: true,
       layers: [
-        addSwisstopoLayer(viewer, 'ch.bafu.vec25-gewaessernetz_2000', 'png', 18, '20070101'),
-        addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', 18, '20070101')
+        addSwisstopoLayer(viewer, 'ch.bafu.vec25-gewaessernetz_2000', 'png', 18),
+        addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', 18)
       ]
     },
     {
