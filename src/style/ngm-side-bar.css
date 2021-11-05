@@ -96,6 +96,11 @@ ngm-auth:hover {
   background-color: #A83526;
 }
 
+.ngm-close-icon,
+.ngm-back-icon {
+  cursor: pointer;
+}
+
 .ngm-menu-1 > div.ngm-active-section > div:nth-child(1),
 .ngm-menu-2 > div.ngm-active-section > div:nth-child(1),
 .ngm-menu-2 > ngm-auth .ngm-active-section > div:nth-child(1) {

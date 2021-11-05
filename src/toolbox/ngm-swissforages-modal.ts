@@ -1,4 +1,5 @@
 import {html} from 'lit';
+import {customElement, property} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 
@@ -8,22 +9,20 @@ import 'fomantic-ui-css/components/modal.js';
 import 'fomantic-ui-css/components/dropdown.js';
 import {showWarning} from '../message';
 
-class NgmSwissforagesModal extends LitElementI18n {
+interface UserWorkgroup {
+  workgroup: string
+  id: string
+}
 
-  constructor() {
-    super();
-    this.userWorkgroups = [];
-    this.username = '';
-    this.password = '';
-  }
-
-  static get properties() {
-    return {
-      service: {type: Object},
-      options: {type: Object},
-      loading: {type: Boolean}
-    };
-  }
+@customElement('ngm-swissforages-modal')
+export class NgmSwissforagesModal extends LitElementI18n {
+  @property({type: Object}) service;
+  @property({type: Object}) options;
+  @property({type: Boolean}) loading;
+  private userWorkgroups: UserWorkgroup[] = [];
+  private username = '';
+  private password = '';
+  private element;
 
   updated() {
     if (this.options.show) {
@@ -60,7 +59,6 @@ class NgmSwissforagesModal extends LitElementI18n {
           this.service.workGroupId = Number(value);
         }
       });
-    this.groupsSelectorInited = true;
     this.requestUpdate();
   }
 
@@ -80,7 +78,7 @@ class NgmSwissforagesModal extends LitElementI18n {
         this.options.onLoggedIn();
       }
     } catch (e) {
-      showWarning(e);
+      showWarning(<string>e);
       this.loading = false;
     }
   }
@@ -96,7 +94,7 @@ class NgmSwissforagesModal extends LitElementI18n {
       this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.options.depth);
       this.toggleLoading();
     } catch (e) {
-      showWarning(e);
+      showWarning(<string>e);
       this.loading = false;
     }
   }
@@ -150,7 +148,7 @@ class NgmSwissforagesModal extends LitElementI18n {
                 </div>
               </div>
               <div class="field">
-              <label>${i18next.t('tbx_swissforages_depth_label')}</label>
+                <label>${i18next.t('tbx_swissforages_depth_label')}</label>
                 <input
                   class="ngm-swissforages-depth-input"
                   type="number"
@@ -187,5 +185,3 @@ class NgmSwissforagesModal extends LitElementI18n {
     return this;
   }
 }
-
-customElements.define('ngm-swissforages-modal', NgmSwissforagesModal);

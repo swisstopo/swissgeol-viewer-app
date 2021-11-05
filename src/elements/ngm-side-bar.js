@@ -1,12 +1,12 @@
 import {html} from 'lit';
 import {LitElementI18n} from '../i18n.js';
-import '../toolbox/AreaOfInterestDrawer.js';
+import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers.js';
 import '../layers/ngm-catalog.js';
 import LayersActions from '../layers/LayersActions.js';
 import {DEFAULT_LAYER_TRANSPARENCY, LAYER_TYPES} from '../constants';
 import defaultLayerTree from '../layertree.js';
-import {getLayerParams, syncLayersParam, getAssetIds, getAttribute} from '../permalink.js';
+import {getLayerParams, syncLayersParam, getAssetIds, getAttribute, getSliceParam} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers.js';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
@@ -19,19 +19,14 @@ import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler'
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../message';
-import {createDataGenerator, createZipFromData} from '../download';
-import {saveAs} from 'file-saver';
 import auth from '../store/auth';
 import './ngm-share-link.js';
 import '../layers/ngm-layers-upload';
 import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
-import SlicerStore from '../store/slicer';
 import {classMap} from 'lit/directives/class-map.js';
 import {zoomTo} from '../utils';
 import $ from '../jquery';
-
-const TOOLBOX = 'ngm-toolbox';
 
 class SideBar extends LitElementI18n {
 
@@ -54,10 +49,6 @@ class SideBar extends LitElementI18n {
         });
       }
     });
-    SlicerStore.rectangleToCreate.subscribe(() => {
-      this.querySelector(`#${TOOLBOX} > .title`).classList.add('active');
-      this.querySelector(`#${TOOLBOX} > .content`).classList.add('active');
-    });
   }
 
   static get properties() {
@@ -66,8 +57,15 @@ class SideBar extends LitElementI18n {
       activeLayers: {type: Object},
       queryManager: {type: Object},
       activePanel: {type: String, attribute: false},
+      showHeader: {type: Boolean, attribute: false},
       globeQueueLength_: {type: Number, attribute: false},
     };
+  }
+
+  firstUpdated() {
+    const sliceOptions = getSliceParam();
+    if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints)
+      this.activePanel = 'tools';
   }
 
   render() {
@@ -92,7 +90,7 @@ class SideBar extends LitElementI18n {
             ${i18next.t('lsb_data')}
           </div>
           <div class="ngm-tools ${classMap({'ngm-active-section': this.activePanel === 'tools'})}"
-               @click=${() => this.togglePanel('tools')}>
+               @click=${() => this.togglePanel('tools', false)}>
             <div class="ngm-tools-icon"></div>
             ${i18next.t('lsb_tools')}
           </div>
@@ -126,7 +124,7 @@ class SideBar extends LitElementI18n {
       </div>
       <div .hidden=${!this.activePanel}
            class="ngm-side-bar-panel ${classMap({'ngm-large-panel': this.activePanel === 'dashboard'})}">
-        <div class="ngm-panel-header">
+        <div .hidden=${!this.showHeader} class="ngm-panel-header">
           ${i18next.t(`lsb_${this.activePanel}`)}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
@@ -169,16 +167,14 @@ class SideBar extends LitElementI18n {
             </div>
           </div>
         </div>
-        <ngm-aoi-drawer .hidden=${this.activePanel !== 'tools'}
-                        .downloadActiveDataEnabled=${!!this.activeLayersForDownload.length}
-                        @downloadActiveData=${evt => this.downloadActiveData(evt)}>
-        </ngm-aoi-drawer>
+        <ngm-tools .hidden=${this.activePanel !== 'tools'} @close=${() => this.activePanel = ''}></ngm-tools>
         <ngm-share-link .hidden=${this.activePanel !== 'share'}></ngm-share-link>
       </div>
     `;
   }
 
-  togglePanel(panelName) {
+  togglePanel(panelName, showHeader = true) {
+    this.showHeader = showHeader;
     if (this.activePanel === panelName) {
       this.activePanel = null;
       return;
@@ -186,30 +182,31 @@ class SideBar extends LitElementI18n {
     this.activePanel = panelName;
   }
 
-  get activeLayersForDownload() {
-    const result = this.activeLayers
-      .filter(l => l.visible && !!l.downloadDataType)
-      .map(l => ({
-        layer: l.layer,
-        url: l.downloadDataPath,
-        type: l.downloadDataType
-      }));
-    return result;
-  }
-
-  async downloadActiveData(evt) {
-    const {bbox4326} = evt.detail;
-    const specs = this.activeLayersForDownload;
-    const data = [];
-    for await (const d of createDataGenerator(specs, bbox4326)) data.push(d);
-    if (data.length === 0) {
-      showWarning(i18next.t('tbx_no_data_to_download_warning'));
-      return;
-    }
-    const zip = await createZipFromData(data);
-    const blob = await zip.generateAsync({type: 'blob'});
-    saveAs(blob, 'swissgeol_data.zip');
-  }
+  // todo not use for now
+  // get activeLayersForDownload() {
+  //   const result = this.activeLayers
+  //     .filter(l => l.visible && !!l.downloadDataType)
+  //     .map(l => ({
+  //       layer: l.layer,
+  //       url: l.downloadDataPath,
+  //       type: l.downloadDataType
+  //     }));
+  //   return result;
+  // }
+  //
+  // async downloadActiveData(evt) {
+  //   const {bbox4326} = evt.detail;
+  //   const specs = this.activeLayersForDownload;
+  //   const data = [];
+  //   for await (const d of createDataGenerator(specs, bbox4326)) data.push(d);
+  //   if (data.length === 0) {
+  //     showWarning(i18next.t('tbx_no_data_to_download_warning'));
+  //     return;
+  //   }
+  //   const zip = await createZipFromData(data);
+  //   const blob = await zip.generateAsync({type: 'blob'});
+  //   saveAs(blob, 'swissgeol_data.zip');
+  // }
 
   initializeActiveLayers() {
     const attributeParams = getAttribute();

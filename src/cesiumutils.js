@@ -242,7 +242,7 @@ export function cartesianToDegrees(cartesian) {
 /**
  * Extend kml for export with entities properties
  * @param {string} kml - kml for export
- * @param {Array<Entity>} entities - list of entities for export
+ * @param {EntityCollection} entities - list of entities for export
  * @return {string}
  */
 export function extendKmlWithProperties(kml, entities) {
@@ -381,6 +381,10 @@ export function getOrthogonalViewPoints(viewer) {
   Cartesian3.subtract(center, orthogonalVector, left);
   Cartesian3.add(center, orthogonalVector, right);
   return updateHeightForCartesianPositions([left, right], 0);
+}
+
+export function getValueOrUndefined(prop) {
+  return prop ? prop.getValue() : undefined;
 }
 
 /**

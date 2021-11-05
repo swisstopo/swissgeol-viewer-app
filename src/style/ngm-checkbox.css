@@ -1,0 +1,75 @@
+.ngm-checkbox {
+  text-align: left;
+  font: normal normal 500 14px/20px Inter;
+  color: #357183;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.ngm-checkbox.active {
+  color: #A83526
+}
+
+.ngm-checkbox:hover {
+  color: #FF0000
+}
+
+.ngm-checkbox > label {
+  margin-left: 15px;
+  cursor: pointer;
+}
+
+.ngm-checkbox input {
+  display: none;
+}
+
+.ngm-checkbox input:checked + .ngm-checkbox-icon {
+  background: #0B7285;
+  border: 2px solid transparent;
+}
+
+.ngm-checkbox input:checked + .ngm-checkbox-icon::before {
+  display: block;
+}
+
+.ngm-checkbox .ngm-checkbox-icon {
+  width: 19px;
+  height: 18px;
+  display: block;
+  position: relative;
+  border-radius: 2px;
+  border: 2px solid #0B7285;
+  transition: all 0.5s ease;
+}
+
+.ngm-checkbox.active .ngm-checkbox-icon {
+  border-color: #A83526;
+}
+
+.ngm-checkbox.active input:checked + .ngm-checkbox-icon {
+  background: #A83526;
+}
+
+.ngm-checkbox:hover .ngm-checkbox-icon {
+  border-color: #FF0000;
+}
+
+.ngm-checkbox:hover input:checked + .ngm-checkbox-icon {
+  background: #FF0000;
+}
+
+.ngm-checkbox .ngm-checkbox-icon::before {
+  content: "";
+  top: -2px;
+  left: 3px;
+  width: 8px;
+  height: 14px;
+  display: none;
+  position: absolute;
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}

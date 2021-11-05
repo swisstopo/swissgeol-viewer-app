@@ -335,12 +335,14 @@ export default class SlicingBox extends SlicingToolBase {
     if (!this.options || !this.options.syncBoxPlanesCallback) return;
     const bbox = this.bbox!;
     const boxCenter = Cartographic.fromCartesian(this.boxCenter!);
+    const altitude = this.viewer.scene.globe.getHeight(boxCenter) || 0;
     const planesInfo = {
       type: this.options.type,
       slicePoints: Object.values(bbox.corners),
-      lowerLimit: boxCenter.height - bbox.height / 2,
+      lowerLimit: (boxCenter.height - bbox.height / 2) - altitude,
       height: bbox.height,
-      showBox: this.slicingBoxEntity!.show
+      showBox: this.slicingBoxEntity!.show,
+      negate: this.options.negate
     };
     this.options.syncBoxPlanesCallback(planesInfo);
   }
