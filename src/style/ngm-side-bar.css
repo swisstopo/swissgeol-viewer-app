@@ -167,3 +167,6 @@ ngm-auth:hover {
   }
 }
 
+.ngm-side-bar-panel.ngm-layer-catalog {
+  z-index: 2;
+}

@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, state} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
@@ -11,10 +11,10 @@ import MapChooser from '../MapChooser.js';
 
 @customElement('ngm-map-configuration')
 export class NgmMapConfiguration extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null | undefined;
-  @property({type: Object}) mapChooser: MapChooser | null | undefined;
-  @property({type: Number}) opacity: number = getMapOpacityParam();
-  @property({type: String}) baseMapId = 'ch.swisstopo.pixelkarte-grau';
+  @state() viewer: Viewer | null | undefined;
+  @state() mapChooser: MapChooser | null | undefined;
+  @state() opacity: number = getMapOpacityParam();
+  @state() baseMapId = 'ch.swisstopo.pixelkarte-grau';
 
   constructor() {
     super();

@@ -1,5 +1,5 @@
 import {html, TemplateResult} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import auth from '../store/auth';
@@ -7,8 +7,8 @@ import {LayerTreeNode} from '../layertree';
 
 @customElement('ngm-catalog')
 export class Catalog extends LitElementI18n {
-  @property({type: Array}) userGroups: string[] = [];
   @property({type: Array}) layers: LayerTreeNode[] = [];
+  @state() userGroups: string[] = [];
 
   constructor() {
     super();

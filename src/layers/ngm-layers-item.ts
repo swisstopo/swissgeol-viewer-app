@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import {html} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {LayerType, DEFAULT_LAYER_OPACITY} from '../constants';
@@ -22,10 +22,10 @@ export interface Config extends LayerTreeNode {
 export class LayerTreeItem extends LitElementI18n {
   @property({type: Object}) actions: any;
   @property({type: Object}) config!: Config;
-  @property({type: Number}) loading = 0;
-  @property({type: Object}) upClassMap: any;
-  @property({type: Object}) downClassMap: any;
-  @property({type: Object}) loadProgressRemover_: any;
+  @state() loading = 0;
+  @state() upClassMap: any;
+  @state() downClassMap: any;
+  @state() loadProgressRemover_: any;
 
   firstUpdated() {
     $(this.querySelector('.ui.dropdown')).dropdown();

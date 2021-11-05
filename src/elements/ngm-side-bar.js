@@ -294,7 +294,6 @@ class SideBar extends LitElementI18n {
     if (this.queryManager) {
       !this.zoomedToPosition && this.zoomToPermalinkObject();
 
-      // todo remove after panel UI update
       if (!this.accordionInited && this.activePanel === 'data') {
         const panelElement = this.querySelector('.ngm-layer-catalog');
 
@@ -302,11 +301,7 @@ class SideBar extends LitElementI18n {
           for (let i = 0; i < panelElement.childElementCount; i++) {
             const element = panelElement.children.item(i);
             if (element && element.classList.contains('accordion')) {
-              $(element).accordion(Object.assign({
-                duration: 150
-              }, {
-                onChange: () => true
-              }));
+              $(element).accordion({duration: 150});
             }
           }
           this.accordionInited = true;

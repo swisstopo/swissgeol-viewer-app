@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
@@ -12,9 +12,9 @@ import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 
 @customElement('ngm-layers-upload')
 export default class LayersUpload extends LitElementI18n {
-  @property({type: Array}) uploadedLayers: Config[] = [];
-  @property({type: Object}) actions: any;
   @property({type: Object}) viewer!: Viewer;
+  @state() uploadedLayers: Config[] = [];
+  @state() actions: any;
 
   constructor() {
     super();
