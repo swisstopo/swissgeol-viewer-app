@@ -45,7 +45,7 @@ export class Catalog extends LitElementI18n {
 
   getLayerTemplate(layer: LayerTreeNode): TemplateResult {
     return html`
-      <div class="ngm-catalog-entry"
+      <div class="ngm-checkbox ${layer.displayed ? 'active' : ''}"
           @click=${() => {
             this.dispatchEvent(new CustomEvent('layerclick', {
               detail: {
@@ -54,7 +54,7 @@ export class Catalog extends LitElementI18n {
             }));
           }}>
         <input type="checkbox" .checked=${!!layer.visible}>
-        <span class="checkmark"></span>
+        <span class="ngm-checkbox-icon"></span>
         <label class=${layer.displayed ? 'displayed' : ''}>
           <i class=${layer.restricted ? 'lock icon' : ''}></i>${i18next.t(layer.label)}
         </label>
