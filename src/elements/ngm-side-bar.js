@@ -128,14 +128,11 @@ class SideBar extends LitElementI18n {
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
         <ngm-catalog class="ui accordion ngm-panel-content" .layers=${this.catalogLayers}
-                      @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
+                     @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
         </ngm-catalog>
       </div>
       <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
-        <div .hidden=${!this.showHeader} class="ngm-panel-header">${i18next.t('lsb_tools')}
-          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
-        </div>
-        <ngm-tools></ngm-tools>
+        <ngm-tools @close=${() => this.activePanel = ''}></ngm-tools>
       </div>
       <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel">
         <div class="ngm-panel-header">${i18next.t('lsb_share')}
