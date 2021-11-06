@@ -4,14 +4,13 @@ import {customElement, property, state} from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
 import {Interactable} from '@interactjs/types';
-import {Cartesian2, Event, Scene, ScreenSpaceEventHandler, ScreenSpaceEventType, Viewer} from 'cesium';
-import CesiumMath from 'cesium/Source/Core/Math';
+import {Cartesian2, Event, Scene, ScreenSpaceEventHandler, ScreenSpaceEventType, Viewer,
+   Math as CesiumMath, Matrix4, KeyboardEventModifier} from 'cesium';
 import {formatCartographicAs2DLv95} from '../projection';
 import {setCameraHeight} from '../cesiumutils';
 import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit/directives/class-map.js';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
+import './ngm-cam-coordinates';
 
 @customElement('ngm-cam-configuration')
 export class NgmCamConfiguration extends LitElementI18n {
@@ -22,7 +21,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   @state() heading = 0;
   @state() elevation = 0;
   @state() pitch = 0;
-  @state() coordinates: string[] = [];
+  @state() coordinates: Record<string, (string | number)[]> | null = null;
   @state() lockType = '';
   // always use the 'de-CH' locale to always have the simple tick as thousands separator
   private integerFormat = new Intl.NumberFormat('de-CH', {
@@ -96,12 +95,17 @@ export class NgmCamConfiguration extends LitElementI18n {
 
   updateFromCamera() {
     const camera = this.scene!.camera;
-    const altitude = this.scene!.globe.getHeight(camera.positionCartographic) || 0;
-    this.elevation = camera.positionCartographic.height - altitude;
+    const pc = camera.positionCartographic;
+    const altitude = this.scene!.globe.getHeight(pc) || 0;
+    this.elevation = pc.height - altitude;
     this.pitch = CesiumMath.toDegrees(camera.pitch);
     const heading = CesiumMath.toDegrees(camera.heading);
     this.heading = heading > 180 ? heading - 360 : heading;
-    this.coordinates = formatCartographicAs2DLv95(camera.positionCartographic);
+    const radToDeg = rad => Math.round(100 * rad * 180 / Math.PI) / 100;
+    this.coordinates = {
+      lv95: formatCartographicAs2DLv95(pc),
+      wgs84: [pc.longitude, pc.latitude].map(radToDeg)
+    };
   }
 
   updateHeight(value) {
@@ -240,10 +244,7 @@ export class NgmCamConfiguration extends LitElementI18n {
         <div>
           <div class="ngm-cam-icon ${classMap({'ngm-active-icon': this.lockType === 'move'})}"
                @click=${() => this.toggleLock('move')}></div>
-          <div class="ngm-cam-coord">
-            <label>${i18next.t('camera_position_coordinates_label')} LV95</label>
-            <label class="ngm-coords">${this.coordinates[0]}, ${this.coordinates[1]}</label>
-          </div>
+          <ngm-cam-coordinates .coordinates=${this.coordinates}></ngm-cam-coordinates>
         </div>
       </div>
       <div class="ngm-drag-area drag-handle">
