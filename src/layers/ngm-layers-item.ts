@@ -29,6 +29,9 @@ export class LayerTreeItem extends LitElementI18n {
 
   firstUpdated() {
     $(this.querySelector('.ui.dropdown')).dropdown();
+    if (!this.config.opacity) {
+      this.config.opacity = DEFAULT_LAYER_OPACITY;
+    }
   }
 
   connectedCallback() {
@@ -107,9 +110,6 @@ export class LayerTreeItem extends LitElementI18n {
   }
 
   render() {
-    if (!this.config.opacity) {
-      this.config.opacity = DEFAULT_LAYER_OPACITY;
-    }
     return html`
       <div class="ngm-layer-icon ${classMap({'ngm-visible-icon': !!this.config.visible, 'ngm-invisible-icon': !this.config.visible})}"
           @click=${this.changeVisibility}></div>
