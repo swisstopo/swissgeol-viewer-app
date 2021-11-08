@@ -63,49 +63,6 @@ ngm-layers-item .ui.dropdown .menu .item:hover {
   background-color: #C5F6FA;
 }
 
-/* KML upload */
-ngm-layers-upload button {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  letter-spacing: 0.25px;
-  font-weight: bold;
-  color: #0B7285;
-  background-color: #F1F3F5;
-  border: 2px dashed #0B7285;
-  margin-top: 9px;
-  padding-left: 10px;
-  height: 46px;
-  width: 100%;
-}
-
-ngm-layers-upload .ngm-upload-icon {
-  pointer-events: none;
-  background-color: #0B7285;
-  margin-top: 0;
-  margin-left: 12px;
-  width: 20px;
-  height: 20px;
-}
-
-ngm-layers-upload button:hover {
-  color: #66D9E8;
-  border: 2px dashed #66D9E8;
-}
-
-ngm-layers-upload button:hover .ngm-upload-icon {
-  background-color: #66D9E8;
-}
-
-ngm-layers-upload button.active {
-  color: #FF0000;
-  border: 2px dashed #FF0000;
-}
-
-ngm-layers-upload button.active .ngm-upload-icon {
-  background-color: #FF0000;
-}
-
 .ngm-extension-panel .ui.header {
   margin-top: 7px;
 }
@@ -163,4 +120,56 @@ ngm-catalog .ui.accordion .title:hover .ngm-dropdown-icon {
 ngm-catalog .ngm-checkbox {
   margin-left: 4px;
   color: #212529
+}
+
+/* KML upload */
+ngm-layers-upload button {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.25px;
+  font-weight: bold;
+  color: #0B7285;
+  background-color: #F1F3F5;
+  border: 2px dashed #0B7285;
+  margin-top: 9px;
+  padding-left: 10px;
+  height: 46px;
+  width: 100%;
+}
+
+ngm-layers-upload .ngm-upload-icon {
+  pointer-events: none;
+  background-color: #0B7285;
+  margin-top: 0;
+  margin-left: 12px;
+  width: 20px;
+  height: 20px;
+}
+
+ngm-layers-upload button:hover {
+  color: #66D9E8;
+  border: 2px dashed #66D9E8;
+}
+
+ngm-layers-upload button:hover .ngm-upload-icon {
+  background-color: #66D9E8;
+}
+
+ngm-layers-upload button.active {
+  color: #FF0000;
+  border: 2px dashed #FF0000;
+}
+
+ngm-layers-upload button.active .ngm-upload-icon {
+  background-color: #FF0000;
+}
+
+/* FIXME: Grey out action menue until further specification */
+ngm-layers-upload .ui.dropdown {
+  pointer-events: none;
+}
+
+ngm-layers-upload .ngm-action-menu-icon {
+  background-color: gray;
 }
