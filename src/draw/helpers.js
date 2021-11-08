@@ -4,6 +4,7 @@ import HeightReference from 'cesium/Source/Scene/HeightReference';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
 import i18next from 'i18next';
+import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
 /**
  * @param {import('./CesiumDraw').ShapeType} type
@@ -36,4 +37,44 @@ export function getDimensionLabel(type, distances) {
     pixelOffset: new Cartesian2(-5, -5),
     disableDepthTestDistance: Number.POSITIVE_INFINITY
   };
+}
+
+
+const scratchAB = new Cartesian3();
+const scratchAC = new Cartesian3();
+const scratchAM = new Cartesian3();
+const scratchAP = new Cartesian3();
+const scratchBP = new Cartesian3();
+
+export function rectanglify(coordinates) {
+  if (coordinates.length === 3) {
+    // A and B are the base of the triangle, C is the point currently moving:
+    //
+    // A -- AP
+    // |\
+    // | \
+    // |  \
+    // |   \
+    // M    C
+    // |
+    // B -- BP
+
+    const A = coordinates[0];
+    const B = coordinates[1];
+    const C = coordinates[2];
+
+    // create the two vectors from the triangle coordinates
+    const AB = Cartesian3.subtract(B, A, scratchAB);
+    const AC = Cartesian3.subtract(C, A, scratchAC);
+
+    const AM = Cartesian3.projectVector(AC, AB, scratchAM);
+
+    const AP = Cartesian3.subtract(C, AM, scratchAP).clone();
+    const BP = Cartesian3.add(AP, AB, scratchBP).clone();
+
+    // FIXME: better memory management
+    return [A, B, BP, AP];
+  } else {
+    return coordinates;
+  }
 }
