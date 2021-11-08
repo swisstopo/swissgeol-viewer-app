@@ -90,6 +90,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       this.scene = this.viewer.scene;
       this.handler = new ScreenSpaceEventHandler(this.viewer!.canvas);
       this.unlistenPostRender = this.scene.postRender.addEventListener(() => this.updateFromCamera());
+      this.updateFromCamera();
     }
   }
 

@@ -41,7 +41,13 @@ ngm-cam-configuration {
   flex-direction: column;
 }
 
-.ngm-cam-coord > .ngm-coords {
+.ngm-cam-coord .dropdown {
+  background-color: transparent;
+  font: normal normal bold 15px/24px Inter;
+  padding-left: 0;
+}
+
+.ngm-cam-coord .ngm-coords {
   font: normal normal bold 15px/24px Inter;
   letter-spacing: 0.16px;
   color: #222529;

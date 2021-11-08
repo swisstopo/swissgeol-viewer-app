@@ -1,7 +1,7 @@
 module.exports = {
   "stories": [
     "../src/**/*.stories.mdx",
-    "../src/**/*.stories.@(js|jsx|ts|tsx)"
+    "../src/**/*.stories.@(js|ts)"
   ],
   "addons": [
     "@storybook/addon-links",
@@ -18,5 +18,5 @@ module.exports = {
       legacy: false
     })
     return options;
-  }
+  },
 };
