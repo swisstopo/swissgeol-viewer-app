@@ -3,7 +3,6 @@ import '@geoblocks/cesium-compass';
 import '@geoblocks/cesium-view-cube';
 import './ngm-elevator-buttons.js';
 import './ngm-keyboard-info-popup.js';
-import './slicer/ngm-slicer.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import MainStore from '../store/main';
@@ -31,7 +30,6 @@ class NgmNavigationWidgets extends LitElementI18n {
                           data-variation="mini"
           ></cesium-compass>
           <ngm-elevator-buttons .scene="${this.viewer.scene}"></ngm-elevator-buttons>
-          <ngm-slicer></ngm-slicer>
           <ngm-keyboard-info-popup></ngm-keyboard-info-popup>
         </div>
       `;

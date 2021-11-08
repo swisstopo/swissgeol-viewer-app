@@ -1,6 +1,6 @@
 ngm-nav-tools {
   width: 44px;
-  height: 218px;
+  height: 258px;
   right: 75px;
 }
 
@@ -9,7 +9,7 @@ ngm-nav-tools {
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  height: 180px;
+  height: 220px;
   cursor: pointer;
 }
 
@@ -30,6 +30,7 @@ ngm-nav-tools.ngm-floating-window {
   background-color: #B9271A;
 }
 
+.ngm-nav-buttons .ngm-coords-icon,
 .ngm-nav-buttons .ngm-cam-icon {
   padding-top: 10px;
   padding-bottom: 20px;

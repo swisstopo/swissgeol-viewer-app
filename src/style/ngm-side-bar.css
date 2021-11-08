@@ -70,10 +70,17 @@ ngm-auth:hover {
   position: absolute;
   margin-left: 80px;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .ngm-side-bar-panel.ngm-large-panel {
   width: calc(100vw - 144px);
+}
+
+.ngm-side-bar-panel.ngm-extension-panel {
+  width: 528px;
+  left: 250px;
 }
 
 .ngm-panel-header {
@@ -94,6 +101,22 @@ ngm-auth:hover {
 
 .ngm-panel-header .ngm-close-icon:hover {
   background-color: #A83526;
+}
+
+.ngm-close-icon,
+.ngm-back-icon {
+  cursor: pointer;
+}
+
+.ngm-panel-content {
+  display: flex;
+  flex-direction: column;
+  margin-top: 9px;
+  max-height: calc(100% - 124px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 40px;
+  /* scrollbar-color: #868E96 #F1F3F5; */
 }
 
 .ngm-menu-1 > div.ngm-active-section > div:nth-child(1),
@@ -149,3 +172,6 @@ ngm-auth:hover {
   }
 }
 
+.ngm-side-bar-panel.ngm-layer-catalog {
+  z-index: 2;
+}

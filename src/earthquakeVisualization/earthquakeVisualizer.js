@@ -1,9 +1,9 @@
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime} from './helpers.js';
+import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime} from './helpers';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import CMath from 'cesium/Source/Core/Math';
-import {LAYER_TYPES} from '../constants';
+import {LayerType} from '../constants';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 
@@ -15,7 +15,7 @@ export default class EarthquakeVisualizer {
   constructor(viewer, config) {
     this.viewer = viewer;
     this.config = config;
-    this.earthquakeDataSource = new CustomDataSource(LAYER_TYPES.earthquakes);
+    this.earthquakeDataSource = new CustomDataSource(LayerType.earthquakes);
     this.viewer.dataSources.add(this.earthquakeDataSource);
     this.boundingSphere = null;
     this.boundingRectangle = new Rectangle(

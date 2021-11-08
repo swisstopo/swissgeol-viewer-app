@@ -93,3 +93,8 @@ ngm-object-information .content-container {
   overflow-x: hidden;
   max-height: 505px;
 }
+
+ngm-object-information div.content-container td,
+ngm-object-information div.content-container span {
+  user-select: text;
+}

@@ -1,8 +1,0 @@
-ngm-drop-files .ui.dimmer {
-  border: 5px dashed #fff;
-  height: 50%;
-}
-
-ngm-drop-files div:nth-child(2).ui.dimmer {
-  top: 50% !important;
-}

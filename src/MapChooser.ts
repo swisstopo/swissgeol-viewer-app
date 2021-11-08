@@ -10,7 +10,7 @@ export default class MapChooser {
   public selectedMap: BaseLayerConfig;
   public elements: NgmMapChooser[] = [];
 
-  constructor(viewer, config) {
+  constructor(viewer: Viewer, config: BaseLayerConfig[]) {
     this.viewer = viewer;
     this.config = config;
     this.selectedMap = this.getInitialMap();
@@ -20,7 +20,7 @@ export default class MapChooser {
     });
   }
 
-  addMapChooser(element) {
+  addMapChooser(element: NgmMapChooser) {
     this.elements.push(element);
     element.choices = this.choices;
     element.active = this.selectedMap;

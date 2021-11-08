@@ -1,9 +1,42 @@
 ngm-map-configuration {
-  display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-ngm-map-configuration > div {
-  width: 253px;
+ngm-map-configuration .ngm-map-preview {
+  width: 80px;
+  height: 80px;
+  padding: 0;
+  border: none;
+  background-color: #F1F3F5;
+  margin-right: 49px;
+}
+
+ngm-map-configuration .base-map-labels {
+  margin-left: 68px;
+  margin-bottom: 5px;
+}
+
+ngm-map-configuration .base-map-labels label{
+  width: 125px;
+  display: inline-block;
+  overflow: hidden;
+  margin-right: 4px;
+}
+
+ngm-map-configuration img {
+  width: 80px;
+  height: 80px !important;
+  border-radius: 40px;
+  overflow: hidden;
+}
+
+ngm-map-configuration ngm-map-chooser {
+  margin-left: 68px;
+  display: flex;
+
+}
+
+ngm-map-configuration ngm-map-chooser .ngm-maps-container > div:nth-last-child(-n+2) {
+  display: none;
 }

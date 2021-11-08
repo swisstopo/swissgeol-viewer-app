@@ -40,7 +40,10 @@ export function executeForAllPrimitives(viewer, functionToExecute) {
   const primitives = viewer.scene.primitives;
   for (let i = 0, ii = primitives.length; i < ii; i++) {
     const primitive = primitives.get(i);
-    functionToExecute(primitive);
+    if (primitive.ready || !primitive.readyPromise)
+      functionToExecute(primitive);
+    else
+      primitive.readyPromise.then(() => functionToExecute(primitive));
   }
 }
 
@@ -167,4 +170,18 @@ export async function zoomTo(viewer: Viewer, config): Promise<void> {
   } else {
     viewer.zoomTo(p);
   }
+}
+
+export function debounce(f, ms) {
+  let isCooldown = false;
+  return (...args) => {
+    if (isCooldown) return;
+    f(...args);
+    isCooldown = true;
+    setTimeout(() => {
+      isCooldown = false;
+      f(...args);
+    }, ms);
+  };
+
 }
