@@ -15,6 +15,7 @@ import {getPercent, interpolateBetweenNumbers} from '../utils';
 import Quaternion from 'cesium/Source/Core/Quaternion';
 import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
 import ApproximateTerrainHeights from 'cesium/Source/Core/ApproximateTerrainHeights';
+import {rectanglify} from '../draw/helpers';
 
 
 export interface BBox {
@@ -151,10 +152,13 @@ export function getBboxFromViewRatio(viewer, ratio): BBox {
     northeastLat = northeastLat > mapRectNortheast.latitude ? mapRectNortheast.latitude : northeastLat;
   }
   // Left bottom corner should be placed in the view center
-  const bottomLeft = Cartographic.toCartesian(slicingCenter);
-  const bottomRight = Cartesian3.fromRadians(northeastLon, slicingCenter.latitude, 0);
-  const topLeft = Cartesian3.fromRadians(slicingCenter.longitude, northeastLat, 0);
-  const topRight = Cartesian3.fromRadians(northeastLon, northeastLat, 0);
+  const corners = [
+    Cartographic.toCartesian(slicingCenter),
+    Cartesian3.fromRadians(slicingCenter.longitude, northeastLat, 0),
+    Cartesian3.fromRadians(northeastLon, northeastLat, 0)
+  ];
+  const [bottomLeft, topLeft, topRight, bottomRight] = rectanglify(corners);
+
   const center = Cartesian3.midpoint(topLeft, bottomRight, new Cartesian3());
   const width = Cartesian3.distance(topLeft, bottomLeft);
   const length = Cartesian3.distance(bottomRight, bottomLeft);
