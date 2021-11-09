@@ -11,6 +11,7 @@ import './elements/ngm-camera-information.js';
 import './elements/ngm-nav-tools';
 import './elements/ngm-minimap';
 import './elements/ngm-cam-configuration';
+import './elements/ngm-height-slider';
 
 import {
   DEFAULT_VIEW,
@@ -245,6 +246,7 @@ export class NgmApp extends LitElementI18n {
                                    .viewer=${this.viewer}
                                    @close=${() => this.showCamConfig = false}>
             </ngm-cam-configuration>
+            <ngm-height-slider .viewer=${this.viewer}></ngm-height-slider>
             <ngm-layer-legend-container></ngm-layer-legend-container>
             <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
           </div>

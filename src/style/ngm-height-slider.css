@@ -1,0 +1,35 @@
+ngm-height-slider {
+  position: absolute;
+  z-index: 2;
+  right: 25px;
+}
+
+ngm-height-slider input {
+  -webkit-appearance: none;
+  transform:rotate(270deg);
+  transform-origin: right;
+  width: 72vh;
+  height: 20px;
+  background-image: linear-gradient(to left, #D0F5F9 33%, white 0, white 33%, #998675 33% )
+}
+
+
+ngm-height-slider input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  transform: rotate(270deg);
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: center/100% url('./images/i_cam_position.svg');
+  cursor: pointer;
+}
+
+ngm-height-slider input::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  transform: rotate(270deg);
+  border: 0;
+  background: center/100% url('./images/i_cam_position.svg');
+  cursor: pointer;
+}
