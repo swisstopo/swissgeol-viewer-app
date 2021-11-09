@@ -1,8 +1,12 @@
 import {html} from 'lit';
+import {until} from 'lit/directives/until.js';
+import {setupI18n} from '../i18n';
 import '../style/index.css';
 import '../elements/ngm-cam-coordinates';
 import '../elements/ngm-cam-configuration';
-import {Cartographic, Math as CesiumMath} from 'cesium';
+import {Cartographic, Clock, Math as CesiumMath} from 'cesium';
+
+const ready = setupI18n();
 
 export default {
   title: 'Components/NgmCamCoordinates',
@@ -13,17 +17,18 @@ const someCoordinates = {
   wgs84: [6.07, 43.78],
 };
 
-export const DefaultLV95 = () => html`
-  <ngm-cam-coordinates .coordinates=${someCoordinates}></ngm-cam-coordinates>
-`;
+function whenReady(partial) {
+  // to render translated text, we need to wait for the i18next promise to be resolved
+  return () => html`${until(ready.then(partial), html`<div>loading...</div>`)}`;
+}
 
+export const DefaultLV95 = whenReady(() => html`
+  <ngm-cam-coordinates
+    .coordinates=${someCoordinates}>
+  </ngm-cam-coordinates>`);
 
 const viewer = {
-  clock: {
-    onTick: {
-      addEventListener() {},
-    }
-  },
+  clock: new Clock(),
   scene: {
     canvas: {
       clientHeight: 130,
@@ -50,9 +55,9 @@ const viewer = {
     },
   }
 };
-export const config = () => html`
+export const config = whenReady(() => html`
   <ngm-cam-configuration
    .viewer=${viewer}
    class="ngm-floating-window">
   </ngm-cam-configuration>
-`;
+`);
