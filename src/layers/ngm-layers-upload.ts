@@ -80,6 +80,7 @@ export default class LayersUpload extends LitElementI18n {
   onDrop(event: DragEvent) {
 
     event.preventDefault();
+    $(event.target).removeClass('active');
 
     for (const file of event.dataTransfer!.files) {
       this.uploadKml(file);
@@ -90,7 +91,9 @@ export default class LayersUpload extends LitElementI18n {
     return html`
       <button @click="${() => $(this.querySelector('.ngm-upload-kml')).click()}"
               @drop="${this.onDrop}"
-              @dragover="${event => event.preventDefault()}">
+              @dragenter=${(event: DragEvent) => $(event.target).addClass('active')}
+              @dragover="${(event: DragEvent) => event.preventDefault()}"
+              @dragleave=${(event: DragEvent) => $(event.target).removeClass('active')}>
         ${i18next.t('dtd_add_own_kml')}<div class="ngm-layer-icon ngm-upload-icon"></div>
       </button>
       <input class="ngm-upload-kml" type='file' accept=".kml,.KML" hidden

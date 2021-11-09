@@ -88,6 +88,24 @@ ngm-layers-upload .ngm-upload-icon {
   height: 20px;
 }
 
+ngm-layers-upload button:hover {
+  color: #66D9E8;
+  border: 2px dashed #66D9E8;
+}
+
+ngm-layers-upload button:hover .ngm-upload-icon {
+  background-color: #66D9E8;
+}
+
+ngm-layers-upload button.active {
+  color: #FF0000;
+  border: 2px dashed #FF0000;
+}
+
+ngm-layers-upload button.active .ngm-upload-icon {
+  background-color: #FF0000;
+}
+
 .ngm-extension-panel .ui.header {
   margin-top: 7px;
 }
