@@ -20,7 +20,7 @@
     "cypress:run": "cypress run",
     "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
     "storybook": "start-storybook -p 6006 --modern --static-dir .storybook/static",
-    "build-storybook": "build-storybook && cp -R locales storybook-static && cp -R node_modules/cesium/Build/Cesium/{Assets,Widgets,Workers}/ storybook-static"
+    "build-storybook": "build-storybook && cp -R locales storybook-static && cp -R node_modules/cesium/Build/Cesium/Assets node_modules/cesium/Build/Cesium/Widgets node_modules/cesium/Build/Cesium/Workers storybook-static"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.39.0",
