@@ -27,6 +27,11 @@ ngm-cam-configuration {
   background-color: var(--ngm-interaction-active);
 }
 
+.ngm-cam-container .ngm-cam-icon {
+  margin-bottom: auto;
+  margin-top: 24px;
+}
+
 .ngm-cam-conf-slider > div:first-child {
   display: flex;
   justify-content: space-between;
@@ -41,16 +46,29 @@ ngm-cam-configuration {
   flex-direction: column;
 }
 
+.ngm-cam-coord > div:first-child {
+  margin-bottom: 20px;
+}
+
+.ngm-cam-coord .dropdown.active,
 .ngm-cam-coord .dropdown {
   background-color: transparent;
   font: normal normal bold 15px/24px Inter;
-  padding-left: 0;
+  padding: 0;
 }
 
 .ngm-cam-coord .ngm-coords {
   font: normal normal bold 15px/24px Inter;
   letter-spacing: 0.16px;
   color: #222529;
+}
+
+.ngm-cam-coord .ui.dropdown .menu {
+  border-radius: 0;
+  box-shadow: 0 3px 4px #00000029;
+}
+.ngm-cam-coord .ui.dropdown .menu .item:hover {
+  background-color: var(--ngm-action-hover);
 }
 
 .ngm-cam-conf-slider,
