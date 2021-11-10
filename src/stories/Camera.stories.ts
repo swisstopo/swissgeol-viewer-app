@@ -4,12 +4,12 @@ import {setupI18n} from '../i18n';
 import '../style/index.css';
 import '../elements/ngm-cam-coordinates';
 import '../elements/ngm-cam-configuration';
-import {Cartographic, Clock, Math as CesiumMath} from 'cesium';
+import {Math as CesiumMath, Cartesian3, HeadingPitchRoll, Rectangle, SingleTileImageryProvider, Viewer} from 'cesium';
 
 const ready = setupI18n();
 
 export default {
-  title: 'Components/NgmCamCoordinates',
+  title: 'Components/NgmCamConfiguration',
 };
 
 const someCoordinates = {
@@ -27,34 +27,45 @@ export const DefaultLV95 = whenReady(() => html`
     .coordinates=${someCoordinates}>
   </ngm-cam-coordinates>`);
 
-const viewer = {
-  clock: new Clock(),
-  scene: {
-    canvas: {
-      clientHeight: 130,
-      clientWidth: 130,
-    },
-    screenSpaceCameraController: {},
-    camera: {
-      pitch: CesiumMath.toRadians(-50),
-      heading: CesiumMath.toRadians(80),
-      setView: function() {},
-      lookAtTransform: function() {},
-      positionCartographic: Cartographic.fromDegrees(6.07, 43.78, 30000),
-      setCameraHeight: function() {},
-    },
-    globe: {
-      getHeight() {
-        return 0;
-      },
-    },
-    postRender: {
-      addEventListener() {
-        return function() {};
-      },
-    },
-  }
-};
+const el = document.createElement('div');
+el.style.width = '50';
+el.style.height = '50';
+el.style.display = 'inline-block';
+document.body.append(el);
+const firstImageryProvider = new SingleTileImageryProvider({
+  url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=',
+  rectangle: Rectangle.fromDegrees(0, 0, 1, 1) // the Rectangle dimensions are arbitrary
+});
+
+window['CESIUM_BASE_URL'] = '.';
+const viewer = new Viewer(el, {
+  imageryProvider: firstImageryProvider,
+  animation: false,
+  baseLayerPicker: false,
+  fullscreenButton: false,
+  vrButton: false,
+  geocoder: false,
+  homeButton: false,
+  infoBox: false,
+  sceneModePicker: false,
+  selectionIndicator: false,
+  timeline: false,
+  navigationHelpButton: false,
+  navigationInstructionsInitiallyVisible: false,
+  scene3DOnly: true,
+  skyBox: false,
+  useBrowserRecommendedResolution: true,
+  requestRenderMode: true,
+});
+viewer.scene.camera.setView({
+  destination: Cartesian3.fromDegrees(6.07, 43.78, 30000),
+  orientation: new HeadingPitchRoll(
+    CesiumMath.toRadians(40),
+    CesiumMath.toRadians(-20),
+    0
+  ),
+});
+
 export const config = whenReady(() => html`
   <ngm-cam-configuration
    .viewer=${viewer}
