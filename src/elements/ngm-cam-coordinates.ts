@@ -22,8 +22,8 @@ export class NgmCamCoordinates extends LitElementI18n {
     return this;
   }
 
-  firstUpdated(changedProperties: PropertyValues) {
-    super.firstUpdated(changedProperties);
+  updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     $(this.dropdown).dropdown();
   }
 
