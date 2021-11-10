@@ -1,0 +1,28 @@
+ngm-geometry-info {
+  width: 250px;
+  height: 640px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  left: 340px;
+}
+
+ngm-geometry-info > .ngm-drag-area {
+  margin-top: auto;
+}
+
+.ngm-geom-actions {
+  background-color: #F1F3F5;
+  box-shadow: 0 1px 3px #00000033;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 14px;
+  width: 144px;
+  height: 36px;
+  margin-top: 12px;
+}
+
+.ngm-geom-actions > div:hover {
+  cursor: pointer;
+}

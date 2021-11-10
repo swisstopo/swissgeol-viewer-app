@@ -16,16 +16,12 @@ ngm-slicer {
   padding: 14px 0;
 }
 
-.ngm-draw-list-item:hover,
-.ngm-tools-list-item:hover {
-  color: #FF0000;
-}
-
 .ngm-draw-list-item div:nth-child(2),
 .ngm-tools-list-item div:nth-child(2) {
   margin-left: 12px;
 }
 
+.ngm-geom-header .ngm-action-menu-icon:hover,
 .ngm-slice-side > div:hover > div:nth-child(1),
 .ngm-draw-list-item:hover div:nth-child(1),
 .ngm-tools-list-item:hover div:nth-child(1) {
@@ -42,7 +38,7 @@ ngm-slicer {
   display: flex;
   flex-direction: column;
   align-items: start;
-  justify-content: space-between;
+  justify-content: center;
   background-color: #F8F9FA;
   color: #0B7285;
   height: 36px;
@@ -57,9 +53,18 @@ ngm-slicer {
   width: 100%;
 }
 
+.ngm-geom-header > div:nth-child(1) {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+}
+
+.ngm-draw-list-item:hover,
+.ngm-tools-list-item:hover,
 .ngm-slice-side > div:hover,
 .ngm-slice-item:hover > .ngm-slice-label,
-.ngm-geom-item:hover {
+.ngm-geom-header > div:nth-child(1):hover {
   color: #FF0000;
 }
 

@@ -6,6 +6,7 @@ export default class ToolboxStore {
   private static slicerSubject = new BehaviorSubject<Slicer | null>(null);
   private static rtcSubject = new Subject<any>();
   private static geometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
+  private static geometryIdSubject = new BehaviorSubject<string | null>(null);
 
   static get slicer(): BehaviorSubject<Slicer | null> {
     return this.slicerSubject;
@@ -31,15 +32,11 @@ export default class ToolboxStore {
     return this.geometriesSubject;
   }
 
-  static get geometriesValue(): NgmGeometry[] {
-    return this.geometriesSubject.getValue();
+  static setGeometryId(value: string | null): void {
+    this.geometryIdSubject.next(value);
   }
 
-  static updateGeometry(geom): void {
-    const geometries = this.geometriesValue;
-    const indx = geometries.findIndex(g => g.id === geom.id);
-    if (indx === -1) throw new Error(`Geometry '${geom.id}' not found`);
-    geometries[indx] = geom;
-    this.setGeometries(geometries);
+  static get geometryId(): BehaviorSubject<string | null> {
+    return this.geometryIdSubject;
   }
 }

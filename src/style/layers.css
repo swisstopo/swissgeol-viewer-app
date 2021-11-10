@@ -19,10 +19,9 @@
   cursor: pointer;
   max-height: 20px;
   max-width: 22px;
-  margin-top: 18px;
 }
 
-.ngm-layer-icon:hover, .ngm-layer-icon:focus{
+.ngm-layer-icon:hover, .ngm-layer-icon:focus {
   background-color: #66D9E8;
 }
 
@@ -32,35 +31,26 @@
 
 ngm-layers-item, .ngm-base-layer {
   display: flex;
-  align-items: center;
+  align-items: end;
   flex-direction: row;
 }
 
 ngm-layers-item, .ngm-base-layer > div:first-child {
-  margin-left: 11px;
+  padding: 0 11px;
 }
 
 ngm-layers-item .ngm-displayed-menu {
   display: flex;
   flex-grow: 1;
   justify-content: flex-end;
-  margin-right: -20px;
 }
 
 ngm-layers-item .ngm-displayed-menu .ngm-layer-icon {
   margin-right: 30px;
 }
 
-ngm-layers-item .ui.dropdown .menu {
-  right: 48px;
-  left: auto;
-  top: 9px;
-  border: 0;
-  border-radius: 0;
-}
-
-ngm-layers-item .ui.dropdown .menu .item:hover {
-  background-color: #C5F6FA;
+ngm-layers-item .ngm-displayed-menu .ngm-layer-icon.ngm-action-menu-icon {
+  margin-right: 0;
 }
 
 /* KML upload */

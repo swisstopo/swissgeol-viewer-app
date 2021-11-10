@@ -183,7 +183,7 @@
   "tbx_gst_close_label": "Close",
   "tbx_hide_volume_btn_label": "Hide geometry extrusion",
   "tbx_image_label": "Image URL",
-  "tbx_info_btn_hint": "Show info",
+  "tbx_info_btn": "Info",
   "tbx_kml_area_existing_warning": "One of the uploaded geometries already exists",
   "tbx_kml_large_warning": "KML is large. Added only 10 geometries to avoid performance issues",
   "tbx_line_slice_warn": "Only first and last point of polyline is taken into account for slicing",

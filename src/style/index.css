@@ -51,6 +51,7 @@
 @import 'notifications.css';
 @import 'ngm-toolbox.css';
 @import 'ngm-checkbox.css';
+@import 'ngm-geometry-info.css';
 
 [hidden] {
   display: none !important;
@@ -305,6 +306,28 @@ ngm-layer-legend-container > ngm-layer-legend {
   background-image: none;
   box-shadow: none;
   pointer-events: none !important;
+}
+
+.ngm-action-menu.ui.dropdown.pointing > .menu {
+  border: 0;
+  border-radius: 0;
+  box-shadow: 6px 6px 8px #00000029;
+  font: normal normal 500 14px/20px Inter;
+  color: #212529;
+  right: 11px;
+}
+
+.ngm-action-menu.ui.dropdown .menu .item:hover {
+  background-color: #C5F6FA;
+}
+
+.ngm-action-menu.ui.dropdown .menu .active.item {
+  font-weight: normal;
+}
+
+
+.ngm-action-menu.ui.dropdown.pointing .menu::after {
+  display: none;
 }
 
 @media (max-height: 630px) {

@@ -12,13 +12,12 @@ import './elements/ngm-nav-tools';
 import './elements/ngm-minimap';
 import './elements/ngm-cam-configuration';
 import './elements/ngm-height-slider';
+import './toolbox/ngm-geometry-info';
 
-import {
-  DEFAULT_VIEW,
-} from './constants';
+import {DEFAULT_VIEW} from './constants';
 
 import {setupSearch} from './search.js';
-import {setupViewer, addMantelEllipsoid, setupBaseLayers} from './viewer';
+import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 
 import {getCameraView, syncCamera} from './permalink.js';
 import i18next from 'i18next';
@@ -234,7 +233,7 @@ export class NgmApp extends LitElementI18n {
         <div class='map'>
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
-            <ngm-object-information class="ngm-floating-window" ></ngm-object-information>
+            <ngm-object-information class="ngm-floating-window"></ngm-object-information>
             <ngm-nav-tools class="ngm-floating-window" .viewer=${this.viewer} .showCamConfig=${this.showCamConfig}
                            @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}>
             </ngm-nav-tools>
@@ -251,6 +250,7 @@ export class NgmApp extends LitElementI18n {
             <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
+          <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
         </div>
       </main>
     `;

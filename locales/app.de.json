@@ -179,7 +179,7 @@
   "tbx_gst_close_label": "Schliessen",
   "tbx_hide_volume_btn_label": "Extrusion der Geometrie ausblenden",
   "tbx_image_label": "Bild-URL",
-  "tbx_info_btn_hint": "Objektinformation",
+  "tbx_info_btn": "Objektinformation",
   "tbx_kml_area_existing_warning": "Eine der hochgeladenen Geometrien besteht bereits",
   "tbx_kml_large_warning": "KML zu gross. Es werden nur 10 Geometrien geladen, um Performanceeinschränlungen zu vermeiden",
   "tbx_line_slice_warn": "Nur der erste und letzte Punkt der Polylinie wird beim Schneiden berücksichtigt",
