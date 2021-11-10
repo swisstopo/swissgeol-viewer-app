@@ -313,3 +313,8 @@ ngm-layer-legend-container > ngm-layer-legend {
     margin-bottom: 72px;
   }
 }
+
+.user-select-text {
+  user-select: text !important;
+  cursor: text;
+}

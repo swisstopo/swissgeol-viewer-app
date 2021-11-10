@@ -46,7 +46,7 @@ export class NgmCamCoordinates extends LitElementI18n {
           </div>
         </div>
         ${i18next.t('camera_position_coordinates_label')}
-        <label class="ngm-coords">${c[0]}, ${c[1]}</label>
+        <label class="ngm-coords user-select-text">${c[0]}, ${c[1]}</label>
       </div>
       `;
   }
