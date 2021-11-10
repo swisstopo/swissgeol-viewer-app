@@ -5,6 +5,7 @@ import '../style/index.css';
 import '../elements/ngm-cam-coordinates';
 import '../elements/ngm-cam-configuration';
 import {Math as CesiumMath, Cartesian3, HeadingPitchRoll, Rectangle, SingleTileImageryProvider, Viewer} from 'cesium';
+import './clean.css';
 
 const ready = setupI18n();
 
@@ -28,8 +29,8 @@ export const DefaultLV95 = whenReady(() => html`
   </ngm-cam-coordinates>`);
 
 const el = document.createElement('div');
-el.style.width = '50';
-el.style.height = '50';
+el.style.width = '150px';
+el.style.height = '150px';
 el.style.display = 'inline-block';
 document.body.append(el);
 const firstImageryProvider = new SingleTileImageryProvider({
@@ -41,6 +42,8 @@ window['CESIUM_BASE_URL'] = '.';
 const viewer = new Viewer(el, {
   imageryProvider: firstImageryProvider,
   animation: false,
+  shadows: false,
+  skyAtmosphere: false,
   baseLayerPicker: false,
   fullscreenButton: false,
   vrButton: false,
