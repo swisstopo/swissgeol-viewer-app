@@ -50,6 +50,9 @@ jobs:
           RELEASE_NAME: ${scripts/get_github_name.sh}
         run: echo $RELEASE_NAME; npm run build
 
+      - name: Build storybook
+        run: npm run build-storybook
+
       - name: Deploy to S3
         env:
           AWS_REGION: "eu-west-1"

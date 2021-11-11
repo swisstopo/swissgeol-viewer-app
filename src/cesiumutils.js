@@ -1,16 +1,6 @@
-import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import CMath from 'cesium/Source/Core/Math';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline';
-import Transforms from 'cesium/Source/Core/Transforms';
-import SceneTransforms from 'cesium/Source/Scene/SceneTransforms';
-import {degreesToLv95} from './projection';
-import Plane from 'cesium/Source/Core/Plane';
-import HeadingPitchRoll from 'cesium/Source/Core/HeadingPitchRoll';
-import Matrix3 from 'cesium/Source/Core/Matrix3';
-import Rectangle from 'cesium/Source/Core/Rectangle';
+import {Cartesian2, Cartesian3, Cartographic, Math as CMath, Matrix4, Plane, Matrix3, Rectangle,
+   PolygonPipeline, Transforms, SceneTransforms, HeadingPitchRoll} from 'cesium';
+import {degreesToLv95} from './projection.js';
 
 
 /**

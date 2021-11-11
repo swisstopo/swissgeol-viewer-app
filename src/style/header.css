@@ -25,7 +25,7 @@ header > a {
 }
 
 .ngm-map-icon.ngm-map-active {
-  background-color: #B9271A;
+  background-color: var(--ngm-interaction-active);
 }
 
 .ngm-map-icon:hover {

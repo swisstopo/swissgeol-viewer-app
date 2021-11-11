@@ -122,13 +122,13 @@ ngm-auth:hover {
 .ngm-menu-1 > div.ngm-active-section > div:nth-child(1),
 .ngm-menu-2 > div.ngm-active-section > div:nth-child(1),
 .ngm-menu-2 > ngm-auth .ngm-active-section > div:nth-child(1) {
-  background-color: #B9271A;
+  background-color: var(--ngm-interaction-active);
 }
 
 .ngm-menu-1 > div.ngm-active-section,
 .ngm-menu-2 > div.ngm-active-section,
 .ngm-menu-2 > ngm-auth .ngm-active-section {
-  color: #B9271A;
+  color: var(--ngm-interaction-active);
 }
 
 @media (max-height: 630px) {

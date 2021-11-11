@@ -29,7 +29,7 @@ ngm-minimap {
 
 .ngm-minimap-container .ngm-cam-icon {
   cursor: grab;
-  background-color: #B9271A;
+  background-color: var(--ngm-interaction-active);
 }
 
 .ngm-minimap-container .ngm-cam-icon:active {

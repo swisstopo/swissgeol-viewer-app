@@ -51,7 +51,7 @@ class LanguageDetector {
 LanguageDetector.type = 'languageDetector';
 
 export function setupI18n() {
-  i18next.use(Backend).use(LanguageDetector).init({
+  const promise = i18next.use(Backend).use(LanguageDetector).init({
     ns: ['app', 'assets'],
     defaultNS: 'app',
     supportedLngs: SUPPORTED_LANGUAGES,
@@ -71,6 +71,7 @@ export function setupI18n() {
     document.documentElement.lang = lang;
     localize('[data-i18n]');
   });
+  return promise;
 }
 
 /**

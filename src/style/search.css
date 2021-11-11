@@ -20,7 +20,7 @@ ga-search.ui.input > input:hover {
 }
 
 ga-search.ui.input > input:focus {
-  background-color: #c5f6fa;
+  background-color: var(--ngm-action-hover);
 }
 
 ga-search.ui.input > input:focus,
@@ -84,7 +84,7 @@ ga-search > .search-results > .autocomplete-result .highlight {
 ga-search > .search-results > .autocomplete-result[aria-selected=true],
 ga-search > .search-results > .autocomplete-result:hover {
   cursor: pointer;
-  background-color: #C5F6FA;
+  background-color: var(--ngm-action-hover);
 }
 
 ga-search > .search-results img {
