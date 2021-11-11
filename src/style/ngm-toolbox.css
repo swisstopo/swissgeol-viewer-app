@@ -93,7 +93,7 @@ ngm-slicer .ngm-geom-item.active,
 
 .ngm-slice-to-draw,
 .ngm-draw-hint {
-  background-color: #C5F6FA;
+  background-color: var(--ngm-action-hover);
   color: #212529;
   box-shadow: 4px 4px 2px #00000029;
   font: normal normal bold 14px/20px Inter;

@@ -1,3 +1,5 @@
+@import 'variables.css';
+
 @import '@fontsource/inter/index.css';
 
 @import 'fomantic-ui-css/components/reset.css';
@@ -27,7 +29,7 @@
 @import 'fomantic-ui-css/components/header.css';
 @import 'fomantic-ui-css/components/card.css';
 
-@import 'cesium/Build/Cesium/Widgets/widgets.css';
+@import 'widgets.css';
 
 @import 'search.css';
 @import 'ngm-height-slider.css';
@@ -311,4 +313,9 @@ ngm-layer-legend-container > ngm-layer-legend {
   .map {
     margin-bottom: 72px;
   }
+}
+
+.user-select-text {
+  user-select: text !important;
+  cursor: text;
 }

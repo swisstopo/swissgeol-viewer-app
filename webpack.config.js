@@ -24,11 +24,13 @@ const presets = [
     }
   ]
 ],
+
 plugins = [
-  '@babel/plugin-proposal-nullish-coalescing-operator',
-  '@babel/plugin-syntax-dynamic-import',
-  '@babel/proposal-class-properties',
-   ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, legacy: false}]
+  ['@babel/plugin-proposal-nullish-coalescing-operator'],
+  ['@babel/plugin-syntax-dynamic-import'],
+  ['@babel/plugin-transform-typescript', {allowDeclareFields: true}],
+  ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, legacy: false}],
+  ['@babel/proposal-class-properties'],
 ];
 
 
@@ -79,6 +81,9 @@ export default {
           options: {
             presets: presets,
             plugins: plugins,
+            assumptions: {
+              setPublicClassFields: true
+            },
           }
         },
         exclude: /node_modules/,

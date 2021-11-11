@@ -60,7 +60,7 @@ ngm-layers-item .ui.dropdown .menu {
 }
 
 ngm-layers-item .ui.dropdown .menu .item:hover {
-  background-color: #C5F6FA;
+  background-color: var(--ngm-action-hover);
 }
 
 .ngm-extension-panel .ui.header {

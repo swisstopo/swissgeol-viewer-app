@@ -38,7 +38,7 @@ ngm-object-information .ui.button:hover .ngm-zoom-plus-icon {
 
 ngm-object-information .ui.button:hover {
   color: #357183;
-  background-color: #C5F6FA;
+  background-color: var(--ngm-action-hover);
 }
 
 ngm-object-information .ui.labeled.icon.button > .icon {

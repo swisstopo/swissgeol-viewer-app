@@ -21,7 +21,7 @@
 }
 
 .ngm-map-preview.active img {
-  border: 2px solid #B9271A;
+  border: 2px solid var(--ngm-interaction-active);
   opacity: 0.75;
 }
 
@@ -98,4 +98,3 @@
     bottom: 80px;
   }
 }
-
