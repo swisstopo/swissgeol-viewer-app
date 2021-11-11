@@ -5,6 +5,8 @@
   "camera_position_coordinates_system_label": "Coordinates system",
   "camera_position_height_label": "Height",
   "camera_position_pitch_label": "Pitch",
+  "disclaimer_href": "legal/legal_en.html",
+  "disclaimer_text": "Copyright & data protection",
   "dtd_add_own_kml": "Add your own KML",
   "dtd_aerial_map_label": "Aerial map",
   "dtd_background_map_label": "Background map",
