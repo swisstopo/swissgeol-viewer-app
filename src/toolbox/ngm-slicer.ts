@@ -10,7 +10,7 @@ import Slicer from '../slicer/Slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
 import SlicingBox from '../slicer/SlicingBox';
 import {BBox} from '../slicer/helper';
-import {Cartesian3, JulianDate} from 'cesium';
+import {Cartesian3} from 'cesium';
 import {NgmGeometry} from './interfaces';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {updateEntityVolume} from './helpers';
@@ -24,7 +24,6 @@ export class NgmSlicer extends LitElementI18n {
   @state() showBox = true;
   @state() negateSlice = false;
   private sliceGeomId: string | undefined;
-  private julianDate = new JulianDate();
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
 
 
@@ -48,6 +47,7 @@ export class NgmSlicer extends LitElementI18n {
         this.slicer!.active = true;
       }
     });
+    ToolboxStore.sliceGeometry.subscribe(geom => this.toggleGeomSlicer(geom));
   }
 
   protected update(changedProperties) {
@@ -91,10 +91,10 @@ export class NgmSlicer extends LitElementI18n {
     this.sliceInfo = sliceInfo;
   }
 
-  toggleGeomSlicer(geom: NgmGeometry) {
+  toggleGeomSlicer(geom: NgmGeometry | null | undefined) {
     if (!this.slicer) return;
     const active = this.slicer.active;
-    if (!active || (active && this.sliceGeomId !== geom.id)) {
+    if (geom && (!active || (active && this.sliceGeomId !== geom.id))) {
       this.slicer.active = false;
       if (geom.type === 'line') {
         this.slicer.sliceOptions = {
@@ -141,7 +141,7 @@ export class NgmSlicer extends LitElementI18n {
     if (geom.type === 'rectangle') {
       entity.polygon!.hierarchy = <any>{positions};
       entity.properties!.volumeHeightLimits = {lowerLimit, height};
-      updateEntityVolume(entity, this.julianDate, MainStore.viewerValue!.scene.globe);
+      updateEntityVolume(entity, MainStore.viewerValue!.scene.globe);
     }
     entity.show = true;
     this.requestUpdate();
@@ -263,7 +263,7 @@ export class NgmSlicer extends LitElementI18n {
         .selectedId=${this.sliceGeomId}
         .disabledTypes=${['point', 'polygon']}
         .optionsTemplate=${(geom) => this.sliceOptionsTemplate({geom})}
-        @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.toggleGeomSlicer(evt.detail)}>
+        @geomclick=${(evt: CustomEvent<NgmGeometry>) => ToolboxStore.setSliceGeometry(evt.detail)}>
       </ngm-geometries-list>
     `;
   }

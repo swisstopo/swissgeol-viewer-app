@@ -4,12 +4,9 @@ import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import GpxDataSource from '../GpxDataSource.js';
 import i18next from 'i18next';
-import {extendKmlWithProperties, getMeasurements} from '../cesiumutils.js';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
-import {Entity, Event, exportKml, exportKmlResultKml, Viewer} from 'cesium';
-import {saveAs} from 'file-saver';
+import {Entity, Event, Viewer} from 'cesium';
 
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
@@ -25,10 +22,10 @@ import {
 } from '../constants';
 import {
   getAreaPositions,
+  getAreaProperties,
   getUploadedEntityType,
   updateBoreholeHeights,
-  updateEntityVolume,
-  updateVolumePositions
+  updateEntityVolume
 } from './helpers';
 import {showWarning} from '../notifications';
 import {LitElementI18n} from '../i18n';
@@ -36,7 +33,6 @@ import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import CesiumMath from 'cesium/Source/Core/Math';
 import CornerType from 'cesium/Source/Core/CornerType';
 import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
@@ -149,12 +145,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
           <div class="ngm-file-upload-icon"></div>
           <div>${i18next.t('tbx_upload_btn_label')}</div>
         </div>
-        <!-- todo disabled for now -->
-        <div hidden class="ngm-draw-list-item" <!-- {classMap({disabled: !this.atLeastOneEntityVisible})} -->
-          @click=${this.downloadVisibleGeometries}>
-        <div class="ngm-file-upload-icon"></div>
-        <div>${i18next.t('tbx_download_btn_label')}</div>
-      </div>
       </div>
       <input id="${fileUploadInputId}" type='file' accept=".kml,.KML,.gpx,.GPX" hidden
              @change=${this.uploadFile_.bind(this)}/>
@@ -212,7 +202,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         updateBoreholeHeights(this.draw!.entityForEdit, this.julianDate);
       } else if (volumeShowedProp && volumeShowedProp.getValue()) {
         const entity = this.geometriesDataSource!.entities.getById(this.draw!.entityForEdit.id)!;
-        updateEntityVolume(entity, this.julianDate, this.viewer!.scene.globe);
+        updateEntityVolume(entity, this.viewer!.scene.globe);
       }
     });
 
@@ -269,7 +259,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       }
       if (this.editedBackup.properties.volumeShowed && this.draw.entityForEdit.polylineVolume) {
         const entity = this.geometriesDataSource!.entities.getById(this.draw!.entityForEdit.id)!;
-        updateEntityVolume(entity, this.julianDate, this.viewer!.scene.globe);
+        updateEntityVolume(entity, this.viewer!.scene.globe);
         this.draw.entityForEdit.polylineVolume.outlineColor = this.editedBackup.color;
         this.draw.entityForEdit.polylineVolume.material = this.editedBackup.color;
       }
@@ -435,7 +425,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       type = extendedData.type;
     }
     if (type) {
-      const attributes = {...extendedData, ...this.getAreaProperties(entity, type)};
+      const attributes = {...extendedData, ...getAreaProperties(entity, type)};
       attributes.id = entity.id;
       if (entity.name) {
         attributes.name = entity.name;
@@ -589,7 +579,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
     const entity = this.geometriesDataSource!.entities.add(entityAttrs);
     if (entityAttrs.properties!.volumeShowed) {
-      updateEntityVolume(entity, this.julianDate, this.viewer!.scene.globe);
+      updateEntityVolume(entity, this.viewer!.scene.globe);
     }
     return entity;
   }
@@ -620,7 +610,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
     this.editedBackup = {
       name: entity.name,
-      properties: {...this.getAreaProperties(entity, type)}
+      properties: {...getAreaProperties(entity, type)}
     };
 
     if (type === 'point') {
@@ -646,140 +636,17 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (!this.draw) return;
     this.editedBackup = undefined;
     const type = this.draw.entityForEdit.properties.type.getValue();
-    this.draw.entityForEdit.properties = this.getAreaProperties(this.draw.entityForEdit, type);
+    this.draw.entityForEdit.properties = getAreaProperties(this.draw.entityForEdit, type);
     this.cancelDraw();
   }
 
-  /**
-   * Returns properties for area of interes according to area type
-   * @param entity
-   * @param {'point' | 'line' | 'rectangle' | 'polygon'} type
-   * @return {{area: any, numberOfSegments: number, perimeter: any, sidesLength: any}|{type: *}}
-   */
-  getAreaProperties(entity, type) {
-    const props = {};
-    if (entity.properties) {
-      entity.properties.propertyNames.forEach(propName => {
-        const property = entity.properties[propName];
-        props[propName] = property ? property.getValue() : undefined;
-      });
-    }
-    if (type === 'point') {
-      return {
-        ...props,
-        type: type
-      };
-    }
-    const positions = type === 'line' ? entity.polyline.positions.getValue() : entity.polygon.hierarchy.getValue().positions;
-    const measurements = getMeasurements(positions, type);
-    return {
-      ...props,
-      type: type,
-      area: measurements.area,
-      perimeter: measurements.perimeter,
-      numberOfSegments: measurements.numberOfSegments,
-      sidesLength: measurements.sidesLength,
-    };
-  }
 
-  // todo reuse or remove
-  hideVolume(id) {
-    const entity = this.geometriesDataSource!.entities.getById(id);
-    if (!entity) return;
-    if (entity.billboard) {
-      entity.ellipse!.show = <any>false;
-    } else {
-      if (entity.polyline) {
-        entity.polyline!.show = <any>true;
-      } else {
-        entity.polygon!.show = <any>true;
-      }
-      entity.polylineVolume!.show = <any>false;
-    }
-    entity.properties!.volumeShowed = <any>false;
-  }
-
-  get volumeHeightLimits() {
-    const entity = this.draw!.entityForEdit;
-    if (!entity || !entity.properties.volumeHeightLimits) {
-      return DEFAULT_VOLUME_HEIGHT_LIMITS;
-    }
-    return entity.properties.volumeHeightLimits.getValue();
-  }
-
-  // todo reuse or remove
-  onVolumeHeightLimitsChange(index) {
-    if (!this.draw || !this.draw.entityForEdit) {
-      return;
-    }
-    const entity = this.draw.entityForEdit;
-    const limitInput: HTMLInputElement = this.querySelector(`.ngm-lower-limit-input-${index}`)!;
-    const heightInput: HTMLInputElement = this.querySelector(`.ngm-volume-height-input-${index}`)!;
-    const lowerLimit = CesiumMath.clamp(Number(limitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
-    const height = CesiumMath.clamp(Number(heightInput.value), this.minVolumeHeight, this.maxVolumeHeight);
-    limitInput.value = lowerLimit.toString();
-    heightInput.value = height.toString();
-    entity.properties.volumeHeightLimits = {lowerLimit, height};
-    const positions = entity.polylineVolume.positions.getValue();
-    updateVolumePositions(entity, positions, this.viewer!.scene.globe);
-  }
-
-  onNameInputChange(index) {
-    const nameElem: HTMLInputElement = this.querySelector(`.ngm-aoi-name-input-${index}`)!;
-    const entity = this.draw!.entityForEdit;
-    entity.name = nameElem.value;
-  }
-
-  onDescriptionChange(index) {
-    const descriptionElem: HTMLInputElement = this.querySelector(`.ngm-aoi-description-${index}`)!;
-    const entity = this.draw!.entityForEdit;
-    if (entity.properties.description) {
-      entity.properties.description = descriptionElem.value;
-    } else {
-      entity.properties.addProperty('description', descriptionElem.value);
-    }
-  }
-
-  onImageChange(index) {
-    const imageElem: HTMLInputElement = this.querySelector(`.ngm-aoi-image-${index}`)!;
-    const entity = this.draw!.entityForEdit;
-    if (entity.properties.image) {
-      entity.properties.image = imageElem.value;
-    } else {
-      entity.properties.addProperty('image', imageElem.value);
-    }
-  }
-
-  onWebsiteChange(index) {
-    const websiteElem: HTMLInputElement = this.querySelector(`.ngm-aoi-website-${index}`)!;
-    const entity = this.draw!.entityForEdit;
-    if (entity.properties.website) {
-      entity.properties.website = websiteElem.value;
-    } else {
-      entity.properties.addProperty('website', websiteElem.value);
-    }
-  }
-
-  async downloadVisibleGeometries() {
-    const visibleGeometries = new EntityCollection();
-    this.geometriesDataSource!.entities.values.forEach(ent => {
-      if (ent.isShowing) {
-        visibleGeometries.add(ent);
-      }
-    });
-    const exportResult: exportKmlResultKml = <exportKmlResultKml> await exportKml({
-      entities: visibleGeometries,
-      time: this.julianDate
-    });
-    let kml: string = exportResult.kml;
-    kml = extendKmlWithProperties(kml, visibleGeometries);
-    const blob = new Blob([kml], {type: 'text/xml'});
-    saveAs(blob, 'swissgeol_geometries.kml');
-  }
-
-  // todo reuse or remove
-  // get atLeastOneEntityVisible() {
-  //   return !!this.entitiesList_.find(ent => ent.show);
+  // get volumeHeightLimits() {
+  //   const entity = this.draw!.entityForEdit;
+  //   if (!entity || !entity.properties.volumeHeightLimits) {
+  //     return DEFAULT_VOLUME_HEIGHT_LIMITS;
+  //   }
+  //   return entity.properties.volumeHeightLimits.getValue();
   // }
 
   // todo reuse or remove

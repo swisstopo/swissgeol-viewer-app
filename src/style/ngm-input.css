@@ -1,0 +1,48 @@
+.ngm-input {
+  position: relative;
+}
+
+.ngm-input textarea,
+.ngm-input input {
+  appearance: none;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 4px 4px 0 0;
+  border: 2px solid transparent;
+  width: 236px;
+  height: 54px;
+  border-bottom-color: #66D9E8;
+  font: normal normal 500 16px/24px Inter;
+  color: #212529;
+  outline: none;
+  padding-left: 16px;
+  padding-top: 17px;
+}
+
+.ngm-input textarea:valid ~ .ngm-floating-label,
+.ngm-input textarea:focus ~ .ngm-floating-label,
+.ngm-input input:valid ~ .ngm-floating-label,
+.ngm-input input:focus ~ .ngm-floating-label {
+  padding-top: 4px;
+  bottom: 10px;
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.ngm-floating-label {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  left: 16px;
+  padding-top: 17px;
+  transition: 0.2s ease all;
+  color: #4A5056;
+  letter-spacing: 0.16px;
+  height: 20px;
+  background-color: white;
+  width: calc(100% - 24px);
+}
+
+.ngm-input textarea {
+  height: 102px;
+  resize: none;
+}

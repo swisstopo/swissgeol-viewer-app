@@ -54,6 +54,26 @@
 @import 'ngm-toolbox.css';
 @import 'ngm-checkbox.css';
 @import 'ngm-geometry-info.css';
+@import 'ngm-input.css';
+
+* {
+  scrollbar-color: light;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.0);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(134, 142, 150, 0.5);
+  border-radius: 100px;
+}
 
 [hidden] {
   display: none !important;
@@ -330,6 +350,36 @@ ngm-layer-legend-container > ngm-layer-legend {
 
 .ngm-action-menu.ui.dropdown.pointing .menu::after {
   display: none;
+}
+
+.ngm-action-btn.ui.button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 208px;
+  height: 36px;
+  letter-spacing: 0.25px;
+  box-shadow: 0 1px 3px #00000033;
+  background-color: #357183;
+  color: white;
+}
+
+.ngm-zoom-obj-btn .ngm-zoom-plus-icon {
+  background-color: white;
+}
+
+.ngm-action-btn.ui.button:hover > div {
+  background-color: #357183;
+}
+
+.ngm-action-btn.ui.button:hover {
+  color: #357183;
+  background-color: var(--ngm-action-hover);
+}
+
+.ngm-action-btn.ui.labeled.icon.button > .icon {
+  padding-top: 8px;
+  font-size: 20px;
 }
 
 @media (max-height: 630px) {

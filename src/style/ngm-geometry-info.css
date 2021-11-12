@@ -1,7 +1,6 @@
 ngm-geometry-info {
-  width: 250px;
+  width: 260px;
   height: 640px;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   left: 340px;
@@ -20,9 +19,102 @@ ngm-geometry-info > .ngm-drag-area {
   padding: 6px 14px;
   width: 144px;
   height: 36px;
-  margin-top: 12px;
+  margin: 12px 2px;
 }
 
 .ngm-geom-actions > div:hover {
   cursor: pointer;
+  background-color: var(--ngm-interaction-hover);
 }
+
+.ngm-geom-actions > div.active {
+  background-color: var(--ngm-interaction-active);
+}
+
+ngm-geometry-info .ngm-action-btn.ui.button {
+  margin: 12px 0;
+  width: 204px;
+}
+
+.ngm-download-obj-btn.ngm-action-btn.ui.button,
+.ngm-download-obj-btn.ngm-action-btn.ui.button:active,
+.ngm-download-obj-btn.ngm-action-btn.ui.button:focus {
+  background-color: #DEE2E6;
+  color: #495057;
+}
+
+.ngm-geom-info-content {
+  margin-top: 12px;
+}
+
+.ngm-geom-info-content > div {
+  margin-bottom: 28px;
+}
+
+.ngm-geom-info-label {
+  color: #4A5056;
+  text-align: left;
+  font: normal normal 500 12px/15px Inter;
+  letter-spacing: 0.41px;
+  margin-bottom: 5px;
+}
+
+.ngm-geom-img img {
+  max-width: 204px;
+}
+
+.ngm-geom-info-body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+}
+
+.ngm-geom-limits {
+  display: flex;
+}
+
+.ngm-geom-limits div:first-child {
+  margin-right: 20px;
+}
+
+ngm-geometry-edit {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+ngm-geometry-edit > .ngm-input {
+  margin-bottom: 22px;
+}
+
+.ngm-geom-limits-edit {
+  display: flex;
+}
+
+.ngm-geom-limits-edit .ngm-input:first-child {
+  margin-right: 12px;
+}
+
+.ngm-geom-limits-edit .ngm-input input {
+  width: 112px;
+}
+
+ngm-geometry-edit .ngm-action-btn.ui.button {
+  width: 104px;
+  text-align: center;
+  justify-content: center;
+}
+
+ngm-geometry-edit .ngm-cancel-btn.ui.button {
+  background-color: rgba(0, 0, 0, 0);
+  color: #0C7285;
+  box-shadow: none;
+}
+
+.ngm-geom-edit-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+

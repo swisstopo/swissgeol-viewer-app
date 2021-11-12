@@ -3,6 +3,7 @@ ngm-slicer {
   height: calc(100vh - 142px);
   display: block;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .ngm-draw-list-item,
@@ -45,6 +46,7 @@ ngm-slicer {
   font: normal normal bold 14px/20px Inter;
   padding: 10px 8px;
   margin-bottom: 4px;
+  width: 230px;
 }
 
 .ngm-geom-header {
@@ -128,6 +130,7 @@ ngm-slicer .ngm-geom-item.active,
   display: flex;
   font: normal normal 500 14px/28px Inter;
   margin-bottom: 20px;
+  width: 214px;
 }
 
 .ngm-slice-side > div {

@@ -85,7 +85,7 @@ class NgmObjectInformation extends LitElementI18n {
           <div class="ngm-close-icon" @click=${() => this.opened = false}></div>
         </div>
         <div class="htmlpopup-header" ?hidden="${!this.info.zoom}">
-          <button @click="${this.info.zoom}" class="ui button">
+          <button @click="${this.info.zoom}" class="ui button ngm-zoom-obj-btn ngm-action-btn">
             ${i18next.t('obj_info_zoom_to_object_btn_label')}
             <div class="ngm-zoom-plus-icon"></div>
           </button>

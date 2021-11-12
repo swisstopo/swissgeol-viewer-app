@@ -17,6 +17,8 @@ export interface AreasCounter {
   polygon: number;
 }
 
+export type GeometryTypes = 'point' | 'line' | 'rectangle' | 'polygon'
+
 export interface NgmGeometry {
   id?: string;
   name?: string;
@@ -26,7 +28,7 @@ export interface NgmGeometry {
   perimeter?: string | number;
   sidesLength?: Array<string | number>;
   numberOfSegments?: number;
-  type: 'point' | 'line' | 'rectangle' | 'polygon';
+  type: GeometryTypes;
   description?: string;
   image?: string;
   website?: string;
