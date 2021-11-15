@@ -23,10 +23,10 @@
     "build-storybook": "build-storybook && cp -R locales storybook-static && cp -R node_modules/cesium/Build/Cesium/Assets node_modules/cesium/Build/Cesium/Widgets node_modules/cesium/Build/Cesium/Workers storybook-static"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "^3.39.0",
-    "@aws-sdk/client-s3": "^3.39.0",
-    "@aws-sdk/credential-provider-cognito-identity": "^3.39.0",
-    "@aws-sdk/s3-request-presigner": "^3.39.0",
+    "@aws-sdk/client-cognito-identity": "^3.42.0",
+    "@aws-sdk/client-s3": "^3.42.0",
+    "@aws-sdk/credential-provider-cognito-identity": "^3.42.0",
+    "@aws-sdk/s3-request-presigner": "^3.42.0",
     "@fontsource/inter": "^4.5.0",
     "@geoblocks/cesium-compass": "0.3.0",
     "@geoblocks/cesium-view-cube": "0.0.1",
