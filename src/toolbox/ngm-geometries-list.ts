@@ -50,8 +50,12 @@ export default class NgmGeometriesList extends LitElementI18n {
           ${i18next.t('tbx_edit_btn')}
         </div>
         <div class="item"
+             @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'copy'})}>
+          ${i18next.t('tbx_copy_btn')}
+        </div>
+        <div class="item"
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: geom.show ? 'hide' : 'show'})}>
-          ${i18next.t(geom.show ? 'tbx_hide_btn_label' : 'tbx_unhide_btn_label')}
+          ${geom.show ? i18next.t('tbx_hide_btn_label') : i18next.t('tbx_unhide_btn_label')}
         </div>
         <div class="item"
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'remove'})}>
@@ -67,9 +71,10 @@ export default class NgmGeometriesList extends LitElementI18n {
       <div class="ngm-geom-list">
         ${this.geometries.map((i) => {
           const disabled = this.disabledTypes.includes(i.type) || this.editingEnabled;
+          const hidden = !disabled && !i.show;
           const active = !disabled && this.selectedId === i.id;
           return html`
-            <div class="ngm-geom-item ${classMap({active, disabled})}">
+            <div class="ngm-geom-item ${classMap({active, disabled, hidden})}">
               <div class="ngm-geom-header">
                 <div
                   @click=${() => !disabled && this.dispatchEvent(new CustomEvent('geomclick', {detail: i}))}>

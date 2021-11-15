@@ -5,7 +5,7 @@ import GpxDataSource from '../GpxDataSource.js';
 import i18next from 'i18next';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import {Entity, Event, Viewer} from 'cesium';
+import {Entity, Event, PropertyBag, Viewer} from 'cesium';
 
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
@@ -65,14 +65,9 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   @property({type: Boolean}) downloadActiveDataEnabled = false;
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
   @state() selectedArea: Entity | undefined;
-  minVolumeHeight = 1;
-  maxVolumeHeight = 30000;
-  minVolumeLowerLimit = -30000;
-  maxVolumeLowerLimit = 30000;
   julianDate = new JulianDate();
   swissforagesService = new SwissforagesService();
   viewer: Viewer | null = null;
-  restrictedEditing = false;
   colorBeforeHighlight: Color = DEFAULT_AOI_COLOR;
   aoiInited = false;
   private areasCounter: AreasCounter = DEFAULT_AREAS_COUNTER;
@@ -178,9 +173,8 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   cancelDraw() {
-    if (!this.draw || (!this.draw.active && !this.restrictedEditing)) return;
+    if (!this.draw || (!this.draw.active)) return;
     this.draw.active = false;
-    this.restrictedEditing = false;
     this.draw.clear();
     if (this.unlistenEditPostRender) {
       this.unlistenEditPostRender();
@@ -251,7 +245,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (range < 1000) range = 1000; // if less than 1000 it goes inside terrain
     const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 2), range);
     this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
-      duration: 0,
+      duration: 2,
       offset: zoomHeadingPitchRange
     });
     this.pickArea(id);
@@ -374,36 +368,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       this.addAreaEntity(area);
     });
   }
-
-  getInfoProps(properties) {
-    const attributes = {
-      properties: [[i18next.t('obj_info_name_label'), properties.name]],
-      zoom: () => this.flyToArea(properties.id)
-    };
-    if (properties.type === 'rectangle' || properties.type === 'polygon') {
-      attributes.properties.push([i18next.t('obj_info_area_label'), `${properties.area}km²`]);
-      attributes.properties.push([i18next.t('obj_info_perimeter_label'), `${properties.perimeter}km`]);
-      attributes.properties.push([i18next.t('obj_info_number_segments_label'), properties.numberOfSegments]);
-    } else if (properties.type === 'line') {
-      attributes.properties.push([i18next.t('obj_info_length_label'), `${properties.perimeter}km`]);
-    }
-    if (properties.description && properties.description.length) {
-      attributes.properties.push([i18next.t('obj_info_description_label'), properties.description]);
-    }
-    if (properties.image && properties.image.length) {
-      attributes.properties.push(
-        [i18next.t('obj_info_image_label'), html`<img src="${properties.image}" alt="${properties.image}">`]
-      );
-    }
-    if (properties.website && properties.website.length) {
-      attributes.properties.push(
-        [i18next.t('obj_info_website_label'), html`<a href="${properties.website}" target="_blank"
-                                                      rel="noopener">${properties.website}</a>`]
-      );
-    }
-    return attributes;
-  }
-
 
   /**
    * Adds AOI entity to data source
@@ -541,9 +505,21 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       case 'zoom':
         this.flyToArea(options.id);
         break;
+      case 'copy':
+        this.copyGeometry(options.id);
     }
   }
 
+  copyGeometry(id) {
+    const entityToCopy = this.geometriesDataSource!.entities.getById(id);
+    if (!entityToCopy) return;
+    const properties = new PropertyBag();
+    properties.merge(entityToCopy.properties);
+    const newEntity = this.geometriesDataSource!.entities.add(new Entity({properties}));
+    newEntity.merge(entityToCopy);
+    newEntity.name = `${i18next.t('tbx_copy_of_label')}  ${entityToCopy.name}`;
+    this.viewer!.scene.requestRender();
+  }
 
   render() {
     if (!this.viewer) {

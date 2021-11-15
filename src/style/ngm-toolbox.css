@@ -93,6 +93,7 @@ ngm-slicer .ngm-geom-item.active,
   background-color: #868E96 !important;
 }
 
+.ngm-geom-item.hidden,
 .ngm-slice-types.disabled > .ngm-slice-item,
 .ngm-geom-actions > div.disabled,
 .ngm-draw-list-item.disabled,
@@ -100,6 +101,10 @@ ngm-slicer .ngm-geom-item.active,
   cursor: default;
   pointer-events: none;
   color: #868E96 !important;
+}
+
+.ngm-geom-item.hidden .ngm-action-menu {
+  pointer-events: auto;
 }
 
 .ngm-geom-item.disabled {

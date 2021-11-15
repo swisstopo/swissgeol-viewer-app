@@ -66,12 +66,10 @@ class NgmKeyboardInfoPopup extends LitElementI18n {
   toggleInfoPopup(show = true) {
     const buttonClassList = this.querySelector(`#${btnId}`).classList;
     if (show) {
-      navigationWidgetClassList.add('no-pointer-events');
       buttonClassList.add('grey');
       $(`#${btnId}`).popup('hide');
       return;
     }
-    navigationWidgetClassList.remove('no-pointer-events');
     buttonClassList.remove('grey');
   }
 
