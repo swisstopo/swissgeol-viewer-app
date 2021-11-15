@@ -135,7 +135,7 @@ export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: Config) 
 }
 
 
-export function createCesiumObject(viewer: Viewer, config: Config, tileLoadCallback) {
+export function createCesiumObject(viewer: Viewer, config: Config, tileLoadCallback?) {
   const factories = {
     [LayerType.ionGeoJSON]: createIonGeoJSONFromConfig,
     [LayerType.tiles3d]: create3DTilesetFromConfig,
