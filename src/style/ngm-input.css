@@ -18,10 +18,10 @@
   padding-top: 17px;
 }
 
-.ngm-input textarea:valid ~ .ngm-floating-label,
+.ngm-input textarea:not(:placeholder-shown) ~ .ngm-floating-label,
 .ngm-input textarea:focus ~ .ngm-floating-label,
-.ngm-input input:valid ~ .ngm-floating-label,
-.ngm-input input:focus ~ .ngm-floating-label {
+.ngm-input input:focus ~ .ngm-floating-label,
+.ngm-input input:not(:placeholder-shown) ~ .ngm-floating-label {
   padding-top: 4px;
   bottom: 10px;
   font-size: 12px;
@@ -53,4 +53,11 @@
 
 .ngm-input.ngm-input-warning input {
   border-bottom-color: var(--ngm-warning);
+}
+
+.ngm-input textarea::placeholder,
+.ngm-input input::placeholder,
+.ngm-input textarea::-webkit-input-placeholder,
+.ngm-input input::-webkit-input-placeholder {
+  opacity: 0;
 }

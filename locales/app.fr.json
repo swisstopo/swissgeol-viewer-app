@@ -136,6 +136,7 @@
   "obj_info_image_label": "Image",
   "obj_info_length_label": "Longueur",
   "obj_info_number_segments_label": "Nombre de segments",
+  "obj_info_perimeter_label": "Périmètre",
   "obj_info_website_label": "Lien site web",
   "obj_info_zoom_to_object_btn_label": "Zoom sur l'objet",
   "slow_connection_label": "Est-ce que c'est lent ?",

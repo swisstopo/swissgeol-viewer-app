@@ -98,6 +98,20 @@ export function updateEntityVolume(entity: Entity, globe: Globe) {
   }
 }
 
+export function hideVolume(entity: Entity) {
+  if (entity.billboard) {
+    entity.ellipse!.show = <any>false;
+  } else {
+    if (entity.polyline) {
+      entity.polyline!.show = <any>true;
+    } else {
+      entity.polygon!.show = <any>true;
+    }
+    entity.polylineVolume!.show = <any>false;
+  }
+  entity.properties!.volumeShowed = <any>false;
+}
+
 export async function downloadGeometry(entity) {
   if (!entity) return;
   const geometries = new EntityCollection();

@@ -1,6 +1,6 @@
 ngm-geometry-info {
   width: 260px;
-  height: 640px;
+  max-height: calc(100vh - 100px);
   display: flex;
   flex-direction: column;
   left: 340px;
@@ -156,6 +156,12 @@ ngm-geometry-edit .ngm-cancel-btn.ui.button {
   height: 24px;
   -webkit-mask-size: contain;
   mask-size: contain;
+}
+
+@media (max-height: 630px) {
+  ngm-geometry-info {
+    max-height: calc(100vh - 165px);
+  }
 }
 
 

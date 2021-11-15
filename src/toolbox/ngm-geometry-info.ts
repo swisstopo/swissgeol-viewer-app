@@ -1,6 +1,6 @@
 import {LitElementI18n} from '../i18n';
 import {customElement, state} from 'lit/decorators.js';
-import {html} from 'lit';
+import {html, PropertyValues} from 'lit';
 import draggable from '../elements/draggable';
 import {Cartographic, Entity, Viewer} from 'cesium';
 import MainStore from '../store/main';
@@ -11,7 +11,7 @@ import i18next from 'i18next';
 import {getValueOrUndefined} from '../cesiumutils';
 import {NgmGeometry} from './interfaces';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {downloadGeometry, updateEntityVolume} from './helpers';
+import {downloadGeometry, hideVolume, updateEntityVolume} from './helpers';
 import './ngm-geometry-edit';
 import {styleMap} from 'lit/directives/style-map.js';
 import {showSnackbarConfirmation} from '../notifications';
@@ -23,6 +23,7 @@ export class NgmGeometryInfo extends LitElementI18n {
   private viewer: Viewer | null = null;
   private geometriesDataSource: CustomDataSource | undefined;
   private geometry: NgmGeometry | undefined;
+  private enableSlicingOnRender = false;
 
   constructor() {
     super();
@@ -42,6 +43,14 @@ export class NgmGeometryInfo extends LitElementI18n {
     ToolboxStore.sliceGeometry.subscribe(() => this.requestUpdate());
   }
 
+  protected updated(_changedProperties: PropertyValues) {
+    if (this.enableSlicingOnRender) {
+      ToolboxStore.setSliceGeometry(this.geometry);
+      this.enableSlicingOnRender = false;
+    }
+    super.updated(_changedProperties);
+  }
+
   connectedCallback() {
     draggable(this, {
       allowFrom: '.drag-handle'
@@ -51,29 +60,11 @@ export class NgmGeometryInfo extends LitElementI18n {
 
   toggleGeomVolume(geom: NgmGeometry) {
     if (geom.volumeShowed) {
-      this.hideVolume(geom.id);
+      hideVolume(this.geomEntity!);
     } else {
-      const entity = this.geometriesDataSource?.entities.getById(geom.id!);
-      if (!entity) return;
-      updateEntityVolume(entity, this.viewer!.scene.globe);
+      updateEntityVolume(this.geomEntity!, this.viewer!.scene.globe);
     }
     this.requestUpdate();
-  }
-
-  hideVolume(id) {
-    const entity = this.geometriesDataSource!.entities.getById(id);
-    if (!entity) return;
-    if (entity.billboard) {
-      entity.ellipse!.show = <any>false;
-    } else {
-      if (entity.polyline) {
-        entity.polyline!.show = <any>true;
-      } else {
-        entity.polygon!.show = <any>true;
-      }
-      entity.polylineVolume!.show = <any>false;
-    }
-    entity.properties!.volumeShowed = <any>false;
   }
 
   onEditClick() {
@@ -83,8 +74,25 @@ export class NgmGeometryInfo extends LitElementI18n {
     });
     if (this.editing)
       showSnackbarConfirmation(i18next.t('tbx_lost_changes_warning'), {onApprove: updateOptions});
-    else
+    else {
+      ToolboxStore.setSliceGeometry(null);
       updateOptions();
+    }
+  }
+
+  onSliceClick() {
+    if (this.editing) {
+      showSnackbarConfirmation(i18next.t('tbx_lost_changes_warning'), {
+        onApprove: () => {
+          hideVolume(this.geomEntity!);
+          this.editing = false;
+          this.enableSlicingOnRender = true;
+        }
+      });
+    } else {
+      hideVolume(this.geomEntity!);
+      ToolboxStore.setSliceGeometry(this.geometry);
+    }
   }
 
   onClose() {
@@ -148,11 +156,11 @@ export class NgmGeometryInfo extends LitElementI18n {
         </div>
         <div ?hidden=${geom.type === 'point' || geom.type === 'line'}>
           <div class="ngm-geom-info-label">${i18next.t('obj_info_area_label')}</div>
-          <div class="ngm-geom-info-value">${geom.area || '-'}  km²</div>
+          <div class="ngm-geom-info-value">${geom.area || '-'} km²</div>
         </div>
         <div ?hidden=${geom.type === 'point'}>
           <div class="ngm-geom-info-label">
-            ${i18next.t(geom.type === 'line' ? 'obj_info_length_label' : 'obj_info_perimeter_label')}
+            ${geom.type === 'line' ? i18next.t('obj_info_length_label') : i18next.t('obj_info_perimeter_label')}
           </div>
           <div class="ngm-geom-info-value">${geom.perimeter || '-'} km</div>
         </div>
@@ -180,11 +188,6 @@ export class NgmGeometryInfo extends LitElementI18n {
     `;
   }
 
-  get editTemplate() {
-    return html`
-      <ngm-geometry-edit .entity=${this.geomEntity}></ngm-geometry-edit>`;
-  }
-
   render() {
     this.hidden = !this.geomEntity;
     if (!this.geomEntity) return '';
@@ -198,16 +201,20 @@ export class NgmGeometryInfo extends LitElementI18n {
         ${`${this.geomEntity.name}`}
         <div class="ngm-geom-actions">
           <div
-            class="ngm-slicing-icon ${classMap({active: ToolboxStore.geomSliceActive, disabled: this.editing})}"
-            @click=${() => ToolboxStore.setSliceGeometry(this.geometry)}></div>
-          <div class="ngm-extrusion-icon ${classMap({active: !!this.geometry?.volumeShowed, disabled: this.editing})}"
+            class="ngm-slicing-icon ${classMap({active: ToolboxStore.geomSliceActive})}"
+            @click=${() => this.onSliceClick()}></div>
+          <div class="ngm-extrusion-icon ${classMap({active: !!this.geometry?.volumeShowed})}"
                @click=${() => this.toggleGeomVolume(this.geometry!)}></div>
           <div class="ngm-edit-icon ${classMap({active: this.editing})}"
                @click=${() => this.onEditClick()}>
           </div>
         </div>
         <div class="ngm-divider"></div>
-        ${this.editing ? this.editTemplate : this.infoTemplate}
+        ${this.editing ?
+          html`
+            <ngm-geometry-edit .entity=${this.geomEntity}></ngm-geometry-edit>` :
+          this.infoTemplate
+        }
       </div>
       <div class="ngm-drag-area drag-handle">
         <div></div>

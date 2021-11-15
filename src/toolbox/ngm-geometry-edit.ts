@@ -1,10 +1,10 @@
 import {LitElementI18n} from '../i18n';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {html} from 'lit';
-import {Entity, PropertyBag, Viewer} from 'cesium';
+import {Entity, Event, PropertyBag, Viewer} from 'cesium';
 import i18next from 'i18next';
 import MainStore from '../store/main';
-import {updateEntityVolume, updateVolumePositions} from './helpers';
+import {hideVolume, updateEntityVolume, updateVolumePositions} from './helpers';
 import {getEntityColor, getValueOrUndefined} from '../cesiumutils';
 import ToolboxStore from '../store/toolbox';
 import CesiumMath from 'cesium/Source/Core/Math';
@@ -14,7 +14,6 @@ import {CesiumDraw} from '../draw/CesiumDraw';
 import {GEOMETRY_COLORS, POINT_SYMBOLS} from '../constants';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
-import {showSnackbarConfirmation} from '../notifications';
 import './ngm-point-edit';
 
 @customElement('ngm-geometry-edit')
@@ -33,6 +32,7 @@ export class NgmGeometryEdit extends LitElementI18n {
   private maxVolumeLowerLimit = 30000;
   private julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;
+  private unsubscribeFromChanges: Event.RemoveCallback | undefined;
 
   constructor() {
     super();
@@ -52,6 +52,18 @@ export class NgmGeometryEdit extends LitElementI18n {
       this.selectedSymbol = getValueOrUndefined(this.editingEntity.billboard?.image);
       this.name = this.editingEntity.name || '';
       this.draw = DrawStore.drawValue;
+      this.unsubscribeFromChanges = this.entity.properties!.definitionChanged.addEventListener(properties => {
+        const volumeShowed = getValueOrUndefined(properties.volumeShowed);
+        if (getValueOrUndefined(properties.volumeShowed) !== getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)) {
+          this.editingEntity!.properties!.volumeShowed = volumeShowed;
+          if (volumeShowed)
+            updateEntityVolume(this.editingEntity!, this.viewer!.scene.globe);
+          else
+            hideVolume(this.editingEntity!);
+          this.viewer?.scene.requestRender();
+          this.requestUpdate();
+        }
+      });
       if (this.draw) {
         this.cancelDraw();
         this.draw.entityForEdit = this.editingEntity;
@@ -63,6 +75,7 @@ export class NgmGeometryEdit extends LitElementI18n {
   }
 
   disconnectedCallback() {
+    if (this.unsubscribeFromChanges) this.unsubscribeFromChanges();
     this.cancelDraw();
     this.removeEditingEntity();
     super.disconnectedCallback();
@@ -126,12 +139,8 @@ export class NgmGeometryEdit extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
-  endEditing(cancel?) {
-    const updateOptions = () => ToolboxStore.setOpenedGeometryOptions(this.entity ? {id: this.entity.id} : null);
-    if (cancel)
-      showSnackbarConfirmation(i18next.t('tbx_lost_changes_warning'), {onApprove: updateOptions});
-    else
-      updateOptions();
+  endEditing() {
+    ToolboxStore.setOpenedGeometryOptions(this.entity ? {id: this.entity.id} : null);
   }
 
   onColorChange(color) {
@@ -169,27 +178,26 @@ export class NgmGeometryEdit extends LitElementI18n {
   render() {
     if (!this.editingEntity) return '';
     const type = getValueOrUndefined(this.editingEntity!.properties!.type);
-    console.log(this.editingEntity.name);
     return html`
       <div class="ngm-input ${classMap({'ngm-input-warning': !this.name})}">
-        <input type="text" required .value=${this.name}
+        <input type="text" placeholder="required" .value=${this.name}
                @input=${evt => this.onNameChange(evt)}/>
         <span class="ngm-floating-label">${i18next.t('tbx_name_label')}</span>
       </div>
       <div class="ngm-input ngm-textarea">
-        <textarea type="text" required
+        <textarea type="text" placeholder="required"
                   .value=${getValueOrUndefined(this.editingEntity!.properties!.description) || ''}
                   @input=${evt => this.onPropChange(evt, 'description')}></textarea>
         <span class="ngm-floating-label">${i18next.t('tbx_description_label')}</span>
       </div>
       <div class="ngm-input">
-        <input type="text" required
+        <input type="text" placeholder="required"
                .value=${getValueOrUndefined(this.editingEntity!.properties!.image) || ''}
                @input=${evt => this.onPropChange(evt, 'image')}/>
         <span class="ngm-floating-label">${i18next.t('tbx_image_label')}</span>
       </div>
       <div class="ngm-input">
-        <input type="text" required
+        <input type="text" placeholder="required"
                .value=${getValueOrUndefined(this.editingEntity!.properties!.website) || ''}
                @input=${evt => this.onPropChange(evt, 'website')}/>
         <span class="ngm-floating-label">${i18next.t('tbx_website_label')}</span>
@@ -198,16 +206,16 @@ export class NgmGeometryEdit extends LitElementI18n {
            ?hidden=${!getValueOrUndefined(this.editingEntity!.properties!.volumeShowed) || type === 'point'}>
         <div class="ngm-input">
           <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit}
-                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.lowerLimit}
+                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed()}
                  @input=${this.onVolumeHeightLimitsChange}
-                 class="ngm-lower-limit-input" required/>
+                 class="ngm-lower-limit-input" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_lower_limit_label')}</span>
         </div>
         <div class="ngm-input">
           <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight}
-                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.height}
+                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.height.toFixed()}
                  @input=${this.onVolumeHeightLimitsChange}
-                 class="ngm-height-input" required/>
+                 class="ngm-height-input" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
       </div>
@@ -240,7 +248,7 @@ export class NgmGeometryEdit extends LitElementI18n {
                 class="ui button ngm-action-btn ${classMap({'ngm-disabled': !this.name})}">
           ${i18next.t('tbx_save_editing_btn_label')}
         </button>
-        <button @click="${() => this.endEditing(true)}" class="ui button ngm-action-btn ngm-cancel-btn">
+        <button @click="${() => this.endEditing()}" class="ui button ngm-action-btn ngm-cancel-btn">
           ${i18next.t('tbx_cancel_area_btn_label')}
         </button>
       </div>
