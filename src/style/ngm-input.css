@@ -46,3 +46,11 @@
   height: 102px;
   resize: none;
 }
+
+.ngm-input.ngm-input-warning .ngm-floating-label {
+  color: var(--ngm-warning);
+}
+
+.ngm-input.ngm-input-warning input {
+  border-bottom-color: var(--ngm-warning);
+}

@@ -24,6 +24,7 @@ export class NgmGeometryEdit extends LitElementI18n {
   @query('.ngm-height-input') heightInput;
   @state() selectedColor = '';
   @state() selectedSymbol = '';
+  @state() name = '';
   private editingEntity: Entity | undefined;
   private viewer: Viewer | null | undefined;
   private minVolumeHeight = 1;
@@ -49,6 +50,7 @@ export class NgmGeometryEdit extends LitElementI18n {
       this.entity.show = false;
       this.selectedColor = getEntityColor(this.editingEntity).withAlpha(1).toCssColorString();
       this.selectedSymbol = getValueOrUndefined(this.editingEntity.billboard?.image);
+      this.name = this.editingEntity.name || '';
       this.draw = DrawStore.drawValue;
       if (this.draw) {
         this.cancelDraw();
@@ -159,13 +161,19 @@ export class NgmGeometryEdit extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
+  onNameChange(evt) {
+    this.editingEntity!.name = evt.target.value;
+    this.name = evt.target.value;
+  }
+
   render() {
     if (!this.editingEntity) return '';
     const type = getValueOrUndefined(this.editingEntity!.properties!.type);
+    console.log(this.editingEntity.name);
     return html`
-      <div class="ngm-input">
-        <input type="text" required .value=${this.editingEntity.name}
-               @input=${evt => this.editingEntity!.name = evt.target.value}/>
+      <div class="ngm-input ${classMap({'ngm-input-warning': !this.name})}">
+        <input type="text" required .value=${this.name}
+               @input=${evt => this.onNameChange(evt)}/>
         <span class="ngm-floating-label">${i18next.t('tbx_name_label')}</span>
       </div>
       <div class="ngm-input ngm-textarea">
@@ -228,7 +236,8 @@ export class NgmGeometryEdit extends LitElementI18n {
         })}
       </div>
       <div class="ngm-geom-edit-actions">
-        <button @click="${this.save}" class="ui button ngm-action-btn">
+        <button @click="${this.save}"
+                class="ui button ngm-action-btn ${classMap({'ngm-disabled': !this.name})}">
           ${i18next.t('tbx_save_editing_btn_label')}
         </button>
         <button @click="${() => this.endEditing(true)}" class="ui button ngm-action-btn ngm-cancel-btn">
