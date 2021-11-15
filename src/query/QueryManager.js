@@ -10,6 +10,7 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import DrawStore from '../store/draw';
 import QueryStore from '../store/query';
+import ToolboxStore from '../store/toolbox';
 
 
 export default class QueryManager {
@@ -83,6 +84,11 @@ export default class QueryManager {
         const result = await this.querySwisstopo(pickedPosition, layers);
         attributes = result || attributes;
       }
+    }
+
+    if (attributes.geomId) {
+      ToolboxStore.setOpenedGeometryOptions({id: attributes.geomId});
+      return;
     }
 
     this.showObjectInformation(attributes);

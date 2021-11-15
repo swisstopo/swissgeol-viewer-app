@@ -1,8 +1,9 @@
-ngm-aoi-drawer,
+ngm-geometry-drawer,
 ngm-slicer {
   height: calc(100vh - 142px);
   display: block;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .ngm-draw-list-item,
@@ -16,16 +17,12 @@ ngm-slicer {
   padding: 14px 0;
 }
 
-.ngm-draw-list-item:hover,
-.ngm-tools-list-item:hover {
-  color: #FF0000;
-}
-
 .ngm-draw-list-item div:nth-child(2),
 .ngm-tools-list-item div:nth-child(2) {
   margin-left: 12px;
 }
 
+.ngm-geom-header .ngm-action-menu-icon:hover,
 .ngm-slice-side > div:hover > div:nth-child(1),
 .ngm-draw-list-item:hover div:nth-child(1),
 .ngm-tools-list-item:hover div:nth-child(1) {
@@ -42,13 +39,14 @@ ngm-slicer {
   display: flex;
   flex-direction: column;
   align-items: start;
-  justify-content: space-between;
+  justify-content: center;
   background-color: #F8F9FA;
   color: #0B7285;
   height: 36px;
   font: normal normal bold 14px/20px Inter;
   padding: 10px 8px;
   margin-bottom: 4px;
+  width: 230px;
 }
 
 .ngm-geom-header {
@@ -57,9 +55,18 @@ ngm-slicer {
   width: 100%;
 }
 
+.ngm-geom-header > div:nth-child(1) {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+}
+
+.ngm-draw-list-item:hover,
+.ngm-tools-list-item:hover,
 .ngm-slice-side > div:hover,
 .ngm-slice-item:hover > .ngm-slice-label,
-.ngm-geom-item:hover {
+.ngm-geom-header > div:nth-child(1):hover {
   color: #FF0000;
 }
 
@@ -80,15 +87,28 @@ ngm-slicer .ngm-geom-item.active,
   height: auto;
 }
 
+.ngm-geom-actions > div.disabled,
+.ngm-draw-list-item.disabled > div:first-child,
 .ngm-geom-item.disabled .ngm-action-menu-icon {
-  background-color: #868E96;
+  background-color: #868E96 !important;
 }
 
+.ngm-geom-item.hidden,
+.ngm-slice-types.disabled > .ngm-slice-item,
+.ngm-geom-actions > div.disabled,
+.ngm-draw-list-item.disabled,
 .ngm-geom-item.disabled {
   cursor: default;
   pointer-events: none;
+  color: #868E96 !important;
+}
+
+.ngm-geom-item.hidden .ngm-action-menu {
+  pointer-events: auto;
+}
+
+.ngm-geom-item.disabled {
   background-color: #F8F9FA;
-  color: #868E96;
 }
 
 .ngm-slice-to-draw,
@@ -123,6 +143,7 @@ ngm-slicer .ngm-geom-item.active,
   display: flex;
   font: normal normal 500 14px/28px Inter;
   margin-bottom: 20px;
+  width: 214px;
 }
 
 .ngm-slice-side > div {

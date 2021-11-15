@@ -1,20 +1,22 @@
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
-import './ngm-aoi-drawer';
+import './ngm-geometry-drawer';
 import './ngm-slicer';
 import './ngm-geometries-list';
 import i18next from 'i18next';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {AOI_DATASOURCE_NAME} from '../constants';
+import {AOI_DATASOURCE_NAME, DEFAULT_AOI_COLOR} from '../constants';
 import MainStore from '../store/main';
 import {JulianDate, Viewer} from 'cesium';
 import LocalStorageController from '../LocalStorageController';
 import ToolboxStore from '../store/toolbox';
 import {getValueOrUndefined} from '../cesiumutils';
 import {NgmGeometry} from './interfaces';
-import {getAreaPositions} from './helpers';
+import {getAreaPositions, updateBoreholeHeights, updateEntityVolume} from './helpers';
 import {getSliceParam} from '../permalink';
+import {CesiumDraw} from '../draw/CesiumDraw';
+import DrawStore from '../store/draw';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
@@ -23,6 +25,7 @@ export class NgmToolbox extends LitElementI18n {
   geometriesDataSource: CustomDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
+  private draw: CesiumDraw | undefined;
 
   constructor() {
     super();
@@ -35,6 +38,33 @@ export class NgmToolbox extends LitElementI18n {
         LocalStorageController.setAoiInStorage(this.entitiesList);
         ToolboxStore.setGeometries(this.entitiesList);
       });
+      if (this.viewer) {
+        this.draw = new CesiumDraw(this.viewer, 'polygon', {
+          fillColor: DEFAULT_AOI_COLOR
+        });
+        this.draw.active = false;
+        this.draw.addEventListener('statechanged', (evt) => {
+          DrawStore.setDrawState((<CustomEvent>evt).detail.active);
+          this.requestUpdate();
+          this.viewer!.scene.requestRender();
+        });
+        this.draw.addEventListener('leftdown', () => {
+          const volumeShowedProp = getValueOrUndefined(this.draw!.entityForEdit.properties.volumeShowed);
+          const type = getValueOrUndefined(this.draw!.entityForEdit.properties.type);
+          if (volumeShowedProp && type !== 'point') {
+            this.draw!.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
+            this.viewer!.scene.requestRender();
+          }
+        });
+        this.draw.addEventListener('leftup', () => {
+          if (getValueOrUndefined(this.draw!.entityForEdit.properties.type) === 'point') {
+            updateBoreholeHeights(this.draw!.entityForEdit, this.julianDate);
+          } else if (getValueOrUndefined(this.draw!.entityForEdit.properties.volumeShowed)) {
+            updateEntityVolume(this.draw!.entityForEdit, this.viewer!.scene.globe);
+          }
+        });
+        DrawStore.setDraw(this.draw);
+      }
     });
   }
 
@@ -45,11 +75,12 @@ export class NgmToolbox extends LitElementI18n {
   }
 
   private get entitiesList(): NgmGeometry[] {
+    const opnGeomOptions = ToolboxStore.openedGeometryOptionsValue;
     return this.geometriesDataSource!.entities.values.map(val => {
       const item = {
         id: val.id,
         name: val.name,
-        show: val.isShowing,
+        show: val.isShowing || !!(!val.isShowing && opnGeomOptions && val.id === opnGeomOptions.id && opnGeomOptions.editing),
         positions: getAreaPositions(val, this.julianDate),
         area: getValueOrUndefined(val.properties!.area),
         perimeter: getValueOrUndefined(val.properties!.perimeter),
@@ -96,8 +127,8 @@ export class NgmToolbox extends LitElementI18n {
           <div>${i18next.t('tbx_slicing')}</div>
         </div>
       </div>
-      <ngm-aoi-drawer .hidden="${this.activeTool !== 'draw'}"
-                      .geometriesDataSource=${this.geometriesDataSource}></ngm-aoi-drawer>
+      <ngm-geometry-drawer .hidden="${this.activeTool !== 'draw'}"
+                      .geometriesDataSource=${this.geometriesDataSource}></ngm-geometry-drawer>
       <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
                   .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
                   .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>`;

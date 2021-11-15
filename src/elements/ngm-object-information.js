@@ -44,6 +44,7 @@ class NgmObjectInformation extends LitElementI18n {
   }
 
   render() {
+    this.hidden = !this.opened;
     if (this.info && (this.info.popupContent || this.info.properties)) {
       const content = this.info.popupContent ?
         unsafeHTML(this.info.popupContent) :
@@ -78,14 +79,13 @@ class NgmObjectInformation extends LitElementI18n {
       if (!this.opened && this.info.onhide) {
         this.info.onhide();
       }
-      this.hidden = !this.opened;
 
       return html`
         <div class="ngm-floating-window-header drag-handle">
           <div class="ngm-close-icon" @click=${() => this.opened = false}></div>
         </div>
         <div class="htmlpopup-header" ?hidden="${!this.info.zoom}">
-          <button @click="${this.info.zoom}" class="ui button">
+          <button @click="${this.info.zoom}" class="ui button ngm-zoom-obj-btn ngm-action-btn">
             ${i18next.t('obj_info_zoom_to_object_btn_label')}
             <div class="ngm-zoom-plus-icon"></div>
           </button>

@@ -11,11 +11,29 @@
   box-shadow: 6px 6px 8px #00000029;
 }
 
+.ui.toast-container.bottom.center .toast-box.floating .snackbar .actions {
+  display: flex;
+  justify-content: end;
+  background-color: #495057;
+  border: none;
+  border-radius: 8px;
+}
+
 .snackbar.success {
   color: #212529;
   background-color: #8CE99A;
 }
+
 .snackbar.error {
   color: #212529;
   background-color: #FFA8A8;
+}
+
+.actions .ui.button.ngm-action-btn {
+  width: auto;
+}
+
+.actions .ui.button.ngm-cancel-btn {
+  background-color: #DEE2E6;
+  color: #495057;
 }

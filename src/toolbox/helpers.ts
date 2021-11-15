@@ -1,17 +1,20 @@
-import {
-  CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_VOLUME_HEIGHT_LIMITS
-} from '../constants';
+import {CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_VOLUME_HEIGHT_LIMITS} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {Entity, Globe, JulianDate} from 'cesium';
-import {updateHeightForCartesianPositions} from '../cesiumutils';
+import {Entity, exportKml, exportKmlResultKml, Globe, JulianDate} from 'cesium';
+import {extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {calculateBoxHeight} from '../slicer/helper';
+import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
+import {saveAs} from 'file-saver';
+import {GeometryTypes} from './interfaces';
 
-export function getUploadedEntityType(entity: Entity) {
+const julianDate = new JulianDate();
+
+export function getUploadedEntityType(entity: Entity): GeometryTypes | undefined {
   for (const geometry of CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD) {
     if (entity[geometry] !== undefined) {
-      return geometry === 'polyline' ? 'line' : geometry;
+      return geometry === 'polyline' ? 'line' : <GeometryTypes>geometry;
     }
   }
   return entity.position ? 'point' : undefined;
@@ -57,7 +60,7 @@ export function updateVolumePositions(entity, positions: Cartesian3[], globe: Gl
   ];
 }
 
-export function updateEntityVolume(entity: Entity, julianDate: JulianDate, globe: Globe) {
+export function updateEntityVolume(entity: Entity, globe: Globe) {
   if (!entity || !entity.properties) return;
   const type = entity.properties.type.getValue();
   let positions;
@@ -93,4 +96,61 @@ export function updateEntityVolume(entity: Entity, julianDate: JulianDate, globe
     updateVolumePositions(entity, positions, globe);
     entity.polylineVolume!.show = <any>true;
   }
+}
+
+export function hideVolume(entity: Entity) {
+  if (entity.billboard) {
+    entity.ellipse!.show = <any>false;
+  } else {
+    if (entity.polyline) {
+      entity.polyline!.show = <any>true;
+    } else {
+      entity.polygon!.show = <any>true;
+    }
+    entity.polylineVolume!.show = <any>false;
+  }
+  entity.properties!.volumeShowed = <any>false;
+}
+
+export async function downloadGeometry(entity) {
+  if (!entity) return;
+  const geometries = new EntityCollection();
+  const name = entity.name.replace(' ', '_');
+  geometries.add(entity);
+  const exportResult: exportKmlResultKml = <exportKmlResultKml> await exportKml({
+    entities: geometries,
+    time: julianDate
+  });
+  let kml: string = exportResult.kml;
+  kml = extendKmlWithProperties(kml, geometries);
+  const blob = new Blob([kml], {type: 'text/xml'});
+  saveAs(blob, `swissgeol_geometry_${name}.kml`);
+}
+
+export function getAreaProperties(entity: Entity, type: GeometryTypes) {
+  const props = {};
+  if (entity.properties) {
+    entity.properties.propertyNames.forEach(propName => {
+      const property = entity.properties![propName];
+      props[propName] = property ? property.getValue() : undefined;
+    });
+  }
+  if (type === 'point') {
+    return {
+      ...props,
+      type: type
+    };
+  }
+  const positions = type === 'line' ?
+    entity.polyline!.positions!.getValue(julianDate) :
+    entity.polygon!.hierarchy!.getValue(julianDate).positions;
+  const measurements = getMeasurements(positions, type);
+  return {
+    ...props,
+    type: type,
+    area: measurements.area,
+    perimeter: measurements.perimeter,
+    numberOfSegments: measurements.numberOfSegments,
+    sidesLength: measurements.sidesLength,
+  };
 }

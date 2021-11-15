@@ -288,3 +288,27 @@
   mask: url('./images/i_upload.svg') no-repeat center;
   -webkit-mask: url('./images/i_upload.svg') no-repeat center;
 }
+
+.ngm-extrusion-icon {
+  width: 20px;
+  height: 24px;
+  mask: url('./images/i_extrusion.svg') no-repeat center;
+  -webkit-mask: url('./images/i_extrusion.svg') no-repeat center;
+  background-color: #0B7285;
+}
+
+.ngm-edit-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_edit.svg') no-repeat center;
+  -webkit-mask: url('./images/i_edit.svg') no-repeat center;
+  background-color: #0B7285;
+}
+
+.ngm-download-icon {
+  width: 20px;
+  height: 20px;
+  mask: url('./images/i_download.svg') no-repeat center;
+  -webkit-mask: url('./images/i_download.svg') no-repeat center;
+  background-color: #495057;
+}

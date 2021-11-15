@@ -1,0 +1,172 @@
+ngm-geometry-info {
+  width: 260px;
+  max-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  left: 340px;
+}
+
+ngm-geometry-info > .ngm-drag-area {
+  margin-top: auto;
+}
+
+.ngm-geom-actions {
+  background-color: #F1F3F5;
+  box-shadow: 0 1px 3px #00000033;
+  border-radius: 8px;
+  display: flex;
+  padding: 6px 14px;
+  width: fit-content;
+  width: -moz-fit-content;
+  height: 36px;
+  margin: 12px 2px;
+}
+
+.ngm-geom-actions > div:not(:last-child) {
+  margin-right: 25px;
+}
+
+.ngm-geom-actions > div:hover {
+  cursor: pointer;
+  background-color: var(--ngm-interaction-hover);
+}
+
+.ngm-geom-actions > div.active {
+  background-color: var(--ngm-interaction-active);
+}
+
+ngm-geometry-info .ngm-action-btn.ui.button {
+  margin: 12px 0;
+  width: 204px;
+}
+
+.ngm-download-obj-btn.ngm-action-btn.ui.button,
+.ngm-download-obj-btn.ngm-action-btn.ui.button:active,
+.ngm-download-obj-btn.ngm-action-btn.ui.button:focus {
+  background-color: #DEE2E6;
+  color: #495057;
+}
+
+.ngm-geom-info-content {
+  margin-top: 12px;
+}
+
+.ngm-geom-info-content > div {
+  margin-bottom: 28px;
+}
+
+.ngm-geom-info-label {
+  color: #4A5056;
+  text-align: left;
+  font: normal normal 500 12px/15px Inter;
+  letter-spacing: 0.41px;
+  margin-bottom: 5px;
+}
+
+.ngm-geom-img img {
+  max-width: 204px;
+}
+
+.ngm-geom-info-body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+}
+
+.ngm-geom-limits {
+  display: flex;
+}
+
+.ngm-geom-limits > div:first-child {
+  margin-right: 49px;
+}
+
+.ngm-geom-limits > div:nth-child(3) {
+  margin-left: 49px;
+}
+
+ngm-geometry-edit {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+ngm-point-edit > div,
+ngm-geometry-edit > div:not(:last-child) {
+  margin-bottom: 22px;
+}
+
+.ngm-geom-edit-double-input {
+  display: flex;
+}
+
+.ngm-geom-edit-double-input .ngm-input:first-child {
+  margin-right: 12px;
+}
+
+.ngm-geom-edit-double-input .ngm-input input {
+  width: 112px;
+}
+
+ngm-geometry-edit .ngm-action-btn.ui.button {
+  width: 104px;
+  text-align: center;
+  justify-content: center;
+}
+
+ngm-geometry-edit .ngm-cancel-btn.ui.button {
+  background-color: rgba(0, 0, 0, 0);
+  color: #0C7285;
+  box-shadow: none;
+}
+
+.ngm-geom-edit-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ngm-geom-color {
+  width: 24px;
+  height: 24px;
+}
+
+.ngm-geom-colorpicker,
+.ngm-geom-symbolpicker {
+  display: flex;
+  width: 100%;
+  justify-content: start;
+}
+
+.ngm-geom-symbolpicker > .ngm-geom-symbol:not(:last-child),
+.ngm-geom-colorpicker > .ngm-geom-color:not(:last-child) {
+  margin-right: 5px;
+}
+
+
+.ngm-geom-colorpicker .ngm-geom-color:hover,
+.ngm-geom-colorpicker .ngm-geom-color.active {
+  background-image: url('./images/i_colorpicker_check.svg');
+}
+
+.ngm-geom-symbolpicker .ngm-geom-symbol:hover,
+.ngm-geom-symbolpicker .ngm-geom-symbol.active,
+.ngm-geom-colorpicker .ngm-geom-color:hover {
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+.ngm-geom-symbol {
+  width: 24px;
+  height: 24px;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+@media (max-height: 630px) {
+  ngm-geometry-info {
+    max-height: calc(100vh - 165px);
+  }
+}
+
+
+

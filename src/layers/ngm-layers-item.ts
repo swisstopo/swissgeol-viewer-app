@@ -142,7 +142,7 @@ export class LayerTreeItem extends LitElementI18n {
         <div class="ngm-layer-icon ngm-delete-icon"
               @click=${this.onRemove}>
         </div>
-        <div class="ui dropdown">
+        <div class="ui dropdown right pointing ngm-action-menu">
           <div class="ngm-layer-icon ngm-action-menu-icon"></div>
           ${this.buttons}
         </div>
