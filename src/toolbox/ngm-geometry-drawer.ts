@@ -78,10 +78,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   private areasClickable = false;
   private unlistenEditPostRender: Event.RemoveCallback | undefined;
   private drawGeometries = [
-    {label: i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},
-    {label: i18next.t('tbx_add_line_btn_label'), type: 'line', icon: 'ngm-line-draw-icon'},
-    {label: i18next.t('tbx_add_polygon_area_btn_label'), type: 'polygon', icon: 'ngm-polygon-draw-icon'},
-    {label: i18next.t('tbx_add_rect_area_btn_label'), type: 'rectangle', icon: 'ngm-rectangle-draw-icon'},
+    {label: () => i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},
+    {label: () => i18next.t('tbx_add_line_btn_label'), type: 'line', icon: 'ngm-line-draw-icon'},
+    {label: () => i18next.t('tbx_add_polygon_area_btn_label'), type: 'polygon', icon: 'ngm-polygon-draw-icon'},
+    {label: () => i18next.t('tbx_add_rect_area_btn_label'), type: 'rectangle', icon: 'ngm-rectangle-draw-icon'},
   ];
 
   constructor() {
@@ -535,7 +535,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
               class="ngm-draw-list-item ${classMap({active, disabled})}"
               @click=${() => this.onAddAreaClick(it.type)}>
               <div class=${it.icon}></div>
-              <div>${it.label}</div>
+              <div>${it.label()}</div>
             </div>
             <div ?hidden=${!active} class="ngm-draw-hint">
               ${i18next.t('tbx_area_of_interest_add_hint')}
