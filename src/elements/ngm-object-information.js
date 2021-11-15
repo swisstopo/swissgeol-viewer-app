@@ -44,6 +44,7 @@ class NgmObjectInformation extends LitElementI18n {
   }
 
   render() {
+    this.hidden = !this.opened;
     if (this.info && (this.info.popupContent || this.info.properties)) {
       const content = this.info.popupContent ?
         unsafeHTML(this.info.popupContent) :
@@ -78,7 +79,6 @@ class NgmObjectInformation extends LitElementI18n {
       if (!this.opened && this.info.onhide) {
         this.info.onhide();
       }
-      this.hidden = !this.opened;
 
       return html`
         <div class="ngm-floating-window-header drag-handle">
