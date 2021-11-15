@@ -73,8 +73,12 @@ ngm-geometry-info .ngm-action-btn.ui.button {
   display: flex;
 }
 
-.ngm-geom-limits div:first-child {
-  margin-right: 20px;
+.ngm-geom-limits > div:first-child {
+  margin-right: 49px;
+}
+
+.ngm-geom-limits > div:nth-child(3) {
+  margin-left: 49px;
 }
 
 ngm-geometry-edit {

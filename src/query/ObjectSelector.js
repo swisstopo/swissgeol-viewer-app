@@ -101,8 +101,7 @@ export default class ObjectSelector {
     attributes.zoom = () => this.viewer.zoomTo(entity, props.zoomHeadingPitchRange);
 
     if (aoiDataSource.entities.contains(entity)) {
-      const aoiElement = document.querySelector('ngm-geometry-drawer');
-      attributes = aoiElement.getInfoProps({...props, name: entity.name});
+      return {geomId: props.id};
     } else if (earthquakesDataSources.some((e) => e.entities.contains(entity))) {
       this.toggleEarthquakeHighlight(entity);
     }

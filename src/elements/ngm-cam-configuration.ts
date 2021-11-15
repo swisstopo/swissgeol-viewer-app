@@ -4,8 +4,17 @@ import {customElement, property, state} from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
 import {Interactable} from '@interactjs/types';
-import {Cartesian2, Event, Scene, ScreenSpaceEventHandler, ScreenSpaceEventType, Viewer,
-   Math as CesiumMath, Matrix4, KeyboardEventModifier} from 'cesium';
+import {
+  Cartesian2,
+  Event,
+  KeyboardEventModifier,
+  Math as CesiumMath,
+  Matrix4,
+  Scene,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+  Viewer
+} from 'cesium';
 import {formatCartographicAs2DLv95} from '../projection';
 import {setCameraHeight} from '../cesiumutils';
 import {styleMap} from 'lit/directives/style-map.js';
@@ -34,7 +43,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   private removeOnTick: Event.RemoveCallback | undefined;
   private configurations = [
     {
-      labelTag: 'camera_position_height_label',
+      label: () => i18next.t('camera_position_height_label'),
       iconClass: () => classMap({'ngm-cam-h-icon': true, 'ngm-active-icon': this.lockType === 'elevation'}),
       minValue: -30000,
       maxValue: 30000,
@@ -46,7 +55,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       lock: () => this.toggleLock('elevation')
     },
     {
-      labelTag: 'camera_position_angle_label',
+      label: () => i18next.t('camera_position_angle_label'),
       iconClass: () => classMap({'ngm-cam-d-icon': true, 'ngm-active-icon': this.lockType === 'angle'}),
       minValue: -179,
       maxValue: 180,
@@ -58,7 +67,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       lock: () => this.toggleLock('angle')
     },
     {
-      labelTag: 'camera_position_pitch_label',
+      label: () => i18next.t('camera_position_pitch_label'),
       iconClass: () => classMap({'ngm-cam-t-icon': true, 'ngm-active-icon': this.lockType === 'pitch'}),
       minValue: -90,
       maxValue: 90,
@@ -231,7 +240,7 @@ export class NgmCamConfiguration extends LitElementI18n {
             <div class=${c.iconClass()} @click=${c.lock}></div>
             <div class="ngm-cam-conf-slider">
               <div>
-                <label>${i18next.t(c.labelTag)}</label>
+                <label>${c.label()}</label>
                 <label>${c.getValueLabel()}</label>
               </div>
               <input type="range" class="ngm-slider" style=${styleMap(c.style())}

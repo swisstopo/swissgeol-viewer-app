@@ -36,6 +36,7 @@ const infoConfig = [
   }
 ];
 
+// todo remove or reuse
 class NgmKeyboardInfoPopup extends LitElementI18n {
 
   updated() {
@@ -63,7 +64,6 @@ class NgmKeyboardInfoPopup extends LitElementI18n {
   }
 
   toggleInfoPopup(show = true) {
-    const navigationWidgetClassList = document.querySelector('ngm-navigation-widgets').classList;
     const buttonClassList = this.querySelector(`#${btnId}`).classList;
     if (show) {
       navigationWidgetClassList.add('no-pointer-events');

@@ -72,13 +72,13 @@ export class NgmPointEdit extends LitElementI18n {
           <input class="ngm-coord-x-input" step=${this.coordsStep} type="number" .value=${this.xValue}
                  @change="${this.onPositionChange}"
                  required/>
-          <span class="ngm-floating-label">${i18next.t('tbx_volume_lower_limit_label')}</span>
+          <span class="ngm-floating-label">${i18next.t('tbx_lon_label')}</span>
         </div>
         <div class="ngm-input">
           <input class="ngm-coord-y-input" step=${this.coordsStep} type="number" .value=${this.yValue}
                  @change="${this.onPositionChange}"
                  required/>
-          <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
+          <span class="ngm-floating-label">${i18next.t('tbx_lat_label')}</span>
         </div>
       </div>
       <div class="ngm-geom-edit-double-input">
