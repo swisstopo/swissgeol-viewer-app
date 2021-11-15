@@ -75,7 +75,7 @@ export class NgmGeometryInfo extends LitElementI18n {
     if (this.editing)
       showSnackbarConfirmation(i18next.t('tbx_lost_changes_warning'), {onApprove: updateOptions});
     else {
-      ToolboxStore.setSliceGeometry(null);
+      if (ToolboxStore.geomSliceActive) ToolboxStore.setSliceGeometry(null);
       updateOptions();
     }
   }
@@ -200,9 +200,9 @@ export class NgmGeometryInfo extends LitElementI18n {
       <div class="ngm-geom-info-body">
         ${`${this.geomEntity.name}`}
         <div class="ngm-geom-actions">
-          <div
-            class="ngm-slicing-icon ${classMap({active: ToolboxStore.geomSliceActive})}"
-            @click=${() => this.onSliceClick()}></div>
+          <div ?hidden=${this.geometry?.type === 'point' || this.geometry?.type === 'polygon'}
+               class="ngm-slicing-icon ${classMap({active: ToolboxStore.geomSliceActive})}"
+               @click=${() => this.onSliceClick()}></div>
           <div class="ngm-extrusion-icon ${classMap({active: !!this.geometry?.volumeShowed})}"
                @click=${() => this.toggleGeomVolume(this.geometry!)}></div>
           <div class="ngm-edit-icon ${classMap({active: this.editing})}"

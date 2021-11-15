@@ -15,11 +15,15 @@ ngm-geometry-info > .ngm-drag-area {
   box-shadow: 0 1px 3px #00000033;
   border-radius: 8px;
   display: flex;
-  justify-content: space-between;
   padding: 6px 14px;
-  width: 144px;
+  width: fit-content;
+  width: -moz-fit-content;
   height: 36px;
   margin: 12px 2px;
+}
+
+.ngm-geom-actions > div:not(:last-child) {
+  margin-right: 25px;
 }
 
 .ngm-geom-actions > div:hover {
