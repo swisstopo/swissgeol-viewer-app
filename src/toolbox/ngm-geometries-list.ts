@@ -13,12 +13,14 @@ export default class NgmGeometriesList extends LitElementI18n {
   @property({type: Function}) optionsTemplate: ((geom: NgmGeometry) => TemplateResult) | undefined;
   @property({type: Array}) disabledTypes: string[] = [];
   @state() geometries: NgmGeometry[] = [];
+  @state() editingEnabled = false;
 
   constructor() {
     super();
     ToolboxStore.geometries.subscribe(geoms => {
       this.geometries = geoms;
     });
+    ToolboxStore.openedGeometryOptions.subscribe(options => this.editingEnabled = !!(options?.editing));
   }
 
   protected firstUpdated() {
@@ -32,21 +34,28 @@ export default class NgmGeometriesList extends LitElementI18n {
     super.updated(changedProperties);
   }
 
-  actionMenuTemplate(id) {
+  actionMenuTemplate(geom: NgmGeometry) {
     return html`
       <div class="menu">
         <div class="item"
-             @click=${() => {
-             }}>
+             @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'zoom'})}>
           ${i18next.t('tbx_fly_to_btn_hint')}
         </div>
         <div class="item"
-             @click=${() => ToolboxStore.setOpenedGeometryOptions({id})}>
+             @click=${() => ToolboxStore.setOpenedGeometryOptions({id: geom.id!})}>
           ${i18next.t('tbx_info_btn')}
         </div>
         <div class="item"
-             @click=${() => ToolboxStore.setOpenedGeometryOptions({id: id, editing: true})}>
+             @click=${() => ToolboxStore.setOpenedGeometryOptions({id: geom.id!, editing: true})}>
           ${i18next.t('tbx_edit_btn')}
+        </div>
+        <div class="item"
+             @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: geom.show ? 'hide' : 'show'})}>
+          ${i18next.t(geom.show ? 'tbx_hide_btn_label' : 'tbx_unhide_btn_label')}
+        </div>
+        <div class="item"
+             @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'remove'})}>
+          ${i18next.t('tbx_remove_btn_label')}
         </div>
       </div>
     `;
@@ -57,7 +66,7 @@ export default class NgmGeometriesList extends LitElementI18n {
       <div class="ngm-geom-label">${i18next.t('tbx_my_geometries')}</div>
       <div class="ngm-geom-list">
         ${this.geometries.map((i) => {
-          const disabled = this.disabledTypes.includes(i.type);
+          const disabled = this.disabledTypes.includes(i.type) || this.editingEnabled;
           const active = !disabled && this.selectedId === i.id;
           return html`
             <div class="ngm-geom-item ${classMap({active, disabled})}">
@@ -68,7 +77,7 @@ export default class NgmGeometriesList extends LitElementI18n {
                 </div>
                 <div class="ui dropdown right pointing ngm-action-menu">
                   <div class="ngm-action-menu-icon"></div>
-                  ${this.actionMenuTemplate(i.id)}
+                  ${this.actionMenuTemplate(i)}
                 </div>
               </div>
               ${this.optionsTemplate ? this.optionsTemplate(i) : ''}

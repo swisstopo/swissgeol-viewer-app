@@ -344,7 +344,7 @@ export class CesiumDraw extends EventTarget {
         this.activePoint_ = position;
 
         this.sketchLine_ = this.createSketchLine_(this.dynamicSketLinePositions());
-
+        this.viewer_.scene.requestRender();
         if (this.type === 'point') {
           this.activePoints_.push(position);
           this.finishDrawing();
@@ -405,6 +405,7 @@ export class CesiumDraw extends EventTarget {
       this.activePoints_[key] = positions[key];
     });
     this.entityForEdit.polygon.hierarchy = {positions};
+    this.viewer_.scene.requestRender();
   }
 
   onMouseMove_(event) {
@@ -501,6 +502,7 @@ export class CesiumDraw extends EventTarget {
       this.activePoint_ = position;
       this.updateSketchPoint();
     }
+    this.viewer_.scene.requestRender();
   }
 
   onDoubleClick_() {

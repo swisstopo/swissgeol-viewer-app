@@ -372,6 +372,7 @@ ngm-layer-legend-container > ngm-layer-legend {
   background-color: #357183;
 }
 
+.ngm-cancel-btn.ui.button:hover,
 .ngm-action-btn.ui.button:hover {
   color: #357183;
   background-color: var(--ngm-action-hover);

@@ -3,7 +3,8 @@ import {
   AOI_DATASOURCE_NAME,
   DRILL_PICK_LENGTH,
   DRILL_PICK_LIMIT,
-  OBJECT_HIGHLIGHT_COLOR, OBJECT_ZOOMTO_RADIUS
+  OBJECT_HIGHLIGHT_COLOR,
+  OBJECT_ZOOMTO_RADIUS
 } from '../constants';
 import {
   extractEntitiesAttributes,
@@ -100,7 +101,7 @@ export default class ObjectSelector {
     attributes.zoom = () => this.viewer.zoomTo(entity, props.zoomHeadingPitchRange);
 
     if (aoiDataSource.entities.contains(entity)) {
-      const aoiElement = document.querySelector('ngm-aoi-drawer');
+      const aoiElement = document.querySelector('ngm-geometry-drawer');
       attributes = aoiElement.getInfoProps({...props, name: entity.name});
     } else if (earthquakesDataSources.some((e) => e.entities.contains(entity))) {
       this.toggleEarthquakeHighlight(entity);
@@ -141,7 +142,7 @@ export default class ObjectSelector {
   unhighlight() {
     this.toggleTileHighlight(null);
     this.toggleEarthquakeHighlight(null);
-    const aoiElement = document.querySelector('ngm-aoi-drawer');
+    const aoiElement = document.querySelector('ngm-geometry-drawer');
     aoiElement.deselectArea();
     this.scene.requestRender();
   }

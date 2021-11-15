@@ -23,6 +23,7 @@ export class NgmSlicer extends LitElementI18n {
   @state() slicer: Slicer | null = null;
   @state() showBox = true;
   @state() negateSlice = false;
+  @state() editingEnabled = false;
   private sliceGeomId: string | undefined;
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
 
@@ -48,10 +49,15 @@ export class NgmSlicer extends LitElementI18n {
       }
     });
     ToolboxStore.sliceGeometry.subscribe(geom => this.toggleGeomSlicer(geom));
+    ToolboxStore.openedGeometryOptions.subscribe(options => {
+      this.editingEnabled = !!(options?.editing);
+      if (this.editingEnabled && this.slicer?.active)
+        this.toggleSlicer();
+    });
   }
 
   protected update(changedProperties) {
-    if (changedProperties.get('slicerHidden') && !this.slicerHidden && !this.slicer?.active)
+    if (changedProperties.get('slicerHidden') && !this.slicerHidden && !this.slicer?.active && !this.editingEnabled)
       this.toggleSlicer('view-box');
     super.update(changedProperties);
   }
@@ -241,7 +247,7 @@ export class NgmSlicer extends LitElementI18n {
   render() {
     if (!this.slicer) return '';
     return html`
-      <div class="ngm-slice-types">
+      <div class="ngm-slice-types ${classMap({disabled: this.editingEnabled})}">
         <div class="ngm-slice-item ${classMap({active: !this.slicingEnabled})}" @click=${() => this.toggleSlicer()}>
           <div class="ngm-slice-label">${i18next.t('tbx_disable_slice_btn_label')}</div>
         </div>

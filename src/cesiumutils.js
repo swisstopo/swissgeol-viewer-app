@@ -1,7 +1,21 @@
-import {Cartesian2, Cartesian3, Cartographic, Math as CMath, Matrix4, Plane, Matrix3, Rectangle,
-   PolygonPipeline, Transforms, SceneTransforms, HeadingPitchRoll} from 'cesium';
+import {
+  Cartesian2,
+  Cartesian3,
+  Cartographic,
+  HeadingPitchRoll,
+  JulianDate,
+  Math as CMath,
+  Matrix3,
+  Matrix4,
+  Plane,
+  PolygonPipeline,
+  Rectangle,
+  SceneTransforms,
+  Transforms
+} from 'cesium';
 import {degreesToLv95} from './projection.js';
 
+const julianDate = new JulianDate();
 
 /**
  * @param {import('cesium/Source/Scene/Camera').default} camera
@@ -168,8 +182,8 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType, useAlt
     x = Math.round(coords[0]);
     y = Math.round(coords[1]);
   } else {
-    x = Number(lon.toFixed(6));
-    y = Number(lat.toFixed(6));
+    x = Number(lon.toFixed(3));
+    y = Number(lat.toFixed(3));
   }
   let altitude = 0;
   if (useAltitude) {
@@ -396,4 +410,18 @@ export function eastNorthUp(left, right) {
     Cartesian3.distance(leftUp, rightDown) * (isNorth ? 1 : -1),
     rightCartographic.height - leftCartographic.height
   );
+}
+
+/**
+ * @param {Entity} entity
+ * @return {Color}
+ */
+export function getEntityColor(entity) {
+  if (entity.billboard) {
+    return entity.billboard.color.getValue(julianDate);
+  } else if (entity.polyline) {
+    return entity.polyline.material.getValue(julianDate).color;
+  } else if (entity.polygon) {
+    return entity.polygon.material.getValue(julianDate).color;
+  }
 }

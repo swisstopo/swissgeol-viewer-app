@@ -83,19 +83,20 @@ ngm-geometry-edit {
   flex-direction: column;
 }
 
-ngm-geometry-edit > .ngm-input {
+ngm-point-edit > div,
+ngm-geometry-edit > div:not(:last-child) {
   margin-bottom: 22px;
 }
 
-.ngm-geom-limits-edit {
+.ngm-geom-edit-double-input {
   display: flex;
 }
 
-.ngm-geom-limits-edit .ngm-input:first-child {
+.ngm-geom-edit-double-input .ngm-input:first-child {
   margin-right: 12px;
 }
 
-.ngm-geom-limits-edit .ngm-input input {
+.ngm-geom-edit-double-input .ngm-input input {
   width: 112px;
 }
 
@@ -114,6 +115,43 @@ ngm-geometry-edit .ngm-cancel-btn.ui.button {
 .ngm-geom-edit-actions {
   display: flex;
   justify-content: space-between;
+}
+
+.ngm-geom-color {
+  width: 24px;
+  height: 24px;
+}
+
+.ngm-geom-colorpicker,
+.ngm-geom-symbolpicker {
+  display: flex;
+  width: 100%;
+  justify-content: start;
+}
+
+.ngm-geom-symbolpicker > .ngm-geom-symbol:not(:last-child),
+.ngm-geom-colorpicker > .ngm-geom-color:not(:last-child) {
+  margin-right: 5px;
+}
+
+
+.ngm-geom-colorpicker .ngm-geom-color:hover,
+.ngm-geom-colorpicker .ngm-geom-color.active {
+  background-image: url('./images/i_colorpicker_check.svg');
+}
+
+.ngm-geom-symbolpicker .ngm-geom-symbol:hover,
+.ngm-geom-symbolpicker .ngm-geom-symbol.active,
+.ngm-geom-colorpicker .ngm-geom-color:hover {
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+.ngm-geom-symbol {
+  width: 24px;
+  height: 24px;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 

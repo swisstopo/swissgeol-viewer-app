@@ -1,5 +1,4 @@
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import GpxDataSource from '../GpxDataSource.js';
@@ -13,20 +12,13 @@ import {customElement, property, state} from 'lit/decorators.js';
 
 import {
   AOI_LINE_ALPHA,
-  AOI_POINT_SYMBOLS,
   AOI_POLYGON_ALPHA,
   AVAILABLE_AOI_TYPES,
   DEFAULT_AOI_COLOR,
-  DEFAULT_VOLUME_HEIGHT_LIMITS,
-  HIGHLIGHTED_AOI_COLOR
+  HIGHLIGHTED_AOI_COLOR,
+  POINT_SYMBOLS
 } from '../constants';
-import {
-  getAreaPositions,
-  getAreaProperties,
-  getUploadedEntityType,
-  updateBoreholeHeights,
-  updateEntityVolume
-} from './helpers';
+import {getAreaPositions, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
 import {showWarning} from '../notifications';
 import {LitElementI18n} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -42,11 +34,9 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 
 import {clickOnElement, parseJson} from '../utils';
 import './ngm-gst-interaction';
-import './ngm-point-edit';
 import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-swissforages-modal';
 import './ngm-swissforages-interaction';
-import '../elements/ngm-geom-configuration.js';
 import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
@@ -71,7 +61,7 @@ const DEFAULT_AREAS_COUNTER = {
   polygon: 0
 };
 
-@customElement('ngm-aoi-drawer')
+@customElement('ngm-geometry-drawer')
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
   @property({type: Boolean}) downloadActiveDataEnabled = false;
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
@@ -91,7 +81,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   private draw: CesiumDraw | undefined;
   private swissforagesModalOptions: SwissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS;
   private sectionImageUrl: string | undefined;
-  private editedBackup;
   private areasClickable = false;
   private unlistenEditPostRender: Event.RemoveCallback | undefined;
   private drawGeometries = [
@@ -113,6 +102,32 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         this.deselectArea();
       }
     });
+    DrawStore.draw.subscribe(draw => {
+      if (draw) {
+        this.draw = draw;
+        this.draw.addEventListener('statechanged', () => this.requestUpdate());
+        this.draw.addEventListener('drawend', (evt) => this.endDrawing_((<CustomEvent>evt).detail));
+        this.draw.addEventListener('drawerror', evt => {
+          if (this.draw!.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
+            showWarning(i18next.t('tbx_error_need_more_points_warning'));
+          }
+        });
+      }
+    });
+    ToolboxStore.geometryAction.subscribe(options => {
+      switch (options.action) {
+        case 'show':
+        case 'hide':
+          this.showHideGeom(options.id, options.action === 'show');
+          break;
+        case 'remove':
+          this.removeGeom(options.id);
+          break;
+        case 'zoom':
+          this.flyToArea(options.id);
+          break;
+      }
+    });
   }
 
   update(changedProperties) {
@@ -127,40 +142,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
   }
 
-
-  getTemplate() {
-    return html`
-      <div class="ngm-draw-list">
-        ${this.drawGeometries.map(it => html`
-          <div class="ngm-draw-list-item ${classMap({'active': this.draw!.active && it.type === this.draw!.type})}"
-               @click=${() => this.onAddAreaClick(it.type)}>
-            <div class=${it.icon}></div>
-            <div>${i18next.t(it.labelTag)}</div>
-          </div>
-          <div ?hidden=${!this.draw!.active || it.type !== this.draw!.type} class="ngm-draw-hint">
-            ${i18next.t('tbx_area_of_interest_add_hint')}
-            <div class="ngm-info-icon"></div>
-          </div>`)}
-        <div class="ngm-draw-list-item" @click=${clickOnElement.bind(null, fileUploadInputId)}>
-          <div class="ngm-file-upload-icon"></div>
-          <div>${i18next.t('tbx_upload_btn_label')}</div>
-        </div>
-      </div>
-      <input id="${fileUploadInputId}" type='file' accept=".kml,.KML,.gpx,.GPX" hidden
-             @change=${this.uploadFile_.bind(this)}/>
-      <div class="ngm-divider"></div>
-      <ngm-geometries-list
-        .selectedId=${this.selectedArea ? this.selectedArea.id : ''}
-        @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.flyToArea(evt.detail.id)}>
-      </ngm-geometries-list>
-      <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
-      <ngm-swissforages-modal
-        .service="${this.swissforagesService}"
-        .options="${this.swissforagesModalOptions}">
-      </ngm-swissforages-modal>
-    `;
-  }
-
   initAoi() {
     if (this.aoiInited || !this.viewer) return;
     this.selectedArea = undefined;
@@ -171,40 +152,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       polygon: 0
     };
     this.areasClickable = true;
-    this.draw = new CesiumDraw(this.viewer, 'polygon', {
-      fillColor: DEFAULT_AOI_COLOR
-    });
-    this.draw.active = false;
-
-    this.editedBackup = undefined;
-
-    this.draw.addEventListener('statechanged', (evt) => {
-      DrawStore.setDrawState((<CustomEvent>evt).detail.active);
-      this.requestUpdate();
-    });
-    this.draw.addEventListener('drawend', (evt) => this.endDrawing_((<CustomEvent>evt).detail));
-    this.draw.addEventListener('drawerror', evt => {
-      if (this.draw!.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
-        showWarning(i18next.t('tbx_error_need_more_points_warning'));
-      }
-    });
-    this.draw.addEventListener('leftdown', () => {
-      const volumeShowedProp = this.draw!.entityForEdit.properties.volumeShowed;
-      const type = this.draw!.entityForEdit.properties.type.getValue();
-      if (volumeShowedProp && volumeShowedProp.getValue() && type !== 'point') {
-        this.draw!.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
-      }
-    });
-    this.draw.addEventListener('leftup', () => {
-      const volumeShowedProp = this.draw!.entityForEdit.properties.volumeShowed;
-      const type = this.draw!.entityForEdit.properties.type.getValue();
-      if (type === 'point') {
-        updateBoreholeHeights(this.draw!.entityForEdit, this.julianDate);
-      } else if (volumeShowedProp && volumeShowedProp.getValue()) {
-        const entity = this.geometriesDataSource!.entities.getById(this.draw!.entityForEdit.id)!;
-        updateEntityVolume(entity, this.viewer!.scene.globe);
-      }
-    });
 
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
     this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
@@ -244,28 +191,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   cancelDraw() {
     if (!this.draw || (!this.draw.active && !this.restrictedEditing)) return;
-    if (this.editedBackup) {
-      this.draw.entityForEdit.properties = this.editedBackup.properties;
-      if (this.draw.type === 'point') {
-        this.draw.entityForEdit.position = this.editedBackup.positions;
-        this.draw.entityForEdit.billboard.color = this.editedBackup.color;
-        this.draw.entityForEdit.billboard.image = this.editedBackup.image;
-      } else if (this.draw.type === 'line') {
-        this.draw.entityForEdit.polyline.positions = this.editedBackup.positions;
-        this.draw.entityForEdit.polyline.material = this.editedBackup.color;
-      } else {
-        this.draw.entityForEdit.polygon.hierarchy = this.editedBackup.positions;
-        this.draw.entityForEdit.polygon.material = this.editedBackup.color;
-      }
-      if (this.editedBackup.properties.volumeShowed && this.draw.entityForEdit.polylineVolume) {
-        const entity = this.geometriesDataSource!.entities.getById(this.draw!.entityForEdit.id)!;
-        updateEntityVolume(entity, this.viewer!.scene.globe);
-        this.draw.entityForEdit.polylineVolume.outlineColor = this.editedBackup.color;
-        this.draw.entityForEdit.polylineVolume.material = this.editedBackup.color;
-      }
-      this.draw.entityForEdit.name = this.editedBackup.name;
-    }
-    this.editedBackup = undefined;
     this.draw.active = false;
     this.restrictedEditing = false;
     this.draw.clear();
@@ -279,7 +204,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       const pickedObject = this.viewer!.scene.pick(click.position);
       if (pickedObject && pickedObject.id) { // to prevent error on tileset click
         if (this.geometriesDataSource!.entities.contains(pickedObject.id)) {
-          this.pickArea_(pickedObject.id.id);
+          this.pickArea(pickedObject.id.id);
         } else if (this.selectedArea) {
           this.deselectArea();
         }
@@ -295,7 +220,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
   }
 
-  pickArea_(id) {
+  private pickArea(id) {
     if (this.selectedArea && this.selectedArea.id === id) {
       return;
     }
@@ -307,18 +232,14 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.updateHighlight(this.selectedArea, true);
   }
 
-  // todo reuse or remove
-  onShowHideEntityClick_(evt, id) {
+  private showHideGeom(id, show) {
     const entity = this.geometriesDataSource!.entities.getById(id);
-    if (entity)
-      entity.show = evt.target.checked;
+    if (entity) entity.show = show;
   }
 
-  // todo reuse or remove
-  onRemoveEntityClick_(id) {
-    if (this.selectedArea && id === this.selectedArea.id) {
+  private removeGeom(id) {
+    if (this.selectedArea && id === this.selectedArea.id)
       this.deselectArea();
-    }
     this.geometriesDataSource!.entities.removeById(id);
   }
 
@@ -346,10 +267,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       duration: 0,
       offset: zoomHeadingPitchRange
     });
-    this.pickArea_(id);
+    this.pickArea(id);
   }
 
-  async uploadFile_(evt) {
+  private async uploadFile(evt) {
     const file = evt.target ? evt.target.files[0] : null;
     if (file) {
       evt.target.value = null;
@@ -529,7 +450,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         entityAttrs.position = Cartographic.toCartesian(cartPosition);
       }
       entityAttrs.billboard = {
-        image: attributes.pointSymbol || `./images/${AOI_POINT_SYMBOLS[0]}`,
+        image: attributes.pointSymbol || `./images/${POINT_SYMBOLS[0]}`,
         color: color ? new Color(color.red, color.green, color.blue) : DEFAULT_AOI_COLOR,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
@@ -586,91 +507,11 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   showAreaInfo(areaAttrs) {
     QueryStore.setObjectInfo(this.getInfoProps(areaAttrs));
-    this.pickArea_(areaAttrs.id);
+    this.pickArea(areaAttrs.id);
   }
 
   get drawState() {
     return this.draw && this.draw.active;
-  }
-
-  // todo reuse or remove
-  editAreaPosition(id, restrictedPoint = false) {
-    this.deselectArea();
-    const entity = this.geometriesDataSource!.entities.getById(id);
-    if (!entity || !entity.properties || !this.draw) return;
-    const type = entity.properties.type.getValue();
-    if (!entity.isShowing) {
-      entity.show = !entity.isShowing;
-    }
-
-    this.draw.entityForEdit = entity;
-    this.draw.type = type;
-    this.draw.active = !restrictedPoint;
-    this.restrictedEditing = restrictedPoint;
-
-    this.editedBackup = {
-      name: entity.name,
-      properties: {...getAreaProperties(entity, type)}
-    };
-
-    if (type === 'point') {
-      const position = entity.position!.getValue(this.julianDate);
-      this.editedBackup.positions = Cartesian3.clone(position);
-      this.editedBackup.color = entity.billboard!.color!.getValue(this.julianDate);
-      this.editedBackup.image = entity.billboard!.image!.getValue(this.julianDate);
-    } else if (type === 'line') {
-      this.editedBackup.positions = entity.polyline!.positions!.getValue(this.julianDate).map(p => Cartesian3.clone(p));
-      this.editedBackup.color = entity.polyline!.material.getValue(this.julianDate).color;
-    } else {
-      const hierarchy = entity.polygon!.hierarchy!.getValue(this.julianDate);
-      // this is hackish: the hierarchy should not be stored as a positions.
-      this.editedBackup.positions = {
-        positions: hierarchy.positions.map(p => Cartesian3.clone(p)),
-        holes: hierarchy.holes ? hierarchy.holes.map(p => Cartesian3.clone(p)) : []
-      };
-      this.editedBackup.color = entity.polygon!.material.getValue(this.julianDate).color;
-    }
-  }
-
-  saveEditing() {
-    if (!this.draw) return;
-    this.editedBackup = undefined;
-    const type = this.draw.entityForEdit.properties.type.getValue();
-    this.draw.entityForEdit.properties = getAreaProperties(this.draw.entityForEdit, type);
-    this.cancelDraw();
-  }
-
-
-  // get volumeHeightLimits() {
-  //   const entity = this.draw!.entityForEdit;
-  //   if (!entity || !entity.properties.volumeHeightLimits) {
-  //     return DEFAULT_VOLUME_HEIGHT_LIMITS;
-  //   }
-  //   return entity.properties.volumeHeightLimits.getValue();
-  // }
-
-  // todo reuse or remove
-  isVolumeInputsHidden() {
-    const entity = this.draw!.entityForEdit;
-    if (!entity) return true;
-    const volumeShowed = entity.properties.volumeShowed && entity.properties.volumeShowed.getValue();
-    const type = entity.properties.type.getValue();
-    return type === 'point' || !volumeShowed;
-  }
-
-  onColorChange(id, type, color) {
-    color = color.withAlpha(0.3);
-    const entity = this.geometriesDataSource!.entities.getById(id);
-    if (!entity) return;
-    if (type === 'line') {
-      entity.polyline!.material = color;
-    } else {
-      entity.polygon!.material = color;
-    }
-    if (entity.polylineVolume) {
-      entity.polylineVolume.material = color;
-      entity.polylineVolume.outlineColor = color;
-    }
   }
 
   updateHighlight(entity, selected) {
@@ -711,8 +552,41 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     if (!this.viewer) {
       return '';
     }
-
-    return this.getTemplate();
+    const disabled = this.draw!.active && this.draw!.entityForEdit;
+    return html`
+      <div class="ngm-draw-list">
+        ${this.drawGeometries.map(it => {
+          const active = !disabled && this.draw!.active && it.type === this.draw!.type;
+          return html`
+            <div
+              class="ngm-draw-list-item ${classMap({active, disabled})}"
+              @click=${() => this.onAddAreaClick(it.type)}>
+              <div class=${it.icon}></div>
+              <div>${i18next.t(it.labelTag)}</div>
+            </div>
+            <div ?hidden=${!active} class="ngm-draw-hint">
+              ${i18next.t('tbx_area_of_interest_add_hint')}
+              <div class="ngm-info-icon"></div>
+            </div>`;
+        })}
+        <div class="ngm-draw-list-item ${classMap({disabled})}" @click=${() => clickOnElement(fileUploadInputId)}>
+          <div class="ngm-file-upload-icon"></div>
+          <div>${i18next.t('tbx_upload_btn_label')}</div>
+        </div>
+      </div>
+      <input id="${fileUploadInputId}" type='file' accept=".kml,.KML,.gpx,.GPX" hidden
+             @change=${evt => this.uploadFile(evt)}/>
+      <div class="ngm-divider"></div>
+      <ngm-geometries-list
+        .selectedId=${this.selectedArea ? this.selectedArea.id : ''}
+        @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.flyToArea(evt.detail.id)}>
+      </ngm-geometries-list>
+      <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
+      <ngm-swissforages-modal
+        .service="${this.swissforagesService}"
+        .options="${this.swissforagesModalOptions}">
+      </ngm-swissforages-modal>
+    `;
   }
 
   createRenderRoot() {

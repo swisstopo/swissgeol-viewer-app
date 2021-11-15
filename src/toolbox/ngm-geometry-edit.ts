@@ -1,20 +1,29 @@
 import {LitElementI18n} from '../i18n';
-import {customElement, property, query} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import {html} from 'lit';
-import {Entity, Viewer} from 'cesium';
+import {Entity, PropertyBag, Viewer} from 'cesium';
 import i18next from 'i18next';
 import MainStore from '../store/main';
 import {updateEntityVolume, updateVolumePositions} from './helpers';
-import {getValueOrUndefined} from '../cesiumutils';
+import {getEntityColor, getValueOrUndefined} from '../cesiumutils';
 import ToolboxStore from '../store/toolbox';
 import CesiumMath from 'cesium/Source/Core/Math';
 import JulianDate from 'cesium/Source/Core/JulianDate';
+import DrawStore from '../store/draw';
+import {CesiumDraw} from '../draw/CesiumDraw';
+import {GEOMETRY_COLORS, POINT_SYMBOLS} from '../constants';
+import {classMap} from 'lit-html/directives/class-map.js';
+import {styleMap} from 'lit/directives/style-map.js';
+import {showSnackbarConfirmation} from '../notifications';
+import './ngm-point-edit';
 
 @customElement('ngm-geometry-edit')
 export class NgmGeometryEdit extends LitElementI18n {
   @property({type: Object}) entity: Entity | undefined;
   @query('.ngm-lower-limit-input') lowerLimitInput;
   @query('.ngm-height-input') heightInput;
+  @state() selectedColor = '';
+  @state() selectedSymbol = '';
   private editingEntity: Entity | undefined;
   private viewer: Viewer | null | undefined;
   private minVolumeHeight = 1;
@@ -22,6 +31,7 @@ export class NgmGeometryEdit extends LitElementI18n {
   private minVolumeLowerLimit = -30000;
   private maxVolumeLowerLimit = 30000;
   private julianDate = new JulianDate();
+  private draw: CesiumDraw | undefined;
 
   constructor() {
     super();
@@ -30,15 +40,28 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   update(changedProps) {
     if (this.entity && !this.editingEntity) {
-      this.editingEntity = new Entity();
+      this.editingEntity = new Entity({properties: new PropertyBag()});
+      // deep clone entity and props
+      this.editingEntity.properties!.merge(this.entity.properties);
       this.editingEntity.merge(this.entity);
       this.viewer!.entities.add(this.editingEntity);
+      this.editingEntity.show = true;
       this.entity.show = false;
+      this.selectedColor = getEntityColor(this.editingEntity).withAlpha(1).toCssColorString();
+      this.selectedSymbol = getValueOrUndefined(this.editingEntity.billboard?.image);
+      this.draw = DrawStore.drawValue;
+      if (this.draw) {
+        this.cancelDraw();
+        this.draw.entityForEdit = this.editingEntity;
+        this.draw.type = this.editingEntity.properties!.type.getValue();
+        this.draw.active = true;
+      }
     }
     super.update(changedProps);
   }
 
   disconnectedCallback() {
+    this.cancelDraw();
     this.removeEditingEntity();
     super.disconnectedCallback();
   }
@@ -51,6 +74,7 @@ export class NgmGeometryEdit extends LitElementI18n {
     this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
     const positions = this.editingEntity!.polylineVolume!.positions!.getValue(this.julianDate);
     updateVolumePositions(this.editingEntity, positions, this.viewer!.scene.globe);
+    this.viewer!.scene.requestRender();
   }
 
   onPropChange(evt, propName) {
@@ -85,6 +109,13 @@ export class NgmGeometryEdit extends LitElementI18n {
     }
   }
 
+  cancelDraw() {
+    if (!this.draw || !this.draw.active) return;
+    this.draw.active = false;
+    this.draw.clear();
+
+  }
+
   removeEditingEntity() {
     if (!this.editingEntity) return;
     this.viewer!.entities.removeById(this.editingEntity!.id);
@@ -93,12 +124,44 @@ export class NgmGeometryEdit extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
-  endEditing() {
-    ToolboxStore.setOpenedGeometryOptions(this.entity ? {id: this.entity.id} : null);
+  endEditing(cancel?) {
+    const updateOptions = () => ToolboxStore.setOpenedGeometryOptions(this.entity ? {id: this.entity.id} : null);
+    if (cancel)
+      showSnackbarConfirmation(i18next.t('tbx_lost_changes_warning'), {onApprove: updateOptions});
+    else
+      updateOptions();
+  }
+
+  onColorChange(color) {
+    this.selectedColor = color.toCssColorString();
+    if (!this.editingEntity) return;
+    if (this.editingEntity.billboard) {
+      this.editingEntity.billboard.color = color;
+      return;
+    }
+    color = color.withAlpha(0.3);
+    if (this.editingEntity.polyline) {
+      this.editingEntity.polyline.material = color;
+    } else if (this.editingEntity.polygon) {
+      this.editingEntity.polygon.material = color;
+    }
+    if (this.editingEntity.polylineVolume) {
+      this.editingEntity.polylineVolume.material = color;
+      this.editingEntity.polylineVolume.outlineColor = color;
+    }
+    this.viewer!.scene.requestRender();
+  }
+
+  onSymbolChange(image) {
+    if (!this.editingEntity || !this.editingEntity.billboard) return;
+    this.selectedSymbol = `./images/${image}`;
+    this.editingEntity.billboard.image = <any> this.selectedSymbol;
+    this.viewer!.scene.requestRender();
   }
 
   render() {
     if (!this.editingEntity) return '';
+    const type = getValueOrUndefined(this.editingEntity!.properties!.type);
     return html`
       <div class="ngm-input">
         <input type="text" required .value=${this.editingEntity.name}
@@ -123,27 +186,52 @@ export class NgmGeometryEdit extends LitElementI18n {
                @input=${evt => this.onPropChange(evt, 'website')}/>
         <span class="ngm-floating-label">${i18next.t('tbx_website_label')}</span>
       </div>
-      <div class="ngm-geom-limits-edit" ?hidden=${!getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)}>
+      <div class="ngm-geom-edit-double-input"
+           ?hidden=${!getValueOrUndefined(this.editingEntity!.properties!.volumeShowed) || type === 'point'}>
         <div class="ngm-input">
           <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit}
                  .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.lowerLimit}
-                 @change=${this.onVolumeHeightLimitsChange}
+                 @input=${this.onVolumeHeightLimitsChange}
                  class="ngm-lower-limit-input" required/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_lower_limit_label')}</span>
         </div>
         <div class="ngm-input">
           <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight}
                  .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.height}
-                 @change=${this.onVolumeHeightLimitsChange}
+                 @input=${this.onVolumeHeightLimitsChange}
                  class="ngm-height-input" required/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
+      </div>
+      <ngm-point-edit ?hidden=${type !== 'point'} .entity=${this.editingEntity}></ngm-point-edit>
+      <div class="ngm-geom-colorpicker">
+        ${GEOMETRY_COLORS.map(color => html`
+          <div
+            style="background-color: ${color.color};"
+            @click=${() => this.onColorChange(color.value)}
+            class="ngm-geom-color ${classMap({active: this.selectedColor === color.value.toCssColorString()})}">
+          </div>`
+        )}
+      </div>
+      <div class="ngm-geom-symbolpicker" ?hidden=${!this.editingEntity.billboard}>
+        ${POINT_SYMBOLS.map(image => {
+          const imgSrc = `./images/${image}`;
+          return html`
+            <div
+              class="ngm-geom-symbol ${classMap({active: this.selectedSymbol === imgSrc})}"
+              style=${styleMap({
+                '-webkit-mask-image': `url('${imgSrc}')`,
+                'mask-image': `url('${imgSrc}')`,
+                backgroundColor: this.selectedColor
+              })}
+              @click=${() => this.onSymbolChange(image)}></div>`;
+        })}
       </div>
       <div class="ngm-geom-edit-actions">
         <button @click="${this.save}" class="ui button ngm-action-btn">
           ${i18next.t('tbx_save_editing_btn_label')}
         </button>
-        <button @click="${this.endEditing}" class="ui button ngm-action-btn ngm-cancel-btn">
+        <button @click="${() => this.endEditing(true)}" class="ui button ngm-action-btn ngm-cancel-btn">
           ${i18next.t('tbx_cancel_area_btn_label')}
         </button>
       </div>

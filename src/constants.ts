@@ -1,4 +1,4 @@
-import {Rectangle, Color, Cartesian3, Math as CMath, ShadowMode, ColorBlendMode} from 'cesium';
+import {Cartesian3, Color, ColorBlendMode, Math as CMath, Rectangle, ShadowMode} from 'cesium';
 
 export {LayerType, DEFAULT_LAYER_OPACITY} from './layertree';
 
@@ -52,7 +52,7 @@ export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
   height: 10000
 };
 
-export const AOI_COLORS = [
+export const GEOMETRY_COLORS = [
   {color: 'black', value: Color.BLACK},
   {color: 'blue', value: Color.BLUE},
   {color: 'gray', value: Color.GRAY},
@@ -63,7 +63,7 @@ export const AOI_COLORS = [
   {color: 'yellow', value: Color.YELLOW},
 ];
 
-export const AOI_POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
+export const POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
 
 export const SLICE_BOX_ARROWS_INSIDE = [
   {side: 'left', oppositeSide: 'right', uri: './images/arrowV.glb'},

@@ -1,4 +1,4 @@
-ngm-aoi-drawer,
+ngm-geometry-drawer,
 ngm-slicer {
   height: calc(100vh - 142px);
   display: block;
@@ -87,15 +87,23 @@ ngm-slicer .ngm-geom-item.active,
   height: auto;
 }
 
+.ngm-geom-actions > div.disabled,
+.ngm-draw-list-item.disabled > div:first-child,
 .ngm-geom-item.disabled .ngm-action-menu-icon {
-  background-color: #868E96;
+  background-color: #868E96 !important;
 }
 
+.ngm-slice-types.disabled > .ngm-slice-item,
+.ngm-geom-actions > div.disabled,
+.ngm-draw-list-item.disabled,
 .ngm-geom-item.disabled {
   cursor: default;
   pointer-events: none;
+  color: #868E96 !important;
+}
+
+.ngm-geom-item.disabled {
   background-color: #F8F9FA;
-  color: #868E96;
 }
 
 .ngm-slice-to-draw,
