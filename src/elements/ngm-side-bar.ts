@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {LitElementI18n} from '../i18n.js';
+import {LitElementI18n, setupI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
 import '../layers/ngm-catalog';
@@ -144,6 +144,12 @@ export class SideBar extends LitElementI18n {
         </div>
         ${this.activePanel !== 'share' ? '' : html`
           <ngm-share-link></ngm-share-link>`}
+      </div>
+      <div .hidden=${this.activePanel !== 'settings'} class="ngm-side-bar-panel">
+        <div class="ngm-panel-header">${i18next.t('lsb_settings')}
+          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+        </div>
+        <div id="langs" class="ui horizontal selection list"></div>
       </div>
       <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
         <div class="ngm-panel-header">${i18next.t('dtd_displayed_data_label')}
