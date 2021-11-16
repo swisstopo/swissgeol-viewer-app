@@ -43,6 +43,7 @@ export class SideBar extends LitElementI18n {
   private zoomedToPosition = false;
   private accordionInited = false;
   private shareListenerAdded = false;
+  private langInited = false;
   private shareDownListener = evt => {
     if (!evt.path.includes(this)) this.activePanel = null;
   };
@@ -318,6 +319,10 @@ export class SideBar extends LitElementI18n {
           this.accordionInited = true;
         }
       }
+    }
+
+    if (this.querySelector('#langs') && !this.langInited) {
+      setupI18n();
     }
 
     super.updated(changedProperties);
