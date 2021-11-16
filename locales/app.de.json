@@ -139,6 +139,9 @@
   "obj_info_perimeter_label": "Umfang",
   "obj_info_website_label": "Website Link",
   "obj_info_zoom_to_object_btn_label": "Auf Objekt Zoomen",
+  "shortlink_copied": "Link kopiert",
+  "shortlink_copy_btn_label": "Link kopieren",
+  "shortlink_link_label": "Link",
   "slow_connection_label": "Noch nicht geladen?",
   "slow_connection_latest_stable_version": "Neueste stabile Version",
   "slow_connection_text": "swissgeol.ch schein langsam zu laden.",
@@ -217,10 +220,5 @@
   "tracking_agree_btn_label": "Einverstanden",
   "tracking_deny_btn_label": "Weiter ohne Datenerfassung",
   "tracking_text": "Damit wir unser Webangebot optimal auf Ihre Bedürfnisse ausrichten können, verwenden wir die Analysetools Google Analytics, Hotjar und Sentry. Dabei wird Ihr Verhalten auf der Website in anonymisierter Form erfasst. Es werden also keine personenbezogenen Daten übermittelt oder gespeichert. Wenn Sie damit nicht einverstanden sind, können Sie die Datenerfassung durch Analysetools unterbinden und diese Website trotzdem ohne Einschränkungen nutzen. Weitere Informationen dazu finden Sie auf unserer Seite <a target='_blank' href='legal/legal_de.html'>Rechtliches.</a>",
-  "welcome_copy_btn_label": "Link kopieren",
-  "welcome_copy_guide": "Ctrl+C zum kopieren",
-  "welcome_get_shortlink_error": "Es ist ein Fehler aufgetreten, so dass der Link konnte nicht erstellt werden konnte. Bitte proboieren Sie es zu einem späteren Zeitpunkt noch einmal.",
-  "welcome_share_link_label": "Link teilen:",
-  "welcome_shortlink_copied": "Link kopiert",
-  "welcome_shortlink_placeholder": "Anklicken, um Link zu erhalten"
+  "welcome_get_shortlink_error": "Es ist ein Fehler aufgetreten, so dass der Link konnte nicht erstellt werden konnte. Bitte proboieren Sie es zu einem späteren Zeitpunkt noch einmal."
 }

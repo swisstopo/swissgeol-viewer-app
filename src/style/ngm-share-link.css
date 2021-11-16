@@ -1,0 +1,24 @@
+ngm-share-link {
+  display: flex;
+  flex-direction: column;
+}
+
+ngm-share-link > div {
+  margin-bottom: 13px;
+}
+
+.ngm-share-label {
+  margin-top: 12px;
+  color: #212529;
+  font: normal normal bold 14px/20px Inter;
+  letter-spacing: 0;
+}
+
+ngm-share-link .ui.button.ngm-action-btn {
+  width: 150px;
+  justify-content: center;
+}
+
+ngm-share-link .ngm-input input {
+  width: 222px;
+}
