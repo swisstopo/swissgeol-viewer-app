@@ -62,7 +62,7 @@ export class NgmShareLink extends LitElementI18n {
         <div class="ui loader"></div>
       </div>
       <div class="ngm-share-label">${i18next.t('shortlink_copy_btn_label')}</div>
-      <div class="ngm-input ${classMap({disabled: this.displayLoader})}" @click=${this.onClick}>
+      <div class="ngm-input ${classMap({disabled: this.displayLoader})}">
         <input type="text" placeholder="required" readonly
                .value=${this.shortlink}/>
         <span class="ngm-floating-label">${i18next.t('shortlink_link_label')}</span>

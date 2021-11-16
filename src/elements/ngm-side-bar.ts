@@ -46,7 +46,6 @@ export class SideBar extends LitElementI18n {
   private shareDownListener = evt => {
     if (!evt.path.includes(this)) this.activePanel = null;
   };
-  private shareKeyPressListener = () => this.activePanel = null;
 
   constructor() {
     super();
@@ -292,12 +291,12 @@ export class SideBar extends LitElementI18n {
     // hide share panel on any action outside side bar
     if (!this.shareListenerAdded && this.activePanel === 'share') {
       document.addEventListener('pointerdown', this.shareDownListener);
-      document.addEventListener('keydown', this.shareKeyPressListener);
+      document.addEventListener('keydown', this.shareDownListener);
       this.shareListenerAdded = true;
     } else if (this.shareListenerAdded) {
       this.shareListenerAdded = false;
       document.removeEventListener('pointerdown', this.shareDownListener);
-      document.removeEventListener('keydown', this.shareKeyPressListener);
+      document.removeEventListener('keydown', this.shareDownListener);
     }
     super.update(changedProperties);
   }
