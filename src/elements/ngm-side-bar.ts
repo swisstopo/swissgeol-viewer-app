@@ -329,6 +329,7 @@ export class SideBar extends LitElementI18n {
 
     if (this.querySelector('#langs') && !this.langInited) {
       setupI18n();
+      this.langInited = true;
     }
 
     super.updated(changedProperties);
