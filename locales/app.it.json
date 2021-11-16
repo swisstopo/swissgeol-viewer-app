@@ -139,6 +139,9 @@
   "obj_info_perimeter_label": "",
   "obj_info_website_label": "",
   "obj_info_zoom_to_object_btn_label": "",
+  "shortlink_copied": "",
+  "shortlink_copy_btn_label": "",
+  "shortlink_link_label": "",
   "slow_connection_label": "",
   "slow_connection_latest_stable_version": "",
   "slow_connection_text": "",
@@ -217,10 +220,5 @@
   "tracking_agree_btn_label": "",
   "tracking_deny_btn_label": "",
   "tracking_text": "Per poter adattare la nostra offerta web in modo ottimale alle vostre esigenze, utilizziamo gli strumenti di analisi Google Analytics, Hotjar e Sentry. Ciò significa, che il vostro comportamento sul sito web viene registrato in forma anonima. Di conseguenza, non vengono trasmessi o memorizzati dati personali. Se non siete dʼaccordo, potete interrompere la raccolta dei dati da parte degli strumenti di analisi e continuare ad utilizzare questo sito web senza restrizioni. Troverete maggiori informazioni sulla nostra pagina <a target='_blank' href='legal/legal_it.html'>Basi legali.</a>",
-  "welcome_copy_btn_label": "",
-  "welcome_copy_guide": "",
-  "welcome_get_shortlink_error": "",
-  "welcome_share_link_label": "",
-  "welcome_shortlink_copied": "",
-  "welcome_shortlink_placeholder": ""
+  "welcome_get_shortlink_error": ""
 }

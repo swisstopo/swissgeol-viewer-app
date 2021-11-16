@@ -6,7 +6,7 @@ import '../layers/ngm-catalog';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import defaultLayerTree from '../layertree';
-import {getLayerParams, syncLayersParam, getAssetIds, getAttribute, getSliceParam} from '../permalink.js';
+import {getAssetIds, getAttribute, getLayerParams, getSliceParam, syncLayersParam} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
@@ -20,21 +20,35 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
 import {showWarning} from '../notifications';
 import auth from '../store/auth';
-import './ngm-share-link.js';
+import './ngm-share-link.ts';
 import '../layers/ngm-layers-upload';
 import MainStore from '../store/main';
 import {classMap} from 'lit/directives/class-map.js';
 import {zoomTo} from '../utils';
 import $ from '../jquery';
+import {customElement, property, state} from 'lit/decorators.js';
+import {Cartesian2, Viewer} from 'cesium';
+import QueryManager from '../query/QueryManager';
 
-class SideBar extends LitElementI18n {
+@customElement('ngm-side-bar')
+export class SideBar extends LitElementI18n {
+  @property({type: Object}) queryManager: QueryManager | null = null;
+  @state() catalogLayers: any;
+  @state() activeLayers: any;
+  @state() activePanel: string | null = null;
+  @state() showHeader = false;
+  @state() globeQueueLength_ = 0;
+  private viewer: Viewer | null = null;
+  private layerActions: any;
+  private zoomedToPosition = false;
+  private accordionInited = false;
+  private shareListenerAdded = false;
+  private shareDownListener = evt => {
+    if (!evt.path.includes(this)) this.activePanel = null;
+  };
 
   constructor() {
     super();
-    /**
-     * @type {import('cesium').Viewer}
-     */
-    this.viewer = null;
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
 
     auth.user.subscribe((user) => {
@@ -48,17 +62,6 @@ class SideBar extends LitElementI18n {
         });
       }
     });
-  }
-
-  static get properties() {
-    return {
-      catalogLayers: {type: Object},
-      activeLayers: {type: Object},
-      queryManager: {type: Object},
-      activePanel: {type: String, attribute: false},
-      showHeader: {type: Boolean, attribute: false},
-      globeQueueLength_: {type: Number, attribute: false},
-    };
   }
 
   firstUpdated() {
@@ -104,7 +107,7 @@ class SideBar extends LitElementI18n {
                     endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
                     clientId='6brvjsufv7fdubr12r9u0gajnj'
           ></ngm-auth>
-          <div class="ngm-help" @click=${() => this.querySelector('.ngm-help-link').click()}>
+          <div class="ngm-help" @click=${() => (<HTMLInputElement> this.querySelector('.ngm-help-link')).click()}>
             <div class="ngm-help-icon"></div>
             ${i18next.t('lsb_help')}
             <a href="/manuals/manual_en.html" target="_blank" .hidden=${true} class="ngm-help-link"></a>
@@ -138,7 +141,8 @@ class SideBar extends LitElementI18n {
         <div class="ngm-panel-header">${i18next.t('lsb_share')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
-        <ngm-share-link></ngm-share-link>
+        ${this.activePanel !== 'share' ? '' : html`
+          <ngm-share-link></ngm-share-link>`}
       </div>
       <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
         <div class="ngm-panel-header">${i18next.t('dtd_displayed_data_label')}
@@ -148,7 +152,7 @@ class SideBar extends LitElementI18n {
           <ngm-layers
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
-            @zoomTo=${evt => zoomTo(this.viewer, evt.detail)}
+            @zoomTo=${evt => zoomTo(this.viewer!, evt.detail)}
             @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
             @layerChanged=${() => this.onLayerChanged()}>
           </ngm-layers>
@@ -223,7 +227,7 @@ class SideBar extends LitElementI18n {
       l.displayed = false;
     });
 
-    const activeLayers = [];
+    const activeLayers: any[] = [];
     urlLayers.forEach(urlLayer => {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.name);
       if (!layer) {
@@ -246,7 +250,9 @@ class SideBar extends LitElementI18n {
         displayed: true,
         opacityDisabled: true,
         pickable: true,
-        customAsset: true
+        customAsset: true,
+        load: () => {
+        }
       };
       layer.load = () => this.addLayer(layer);
       activeLayers.push(layer);
@@ -264,7 +270,7 @@ class SideBar extends LitElementI18n {
         const feature = content.getFeature(i);
         if (feature.getProperty(attributeKey) === attributeValue) {
           removeTileLoadListener();
-          this.queryManager.selectTile(feature);
+          this.queryManager!.selectTile(feature);
           return;
         }
       }
@@ -281,6 +287,16 @@ class SideBar extends LitElementI18n {
       this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(queueLength => {
         this.globeQueueLength_ = queueLength;
       });
+    }
+    // hide share panel on any action outside side bar
+    if (!this.shareListenerAdded && this.activePanel === 'share') {
+      document.addEventListener('pointerdown', this.shareDownListener);
+      document.addEventListener('keydown', this.shareDownListener);
+      this.shareListenerAdded = true;
+    } else if (this.shareListenerAdded) {
+      this.shareListenerAdded = false;
+      document.removeEventListener('pointerdown', this.shareDownListener);
+      document.removeEventListener('keydown', this.shareDownListener);
     }
     super.update(changedProperties);
   }
@@ -332,11 +348,11 @@ class SideBar extends LitElementI18n {
     syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];
     this.activeLayers = [...this.activeLayers];
-    this.viewer.scene.requestRender();
+    this.viewer!.scene.requestRender();
   }
 
   onLayerChanged() {
-    this.queryManager.hideObjectInformation();
+    this.queryManager!.hideObjectInformation();
     this.catalogLayers = [...this.catalogLayers];
     syncLayersParam(this.activeLayers);
   }
@@ -354,15 +370,15 @@ class SideBar extends LitElementI18n {
     if (config.remove) {
       config.remove();
     }
-    this.viewer.scene.requestRender();
+    this.viewer!.scene.requestRender();
     syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];
     this.activeLayers = [...this.activeLayers];
     this.requestUpdate();
   }
 
-  getFlatLayers(tree, tileLoadCallback) {
-    const flat = [];
+  getFlatLayers(tree, tileLoadCallback): any[] {
+    const flat: any[] = [];
     for (const layer of tree) {
       if (layer.children) {
         flat.push(...this.getFlatLayers(layer.children, tileLoadCallback));
@@ -394,7 +410,7 @@ class SideBar extends LitElementI18n {
       layer.setVisibility(true);
       layer.visible = true;
       layer.displayed = true;
-      this.viewer.scene.requestRender();
+      this.viewer!.scene.requestRender();
     } else { // for new layers
       this.activeLayers.push(this.createSearchLayer(searchLayer.title, searchLayer.layer));
     }
@@ -411,7 +427,9 @@ class SideBar extends LitElementI18n {
       visible: true,
       displayed: true,
       opacity: DEFAULT_LAYER_OPACITY,
-      queryType: 'geoadmin'
+      queryType: 'geoadmin',
+      load: () => {
+      }
     };
     config.load = () => this.addLayer(config);
     return config;
@@ -421,26 +439,26 @@ class SideBar extends LitElementI18n {
     this.zoomedToPosition = true;
     const zoomToPosition = getZoomToPosition();
     if (zoomToPosition) {
-      let altitude = undefined, cartesianPosition = undefined, windowPosition = undefined;
+      let altitude = 0, cartesianPosition: Cartesian3 | undefined, windowPosition: Cartesian2 | undefined;
       const updateValues = () => {
-        altitude = this.viewer.scene.globe.getHeight(this.viewer.scene.camera.positionCartographic) || 0;
+        altitude = this.viewer!.scene.globe.getHeight(this.viewer!.scene.camera.positionCartographic) || 0;
         cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height + altitude);
-        windowPosition = this.viewer.scene.cartesianToCanvasCoordinates(cartesianPosition);
+        windowPosition = this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
       };
       updateValues();
       const completeCallback = () => {
         if (windowPosition) {
           let maxTries = 25;
           let triesCounter = 0;
-          const eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-          eventHandler.setInputAction(event => maxTries = 0, ScreenSpaceEventType.LEFT_DOWN);
+          const eventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
+          eventHandler.setInputAction(() => maxTries = 0, ScreenSpaceEventType.LEFT_DOWN);
           // Waits while will be possible to select an object
           const tryToSelect = () => setTimeout(() => {
             updateValues();
             this.zoomToObjectCoordinates(cartesianPosition);
-            this.queryManager.pickObject(windowPosition);
+            this.queryManager!.pickObject(windowPosition);
             triesCounter += 1;
-            if (!this.queryManager.objectSelector.selectedObj && triesCounter <= maxTries) {
+            if (!this.queryManager!.objectSelector.selectedObj && triesCounter <= maxTries) {
               tryToSelect();
             } else {
               eventHandler.destroy();
@@ -457,13 +475,13 @@ class SideBar extends LitElementI18n {
     }
   }
 
-  zoomToObjectCoordinates(center, complete) {
+  zoomToObjectCoordinates(center, complete?) {
     const boundingSphere = new BoundingSphere(center, 1000);
     const zoomHeadingPitchRange = new HeadingPitchRange(
       0,
       -CMath.toRadians(45),
       boundingSphere.radius);
-    this.viewer.scene.camera.flyToBoundingSphere(boundingSphere, {
+    this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
       duration: 0,
       offset: zoomHeadingPitchRange,
       complete: complete
@@ -471,7 +489,7 @@ class SideBar extends LitElementI18n {
   }
 
   addLayer(layer) {
-    layer.promise = createCesiumObject(this.viewer, layer);
+    layer.promise = createCesiumObject(this.viewer!, layer);
     this.dispatchEvent(new CustomEvent('layeradded', {
       detail: {
         layer
@@ -484,6 +502,3 @@ class SideBar extends LitElementI18n {
     return this;
   }
 }
-
-
-customElements.define('ngm-side-bar', SideBar);

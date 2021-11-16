@@ -55,6 +55,7 @@
 @import 'ngm-checkbox.css';
 @import 'ngm-geometry-info.css';
 @import 'ngm-input.css';
+@import 'ngm-share-link.css';
 
 * {
   scrollbar-color: light;
@@ -256,14 +257,6 @@ ngm-loading-mask .progress {
 .small_load_counter {
   font-size: 0.5rem;
   vertical-align: bottom;
-}
-
-.ui.input.ngm-share-link {
-  display: flex;
-}
-
-.ui.input.ngm-share-link input {
-  width: 100px;
 }
 
 ngm-layer-legend-container {
