@@ -135,6 +135,7 @@ export class NgmGeometryEdit extends LitElementI18n {
     if (!this.editingEntity) return;
     this.viewer!.entities.removeById(this.editingEntity!.id);
     this.editingEntity = undefined;
+    hideVolume(this.entity!);
     this.entity!.show = true;
     this.viewer!.scene.requestRender();
   }

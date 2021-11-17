@@ -33,10 +33,10 @@ export class NgmToolbox extends LitElementI18n {
       this.viewer = viewer;
       this.viewer?.dataSources.add(this.geometriesDataSource);
       this.geometriesDataSource!.entities.collectionChanged.addEventListener((_collection) => {
-        this.viewer!.scene.requestRender();
-        this.requestUpdate();
         LocalStorageController.setAoiInStorage(this.entitiesList);
         ToolboxStore.setGeometries(this.entitiesList);
+        this.viewer!.scene.requestRender();
+        this.requestUpdate();
       });
       if (this.viewer) {
         this.draw = new CesiumDraw(this.viewer, 'polygon', {
@@ -99,7 +99,7 @@ export class NgmToolbox extends LitElementI18n {
         pointSymbol: undefined
       };
       if (val.billboard) {
-        item.color = val.billboard.color!.getValue(this.julianDate);
+        item.color = val.properties!.colorBeforeHighlight || val.billboard.color!.getValue(this.julianDate);
         item.pointSymbol = val.billboard.image!.getValue(this.julianDate);
       } else if (val.polyline) {
         item.color = val.properties!.colorBeforeHighlight || val.polyline.material.getValue(this.julianDate).color;
