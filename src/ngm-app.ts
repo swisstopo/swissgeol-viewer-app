@@ -247,6 +247,7 @@ export class NgmApp extends LitElementI18n {
             <ngm-height-slider .viewer=${this.viewer}></ngm-height-slider>
             <ngm-layer-legend-container></ngm-layer-legend-container>
             <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
+            <a class="disclaimer-link" target="_blank" href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
           <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
