@@ -105,3 +105,52 @@ export const SHORTLINK_HOST_BY_PAGE_HOST = {
   'test.viewer.swissgeol.ch': 'link.swissgeol.ch',
   'viewer.swissgeol.ch': 'link.swissgeol.ch',
 };
+
+export const SHOWCASE_PROJECTS = [
+  {
+    title: 'Hot springs in Switzerland',
+    subtitle: 'Heat and water sources of hot springs',
+    image: './images/spashing_water.jpg',
+    color: '#B9271A',
+    views: [
+      {
+        title: 'Thermalbad Egelsee',
+        permalink: '/?layers=boreholes,ch.swisstopo.geologie-tiefengeothermie_projekte,temperature_model,faults_geomol,ch.swisstopo.swisstlm3d.3d,top_omm,top_usm,top_umm,base_cenozoic&layers_visibility=true,true,true,true,true,true,true,true,true&layers_transparency=0,0.5,1,0,0,0.2,0.3,0.15,0.2&map_transparency=0&map=ch.swisstopo.swissimage&lon=9.16541&lat=47.67935&elevation=2763&heading=176&pitch=-36&slice={"type":"view-line","slicePoints":[{"x":4249855.295002234,"y":687067.3765101306,"z":4690313.160185342},{"x":4249844.886360756,"y":686029.243426846,"z":4690473.465777454}]}',
+        targetPoint: false
+      },
+      {
+        title: 'Thermalbad Baden',
+        permalink: '/?layers=boreholes,ch.swisstopo.geologie-tiefengeothermie_projekte,temperature_model,faults_geomol,ch.swisstopo.swisstlm3d.3d,top_muschelkalk,top_keuper,top_lias,top_dogger,top_lower_malm,top_upper_malm,base_mesozoic&layers_visibility=true,true,true,true,true,true,true,true,true,true,true,true&layers_transparency=0,0.5,1,0.5,0,0,0,0,0,0,0,0&map_transparency=0&map=ch.swisstopo.swissimage&lon=8.36491&lat=47.46059&elevation=2669&heading=299&pitch=-31&slice={"type":"view-line","slicePoints":[{"x":4273763.245676614,"y":624541.26385917,"z":4677401.016558762},{"x":4272270.9806707995,"y":624286.9741874507,"z":4678788.655482157}]}',
+        targetPoint: false
+      },
+      {
+        title: 'Les Bains d\'Yverdon',
+        permalink: '/?layers=boreholes,ch.swisstopo.geologie-tiefengeothermie_projekte,temperature_model,top_upper_malm,base_cenozoic,top_lower_malm,top_dogger,top_lias,top_keuper,top_muschelkalk,base_mesozoic,base_permocarboniferous,base_permocarboniferous_supposed,faults_geomol,ch.swisstopo.swisstlm3d.3d&layers_visibility=true,true,true,true,true,true,true,true,true,true,true,true,true,true,true&layers_transparency=0,0.5,1,0,0,0,0,0,0,0,0,0,0,0.5,0&map_transparency=0&map=ch.swisstopo.swissimage&lon=6.59900&lat=46.81160&elevation=3429&heading=144&pitch=-33&slice={"type":"view-line","slicePoints":[{"x":4345748.030793835,"y":507468.31110827957,"z":4625300.076949739},{"x":4347816.352357404,"y":505325.9842407562,"z":4623601.9831696395}]}',
+        targetPoint: false
+      }
+    ]
+  },
+  {
+    title: 'The church of Wassen',
+    subtitle: 'Infrastructure at a transit route',
+    image: './images/wassen.png',
+    color: '#B9271A',
+    views: [
+      {
+        title: 'Wassen as you know it',
+        permalink: '/?lon=8.59956&lat=46.70494&elevation=1010&heading=22&pitch=-15&map=ch.swisstopo.swissimage&map_transparency=0.00&layers=ch.swisstopo.swisstlm3d.3d&layers_visibility=true&layers_transparency=0.00',
+        targetPoint: true
+      },
+      {
+        title: 'Geological situation (click on a color to get more information)',
+        permalink: '/?lon=8.59533&lat=46.69436&elevation=2346&heading=20&pitch=-44&map=ch.swisstopo.swissimage&map_transparency=0.00&layers=ch.swisstopo.swisstlm3d.3d,ch.swisstopo.geologie-geocover&layers_visibility=true,true&layers_transparency=0.00,0.30',
+        targetPoint: false
+      },
+      {
+        title: 'Subsurface infrastructure',
+        permalink: '/?lon=8.59559&lat=46.69875&elevation=417&heading=21&pitch=23&map=ch.swisstopo.swissimage&map_transparency=0.43&layers=ch.swisstopo.swisstlm3d.3d,ch.swisstopo.geologie-geocover,water_tunnel,rail_tunnel,road_tunnel&layers_visibility=true,false,true,true,true&layers_transparency=0.00,0.82,0.00,0.00,0.00',
+        targetPoint: true
+      }
+    ]
+  }
+];

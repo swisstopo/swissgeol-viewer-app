@@ -3,6 +3,7 @@ import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
 import '../layers/ngm-catalog';
+import './ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import defaultLayerTree from '../layertree';
@@ -124,8 +125,8 @@ export class SideBar extends LitElementI18n {
           </div>
         </div>
       </div>
-      <div .hidden=${this.activePanel !== 'dashboard'} class="ngm-side-bar-panel ngm-large-panel">
-      </div>
+      <ngm-dashboard .hidden=${this.activePanel !== 'dashboard'} @close=${() => this.activePanel = ''}
+                     class="ngm-side-bar-panel ngm-large-panel"></ngm-dashboard>
       <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-layer-catalog">
         <div class="ngm-panel-header">${i18next.t('lyr_geocatalog_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>

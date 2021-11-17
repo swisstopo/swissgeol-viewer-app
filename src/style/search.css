@@ -20,7 +20,7 @@ ga-search.ui.input > input:hover {
 }
 
 ga-search.ui.input > input:focus {
-  background-color: var(--ngm-action-hover);
+  background-color: var(--ngm-hover);
 }
 
 ga-search.ui.input > input:focus,
@@ -51,7 +51,7 @@ ga-search.ui.input > input::-webkit-search-results-decoration {
   position: absolute;
   right: 12px;
   color: #66D9E8;
-  background-color: #0b7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-search-icon-container.ngm-close-icon {
@@ -84,7 +84,7 @@ ga-search > .search-results > .autocomplete-result .highlight {
 ga-search > .search-results > .autocomplete-result[aria-selected=true],
 ga-search > .search-results > .autocomplete-result:hover {
   cursor: pointer;
-  background-color: var(--ngm-action-hover);
+  background-color: var(--ngm-hover);
 }
 
 ga-search > .search-results img {

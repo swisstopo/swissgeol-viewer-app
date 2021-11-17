@@ -218,12 +218,12 @@ export class NgmSlicer extends LitElementI18n {
           <div class=${classMap({active: !this.negateSlice})}
                @click=${() => this.changeSliceSide(false, options.geom)}>
             <div class=${type.includes('box') ? 'ngm-out-box-icon' : 'ngm-slice-left-icon'}></div>
-            ${i18next.t(type.includes('box') ? 'tbx_slice_outside_label' : 'tbx_slice_left_label')}
+            ${type.includes('box') ? i18next.t('tbx_slice_outside_label') : i18next.t('tbx_slice_left_label')}
           </div>
           <div class=${classMap({active: this.negateSlice})}
                @click=${() => this.changeSliceSide(true, options.geom)}>
             <div class=${type.includes('box') ? 'ngm-in-box-icon' : 'ngm-slice-right-icon'}></div>
-            ${i18next.t(type.includes('box') ? 'tbx_slice_inside_label' : 'tbx_slice_right_label')}
+            ${type.includes('box') ? i18next.t('tbx_slice_inside_label') : i18next.t('tbx_slice_right_label')}
           </div>
         </div>
         <div ?hidden=${type.includes('line')}
@@ -248,18 +248,21 @@ export class NgmSlicer extends LitElementI18n {
     if (!this.slicer) return '';
     return html`
       <div class="ngm-slice-types ${classMap({disabled: this.editingEnabled})}">
-        <div class="ngm-slice-item ${classMap({active: !this.slicingEnabled})}" @click=${() => this.toggleSlicer()}>
-          <div class="ngm-slice-label">${i18next.t('tbx_disable_slice_btn_label')}</div>
+        <div class="ngm-action-list-item ${classMap({active: !this.slicingEnabled})}"
+             @click=${() => this.toggleSlicer()}>
+          <div class="ngm-action-list-item-header">
+            <div>${i18next.t('tbx_disable_slice_btn_label')}</div>
+          </div>
         </div>
-        <div class="ngm-slice-item ${classMap({active: this.slicingType === 'view-box'})}">
-          <div class="ngm-slice-label" @click=${() => this.toggleSlicer('view-box')}>
-            ${i18next.t('tbx_slice_box')}
+        <div class="ngm-action-list-item ${classMap({active: this.slicingType === 'view-box'})}">
+          <div class="ngm-action-list-item-header" @click=${() => this.toggleSlicer('view-box')}>
+            <div>${i18next.t('tbx_slice_box')}</div>
           </div>
           ${this.sliceOptionsTemplate({type: 'view-box'})}
         </div>
-        <div class="ngm-slice-item ${classMap({active: this.slicingType === 'view-line'})}">
-          <div class="ngm-slice-label" @click=${() => this.toggleSlicer('view-line')}>
-            ${i18next.t('tbx_slice_line')}
+        <div class="ngm-action-list-item ${classMap({active: this.slicingType === 'view-line'})}">
+          <div class="ngm-action-list-item-header" @click=${() => this.toggleSlicer('view-line')}>
+            <div>${i18next.t('tbx_slice_line')}</div>
           </div>
           ${this.sliceOptionsTemplate({type: 'view-line'})}
         </div>

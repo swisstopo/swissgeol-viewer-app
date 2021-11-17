@@ -19,7 +19,7 @@ header > a {
 
 .ngm-map-icon {
   margin-right: 17px;
-  background-color: #0b7285;
+  background-color: var(--ngm-interaction);
   margin-left: auto;
   cursor: pointer;
 }
@@ -29,7 +29,7 @@ header > a {
 }
 
 .ngm-map-icon:hover {
-  background-color: #FF0000;
+  background-color: var(--ngm-interaction-hover);
 }
 
 @media (max-width: 710px) {

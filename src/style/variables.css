@@ -1,6 +1,8 @@
 :root {
+  --ngm-interaction: #0B7285;
   --ngm-interaction-active: #B9271A;
-  --ngm-interaction-hover: #FE0F17;
-  --ngm-action-hover: #C5F6FA;
+  --ngm-interaction-hover: #FF0000;
+  --ngm-action-hover: #A83526;
+  --ngm-hover: #C5F6FA;
   --ngm-warning: #C92A2A;
 }

@@ -51,13 +51,13 @@ ngm-auth .ngm-user-icon {
 .ngm-menu-1 > div:hover > div:nth-child(1),
 .ngm-menu-2 > div:hover > div:nth-child(1),
 ngm-auth:hover .ngm-user-icon {
-  background-color: #FF0000;
+  background-color: var(--ngm-interaction-hover);
 }
 
 .ngm-menu-1 > div:hover,
 .ngm-menu-2 > div:hover,
 ngm-auth:hover {
-  color: #FF0000;
+  color: var(--ngm-interaction-hover);
 }
 
 .ngm-side-bar-panel {
@@ -100,7 +100,7 @@ ngm-auth:hover {
 }
 
 .ngm-panel-header .ngm-close-icon:hover {
-  background-color: #A83526;
+  background-color: var(--ngm-action-hover);
 }
 
 .ngm-close-icon,

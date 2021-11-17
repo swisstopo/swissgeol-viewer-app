@@ -34,7 +34,7 @@ export class NgmNadirView extends LitElementI18n {
   get compassStyle() {
     const angle = this.currentHeading * 180 / Math.PI;
     return {
-      'background-color': this.active && (angle === 0 || angle === 360) ? '#FFFFFF' : '#0B7285',
+      'background-color': this.active && (angle === 0 || angle === 360) ? '#FFFFFF' : 'var(--ngm-interaction)',
     };
   }
 

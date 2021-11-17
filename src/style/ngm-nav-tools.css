@@ -18,7 +18,7 @@ ngm-nav-tools.ngm-floating-window {
 }
 
 .ngm-nav-buttons > div {
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-nav-buttons > div:hover {

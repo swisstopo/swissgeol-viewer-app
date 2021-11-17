@@ -39,7 +39,7 @@ ngm-minimap {
 .ngm-compass-arrow > div.ngm-compass-arrow-top {
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-bottom: 12px solid #FF0000;
+  border-bottom: 12px solid var(--ngm-interaction-hover);
 }
 
 .ngm-compass-arrow > div.ngm-compass-arrow-bottom {
