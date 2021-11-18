@@ -388,3 +388,29 @@ ngm-layer-legend-container > ngm-layer-legend {
   user-select: text !important;
   cursor: text;
 }
+
+.cesium-credit-expand-link {
+  display: none !important;
+}
+
+.disclaimer-link {
+  position: absolute;
+  z-index: 2;
+  bottom: 8px;
+  left: 224px;
+  font-size: 12px;
+  color: #fff;
+  text-shadow: 0 0 2px #000;
+}
+
+.disclaimer-link:hover {
+  color: #FF0000;
+  text-shadow: none;
+}
+
+@media (max-height: 630px) {
+  .disclaimer-link {
+    bottom: 80px;
+    left: 144px;
+  }
+}

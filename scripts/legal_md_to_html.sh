@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 mkdir -p dist/legal/
+cp legal/index.css dist/legal/
 
 template=$(<legal/template.html)
 

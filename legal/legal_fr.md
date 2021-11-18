@@ -48,7 +48,7 @@ Dès que vous aurez donné votre consentement, Google Analytics, Hotjar et Sentr
 
 Les services d’analyse recourent à des cookies qui permettent d’analyser votre comportement d’internaute. Les informations recueillies par ces témoins de connexion sont en général transmises à un serveur du fournisseur mentionné, où elles sont stockées.  Nous tenons à souligner que sur ce site, les services d’analyse sont dotés d’une extension pour l’anonymisation ; cela signifie que l’adresse IP des visiteurs du site est modifiée avant la transmission des données de suivi, afin de garantir que les moteurs de recherche ne puissent pas attribuer ces données à une adresse IP exacte (adresse IP masquée). De même, l’adresse IP transmise par votre navigateur Internet dans le cadre des services d’analyse n’est pas fusionnée aux autres données de ces fournisseurs. Vous trouverez de plus amples informations concernant les conditions d’utilisation et la protection des données sous
 <https://www.google.com/analytics/terms/fr.html> et <https://policies.google.com/?hl=fr>.
-[Hotjar - Privacy Policy](https://www.hotjar.com/legal/policies/privacy/
+[Hotjar - Privacy Policy](https://www.hotjar.com/legal/policies/privacy/)
 <https://sentry.io/privacy/>
 
 ### Finalité
@@ -60,7 +60,7 @@ Les destinataires des données collectées sont les opérateurs des services d�
 ### Durée du stockage des données
 Les données que nous envoyons liées à des cookies, à des identifiants d’utilisateurs (User-ID) ou à des identifiants publicitaires sont effacées automatiquement après quatorze mois. La suppression des données dont la durée d’utilisation est échue se fait mensuellement.
 
-###Droit des personnes concernées
+### Droit des personnes concernées
 Vous pouvez également télécharger et installer le [module complémentaire de navigateur](https://tools.google.com/dlpage/gaoptout?hl=fr) pour la désactivation de Google Analytics et ainsi empêcher que la société Google ne collecte les données générées par les cookies et celles liées à votre utilisation du site (y compris adresse IP) ou qu’elle ne les traite.  Les cookies de désactivation (Opt Out) préviennent la saisie future de vos données lorsque vous consultez ce site.  Afin d’empêcher Universal Analytics de saisir les données via plusieurs appareils, il vous faut installer les cookies de désactivation sur tous les systèmes que vous utilisez. Pour ce faire, cliquez sur le lien suivant : [Désactiver Google Analytics](https://tools.google.com/dlpage/gaoptout?hl=fr).
 
 Vous êtes en droit de révoquer votre accord à tout moment, avec effet pour l’avenir. Il vous suffit pour cela de désactiver l’utilisation de cookies en sélectionnant les paramètres appropriés de votre navigateur ; toutefois, dans ce cas, vous ne pourrez peut-être pas utiliser toutes les fonctions de ce site.

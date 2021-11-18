@@ -39,7 +39,7 @@ Diese Nutzungsdaten bilden die Basis für statistische, anonyme Auswertungen, so
 
 Wenn Sie über unsere Websites Produkte bestellen oder einen Newsletter abonnieren, wird Ihre Email-Adresse separat gespeichert und nicht mit den anonymen Logfiles verknüpft. Sie haben jederzeit die Möglichkeit, Ihre Registrierung wieder rückgängig zu machen; senden Sie uns bei Bedarf hierfür eine entsprechende E-Mail an den Datenschutzberater von swisstopo.
 
-###Verwendung von Cookies
+### Verwendung von Cookies
 Auf verschiedenen Seiten verwenden wir Cookies, um den Besuch unserer Website attraktiver zu machen und die Nutzung bestimmter Funktionen zu ermöglichen. Hierbei handelt es sich um kleine Textdateien, die auf Ihrem Computer abgelegt werden. Die meisten der von uns verwendeten Cookies werden nach Ende der Browser-Sitzung wieder von Ihrer Festplatte gelöscht (sog. Sitzungs- oder Session-Cookies). Andere Cookies verbleiben auf Ihrem Computer und ermöglichen uns, Sie bei Ihrem nächsten Besuch wieder zu erkennen (sog. dauerhafte Cookies).
 
 Sie können die Speicherung von Cookies in Ihrem Browser verhindern, indem Sie die Speicherung und das Lesen von Cookies einschränken oder ausschalten.. Bitte beachten Sie, dass Sie gewisse Funktionen unserer Website ohne Cookies nicht nutzen können.
