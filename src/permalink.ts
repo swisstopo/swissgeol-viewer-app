@@ -3,13 +3,16 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
 import {getURLSearchParams, parseJson, setURLSearchParams} from './utils';
 import {
+  ASSET_IDS_URL_PARAM,
+  ATTRIBUTE_KEY_PARAM,
+  ATTRIBUTE_VALUE_PARAM,
   LAYERS_TRANSPARENCY_URL_PARAM,
   LAYERS_URL_PARAM,
   LAYERS_VISIBILITY_URL_PARAM,
-  ASSET_IDS_URL_PARAM,
-  MAP_URL_PARAM,
   MAP_TRANSPARENCY_URL_PARAM,
-  ATTRIBUTE_KEY_PARAM, ATTRIBUTE_VALUE_PARAM, ZOOM_TO_PARAM, SLICE_PARAM
+  MAP_URL_PARAM,
+  SLICE_PARAM,
+  ZOOM_TO_PARAM
 } from './constants';
 
 export function getCameraView() {
@@ -77,13 +80,14 @@ export function getAssetIds() {
 
 export function syncLayersParam(activeLayers) {
   const params = getURLSearchParams();
-  const layerNames = [];
-  const layersTransparency = [];
-  const layersVisibility = [];
+  const layerNames: string[] = [];
+  const layersTransparency: string[] = [];
+  const layersVisibility: boolean[] = [];
   activeLayers.forEach(l => {
     if (!l.customAsset) {
       layerNames.push(l.layer);
-      layersTransparency.push(isNaN(l.opacity) ? 0 : (1 - l.opacity).toFixed(2));
+      const transparency = isNaN(l.opacity) ? 0 : (1 - l.opacity);
+      layersTransparency.push(transparency.toFixed(2));
       layersVisibility.push(l.visible);
     }
   });
@@ -159,7 +163,7 @@ export function getZoomToPosition() {
   return {longitude: Number(position[0]), latitude: Number(position[1]), height: Number(position[2])};
 }
 
-export function syncSliceParam(sliceOptions) {
+export function syncSliceParam(sliceOptions?) {
   const params = getURLSearchParams();
   if (sliceOptions) {
     params.set(SLICE_PARAM, JSON.stringify(sliceOptions));

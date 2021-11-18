@@ -7,12 +7,18 @@ import './ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import defaultLayerTree from '../layertree';
-import {getAssetIds, getAttribute, getLayerParams, getSliceParam, syncLayersParam} from '../permalink.js';
+import {
+  getAssetIds,
+  getAttribute,
+  getLayerParams,
+  getSliceParam,
+  getZoomToPosition,
+  syncLayersParam
+} from '../permalink';
 import {createCesiumObject} from '../layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import './ngm-map-configuration';
-import {getZoomToPosition} from '../permalink';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
@@ -62,6 +68,10 @@ export class SideBar extends LitElementI18n {
           this.removeLayer(config);
         });
       }
+    });
+    MainStore.syncLayers.subscribe(() => {
+      this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
+      this.syncActiveLayers();
     });
   }
 
@@ -206,7 +216,7 @@ export class SideBar extends LitElementI18n {
   //   saveAs(blob, 'swissgeol_data.zip');
   // }
 
-  initializeActiveLayers() {
+  async syncActiveLayers() {
     const attributeParams = getAttribute();
     const callback = attributeParams ?
       this.getTileLoadCallback(attributeParams.attributeKey, attributeParams.attributeValue) :
@@ -229,17 +239,21 @@ export class SideBar extends LitElementI18n {
     });
 
     const activeLayers: any[] = [];
-    urlLayers.forEach(urlLayer => {
+    await Promise.all(urlLayers.map(async (urlLayer) => {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.name);
       if (!layer) {
         // Layers from the search are not present in the flat layers.
         layer = this.createSearchLayer(urlLayer.name, urlLayer.name);
+      } else {
+        await (layer.promise || this.addLayer(layer));
+        layer.add && layer.add();
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
       layer.displayed = true;
+      layer.setVisibility && layer.setVisibility(layer.visible);
       activeLayers.push(layer);
-    });
+    }));
 
     assetIds.forEach(assetId => {
       const layer = {
@@ -278,12 +292,12 @@ export class SideBar extends LitElementI18n {
     };
   }
 
-  update(changedProperties) {
+  async update(changedProperties) {
     if (this.viewer && !this.layerActions) {
       this.layerActions = new LayersActions(this.viewer);
       if (!this.catalogLayers) {
         this.catalogLayers = [...defaultLayerTree];
-        this.initializeActiveLayers();
+        await this.syncActiveLayers();
       }
       this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(queueLength => {
         this.globeQueueLength_ = queueLength;
@@ -364,13 +378,17 @@ export class SideBar extends LitElementI18n {
     this.removeLayer(config);
   }
 
-  removeLayer(config) {
+  removeLayerWithoutSync(config) {
     config.setVisibility(false);
     config.visible = false;
     config.displayed = false;
     if (config.remove) {
       config.remove();
     }
+  }
+
+  removeLayer(config) {
+    this.removeLayerWithoutSync(config);
     this.viewer!.scene.requestRender();
     syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];

@@ -5,11 +5,32 @@ import i18next from 'i18next';
 import {styleMap} from 'lit/directives/style-map.js';
 import {SHOWCASE_PROJECTS} from '../constants';
 import {classMap} from 'lit-html/directives/class-map.js';
+import MainStore from '../store/main';
+import ToolboxStore from '../store/toolbox';
+import {getCameraView} from '../permalink';
 
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
   @state() activeTab: 'dashboard' | 'project' = 'dashboard';
   @state() selectedProject: any | undefined;
+
+  selectView(permalink) {
+    const viewer = MainStore.viewerValue;
+    if (!viewer) return;
+    this.dispatchEvent(new CustomEvent('close'));
+    const url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${permalink}`;
+    window.history.pushState({path: url}, '', url);
+    MainStore.nextLayersSync();
+    MainStore.nextMapSync();
+    ToolboxStore.nextSliceSync();
+    const {destination, orientation} = getCameraView();
+    if (destination && orientation)
+      viewer.camera.flyTo({
+        destination: destination,
+        orientation: orientation,
+        duration: 3
+      });
+  }
 
   previewTemplate(data) {
     return html`
@@ -21,19 +42,30 @@ export class NgmDashboard extends LitElementI18n {
         <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: data.color})}>
           <span>${data.title}</span>
         </div>
-        <div class="ngm-proj-preview-subtitle"><span>${data.subtitle}</span></div>
+        <div class="ngm-proj-preview-subtitle"><span>${data.description}</span></div>
       </div>`;
   }
 
   projectTabTemplate() {
     if (!this.selectedProject) return '';
     return html`
-      <div class="ngm-projects-title">${this.selectedProject.title}</div>
-      <div class="ngm-project-info">
-        <div class="ngm-proj-preview-img"
-             style=${styleMap({backgroundImage: `url('${this.selectedProject.image}')`})}></div>
+      <div>
+        <div class="ngm-proj-title">${this.selectedProject.title}</div>
+        <div class="ngm-proj-data">
+          ${`${i18next.t('dashboard_created_title')} ${this.selectedProject.created} ${i18next.t('dashboard_by_swisstopo_title')}`}
+        </div>
+        <div class="ngm-proj-information">
+          <div>
+            <div class="ngm-proj-preview-img"
+                 style=${styleMap({backgroundImage: `url('${this.selectedProject.image}')`})}></div>
+            <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: this.selectedProject.color})}></div>
+          </div>
+          <div class="ngm-proj-description">
+            <div class="ngm-proj-description-title">${i18next.t('dashboard_description')}</div>
+            <div class="ngm-proj-description-content">${this.selectedProject.description}</div>
+          </div>
+        </div>
       </div>
-      <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: this.selectedProject.color})}></div>
       <div class="ngm-divider"></div>
       <div class="ngm-proj-views-title">
         <div class="ngm-screenshot-icon"></div>
@@ -41,7 +73,7 @@ export class NgmDashboard extends LitElementI18n {
       </div>
       <div class="ngm-project-views">
         ${this.selectedProject.views.map(view => html`
-          <div class="ngm-action-list-item">
+          <div class="ngm-action-list-item" @click=${() => this.selectView(view.permalink)}>
             <div class="ngm-action-list-item-header">
               <div>${view.title}</div>
             </div>
@@ -69,7 +101,7 @@ export class NgmDashboard extends LitElementI18n {
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
       <div ?hidden=${this.selectedProject}>
-        <div class="ngm-projects-title">${i18next.t('dashboard_recent_swisstopo')}</div>
+        <div class="ngm-proj-title">${i18next.t('dashboard_recent_swisstopo')}</div>
         <div class="ngm-projects-list">
           ${SHOWCASE_PROJECTS.map(data => this.previewTemplate(data))}
         </div>

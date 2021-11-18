@@ -1,8 +1,9 @@
-import {getMapParam, syncMapParam} from './permalink.js';
+import {getMapParam, syncMapParam} from './permalink';
 import i18next from 'i18next';
 import {Viewer} from 'cesium';
 import {NgmMapChooser} from './elements/ngm-map-chooser';
 import {BaseLayerConfig} from './viewer';
+import MainStore from './store/main';
 
 export default class MapChooser {
   private viewer: Viewer;
@@ -17,6 +18,10 @@ export default class MapChooser {
 
     i18next.on('languageChanged', () => {
       this.elements.forEach(el => el.choices = this.choices);
+    });
+    MainStore.syncMap.subscribe(() => {
+      const id = getMapParam();
+      id && this.selectMap(id);
     });
   }
 

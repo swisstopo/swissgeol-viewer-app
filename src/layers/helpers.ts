@@ -6,7 +6,7 @@ import Cesium3DTileStyle from 'cesium/Source/Scene/Cesium3DTileStyle';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
 import {LayerType} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {isLabelOutlineEnabled} from '../permalink.js';
+import {isLabelOutlineEnabled} from '../permalink';
 import LabelStyle from 'cesium/Source/Scene/LabelStyle';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';

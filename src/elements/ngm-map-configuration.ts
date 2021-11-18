@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-map-chooser';
-import {getMapOpacityParam, syncMapOpacityParam} from '../permalink.js';
+import {getMapOpacityParam, syncMapOpacityParam} from '../permalink';
 import MainStore from '../store/main';
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import MapChooser from '../MapChooser.js';
@@ -24,11 +24,11 @@ export class NgmMapConfiguration extends LitElementI18n {
       this.mapChooser = chooser;
       this.requestUpdate();
     });
+    MainStore.syncMap.subscribe(() => this.updateOpacity(getMapOpacityParam()));
   }
 
-  updateOpacity(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.opacity = Number(input.value);
+  updateOpacity(opacity: number) {
+    this.opacity = opacity;
     if (this.opacity === 1) {
       this.viewer!.scene.globe.translucency.enabled = !!this.mapChooser!.selectedMap.hasAlphaChannel;
       this.viewer!.scene.globe.translucency.backFaceAlpha = 1;
@@ -66,18 +66,21 @@ export class NgmMapConfiguration extends LitElementI18n {
       <ngm-map-chooser></ngm-map-chooser>
       <div class="ui divider"></div>
       <div class="ngm-base-layer">
-        <div class="ngm-layer-icon ${classMap({'ngm-visible-icon': this.mapChooser!.selectedMap.id !== 'empty_map', 'ngm-invisible-icon': this.mapChooser!.selectedMap.id === 'empty_map'})}"
-              @click=${this.changeVisibility}></div>
+        <div class="ngm-layer-icon ${classMap({
+          'ngm-visible-icon': this.mapChooser!.selectedMap.id !== 'empty_map',
+          'ngm-invisible-icon': this.mapChooser!.selectedMap.id === 'empty_map'
+        })}"
+             @click=${this.changeVisibility}></div>
         <div class="ngm-displayed-slider">
           <div>
             <label>${i18next.t('dtd_opacity_base_map')}</label>
             <label>${(this.opacity * 100).toFixed()} %</label>
           </div>
           <input type="range" class="ngm-slider"
-                style="background-image: linear-gradient(to right, #B9271A, #B9271A ${this.opacity * 100}%, white ${this.opacity * 100}%)"
-                min=0 max=1 step=0.01
-                value=${!isNaN(this.opacity) ? this.opacity : 0.4}
-                @input=${this.updateOpacity}/>
+                 style="background-image: linear-gradient(to right, #B9271A, #B9271A ${this.opacity * 100}%, white ${this.opacity * 100}%)"
+                 min=0 max=1 step=0.01
+                 value=${!isNaN(this.opacity) ? this.opacity : 0.4}
+                 @input=${evt => this.updateOpacity(Number((<HTMLInputElement>evt.target).value))}/>
         </div>
       </div>
     `;

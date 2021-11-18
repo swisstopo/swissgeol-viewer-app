@@ -18,9 +18,8 @@ import {DEFAULT_VIEW} from './constants';
 import {setupSearch} from './search.js';
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 
-import {getCameraView, syncCamera} from './permalink.js';
+import {getCameraView, getZoomToPosition, syncCamera} from './permalink';
 import i18next from 'i18next';
-import {getZoomToPosition} from './permalink';
 import Slicer from './slicer/Slicer';
 
 import {setupI18n} from './i18n.js';

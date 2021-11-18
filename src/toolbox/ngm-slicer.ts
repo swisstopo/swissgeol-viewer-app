@@ -15,6 +15,7 @@ import {NgmGeometry} from './interfaces';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
+import {skip} from 'rxjs';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
@@ -33,27 +34,15 @@ export class NgmSlicer extends LitElementI18n {
     ToolboxStore.slicer.subscribe(slicer => {
       if (!slicer) return;
       this.slicer = slicer;
-      const sliceOptions = getSliceParam();
-      if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
-        this.showBox = sliceOptions.showBox;
-        this.negateSlice = sliceOptions.negate;
-        this.slicer!.sliceOptions = {
-          ...this.slicer!.sliceOptions, ...sliceOptions,
-          syncBoxPlanesCallback: (sliceInfo) => this.syncSliceInfo(sliceInfo),
-          deactivationCallback: () => this.onDeactivation()
-        };
-        if (sliceOptions.type === 'view-line') {
-          this.slicer.sliceOptions.activationCallback = () => this.syncSliceInfo(sliceOptions);
-        }
-        this.slicer!.active = true;
-      }
+      this.syncSlice();
     });
-    ToolboxStore.sliceGeometry.subscribe(geom => this.toggleGeomSlicer(geom));
+    ToolboxStore.sliceGeometry.pipe(skip(1)).subscribe(geom => this.toggleGeomSlicer(geom));
     ToolboxStore.openedGeometryOptions.subscribe(options => {
       this.editingEnabled = !!(options?.editing);
       if (this.editingEnabled && this.slicer?.active)
         this.toggleSlicer();
     });
+    ToolboxStore.syncSlice.subscribe(() => this.syncSlice());
   }
 
   protected update(changedProperties) {
@@ -62,13 +51,24 @@ export class NgmSlicer extends LitElementI18n {
     super.update(changedProperties);
   }
 
-  toggleSlicer(type?, info?) {
+  syncSlice() {
+    const sliceOptions = getSliceParam();
+    if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
+      this.showBox = sliceOptions.showBox;
+      this.negateSlice = sliceOptions.negate;
+      this.toggleSlicer(sliceOptions.type, sliceOptions, true);
+    } else if (this.slicingEnabled) {
+      this.toggleSlicer();
+    }
+  }
+
+  toggleSlicer(type?, info?, force?) {
     if (!this.slicer) return;
     const active = this.slicer.active;
-    const boxOptionChanged = this.slicingType !== type;
+    const sliceOptionChanged = this.slicingType !== type;
     this.slicer.active = false;
     if (!type) return;
-    if (!active || boxOptionChanged) {
+    if (force || !active || sliceOptionChanged) {
       this.slicer.sliceOptions = {
         type: type,
         showBox: this.showBox,
