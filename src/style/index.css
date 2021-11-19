@@ -180,8 +180,30 @@ ngm-app {
   pointer-events: all;
 }
 
+.language-settings {
+  display: flex;
+  flex-direction: column;
+}
+
+.language-settings label {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.language-settings .ui.horizontal.list {
+  border: 1px solid lightgrey;
+  width: fit-content;
+  padding-right: 7px;
+  box-shadow: 0 2px 3px #00000029;
+}
+
+.language-settings .ui.selection.list .item {
+  color: #0B7285;
+  font-weight: 900;
+}
+
 :lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en {
-  font-weight: bold;
+  color: #A83526 !important;
 }
 
 .ui.checkbox label {
