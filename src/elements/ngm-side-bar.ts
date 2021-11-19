@@ -149,7 +149,10 @@ export class SideBar extends LitElementI18n {
         <div class="ngm-panel-header">${i18next.t('lsb_settings')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
-        <div id="langs" class="ui horizontal selection list"></div>
+        <div class="language-settings">
+          <label>${i18next.t('lsb_langs')}</label>
+          <div id="langs" class="ui horizontal selection list"></div>
+        <div>
       </div>
       <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
         <div class="ngm-panel-header">${i18next.t('dtd_displayed_data_label')}
