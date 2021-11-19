@@ -8,7 +8,6 @@ import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {AOI_DATASOURCE_NAME} from '../constants';
 import ToolboxStore from '../store/toolbox';
 import i18next from 'i18next';
-import {getValueOrUndefined} from '../cesiumutils';
 import {NgmGeometry} from './interfaces';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {downloadGeometry, hideVolume, updateEntityVolume} from './helpers';
@@ -20,9 +19,9 @@ import {showSnackbarConfirmation} from '../notifications';
 export class NgmGeometryInfo extends LitElementI18n {
   @state() geomEntity: Entity | undefined;
   @state() editing = false;
+  @state() geometry: NgmGeometry | undefined;
   private viewer: Viewer | null = null;
   private geometriesDataSource: CustomDataSource | undefined;
-  private geometry: NgmGeometry | undefined;
   private enableSlicingOnRender = false;
 
   constructor() {
@@ -41,6 +40,9 @@ export class NgmGeometryInfo extends LitElementI18n {
       this.editing = !!options.editing;
     });
     ToolboxStore.sliceGeometry.subscribe(() => this.requestUpdate());
+    ToolboxStore.geometries.subscribe(geometries => {
+      this.geometry = geometries.find(geom => geom.id === this.geomEntity?.id);
+    });
   }
 
   protected updated(_changedProperties: PropertyValues) {
@@ -189,21 +191,20 @@ export class NgmGeometryInfo extends LitElementI18n {
   }
 
   render() {
-    this.hidden = !this.geomEntity;
-    if (!this.geomEntity) return '';
-    this.geometry = ToolboxStore.openedGeometry;
+    this.hidden = !this.geometry;
+    if (!this.geometry) return '';
     return html`
       <div class="ngm-floating-window-header drag-handle">
-        ${`${i18next.t('tbx_geometry')} ${getValueOrUndefined(this.geomEntity.properties!.type)}`}
+        ${`${i18next.t('tbx_geometry')} ${this.geometry.type}`}
         <div class="ngm-close-icon" @click=${() => this.onClose()}></div>
       </div>
       <div class="ngm-geom-info-body">
-        ${`${this.geomEntity.name}`}
+        ${`${this.geometry.name}`}
         <div class="ngm-geom-actions">
-          <div ?hidden=${this.geometry?.type === 'point' || this.geometry?.type === 'polygon'}
+          <div ?hidden=${this.geometry.type === 'point' || this.geometry.type === 'polygon'}
                class="ngm-slicing-icon ${classMap({active: ToolboxStore.geomSliceActive})}"
                @click=${() => this.onSliceClick()}></div>
-          <div class="ngm-extrusion-icon ${classMap({active: !!this.geometry?.volumeShowed})}"
+          <div class="ngm-extrusion-icon ${classMap({active: !!this.geometry.volumeShowed})}"
                @click=${() => this.toggleGeomVolume(this.geometry!)}></div>
           <div class="ngm-edit-icon ${classMap({active: this.editing})}"
                @click=${() => this.onEditClick()}>

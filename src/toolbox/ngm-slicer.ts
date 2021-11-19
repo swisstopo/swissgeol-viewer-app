@@ -13,7 +13,7 @@ import {BBox} from '../slicer/helper';
 import {Cartesian3} from 'cesium';
 import {NgmGeometry} from './interfaces';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {updateEntityVolume} from './helpers';
+import {hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
 
 @customElement('ngm-slicer')
@@ -148,6 +148,7 @@ export class NgmSlicer extends LitElementI18n {
       entity.polygon!.hierarchy = <any>{positions};
       entity.properties!.volumeHeightLimits = {lowerLimit, height};
       updateEntityVolume(entity, MainStore.viewerValue!.scene.globe);
+      hideVolume(entity);
     }
     entity.show = true;
     this.requestUpdate();
