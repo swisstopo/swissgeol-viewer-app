@@ -166,7 +166,7 @@ export class SideBar extends LitElementI18n {
               <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
               `)}
           </div>
-        <div>
+        </div>
       </div>
       <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
         <div class="ngm-panel-header">${i18next.t('dtd_displayed_data_label')}
