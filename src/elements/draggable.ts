@@ -34,9 +34,9 @@ function translate(event) {
 
 function checkForOverlap(target): DOMRect[] {
   const overlapList: DOMRect[] = [];
+  const targetRect = target.getBoundingClientRect();
   document.querySelectorAll<HTMLElement>('.ngm-floating-window').forEach(elem => {
     if (!elem.hidden && elem !== target) {
-      const targetRect = target.getBoundingClientRect();
       const checkRect = elem.getBoundingClientRect();
       const overlap = !(targetRect.right < checkRect.left || targetRect.left > checkRect.right);
       if (overlap) overlapList.push(checkRect);
@@ -48,21 +48,28 @@ function checkForOverlap(target): DOMRect[] {
 function moveWindow(target, overlapList, changeSide) {
   overlapList.forEach(checkRect => {
     const targetRect = target.getBoundingClientRect();
+    // reset transform from interaction
     if (target.style.transform) {
       target.style.transform = `translate(0px, ${target.getAttribute('data-y')}px)`;
       target.setAttribute('data-x', '0');
     }
     const parentRect = target.parentElement!.getBoundingClientRect();
     const margin = 5;
+    // check on which side more space
     let moveLeft = targetRect.left - parentRect.left > parentRect.right - (checkRect.right + targetRect.width + margin);
+    // try different size if not first try
     moveLeft = changeSide ? !moveLeft : moveLeft;
     if (moveLeft) {
+      // move left
       target.style.left = `${checkRect.left - targetRect.width - margin}px`;
     } else {
+      // right
       target.style.left = `${checkRect.right + margin}px`;
     }
+    // always set right to auto to have correct window size
     target.style.right = 'auto';
   });
+  // reposition window to have it always on map
   target.interaction && target.interaction.reflow({name: 'drag', axis: 'xy'});
 }
 
@@ -70,12 +77,10 @@ function repositionOnOpen(target) {
   const observer = new MutationObserver(((mutationsList) => {
     if (mutationsList[0].attributeName === 'hidden' && !target.hidden) {
       let overlapList: DOMRect[] = checkForOverlap(target);
-      let counter = 0;
-      while (overlapList.length !== 0) {
-        counter++;
-        moveWindow(target, overlapList, counter % 2 === 0);
+      for (let i = 1; i <= 10; i++) {
+        moveWindow(target, overlapList, i % 2 === 0);
         overlapList = checkForOverlap(target);
-        if (counter === 10) break;
+        if (overlapList.length === 0) break;
       }
     }
   }));
