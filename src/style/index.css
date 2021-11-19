@@ -56,6 +56,8 @@
 @import 'ngm-geometry-info.css';
 @import 'ngm-input.css';
 @import 'ngm-share-link.css';
+@import 'ngm-dashboard.css';
+@import 'ngm-action-list-item.css';
 
 * {
   scrollbar-color: light;
@@ -368,7 +370,7 @@ ngm-layer-legend-container > ngm-layer-legend {
 .ngm-cancel-btn.ui.button:hover,
 .ngm-action-btn.ui.button:hover {
   color: #357183;
-  background-color: var(--ngm-action-hover);
+  background-color: var(--ngm-hover);
 }
 
 .ngm-action-btn.ui.labeled.icon.button > .icon {

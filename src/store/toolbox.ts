@@ -19,6 +19,7 @@ export default class ToolboxStore {
   private static openedGeometryOptionsSubject = new BehaviorSubject<OpenedGeometryOptions | null>(null);
   private static sliceGeometrySubject = new BehaviorSubject<NgmGeometry | null | undefined>(null);
   private static geomActionSubject = new Subject<GeometryAction>();
+  private static syncSliceSubject = new Subject<void>();
 
   static get slicer(): BehaviorSubject<Slicer | null> {
     return this.slicerSubject;
@@ -26,6 +27,14 @@ export default class ToolboxStore {
 
   static setSlicer(value: Slicer): void {
     this.slicerSubject.next(value);
+  }
+
+  static get syncSlice(): Subject<void> {
+    return this.syncSliceSubject;
+  }
+
+  static nextSliceSync(): void {
+    this.syncSliceSubject.next();
   }
 
   static get geometryToCreate(): Subject<any> {

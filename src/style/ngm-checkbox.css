@@ -9,11 +9,11 @@
 }
 
 .ngm-checkbox.active {
-  color: #A83526
+  color: var(--ngm-action-hover)
 }
 
 .ngm-checkbox:hover {
-  color: #FF0000
+  color: var(--ngm-interaction-hover)
 }
 
 .ngm-checkbox > label {
@@ -26,7 +26,7 @@
 }
 
 .ngm-checkbox input:checked + .ngm-checkbox-icon {
-  background: #0B7285;
+  background: var(--ngm-interaction);
   border: 2px solid transparent;
 }
 
@@ -40,24 +40,24 @@
   display: block;
   position: relative;
   border-radius: 2px;
-  border: 2px solid #0B7285;
+  border: 2px solid var(--ngm-interaction);
   transition: all 0.5s ease;
 }
 
 .ngm-checkbox.active .ngm-checkbox-icon {
-  border-color: #A83526;
+  border-color: var(--ngm-action-hover);
 }
 
 .ngm-checkbox.active input:checked + .ngm-checkbox-icon {
-  background: #A83526;
+  background: var(--ngm-action-hover);
 }
 
 .ngm-checkbox:hover .ngm-checkbox-icon {
-  border-color: #FF0000;
+  border-color: var(--ngm-interaction-hover);
 }
 
 .ngm-checkbox:hover input:checked + .ngm-checkbox-icon {
-  background: #FF0000;
+  background: var(--ngm-interaction-hover);
 }
 
 .ngm-checkbox .ngm-checkbox-icon::before {

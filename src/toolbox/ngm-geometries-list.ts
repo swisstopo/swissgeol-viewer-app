@@ -71,11 +71,11 @@ export default class NgmGeometriesList extends LitElementI18n {
       <div class="ngm-geom-list">
         ${this.geometries.map((i) => {
           const disabled = this.disabledTypes.includes(i.type) || this.editingEnabled;
-          const hidden = !disabled && !i.show;
           const active = !disabled && this.selectedId === i.id;
+          const hidden = !disabled && !active && !i.show;
           return html`
-            <div class="ngm-geom-item ${classMap({active, disabled, hidden})}">
-              <div class="ngm-geom-header">
+            <div class="ngm-action-list-item ${classMap({active, disabled, hidden})}">
+              <div class="ngm-action-list-item-header">
                 <div
                   @click=${() => !disabled && this.dispatchEvent(new CustomEvent('geomclick', {detail: i}))}>
                   ${i.name}

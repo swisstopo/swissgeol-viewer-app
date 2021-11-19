@@ -167,7 +167,7 @@
   height: 24px;
   mask: url('./images/i_vector.svg') no-repeat center;
   -webkit-mask: url('./images/i_vector.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-line-draw-icon {
@@ -175,7 +175,7 @@
   height: 24px;
   mask: url('./images/i_line_draw.svg') no-repeat center;
   -webkit-mask: url('./images/i_line_draw.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-polygon-draw-icon {
@@ -183,7 +183,7 @@
   height: 24px;
   mask: url('./images/i_polygon_draw.svg') no-repeat center;
   -webkit-mask: url('./images/i_polygon_draw.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-point-draw-icon {
@@ -191,7 +191,7 @@
   height: 24px;
   mask: url('./images/i_point_draw.svg') no-repeat center;
   -webkit-mask: url('./images/i_point_draw.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-rectangle-draw-icon {
@@ -199,7 +199,7 @@
   height: 24px;
   mask: url('./images/i_rectangle_draw.svg') no-repeat center;
   -webkit-mask: url('./images/i_rectangle_draw.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-file-upload-icon {
@@ -207,7 +207,7 @@
   height: 24px;
   mask: url('./images/i_kml_gpx_upload.svg') no-repeat center;
   -webkit-mask: url('./images/i_kml_gpx_upload.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-file-download-icon {
@@ -215,7 +215,7 @@
   height: 24px;
   mask: url('./images/i_download_kml.svg') no-repeat center;
   -webkit-mask: url('./images/i_download_kml.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-info-icon {
@@ -223,7 +223,7 @@
   height: 24px;
   mask: url('./images/i_info.svg') no-repeat center;
   -webkit-mask: url('./images/i_info.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-action-menu-icon {
@@ -231,7 +231,7 @@
   height: 24px;
   mask: url('./images/i_action_menu.svg') no-repeat center;
   -webkit-mask: url('./images/i_action_menu.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-slicing-icon {
@@ -239,7 +239,7 @@
   height: 24px;
   mask: url('./images/i_slicing.svg') no-repeat center;
   -webkit-mask: url('./images/i_slicing.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-in-box-icon {
@@ -247,7 +247,7 @@
   height: 24px;
   mask: url('./images/i_box_inside.svg') no-repeat center;
   -webkit-mask: url('./images/i_box_inside.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-out-box-icon {
@@ -255,7 +255,7 @@
   height: 24px;
   mask: url('./images/i_box_outside.svg') no-repeat center;
   -webkit-mask: url('./images/i_box_outside.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-back-icon {
@@ -271,7 +271,7 @@
   height: 24px;
   mask: url('./images/i_slice_left.svg') no-repeat center;
   -webkit-mask: url('./images/i_slice_left.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-slice-right-icon {
@@ -279,7 +279,7 @@
   height: 24px;
   mask: url('./images/i_slice_right.svg') no-repeat center;
   -webkit-mask: url('./images/i_slice_right.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-upload-icon {
@@ -294,7 +294,7 @@
   height: 24px;
   mask: url('./images/i_extrusion.svg') no-repeat center;
   -webkit-mask: url('./images/i_extrusion.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-edit-icon {
@@ -302,7 +302,7 @@
   height: 24px;
   mask: url('./images/i_edit.svg') no-repeat center;
   -webkit-mask: url('./images/i_edit.svg') no-repeat center;
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-download-icon {
@@ -311,4 +311,12 @@
   mask: url('./images/i_download.svg') no-repeat center;
   -webkit-mask: url('./images/i_download.svg') no-repeat center;
   background-color: #495057;
+}
+
+.ngm-screenshot-icon {
+  width: 18px;
+  height: 18px;
+  mask: url('./images/i_screenshot.svg') no-repeat center;
+  -webkit-mask: url('./images/i_screenshot.svg') no-repeat center;
+  background-color: var(--ngm-interaction);
 }

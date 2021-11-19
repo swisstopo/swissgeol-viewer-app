@@ -1,0 +1,123 @@
+ngm-dashboard .ngm-panel-header,
+.ngm-proj-title,
+.ngm-proj-views-title {
+  margin-bottom: 12px;
+}
+
+.ngm-proj-views-title,
+.ngm-proj-title {
+  display: flex;
+  color: #212529;
+  font: normal normal bold 14px/20px Inter;
+}
+
+.ngm-proj-views-title > div:first-child {
+  margin-right: 15px;
+}
+
+.ngm-dashboard-tabs {
+  color: var(--ngm-interaction);
+  display: flex;
+}
+
+.ngm-dashboard-tabs > div:hover {
+  color: var(--ngm-interaction-hover);
+}
+
+.ngm-dashboard-tabs > div.active {
+  color: var(--ngm-interaction-active);
+}
+
+.ngm-dashboard-tabs > div:not(:last-child) {
+  margin-right: 24px;
+}
+
+.ngm-projects-list {
+  display: flex;
+}
+
+.ngm-projects-list > div:not(:last-child) {
+  margin-right: 16px;
+}
+
+.ngm-proj-preview {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  box-shadow: 2px 2px 2px #00000029;
+  border-radius: 8px;
+  width: 240px;
+  height: 228px;
+  cursor: pointer;
+}
+
+.ngm-proj-preview-img {
+  width: 240px;
+  height: 132px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+}
+
+.ngm-proj-preview-title {
+  background-color: var(--ngm-interaction-active);
+  width: 240px;
+  height: 32px;
+  color: white;
+  font: normal normal bold 14px/28px Inter;
+}
+
+.ngm-proj-preview-subtitle {
+  width: 100%;
+  height: calc(100% - 164px);
+  font: normal normal 500 14px/20px Inter;
+  color: #212529;
+}
+
+.ngm-proj-preview-subtitle,
+.ngm-proj-preview-title {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.ngm-proj-preview-subtitle span {
+  height: 70%;
+  display: block;
+  display: -webkit-box;
+  max-width: 224px;
+  margin: 0 auto;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+ngm-dashboard .ngm-divider {
+  margin-top: 16px;
+  margin-bottom: 19px;
+}
+
+.ngm-proj-information {
+  display: flex;
+}
+
+.ngm-proj-description {
+  margin-left: 28px;
+  font: normal normal 500 16px/24px Inter;
+  letter-spacing: 0.16px;
+  color: #4A5056;
+  width: 450px;
+}
+
+.ngm-proj-data {
+  margin-bottom: 16px;
+  font: normal normal 500 14px/20px Inter;
+  color: #212529;
+}
+
+.ngm-proj-description-title {
+  font: normal normal 500 12px/15px Inter;
+  letter-spacing: 0.41px;
+}

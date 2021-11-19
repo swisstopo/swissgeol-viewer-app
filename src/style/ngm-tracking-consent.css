@@ -6,7 +6,7 @@ ngm-tracking-consent {
 }
 
 ngm-tracking-consent .ui.card {
-  background-color: var(--ngm-action-hover);
+  background-color: var(--ngm-hover);
   color: #212529;
   box-shadow: 4px 4px 2px #00000029;
 }
@@ -23,7 +23,7 @@ ngm-tracking-consent .ui.card > .content a {
 
 ngm-tracking-consent .ui.button,
 ngm-tracking-consent .ui.button:hover {
-  background-color: #0b7285;
+  background-color: var(--ngm-interaction);
   color: #fff;
   text-shadow: none;
   background-image: none;

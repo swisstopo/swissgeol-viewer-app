@@ -3,13 +3,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import draggable from './draggable';
 import {DEFAULT_VIEW} from '../constants';
-import {
-  Cartesian3,
-  Entity,
-  Event, Matrix4,
-  Scene, Transforms,
-  Viewer
-} from 'cesium';
+import {Cartesian3, Cartographic, Entity, Event, Matrix4, Scene, Transforms, Viewer} from 'cesium';
 import {Interactable} from '@interactjs/types';
 import {classMap} from 'lit/directives/class-map.js';
 import {eastNorthUp, pickCenterOnMapOrObject} from '../cesiumutils';
@@ -18,6 +12,8 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import {showWarning} from '../notifications';
 import i18next from 'i18next';
 import {debounce} from '../utils';
+import {getTargetParam, syncTargetParam} from '../permalink';
+import MainStore from '../store/main';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
@@ -43,6 +39,11 @@ export class NgmNavTools extends LitElementI18n {
   });
   private moveRef = false;
 
+  constructor() {
+    super();
+    MainStore.syncTargetPoint.subscribe(() => this.syncPoint());
+  }
+
   updated() {
     if (this.viewer && !this.unlistenFromPostRender) {
       const scene: Scene = this.viewer.scene;
@@ -56,6 +57,7 @@ export class NgmNavTools extends LitElementI18n {
       });
       this.refIcon = this.viewer.entities.add(this.refIcon);
       this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+      this.syncPoint();
     }
   }
 
@@ -73,6 +75,12 @@ export class NgmNavTools extends LitElementI18n {
     }
     document.removeEventListener('pointerup', this.stopZoomFunction);
     super.disconnectedCallback();
+  }
+
+  syncPoint() {
+    const initialTarget = getTargetParam();
+    if (!initialTarget) return;
+    this.toggleReference(initialTarget);
   }
 
   startZoomIn(event) {
@@ -99,9 +107,10 @@ export class NgmNavTools extends LitElementI18n {
     this.viewer.camera.flyTo(DEFAULT_VIEW);
   }
 
-  toggleReference() {
+  toggleReference(forcePosition?) {
     if (!this.eventHandler) return;
-    if (this.showRefPoint) {
+    let position: Cartesian3 | undefined = forcePosition;
+    if (this.showRefPoint && !forcePosition) {
       this.eventHandler.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
       this.eventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOWN);
       this.eventHandler.removeInputAction(ScreenSpaceEventType.LEFT_UP);
@@ -110,13 +119,14 @@ export class NgmNavTools extends LitElementI18n {
       this.eventHandler.setInputAction(debounce(event => this.onMouseMove(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
       this.eventHandler.setInputAction(event => this.onLeftDown(event), ScreenSpaceEventType.LEFT_DOWN);
       this.eventHandler.setInputAction(() => this.onLeftUp(), ScreenSpaceEventType.LEFT_UP);
-      const position = pickCenterOnMapOrObject(this.viewer!.scene);
+      position = position || pickCenterOnMapOrObject(this.viewer!.scene);
       if (!position) {
         showWarning(i18next.t('nav_tools_out_glob_warn'));
         return;
       }
       this.addTargetPoint(position, true);
     }
+    syncTargetParam(position && Cartographic.fromCartesian(position));
   }
 
   addTargetPoint(center: Cartesian3, lookAtTransform = false) {
@@ -194,7 +204,7 @@ export class NgmNavTools extends LitElementI18n {
              @click=${() => this.dispatchEvent(new CustomEvent('togglecamconfig'))}>
         </div>
         <div class="ngm-coords-icon ${classMap({'ngm-active-icon': this.showRefPoint})}"
-             @click=${this.toggleReference}>
+             @click=${() => this.toggleReference()}>
         </div>
       </div>
       <div class="ngm-drag-area">

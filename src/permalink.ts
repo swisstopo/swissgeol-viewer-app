@@ -3,14 +3,19 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 
 import {getURLSearchParams, parseJson, setURLSearchParams} from './utils';
 import {
+  ASSET_IDS_URL_PARAM,
+  ATTRIBUTE_KEY_PARAM,
+  ATTRIBUTE_VALUE_PARAM,
   LAYERS_TRANSPARENCY_URL_PARAM,
   LAYERS_URL_PARAM,
   LAYERS_VISIBILITY_URL_PARAM,
-  ASSET_IDS_URL_PARAM,
-  MAP_URL_PARAM,
   MAP_TRANSPARENCY_URL_PARAM,
-  ATTRIBUTE_KEY_PARAM, ATTRIBUTE_VALUE_PARAM, ZOOM_TO_PARAM, SLICE_PARAM
+  MAP_URL_PARAM,
+  SLICE_PARAM,
+  TARGET_PARAM,
+  ZOOM_TO_PARAM
 } from './constants';
+import {Cartographic} from 'cesium';
 
 export function getCameraView() {
   let destination;
@@ -77,13 +82,14 @@ export function getAssetIds() {
 
 export function syncLayersParam(activeLayers) {
   const params = getURLSearchParams();
-  const layerNames = [];
-  const layersTransparency = [];
-  const layersVisibility = [];
+  const layerNames: string[] = [];
+  const layersTransparency: string[] = [];
+  const layersVisibility: boolean[] = [];
   activeLayers.forEach(l => {
     if (!l.customAsset) {
       layerNames.push(l.layer);
-      layersTransparency.push(isNaN(l.opacity) ? 0 : (1 - l.opacity).toFixed(2));
+      const transparency = isNaN(l.opacity) ? 0 : (1 - l.opacity);
+      layersTransparency.push(transparency.toFixed(2));
       layersVisibility.push(l.visible);
     }
   });
@@ -159,7 +165,7 @@ export function getZoomToPosition() {
   return {longitude: Number(position[0]), latitude: Number(position[1]), height: Number(position[2])};
 }
 
-export function syncSliceParam(sliceOptions) {
+export function syncSliceParam(sliceOptions?) {
   const params = getURLSearchParams();
   if (sliceOptions) {
     params.set(SLICE_PARAM, JSON.stringify(sliceOptions));
@@ -176,4 +182,24 @@ export function getSliceParam() {
     sliceOptions.slicePoints = sliceOptions.slicePoints.map(coord => new Cartesian3(coord.x, coord.y, coord.z));
   }
   return sliceOptions;
+}
+
+export function syncTargetParam(position: Cartographic | undefined) {
+  const params = getURLSearchParams();
+  if (position) {
+    params.set(TARGET_PARAM, JSON.stringify({
+      lon: Math.toDegrees(position.longitude).toFixed(5),
+      lat: Math.toDegrees(position.latitude).toFixed(5),
+      height: position.height
+    }));
+  } else {
+    params.delete(TARGET_PARAM);
+  }
+  setURLSearchParams(params);
+}
+
+export function getTargetParam(): Cartesian3 | undefined {
+  const params = getURLSearchParams();
+  const position = parseJson(params.get(TARGET_PARAM));
+  return position && Cartesian3.fromDegrees(Number(position.lon), Number(position.lat), Number(position.height));
 }

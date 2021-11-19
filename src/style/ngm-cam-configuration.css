@@ -15,7 +15,7 @@ ngm-cam-configuration {
 }
 
 .ngm-cam-container > div > div:first-child {
-  background-color: #0B7285;
+  background-color: var(--ngm-interaction);
   cursor: pointer;
 }
 
@@ -68,7 +68,7 @@ ngm-cam-configuration {
   box-shadow: 0 3px 4px #00000029;
 }
 .ngm-cam-coord .ui.dropdown .menu .item:hover {
-  background-color: var(--ngm-action-hover);
+  background-color: var(--ngm-hover);
 }
 
 .ngm-cam-conf-slider,

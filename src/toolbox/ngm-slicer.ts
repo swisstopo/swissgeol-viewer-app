@@ -15,6 +15,7 @@ import {NgmGeometry} from './interfaces';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
+import {skip} from 'rxjs';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
@@ -33,27 +34,15 @@ export class NgmSlicer extends LitElementI18n {
     ToolboxStore.slicer.subscribe(slicer => {
       if (!slicer) return;
       this.slicer = slicer;
-      const sliceOptions = getSliceParam();
-      if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
-        this.showBox = sliceOptions.showBox;
-        this.negateSlice = sliceOptions.negate;
-        this.slicer!.sliceOptions = {
-          ...this.slicer!.sliceOptions, ...sliceOptions,
-          syncBoxPlanesCallback: (sliceInfo) => this.syncSliceInfo(sliceInfo),
-          deactivationCallback: () => this.onDeactivation()
-        };
-        if (sliceOptions.type === 'view-line') {
-          this.slicer.sliceOptions.activationCallback = () => this.syncSliceInfo(sliceOptions);
-        }
-        this.slicer!.active = true;
-      }
+      this.syncSlice();
     });
-    ToolboxStore.sliceGeometry.subscribe(geom => this.toggleGeomSlicer(geom));
+    ToolboxStore.sliceGeometry.pipe(skip(1)).subscribe(geom => this.toggleGeomSlicer(geom));
     ToolboxStore.openedGeometryOptions.subscribe(options => {
       this.editingEnabled = !!(options?.editing);
       if (this.editingEnabled && this.slicer?.active)
         this.toggleSlicer();
     });
+    ToolboxStore.syncSlice.subscribe(() => this.syncSlice());
   }
 
   protected update(changedProperties) {
@@ -62,13 +51,24 @@ export class NgmSlicer extends LitElementI18n {
     super.update(changedProperties);
   }
 
-  toggleSlicer(type?, info?) {
+  syncSlice() {
+    const sliceOptions = getSliceParam();
+    if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
+      this.showBox = sliceOptions.showBox;
+      this.negateSlice = sliceOptions.negate;
+      this.toggleSlicer(sliceOptions.type, sliceOptions, true);
+    } else if (this.slicingEnabled) {
+      this.toggleSlicer();
+    }
+  }
+
+  toggleSlicer(type?, info?, force?) {
     if (!this.slicer) return;
     const active = this.slicer.active;
-    const boxOptionChanged = this.slicingType !== type;
+    const sliceOptionChanged = this.slicingType !== type;
     this.slicer.active = false;
     if (!type) return;
-    if (!active || boxOptionChanged) {
+    if (force || !active || sliceOptionChanged) {
       this.slicer.sliceOptions = {
         type: type,
         showBox: this.showBox,
@@ -219,12 +219,12 @@ export class NgmSlicer extends LitElementI18n {
           <div class=${classMap({active: !this.negateSlice})}
                @click=${() => this.changeSliceSide(false, options.geom)}>
             <div class=${type.includes('box') ? 'ngm-out-box-icon' : 'ngm-slice-left-icon'}></div>
-            ${i18next.t(type.includes('box') ? 'tbx_slice_outside_label' : 'tbx_slice_left_label')}
+            ${type.includes('box') ? i18next.t('tbx_slice_outside_label') : i18next.t('tbx_slice_left_label')}
           </div>
           <div class=${classMap({active: this.negateSlice})}
                @click=${() => this.changeSliceSide(true, options.geom)}>
             <div class=${type.includes('box') ? 'ngm-in-box-icon' : 'ngm-slice-right-icon'}></div>
-            ${i18next.t(type.includes('box') ? 'tbx_slice_inside_label' : 'tbx_slice_right_label')}
+            ${type.includes('box') ? i18next.t('tbx_slice_inside_label') : i18next.t('tbx_slice_right_label')}
           </div>
         </div>
         <div ?hidden=${type.includes('line')}
@@ -249,18 +249,21 @@ export class NgmSlicer extends LitElementI18n {
     if (!this.slicer) return '';
     return html`
       <div class="ngm-slice-types ${classMap({disabled: this.editingEnabled})}">
-        <div class="ngm-slice-item ${classMap({active: !this.slicingEnabled})}" @click=${() => this.toggleSlicer()}>
-          <div class="ngm-slice-label">${i18next.t('tbx_disable_slice_btn_label')}</div>
+        <div class="ngm-action-list-item ${classMap({active: !this.slicingEnabled})}"
+             @click=${() => this.toggleSlicer()}>
+          <div class="ngm-action-list-item-header">
+            <div>${i18next.t('tbx_disable_slice_btn_label')}</div>
+          </div>
         </div>
-        <div class="ngm-slice-item ${classMap({active: this.slicingType === 'view-box'})}">
-          <div class="ngm-slice-label" @click=${() => this.toggleSlicer('view-box')}>
-            ${i18next.t('tbx_slice_box')}
+        <div class="ngm-action-list-item ${classMap({active: this.slicingType === 'view-box'})}">
+          <div class="ngm-action-list-item-header" @click=${() => this.toggleSlicer('view-box')}>
+            <div>${i18next.t('tbx_slice_box')}</div>
           </div>
           ${this.sliceOptionsTemplate({type: 'view-box'})}
         </div>
-        <div class="ngm-slice-item ${classMap({active: this.slicingType === 'view-line'})}">
-          <div class="ngm-slice-label" @click=${() => this.toggleSlicer('view-line')}>
-            ${i18next.t('tbx_slice_line')}
+        <div class="ngm-action-list-item ${classMap({active: this.slicingType === 'view-line'})}">
+          <div class="ngm-action-list-item-header" @click=${() => this.toggleSlicer('view-line')}>
+            <div>${i18next.t('tbx_slice_line')}</div>
           </div>
           ${this.sliceOptionsTemplate({type: 'view-line'})}
         </div>

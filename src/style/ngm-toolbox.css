@@ -22,98 +22,46 @@ ngm-slicer {
   margin-left: 12px;
 }
 
-.ngm-geom-header .ngm-action-menu-icon:hover,
 .ngm-slice-side > div:hover > div:nth-child(1),
 .ngm-draw-list-item:hover div:nth-child(1),
 .ngm-tools-list-item:hover div:nth-child(1) {
-  background-color: #FF0000;
+  background-color: var(--ngm-interaction-hover);
 }
 
-.ngm-slice-types > .ngm-slice-item:nth-child(1) {
+.ngm-slice-types > .ngm-action-list-item:nth-child(1) {
   margin-top: 12px;
   height: 36px;
 }
 
-.ngm-slice-item,
-.ngm-geom-item {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  justify-content: center;
-  background-color: #F8F9FA;
-  color: #0B7285;
-  height: 36px;
-  font: normal normal bold 14px/20px Inter;
-  padding: 10px 8px;
-  margin-bottom: 4px;
-  width: 230px;
-}
-
-.ngm-geom-header {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.ngm-geom-header > div:nth-child(1) {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  cursor: pointer;
-}
-
 .ngm-draw-list-item:hover,
 .ngm-tools-list-item:hover,
-.ngm-slice-side > div:hover,
-.ngm-slice-item:hover > .ngm-slice-label,
-.ngm-geom-header > div:nth-child(1):hover {
-  color: #FF0000;
+.ngm-slice-side > div:hover  {
+  color: var(--ngm-interaction-hover);
 }
 
 .ngm-slice-side > div.active,
-.ngm-slice-item.active > .ngm-slice-label,
-.ngm-geom-item.active > .ngm-geom-header,
 .ngm-draw-list-item.active {
-  color: #A83526;
+  color: var(--ngm-action-hover);
 }
 
-.ngm-slice-label {
-  width: 100%;
-  cursor: pointer;
-}
-
-ngm-slicer .ngm-geom-item.active,
-.ngm-slice-item.active {
+ngm-slicer .ngm-action-list-item.active {
   height: auto;
 }
 
-.ngm-geom-actions > div.disabled,
-.ngm-draw-list-item.disabled > div:first-child,
-.ngm-geom-item.disabled .ngm-action-menu-icon {
+.ngm-draw-list-item.disabled > div:first-child {
   background-color: #868E96 !important;
 }
 
-.ngm-geom-item.hidden,
-.ngm-slice-types.disabled > .ngm-slice-item,
-.ngm-geom-actions > div.disabled,
-.ngm-draw-list-item.disabled,
-.ngm-geom-item.disabled {
+.ngm-slice-types.disabled > .ngm-action-list-item,
+.ngm-draw-list-item.disabled {
   cursor: default;
   pointer-events: none;
   color: #868E96 !important;
 }
 
-.ngm-geom-item.hidden .ngm-action-menu {
-  pointer-events: auto;
-}
-
-.ngm-geom-item.disabled {
-  background-color: #F8F9FA;
-}
-
 .ngm-slice-to-draw,
 .ngm-draw-hint {
-  background-color: var(--ngm-action-hover);
+  background-color: var(--ngm-hover);
   color: #212529;
   box-shadow: 4px 4px 2px #00000029;
   font: normal normal bold 14px/20px Inter;
@@ -132,7 +80,7 @@ ngm-slicer .ngm-geom-item.active,
 
 .ngm-slice-side > div.active > div:nth-child(1),
 .ngm-draw-list-item.active div:nth-child(1) {
-  background-color: #A83526;
+  background-color: var(--ngm-action-hover);
 }
 
 .ngm-draw-hint > .ngm-info-icon {
@@ -163,7 +111,7 @@ ngm-slicer .ui.button.ngm-transform-btn {
   display: flex;
   margin-left: auto;
   height: 36px;
-  background-color: #0b7285;
+  background-color: var(--ngm-interaction);
   box-shadow: 0 1px 3px #00000033;
   color: #fff;
   vertical-align: middle;
