@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import draggable from './draggable.js';
+import draggable from './draggable.ts';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 

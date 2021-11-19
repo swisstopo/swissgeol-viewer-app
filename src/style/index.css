@@ -280,6 +280,7 @@ ngm-layer-legend-container > ngm-layer-legend {
   position: absolute;
   z-index: 2;
   top: 98px;
+  right: 75px;
   padding: 10px 12px 8px 12px;
 }
 

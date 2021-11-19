@@ -3,7 +3,6 @@ ngm-geometry-info {
   max-height: calc(100vh - 100px);
   display: flex;
   flex-direction: column;
-  left: 340px;
 }
 
 ngm-geometry-info > .ngm-drag-area {
