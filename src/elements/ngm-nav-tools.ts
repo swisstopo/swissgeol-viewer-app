@@ -140,7 +140,6 @@ export class NgmNavTools extends LitElementI18n {
       cam.lookAtTransform(transform);
     }
     document.addEventListener('keydown', this.ctrlListener);
-
   }
 
   removeTargetPoint() {
@@ -182,6 +181,7 @@ export class NgmNavTools extends LitElementI18n {
       const position = this.viewer!.scene.pickPosition(event.endPosition);
       if (!position) return;
       this.addTargetPoint(position);
+      syncTargetParam(Cartographic.fromCartesian(position));
       this.viewer!.scene.requestRender();
     } else {
       const pickedObject = this.viewer!.scene.pick(event.endPosition);
