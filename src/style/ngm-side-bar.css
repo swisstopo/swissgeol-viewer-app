@@ -69,7 +69,7 @@ ngm-auth:hover {
   padding: 10px;
   position: absolute;
   margin-left: 80px;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   flex-direction: column;
 }
@@ -173,5 +173,5 @@ ngm-auth:hover {
 }
 
 .ngm-side-bar-panel.ngm-layer-catalog {
-  z-index: 2;
+  z-index: 4;
 }
