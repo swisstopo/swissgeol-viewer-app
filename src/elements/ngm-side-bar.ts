@@ -1,10 +1,10 @@
 import {html} from 'lit';
-import {LitElementI18n, setupI18n} from '../i18n.js';
+import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
 import '../layers/ngm-catalog';
 import LayersActions from '../layers/LayersActions';
-import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
+import {DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
 import defaultLayerTree from '../layertree';
 import {getAssetIds, getAttribute, getLayerParams, getSliceParam, syncLayersParam} from '../permalink.js';
 import {createCesiumObject} from '../layers/helpers';
@@ -43,7 +43,6 @@ export class SideBar extends LitElementI18n {
   private zoomedToPosition = false;
   private accordionInited = false;
   private shareListenerAdded = false;
-  private langInited = false;
   private shareDownListener = evt => {
     if (!evt.path.includes(this)) this.activePanel = null;
   };
@@ -151,7 +150,11 @@ export class SideBar extends LitElementI18n {
         </div>
         <div class="language-settings">
           <label>${i18next.t('lsb_langs')}</label>
-          <div id="langs" class="ui horizontal selection list"></div>
+          <div id="langs" class="ui horizontal selection list">
+            ${SUPPORTED_LANGUAGES.map(lang => html`
+              <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
+              `)}
+          </div>
         <div>
       </div>
       <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
@@ -328,11 +331,6 @@ export class SideBar extends LitElementI18n {
           this.accordionInited = true;
         }
       }
-    }
-
-    if (this.querySelector('#langs') && !this.langInited) {
-      setupI18n();
-      this.langInited = true;
     }
 
     super.updated(changedProperties);

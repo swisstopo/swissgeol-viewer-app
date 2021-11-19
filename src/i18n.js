@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import locI18next from 'loc-i18next';
 import Backend from 'i18next-xhr-backend';
-import {html, LitElement, render} from 'lit';
+import {LitElement} from 'lit';
 import {SUPPORTED_LANGUAGES} from './constants';
 import {getURLSearchParams, setURLSearchParams} from './utils';
 
@@ -71,10 +71,6 @@ export function setupI18n() {
     document.documentElement.lang = lang;
     localize('[data-i18n]');
   });
-  const templates = SUPPORTED_LANGUAGES.map(lang => html`
-    <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
-  `);
-  render(templates, document.getElementById('langs'));
   return promise;
 }
 

@@ -22,6 +22,8 @@ import {getCameraView, syncCamera} from './permalink.js';
 import i18next from 'i18next';
 import {getZoomToPosition} from './permalink';
 import Slicer from './slicer/Slicer';
+
+import {setupI18n} from './i18n.js';
 import QueryManager from './query/QueryManager';
 
 import {initAnalytics} from './analytics.js';
@@ -149,6 +151,7 @@ export class NgmApp extends LitElementI18n {
   }
 
   firstUpdated() {
+    setupI18n();
     const cesiumContainer = this.querySelector('#cesium')!;
     const viewer = setupViewer(cesiumContainer, isLocalhost);
     this.viewer = viewer;
