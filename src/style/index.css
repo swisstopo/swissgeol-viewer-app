@@ -357,6 +357,11 @@ ngm-layer-legend-container > ngm-layer-legend {
   right: 11px;
 }
 
+.ngm-action-menu.ui.dropdown .menu .item {
+  max-width: 191px;
+  white-space: normal;
+}
+
 .ngm-action-menu.ui.dropdown .menu .item:hover {
   background-color: #C5F6FA;
 }

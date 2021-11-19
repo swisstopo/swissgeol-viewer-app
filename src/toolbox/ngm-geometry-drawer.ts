@@ -41,7 +41,8 @@ import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
-import {AreasCounter, NgmGeometry, SwissforagesModalOptions} from './interfaces';
+import {AreasCounter, GeometryTypes, NgmGeometry, SwissforagesModalOptions} from './interfaces';
+import {getValueOrUndefined} from '../cesiumutils';
 
 const fileUploadInputId = 'fileUpload';
 const DEFAULT_SWISSFORAGES_MODAL_OPTIONS = {
@@ -216,6 +217,13 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   private showHideGeom(id, show) {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (entity) entity.show = show;
+  }
+
+  private showHideGeomByType(show: boolean, type?: GeometryTypes) {
+    this.geometriesDataSource!.entities.values.forEach(entity => {
+      if (!type || getValueOrUndefined(entity.properties!.type) === type)
+        entity.show = show;
+    });
   }
 
   private removeGeom(id) {
@@ -507,6 +515,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         break;
       case 'copy':
         this.copyGeometry(options.id);
+        break;
+      case 'hideAll':
+      case 'showAll':
+        this.showHideGeomByType(options.action === 'showAll', options.type);
     }
   }
 

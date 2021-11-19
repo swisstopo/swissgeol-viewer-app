@@ -16,7 +16,7 @@ ngm-camera-information .ngm-nci-value {
 }
 
 .ngm-nci-height {
-  min-width: 6em;
+  min-width: 88px;
 }
 
 .ngm-nci-position {
@@ -31,7 +31,6 @@ ngm-camera-information .ngm-nci-value {
 
 .ngm-nci-direction > div:nth-child(2) {
   text-align: end;
-  margin-left: 20px;
 }
 
 ngm-camera-information > img {

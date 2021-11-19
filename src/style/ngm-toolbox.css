@@ -35,7 +35,7 @@ ngm-slicer {
 
 .ngm-draw-list-item:hover,
 .ngm-tools-list-item:hover,
-.ngm-slice-side > div:hover  {
+.ngm-slice-side > div:hover {
   color: var(--ngm-interaction-hover);
 }
 
@@ -125,6 +125,26 @@ ngm-slicer .ui.button.ngm-transform-btn:hover {
 
 ngm-slicer .ngm-divider {
   margin-top: 12px;
+}
+
+.ngm-geom-filter.ngm-action-list-item {
+  background-color: #f1f3f5;
+}
+
+.ngm-geom-filter.ngm-action-list-item .ngm-action-list-item-header > div:first-child {
+  width: auto;
+}
+
+.ngm-geom-filter.ngm-action-list-item .ngm-action-list-item-header > div:not(:first-child, :last-child):hover {
+  background-color: var(--ngm-interaction-hover);
+}
+
+.ngm-geom-filter.ngm-action-list-item .ngm-action-list-item-header > div:not(:first-child, :last-child).active {
+  background-color: var(--ngm-interaction-active);
+}
+
+.ngm-geom-filter.ngm-action-list-item .ngm-action-list-item-header > div:first-child.active {
+  color: var(--ngm-interaction-active);
 }
 
 
