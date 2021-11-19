@@ -135,7 +135,7 @@ export class SideBar extends LitElementI18n {
           </div>
         </div>
       </div>
-      <ngm-dashboard .hidden=${this.activePanel !== 'dashboard'} @close=${() => this.activePanel = ''}
+      <ngm-dashboard ?hidden=${this.activePanel !== 'dashboard'} @close=${() => this.activePanel = ''}
                      class="ngm-side-bar-panel ngm-large-panel"></ngm-dashboard>
       <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-layer-catalog">
         <div class="ngm-panel-header">${i18next.t('lyr_geocatalog_label')}

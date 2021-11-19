@@ -116,3 +116,8 @@ ngm-dashboard .ngm-divider {
   font: normal normal 500 14px/20px Inter;
   color: #212529;
 }
+
+.ngm-proj-description-title {
+  font: normal normal 500 12px/15px Inter;
+  letter-spacing: 0.41px;
+}

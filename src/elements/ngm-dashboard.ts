@@ -1,22 +1,32 @@
 import {LitElementI18n} from '../i18n';
-import {customElement, state} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import i18next from 'i18next';
 import {styleMap} from 'lit/directives/style-map.js';
-import {SHOWCASE_PROJECTS} from '../constants';
 import {classMap} from 'lit-html/directives/class-map.js';
 import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
-import {getCameraView} from '../permalink';
+import {getCameraView, syncTargetParam} from '../permalink';
 
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
+  @property({type: Boolean}) hidden = true;
   @state() activeTab: 'dashboard' | 'project' = 'dashboard';
   @state() selectedProject: any | undefined;
+  @state() projects: any | undefined;
+
+  async update(changedProperties) {
+    if (!this.hidden && !this.projects) {
+      this.projects = await (await fetch('./src/sampleData/showcase_projects.json')).json();
+    }
+    super.update(changedProperties);
+  }
 
   selectView(permalink) {
     const viewer = MainStore.viewerValue;
     if (!viewer) return;
+    syncTargetParam(undefined);
+    MainStore.nextTargetPointSync();
     this.dispatchEvent(new CustomEvent('close'));
     const url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${permalink}`;
     window.history.pushState({path: url}, '', url);
@@ -30,6 +40,7 @@ export class NgmDashboard extends LitElementI18n {
         orientation: orientation,
         duration: 3
       });
+    MainStore.nextTargetPointSync();
   }
 
   previewTemplate(data) {
@@ -84,6 +95,7 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   render() {
+    if (!this.projects) return '';
     return html`
       <div class="ngm-panel-header">
         <div class="ngm-dashboard-tabs">
@@ -103,7 +115,7 @@ export class NgmDashboard extends LitElementI18n {
       <div ?hidden=${this.selectedProject}>
         <div class="ngm-proj-title">${i18next.t('dashboard_recent_swisstopo')}</div>
         <div class="ngm-projects-list">
-          ${SHOWCASE_PROJECTS.map(data => this.previewTemplate(data))}
+          ${this.projects.map(data => this.previewTemplate(data))}
         </div>
       </div>
       <div ?hidden=${!this.selectedProject}>

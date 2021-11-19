@@ -12,8 +12,10 @@ import {
   MAP_TRANSPARENCY_URL_PARAM,
   MAP_URL_PARAM,
   SLICE_PARAM,
+  TARGET_PARAM,
   ZOOM_TO_PARAM
 } from './constants';
+import {Cartographic} from 'cesium';
 
 export function getCameraView() {
   let destination;
@@ -180,4 +182,24 @@ export function getSliceParam() {
     sliceOptions.slicePoints = sliceOptions.slicePoints.map(coord => new Cartesian3(coord.x, coord.y, coord.z));
   }
   return sliceOptions;
+}
+
+export function syncTargetParam(position: Cartographic | undefined) {
+  const params = getURLSearchParams();
+  if (position) {
+    params.set(TARGET_PARAM, JSON.stringify({
+      lon: Math.toDegrees(position.longitude).toFixed(5),
+      lat: Math.toDegrees(position.latitude).toFixed(5),
+      height: position.height
+    }));
+  } else {
+    params.delete(TARGET_PARAM);
+  }
+  setURLSearchParams(params);
+}
+
+export function getTargetParam(): Cartesian3 | undefined {
+  const params = getURLSearchParams();
+  const position = parseJson(params.get(TARGET_PARAM));
+  return position && Cartesian3.fromDegrees(Number(position.lon), Number(position.lat), Number(position.height));
 }

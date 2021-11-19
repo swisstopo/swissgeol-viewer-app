@@ -7,6 +7,7 @@ export default class MainStore {
   private static mapChooserSubject = new BehaviorSubject<MapChooser | null>(null);
   private static syncLayersSubject = new Subject<void>();
   private static syncMapSubject = new Subject<void>();
+  private static syncTargetPointSubject = new Subject<void>();
 
   static get viewer(): BehaviorSubject<Viewer | null> {
     return this.viewerSubject;
@@ -42,6 +43,14 @@ export default class MainStore {
 
   static nextMapSync() {
     this.syncMapSubject.next();
+  }
+
+  static get syncTargetPoint() {
+    return this.syncTargetPointSubject;
+  }
+
+  static nextTargetPointSync() {
+    this.syncTargetPointSubject.next();
   }
 
 }
