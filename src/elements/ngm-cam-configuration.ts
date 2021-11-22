@@ -111,7 +111,7 @@ export class NgmCamConfiguration extends LitElementI18n {
     this.pitch = CesiumMath.toDegrees(camera.pitch);
     const heading = CesiumMath.toDegrees(camera.heading);
     this.heading = heading > 180 ? heading - 360 : heading;
-    const radToDeg = rad => Math.round(100 * rad * 180 / Math.PI) / 100;
+    const radToDeg = rad => (Math.round(100000 * rad * 180 / Math.PI) / 100000).toFixed(5);
     this.coordinates = {
       lv95: formatCartographicAs2DLv95(pc),
       wgs84: [pc.longitude, pc.latitude].map(radToDeg)
