@@ -15,7 +15,7 @@ export default {
 
 const someCoordinates = {
   lv95: ['2’489’448', '848’116'],
-  wgs84: [6.07, 43.78],
+  wgs84: [6.07345, 43.78234],
 };
 
 function whenReady(partial) {
