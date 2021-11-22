@@ -2,7 +2,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 
 import {LitElementI18n} from '../i18n.js';
-import {setCameraHeight} from '../cesiumutils.js';
+import {setCameraHeight} from '../cesiumutils';
 
 import CesiumMath from 'cesium/Source/Core/Math';
 import {styleMap} from 'lit/directives/style-map.js';

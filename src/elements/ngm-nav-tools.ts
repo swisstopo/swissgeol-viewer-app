@@ -3,7 +3,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import draggable from './draggable';
 import {DEFAULT_VIEW} from '../constants';
-import {Cartesian3, Cartographic, Entity, Event, Matrix4, Scene, Transforms, Viewer} from 'cesium';
+import {Cartesian3, Cartographic, Entity, Event, JulianDate, Matrix4, Scene, Transforms, Viewer} from 'cesium';
 import {Interactable} from '@interactjs/types';
 import {classMap} from 'lit/directives/class-map.js';
 import {eastNorthUp, pickCenterOnMapOrObject} from '../cesiumutils';
@@ -159,10 +159,7 @@ export class NgmNavTools extends LitElementI18n {
   onLeftDown(event) {
     const pickedObject = this.viewer!.scene.pick(event.position);
     if (pickedObject && pickedObject.id && pickedObject.id.id === this.refIcon.id) {
-      this.viewer!.scene.screenSpaceCameraController.enableInputs = false;
-      this.eventHandler!.setInputAction(event => this.onMouseMove(event), ScreenSpaceEventType.MOUSE_MOVE);
-      this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
-      this.viewer!.trackedEntity = undefined;
+      this.stopTracking();
       this.moveRef = true;
     }
   }
@@ -170,10 +167,25 @@ export class NgmNavTools extends LitElementI18n {
   onLeftUp() {
     if (!this.moveRef) return;
     this.moveRef = false;
+    this.continueTracking();
+  }
+
+  stopTracking() {
+    console.log('stop');
+    this.viewer!.scene.screenSpaceCameraController.enableInputs = false;
+    this.eventHandler!.setInputAction(event => this.onMouseMove(event), ScreenSpaceEventType.MOUSE_MOVE);
+    this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
+    this.viewer!.trackedEntity = undefined;
+  }
+
+  continueTracking() {
+    console.log('continueTracking');
+    this.addTargetPoint(this.refIcon.position!.getValue(new JulianDate()));
     this.viewer!.trackedEntity = this.refIcon;
     this.viewer!.scene.screenSpaceCameraController.enableInputs = true;
     // for better performance
     this.eventHandler!.setInputAction(debounce(event => this.onMouseMove(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
+    this.viewer!.scene.requestRender();
   }
 
   onMouseMove(event) {

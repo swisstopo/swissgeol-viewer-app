@@ -1,4 +1,4 @@
-import {setCameraHeight} from './cesiumutils.js';
+import {setCameraHeight} from './cesiumutils.ts';
 
 export default class LimitCameraHeightToDepth {
   /**

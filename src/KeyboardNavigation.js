@@ -1,4 +1,4 @@
-import {setCameraHeight, verticalDirectionRotate} from './cesiumutils.js';
+import {setCameraHeight, verticalDirectionRotate} from './cesiumutils.ts';
 
 /**
  * @typedef {Object} Options

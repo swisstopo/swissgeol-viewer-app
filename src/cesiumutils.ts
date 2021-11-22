@@ -1,4 +1,5 @@
 import {
+  Camera,
   Cartesian2,
   Cartesian3,
   Cartographic,
@@ -14,16 +15,18 @@ import {
   Transforms
 } from 'cesium';
 import {degreesToLv95} from './projection.js';
+import {debounce} from './utils';
+import {NgmGeometry} from './toolbox/interfaces';
+import {NgmNavTools} from './elements/ngm-nav-tools';
 
 const julianDate = new JulianDate();
 
-/**
- * @param {import('cesium/Source/Scene/Camera').default} camera
- * @param {number} height Camera height in meters.
- */
-export function setCameraHeight(camera, height) {
+export function setCameraHeight(camera: Camera, height: number) {
   const pc = camera.positionCartographic;
+  const navTools: NgmNavTools = document.querySelector('ngm-nav-tools')!;
+  navTools.stopTracking();
   camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, height);
+  debounce(() => navTools.continueTracking(), 500)();
 }
 
 /**
@@ -128,17 +131,17 @@ function getPolygonArea(positions, holes = []) {
 
 /**
  * Returns measurements for geometry
- * @param {Array<Cartesian3>} positions
- * @param {import('./draw/CesiumDraw').ShapeType} type
  */
 export function getMeasurements(positions, type) {
-  const distances = [];
+  const distances: number[] = [];
   positions.forEach((p, key) => {
     if (key > 0) {
       distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
     }
   });
-  const result = {
+  const result: NgmGeometry = {
+    positions: positions,
+    type: type,
     numberOfSegments: positions.length
   };
   let perimeter = distances.reduce((a, b) => a + b, 0);
@@ -201,7 +204,7 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType, useAlt
  * @param {boolean} assignBack assign value to initial position
  * @return {Array<Cartesian3>}
  */
-export function updateHeightForCartesianPositions(positions, height, scene, assignBack = false) {
+export function updateHeightForCartesianPositions(positions, height, scene?, assignBack = false) {
   return positions.map(p => {
     const cartographicPosition = Cartographic.fromCartesian(p);
     cartographicPosition.height = height;
