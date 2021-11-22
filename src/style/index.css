@@ -94,7 +94,7 @@ body {
 }
 
 /* FIXME: create a fomantic-ui build with the correct font */
-body, .ui.button, .ui.accordion .title:not(.ui), .ui.input > input {
+body, .ui.button, .ui.accordion .title:not(.ui), .ui.input > input, .ui.header {
   font-family: 'Inter', sans-serif;
 }
 
