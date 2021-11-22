@@ -23,6 +23,19 @@ import NavToolsStore from '../store/navTools';
 
 type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
 
+function heightToValue(height: number): number {
+  const m = 0.5 / (height < 0 ? 30000 : 300000);
+  return m * height + 0.5;
+}
+
+function valueToHeight(value: number): number {
+  if (value < 0.5) {
+    return (30000 / 0.5) * value - 30000;
+  } else {
+    return (300000 / 0.5) * value - 300000;
+  }
+}
+
 @customElement('ngm-cam-configuration')
 export class NgmCamConfiguration extends LitElementI18n {
   @property({type: Object}) viewer: Viewer | null = null;
@@ -47,13 +60,13 @@ export class NgmCamConfiguration extends LitElementI18n {
     {
       label: () => i18next.t('camera_position_height_label'),
       iconClass: () => classMap({'ngm-cam-h-icon': true, 'ngm-active-icon': this.lockType === 'elevation'}),
-      minValue: -30000,
-      maxValue: 30000,
-      step: 100,
-      style: () => this.getSliderStyle(this.elevation, 30000),
-      getValue: () => this.elevation,
+      minValue: 0,
+      maxValue: 1,
+      step: 'any',
+      style: () => this.getSliderStyle(heightToValue(this.elevation), 0, 1),
+      getValue: () => heightToValue(this.elevation),
       getValueLabel: () => `${this.integerFormat.format(this.elevation)} m`,
-      onChange: evt => this.updateHeight(Number(evt.target.value)),
+      onChange: evt => this.updateHeight(valueToHeight(Number(evt.target.value))),
       lock: () => this.toggleLock('elevation')
     },
     {
@@ -62,7 +75,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       minValue: -179,
       maxValue: 180,
       step: 1,
-      style: () => this.getSliderStyle(this.heading, 180),
+      style: () => this.getSliderStyle(this.heading, -179, 180),
       getValue: () => this.heading,
       getValueLabel: () => `${this.integerFormat.format(this.heading)}°`,
       onChange: (evt) => this.updateAngle(Number(evt.target.value)),
@@ -74,7 +87,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       minValue: -90,
       maxValue: 90,
       step: 1,
-      style: () => this.getSliderStyle(this.pitch, 90),
+      style: () => this.getSliderStyle(this.pitch, -90, 90),
       getValue: () => this.pitch,
       getValueLabel: () => `${this.integerFormat.format(this.pitch)}°`,
       onChange: (evt) => this.updatePitch(Number(evt.target.value)),
@@ -143,13 +156,16 @@ export class NgmCamConfiguration extends LitElementI18n {
     });
   }
 
-  getSliderStyle(value, maxValue) {
-    maxValue = value > 0 ? maxValue : -maxValue;
-    const perc = Math.round(value / maxValue * 100) / 2;
-    const side = value > 0 ? 'left' : 'right';
+  getSliderStyle(value: number, minValue: number, maxValue: number) {
+    const range = maxValue - minValue;
+    const valuePercent = Math.round((value - minValue) / range * 100);
+
+    const start = Math.min(50, valuePercent);
+    const stop = Math.max(50, valuePercent);
+
     return {
-      'background-image': `linear-gradient(to ${side}, white ${50 - perc}%, var(--ngm-interaction-active) 0, var(--ngm-interaction-active) 50%, white 50% )`
-    };
+      'background-image': `linear-gradient(to right, #fff ${start}%, var(--ngm-interaction-active) ${start}% ${stop}%, #fff ${stop}% 100%)`
+   };
   }
 
   toggleLock(type: LockType) {
