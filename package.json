@@ -28,8 +28,6 @@
     "@aws-sdk/credential-provider-cognito-identity": "^3.42.0",
     "@aws-sdk/s3-request-presigner": "^3.42.0",
     "@fontsource/inter": "^4.5.0",
-    "@geoblocks/cesium-compass": "0.3.0",
-    "@geoblocks/cesium-view-cube": "0.0.1",
     "@geoblocks/ga-search": "0.0.20",
     "@sentry/browser": "^6.14.0",
     "@webcomponents/webcomponentsjs": "^2.6.0",
