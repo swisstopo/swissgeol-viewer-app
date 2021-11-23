@@ -9,25 +9,15 @@ import {
   Matrix3,
   Matrix4,
   Plane,
-  PolygonPipeline,
   Rectangle,
   SceneTransforms,
   Transforms
 } from 'cesium';
+import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline.js';
 import {degreesToLv95} from './projection.js';
-import {debounce} from './utils';
 import {NgmGeometry} from './toolbox/interfaces';
-import {NgmNavTools} from './elements/ngm-nav-tools';
 
 const julianDate = new JulianDate();
-
-export function setCameraHeight(camera: Camera, height: number) {
-  const pc = camera.positionCartographic;
-  const navTools: NgmNavTools = document.querySelector('ngm-nav-tools')!;
-  navTools.stopTracking();
-  camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, height);
-  debounce(() => navTools.continueTracking(), 500)();
-}
 
 /**
  * @param {import('cesium/Source/Scene/Scene').default} scene
@@ -395,24 +385,43 @@ export function getValueOrUndefined(prop) {
 }
 
 /**
- * Computes the east-north-up difference between two points.
- * Taken from https://community.cesium.com/t/do-not-move-camera-when-setting-trackedentity/9554/4 to keep the camera centered on target entity
- * @param {Cartesian3} left
- * @param {Cartesian3} right
- * @returns {Cartesian3}
+ * Makes the camera look towards a specific point without changing its location
+ * @param position
+ * @param camera
  */
-export function eastNorthUp(left, right) {
-  const leftCartographic = Cartographic.fromCartesian(left);
-  const rightCartographic = Cartographic.fromCartesian(right);
-  const leftUp = Cartesian3.fromRadians(rightCartographic.longitude, leftCartographic.latitude);
-  const rightDown = Cartesian3.fromRadians(rightCartographic.longitude, rightCartographic.latitude);
-  const isEast = rightCartographic.longitude > leftCartographic.longitude;
-  const isNorth = rightCartographic.latitude > leftCartographic.latitude;
-  return new Cartesian3(
-    Cartesian3.distance(left, leftUp) * (isEast ? 1 : -1),
-    Cartesian3.distance(leftUp, rightDown) * (isNorth ? 1 : -1),
-    rightCartographic.height - leftCartographic.height
+export function lookAtPoint(position: Cartesian3, camera: Camera) {
+  const cameraPosition = camera.position.clone();
+  let direction = Cartesian3.subtract(
+    position,
+    cameraPosition,
+    new Cartesian3()
   );
+  direction = Cartesian3.normalize(direction, direction);
+  camera.direction = direction;
+
+  // get an "approximate" up vector, which in this case we want to be something like the geodetic surface normal.
+  const approxUp = Cartesian3.normalize(
+    cameraPosition,
+    new Cartesian3()
+  );
+
+  // cross view direction with approxUp to get a right normal
+  let right = Cartesian3.cross(
+    direction,
+    approxUp,
+    new Cartesian3()
+  );
+  right = Cartesian3.normalize(right, right);
+  camera.right = right;
+
+  // cross right with view direction to get an orthonormal up
+  let up = Cartesian3.cross(
+    right,
+    direction,
+    new Cartesian3()
+  );
+  up = Cartesian3.normalize(up, up);
+  camera.up = up;
 }
 
 /**

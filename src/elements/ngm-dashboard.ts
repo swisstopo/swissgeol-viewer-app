@@ -7,6 +7,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
 import {getCameraView, syncTargetParam} from '../permalink';
+import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
@@ -26,7 +27,7 @@ export class NgmDashboard extends LitElementI18n {
     const viewer = MainStore.viewerValue;
     if (!viewer) return;
     syncTargetParam(undefined);
-    MainStore.nextTargetPointSync();
+    NavToolsStore.nextTargetPointSync();
     this.dispatchEvent(new CustomEvent('close'));
     const url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${permalink}`;
     window.history.pushState({path: url}, '', url);
@@ -38,9 +39,9 @@ export class NgmDashboard extends LitElementI18n {
       viewer.camera.flyTo({
         destination: destination,
         orientation: orientation,
-        duration: 3
+        duration: 3,
+        complete: () => NavToolsStore.nextTargetPointSync()
       });
-    MainStore.nextTargetPointSync();
   }
 
   previewTemplate(data) {

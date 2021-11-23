@@ -1,4 +1,4 @@
-import {setCameraHeight} from './cesiumutils.ts';
+import NavToolsStore from './store/navTools';
 
 export default class LimitCameraHeightToDepth {
   /**
@@ -15,7 +15,7 @@ export default class LimitCameraHeightToDepth {
   onTick_() {
     const camera = this.scene_.camera;
     if (camera.positionCartographic.height <= -this.depth_) {
-      setCameraHeight(camera, -this.depth_);
+      NavToolsStore.setCameraHeight(-this.depth_);
     }
   }
 }

@@ -2,11 +2,13 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 
 import {LitElementI18n} from '../i18n.js';
-import {setCameraHeight} from '../cesiumutils';
+import {updateHeightForCartesianPositions} from '../cesiumutils';
 
 import CesiumMath from 'cesium/Source/Core/Math';
 import {styleMap} from 'lit/directives/style-map.js';
-import {Event, Viewer} from 'cesium';
+import {Cartesian3, Event, Viewer} from 'cesium';
+import {getTargetParam} from '../permalink';
+import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-nadir-view')
 export class NgmNadirView extends LitElementI18n {
@@ -16,6 +18,7 @@ export class NgmNadirView extends LitElementI18n {
   @state() pitch: number | undefined = undefined;
   @state() height: number | undefined = undefined;
   @state() heading: number | undefined = undefined;
+  @state() position: Cartesian3 | undefined = undefined;
   @state() currentHeading = 0;
 
   updated() {
@@ -32,7 +35,7 @@ export class NgmNadirView extends LitElementI18n {
   }
 
   get compassStyle() {
-    const angle = this.currentHeading * 180 / Math.PI;
+    const angle = Math.round(this.currentHeading * 180 / Math.PI);
     return {
       'background-color': this.active && (angle === 0 || angle === 360) ? '#FFFFFF' : 'var(--ngm-interaction)',
     };
@@ -56,6 +59,8 @@ export class NgmNadirView extends LitElementI18n {
 
     if (this.active) {
       this.viewer.camera.setView({
+        destination: this.position,
+        convert: true,
         orientation: {
           heading: this.heading,
           pitch: this.pitch,
@@ -64,20 +69,28 @@ export class NgmNadirView extends LitElementI18n {
       });
       this.heading = undefined;
       this.pitch = undefined;
+      this.position = undefined;
 
       if (this.height !== undefined) {
-        setCameraHeight(camera, this.height);
+        NavToolsStore.setCameraHeight(this.height);
       }
       this.height = undefined;
     } else {
       if (this.viewer.scene.cameraUnderground) {
         this.height = camera.positionCartographic.height;
-        setCameraHeight(camera, 10000);
+        NavToolsStore.setCameraHeight(10000);
       }
 
       this.pitch = camera.pitch;
       this.heading = camera.heading;
+      const targetPoint = getTargetParam();
+      if (targetPoint) {
+        this.position = Cartesian3.clone(camera.positionWC, new Cartesian3());
+        updateHeightForCartesianPositions([targetPoint], camera.positionCartographic.height, undefined, true);
+      }
       this.viewer.camera.setView({
+        destination: targetPoint,
+        convert: true,
         orientation: {
           heading: 0,
           pitch: CesiumMath.toRadians(-90),
