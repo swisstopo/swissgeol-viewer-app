@@ -123,7 +123,7 @@ export class LayerTreeItem extends LitElementI18n {
         </label>
         <label ?hidden=${!this.config.setOpacity}>${(this.config.opacity! * 100).toFixed()} %</label>
         <input type="range" class="ngm-slider" ?hidden=${!this.config.setOpacity}
-                style="background-image: linear-gradient(to right, #B9271A, #B9271A ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
+                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                 min=0 max=1 step=0.01
                 .value=${this.config.opacity!.toString()}
                 @input=${this.changeOpacity}/>
