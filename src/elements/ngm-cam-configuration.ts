@@ -21,6 +21,8 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit/directives/class-map.js';
 import './ngm-cam-coordinates';
 
+type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
+
 @customElement('ngm-cam-configuration')
 export class NgmCamConfiguration extends LitElementI18n {
   @property({type: Object}) viewer: Viewer | null = null;
@@ -31,7 +33,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   @state() elevation = 0;
   @state() pitch = 0;
   @state() coordinates: Record<string, (string | number)[]> | null = null;
-  @state() lockType = '';
+  @state() lockType: LockType = '';
   // always use the 'de-CH' locale to always have the simple tick as thousands separator
   private integerFormat = new Intl.NumberFormat('de-CH', {
     maximumFractionDigits: 0
@@ -118,12 +120,12 @@ export class NgmCamConfiguration extends LitElementI18n {
     };
   }
 
-  updateHeight(value) {
+  updateHeight(value: number) {
     const altitude = this.scene!.globe.getHeight(this.scene!.camera.positionCartographic) || 0;
     setCameraHeight(this.scene!.camera, value + altitude);
   }
 
-  updateAngle(value) {
+  updateAngle(value: number) {
     this.scene!.camera.setView({
       orientation: {
         heading: CesiumMath.toRadians(value),
@@ -132,7 +134,7 @@ export class NgmCamConfiguration extends LitElementI18n {
     });
   }
 
-  updatePitch(value) {
+  updatePitch(value: number) {
     this.scene!.camera.setView({
       orientation: {
         heading: CesiumMath.toRadians(this.heading),
@@ -150,7 +152,7 @@ export class NgmCamConfiguration extends LitElementI18n {
     };
   }
 
-  toggleLock(type) {
+  toggleLock(type: LockType) {
     if (this.lockType === type) {
       this.disableLock();
     } else {
@@ -158,7 +160,7 @@ export class NgmCamConfiguration extends LitElementI18n {
     }
   }
 
-  enableLock(type) {
+  enableLock(type: LockType) {
     if (!this.scene) return;
     this.disableLock();
     this.lockType = type;

@@ -77,7 +77,7 @@ export class NgmMapConfiguration extends LitElementI18n {
             <label>${(this.opacity * 100).toFixed()} %</label>
           </div>
           <input type="range" class="ngm-slider"
-                 style="background-image: linear-gradient(to right, #B9271A, #B9271A ${this.opacity * 100}%, white ${this.opacity * 100}%)"
+                 style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.opacity * 100}%, white ${this.opacity * 100}%)"
                  min=0 max=1 step=0.01
                  value=${!isNaN(this.opacity) ? this.opacity : 0.4}
                  @input=${evt => this.updateOpacity(Number((<HTMLInputElement>evt.target).value))}/>
