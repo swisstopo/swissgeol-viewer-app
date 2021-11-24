@@ -6,11 +6,11 @@ ngm-height-slider {
 
 ngm-height-slider input {
   -webkit-appearance: none;
-  transform:rotate(270deg);
+  transform: rotate(270deg);
   transform-origin: right;
   width: 72vh;
   height: 20px;
-  background-image: linear-gradient(to left, #D0F5F9 33%, white 0, white 33%, #998675 33% )
+  background-image: linear-gradient(to left, #1893EF 14%, #87DEF7 14%, #E2F8FB 55%, #B0A8A0 55%, #534741 100%)
 }
 
 

@@ -46,19 +46,31 @@ export class NgmHeightSlider extends LitElementI18n {
     NavToolsStore.setCameraHeight(height);
   }
 
+  /*
+   * Convert cartographic height (between -30'000m and +300'000) to input value (between 0 and 3)
+   * The input value between 0 and 1.35 is mapped to the height between -30'000m and 0m
+   * The input value between 1.35 and 2.7 is mapped to the height between 0m and +30'000m
+   * The input value between 2.7 and 3 is mapped to the height between +30'000m and +300'000m
+   */
   heightToValue(height: number) {
-    const height_km = height / 1000;
-    if (height_km >= 300) return 3;
-    else if (height_km > 0) return height_km / 300 + 2;
-    else if (height_km >= -30) return 2 - -height_km / 30 * 2;
-    else return 0;
+    if (height < 30000) {
+      return (1.35 / 30000) * height + 1.35;
+    } else {
+      return (0.3 / 270000) * height + 2.65;
+    }
   }
 
+  /*
+   * Convert input value (between 0 and 3) to cartographic height (between -30'000m and +300'000)
+   * The input value between 0 and 1.35 is mapped to the height between -30'000m and 0m
+   * The input value between 1.35 and 2.7 is mapped to the height between 0m and +30'000m
+   * The input value between 2.7 and 3 is mapped to the height between +30'000m and +300'000m
+   */
   valueToHeight(value: number) {
-    if (value >= 2) {
-      return 300000 * (value - 2);
+    if (value < 2.7) {
+      return (30000 / 1.35) * value - 30000;
     } else {
-      return -30000 * (1 - value / 2);
+      return (270000 / 0.3) * value - 2400000;
     }
   }
 
