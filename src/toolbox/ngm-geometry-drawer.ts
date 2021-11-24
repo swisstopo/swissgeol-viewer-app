@@ -188,8 +188,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       if (pickedObject && pickedObject.id) { // to prevent error on tileset click
         if (this.geometriesDataSource!.entities.contains(pickedObject.id)) {
           this.pickArea(pickedObject.id.id);
-        } else if (this.selectedArea) {
-          this.deselectArea();
         }
       }
     }

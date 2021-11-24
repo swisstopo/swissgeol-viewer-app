@@ -1,11 +1,13 @@
 import interact from 'interactjs';
 
+const MARGIB_BETWEEN_WINDOWS = 5;
+
 /**
  * @param {HTMLElement} target
  * @param {Interact.DraggableOptions} options
  */
 export default function draggable(target, options = {}) {
-  const interaction = interact(target).draggable(Object.assign({
+  target.interaction = interact(target).draggable(Object.assign({
     onmove: translate,
     // keep the element within the area of it's parent
     modifiers: [
@@ -15,7 +17,6 @@ export default function draggable(target, options = {}) {
     ]
   }, options));
   repositionOnOpen(target);
-  return interaction;
 }
 
 /**
@@ -30,6 +31,19 @@ function translate(event) {
   // update the position attributes
   target.setAttribute('data-x', x);
   target.setAttribute('data-y', y);
+  // show target window above other windows
+  if (!target.style.zIndex || target.style.zIndex === '1') {
+    document.querySelectorAll<HTMLElement>('.ngm-floating-window').forEach(elem => elem.style.zIndex = '1');
+    target.style.zIndex = '2';
+  }
+}
+
+
+function updateZIndex(target) {
+  target.style.zIndex = '2';
+  document.querySelectorAll<HTMLElement>('.ngm-floating-window').forEach(elem => {
+    if (elem !== target) elem.style.zIndex = '1';
+  });
 }
 
 function checkForOverlap(target): DOMRect[] {
@@ -38,50 +52,84 @@ function checkForOverlap(target): DOMRect[] {
   document.querySelectorAll<HTMLElement>('.ngm-floating-window').forEach(elem => {
     if (!elem.hidden && elem !== target) {
       const checkRect = elem.getBoundingClientRect();
-      const overlap = !(targetRect.right < checkRect.left || targetRect.left > checkRect.right);
-      if (overlap) overlapList.push(checkRect);
+      const overlapH = !(targetRect.right < checkRect.left || targetRect.left > checkRect.right);
+      const overlapV = !(targetRect.bottom < checkRect.top || targetRect.top > checkRect.bottom);
+      if (overlapH && overlapV) overlapList.push(checkRect);
     }
   });
   return overlapList;
 }
 
-function moveWindow(target, overlapList, changeSide) {
-  overlapList.forEach(checkRect => {
+function moveWindow(target, moveLeft) {
+  const rectsForCheck = Array.from(document.querySelectorAll<HTMLElement>('.ngm-floating-window'))
+    .filter(el => el !== target && !el.hidden)
+    .map(el => el.getBoundingClientRect())
+    .sort((el1, el2) => moveLeft ? el2.left - el1.left : el1.left - el2.left);
+  const parentRect = target.parentElement!.getBoundingClientRect();
+
+  for (let i = 0; i < rectsForCheck.length; i++) {
+    const checkRect = rectsForCheck[i];
     const targetRect = target.getBoundingClientRect();
     // reset transform from interaction
     if (target.style.transform) {
       target.style.transform = `translate(0px, ${target.getAttribute('data-y')}px)`;
       target.setAttribute('data-x', '0');
     }
-    const parentRect = target.parentElement!.getBoundingClientRect();
-    const margin = 5;
-    // check on which side more space
-    let moveLeft = targetRect.left - parentRect.left > parentRect.right - (checkRect.right + targetRect.width + margin);
-    // try different size if not first try
-    moveLeft = changeSide ? !moveLeft : moveLeft;
-    if (moveLeft) {
-      // move left
-      target.style.left = `${checkRect.left - targetRect.width - margin}px`;
-    } else {
-      // right
-      target.style.left = `${checkRect.right + margin}px`;
-    }
+    // move left/right
+    target.style.left = moveLeft ?
+      `${checkRect.left - targetRect.width - MARGIB_BETWEEN_WINDOWS}px` :
+      `${checkRect.right + MARGIB_BETWEEN_WINDOWS}px`;
     // always set right to auto to have correct window size
     target.style.right = 'auto';
-  });
-  // reposition window to have it always on map
-  target.interaction && target.interaction.reflow({name: 'drag', axis: 'xy'});
+    // reposition window to have it always on map
+    target.interaction.reflow({name: 'drag', axis: 'xy'});
+    const overlapList = checkForOverlap(target);
+    // stops moving if no overlap or try to place top/bottom of next window if overlap
+    if (!overlapList.length) break;
+    else if (
+      rectsForCheck[i + 1] && !(
+        // checks if enough space between checked window and next one
+        (moveLeft && rectsForCheck[i].left - rectsForCheck[i + 1].right > targetRect.width + MARGIB_BETWEEN_WINDOWS) ||
+        (!moveLeft && rectsForCheck[i + 1].left - rectsForCheck[i].right > targetRect.width + MARGIB_BETWEEN_WINDOWS)
+      )) {
+      // saves a backup of style to restore if window anyway overlap another one after move top/bottom
+      const styleBackup = target.style;
+      const topPosition = rectsForCheck[i + 1].top - (targetRect.height + MARGIB_BETWEEN_WINDOWS);
+      const bottomPosition = rectsForCheck[i + 1].bottom + MARGIB_BETWEEN_WINDOWS;
+      // tries to place the window on the bottom of the next window or on top
+      if (targetRect.top < rectsForCheck[i + 1].bottom && bottomPosition + targetRect.height < parentRect.height) {
+        target.style.top = `${bottomPosition}px`;
+      } else if (targetRect.bottom > rectsForCheck[i + 1].top && topPosition > parentRect.top) {
+        target.style.top = `${topPosition}px`;
+      }
+      // always set bottom to auto to have correct window size
+      target.style.bottom = 'auto';
+      const overlapList = checkForOverlap(target);
+      // stops moving if no overlap or restore top/bottom styles
+      if (!overlapList.length) break;
+      else target.style = styleBackup;
+    }
+  }
 }
 
 function repositionOnOpen(target) {
   const observer = new MutationObserver(((mutationsList) => {
     if (mutationsList[0].attributeName === 'hidden' && !target.hidden) {
+      // always show last opened window above others
+      updateZIndex(target);
       let overlapList: DOMRect[] = checkForOverlap(target);
-      for (let i = 1; i <= 10; i++) {
-        moveWindow(target, overlapList, i % 2 === 0);
-        overlapList = checkForOverlap(target);
-        if (overlapList.length === 0) break;
-      }
+      if (!overlapList.length) return;
+
+      const parentRect = target.parentElement!.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      // starts moving the window to the left if enough space or to the right otherwise
+      const moveLeft = targetRect.left - parentRect.left > targetRect.width + MARGIB_BETWEEN_WINDOWS;
+      // moves in the first side
+      moveWindow(target, moveLeft);
+      overlapList = checkForOverlap(target);
+      if (!overlapList.length) return;
+      // moves in another side if still overlap
+      moveWindow(target, !moveLeft);
     }
   }));
   observer.observe(target, {attributes: true});

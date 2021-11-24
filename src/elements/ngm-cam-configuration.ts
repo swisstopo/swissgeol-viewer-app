@@ -83,7 +83,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   ];
 
   connectedCallback() {
-    this.interaction = draggable(this, {
+    draggable(this, {
       allowFrom: '.drag-handle'
     });
     super.connectedCallback();

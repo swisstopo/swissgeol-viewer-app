@@ -31,6 +31,7 @@ export class NgmGeometryInfo extends LitElementI18n {
       if (this.viewer && !this.geometriesDataSource)
         this.geometriesDataSource = this.viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
       if (!options?.id) {
+        this.editing = false;
         this.geomEntity = undefined;
         return;
       }
