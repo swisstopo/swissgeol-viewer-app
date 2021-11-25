@@ -43,6 +43,7 @@ export class NgmNavTools extends LitElementI18n {
   constructor() {
     super();
     NavToolsStore.syncTargetPoint.subscribe(() => this.syncPoint());
+    NavToolsStore.hideTargetPointListener.subscribe(() => this.removeTargetPoint());
     NavToolsStore.cameraHeightUpdate.subscribe(height => {
       if (!this.viewer) return;
       this.showRefPoint && this.stopTracking();
@@ -112,10 +113,10 @@ export class NgmNavTools extends LitElementI18n {
 
   flyToHome() {
     if (!this.viewer) return;
-    this.stopTracking();
+    this.showRefPoint && this.stopTracking();
     this.viewer.camera.flyTo({
       ...DEFAULT_VIEW,
-      complete: () => this.startTracking()
+      complete: () => this.showRefPoint && this.startTracking()
     });
   }
 
