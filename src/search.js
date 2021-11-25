@@ -7,6 +7,7 @@ import Rectangle from 'cesium/Source/Core/Rectangle';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import Math from 'cesium/Source/Core/Math';
 import {extractEntitiesAttributes} from './query/objectInformation.js';
+import NavToolsStore from './store/navTools';
 
 /**
  * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
@@ -52,6 +53,7 @@ export function setupSearch(viewer, element, layerTree) {
         // add layer
         layerTree.addLayerFromSearch(result.properties);
       } else {
+        NavToolsStore.hideTargetPoint();
         // recenter to location
         if (rectangle.width < Math.EPSILON3 || rectangle.height < Math.EPSILON3) {
           // rectangle is too small
@@ -68,6 +70,7 @@ export function setupSearch(viewer, element, layerTree) {
         }
       }
     } else {
+      NavToolsStore.hideTargetPoint();
       layerTree.addLayerFromSearch(result);
       viewer.zoomTo(result.entity);
     }
