@@ -274,15 +274,6 @@ ngm-loading-mask .progress {
   width: 18%;
 }
 
-.layerloader {
-  line-height: 1rem;
-}
-
-.small_load_counter {
-  font-size: 0.5rem;
-  vertical-align: bottom;
-}
-
 ngm-layer-legend-container {
   position: absolute;
   width: 100%;
@@ -434,6 +425,40 @@ ngm-layer-legend-container > ngm-layer-legend {
 .disclaimer-link:hover {
   color: #FF0000;
   text-shadow: none;
+}
+
+.ui.loader {
+  mask: url('./images/swisstopo_spinner.svg') center no-repeat;
+  -webkit-mask: url('./images/swisstopo_spinner.svg') center no-repeat;
+  background-color: var(--ngm-interaction);
+  border-radius: 0 !important;
+  color: rgba(0, 0, 0, 0) !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.ui.loader.determinate {
+  mask: url('./images/swisstopo_spinner_determinate.svg') center no-repeat;
+  -webkit-mask: url('./images/swisstopo_spinner_determinate.svg') center no-repeat;
+}
+
+.ui.loader:before {
+  border-color: rgba(0, 0, 0, 0) !important;
+}
+
+.ngm-determinate-loader {
+  display: flex;
+}
+
+.ngm-load-counter {
+  color: var(--ngm-interaction);
+  position: fixed;
+  margin-left: 9px;
+  font: normal normal bold 12px/15px Inter;
+}
+
+.ui.dimmer.ngm-main-load-dimmer {
+  background: hsla(0, 0%, 100%, .85);
 }
 
 @media (max-height: 630px) {

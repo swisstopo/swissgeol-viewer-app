@@ -9,12 +9,14 @@ import {DEFAULT_LAYER_OPACITY} from '../constants';
 import {Config} from './ngm-layers-item';
 import $ from '../jquery.js';
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import {classMap} from 'lit-html/directives/class-map.js';
 
 @customElement('ngm-layers-upload')
 export default class LayersUpload extends LitElementI18n {
   @property({type: Object}) viewer!: Viewer;
   @state() uploadedLayers: Config[] = [];
   @state() actions: any;
+  @state() loading = false;
 
   constructor() {
     super();
@@ -44,6 +46,7 @@ export default class LayersUpload extends LitElementI18n {
       showSnackbarInfo(i18next.t('dtd_file_not_kml'));
     } else {
       try {
+        this.loading = true;
         const kmlDataSource = await KmlDataSource.load(file, {
           camera: this.viewer.scene.camera,
           canvas: this.viewer.scene.canvas
@@ -69,8 +72,11 @@ export default class LayersUpload extends LitElementI18n {
           opacity: DEFAULT_LAYER_OPACITY
         }];
         this.requestUpdate();
-        this.viewer.zoomTo(uploadedLayer);
+        await this.viewer.zoomTo(uploadedLayer);
+        (<HTMLInputElement> this.querySelector('.ngm-upload-kml')).value = '';
+        this.loading = false;
       } catch (e) {
+        this.loading = false;
         console.error(e);
         showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
       }
@@ -89,12 +95,16 @@ export default class LayersUpload extends LitElementI18n {
 
   render() {
     return html`
-      <button @click="${() => $(this.querySelector('.ngm-upload-kml')).click()}"
+      <button class="ngm-upload-kml-btn" @click="${() => $(this.querySelector('.ngm-upload-kml')).click()}"
               @drop="${this.onDrop}"
               @dragenter=${(event: DragEvent) => $(event.target).addClass('active')}
               @dragover="${(event: DragEvent) => event.preventDefault()}"
               @dragleave=${(event: DragEvent) => $(event.target).removeClass('active')}>
-        ${i18next.t('dtd_add_own_kml')}<div class="ngm-layer-icon ngm-upload-icon"></div>
+        ${i18next.t('dtd_add_own_kml')}
+        <div ?hidden=${this.loading} class="ngm-layer-icon ngm-upload-icon"></div>
+        <div
+          class="ui inline mini loader ${classMap({active: this.loading})}">
+        </div>
       </button>
       <input class="ngm-upload-kml" type='file' accept=".kml,.KML" hidden
              @change=${(e) => this.uploadKml(e.target ? e.target.files[0] : null)}/>

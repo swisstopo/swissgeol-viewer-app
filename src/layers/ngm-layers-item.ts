@@ -3,7 +3,7 @@ import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {LayerType, DEFAULT_LAYER_OPACITY} from '../constants';
+import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import $ from '../jquery.js';
 import {LayerTreeNode} from '../layertree';
 
@@ -15,7 +15,7 @@ export interface Config extends LayerTreeNode {
   setVisibility?: any;
   setOpacity?: any;
   hideUpDown: any;
-  promise: any
+  promise: any;
 }
 
 @customElement('ngm-layers-item')
@@ -23,6 +23,7 @@ export class LayerTreeItem extends LitElementI18n {
   @property({type: Object}) actions: any;
   @property({type: Object}) config!: Config;
   @state() loading = 0;
+  @state() determinateLoading = false;
   @state() upClassMap: any;
   @state() downClassMap: any;
   @state() loadProgressRemover_: any;
@@ -39,7 +40,15 @@ export class LayerTreeItem extends LitElementI18n {
     if (!this.actions || !this.actions.listenForEvent) return;
     this.loading = 0;
     const callback = (pending, processing) => {
-      this.loading = pending + processing;
+      const newValue = pending + processing;
+      if (this.loading === 0 && newValue > 0) {
+        setTimeout(() => {
+          if (this.loading > 0) this.determinateLoading = true;
+        }, 3000);
+      } else if (newValue === 0) {
+        this.determinateLoading = false;
+      }
+      this.loading = newValue;
     };
     this.loadProgressRemover_ = this.actions.listenForEvent(this.config, 'loadProgress', callback);
   }
@@ -88,21 +97,21 @@ export class LayerTreeItem extends LitElementI18n {
       <div class="menu">
         ${this.config?.geocatId || this.config?.legend ? html`
           <div class="item"
-            @click=${() => this.showLayerLegend(this.config)}>
+               @click=${() => this.showLayerLegend(this.config)}>
             ${i18next.t('dtd_disclaimer_hint')}
           </div>` : ''}
         ${!this.config?.hideUpDown ? html`
           <div class="item ${classMap(this.downClassMap)}"
-            @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
+               @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
             ${i18next.t('dtd_layer_down_label')}
           </div>
           <div class="item ${classMap(this.upClassMap)}"
-            @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
+               @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
             ${i18next.t('dtd_layer_up_label')}
           </div>` : ''}
         ${this.config?.downloadUrl && this.config?.type !== LayerType.earthquakes ? html`
           <div class="item"
-            @click=${() => window.open(this.config?.downloadUrl)}>
+               @click=${() => window.open(this.config?.downloadUrl)}>
             ${i18next.t('dtd_download_hint')}
           </div>` : ''}
       </div>
@@ -111,36 +120,42 @@ export class LayerTreeItem extends LitElementI18n {
 
   render() {
     return html`
-      <div class="ngm-layer-icon ${classMap({'ngm-visible-icon': !!this.config.visible, 'ngm-invisible-icon': !this.config.visible})}"
-          @click=${this.changeVisibility}></div>
+      <div ?hidden=${this.loading > 0} class="ngm-layer-icon ${classMap({
+        'ngm-visible-icon': !!this.config.visible,
+        'ngm-invisible-icon': !this.config.visible
+      })}" @click=${this.changeVisibility}>
+      </div>
+      <div ?hidden=${this.loading === 0} class="ngm-determinate-loader">
+        <div
+          class="ui inline mini loader ${classMap({active: this.loading > 0, determinate: this.determinateLoading})}">
+        </div>
+        <span ?hidden=${!this.determinateLoading} class="ngm-load-counter">${this.loading}</span>
+      </div>
       <div class="ngm-displayed-slider">
         <label class="ngm-layer-label">
           <i class=${this.config.restricted ? 'lock icon' : ''}></i>
           ${i18next.t(this.config.label)}
-          <div class="ui ${this.loading > 0 ? 'active' : ''} inline mini loader layerloader">
-            <span class="small_load_counter">${this.loading}</span>
-          </div>
         </label>
         <label ?hidden=${!this.config.setOpacity}>${(this.config.opacity! * 100).toFixed()} %</label>
         <input type="range" class="ngm-slider" ?hidden=${!this.config.setOpacity}
-                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
-                min=0 max=1 step=0.01
-                .value=${this.config.opacity!.toString()}
-                @input=${this.changeOpacity}/>
-        </div>
+               style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
+               min=0 max=1 step=0.01
+               .value=${this.config.opacity?.toString() || '1'}
+               @input=${this.changeOpacity}/>
+      </div>
       </div>
       <div class="ngm-displayed-menu">
         <div class="ngm-layer-icon ngm-zoom-plus-icon" ?hidden=${!this.config.zoomToBbox}
-              @mouseenter=${() => {
-                if (this.actions && this.actions.showBoundingBox) this.actions.showBoundingBox(this.config);
-              }}
-              @mouseleave=${() => {
-                if (this.actions && this.actions.hideBoundingBox) this.actions.hideBoundingBox();
-              }}
-              @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
+             @mouseenter=${() => {
+               if (this.actions && this.actions.showBoundingBox) this.actions.showBoundingBox(this.config);
+             }}
+             @mouseleave=${() => {
+               if (this.actions && this.actions.hideBoundingBox) this.actions.hideBoundingBox();
+             }}
+             @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
         </div>
         <div class="ngm-layer-icon ngm-delete-icon"
-              @click=${this.onRemove}>
+             @click=${this.onRemove}>
         </div>
         <div class="ui dropdown right pointing ngm-action-menu">
           <div class="ngm-layer-icon ngm-action-menu-icon"></div>

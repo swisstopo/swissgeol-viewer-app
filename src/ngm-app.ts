@@ -34,7 +34,6 @@ import {customElement, state} from 'lit/decorators.js';
 import MapChooser from './MapChooser';
 import {NgmLayerLegendContainer} from './elements/ngm-layer-legend-container';
 import {NgmSlowLoading} from './elements/ngm-slow-loading';
-import {NgmLoadingMask} from './elements/ngm-loading-mask';
 import {Viewer} from 'cesium';
 
 const SKIP_STEP2_TIMEOUT = 5000;
@@ -63,6 +62,8 @@ export class NgmApp extends LitElementI18n {
   @state() slicer_: Slicer | undefined;
   @state() showMinimap = false;
   @state() showCamConfig = false;
+  @state() loading = 0;
+  @state() determinateLoading = false;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
 
@@ -91,8 +92,7 @@ export class NgmApp extends LitElementI18n {
     (<NgmLayerLegendContainer> this.querySelector('ngm-layer-legend-container')).showLegend(event.detail.config);
   }
 
-  onStep2Finished({loadingMask, viewer}) {
-    loadingMask.active = false;
+  onStep2Finished(viewer) {
     const loadingTime = performance.now() / 1000;
     console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
     (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
@@ -124,26 +124,28 @@ export class NgmApp extends LitElementI18n {
     globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') || '2000');
 
     let currentStep = 1;
-    const loadingMask: NgmLoadingMask = this.querySelector('ngm-loading-mask')!;
     const unlisten = globe.tileLoadProgressEvent.addEventListener(queueLength => {
-      loadingMask.message = queueLength;
+      this.loading = queueLength;
+      setTimeout(() => {
+        if (this.loading > 0)
+          this.determinateLoading = true;
+      }, 3000);
       if (currentStep === 1 && globe.tilesLoaded) {
         currentStep = 2;
-        loadingMask.step = currentStep;
         console.log('Step 1 finished');
         onStep1Finished(globe, searchParams);
         setTimeout(() => {
           if (currentStep === 2) {
             console.log('Too long: going straight to step 3');
             currentStep = 3;
-            this.onStep2Finished({loadingMask, viewer});
+            this.onStep2Finished(viewer);
             unlisten();
           }
         }, SKIP_STEP2_TIMEOUT);
       } else if (currentStep === 2 && globe.tilesLoaded) {
         currentStep = 3;
         console.log('Step 2 finished');
-        this.onStep2Finished({loadingMask, viewer});
+        this.onStep2Finished(viewer);
         unlisten();
       }
     });
@@ -172,10 +174,6 @@ export class NgmApp extends LitElementI18n {
 
     MainStore.setViewer(viewer);
 
-    i18next.on('initialized', () => {
-      this.showSlowLoadingWindow();
-    });
-
     const origin = window.location.origin;
     const pathname = window.location.pathname;
     (<any> this.querySelector('#ngm-home-link')).href = `${origin}${pathname}`;
@@ -187,20 +185,6 @@ export class NgmApp extends LitElementI18n {
         }
       });
     });
-  }
-
-  showSlowLoadingWindow() {
-    const timeout = 10000;
-    const loadingMask: NgmLoadingMask = this.querySelector('ngm-loading-mask')!;
-    if (loadingMask.active && performance.now() > timeout) {
-      (<NgmSlowLoading> this.querySelector('ngm-slow-loading'))!.style.display = 'block';
-    } else {
-      setTimeout(() => {
-        if (loadingMask.active) {
-          (<NgmSlowLoading> this.querySelector('ngm-slow-loading'))!.style.display = 'block';
-        }
-      }, timeout - performance.now());
-    }
   }
 
   onTrackingAllowedChanged(event) {
@@ -222,7 +206,17 @@ export class NgmApp extends LitElementI18n {
         <ngm-camera-information .viewer="${this.viewer}"></ngm-camera-information>
       </header>
       <main>
-        <ngm-loading-mask></ngm-loading-mask>
+        <div class="ui dimmer ngm-main-load-dimmer ${classMap({active: this.loading > 0})}">
+          <div ?hidden=${this.loading === 0} class="ngm-determinate-loader">
+            <div
+              class="ui inline mini loader ${classMap({
+                active: this.loading > 0,
+                determinate: this.determinateLoading
+              })}">
+            </div>
+            <span ?hidden=${!this.determinateLoading} class="ngm-load-counter">${this.loading}</span>
+          </div>
+        </div>
         <ngm-side-bar
           .queryManager=${this.queryManager}
           @layeradded=${this.onLayerAdded}
@@ -246,7 +240,8 @@ export class NgmApp extends LitElementI18n {
             <ngm-height-slider .viewer=${this.viewer}></ngm-height-slider>
             <ngm-layer-legend-container></ngm-layer-legend-container>
             <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
-            <a class="disclaimer-link" target="_blank" href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
+            <a class="disclaimer-link" target="_blank"
+               href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
           <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
