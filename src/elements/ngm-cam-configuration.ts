@@ -16,10 +16,10 @@ import {
   Viewer
 } from 'cesium';
 import {formatCartographicAs2DLv95} from '../projection';
-import {setCameraHeight} from '../cesiumutils';
 import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit/directives/class-map.js';
 import './ngm-cam-coordinates';
+import NavToolsStore from '../store/navTools';
 
 type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
 
@@ -122,7 +122,7 @@ export class NgmCamConfiguration extends LitElementI18n {
 
   updateHeight(value: number) {
     const altitude = this.scene!.globe.getHeight(this.scene!.camera.positionCartographic) || 0;
-    setCameraHeight(this.scene!.camera, value + altitude);
+    NavToolsStore.setCameraHeight(value + altitude);
   }
 
   updateAngle(value: number) {

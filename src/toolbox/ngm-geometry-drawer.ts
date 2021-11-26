@@ -41,6 +41,7 @@ import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import {AreasCounter, GeometryTypes, NgmGeometry, SwissforagesModalOptions} from './interfaces';
 import {getValueOrUndefined, updateHeightForCartesianPositions} from '../cesiumutils';
+import NavToolsStore from '../store/navTools';
 
 const fileUploadInputId = 'fileUpload';
 const DEFAULT_SWISSFORAGES_MODAL_OPTIONS = {
@@ -243,6 +244,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   flyToArea(id) {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (!entity) return;
+    NavToolsStore.hideTargetPoint();
     if (!entity.isShowing)
       entity.show = true;
     let positions = getAreaPositions(entity, this.julianDate);
