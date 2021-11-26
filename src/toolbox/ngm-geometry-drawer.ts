@@ -240,7 +240,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.draw!.active = true;
   }
 
-  async flyToArea(id) {
+  flyToArea(id) {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (!entity) return;
     if (!entity.isShowing)
