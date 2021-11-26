@@ -2,7 +2,7 @@ import $ from '../jquery.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
 import {html, PropertyValues} from 'lit';
-import {property, customElement, query, state} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import 'fomantic-ui-css/components/transition.js';
 import 'fomantic-ui-css/components/dropdown.js';
 
@@ -15,6 +15,9 @@ export class NgmCamCoordinates extends LitElementI18n {
   @state()
   key = 'lv95';
 
+  @state()
+  dropdownInited = false;
+
   @query('.dropdown')
   dropdown;
 
@@ -23,12 +26,15 @@ export class NgmCamCoordinates extends LitElementI18n {
   }
 
   updated(changedProperties: PropertyValues) {
+    if (!this.dropdownInited && this.dropdown) {
+      $(this.dropdown).dropdown();
+      this.dropdownInited = true;
+    }
     super.updated(changedProperties);
-    $(this.dropdown).dropdown();
   }
 
   render() {
-    if (!this.coordinates) {
+    if (!this.coordinates || !this.coordinates[this.key]) {
       return '';
     }
     const c = this.coordinates[this.key];
@@ -48,6 +54,6 @@ export class NgmCamCoordinates extends LitElementI18n {
         ${i18next.t('camera_position_coordinates_label')}
         <label class="ngm-coords user-select-text">${c[0]}, ${c[1]}</label>
       </div>
-      `;
+    `;
   }
 }

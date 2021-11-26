@@ -62,8 +62,9 @@ export class NgmApp extends LitElementI18n {
   @state() slicer_: Slicer | undefined;
   @state() showMinimap = false;
   @state() showCamConfig = false;
-  @state() loading = 0;
+  @state() loading = true;
   @state() determinateLoading = false;
+  @state() queueLength = 0;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
 
@@ -93,6 +94,7 @@ export class NgmApp extends LitElementI18n {
   }
 
   onStep2Finished(viewer) {
+    this.loading = false;
     const loadingTime = performance.now() / 1000;
     console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
     (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
@@ -125,11 +127,7 @@ export class NgmApp extends LitElementI18n {
 
     let currentStep = 1;
     const unlisten = globe.tileLoadProgressEvent.addEventListener(queueLength => {
-      this.loading = queueLength;
-      setTimeout(() => {
-        if (this.loading > 0)
-          this.determinateLoading = true;
-      }, 3000);
+      this.queueLength = queueLength;
       if (currentStep === 1 && globe.tilesLoaded) {
         currentStep = 2;
         console.log('Step 1 finished');
@@ -152,6 +150,7 @@ export class NgmApp extends LitElementI18n {
   }
 
   firstUpdated() {
+    setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
     const cesiumContainer = this.querySelector('#cesium')!;
     const viewer = setupViewer(cesiumContainer, isLocalhost);
@@ -174,6 +173,10 @@ export class NgmApp extends LitElementI18n {
 
     MainStore.setViewer(viewer);
 
+    i18next.on('initialized', () => {
+      this.showSlowLoadingWindow();
+    });
+
     const origin = window.location.origin;
     const pathname = window.location.pathname;
     (<any> this.querySelector('#ngm-home-link')).href = `${origin}${pathname}`;
@@ -185,6 +188,19 @@ export class NgmApp extends LitElementI18n {
         }
       });
     });
+  }
+
+  showSlowLoadingWindow() {
+    const timeout = 10000;
+    if (this.loading && performance.now() > timeout) {
+      (<NgmSlowLoading> this.querySelector('ngm-slow-loading'))!.style.display = 'block';
+    } else {
+      setTimeout(() => {
+        if (this.loading) {
+          (<NgmSlowLoading> this.querySelector('ngm-slow-loading'))!.style.display = 'block';
+        }
+      }, timeout - performance.now());
+    }
   }
 
   onTrackingAllowedChanged(event) {
@@ -206,15 +222,15 @@ export class NgmApp extends LitElementI18n {
         <ngm-camera-information .viewer="${this.viewer}"></ngm-camera-information>
       </header>
       <main>
-        <div class="ui dimmer ngm-main-load-dimmer ${classMap({active: this.loading > 0})}">
-          <div ?hidden=${this.loading === 0} class="ngm-determinate-loader">
+        <div class="ui dimmer ngm-main-load-dimmer ${classMap({active: this.loading})}">
+          <div ?hidden=${!this.loading} class="ngm-determinate-loader">
             <div
               class="ui inline mini loader ${classMap({
-                active: this.loading > 0,
+                active: this.loading,
                 determinate: this.determinateLoading
               })}">
             </div>
-            <span ?hidden=${!this.determinateLoading} class="ngm-load-counter">${this.loading}</span>
+            <span ?hidden=${!this.determinateLoading} class="ngm-load-counter">${this.queueLength}</span>
           </div>
         </div>
         <ngm-side-bar
