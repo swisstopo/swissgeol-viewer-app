@@ -189,7 +189,7 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType, useAlt
 /**
  * Sets height in meters for each cartesian3 position in array
  * @param {Array<Cartesian3>} positions
- * @param {number} height
+ * @param {number | undefined} height
  * @param {import('cesium/Source/Scene/Scene').default} [scene]
  * @param {boolean} assignBack assign value to initial position
  * @return {Array<Cartesian3>}
@@ -197,7 +197,8 @@ export function prepareCoordinatesForUi(scene, position, coordinatesType, useAlt
 export function updateHeightForCartesianPositions(positions, height, scene?, assignBack = false) {
   return positions.map(p => {
     const cartographicPosition = Cartographic.fromCartesian(p);
-    cartographicPosition.height = height;
+    if (height)
+      cartographicPosition.height = height;
     if (scene) {
       const altitude = scene.globe.getHeight(cartographicPosition) || 0;
       cartographicPosition.height += altitude;
