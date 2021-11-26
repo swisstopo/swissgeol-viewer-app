@@ -62,10 +62,6 @@ export class NgmHeightSlider extends LitElementI18n {
     }
   }
 
-  //
-// @pointerdown=${() => (<NgmNavTools>document.querySelector('ngm-nav-tools')).stopTracking()}
-// @pointerup=${() => (<NgmNavTools>document.querySelector('ngm-nav-tools')).continueTracking()}
-
   render() {
     return html`
       <input type="range" min="0" max="3" step=0.01

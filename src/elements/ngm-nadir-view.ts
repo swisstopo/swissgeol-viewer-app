@@ -60,7 +60,6 @@ export class NgmNadirView extends LitElementI18n {
     if (this.active) {
       this.viewer.camera.setView({
         destination: this.position,
-        convert: true,
         orientation: {
           heading: this.heading,
           pitch: this.pitch,
@@ -90,7 +89,6 @@ export class NgmNadirView extends LitElementI18n {
       }
       this.viewer.camera.setView({
         destination: targetPoint,
-        convert: true,
         orientation: {
           heading: 0,
           pitch: CesiumMath.toRadians(-90),
