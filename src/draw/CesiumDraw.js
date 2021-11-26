@@ -10,7 +10,7 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import Intersections2D from 'cesium/Source/Core/Intersections2D';
 
 import {getDimensionLabel, rectanglify} from './helpers';
-import {getMeasurements} from '../cesiumutils.js';
+import {getMeasurements} from '../cesiumutils.ts';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 
 /**

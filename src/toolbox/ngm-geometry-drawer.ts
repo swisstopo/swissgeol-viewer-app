@@ -5,7 +5,7 @@ import GpxDataSource from '../GpxDataSource.js';
 import i18next from 'i18next';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import {Entity, Event, PropertyBag, Viewer} from 'cesium';
+import {BoundingSphere, Entity, Event, HeadingPitchRange, PropertyBag, Viewer} from 'cesium';
 
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
@@ -23,8 +23,6 @@ import {showWarning} from '../notifications';
 import {LitElementI18n} from '../i18n';
 import {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
-import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import CornerType from 'cesium/Source/Core/CornerType';
 import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
@@ -42,7 +40,8 @@ import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import {AreasCounter, GeometryTypes, NgmGeometry, SwissforagesModalOptions} from './interfaces';
-import {getValueOrUndefined} from '../cesiumutils';
+import {getValueOrUndefined, updateHeightForCartesianPositions} from '../cesiumutils';
+import NavToolsStore from '../store/navTools';
 
 const fileUploadInputId = 'fileUpload';
 const DEFAULT_SWISSFORAGES_MODAL_OPTIONS = {
@@ -245,13 +244,13 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   flyToArea(id) {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (!entity) return;
+    NavToolsStore.hideTargetPoint();
     if (!entity.isShowing)
       entity.show = true;
-    const positions = getAreaPositions(entity, this.julianDate);
+    let positions = getAreaPositions(entity, this.julianDate);
+    positions = updateHeightForCartesianPositions(positions, undefined, this.viewer!.scene);
     const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
-    let range = boundingSphere.radius > 1000 ? boundingSphere.radius * 2 : boundingSphere.radius * 5;
-    if (range < 1000) range = 1000; // if less than 1000 it goes inside terrain
-    const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 2), range);
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 2), 0);
     this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
       duration: 2,
       offset: zoomHeadingPitchRange

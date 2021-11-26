@@ -2,7 +2,7 @@ import {LitElementI18n} from '../i18n';
 import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import {Viewer} from 'cesium';
-import {setCameraHeight} from '../cesiumutils.js';
+import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-height-slider')
 export class NgmHeightSlider extends LitElementI18n {
@@ -43,7 +43,7 @@ export class NgmHeightSlider extends LitElementI18n {
     const snapDistance = 150; // snap to 0 from 150m/-150m
     if (height <= snapDistance && height >= -snapDistance) height = 0;
     height += altitude;
-    setCameraHeight(camera, height);
+    NavToolsStore.setCameraHeight(height);
   }
 
   heightToValue(height: number) {
@@ -67,7 +67,6 @@ export class NgmHeightSlider extends LitElementI18n {
       <input type="range" min="0" max="3" step=0.01
              .value=${this.value}
              @input=${this.updateCameraHeight}>
-
     `;
   }
 

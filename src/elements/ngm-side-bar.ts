@@ -36,6 +36,7 @@ import $ from '../jquery';
 import {customElement, property, state} from 'lit/decorators.js';
 import {Cartesian2, Viewer} from 'cesium';
 import QueryManager from '../query/QueryManager';
+import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
@@ -164,7 +165,7 @@ export class SideBar extends LitElementI18n {
           <div id="langs" class="ui horizontal selection list">
             ${SUPPORTED_LANGUAGES.map(lang => html`
               <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
-              `)}
+            `)}
           </div>
         </div>
       </div>
@@ -176,7 +177,10 @@ export class SideBar extends LitElementI18n {
           <ngm-layers
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
-            @zoomTo=${evt => zoomTo(this.viewer!, evt.detail)}
+            @zoomTo=${evt => {
+              NavToolsStore.hideTargetPoint();
+              zoomTo(this.viewer!, evt.detail);
+            }}
             @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
             @layerChanged=${() => this.onLayerChanged()}>
           </ngm-layers>

@@ -29,7 +29,7 @@
     "views": [
       {
         "title": "Wassen as you know it",
-        "permalink": "?lon=8.59956&lat=46.70494&elevation=1010&heading=22&pitch=-15&map=ch.swisstopo.swissimage&map_transparency=0.00&layers=ch.swisstopo.swisstlm3d.3d&layers_visibility=true&layers_transparency=0.00&target={\"lon\":\"8.60188\",\"lat\":\"46.70889\",\"height\":883.1281257264219}"
+        "permalink": "?lon=8.59946&lat=46.70489&elevation=974&heading=28&pitch=-9&map=ch.swisstopo.swissimage&map_transparency=0.00&layers=ch.swisstopo.swisstlm3d.3d&layers_visibility=true&layers_transparency=0.00&target={\"lon\":\"8.60100\",\"lat\":\"46.70688\",\"height\":932.9088491525921}"
       },
       {
         "title": "Geological situation (click on a color to get more information)",

@@ -1,6 +1,6 @@
 import CSVParser from 'papaparse';
 import {SWITZERLAND_RECTANGLE} from './constants';
-import {Viewer, Ellipsoid, HeadingPitchRange, BoundingSphere} from 'cesium';
+import {BoundingSphere, Ellipsoid, HeadingPitchRange, Viewer} from 'cesium';
 
 /**
  * @return {URLSearchParams}
@@ -180,7 +180,6 @@ export function debounce(f, ms) {
     isCooldown = true;
     setTimeout(() => {
       isCooldown = false;
-      f(...args);
     }, ms);
   };
 

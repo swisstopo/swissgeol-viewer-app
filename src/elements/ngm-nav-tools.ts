@@ -3,17 +3,17 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import draggable from './draggable';
 import {DEFAULT_VIEW} from '../constants';
-import {Cartesian3, Cartographic, Entity, Event, Matrix4, Scene, Transforms, Viewer} from 'cesium';
+import {Cartesian3, Cartographic, Entity, Event, JulianDate, Matrix4, Scene, Transforms, Viewer} from 'cesium';
 import {Interactable} from '@interactjs/types';
 import {classMap} from 'lit/directives/class-map.js';
-import {eastNorthUp, pickCenterOnMapOrObject} from '../cesiumutils';
+import {lookAtPoint, pickCenterOnMapOrObject} from '../cesiumutils';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import {showWarning} from '../notifications';
 import i18next from 'i18next';
 import {debounce} from '../utils';
 import {getTargetParam, syncTargetParam} from '../permalink';
-import MainStore from '../store/main';
+import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
@@ -38,10 +38,19 @@ export class NgmNavTools extends LitElementI18n {
     }
   });
   private moveRef = false;
+  private julianDate = new JulianDate();
 
   constructor() {
     super();
-    MainStore.syncTargetPoint.subscribe(() => this.syncPoint());
+    NavToolsStore.syncTargetPoint.subscribe(() => this.syncPoint());
+    NavToolsStore.hideTargetPointListener.subscribe(() => this.removeTargetPoint());
+    NavToolsStore.cameraHeightUpdate.subscribe(height => {
+      if (!this.viewer) return;
+      this.showRefPoint && this.stopTracking();
+      const pc = this.viewer.camera.positionCartographic;
+      this.viewer.camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, height);
+      this.showRefPoint && this.startTracking();
+    });
   }
 
   updated() {
@@ -79,7 +88,7 @@ export class NgmNavTools extends LitElementI18n {
 
   syncPoint() {
     const initialTarget = getTargetParam();
-    if (!initialTarget) return;
+    if (!initialTarget && !this.showRefPoint) return;
     this.toggleReference(initialTarget);
   }
 
@@ -104,7 +113,11 @@ export class NgmNavTools extends LitElementI18n {
 
   flyToHome() {
     if (!this.viewer) return;
-    this.viewer.camera.flyTo(DEFAULT_VIEW);
+    this.showRefPoint && this.stopTracking();
+    this.viewer.camera.flyTo({
+      ...DEFAULT_VIEW,
+      complete: () => this.showRefPoint && this.startTracking()
+    });
   }
 
   toggleReference(forcePosition?) {
@@ -134,7 +147,6 @@ export class NgmNavTools extends LitElementI18n {
     this.refIcon.position = <any>center;
     const cam = this.viewer!.camera;
     this.refIcon.show = true;
-    this.refIcon.viewFrom = <any>eastNorthUp(center, cam.position);
     if (lookAtTransform) {
       const transform = Transforms.eastNorthUpToFixedFrame(center);
       cam.lookAtTransform(transform);
@@ -147,7 +159,6 @@ export class NgmNavTools extends LitElementI18n {
     this.showRefPoint = false;
     this.refIcon.show = false;
     this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
-    this.viewer!.trackedEntity = undefined;
   }
 
   ctrlListener = (evt) => {
@@ -159,10 +170,7 @@ export class NgmNavTools extends LitElementI18n {
   onLeftDown(event) {
     const pickedObject = this.viewer!.scene.pick(event.position);
     if (pickedObject && pickedObject.id && pickedObject.id.id === this.refIcon.id) {
-      this.viewer!.scene.screenSpaceCameraController.enableInputs = false;
-      this.eventHandler!.setInputAction(event => this.onMouseMove(event), ScreenSpaceEventType.MOUSE_MOVE);
-      this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
-      this.viewer!.trackedEntity = undefined;
+      this.stopTracking();
       this.moveRef = true;
     }
   }
@@ -170,10 +178,27 @@ export class NgmNavTools extends LitElementI18n {
   onLeftUp() {
     if (!this.moveRef) return;
     this.moveRef = false;
-    this.viewer!.trackedEntity = this.refIcon;
+    this.startTracking();
+  }
+
+  stopTracking() {
+    this.viewer!.scene.screenSpaceCameraController.enableInputs = false;
+    this.eventHandler!.setInputAction(event => this.onMouseMove(event), ScreenSpaceEventType.MOUSE_MOVE);
+    this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
+  }
+
+  startTracking() {
+    this.addTargetPoint(this.refIcon.position!.getValue(this.julianDate));
+    const center = this.refIcon.position!.getValue(this.julianDate);
+    const camera = this.viewer!.camera;
+    lookAtPoint(center, camera);
+    const transform = Transforms.eastNorthUpToFixedFrame(center);
+    camera.lookAtTransform(transform);
+
     this.viewer!.scene.screenSpaceCameraController.enableInputs = true;
     // for better performance
     this.eventHandler!.setInputAction(debounce(event => this.onMouseMove(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
+    this.viewer!.scene.requestRender();
   }
 
   onMouseMove(event) {

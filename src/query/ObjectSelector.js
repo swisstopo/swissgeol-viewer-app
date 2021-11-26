@@ -14,6 +14,7 @@ import {
 } from './objectInformation';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
+import NavToolsStore from '../store/navTools';
 
 /**
  * Wether the passed value follows the lit TemplateResult interface.
@@ -65,6 +66,7 @@ export default class ObjectSelector {
       if (object.getPropertyNames) {
         attributes.properties = extractPrimitiveAttributes(object);
         attributes.zoom = () => {
+          NavToolsStore.hideTargetPoint();
           const boundingSphere = new BoundingSphere(pickedPosition, OBJECT_ZOOMTO_RADIUS);
           const zoomHeadingPitchRange = new HeadingPitchRange(0, Math.PI / 8, boundingSphere.radius);
           this.scene.camera.flyToBoundingSphere(boundingSphere, {

@@ -1,4 +1,5 @@
-import {setCameraHeight, verticalDirectionRotate} from './cesiumutils.js';
+import {verticalDirectionRotate} from './cesiumutils.ts';
+import NavToolsStore from './store/navTools';
 
 /**
  * @typedef {Object} Options
@@ -171,10 +172,10 @@ export default class KeyboardNavigation {
     let pitch;
 
     if (this.flags_.moveUp) {
-      setCameraHeight(camera, camera.positionCartographic.height + moveAmount);
+      NavToolsStore.setCameraHeight(camera.positionCartographic.height + moveAmount);
     }
     if (this.flags_.moveDown) {
-      setCameraHeight(camera, camera.positionCartographic.height - moveAmount);
+      NavToolsStore.setCameraHeight(camera.positionCartographic.height - moveAmount);
     }
     if (this.flags_.moveForward) {
       verticalDirectionRotate(camera, angle);
