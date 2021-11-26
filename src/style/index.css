@@ -25,7 +25,6 @@
 @import 'fomantic-ui-css/components/slider.css';
 @import 'fomantic-ui-css/components/dropdown.css';
 @import 'fomantic-ui-css/components/label.css';
-@import 'fomantic-ui-css/components/progress.css';
 @import 'fomantic-ui-css/components/header.css';
 @import 'fomantic-ui-css/components/card.css';
 
@@ -268,10 +267,6 @@ ngm-full-screen-view {
 ngm-full-screen-view.full-active {
   right: 10px;
   top: 10px;
-}
-
-ngm-loading-mask .progress {
-  width: 18%;
 }
 
 ngm-layer-legend-container {
