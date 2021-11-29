@@ -18,7 +18,7 @@ export class NgmLayerLegendContainer extends LitElement {
   render() {
     return html`
       ${[...this.configs].map(config => html`
-        <ngm-layer-legend .config=${config} @close=${this.onClose}></ngm-layer-legend>
+        <ngm-layer-legend class="ngm-floating-window" .config=${config} @close=${this.onClose}></ngm-layer-legend>
       `)}
     `;
   }

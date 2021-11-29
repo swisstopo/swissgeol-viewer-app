@@ -41,7 +41,6 @@
 @import 'ngm-position-edit.css';
 @import 'ngm-map-chooser.css';
 @import 'ngm-tracking-consent.css';
-@import 'ngm-layer-legend.css';
 @import 'icons.css';
 @import 'ngm-side-bar.css';
 @import 'ngm-nav-tools.css';
@@ -273,7 +272,6 @@ ngm-layer-legend-container {
   position: absolute;
   width: 100%;
   height: 100%;
-  z-index: 2;
   pointer-events: none;
 }
 
