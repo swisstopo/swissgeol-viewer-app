@@ -320,3 +320,11 @@
   -webkit-mask: url('./images/i_screenshot.svg') no-repeat center;
   background-color: var(--ngm-interaction);
 }
+
+.ngm-gst-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_query_3d_models.svg') no-repeat center;
+  -webkit-mask: url('./images/i_query_3d_models.svg') no-repeat center;
+  background-color: var(--ngm-interaction);
+}

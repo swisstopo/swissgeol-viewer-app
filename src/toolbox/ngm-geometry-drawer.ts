@@ -74,7 +74,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   private screenSpaceEventHandler: ScreenSpaceEventHandler | undefined;
   private draw: CesiumDraw | undefined;
   private swissforagesModalOptions: SwissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS;
-  private sectionImageUrl: string | undefined;
   private areasClickable = false;
   private unlistenEditPostRender: Event.RemoveCallback | undefined;
   private drawGeometries = [
@@ -139,16 +138,9 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
     this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
     this.addStoredAreas(LocalStorageController.getStoredAoi());
-    this.sectionImageUrl = undefined;
     this.swissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS;
 
     this.aoiInited = true;
-  }
-
-  // required for gst
-  showSectionModal(imageUrl) {
-    this.sectionImageUrl = imageUrl;
-    this.requestUpdate();
   }
 
   endDrawing_(info) {
@@ -565,7 +557,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         .selectedId=${this.selectedArea ? this.selectedArea.id : ''}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.flyToArea(evt.detail.id)}>
       </ngm-geometries-list>
-      <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
       <ngm-swissforages-modal
         .service="${this.swissforagesService}"
         .options="${this.swissforagesModalOptions}">

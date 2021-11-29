@@ -21,7 +21,8 @@ import DrawStore from '../store/draw';
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
   @property({type: Boolean}) toolsHidden = true;
-  @state() activeTool: 'draw' | 'slicing' | undefined;
+  @state() activeTool: 'draw' | 'slicing' | 'gst' | undefined;
+  @state() sectionImageUrl: string | undefined;
   geometriesDataSource: CustomDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
@@ -72,6 +73,11 @@ export class NgmToolbox extends LitElementI18n {
     const sliceOptions = getSliceParam();
     if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints)
       this.activeTool = 'slicing';
+  }
+
+  // required for gst
+  showSectionModal(imageUrl) {
+    this.sectionImageUrl = imageUrl;
   }
 
   private get entitiesList(): NgmGeometry[] {
@@ -126,12 +132,18 @@ export class NgmToolbox extends LitElementI18n {
           <div class="ngm-slicing-icon"></div>
           <div>${i18next.t('tbx_slicing')}</div>
         </div>
+        <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'gst'}>
+          <div class="ngm-gst-icon"></div>
+          <div>${i18next.t('tbx_gst')}</div>
+        </div>
       </div>
       <ngm-geometry-drawer .hidden="${this.activeTool !== 'draw'}"
-                      .geometriesDataSource=${this.geometriesDataSource}></ngm-geometry-drawer>
+                           .geometriesDataSource=${this.geometriesDataSource}></ngm-geometry-drawer>
       <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
                   .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
-                  .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>`;
+                  .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>
+      <ngm-gst-interaction .hidden="${this.activeTool !== 'gst'}"></ngm-gst-interaction>
+      <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>`;
   }
 
   createRenderRoot() {
