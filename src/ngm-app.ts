@@ -11,6 +11,7 @@ import './elements/ngm-nav-tools';
 import './elements/ngm-minimap';
 import './elements/ngm-cam-configuration';
 import './elements/ngm-height-slider';
+import './elements/ngm-layer-legend-container';
 import './toolbox/ngm-geometry-info';
 
 import {DEFAULT_VIEW} from './constants';

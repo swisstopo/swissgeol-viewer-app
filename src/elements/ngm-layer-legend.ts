@@ -1,20 +1,15 @@
 import {html} from 'lit';
-import draggable from './draggable.ts';
+import {customElement, state} from 'lit/decorators.js';
+import draggable from './draggable';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
+import {Interactable} from '@interactjs/types';
+import {Config} from '../layers/ngm-layers-item';
 
-class NgmLayerLegend extends LitElementI18n {
-
-  static get properties() {
-    return {
-      config: {type: Object},
-    };
-  }
-
-  constructor() {
-    super();
-    this.config = {};
-  }
+@customElement('ngm-layer-legend')
+export class NgmLayerLegend extends LitElementI18n {
+  @state() config!: Config;
+  @state() interaction: Interactable | null = null;
 
   connectedCallback() {
     this.interaction = draggable(this, {
@@ -51,9 +46,7 @@ const GEOCAT_LANG_CODE = {
   'en': 'eng',
 };
 
-function geocatLink(id) {
+function geocatLink(id: string) {
   const lang = GEOCAT_LANG_CODE[i18next.language];
   return `https://www.geocat.ch/geonetwork/srv/${lang}/md.viewer#/full_view/${id}/tab/complete`;
 }
-
-customElements.define('ngm-layer-legend', NgmLayerLegend);
