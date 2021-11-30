@@ -438,3 +438,22 @@ export function getEntityColor(entity) {
     return entity.polygon.material.getValue(julianDate).color;
   }
 }
+
+/**
+ * Checks is point lies within the polygon
+ * @param point
+ * @param polygonPositions
+ */
+export function pointInPolygon(point: Cartographic, polygonPositions: Cartographic[]): boolean {
+  let inside = false;
+  for (let i = 0, j = polygonPositions.length - 1; i < polygonPositions.length; j = i++) {
+    const xi = polygonPositions[i].longitude, yi = polygonPositions[i].latitude;
+    const xj = polygonPositions[j].longitude, yj = polygonPositions[j].latitude;
+
+    const intersect = ((yi > point.latitude) !== (yj > point.latitude))
+      && (point.longitude < (xj - xi) * (point.latitude - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
+}

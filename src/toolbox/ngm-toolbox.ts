@@ -142,7 +142,7 @@ export class NgmToolbox extends LitElementI18n {
       <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
                   .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
                   .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>
-      <ngm-gst-interaction .hidden="${this.activeTool !== 'gst'}"></ngm-gst-interaction>
+      <ngm-gst-interaction ?hidden="${this.activeTool !== 'gst'}"></ngm-gst-interaction>
       <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>`;
   }
 

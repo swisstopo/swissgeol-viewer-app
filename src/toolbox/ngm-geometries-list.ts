@@ -10,8 +10,9 @@ import $ from '../jquery.js';
 @customElement('ngm-geometries-list')
 export default class NgmGeometriesList extends LitElementI18n {
   @property({type: String}) selectedId = '';
-  @property({type: Function}) optionsTemplate: ((geom: NgmGeometry) => TemplateResult) | undefined;
+  @property({type: Function}) optionsTemplate: ((geom: NgmGeometry, active: boolean) => TemplateResult) | undefined;
   @property({type: Array}) disabledTypes: string[] = [];
+  @property({type: Function}) disabledCallback: ((geom: NgmGeometry) => boolean) | undefined;
   @state() geometries: NgmGeometry[] = [];
   @state() editingEnabled = false;
   @state() selectedFilter: GeometryTypes | undefined;
@@ -119,7 +120,7 @@ export default class NgmGeometriesList extends LitElementI18n {
         </div>
       </div>
       ${geometries.map((i) => {
-        const disabled = this.disabledTypes.includes(i.type) || this.editingEnabled;
+        const disabled = (this.disabledCallback && this.disabledCallback(i)) || this.disabledTypes.includes(i.type) || this.editingEnabled;
         const active = !disabled && this.selectedId === i.id;
         const hidden = !disabled && !active && !i.show;
         return html`
@@ -134,7 +135,7 @@ export default class NgmGeometriesList extends LitElementI18n {
                 ${this.actionMenuTemplate(i)}
               </div>
             </div>
-            ${this.optionsTemplate ? this.optionsTemplate(i) : ''}
+            ${this.optionsTemplate ? this.optionsTemplate(i, active) : ''}
           </div>
         `;
       })}

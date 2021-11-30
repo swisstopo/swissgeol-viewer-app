@@ -510,6 +510,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       case 'hideAll':
       case 'showAll':
         this.showHideGeomByType(options.action === 'showAll', options.type);
+        break;
+      case 'pick':
+        this.pickArea(options.id);
+        break;
     }
   }
 
