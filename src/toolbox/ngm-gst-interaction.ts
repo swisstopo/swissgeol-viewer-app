@@ -53,7 +53,7 @@ export class NgmGstInteraction extends LitElementI18n {
 
   update(changedProperties) {
     this.initExtent().then(() => {
-      if (this.gstExtent!.show !== !this.hidden)
+      if (this.gstExtent?.show !== !this.hidden)
         this.switchExtent(!this.hidden);
     });
     if (changedProperties.has('selectedId')) this.initDropdowns();
