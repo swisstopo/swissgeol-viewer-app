@@ -28,7 +28,7 @@ type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
  * The input value between 0 to 0.5 is mapped to the height between -30'000m and 0m
  * The input between 0.5 and 1 is mapped to the height between 0m and +300'000m
  */
-function heightToValue(height: number): number {
+export function heightToValue(height: number): number {
   const m = 0.5 / (height < 0 ? 30000 : 300000);
   return m * height + 0.5;
 }
@@ -38,7 +38,7 @@ function heightToValue(height: number): number {
  * The input value between 0 to 0.5 is mapped to the height between -30'000m and 0m
  * The input between 0.5 and 1 is mapped to the height between 0m and +300'000m
  */
-function valueToHeight(value: number): number {
+export function valueToHeight(value: number): number {
   if (value < 0.5) {
     return (30000 / 0.5) * value - 30000;
   } else {
