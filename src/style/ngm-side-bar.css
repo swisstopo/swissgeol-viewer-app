@@ -134,7 +134,7 @@ ngm-auth:hover {
 @media (max-height: 630px) {
   .ngm-menu {
     width: 100%;
-    height: 72px;
+    height: var(--ngm-bottom-menu-height);
     position: absolute;
     z-index: 9999;
     bottom: 0;

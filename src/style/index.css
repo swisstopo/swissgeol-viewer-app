@@ -394,7 +394,7 @@ ngm-layer-legend-container > ngm-layer-legend {
 
 @media (max-height: 630px) {
   .map {
-    margin-bottom: 72px;
+    margin-bottom: var(--ngm-bottom-menu-height);
   }
 }
 
