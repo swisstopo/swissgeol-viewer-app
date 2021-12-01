@@ -3,16 +3,14 @@ import {customElement, state} from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
-import {Interactable} from '@interactjs/types';
 import {Config} from '../layers/ngm-layers-item';
 
 @customElement('ngm-layer-legend')
 export class NgmLayerLegend extends LitElementI18n {
   @state() config!: Config;
-  @state() interaction: Interactable | null = null;
 
   connectedCallback() {
-    this.interaction = draggable(this, {
+    draggable(this, {
       allowFrom: '.drag-handle'
     });
     super.connectedCallback();
@@ -27,8 +25,22 @@ export class NgmLayerLegend extends LitElementI18n {
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
       <div class="content-container">
-          ${legendImage ? html`<div><img src="${legendImage}"></div>` : ''}
-          ${geocatUrl ? html`<div><a target="_blank" href="${geocatUrl}">${i18next.t('dtd_geocat_link')}</a></div>` : ''}
+        <table class="ui compact small very basic table">
+          <tbody>
+          ${legendImage ? html`
+            <tr class="top aligned">
+              <td class="key">${i18next.t('dtd_legend')}</td>
+              <td class="value"><img src="${legendImage}"></td>
+            </tr>
+            ` : ''}
+          ${geocatUrl ? html`
+          <tr class="top aligned">
+            <td class="key">${i18next.t('dtd_geocat_link')}</td>
+            <td class="value"><a href="${geocatUrl}" target="_blank" rel="noopener">${i18next.t('link')}</a></td>
+          </tr>
+          ` : ''}
+          </tbody>
+        </table>
       </div>
     `;
   }
