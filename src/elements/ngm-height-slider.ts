@@ -70,7 +70,7 @@ export class NgmHeightSlider extends LitElementI18n {
     const altitude = this.viewer.scene.globe.getHeight(camera.positionCartographic) || 0;
     let height = Math.round(valueToHeight(Number(input.value)));
     const snapDistance = 150; // snap to 0 from 150m/-150m
-    if (height <= snapDistance && height >= -snapDistance) height = 0;
+    if (height <= snapDistance && height >= -snapDistance) height = 10;
     height += altitude;
     NavToolsStore.setCameraHeight(height);
   }
