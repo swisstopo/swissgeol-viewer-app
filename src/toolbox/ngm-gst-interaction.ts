@@ -174,7 +174,7 @@ export class NgmGstInteraction extends LitElementI18n {
     ToolboxStore.nextGeometryAction({id: geom.id, action: 'pick'});
   }
 
-  disabledCallback(geom) {
+  geometryInsideExtent(geom) {
     const points = geom.positions.map(p => Cartographic.fromCartesian(p));
     let inside = false;
     for (let i = 0; i < points.length; i++) {
@@ -206,7 +206,7 @@ export class NgmGstInteraction extends LitElementI18n {
             <i class="dropdown icon"></i>
           </div>
         </div>
-        <button class="ui button ngm-action-btn ${this.hasValidParams(geom) ? '' : 'disabled'}"
+        <button class="ui button ngm-action-btn ${classMap({disabled: this.hasValidParams(geom)})}"
                 @click=${() => this.getGST(geom)}>
           ${i18next.t('tbx_create_section_label')}
         </button>
@@ -219,7 +219,7 @@ export class NgmGstInteraction extends LitElementI18n {
       <ngm-geometries-list
         .selectedId=${this.selectedId}
         .disabledTypes=${['polygon']}
-        .disabledCallback=${geom => this.disabledCallback(geom)}
+        .disabledCallback=${geom => this.geometryInsideExtent(geom)}
         .optionsTemplate=${(geom, active) => this.interactionTemplate(geom, active)}
         @geomclick=${evt => this.onGeomClick(evt.detail)}>
       </ngm-geometries-list>`;
