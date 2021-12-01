@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 
-const MARGIB_BETWEEN_WINDOWS = 5;
+const MARGIN_BETWEEN_WINDOWS = 5;
 
 /**
  * @param {HTMLElement} target
@@ -77,8 +77,8 @@ function moveWindow(target, moveLeft) {
     }
     // move left/right
     target.style.left = moveLeft ?
-      `${checkRect.left - targetRect.width - MARGIB_BETWEEN_WINDOWS}px` :
-      `${checkRect.right + MARGIB_BETWEEN_WINDOWS}px`;
+      `${checkRect.left - targetRect.width - MARGIN_BETWEEN_WINDOWS}px` :
+      `${checkRect.right + MARGIN_BETWEEN_WINDOWS}px`;
     // always set right to auto to have correct window size
     target.style.right = 'auto';
     // reposition window to have it always on map
@@ -89,13 +89,13 @@ function moveWindow(target, moveLeft) {
     else if (
       rectsForCheck[i + 1] && !(
         // checks if enough space between checked window and next one
-        (moveLeft && rectsForCheck[i].left - rectsForCheck[i + 1].right > targetRect.width + MARGIB_BETWEEN_WINDOWS) ||
-        (!moveLeft && rectsForCheck[i + 1].left - rectsForCheck[i].right > targetRect.width + MARGIB_BETWEEN_WINDOWS)
+        (moveLeft && rectsForCheck[i].left - rectsForCheck[i + 1].right > targetRect.width + MARGIN_BETWEEN_WINDOWS) ||
+        (!moveLeft && rectsForCheck[i + 1].left - rectsForCheck[i].right > targetRect.width + MARGIN_BETWEEN_WINDOWS)
       )) {
       // saves a backup of style to restore if window anyway overlap another one after move top/bottom
       const styleBackup = target.style;
-      const topPosition = rectsForCheck[i + 1].top - (targetRect.height + MARGIB_BETWEEN_WINDOWS);
-      const bottomPosition = rectsForCheck[i + 1].bottom + MARGIB_BETWEEN_WINDOWS;
+      const topPosition = rectsForCheck[i + 1].top - (targetRect.height + MARGIN_BETWEEN_WINDOWS);
+      const bottomPosition = rectsForCheck[i + 1].bottom + MARGIN_BETWEEN_WINDOWS;
       // tries to place the window on the bottom of the next window or on top
       if (targetRect.top < rectsForCheck[i + 1].bottom && bottomPosition + targetRect.height < parentRect.height) {
         target.style.top = `${bottomPosition}px`;
@@ -123,7 +123,7 @@ function repositionOnOpen(target) {
       const parentRect = target.parentElement!.getBoundingClientRect();
       const targetRect = target.getBoundingClientRect();
       // starts moving the window to the left if enough space or to the right otherwise
-      const moveLeft = targetRect.left - parentRect.left > targetRect.width + MARGIB_BETWEEN_WINDOWS;
+      const moveLeft = targetRect.left - parentRect.left > targetRect.width + MARGIN_BETWEEN_WINDOWS;
       // moves in the first side
       moveWindow(target, moveLeft);
       overlapList = checkForOverlap(target);
