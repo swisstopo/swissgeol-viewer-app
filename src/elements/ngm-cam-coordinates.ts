@@ -15,9 +15,6 @@ export class NgmCamCoordinates extends LitElementI18n {
   @state()
   key = 'lv95';
 
-  @state()
-  dropdownInited = false;
-
   @query('.dropdown')
   dropdown;
 
@@ -26,10 +23,7 @@ export class NgmCamCoordinates extends LitElementI18n {
   }
 
   updated(changedProperties: PropertyValues) {
-    if (!this.dropdownInited && this.dropdown) {
-      $(this.dropdown).dropdown();
-      this.dropdownInited = true;
-    }
+    $(this.dropdown).dropdown();
     super.updated(changedProperties);
   }
 
