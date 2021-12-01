@@ -187,7 +187,7 @@ export class SideBar extends LitElementI18n {
           <h5 class="ui header">
             ${i18next.t('dtd_background_map_label')}
             <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
-              <span class="small_load_counter">${this.globeQueueLength_}</span>
+              <span class="ngm-load-counter">${this.globeQueueLength_}</span>
             </div>
           </h5>
           <ngm-map-configuration></ngm-map-configuration>

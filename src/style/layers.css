@@ -21,6 +21,10 @@
   max-width: 22px;
 }
 
+.ngm-layer-icon.ngm-visible-icon  {
+  margin-left: 2px;
+}
+
 .ngm-layer-icon:hover, .ngm-layer-icon:focus {
   background-color: var(--ngm-interaction-hover);
 }
@@ -76,6 +80,10 @@ ngm-layers-upload .ngm-upload-icon {
   margin-left: 12px;
   width: 20px;
   height: 20px;
+}
+
+ngm-layers-upload .ui.inline.loader {
+  margin-left: 12px;
 }
 
 ngm-layers-upload button:hover {
@@ -209,4 +217,8 @@ ngm-layers-upload .ui.dropdown {
 
 ngm-layers-upload .ngm-action-menu-icon {
   background-color: gray;
+}
+
+.ngm-upload-kml-btn {
+  margin-bottom: 16px;
 }
