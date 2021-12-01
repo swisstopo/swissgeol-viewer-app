@@ -179,8 +179,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       if (pickedObject && pickedObject.id) { // to prevent error on tileset click
         if (this.geometriesDataSource!.entities.contains(pickedObject.id)) {
           this.pickArea(pickedObject.id.id);
-        } else if (this.selectedArea) {
-          this.deselectArea();
         }
       }
     }
@@ -239,14 +237,18 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     NavToolsStore.hideTargetPoint();
     if (!entity.isShowing)
       entity.show = true;
-    let positions = getAreaPositions(entity, this.julianDate);
-    positions = updateHeightForCartesianPositions(positions, undefined, this.viewer!.scene);
-    const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
-    const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 2), 0);
-    this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
-      duration: 2,
-      offset: zoomHeadingPitchRange
-    });
+    const flyToEntity = (repeat) => {
+      let positions = getAreaPositions(entity, this.julianDate);
+      positions = updateHeightForCartesianPositions(positions, undefined, this.viewer!.scene);
+      const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
+      const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 2), 0);
+      this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
+        duration: repeat ? 2 : 0,
+        offset: zoomHeadingPitchRange,
+        complete: () => repeat && flyToEntity(false)
+      });
+    };
+    flyToEntity(true);
     this.pickArea(id);
   }
 

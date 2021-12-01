@@ -21,12 +21,16 @@
   max-width: 22px;
 }
 
-.ngm-layer-icon:hover, .ngm-layer-icon:focus {
-  background-color: #66D9E8;
+.ngm-layer-icon.ngm-visible-icon  {
+  margin-left: 2px;
 }
 
-.ngm-layer-icon:active {
-  background-color: #15AABF;
+.ngm-layer-icon:hover, .ngm-layer-icon:focus {
+  background-color: var(--ngm-interaction-hover);
+}
+
+.ngm-layer-icon:active, .ngm-action-menu.active .ngm-action-menu-icon {
+  background-color: var(--ngm-interaction-active);
 }
 
 ngm-layers-item, .ngm-base-layer {
@@ -78,13 +82,17 @@ ngm-layers-upload .ngm-upload-icon {
   height: 20px;
 }
 
+ngm-layers-upload .ui.inline.loader {
+  margin-left: 12px;
+}
+
 ngm-layers-upload button:hover {
-  color: #66D9E8;
-  border: 2px dashed #66D9E8;
+  color: var(--ngm-interaction-hover);
+  border: 2px dashed var(--ngm-interaction-hover);
 }
 
 ngm-layers-upload button:hover .ngm-upload-icon {
-  background-color: #66D9E8;
+  background-color: var(--ngm-interaction-hover);
 }
 
 ngm-layers-upload button.active {
@@ -185,12 +193,12 @@ ngm-layers-upload .ngm-upload-icon {
 }
 
 ngm-layers-upload button:hover {
-  color: #66D9E8;
-  border: 2px dashed #66D9E8;
+  color: var(--ngm-interaction-hover);
+  border: 2px dashed var(--ngm-interaction-hover);
 }
 
 ngm-layers-upload button:hover .ngm-upload-icon {
-  background-color: #66D9E8;
+  background-color: var(--ngm-interaction-hover);
 }
 
 ngm-layers-upload button.active {
@@ -209,4 +217,8 @@ ngm-layers-upload .ui.dropdown {
 
 ngm-layers-upload .ngm-action-menu-icon {
   background-color: gray;
+}
+
+.ngm-upload-kml-btn {
+  margin-bottom: 16px;
 }

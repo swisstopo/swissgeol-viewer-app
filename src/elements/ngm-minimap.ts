@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {customElement, state, property} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import {Event, Viewer} from 'cesium';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import CesiumMath from 'cesium/Source/Core/Math';
@@ -118,7 +118,7 @@ export class NgmMinimap extends LitElementI18n {
   }
 
   connectedCallback() {
-    this.interaction = draggable(this, {
+    draggable(this, {
       allowFrom: '.drag-handle'
     });
     super.connectedCallback();

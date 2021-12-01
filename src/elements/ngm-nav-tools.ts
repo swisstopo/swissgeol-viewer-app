@@ -72,7 +72,7 @@ export class NgmNavTools extends LitElementI18n {
 
   connectedCallback() {
     document.addEventListener('pointerup', this.stopZoomFunction);
-    this.interaction = draggable(this, {
+    draggable(this, {
       allowFrom: '.ngm-drag-area'
     });
     super.connectedCallback();

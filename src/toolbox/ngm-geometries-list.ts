@@ -30,7 +30,7 @@ export default class NgmGeometriesList extends LitElementI18n {
   }
 
   updated(changedProperties) {
-    if (changedProperties.get('geometries'))
+    if (changedProperties.get('geometries') || changedProperties.get('selectedFilter'))
       this.querySelectorAll('.ngm-action-menu').forEach(el => $(el).dropdown());
 
     super.updated(changedProperties);
