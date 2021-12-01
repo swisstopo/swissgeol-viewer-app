@@ -4,8 +4,8 @@ import 'fomantic-ui-css/components/toast.js';
 import i18next from 'i18next';
 
 
-export function showSnackbarInfo(message: string) {
-  showSnackbarMessage(message, 'snackbar info');
+export function showSnackbarInfo(message: string, options?) {
+  showSnackbarMessage(message, 'snackbar info', options);
 }
 
 export function showSnackbarSuccess(message: string) {
