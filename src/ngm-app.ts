@@ -231,6 +231,7 @@ export class NgmApp extends LitElementI18n {
         <div class='map'>
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
+            <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
             <ngm-object-information class="ngm-floating-window"></ngm-object-information>
             <ngm-nav-tools class="ngm-floating-window" .viewer=${this.viewer} .showCamConfig=${this.showCamConfig}
                            @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}>
@@ -249,7 +250,6 @@ export class NgmApp extends LitElementI18n {
             <a class="disclaimer-link" target="_blank" href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
           </div>
           <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
-          <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
         </div>
       </main>
     `;

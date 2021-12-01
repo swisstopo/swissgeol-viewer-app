@@ -86,7 +86,7 @@ export default class QueryManager {
       }
     }
 
-    if (attributes.geomId) {
+    if (attributes && attributes.geomId) {
       ToolboxStore.setOpenedGeometryOptions({id: attributes.geomId});
       return;
     }
