@@ -1,32 +1,33 @@
 describe('Toolbox', () => {
   const testGstOutput = () => {
+    cy.intercept('https://viewer.geomol.ch/webgui/**', (req) => {
+      req.reply(200, {imageUrl: `https://viewer.geomol.ch/webgui/tmp/test.${req.query.outputType}`});
+    }).as('createSection');
     cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').should('not.have.class', 'disabled');
     cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').click();
     cy.get('.ngm-gst-container .ngm-action-btn').click();
-    cy.get('.ngm-gst-modal', {timeout: 120000}).should('be.visible');
+    cy.get('.ngm-gst-modal', {timeout: 15000}).should('be.visible');
     cy.get('ngm-gst-modal').then(el => {
-      // @ts-ignore
-      const url = el[0].imageUrl;
+      const url = (<any>el[0]).imageUrl;
       expect(url).to.match(/pdf/);
     });
     cy.get('.ngm-gst-modal .ngm-cancel-btn').click();
+    // wait for rerender
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000);
     cy.get('.ngm-section-format').click();
     cy.get('.ngm-section-format .menu .item:nth-child(2)').click();
     cy.get('.ngm-section-format').trigger('change');
     cy.get('.ngm-gst-container .ngm-action-btn').click();
-    cy.get('.ngm-gst-modal', {timeout: 120000}).should('be.visible');
+    cy.get('.ngm-gst-modal', {timeout: 15000}).should('be.visible');
     cy.get('ngm-gst-modal').then(el => {
-      // @ts-ignore
-      const url = el[0].imageUrl;
+      const url = (<any>el[0]).imageUrl;
       expect(url).to.match(/svg/);
     });
   };
   it('GST point', () => {
-    cy.visit('/');
-    cy.get('.ngm-tools', {timeout: 120000}).click();
-    // todo remove when loading test merged
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(5000);
+    (<any>cy).loadPage();
+    cy.get('.ngm-tools').click();
     cy.get('.ngm-vector-icon').click();
     cy.get('.ngm-draw-list-item:first-child').click();
     cy.get('.cesium-widget > canvas').click(450, 280);
@@ -42,11 +43,8 @@ describe('Toolbox', () => {
   });
 
   it('GST line', () => {
-    cy.visit('/');
-    cy.get('.ngm-tools', {timeout: 120000}).click();
-    // todo remove when loading test merged
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(5000);
+    (<any>cy).loadPage();
+    cy.get('.ngm-tools').click();
     cy.get('.ngm-vector-icon').click();
     cy.get('.ngm-draw-list-item:nth-child(3)').click();
     cy.get('.cesium-widget > canvas').click(450, 280);

@@ -75,7 +75,6 @@ export class NgmToolbox extends LitElementI18n {
       this.activeTool = 'slicing';
   }
 
-  // required for gst
   showSectionModal(imageUrl) {
     this.sectionImageUrl = imageUrl;
   }

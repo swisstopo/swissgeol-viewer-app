@@ -9,22 +9,25 @@ import 'fomantic-ui-css/components/modal.js';
 
 @customElement('ngm-gst-modal')
 export class NgmGstModal extends LitElementI18n {
-  @property({type: String}) imageUrl = '';
+  @property({type: String}) imageUrl: string | undefined;
   element;
 
 
   firstUpdated(_changedProperties) {
     this.element = $('.ngm-gst-modal.ui.modal').modal({
       centered: false,
-      onHidden: () => this.imageUrl = '',
+      onHidden: () => this.imageUrl = undefined,
       onApprove: () => window.open(this.imageUrl, '_blank')
     });
     super.firstUpdated(_changedProperties);
   }
 
   updated(changedProperties) {
-    if (changedProperties.has('imageUrl') && this.imageUrl) this.element.modal('show');
-    else if (!this.imageUrl) this.element.modal('hide');
+    if (changedProperties.has('imageUrl') && this.imageUrl) {
+      this.element.modal('show');
+    } else if (!this.imageUrl) {
+      this.element.modal('hide');
+    }
     super.updated(changedProperties);
   }
 
