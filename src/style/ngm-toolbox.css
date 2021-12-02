@@ -44,6 +44,7 @@ ngm-slicer {
   color: var(--ngm-action-hover);
 }
 
+ngm-gst-interaction .ngm-action-list-item.active,
 ngm-slicer .ngm-action-list-item.active {
   height: auto;
 }
@@ -144,4 +145,45 @@ ngm-slicer .ngm-divider {
 
 .ngm-geom-filter.ngm-action-list-item .ngm-action-list-item-header > div:first-child.active {
   color: var(--ngm-interaction-active);
+}
+
+.ngm-gst-container,
+.ngm-gst-container .ngm-input > input {
+  width: 100%;
+}
+
+.ngm-gst-container > div:first-child {
+  margin-top: 12px;
+}
+
+.ngm-gst-container > div {
+  margin-bottom: 12px;
+}
+
+.ngm-section-format-container {
+  font: normal normal bold 15px/24px Inter;
+  letter-spacing: 0.16px;
+  color: #222529;
+}
+
+.ngm-section-format-container > label {
+  color: #495057;
+  font: normal normal 500 14px/20px Inter;
+}
+
+.ngm-section-format-container .dropdown.active,
+.ngm-section-format-container .dropdown {
+  background-color: transparent;
+  font: normal normal bold 15px/24px Inter;
+  padding: 0;
+}
+
+.ngm-section-format-container .ui.dropdown .menu {
+  border-radius: 0;
+  box-shadow: 0 3px 4px #00000029;
+  width: 100%;
+}
+
+.ngm-section-format-container .ui.dropdown .menu .item:hover {
+  background-color: var(--ngm-hover);
 }

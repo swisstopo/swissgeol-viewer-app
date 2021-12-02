@@ -2,8 +2,8 @@
 
 import assert from 'assert';
 import {assert as chaiAssert} from 'chai';
-import {createZipFromData, createDataGenerator} from '../download';
-import {containsXY, filterCsvString, areBboxIntersectings} from '../utils.js';
+import {createDataGenerator, createZipFromData} from '../download';
+import {areBboxIntersectings, containsXY, filterCsvString} from '../utils';
 
 // see https://stackoverflow.com/questions/58668361/how-can-i-convert-an-async-iterator-to-an-array
 async function toArray<T>(asyncIterator: AsyncIterable<T>): Promise<T[]> {

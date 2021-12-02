@@ -13,9 +13,9 @@ import {
   SceneTransforms,
   Transforms
 } from 'cesium';
-import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline.js';
 import {degreesToLv95} from './projection.js';
 import {NgmGeometry} from './toolbox/interfaces';
+import earcut from 'earcut';
 
 const julianDate = new JulianDate();
 
@@ -100,7 +100,7 @@ export function verticalDirectionRotate(camera, angle) {
  * @return {number}
  */
 function getPolygonArea(positions, holes = []) {
-  const indices = PolygonPipeline.triangulate(positions, holes);
+  const indices = triangulate(positions, holes);
   let area = 0;
 
   for (let i = 0; i < indices.length; i += 3) {
@@ -437,4 +437,35 @@ export function getEntityColor(entity) {
   } else if (entity.polygon) {
     return entity.polygon.material.getValue(julianDate).color;
   }
+}
+
+/**
+ * Checks is point lies within the polygon
+ * @param point
+ * @param polygonPositions
+ */
+export function pointInPolygon(point: Cartographic, polygonPositions: Cartographic[]): boolean {
+  let inside = false;
+  for (let i = 0, j = polygonPositions.length - 1; i < polygonPositions.length; j = i++) {
+    const xi = polygonPositions[i].longitude, yi = polygonPositions[i].latitude;
+    const xj = polygonPositions[j].longitude, yj = polygonPositions[j].latitude;
+
+    const intersect = ((yi > point.latitude) !== (yj > point.latitude))
+      && (point.longitude < (xj - xi) * (point.latitude - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
+}
+
+/**
+ * Triangulate a polygon.
+ *
+ * @param {Cartesian2[]} positions Cartesian2 array containing the vertices of the polygon
+ * @param {Number[]} [holes] An array of the staring indices of the holes.
+ * @returns {Number[]} Index array representing triangles that fill the polygon
+ */
+export function triangulate(positions, holes) {
+  const flattenedPositions = Cartesian2.packArray(positions);
+  return earcut(flattenedPositions, holes, 2);
 }

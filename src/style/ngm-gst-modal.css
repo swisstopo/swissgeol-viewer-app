@@ -2,3 +2,8 @@
   width: 100%;
   height: 500px;
 }
+
+.ngm-gst-modal .actions {
+  display: flex;
+  justify-content: end;
+}

@@ -9,20 +9,26 @@ import 'fomantic-ui-css/components/modal.js';
 
 @customElement('ngm-gst-modal')
 export class NgmGstModal extends LitElementI18n {
-  @property({type: String}) imageUrl = '';
+  @property({type: String}) imageUrl: string | undefined;
   element;
 
-  updated() {
-    if (this.imageUrl) {
-      if (!this.element) {
-        this.element = $('.ngm-gst-modal.ui.modal').modal({
-          centered: false,
-          onHidden: () => this.imageUrl = '',
-          onApprove: () => window.open(this.imageUrl, '_blank')
-        });
-      }
+
+  firstUpdated(_changedProperties) {
+    this.element = $('.ngm-gst-modal.ui.modal').modal({
+      centered: false,
+      onHidden: () => this.imageUrl = undefined,
+      onApprove: () => window.open(this.imageUrl, '_blank')
+    });
+    super.firstUpdated(_changedProperties);
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has('imageUrl') && this.imageUrl) {
       this.element.modal('show');
+    } else if (!this.imageUrl) {
+      this.element.modal('hide');
     }
+    super.updated(changedProperties);
   }
 
   get getOutputType() {
@@ -40,12 +46,10 @@ export class NgmGstModal extends LitElementI18n {
             <embed src="${this.imageUrl}"></embed>` : html``}
         </div>
         <div class="actions">
-          <div class="ui cancel small labeled icon button">
-            <i class="remove icon"></i>
+          <div class="ui cancel button ngm-cancel-btn">
             ${i18next.t('tbx_gst_close_label')}
           </div>
-          <div class="ui ok green small labeled icon button">
-            <i class="download icon"></i>
+          <div class="ui ok button ngm-action-btn">
             ${i18next.t('tbx_download_section_output_label')} ${this.getOutputType}
           </div>
         </div>
