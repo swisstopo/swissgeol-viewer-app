@@ -37,6 +37,11 @@ ngm-tracking-consent .ui.button:hover {
   ngm-tracking-consent {
     max-height: calc(100vh - var(--ngm-header-height) - var(--ngm-bottom-menu-height) - 10px);
     bottom: 78px;
-    width: 80%;
+  }
+}
+
+@media (max-width: 1193px) {
+  ngm-tracking-consent {
+    width: 85%;
   }
 }
