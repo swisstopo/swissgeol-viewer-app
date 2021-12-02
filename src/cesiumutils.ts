@@ -13,9 +13,9 @@ import {
   SceneTransforms,
   Transforms
 } from 'cesium';
-import PolygonPipeline from 'cesium/Source/Core/PolygonPipeline.js';
 import {degreesToLv95} from './projection.js';
 import {NgmGeometry} from './toolbox/interfaces';
+import earcut from 'earcut';
 
 const julianDate = new JulianDate();
 
@@ -100,7 +100,7 @@ export function verticalDirectionRotate(camera, angle) {
  * @return {number}
  */
 function getPolygonArea(positions, holes = []) {
-  const indices = PolygonPipeline.triangulate(positions, holes);
+  const indices = triangulate(positions, holes);
   let area = 0;
 
   for (let i = 0; i < indices.length; i += 3) {
@@ -456,4 +456,16 @@ export function pointInPolygon(point: Cartographic, polygonPositions: Cartograph
   }
 
   return inside;
+}
+
+/**
+ * Triangulate a polygon.
+ *
+ * @param {Cartesian2[]} positions Cartesian2 array containing the vertices of the polygon
+ * @param {Number[]} [holes] An array of the staring indices of the holes.
+ * @returns {Number[]} Index array representing triangles that fill the polygon
+ */
+export function triangulate(positions, holes) {
+  const flattenedPositions = Cartesian2.packArray(positions);
+  return earcut(flattenedPositions, holes, 2);
 }

@@ -32,6 +32,7 @@
     "@sentry/browser": "^6.15.0",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "cesium": "^1.87.1",
+    "earcut": "^2.2.3",
     "event-target-shim": "^6.0.2",
     "fomantic-ui-css": "^2.8.8",
     "i18next": "^21.5.3",
