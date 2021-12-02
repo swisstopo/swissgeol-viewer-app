@@ -153,6 +153,21 @@ ngm-app {
   vertical-align: middle;
 }
 
+cesium-view-cube {
+  --cesium-view-cube-stroke-color: transparent;
+  --cesium-view-cube-fill-color: transparent;
+  position: absolute;
+  z-index: 2;
+  bottom: 40px;
+  right: 100px;
+}
+
+@media (max-height: 630px) {
+  cesium-view-cube {
+    bottom: 80px;
+  }
+}
+
 #cesium {
   display: flex;
   flex: auto;

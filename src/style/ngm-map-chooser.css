@@ -27,7 +27,7 @@
 
 .ngm-bg-chooser-map {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   right: 16px;
   bottom: 40px;
   background: #F1F3F5;
