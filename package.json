@@ -63,7 +63,7 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.11.10",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "@typescript-eslint/parser": "^5.4.0",
+    "@typescript-eslint/parser": "^5.5.0",
     "autoprefixer": "^10.4.0",
     "babel-loader": "^8.2.3",
     "chai": "^4.3.4",
