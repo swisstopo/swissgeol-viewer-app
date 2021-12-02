@@ -31,6 +31,7 @@ ngm-layer-legend .ui.basic.table tbody tr {
 ngm-layer-legend .ui.table .key {
   padding-left: 8px !important;
   vertical-align: top;
+  white-space: nowrap;
 }
 
 ngm-layer-legend .ui.table .value {
@@ -47,7 +48,7 @@ ngm-layer-legend .ui.table .value a {
 }
 
 ngm-layer-legend .ui.table .value img {
-  max-width: 200px;
+  width: 200px;
 }
 
 ngm-layer-legend .ui.divider {

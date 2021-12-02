@@ -9,11 +9,14 @@ import {Config} from '../layers/ngm-layers-item';
 export class NgmLayerLegend extends LitElementI18n {
   @state() config!: Config;
 
-  connectedCallback() {
+  protected firstUpdated(_changedProperties) {
+    // hidden is required to have correct window placing
+    this.hidden = true;
     draggable(this, {
       allowFrom: '.drag-handle'
     });
-    super.connectedCallback();
+    this.hidden = false;
+    super.firstUpdated(_changedProperties);
   }
 
   render() {
