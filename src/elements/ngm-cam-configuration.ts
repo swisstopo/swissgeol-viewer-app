@@ -3,17 +3,15 @@ import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
-import {Interactable} from '@interactjs/types';
+import type {Interactable} from '@interactjs/types';
+import type {Event, Scene, Viewer} from 'cesium';
 import {
   Cartesian2,
-  Event,
   KeyboardEventModifier,
   Math as CesiumMath,
   Matrix4,
-  Scene,
   ScreenSpaceEventHandler,
-  ScreenSpaceEventType,
-  Viewer
+  ScreenSpaceEventType
 } from 'cesium';
 import {formatCartographicAs2DLv95} from '../projection';
 import {styleMap} from 'lit/directives/style-map.js';

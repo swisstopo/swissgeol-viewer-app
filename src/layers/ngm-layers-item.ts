@@ -5,7 +5,7 @@ import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import $ from '../jquery.js';
-import {LayerTreeNode} from '../layertree';
+import type {LayerTreeNode} from '../layertree';
 
 export interface Config extends LayerTreeNode {
   add?: any;

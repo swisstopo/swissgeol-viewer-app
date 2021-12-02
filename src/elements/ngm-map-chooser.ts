@@ -1,7 +1,7 @@
 import {html, LitElement} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
-import {BaseLayerConfig} from '../viewer';
+import type {BaseLayerConfig} from '../viewer';
 
 @customElement('ngm-map-chooser')
 export class NgmMapChooser extends LitElement {

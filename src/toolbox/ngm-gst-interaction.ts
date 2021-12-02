@@ -16,12 +16,13 @@ import CesiumMath from 'cesium/Source/Core/Math';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
 import MainStore from '../store/main';
-import {JulianDate, Viewer} from 'cesium';
-import {NgmToolbox} from './ngm-toolbox';
+import {JulianDate} from 'cesium';
+import type {NgmToolbox} from './ngm-toolbox';
 import {classMap} from 'lit-html/directives/class-map.js';
 import ToolboxStore from '../store/toolbox';
-import {NgmGeometry} from './interfaces';
+import type {NgmGeometry} from './interfaces';
 import {pointInPolygon} from '../cesiumutils';
+import type {Viewer} from 'cesium';
 
 export type OutputFormat = 'pdf' | 'png' | 'svg';
 

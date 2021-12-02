@@ -1,6 +1,7 @@
 import CSVParser from 'papaparse';
 import {SWITZERLAND_RECTANGLE} from './constants';
-import {BoundingSphere, Ellipsoid, HeadingPitchRange, Viewer} from 'cesium';
+import type {Viewer} from 'cesium';
+import {BoundingSphere, Ellipsoid, HeadingPitchRange} from 'cesium';
 
 /**
  * @return {URLSearchParams}

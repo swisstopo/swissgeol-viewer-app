@@ -1,13 +1,14 @@
 import {CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_VOLUME_HEIGHT_LIMITS} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import {Entity, exportKml, exportKmlResultKml, Globe, JulianDate} from 'cesium';
+import type {Entity, exportKmlResultKml, Globe} from 'cesium';
+import {exportKml, JulianDate} from 'cesium';
 import {extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {calculateBoxHeight} from '../slicer/helper';
 import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
 import {saveAs} from 'file-saver';
-import {GeometryTypes} from './interfaces';
+import type {GeometryTypes} from './interfaces';
 
 const julianDate = new JulianDate();
 

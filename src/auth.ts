@@ -1,8 +1,7 @@
-import {
+import type {
   CognitoIdentityCredentialProvider,
-  CognitoIdentityCredentials,
-  fromCognitoIdentityPool
-} from '@aws-sdk/credential-provider-cognito-identity';
+  CognitoIdentityCredentials} from '@aws-sdk/credential-provider-cognito-identity';
+import {fromCognitoIdentityPool} from '@aws-sdk/credential-provider-cognito-identity';
 import {CognitoIdentityClient} from '@aws-sdk/client-cognito-identity';
 import auth from './store/auth';
 

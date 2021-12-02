@@ -9,12 +9,12 @@ import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import {getDirectionFromPoints, updateHeightForCartesianPositions} from '../cesiumutils';
-import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
-import DataSource from 'cesium/Source/DataSources/DataSource';
-import ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
-import Quaternion from 'cesium/Source/Core/Quaternion';
-import ShadowMode from 'cesium/Source/Scene/ShadowMode';
-import {BBox} from './helper';
+import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type DataSource from 'cesium/Source/DataSources/DataSource';
+import type ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
+import type Quaternion from 'cesium/Source/Core/Quaternion';
+import type ShadowMode from 'cesium/Source/Scene/ShadowMode';
+import type {BBox} from './helper';
 import {debounce} from '../utils';
 
 interface ArrowListItem {

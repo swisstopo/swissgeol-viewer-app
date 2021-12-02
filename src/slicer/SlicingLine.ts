@@ -5,7 +5,7 @@ import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Plane from 'cesium/Source/Core/Plane';
-import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
+import type Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
 
 export interface SlicingLineOptions {

@@ -1,7 +1,8 @@
 import {LitElementI18n} from '../i18n';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {html} from 'lit';
-import {Entity, Event, PropertyBag, Viewer} from 'cesium';
+import type {Event, Viewer} from 'cesium';
+import {Entity, PropertyBag} from 'cesium';
 import i18next from 'i18next';
 import MainStore from '../store/main';
 import {hideVolume, updateEntityVolume, updateVolumePositions} from './helpers';
@@ -10,7 +11,7 @@ import ToolboxStore from '../store/toolbox';
 import CesiumMath from 'cesium/Source/Core/Math';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import DrawStore from '../store/draw';
-import {CesiumDraw} from '../draw/CesiumDraw';
+import type {CesiumDraw} from '../draw/CesiumDraw';
 import {GEOMETRY_COLORS, POINT_SYMBOLS} from '../constants';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';

@@ -1,4 +1,4 @@
-import {OutputFormat} from './toolbox/ngm-gst-interaction';
+import type {OutputFormat} from './toolbox/ngm-gst-interaction';
 
 const boreholeBaseUrl = 'https://viewer.geomol.ch/webgui/createBoreholeWithOverviewMap.php';
 const boreholeParams = 'csRootElement=0&csRootScale=-1&intersectionGeometry=multipoint%20z%20(({coordinates}))&legendTemplateFile=&maxBoreDepth={depth}&outputType={outputType}&projectZ=true&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=02-BH_swisstopo_Map_2019a.svg&title={title}&user=NGM&crs=EPSG:2056';

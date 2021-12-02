@@ -1,5 +1,5 @@
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import type Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {radiansToLv95} from '../projection';
 
 const getIdentifyUrl = ({geom2056, lang, layers, tolerance}) =>

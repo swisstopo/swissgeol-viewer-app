@@ -1,5 +1,5 @@
-import Primitive from 'cesium/Source/Scene/Primitive';
-import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type Primitive from 'cesium/Source/Scene/Primitive';
+import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 
 /**
  * Base class for slicing tools.

@@ -34,8 +34,8 @@ import {classMap} from 'lit/directives/class-map.js';
 import {zoomTo} from '../utils';
 import $ from '../jquery';
 import {customElement, property, state} from 'lit/decorators.js';
-import {Cartesian2, Viewer} from 'cesium';
-import QueryManager from '../query/QueryManager';
+import type {Cartesian2, Viewer} from 'cesium';
+import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-side-bar')

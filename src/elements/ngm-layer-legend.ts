@@ -3,7 +3,7 @@ import {customElement, state} from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
-import {Config} from '../layers/ngm-layers-item';
+import type {Config} from '../layers/ngm-layers-item';
 
 @customElement('ngm-layer-legend')
 export class NgmLayerLegend extends LitElementI18n {

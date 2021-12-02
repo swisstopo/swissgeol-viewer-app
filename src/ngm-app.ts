@@ -34,11 +34,11 @@ import MainStore from './store/main';
 import ToolboxStore from './store/toolbox';
 import {classMap} from 'lit/directives/class-map.js';
 import {customElement, state} from 'lit/decorators.js';
-import MapChooser from './MapChooser';
-import {NgmSlowLoading} from './elements/ngm-slow-loading';
-import {Viewer} from 'cesium';
 import {showSnackbarInfo} from './notifications';
-import {Config} from './layers/ngm-layers-item';
+import type MapChooser from './MapChooser';
+import type {NgmSlowLoading} from './elements/ngm-slow-loading';
+import type {Viewer} from 'cesium';
+import type {Config} from './layers/ngm-layers-item';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 

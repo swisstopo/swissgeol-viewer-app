@@ -1,6 +1,6 @@
 import {BehaviorSubject, Subject} from 'rxjs';
-import {Viewer} from 'cesium';
-import MapChooser from '../MapChooser';
+import type {Viewer} from 'cesium';
+import type MapChooser from '../MapChooser';
 
 export default class MainStore {
   private static viewerSubject = new BehaviorSubject<Viewer | null>(null);
