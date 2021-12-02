@@ -206,7 +206,7 @@ export class NgmGstInteraction extends LitElementI18n {
             <i class="dropdown icon"></i>
           </div>
         </div>
-        <button class="ui button ngm-action-btn ${classMap({disabled: this.hasValidParams(geom)})}"
+        <button class="ui button ngm-action-btn ${classMap({disabled: !this.hasValidParams(geom)})}"
                 @click=${() => this.getGST(geom)}>
           ${i18next.t('tbx_create_section_label')}
         </button>
