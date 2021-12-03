@@ -3,6 +3,9 @@ ngm-tracking-consent {
   left: 50%;
   transform: translate(-50%, 0);
   bottom: 6px;
+  max-height: calc(100vh - var(--ngm-header-height) - 10px);
+  overflow-y: auto;
+  z-index: 3;
 }
 
 ngm-tracking-consent .ui.card {
@@ -27,4 +30,18 @@ ngm-tracking-consent .ui.button:hover {
   color: #fff;
   text-shadow: none;
   background-image: none;
+  margin-bottom: 2px;
+}
+
+@media (max-height: 630px) {
+  ngm-tracking-consent {
+    max-height: calc(100vh - var(--ngm-header-height) - var(--ngm-bottom-menu-height) - 10px);
+    bottom: 78px;
+  }
+}
+
+@media (max-width: 1193px) {
+  ngm-tracking-consent {
+    width: 85%;
+  }
 }
