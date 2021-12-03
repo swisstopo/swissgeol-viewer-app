@@ -35,6 +35,7 @@ import {customElement, state} from 'lit/decorators.js';
 import MapChooser from './MapChooser';
 import {NgmSlowLoading} from './elements/ngm-slow-loading';
 import {Viewer} from 'cesium';
+import {showSnackbarInfo} from './notifications';
 import {Config} from './layers/ngm-layers-item';
 
 const SKIP_STEP2_TIMEOUT = 5000;
@@ -111,6 +112,7 @@ export class NgmApp extends LitElementI18n {
 
   onStep2Finished(viewer) {
     this.loading = false;
+    this.showNavigationHint();
     const loadingTime = performance.now() / 1000;
     console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
     (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
@@ -222,6 +224,20 @@ export class NgmApp extends LitElementI18n {
   onTrackingAllowedChanged(event) {
     initSentry(event.detail.allowed);
     initAnalytics(event.detail.allowed);
+  }
+
+  showNavigationHint() {
+    const ctrlHandler = evt => {
+      if (evt.key === 'Control') {
+        (<HTMLElement | null>document.querySelector('.ngm-nav-hint'))?.click();
+      }
+    };
+    showSnackbarInfo(i18next.t('navigation_hint'), {
+      class: 'ngm-nav-hint',
+      displayTime: 20000,
+      onHidden: () => document.removeEventListener('keydown', ctrlHandler)
+    });
+    document.addEventListener('keydown', ctrlHandler);
   }
 
   render() {
