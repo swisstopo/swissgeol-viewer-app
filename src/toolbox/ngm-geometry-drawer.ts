@@ -561,7 +561,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       <div class="ngm-divider"></div>
       <ngm-geometries-list
         .selectedId=${this.selectedArea ? this.selectedArea.id : ''}
-        @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.flyToArea(evt.detail.id)}>
+        @geomclick=${(evt: CustomEvent<NgmGeometry>) => {
+          this.flyToArea(evt.detail.id);
+          ToolboxStore.setOpenedGeometryOptions({id: evt.detail.id!});
+        }}>
       </ngm-geometries-list>
       <ngm-swissforages-modal
         .service="${this.swissforagesService}"

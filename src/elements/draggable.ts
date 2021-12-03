@@ -72,7 +72,8 @@ function moveWindow(target, moveLeft) {
     const targetRect = target.getBoundingClientRect();
     // reset transform from interaction
     if (target.style.transform) {
-      target.style.transform = `translate(0px, ${target.getAttribute('data-y')}px)`;
+      target.style.transform = 'translate(0px, 0px)';
+      target.setAttribute('data-y', '0');
       target.setAttribute('data-x', '0');
     }
     // move left/right

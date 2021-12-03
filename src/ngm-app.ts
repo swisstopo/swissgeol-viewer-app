@@ -12,6 +12,7 @@ import './elements/ngm-minimap';
 import './elements/ngm-cam-configuration';
 import './elements/ngm-height-slider';
 import './toolbox/ngm-geometry-info';
+import './elements/ngm-layer-legend';
 
 import {DEFAULT_VIEW} from './constants';
 
@@ -32,10 +33,10 @@ import ToolboxStore from './store/toolbox';
 import {classMap} from 'lit/directives/class-map.js';
 import {customElement, state} from 'lit/decorators.js';
 import MapChooser from './MapChooser';
-import {NgmLayerLegendContainer} from './elements/ngm-layer-legend-container';
 import {NgmSlowLoading} from './elements/ngm-slow-loading';
 import {Viewer} from 'cesium';
 import {showSnackbarInfo} from './notifications';
+import {Config} from './layers/ngm-layers-item';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -66,6 +67,7 @@ export class NgmApp extends LitElementI18n {
   @state() loading = true;
   @state() determinateLoading = false;
   @state() queueLength = 0;
+  @state() legendConfigs: Config[] = [];
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
 
@@ -91,7 +93,21 @@ export class NgmApp extends LitElementI18n {
   }
 
   onShowLayerLegend(event) {
-    (<NgmLayerLegendContainer> this.querySelector('ngm-layer-legend-container')).showLegend(event.detail.config);
+    const config = event.detail.config;
+    if (!this.legendConfigs.find(c => c && c.layer === config.layer)) {
+      this.legendConfigs.push(config);
+      this.requestUpdate();
+    }
+  }
+
+  onCloseLayerLegend(event) {
+    const config = event.target.config;
+    const index = this.legendConfigs.findIndex(c => c && c.layer === config.layer);
+    console.assert(index !== -1);
+    delete this.legendConfigs[index];
+    if (!this.legendConfigs.filter(c => !!c).length)
+      this.legendConfigs = [];
+    this.requestUpdate();
   }
 
   onStep2Finished(viewer) {
@@ -271,7 +287,10 @@ export class NgmApp extends LitElementI18n {
                                    @close=${() => this.showCamConfig = false}>
             </ngm-cam-configuration>
             <ngm-height-slider .viewer=${this.viewer}></ngm-height-slider>
-            <ngm-layer-legend-container></ngm-layer-legend-container>
+            ${[...this.legendConfigs].map(config => config ? html`
+              <ngm-layer-legend class="ngm-floating-window" .config=${config}
+                                @close=${this.onCloseLayerLegend}></ngm-layer-legend>
+            ` : '')}
             <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
             <a class="disclaimer-link" target="_blank"
                href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
