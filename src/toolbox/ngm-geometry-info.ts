@@ -38,6 +38,7 @@ export class NgmGeometryInfo extends LitElementI18n {
       const entity = this.geometriesDataSource?.entities.getById(options.id);
       if (!entity) return;
       this.geomEntity = entity;
+      this.geometry = ToolboxStore.openedGeometry;
       this.editing = !!options.editing;
     });
     ToolboxStore.sliceGeometry.subscribe(() => this.requestUpdate());
