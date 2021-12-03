@@ -1,22 +1,68 @@
 
 ngm-layer-legend {
-  position: absolute;
-  z-index: 2;
-  margin: 6px;
+  max-width: 528px;
+  max-height: 643px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
-ngm-layer-legend .header {
-  display: flex;
+ngm-layer-legend .htmlpopup-header {
+  font-weight: bold;
+  border-bottom: 2px solid #DFE2E6;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
 }
 
-ngm-layer-legend .header .title {
-  margin-right: 10px;
+ngm-layer-legend .ui.small.table {
+  font-size: unset;
 }
 
-ngm-layer-legend .header a {
-  color: rgba(0, 0, 0, 0.4);
+ngm-layer-legend .ui.basic.table {
+  background-color: #F8F9FA;
+  border-spacing: 4px;
+  border-collapse: collapse;
+}
+
+ngm-layer-legend .ui.basic.table tbody tr {
+  border-bottom-width: 4px;
+  border-bottom-color: #F1F3F5;
+}
+
+ngm-layer-legend .ui.table .key {
+  padding-left: 8px !important;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+ngm-layer-legend .ui.table .value {
+  min-width: 160px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  padding-right: 8px !important;
+}
+
+ngm-layer-legend .ui.table .value a {
+  color: #357183;
+}
+
+ngm-layer-legend .ui.table .value img {
+  width: 200px;
 }
 
 ngm-layer-legend .ui.divider {
-  margin: 10px 0;
+  margin: 10px 0 0 0;
+}
+
+ngm-layer-legend .content-container {
+  margin-bottom: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 505px;
+}
+
+ngm-layer-legend div.content-container td,
+ngm-layer-legend div.content-container span {
+  user-select: text;
 }

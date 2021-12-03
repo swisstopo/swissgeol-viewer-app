@@ -269,18 +269,6 @@ ngm-full-screen-view.full-active {
   top: 10px;
 }
 
-ngm-layer-legend-container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-}
-
-ngm-layer-legend-container > ngm-layer-legend {
-  pointer-events: auto;
-}
-
 .ngm-floating-window {
   background: #F1F3F5;
   box-shadow: 4px 4px 2px #00000029;

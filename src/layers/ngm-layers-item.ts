@@ -98,7 +98,7 @@ export class LayerTreeItem extends LitElementI18n {
         ${this.config?.geocatId || this.config?.legend ? html`
           <div class="item"
                @click=${() => this.showLayerLegend(this.config)}>
-            ${i18next.t('dtd_disclaimer_hint')}
+            ${i18next.t('dtd_legend_geocat_hint')}
           </div>` : ''}
         ${!this.config?.hideUpDown ? html`
           <div class="item ${classMap(this.downClassMap)}"
