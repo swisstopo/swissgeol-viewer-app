@@ -79,16 +79,16 @@ const FOG_FRAGMENT_SHADER_SOURCE = `
   }`;
 
 interface EmptyLayer {
-  layer: { show: boolean }
+  layer: { show: boolean };
 }
 
 export interface BaseLayerConfig {
-  id: string
+  id: string;
   labelKey: string;
-  backgroundImgSrc: string
-  layers?: ImageryLayer[] | EmptyLayer[]
-  default?: boolean
-  hasAlphaChannel?: boolean
+  backgroundImgSrc: string;
+  layers?: ImageryLayer[] | EmptyLayer[];
+  default?: boolean;
+  hasAlphaChannel?: boolean;
 }
 
 export function setupViewer(container: Element, rethrowRenderErrors) {
@@ -345,8 +345,8 @@ export function setupBaseLayers(viewer: Viewer) {
       backgroundImgSrc: 'src/images/lakes_rivers.png',
       hasAlphaChannel: true,
       layers: [
+        addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', 18),
         addSwisstopoLayer(viewer, 'ch.bafu.vec25-gewaessernetz_2000', 'png', 18),
-        addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', 18)
       ]
     },
     {

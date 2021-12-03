@@ -119,6 +119,7 @@ export function addSwisstopoLayer(viewer, layer, format, maximumLevel, timestamp
     show: false
   });
   viewer.scene.imageryLayers.add(imageryLayer);
+  viewer.scene.imageryLayers.lowerToBottom(imageryLayer);
 
   return imageryLayer;
 }
