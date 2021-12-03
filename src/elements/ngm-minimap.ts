@@ -11,6 +11,7 @@ import './ngm-nadir-view';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
 import {Interactable} from '@interactjs/types';
+import NavToolsStore from '../store/navTools';
 
 // calculate difference between minimap extent and container
 const width = CesiumMath.toRadians(MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
@@ -39,6 +40,7 @@ export class NgmMinimap extends LitElementI18n {
     });
     this.addEventListener('click', (evt: MouseEvent) => {
       if (!this.moveMarker && evt.target && (evt.target as Element).classList.contains('ngm-map-overview')) {
+        NavToolsStore.hideTargetPoint();
         this.moveCamera(evt.x, evt.y, 'click');
       }
     });
@@ -125,6 +127,7 @@ export class NgmMinimap extends LitElementI18n {
   }
 
   onIconPress(evt) {
+    NavToolsStore.hideTargetPoint();
     this.moveCamera(evt.x, evt.y, 'mousemove');
     this.moveMarker = true;
   }
