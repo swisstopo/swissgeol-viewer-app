@@ -382,7 +382,7 @@ ngm-full-screen-view.full-active {
 
 @media (max-height: 630px) {
   .map {
-    margin-bottom: 72px;
+    margin-bottom: var(--ngm-bottom-menu-height);
   }
 }
 
