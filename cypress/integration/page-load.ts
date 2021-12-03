@@ -2,7 +2,7 @@ describe('Page load', () => {
   it('Navigation hint', () => {
     (<any>cy).loadPage();
     cy.get('.ngm-nav-hint').should('be.visible');
-    cy.get('.ngm-nav-hint', {timeout: 21000}).should('not.exist');
+    cy.get('.ngm-nav-hint', {timeout: 22000}).should('not.exist');
 
     (<any>cy).loadPage(true);
     cy.get('.ngm-nav-hint').should('be.visible');
