@@ -68,6 +68,7 @@ export class NgmApp extends LitElementI18n {
   @state() determinateLoading = false;
   @state() queueLength = 0;
   @state() legendConfigs: Config[] = [];
+  @state() showTrackingConsent = false;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
 
@@ -112,7 +113,7 @@ export class NgmApp extends LitElementI18n {
 
   onStep2Finished(viewer) {
     this.loading = false;
-    this.showNavigationHint();
+    this.showTrackingConsent = true;
     const loadingTime = performance.now() / 1000;
     console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
     (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
@@ -222,6 +223,7 @@ export class NgmApp extends LitElementI18n {
   }
 
   onTrackingAllowedChanged(event) {
+    this.showNavigationHint();
     initSentry(event.detail.allowed);
     initAnalytics(event.detail.allowed);
   }
@@ -295,7 +297,8 @@ export class NgmApp extends LitElementI18n {
             <a class="disclaimer-link" target="_blank"
                href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
           </div>
-          <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>
+          ${this.showTrackingConsent ? html`
+            <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>` : ''}
         </div>
       </main>
     `;
