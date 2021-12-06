@@ -170,6 +170,7 @@
   "tbx_disable_slice_btn_label": "Gesamte Karte zeigen",
   "tbx_download_all_btn": "",
   "tbx_download_btn_label": "Download",
+  "tbx_download_kml_btn_label": "",
   "tbx_download_section_output_label": "Herunterladen",
   "tbx_draw": "Zeichnen",
   "tbx_edit_btn": "Bearbeiten",
