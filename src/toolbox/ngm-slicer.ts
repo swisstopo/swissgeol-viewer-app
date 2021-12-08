@@ -34,6 +34,7 @@ export class NgmSlicer extends LitElementI18n {
     ToolboxStore.slicer.subscribe(slicer => {
       if (!slicer) return;
       this.slicer = slicer;
+      this.slicer.draw.addEventListener('statechanged', () => this.requestUpdate());
       this.syncSlice();
     });
     ToolboxStore.sliceGeometry.pipe(skip(1)).subscribe(geom => this.toggleGeomSlicer(geom));
@@ -48,6 +49,8 @@ export class NgmSlicer extends LitElementI18n {
   protected update(changedProperties) {
     if (changedProperties.get('slicerHidden') && !this.slicerHidden && !this.slicer?.active && !this.editingEnabled)
       this.toggleSlicer('view-box');
+    else if (changedProperties.has('slicerHidden') && !changedProperties.get('slicerHidden'))
+      this.slicer?.deactivateDrawing();
     super.update(changedProperties);
   }
 
@@ -164,7 +167,7 @@ export class NgmSlicer extends LitElementI18n {
   }
 
   get slicingEnabled() {
-    return this.slicer!.active;
+    return this.slicer!.active || this.slicer!.draw.active;
   }
 
   addCurrentSliceToToolbox(sliceType) {
@@ -213,7 +216,13 @@ export class NgmSlicer extends LitElementI18n {
       type = options.geom.type === 'line' ? 'line' : 'box';
     }
     return html`
-      <div class="ngm-slice-options" ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId}>
+      <div class="ngm-draw-hint"
+           ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || !this.slicer!.draw.active}>
+        ${i18next.t('tbx_area_of_interest_add_hint')}
+        <div class="ngm-info-icon"></div>
+      </div>
+      <div class="ngm-slice-options"
+           ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || this.slicer!.draw.active}>
         <div class="ngm-slice-type-label">${i18next.t('tbx_slicing_type')}</div>
         <div class="ngm-slice-side">
           <div class=${classMap({active: !this.negateSlice})}
