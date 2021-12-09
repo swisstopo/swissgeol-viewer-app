@@ -196,6 +196,7 @@
   "tbx_save_editing_btn_label": "Sauvegarder",
   "tbx_show_all_btn": "Afficher toutes les géométries de la liste",
   "tbx_slice_box": "Coupez la scène 3D (box)",
+  "tbx_slice_draw_hint": "",
   "tbx_slice_geom_transform_hint": "Ajouter la vue actuelle aux géométries?",
   "tbx_slice_inside_label": "Intérieur",
   "tbx_slice_left_label": "Gauche",

@@ -22,6 +22,7 @@ import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
  * @property {string|Color} [strokeColor='rgba(0, 153, 255, 0.75)']
  * @property {number} [strokeWidth=4]
  * @property {string|Color} [fillColor='rgba(0, 153, 255, 0.3)']
+ * @property {boolean} [minPointsStop] finish drawing when min count of points added
  */
 
 export class CesiumDraw extends EventTarget {
@@ -45,6 +46,7 @@ export class CesiumDraw extends EventTarget {
     this.strokeWidth_ = options.strokeWidth !== undefined ? options.strokeWidth : 4;
     this.fillColor_ = options.fillColor instanceof Color ?
       options.fillColor : Color.fromCssColorString(options.fillColor || 'rgba(0, 153, 255, 0.3)');
+    this.minPointsStop = !!options.minPointsStop;
 
     this.eventHandler_ = undefined;
     this.activePoints_ = [];
@@ -165,7 +167,6 @@ export class CesiumDraw extends EventTarget {
    *
    */
   finishDrawing() {
-    this.activePoints_.pop();
     let positions = this.activePoints_;
     if ((this.type === 'polygon' || this.type === 'rectangle') && positions.length < 3) {
       this.dispatchEvent(new CustomEvent('drawerror', {
@@ -354,7 +355,11 @@ export class CesiumDraw extends EventTarget {
         this.activeDistances_.push(this.activeDistance_);
       }
       this.activePoints_.push(Cartesian3.clone(this.activePoint_));
-      if (this.type === 'rectangle' && this.activePoints_.length === 4) {
+      const forceFinish = this.minPointsStop && (
+        (this.type === 'polygon' && this.activePoints_.length === 3) ||
+        (this.type === 'line' && this.activePoints_.length === 2)
+      );
+      if ((this.type === 'rectangle' && this.activePoints_.length === 3) || forceFinish) {
         this.finishDrawing();
       }
     }
@@ -509,6 +514,7 @@ export class CesiumDraw extends EventTarget {
     if (!this.activeDistances_.includes(this.activeDistance_)) {
       this.activeDistances_.push(this.activeDistance_);
     }
+    this.activePoints_.pop();
     this.finishDrawing();
   }
 

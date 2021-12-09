@@ -16,6 +16,7 @@ import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
 import {skip} from 'rxjs';
+import DrawStore from '../store/draw';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
@@ -34,13 +35,16 @@ export class NgmSlicer extends LitElementI18n {
     ToolboxStore.slicer.subscribe(slicer => {
       if (!slicer) return;
       this.slicer = slicer;
-      this.slicer.draw.addEventListener('statechanged', () => this.requestUpdate());
+      this.slicer.draw.addEventListener('statechanged', evt => {
+        DrawStore.setDrawState((<CustomEvent>evt).detail.active);
+        this.requestUpdate();
+      });
       this.syncSlice();
     });
     ToolboxStore.sliceGeometry.pipe(skip(1)).subscribe(geom => this.toggleGeomSlicer(geom));
     ToolboxStore.openedGeometryOptions.subscribe(options => {
       this.editingEnabled = !!(options?.editing);
-      if (this.editingEnabled && this.slicer?.active)
+      if (this.editingEnabled && (this.slicer?.active || this.slicer?.draw.active))
         this.toggleSlicer();
     });
     ToolboxStore.syncSlice.subscribe(() => this.syncSlice());
@@ -48,7 +52,7 @@ export class NgmSlicer extends LitElementI18n {
 
   protected update(changedProperties) {
     if (changedProperties.get('slicerHidden') && !this.slicerHidden && !this.slicer?.active && !this.editingEnabled)
-      this.toggleSlicer('view-box');
+      this.toggleSlicer('view-line');
     else if (changedProperties.has('slicerHidden') && !changedProperties.get('slicerHidden'))
       this.slicer?.deactivateDrawing();
     super.update(changedProperties);
@@ -218,7 +222,7 @@ export class NgmSlicer extends LitElementI18n {
     return html`
       <div class="ngm-draw-hint"
            ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || !this.slicer!.draw.active}>
-        ${i18next.t('tbx_area_of_interest_add_hint')}
+        ${i18next.t('tbx_slice_draw_hint')}
         <div class="ngm-info-icon"></div>
       </div>
       <div class="ngm-slice-options"

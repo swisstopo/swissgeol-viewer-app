@@ -138,6 +138,7 @@ export class NgmToolbox extends LitElementI18n {
         </div>
       </div>
       <ngm-geometry-drawer .hidden="${this.activeTool !== 'draw'}"
+                           .drawerHidden="${this.activeTool !== 'draw' || this.toolsHidden}"
                            .geometriesDataSource=${this.geometriesDataSource}></ngm-geometry-drawer>
       <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
                   .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
