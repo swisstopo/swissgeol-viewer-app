@@ -92,9 +92,3 @@
 .ngm-bg-chooser-map .ngm-selected-map-container:hover .ngm-map-preview {
   background-color: #DEE2E6;
 }
-
-@media (max-height: 630px) {
-  .ngm-bg-chooser-map {
-    bottom: 80px;
-  }
-}
