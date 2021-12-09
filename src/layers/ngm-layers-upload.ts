@@ -101,7 +101,7 @@ export default class LayersUpload extends LitElementI18n {
               @dragover="${(event: DragEvent) => event.preventDefault()}"
               @dragleave=${(event: DragEvent) => $(event.target).removeClass('active')}>
         ${i18next.t('dtd_add_own_kml')}
-        <div ?hidden=${this.loading} class="ngm-layer-icon ngm-upload-icon"></div>
+        <div ?hidden=${this.loading} class="ngm-layer-icon ngm-file-upload-icon"></div>
         <div
           class="ui inline mini loader ${classMap({active: this.loading})}">
         </div>
