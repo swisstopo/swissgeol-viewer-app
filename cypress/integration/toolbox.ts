@@ -1,30 +1,55 @@
+const testGstOutput = () => {
+  cy.intercept('https://viewer.geomol.ch/webgui/**', (req) => {
+    req.reply(200, {imageUrl: `https://viewer.geomol.ch/webgui/tmp/test.${req.query.outputType}`});
+  }).as('createSection');
+  cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').should('not.have.class', 'disabled');
+  cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').click();
+  cy.get('.ngm-gst-container .ngm-action-btn').click();
+  cy.get('.ngm-gst-modal', {timeout: 15000}).should('be.visible');
+  cy.get('ngm-gst-modal').then(el => {
+    const url = (<any>el[0]).imageUrl;
+    expect(url).to.match(/pdf/);
+  });
+  cy.get('.ngm-gst-modal .ngm-cancel-btn').click();
+  // wait for rerender
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(1000);
+  cy.get('.ngm-section-format').click();
+  cy.get('.ngm-section-format .menu .item:nth-child(2)').click();
+  cy.get('.ngm-section-format').trigger('change');
+  cy.get('.ngm-gst-container .ngm-action-btn').click();
+  cy.get('.ngm-gst-modal', {timeout: 15000}).should('be.visible');
+  cy.get('ngm-gst-modal').then(el => {
+    const url = (<any>el[0]).imageUrl;
+    expect(url).to.match(/svg/);
+  });
+};
+
 describe('Toolbox', () => {
-  const testGstOutput = () => {
-    cy.intercept('https://viewer.geomol.ch/webgui/**', (req) => {
-      req.reply(200, {imageUrl: `https://viewer.geomol.ch/webgui/tmp/test.${req.query.outputType}`});
-    }).as('createSection');
-    cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').should('not.have.class', 'disabled');
-    cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').click();
-    cy.get('.ngm-gst-container .ngm-action-btn').click();
-    cy.get('.ngm-gst-modal', {timeout: 15000}).should('be.visible');
-    cy.get('ngm-gst-modal').then(el => {
-      const url = (<any>el[0]).imageUrl;
-      expect(url).to.match(/pdf/);
-    });
-    cy.get('.ngm-gst-modal .ngm-cancel-btn').click();
-    // wait for rerender
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
-    cy.get('.ngm-section-format').click();
-    cy.get('.ngm-section-format .menu .item:nth-child(2)').click();
-    cy.get('.ngm-section-format').trigger('change');
-    cy.get('.ngm-gst-container .ngm-action-btn').click();
-    cy.get('.ngm-gst-modal', {timeout: 15000}).should('be.visible');
-    cy.get('ngm-gst-modal').then(el => {
-      const url = (<any>el[0]).imageUrl;
-      expect(url).to.match(/svg/);
-    });
-  };
+
+  it.only('Slicing', () => {
+    (<any>cy).loadPage();
+    cy.get('.ngm-tools').click();
+    cy.get('.ngm-slicing-icon').click();
+    cy.get('.ngm-slice-types > div:nth-child(3) .ngm-draw-hint').should('be.visible');
+    cy.get('.cesium-widget > canvas').click(450, 280);
+    cy.get('.cesium-widget > canvas').click(450, 200);
+    cy.get('.ngm-slice-types > div:nth-child(3) .ngm-slice-side div:nth-child(2)').click();
+    cy.get('.ngm-slice-types > div:nth-child(3) .ngm-slice-side div:nth-child(2)').should('have.class', 'active');
+    cy.get('.ngm-slice-types > div:nth-child(3) .ngm-slice-to-draw button').click();
+    cy.get('ngm-slicer .ngm-geom-list .ngm-action-list-item:nth-child(2)').click();
+    cy.get('ngm-slicer .ngm-geom-list .ngm-action-list-item:nth-child(2)').should('have.class', 'active');
+    cy.get('.ngm-slice-types > div:first-child').click();
+    cy.get('.ngm-slice-types > div:nth-child(2)').click();
+    cy.get('.cesium-widget > canvas').click(450, 280);
+    cy.get('.cesium-widget > canvas').click(450, 200);
+    cy.get('.cesium-widget > canvas').click(650, 200);
+    cy.get('.ngm-slice-types > div:nth-child(2) .ngm-slice-box-toggle').click();
+    cy.get('.ngm-slice-types > div:nth-child(2) .ngm-slice-box-toggle').should('not.have.class', 'active');
+    (<any>cy).loadPage(true, true);
+    cy.get('.ngm-slice-types > div:nth-child(2) .ngm-slice-to-draw button').click();
+  });
+
   it('GST point', () => {
     (<any>cy).loadPage();
     cy.get('.ngm-tools').click();

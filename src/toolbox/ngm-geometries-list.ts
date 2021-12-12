@@ -124,12 +124,11 @@ export default class NgmGeometriesList extends LitElementI18n {
             </div>
           </div>
         </div>
-      </div>
-      ${geometries.map((i) => {
-        const disabled = (this.disabledCallback && this.disabledCallback(i)) || this.disabledTypes.includes(i.type) || this.editingEnabled;
-        const active = !disabled && this.selectedId === i.id;
-        const hidden = !disabled && !active && !i.show;
-        return html`
+        ${geometries.map((i) => {
+          const disabled = (this.disabledCallback && this.disabledCallback(i)) || this.disabledTypes.includes(i.type) || this.editingEnabled;
+          const active = !disabled && this.selectedId === i.id;
+          const hidden = !disabled && !active && !i.show;
+          return html`
           <div class="ngm-action-list-item ${classMap({active, disabled, hidden})}">
             <div class="ngm-action-list-item-header">
               <div
@@ -144,7 +143,8 @@ export default class NgmGeometriesList extends LitElementI18n {
             ${this.optionsTemplate ? this.optionsTemplate(i, active) : ''}
           </div>
         `;
-      })}
+        })}
+      </div>
       </div>`;
   }
 
