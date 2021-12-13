@@ -5,8 +5,8 @@ import GpxDataSource from '../GpxDataSource.js';
 import i18next from 'i18next';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import type {Event, Viewer} from 'cesium';
-import {BoundingSphere, Entity, HeadingPitchRange, PropertyBag} from 'cesium';
+import type {Event, exportKmlResultKml, Viewer} from 'cesium';
+import {BoundingSphere, Entity, EntityCollection, exportKml, HeadingPitchRange, PropertyBag} from 'cesium';
 
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
@@ -29,6 +29,7 @@ import Color from 'cesium/Source/Core/Color';
 import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import {SwissforagesService} from './SwissforagesService';
 import Cartographic from 'cesium/Source/Core/Cartographic';
+import {saveAs} from 'file-saver';
 
 
 import {clickOnElement, parseJson} from '../utils';
@@ -41,7 +42,7 @@ import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import type {AreasCounter, GeometryTypes, NgmGeometry, SwissforagesModalOptions} from './interfaces';
-import {getValueOrUndefined, updateHeightForCartesianPositions} from '../cesiumutils';
+import {extendKmlWithProperties, getValueOrUndefined, updateHeightForCartesianPositions} from '../cesiumutils';
 import NavToolsStore from '../store/navTools';
 
 const fileUploadInputId = 'fileUpload';
@@ -517,6 +518,9 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       case 'pick':
         this.pickArea(options.id);
         break;
+      case 'downloadAll':
+        this.downloadVisibleGeometries();
+        break;
     }
   }
 
@@ -529,6 +533,23 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     newEntity.merge(entityToCopy);
     newEntity.name = `${i18next.t('tbx_copy_of_label')}  ${entityToCopy.name}`;
     this.viewer!.scene.requestRender();
+  }
+
+  async downloadVisibleGeometries() {
+    const visibleGeometries = new EntityCollection();
+    this.geometriesDataSource!.entities.values.forEach(ent => {
+      if (ent.isShowing) {
+        visibleGeometries.add(ent);
+      }
+    });
+    const exportResult: exportKmlResultKml = <exportKmlResultKml> await exportKml({
+      entities: visibleGeometries,
+      time: this.julianDate
+    });
+    let kml: string = exportResult.kml;
+    kml = extendKmlWithProperties(kml, visibleGeometries);
+    const blob = new Blob([kml], {type: 'text/xml'});
+    saveAs(blob, 'swissgeol_geometries.kml');
   }
 
   render() {

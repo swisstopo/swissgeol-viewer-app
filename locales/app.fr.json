@@ -167,6 +167,7 @@
   "tbx_cross_sections_format_label": "Format du résultat",
   "tbx_description_label": "Description",
   "tbx_disable_slice_btn_label": "Afficher la carte complète",
+  "tbx_download_all_btn": "",
   "tbx_download_btn_label": "Téléchargement",
   "tbx_download_section_output_label": "Télécharger",
   "tbx_draw": "Dessiner",

@@ -87,6 +87,10 @@ export default class NgmGeometriesList extends LitElementI18n {
              @click=${() => ToolboxStore.nextGeometryAction({type: this.selectedFilter, action: 'hideAll'})}>
           ${i18next.t('tbx_hide_all_btn')}
         </div>
+        <div class="item"
+             @click=${() => ToolboxStore.nextGeometryAction({type: this.selectedFilter, action: 'downloadAll'})}>
+          ${i18next.t('tbx_download_all_btn')}
+        </div>
       </div>
     `;
   }
