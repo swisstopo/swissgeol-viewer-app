@@ -73,7 +73,7 @@ ngm-layers-upload button {
   width: 100%;
 }
 
-ngm-layers-upload .ngm-upload-icon {
+ngm-layers-upload .ngm-file-upload-icon {
   pointer-events: none;
   background-color: var(--ngm-interaction);
   margin-top: 0;
@@ -91,7 +91,7 @@ ngm-layers-upload button:hover {
   border: 2px dashed var(--ngm-interaction-hover);
 }
 
-ngm-layers-upload button:hover .ngm-upload-icon {
+ngm-layers-upload button:hover .ngm-file-upload-icon {
   background-color: var(--ngm-interaction-hover);
 }
 
@@ -100,7 +100,7 @@ ngm-layers-upload button.active {
   border: 2px dashed var(--ngm-interaction-hover);
 }
 
-ngm-layers-upload button.active .ngm-upload-icon {
+ngm-layers-upload button.active .ngm-file-upload-icon {
   background-color: var(--ngm-interaction-hover);
 }
 
@@ -183,7 +183,7 @@ ngm-layers-upload button {
   width: 100%;
 }
 
-ngm-layers-upload .ngm-upload-icon {
+ngm-layers-upload .ngm-file-upload-icon {
   pointer-events: none;
   background-color: var(--ngm-interaction);
   margin-top: 0;
@@ -197,7 +197,7 @@ ngm-layers-upload button:hover {
   border: 2px dashed var(--ngm-interaction-hover);
 }
 
-ngm-layers-upload button:hover .ngm-upload-icon {
+ngm-layers-upload button:hover .ngm-file-upload-icon {
   background-color: var(--ngm-interaction-hover);
 }
 
@@ -206,7 +206,7 @@ ngm-layers-upload button.active {
   border: 2px dashed var(--ngm-interaction-hover);
 }
 
-ngm-layers-upload button.active .ngm-upload-icon {
+ngm-layers-upload button.active .ngm-file-upload-icon {
   background-color: var(--ngm-interaction-hover);
 }
 
