@@ -1,9 +1,10 @@
-import {html, TemplateResult} from 'lit';
+import type {TemplateResult} from 'lit';
+import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import auth from '../store/auth';
-import {LayerTreeNode} from '../layertree';
+import type {LayerTreeNode} from '../layertree';
 
 @customElement('ngm-catalog')
 export class Catalog extends LitElementI18n {

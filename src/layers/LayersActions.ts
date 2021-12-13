@@ -5,9 +5,9 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import Color from 'cesium/Source/Core/Color';
-import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
-import {ImageryLayer} from 'cesium';
-import {Config} from './ngm-layers-item.js';
+import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type {ImageryLayer} from 'cesium';
+import type {Config} from './ngm-layers-item.js';
 
 
 export default class LayersAction {

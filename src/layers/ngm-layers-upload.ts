@@ -6,9 +6,9 @@ import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import {DEFAULT_LAYER_OPACITY} from '../constants';
-import {Config} from './ngm-layers-item';
+import type {Config} from './ngm-layers-item';
 import $ from '../jquery.js';
-import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import {classMap} from 'lit-html/directives/class-map.js';
 
 @customElement('ngm-layers-upload')

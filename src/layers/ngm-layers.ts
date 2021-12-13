@@ -2,7 +2,7 @@ import {html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {repeat} from 'lit/directives/repeat.js';
 import {LitElementI18n} from '../i18n.js';
-import {Config} from './ngm-layers-item';
+import type {Config} from './ngm-layers-item';
 // eslint-disable-next-line no-duplicate-imports
 import './ngm-layers-item';
 

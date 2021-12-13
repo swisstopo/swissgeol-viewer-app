@@ -1,6 +1,6 @@
 import {BehaviorSubject, Subject} from 'rxjs';
-import Slicer from '../slicer/Slicer';
-import {NgmGeometry} from '../toolbox/interfaces';
+import type Slicer from '../slicer/Slicer';
+import type {NgmGeometry} from '../toolbox/interfaces';
 
 interface OpenedGeometryOptions {
   id: string,

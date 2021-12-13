@@ -1,7 +1,7 @@
 import {LitElementI18n} from '../i18n';
 import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
-import {Viewer} from 'cesium';
+import type {Viewer} from 'cesium';
 import NavToolsStore from '../store/navTools';
 
 /*

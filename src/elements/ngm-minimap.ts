@@ -1,6 +1,5 @@
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {Event, Viewer} from 'cesium';
 import Rectangle from 'cesium/Source/Core/Rectangle';
 import CesiumMath from 'cesium/Source/Core/Math';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
@@ -10,8 +9,9 @@ import draggable from './draggable';
 import './ngm-nadir-view';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
-import {Interactable} from '@interactjs/types';
 import NavToolsStore from '../store/navTools';
+import type {Interactable} from '@interactjs/types';
+import type {Event, Viewer} from 'cesium';
 
 // calculate difference between minimap extent and container
 const width = CesiumMath.toRadians(MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);

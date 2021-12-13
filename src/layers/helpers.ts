@@ -15,8 +15,8 @@ import Matrix3 from 'cesium/Source/Core/Matrix3';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import Cesium3DTileColorBlendMode from 'cesium/Source/Scene/Cesium3DTileColorBlendMode';
 import AmazonS3Resource from '../AmazonS3Resource.js';
-import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
-import {Config} from './ngm-layers-item.js';
+import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type {Config} from './ngm-layers-item.js';
 
 export function createEarthquakeFromConfig(viewer: Viewer, config: Config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer, config);

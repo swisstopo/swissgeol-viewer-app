@@ -6,7 +6,8 @@ import {updateHeightForCartesianPositions} from '../cesiumutils';
 
 import CesiumMath from 'cesium/Source/Core/Math';
 import {styleMap} from 'lit/directives/style-map.js';
-import {Cartesian3, Event, Viewer} from 'cesium';
+import type {Event, Viewer} from 'cesium';
+import {Cartesian3} from 'cesium';
 import {getTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
 

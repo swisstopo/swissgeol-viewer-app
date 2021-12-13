@@ -1,5 +1,5 @@
 import {BehaviorSubject} from 'rxjs';
-import {AuthUser} from '../auth';
+import type {AuthUser} from '../auth';
 
 export default class AuthStore {
   private static userSubject = new BehaviorSubject<AuthUser | null>(null);

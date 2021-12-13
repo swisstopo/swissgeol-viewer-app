@@ -1,5 +1,5 @@
 import {BehaviorSubject} from 'rxjs';
-import {CesiumDraw} from '../draw/CesiumDraw';
+import type {CesiumDraw} from '../draw/CesiumDraw';
 
 export default class DrawStore {
   private static drawSubject = new BehaviorSubject<CesiumDraw | undefined>(undefined);

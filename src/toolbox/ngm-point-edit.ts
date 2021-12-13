@@ -9,7 +9,7 @@ import CesiumMath from 'cesium/Source/Core/Math';
 import {updateBoreholeHeights} from './helpers';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import MainStore from '../store/main';
-import {Entity, Viewer} from 'cesium';
+import type {Entity, Viewer} from 'cesium';
 
 @customElement('ngm-point-edit')
 export class NgmPointEdit extends LitElementI18n {

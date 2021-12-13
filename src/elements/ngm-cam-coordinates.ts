@@ -1,7 +1,8 @@
 import $ from '../jquery.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
-import {html, PropertyValues} from 'lit';
+import type {PropertyValues} from 'lit';
+import {html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import 'fomantic-ui-css/components/transition.js';
 import 'fomantic-ui-css/components/dropdown.js';

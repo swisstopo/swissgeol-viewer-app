@@ -1,8 +1,8 @@
 import {getMapParam, syncMapParam} from './permalink';
 import i18next from 'i18next';
-import {Viewer} from 'cesium';
-import {NgmMapChooser} from './elements/ngm-map-chooser';
-import {BaseLayerConfig} from './viewer';
+import type {Viewer} from 'cesium';
+import type {NgmMapChooser} from './elements/ngm-map-chooser';
+import type {BaseLayerConfig} from './viewer';
 import MainStore from './store/main';
 
 export default class MapChooser {

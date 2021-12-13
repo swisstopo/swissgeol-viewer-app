@@ -1,11 +1,12 @@
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import GpxDataSource from '../GpxDataSource.js';
 import i18next from 'i18next';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import {BoundingSphere, Entity, Event, HeadingPitchRange, PropertyBag, Viewer} from 'cesium';
+import type {Event, Viewer} from 'cesium';
+import {BoundingSphere, Entity, HeadingPitchRange, PropertyBag} from 'cesium';
 
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
@@ -21,7 +22,7 @@ import {
 import {getAreaPositions, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
 import {showWarning} from '../notifications';
 import {LitElementI18n} from '../i18n';
-import {CesiumDraw} from '../draw/CesiumDraw.js';
+import type {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import CornerType from 'cesium/Source/Core/CornerType';
 import Color from 'cesium/Source/Core/Color';
@@ -39,7 +40,7 @@ import LocalStorageController from '../LocalStorageController';
 import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
-import {AreasCounter, GeometryTypes, NgmGeometry, SwissforagesModalOptions} from './interfaces';
+import type {AreasCounter, GeometryTypes, NgmGeometry, SwissforagesModalOptions} from './interfaces';
 import {getValueOrUndefined, updateHeightForCartesianPositions} from '../cesiumutils';
 import NavToolsStore from '../store/navTools';
 

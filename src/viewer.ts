@@ -27,7 +27,7 @@ import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
 import Transforms from 'cesium/Source/Core/Transforms';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import {ImageryLayer} from 'cesium';
+import type {ImageryLayer} from 'cesium';
 
 
 window['CESIUM_BASE_URL'] = '.';

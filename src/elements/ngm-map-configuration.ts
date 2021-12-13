@@ -6,8 +6,8 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-map-chooser';
 import {getMapOpacityParam, syncMapOpacityParam} from '../permalink';
 import MainStore from '../store/main';
-import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
-import MapChooser from '../MapChooser.js';
+import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type MapChooser from '../MapChooser.js';
 
 @customElement('ngm-map-configuration')
 export class NgmMapConfiguration extends LitElementI18n {

@@ -1,5 +1,5 @@
+import type {Camera} from 'cesium';
 import {
-  Camera,
   Cartesian2,
   Cartesian3,
   Cartographic,
@@ -14,7 +14,7 @@ import {
   Transforms
 } from 'cesium';
 import {degreesToLv95} from './projection.js';
-import {NgmGeometry} from './toolbox/interfaces';
+import type {NgmGeometry} from './toolbox/interfaces';
 import earcut from 'earcut';
 
 const julianDate = new JulianDate();

@@ -2,8 +2,8 @@ import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {executeForAllPrimitives} from '../utils';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
+import type {BBox} from './helper';
 import {
-  BBox,
   createClippingPlanes, getBboxFromRectangle,
   createCPCModelMatrixFromSphere,
   getBboxFromViewRatio,
@@ -25,10 +25,10 @@ import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import CornerType from 'cesium/Source/Core/CornerType';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import Entity from 'cesium/Source/DataSources/Entity';
-import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
-import DataSource from 'cesium/Source/DataSources/DataSource';
-import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
+import type Entity from 'cesium/Source/DataSources/Entity';
+import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type DataSource from 'cesium/Source/DataSources/DataSource';
+import type Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
 
 export interface SlicingBoxOptions {
   type: 'box' | 'view-box' | undefined,

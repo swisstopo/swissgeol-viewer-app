@@ -15,7 +15,7 @@ import {
   TARGET_PARAM,
   ZOOM_TO_PARAM
 } from './constants';
-import {Cartographic} from 'cesium';
+import type {Cartographic} from 'cesium';
 
 export function getCameraView() {
   let destination;

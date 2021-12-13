@@ -12,8 +12,8 @@ import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
 import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
 import {HeadingPitchRoll, Plane, Transforms} from 'cesium';
 import {getPercent, interpolateBetweenNumbers} from '../utils';
-import Quaternion from 'cesium/Source/Core/Quaternion';
-import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
+import type Quaternion from 'cesium/Source/Core/Quaternion';
+import type Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
 import ApproximateTerrainHeights from 'cesium/Source/Core/ApproximateTerrainHeights';
 import {rectanglify} from '../draw/helpers';
 
