@@ -118,8 +118,7 @@ export class NgmSlicer extends LitElementI18n {
           activationCallback: () => this.syncSliceInfo({
             type: 'view-line',
             negate: this.negateSlice,
-            slicePoints: this.slicer!.sliceOptions.slicePoints,
-            geomId: this.sliceGeomId
+            slicePoints: this.slicer!.sliceOptions.slicePoints
           })
         };
       } else {
@@ -131,7 +130,7 @@ export class NgmSlicer extends LitElementI18n {
           negate: this.negateSlice,
           showBox: this.showBox,
           deactivationCallback: () => this.onGeomSliceDeactivation(geom),
-          syncBoxPlanesCallback: (sliceInfo) => this.syncSliceInfo({...sliceInfo, type: 'view-box', geomId: this.sliceGeomId})
+          syncBoxPlanesCallback: (sliceInfo) => this.syncSliceInfo({...sliceInfo, type: 'view-box'})
         };
       }
       const entity = this.geometriesDataSource!.entities.getById(geom.id!);
@@ -171,7 +170,6 @@ export class NgmSlicer extends LitElementI18n {
   onDeactivation() {
     syncSliceParam();
     this.requestUpdate();
-    // if (this.sliceGeomId) this.onGeomSliceDeactivation();
   }
 
   get slicingType() {
