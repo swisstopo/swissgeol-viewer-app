@@ -16,7 +16,7 @@ export function showSnackbarError(message: string) {
   showSnackbarMessage(message, 'snackbar error');
 }
 
-export function showSnackbarConfirmation(message: string, callbacks: {onApprove?: () => void, onDeny?: () => void}) {
+export function showSnackbarConfirmation(message: string, callbacks: { onApprove?: () => void, onDeny?: () => void }) {
   showSnackbarMessage(message, 'snackbar info actions', {
     displayTime: 0,
     actions: [
@@ -57,7 +57,9 @@ export function showError(message: string) {
   });
 }
 
-export function showMessage(message: string, options = {}) {
+export function showMessage(message: string, options: any = {}) {
+  // hide same toasts
+  if (options.class) (<HTMLElement>document.querySelector(`.${options.class}`))?.parentElement?.remove();
   $('body').toast(Object.assign({
     message: message
   }, options));

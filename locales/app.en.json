@@ -184,7 +184,7 @@
   "tbx_kml_large_warning": "KML is too large. Added only 10 geometries to avoid performance issues",
   "tbx_lat_label": "Latitude",
   "tbx_lon_label": "Longitude",
-  "tbx_lost_changes_warning": "Your changes will be lost. Are you sure?",
+  "tbx_lost_changes_warning": "Please save or cancel your changes.",
   "tbx_my_geometries": "My Geometries",
   "tbx_name_label": "Name",
   "tbx_no_data_to_download_warning": "Nothing to download",

@@ -1,6 +1,5 @@
 import {LitElementI18n} from '../i18n';
 import {customElement, state} from 'lit/decorators.js';
-import type {PropertyValues} from 'lit';
 import {html} from 'lit';
 import draggable from '../elements/draggable';
 import type {Entity, Viewer} from 'cesium';
@@ -15,7 +14,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {downloadGeometry, hideVolume, updateEntityVolume} from './helpers';
 import './ngm-geometry-edit';
 import {styleMap} from 'lit/directives/style-map.js';
-import {showSnackbarConfirmation} from '../notifications';
+import {showSnackbarInfo} from '../notifications';
 
 @customElement('ngm-geometry-info')
 export class NgmGeometryInfo extends LitElementI18n {
@@ -24,7 +23,6 @@ export class NgmGeometryInfo extends LitElementI18n {
   @state() geometry: NgmGeometry | undefined;
   private viewer: Viewer | null = null;
   private geometriesDataSource: CustomDataSource | undefined;
-  private enableSlicingOnRender = false;
 
   constructor() {
     super();
@@ -49,14 +47,6 @@ export class NgmGeometryInfo extends LitElementI18n {
     });
   }
 
-  protected updated(_changedProperties: PropertyValues) {
-    if (this.enableSlicingOnRender) {
-      ToolboxStore.setSliceGeometry(this.geometry);
-      this.enableSlicingOnRender = false;
-    }
-    super.updated(_changedProperties);
-  }
-
   connectedCallback() {
     draggable(this, {
       allowFrom: '.drag-handle'
@@ -74,27 +64,20 @@ export class NgmGeometryInfo extends LitElementI18n {
   }
 
   onEditClick() {
-    const updateOptions = () => ToolboxStore.setOpenedGeometryOptions({
-      id: this.geomEntity!.id,
-      editing: !this.editing
-    });
-    if (this.editing)
-      showSnackbarConfirmation(i18next.t('tbx_lost_changes_warning'), {onApprove: updateOptions});
-    else {
+    if (this.editing) {
+      this.showLostChangesWarn();
+    } else {
       if (ToolboxStore.geomSliceActive) ToolboxStore.setSliceGeometry(null);
-      updateOptions();
+      ToolboxStore.setOpenedGeometryOptions({
+        id: this.geomEntity!.id,
+        editing: !this.editing
+      });
     }
   }
 
   onSliceClick() {
     if (this.editing) {
-      showSnackbarConfirmation(i18next.t('tbx_lost_changes_warning'), {
-        onApprove: () => {
-          hideVolume(this.geomEntity!);
-          this.editing = false;
-          this.enableSlicingOnRender = true;
-        }
-      });
+      this.showLostChangesWarn();
     } else {
       hideVolume(this.geomEntity!);
       ToolboxStore.setSliceGeometry(this.geometry);
@@ -102,16 +85,25 @@ export class NgmGeometryInfo extends LitElementI18n {
   }
 
   onClose() {
-    const updateOptions = () => ToolboxStore.setOpenedGeometryOptions(null);
     if (this.editing)
-      showSnackbarConfirmation(i18next.t('tbx_lost_changes_warning'), {onApprove: updateOptions});
+      this.showLostChangesWarn();
     else
-      updateOptions();
+      ToolboxStore.setOpenedGeometryOptions(null);
   }
 
   getHeight(geom: NgmGeometry) {
     const height = geom.type === 'point' ? Cartographic.fromCartesian(geom.positions[0]).height : geom.volumeHeightLimits?.height;
     return height ? height.toFixed() : '';
+  }
+
+  showLostChangesWarn() {
+    showSnackbarInfo(i18next.t('tbx_lost_changes_warning'), {
+      class: 'ngm-lost-changes-warn',
+      displayTime: 20000
+    });
+    const body = this.querySelector('.ngm-geom-info-body');
+    if (!body) return;
+    body.scrollTop = body.scrollHeight;
   }
 
   get infoTemplate() {
