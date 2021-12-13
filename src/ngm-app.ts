@@ -14,6 +14,8 @@ import './elements/ngm-height-slider';
 import './toolbox/ngm-geometry-info';
 import './elements/ngm-layer-legend';
 
+import '@geoblocks/cesium-view-cube';
+
 import {DEFAULT_VIEW} from './constants';
 
 import {setupSearch} from './search.js';
@@ -294,6 +296,7 @@ export class NgmApp extends LitElementI18n {
                                 @close=${this.onCloseLayerLegend}></ngm-layer-legend>
             ` : '')}
             <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
+            <cesium-view-cube .scene="${this.viewer?.scene}"></cesium-view-cube>
             <a class="disclaimer-link" target="_blank"
                href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
           </div>
