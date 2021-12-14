@@ -297,6 +297,8 @@ export class NgmApp extends LitElementI18n {
             ` : '')}
             <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
             <cesium-view-cube .scene="${this.viewer?.scene}"></cesium-view-cube>
+            <a class="contact-mailto-link" target="_blank"
+               href="mailto:swissgeol@swisstopo.ch">${i18next.t('contact_mailto_text')}</a>
             <a class="disclaimer-link" target="_blank"
                href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
           </div>

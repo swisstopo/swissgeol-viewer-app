@@ -171,6 +171,7 @@ cesium-view-cube {
 #cesium {
   display: flex;
   flex: auto;
+  position: relative;
 }
 
 /* This is workaround to make the 'clientHeight' works in cesium when the parent element is in flex grow */
@@ -290,7 +291,7 @@ ngm-full-screen-view.full-active {
   border-radius: 8px;
   position: absolute;
   z-index: 2;
-  top: 98px;
+  top: 10px;
   right: 75px;
   padding: 10px 12px 8px 12px;
 }
@@ -410,17 +411,23 @@ ngm-full-screen-view.full-active {
   display: none !important;
 }
 
-.disclaimer-link {
+.contact-mailto-link, .disclaimer-link {
   position: absolute;
   z-index: 2;
-  bottom: 8px;
-  left: 224px;
+  left: 5px;
   font-size: 12px;
   color: #fff;
   text-shadow: 0 0 2px #000;
 }
+.contact-mailto-link {
+  bottom: 60px;
+}
 
-.disclaimer-link:hover {
+.disclaimer-link {
+  bottom: 40px;
+}
+
+.contact-mailto-link:hover, .disclaimer-link:hover {
   color: #FF0000;
   text-shadow: none;
 }
@@ -457,11 +464,4 @@ ngm-full-screen-view.full-active {
 
 .ui.dimmer.ngm-main-load-dimmer {
   background: hsla(0, 0%, 100%, .85);
-}
-
-@media (max-height: 630px) {
-  .disclaimer-link {
-    bottom: 80px;
-    left: 144px;
-  }
 }
