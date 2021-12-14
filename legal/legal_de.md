@@ -1,3 +1,5 @@
+![logo](../src/images/logo-CH.svg)
+
 Rechtliches
 ===========
 

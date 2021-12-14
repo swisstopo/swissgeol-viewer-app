@@ -1,4 +1,6 @@
-﻿Legal framework
+﻿![logo](../src/images/logo-CH.svg)
+
+Legal framework
 ===============
 
 ## Liability
