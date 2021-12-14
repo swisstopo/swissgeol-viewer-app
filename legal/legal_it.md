@@ -1,4 +1,6 @@
-﻿Basi legali
+﻿![logo](../src/images/logo-CH.svg)
+
+Basi legali
 ===========
 
 ## Responsabilità
