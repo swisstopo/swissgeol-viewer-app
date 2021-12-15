@@ -5,15 +5,16 @@ import {LitElementI18n} from '../i18n.js';
 import {getSliceParam, syncSliceParam} from '../permalink';
 import 'fomantic-ui-css/components/checkbox';
 import ToolboxStore from '../store/toolbox';
-import {getMeasurements} from '../cesiumutils';
+import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import type Slicer from '../slicer/Slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
 import type SlicingBox from '../slicer/SlicingBox';
 import type {BBox} from '../slicer/helper';
 import type {Cartesian3} from 'cesium';
+import {BoundingSphere, HeadingPitchRange, JulianDate} from 'cesium';
 import type {NgmGeometry} from './interfaces';
 import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {hideVolume, updateEntityVolume} from './helpers';
+import {getAreaPositions, hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
 import {skip} from 'rxjs';
 import DrawStore from '../store/draw';
@@ -28,6 +29,7 @@ export class NgmSlicer extends LitElementI18n {
   @state() editingEnabled = false;
   private sliceGeomId: string | undefined;
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
+  private julianDate = new JulianDate();
 
 
   constructor() {
@@ -134,6 +136,7 @@ export class NgmSlicer extends LitElementI18n {
         };
       }
       const entity = this.geometriesDataSource!.entities.getById(geom.id!);
+      this.flyToSlicingGeom(entity);
       entity!.show = false;
       this.sliceGeomId = geom.id;
       this.slicer.active = true;
@@ -218,6 +221,23 @@ export class NgmSlicer extends LitElementI18n {
     const type = this.slicer!.sliceOptions.type;
     this.slicer!.active = false;
     geom ? this.toggleGeomSlicer(geom) : this.toggleSlicer(type, this.sliceInfo);
+  }
+
+  flyToSlicingGeom(entity) {
+    const flyToEntity = (repeat) => {
+      let positions = getAreaPositions(entity, this.julianDate);
+      const scene = MainStore.viewerValue!.scene;
+      positions = updateHeightForCartesianPositions(positions, undefined, scene);
+      const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
+      boundingSphere.radius *= 2;
+      const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 4), 0);
+      scene.camera.flyToBoundingSphere(boundingSphere, {
+        duration: repeat ? 2 : 0,
+        offset: zoomHeadingPitchRange,
+        complete: () => repeat && flyToEntity(false)
+      });
+    };
+    flyToEntity(true);
   }
 
   sliceOptionsTemplate(options) {
