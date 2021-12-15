@@ -168,6 +168,7 @@
   "tbx_cross_sections_format_label": "Result format",
   "tbx_description_label": "Description",
   "tbx_disable_slice_btn_label": "Show full map",
+  "tbx_download_all_btn": "Download the list as KML",
   "tbx_download_btn_label": "Download",
   "tbx_download_section_output_label": "Download",
   "tbx_draw": "Draw",

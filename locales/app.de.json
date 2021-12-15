@@ -168,6 +168,7 @@
   "tbx_cross_sections_format_label": "Format des Schnitts",
   "tbx_description_label": "Beschreibung",
   "tbx_disable_slice_btn_label": "Gesamte Karte zeigen",
+  "tbx_download_all_btn": "",
   "tbx_download_btn_label": "Download",
   "tbx_download_section_output_label": "Herunterladen",
   "tbx_draw": "Zeichnen",
