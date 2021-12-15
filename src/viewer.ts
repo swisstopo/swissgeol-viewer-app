@@ -194,22 +194,39 @@ export function setupViewer(container: Element, rethrowRenderErrors) {
   scene.screenSpaceCameraController.enableCollisionDetection = false;
   scene.useDepthPicking = true;
   scene.pickTranslucentDepth = true;
-  scene.backgroundColor = Color.TRANSPARENT;
+
+  // const highlightColorParam = searchParams.get('highlightColor');
+  // if (highlightColorParam) globe.fillHighlightColor = Color.fromCssColorString(highlightColorParam);
+  // if (highlightColorParam) {
+  //   scene.sun = new Sun();
+  //   scene.light = new SunLight({color: Color.fromCssColorString(highlightColorParam)});
+  // }
+
+  const backgroundColorParam = searchParams.get('backgroundColor');
+  scene.backgroundColor = backgroundColorParam ? Color.fromCssColorString(backgroundColorParam) : Color.TRANSPARENT;
 
   globe.baseColor = Color.TRANSPARENT;
   globe.depthTestAgainstTerrain = true;
   globe.showGroundAtmosphere = false;
   globe.showWaterEffect = false;
   globe.backFaceCulling = false;
-  globe.undergroundColor = Color.BLACK;
+
+  const undergroundColorParam = searchParams.get('undergroundColor');
+  globe.undergroundColor = undergroundColorParam ? Color.fromCssColorString(undergroundColorParam) : Color.BLACK;
   globe.undergroundColorAlphaByDistance.nearValue = 0.5;
   globe.undergroundColorAlphaByDistance.farValue = 0.0;
 
+  const fogDistance = new Cartesian4(10000, 0.0, 150000, 0.3);
+  let fogColor = Color.BLACK;
+  const fogDistanceParam = searchParams.get('fogDistance');
+  const fogColorParam = searchParams.get('fogColor');
+  if (fogDistanceParam) Cartesian4.fromArray(fogDistanceParam.split(',').map(n => Number(n)), 0, fogDistance);
+  if (fogColorParam) fogColor = Color.fromCssColorString(fogColorParam);
   const fog = new PostProcessStage({
     fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
     uniforms: {
-      fogByDistance: new Cartesian4(10000, 0.0, 150000, 0.3),
-      fogColor: Color.BLACK
+      fogByDistance: fogDistance,
+      fogColor: fogColor
     },
     name: 'fog'
   });

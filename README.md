@@ -41,6 +41,10 @@ A few URL parameters will modify the behaviour of the viewer:
 - `inspector` display the Cesium Inspector widget
 - `inspector_wireframe` enable the wireframe mode
 - `preserveDrawingBuffer` allow to read canvas from the DOM, probably helping hotjar record the canvas
+- `fogDistance` sets fog distance in 3 directions (0 - infinity) and opacity (0 - 1) (default: 10000,0.0,150000,0.3)
+- `fogColor` sets fog color. The CSS color value in %23rgb, %23rgba, %23rrggbb, %23rrggbbaa, rgb(), rgba(), hsl(), or hsla() format (to pass value correctly need to pass %23 instead of #). (default: black)
+- `undergroundColor` sets terrain underground color. The CSS color value in %23rgb, %23rgba, %23rrggbb, %23rrggbbaa, rgb(), rgba(), hsl(), or hsla() format (to pass value correctly need to pass %23 instead of #). (default: black)
+- `backgroundColor` sets background color. The CSS color value in %23rgb, %23rrggbb, rgb() or hsl() format (to pass value correctly need to pass %23 instead of #).
 
 
 ## Notes
