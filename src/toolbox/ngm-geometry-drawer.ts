@@ -548,7 +548,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     });
     let kml: string = exportResult.kml;
     kml = extendKmlWithProperties(kml, visibleGeometries);
-    const blob = new Blob([kml], {type: 'text/xml'});
+    const blob = new Blob([kml], {type: 'application/vnd.google-earth.kml+xml'});
     saveAs(blob, 'swissgeol_geometries.kml');
   }
 

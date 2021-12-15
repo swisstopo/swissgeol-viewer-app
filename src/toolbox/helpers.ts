@@ -124,7 +124,7 @@ export async function downloadGeometry(entity) {
   });
   let kml: string = exportResult.kml;
   kml = extendKmlWithProperties(kml, geometries);
-  const blob = new Blob([kml], {type: 'text/xml'});
+  const blob = new Blob([kml], {type: 'application/vnd.google-earth.kml+xml'});
   saveAs(blob, `swissgeol_geometry_${name}.kml`);
 }
 
