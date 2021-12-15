@@ -9,7 +9,7 @@ import type {Event, exportKmlResultKml, Viewer} from 'cesium';
 import {BoundingSphere, Entity, EntityCollection, exportKml, HeadingPitchRange, PropertyBag} from 'cesium';
 
 import {html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 
 import {
   AOI_LINE_ALPHA,
@@ -20,7 +20,7 @@ import {
   POINT_SYMBOLS
 } from '../constants';
 import {getAreaPositions, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
-import {showWarning} from '../notifications';
+import {showBannerError, showSnackbarInfo} from '../notifications';
 import {LitElementI18n} from '../i18n';
 import type {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
@@ -67,6 +67,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   @property({type: Boolean}) downloadActiveDataEnabled = false;
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
   @state() selectedArea: Entity | undefined;
+  @query('.ngm-toast-placeholder') toastPlaceholder;
   julianDate = new JulianDate();
   swissforagesService = new SwissforagesService();
   viewer: Viewer | null = null;
@@ -99,7 +100,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         this.draw.addEventListener('drawend', (evt) => this.endDrawing_((<CustomEvent>evt).detail));
         this.draw.addEventListener('drawerror', evt => {
           if (this.draw!.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
-            showWarning(i18next.t('tbx_error_need_more_points_warning'));
+            showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
           }
         });
       }
@@ -263,7 +264,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       } else if (file.name.toLowerCase().endsWith('.gpx')) {
         return this.uploadGpx(file);
       } else {
-        showWarning(i18next.t('tbx_unsupported_file_warning'));
+        showBannerError(this.toastPlaceholder, i18next.t('tbx_unsupported_file_warning'));
         return;
       }
     }
@@ -278,7 +279,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
     let entities = kmlDataSource.entities.values;
     if (entities.length > 10) {
-      showWarning(i18next.t('tbx_kml_large_warning'));
+      showBannerError(this.toastPlaceholder, i18next.t('tbx_kml_large_warning'));
       entities = entities.slice(0, 10);
     }
     let atLeastOneValid = false;
@@ -288,12 +289,12 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         atLeastOneValid = this.addUploadedArea(ent, kmlDataSource.name);
       } else {
         atLeastOneValid = true;
-        showWarning(i18next.t('tbx_kml_area_existing_warning'));
+        showBannerError(this.toastPlaceholder, i18next.t('tbx_kml_area_existing_warning'));
       }
     });
 
     if (!atLeastOneValid) {
-      showWarning(i18next.t('tbx_unsupported_kml_warning'));
+      showBannerError(this.toastPlaceholder, i18next.t('tbx_unsupported_kml_warning'));
     } else {
       this.viewer!.zoomTo(entities);
     }
@@ -558,6 +559,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
     const disabled = this.draw!.active && this.draw!.entityForEdit;
     return html`
+      <div class="ngm-toast-placeholder"></div>
       <div class="ngm-draw-list">
         ${this.drawGeometries.map(it => {
           const active = !disabled && this.draw!.active && it.type === this.draw!.type;

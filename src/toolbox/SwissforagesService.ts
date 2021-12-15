@@ -1,14 +1,14 @@
 import {SWISSFORAGES_API_URL} from '../constants';
 import {radiansToLv95} from '../projection';
 import i18next from 'i18next';
-import {showWarning} from '../notifications';
+import {showSnackbarInfo} from '../notifications';
 
 interface SwissforagesResponse {
   success: boolean;
   data: {
     cid: string
     mid: string
-  }
+  };
 }
 
 export class SwissforagesService {
@@ -89,7 +89,7 @@ export class SwissforagesService {
         });
       } catch (e) {
         console.error(e);
-        showWarning(i18next.t('tbx_swissforages_borehole_location_error'));
+        showSnackbarInfo(i18next.t('tbx_swissforages_borehole_location_error'));
       }
     }
 
@@ -106,7 +106,7 @@ export class SwissforagesService {
         });
       } catch (e) {
         console.error(e);
-        showWarning(i18next.t('tbx_swissforages_borehole_depth_error'));
+        showSnackbarInfo(i18next.t('tbx_swissforages_borehole_depth_error'));
       }
     }
 
@@ -123,7 +123,7 @@ export class SwissforagesService {
         });
       } catch (e) {
         console.error(e);
-        showWarning(i18next.t('tbx_swissforages_borehole_name_error'));
+        showSnackbarInfo(i18next.t('tbx_swissforages_borehole_name_error'));
       }
     }
     return boreholeId;
@@ -143,7 +143,7 @@ export class SwissforagesService {
       response = await fetchResult.json();
     } catch (e) {
       console.error(e);
-      showWarning(i18next.t('tbx_swissforages_get_location_error'));
+      showSnackbarInfo(i18next.t('tbx_swissforages_get_location_error'));
     }
 
     if (response && response.success) {

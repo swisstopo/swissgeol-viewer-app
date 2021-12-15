@@ -29,6 +29,11 @@
   background-color: #FFA8A8;
 }
 
+.snackbar.warning {
+  color: #212529;
+  background-color: #FFC078;
+}
+
 .actions .ui.button.ngm-action-btn {
   width: auto;
 }
@@ -36,4 +41,18 @@
 .actions .ui.button.ngm-cancel-btn {
   background-color: #DEE2E6;
   color: #495057;
+}
+
+.ngm-toast-placeholder > .ui.toast-container.attached {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.ngm-toast-placeholder div.snackbar {
+  display: flex;
+  align-items: center;
+}
+
+.ngm-toast-placeholder div.snackbar > img {
+  margin-right: 12px;
 }

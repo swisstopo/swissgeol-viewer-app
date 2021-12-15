@@ -10,7 +10,7 @@ import {classMap} from 'lit/directives/class-map.js';
 import {lookAtPoint, pickCenterOnMapOrObject} from '../cesiumutils';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import {showWarning} from '../notifications';
+import {showSnackbarError} from '../notifications';
 import i18next from 'i18next';
 import {debounce} from '../utils';
 import {getTargetParam, syncTargetParam} from '../permalink';
@@ -135,7 +135,7 @@ export class NgmNavTools extends LitElementI18n {
       this.eventHandler.setInputAction(() => this.onLeftUp(), ScreenSpaceEventType.LEFT_UP);
       position = position || pickCenterOnMapOrObject(this.viewer!.scene);
       if (!position) {
-        showWarning(i18next.t('nav_tools_out_glob_warn'));
+        showSnackbarError(i18next.t('nav_tools_out_glob_warn'));
         return;
       }
       this.addTargetPoint(position, true);
@@ -165,7 +165,6 @@ export class NgmNavTools extends LitElementI18n {
   ctrlListener = (evt) => {
     if (evt.key !== 'Control') return;
     this.removeTargetPoint();
-    showWarning(i18next.t('nav_tools_ctrl_disable_warn'));
   };
 
   onLeftDown(event) {

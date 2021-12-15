@@ -25,7 +25,7 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
-import {showWarning} from '../notifications';
+import {showSnackbarError} from '../notifications';
 import auth from '../store/auth';
 import './ngm-share-link.ts';
 import '../layers/ngm-layers-upload';
@@ -33,7 +33,7 @@ import MainStore from '../store/main';
 import {classMap} from 'lit/directives/class-map.js';
 import {zoomTo} from '../utils';
 import $ from '../jquery';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import type {Cartesian2, Viewer} from 'cesium';
 import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
@@ -46,6 +46,7 @@ export class SideBar extends LitElementI18n {
   @state() activePanel: string | null = null;
   @state() showHeader = false;
   @state() globeQueueLength_ = 0;
+  @query('.ngm-toast-placeholder') toastPlaceholder;
   private viewer: Viewer | null = null;
   private layerActions: any;
   private zoomedToPosition = false;
@@ -174,6 +175,7 @@ export class SideBar extends LitElementI18n {
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
         <div class="ngm-panel-content">
+          <div class="ngm-toast-placeholder"></div>
           <ngm-layers
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
@@ -192,7 +194,7 @@ export class SideBar extends LitElementI18n {
           </h5>
           <ngm-map-configuration></ngm-map-configuration>
           <div class="ui divider"></div>
-          <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
+          <ngm-layers-upload .viewer=${this.viewer} .toastPlaceholder=${this.toastPlaceholder}></ngm-layers-upload>
         </div>
       </div>
     `;
@@ -225,7 +227,7 @@ export class SideBar extends LitElementI18n {
   //   const data = [];
   //   for await (const d of createDataGenerator(specs, bbox4326)) data.push(d);
   //   if (data.length === 0) {
-  //     showWarning(i18next.t('tbx_no_data_to_download_warning'));
+  //     showSnackbarInfo(i18next.t('tbx_no_data_to_download_warning'));
   //     return;
   //   }
   //   const zip = await createZipFromData(data);
@@ -499,7 +501,7 @@ export class SideBar extends LitElementI18n {
             } else {
               eventHandler.destroy();
               if (triesCounter > maxTries) {
-                showWarning(i18next.t('dtd_object_on_coordinates_not_found_warning'));
+                showSnackbarError(i18next.t('dtd_object_on_coordinates_not_found_warning'));
               }
             }
           }, 500);
