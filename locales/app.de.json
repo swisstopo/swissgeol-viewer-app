@@ -185,7 +185,7 @@
   "tbx_kml_large_warning": "KML zu gross. Es werden nur 10 Geometrien geladen, um Performanceeinschränlungen zu vermeiden",
   "tbx_lat_label": "Breitengrad",
   "tbx_lon_label": "Längengrad",
-  "tbx_lost_changes_warning": "Ihre Änderungen werden verloren gehen. Fortfahren?",
+  "tbx_lost_changes_warning": "",
   "tbx_my_geometries": "Meine Geometrien",
   "tbx_name_label": "Name",
   "tbx_no_data_to_download_warning": "Keine Daten zum Herunterladen",
