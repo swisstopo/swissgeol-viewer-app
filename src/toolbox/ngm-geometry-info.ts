@@ -1,5 +1,5 @@
 import {LitElementI18n} from '../i18n';
-import {customElement, state} from 'lit/decorators.js';
+import {customElement, query, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import draggable from '../elements/draggable';
 import type {Entity, Viewer} from 'cesium';
@@ -21,6 +21,7 @@ export class NgmGeometryInfo extends LitElementI18n {
   @state() geomEntity: Entity | undefined;
   @state() editing = false;
   @state() geometry: NgmGeometry | undefined;
+  @query('.ngm-geom-info-body') infoBodyElement;
   private viewer: Viewer | null = null;
   private geometriesDataSource: CustomDataSource | undefined;
 
@@ -101,9 +102,7 @@ export class NgmGeometryInfo extends LitElementI18n {
       class: 'ngm-lost-changes-warn',
       displayTime: 20000
     });
-    const body = this.querySelector('.ngm-geom-info-body');
-    if (!body) return;
-    body.scrollTop = body.scrollHeight;
+    this.infoBodyElement.scrollTop = this.infoBodyElement.scrollHeight;
   }
 
   get infoTemplate() {
