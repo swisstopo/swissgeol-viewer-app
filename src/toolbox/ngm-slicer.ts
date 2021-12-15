@@ -164,6 +164,7 @@ export class NgmSlicer extends LitElementI18n {
       hideVolume(entity);
     }
     entity.show = true;
+    syncSliceParam();
     this.requestUpdate();
   }
 
