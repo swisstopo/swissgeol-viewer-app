@@ -66,6 +66,7 @@ const DEFAULT_AREAS_COUNTER = {
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
   @property({type: Boolean}) downloadActiveDataEnabled = false;
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
+  @property({type: Boolean}) drawerHidden = true;
   @state() selectedArea: Entity | undefined;
   julianDate = new JulianDate();
   swissforagesService = new SwissforagesService();
@@ -116,7 +117,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   update(changedProperties) {
     this.initAoi();
-
+    if (changedProperties.has('drawerHidden') && !changedProperties.get('drawerHidden') && this.draw) {
+      this.draw.active = false;
+      this.draw.clear();
+    }
     super.update(changedProperties);
   }
 

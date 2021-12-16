@@ -5,6 +5,10 @@ import {executeForAllPrimitives} from '../utils';
 import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 import SlicingToolBase from './SlicingToolBase';
+import {showWarning} from '../notifications';
+import i18next from 'i18next';
+import {CesiumDraw} from '../draw/CesiumDraw';
+import {DEFAULT_AOI_COLOR} from '../constants';
 
 
 interface SliceOptions {
@@ -54,14 +58,14 @@ const DEFAULT_SLICE_OPTIONS: SliceOptions = {
 };
 
 export default class Slicer {
-
   viewer: Viewer;
   slicingBox: SlicingBox;
   slicingLine: SlicingLine;
   sliceOptions: SliceOptions;
-  slicerDataSource: CustomDataSource;
-  sliceActive: boolean;
-  slicingTool: SlicingToolBase | null;
+  slicerDataSource: CustomDataSource = new CustomDataSource('slicer');
+  sliceActive = false;
+  slicingTool: SlicingToolBase | null = null;
+  draw: CesiumDraw;
 
   /**
    * @param {Viewer} viewer
@@ -72,13 +76,16 @@ export default class Slicer {
      * @type {SliceOptions}
      */
     this.sliceOptions = {...DEFAULT_SLICE_OPTIONS};
-
-    this.slicerDataSource = new CustomDataSource('slicer');
     this.viewer.dataSources.add(this.slicerDataSource);
-    this.sliceActive = false;
     this.slicingBox = new SlicingBox(this.viewer, this.slicerDataSource);
     this.slicingLine = new SlicingLine(this.viewer);
-    this.slicingTool = null;
+    this.draw = new CesiumDraw(this.viewer, 'line', {fillColor: DEFAULT_AOI_COLOR, minPointsStop: true});
+    this.draw.addEventListener('drawend', (evt) => this.endDrawing((<CustomEvent>evt).detail));
+    this.draw.addEventListener('drawerror', evt => {
+      if (this.draw.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
+        showWarning(i18next.t('tbx_error_need_more_points_warning'));
+      }
+    });
   }
 
   get active() {
@@ -92,11 +99,14 @@ export default class Slicer {
       if (!(this.slicingTool instanceof SlicingToolBase))
         throw new Error('Slicing tools should extend SlicingToolBase');
 
-      this.sliceActive = true;
-      this.slicingTool.activate(this.sliceOptions);
-      if (this.sliceOptions.activationCallback)
-        this.sliceOptions.activationCallback();
+      if (this.sliceOptions.type?.includes('view') && !this.sliceOptions.slicePoints) {
+        this.draw!.type = this.sliceOptions.type === 'view-box' ? 'rectangle' : 'line';
+        this.draw!.active = true;
+      } else {
+        this.activateSlicing();
+      }
     } else {
+      this.deactivateDrawing();
       this.sliceActive = false;
       if (this.sliceOptions.deactivationCallback)
         this.sliceOptions.deactivationCallback();
@@ -157,6 +167,39 @@ export default class Slicer {
   toggleBoxVisibility(show) {
     if (!this.slicingBox) return;
     this.slicingBox.toggleBoxVisibility(show);
+  }
+
+  deactivateDrawing() {
+    if (!this.draw.active) return;
+    this.draw.active = false;
+    this.draw.clear();
+  }
+
+  endDrawing(info) {
+    this.deactivateDrawing();
+    const positions = info.positions;
+    const type = info.type;
+
+    if (type === 'line') {
+      this.sliceOptions = {
+        ...this.sliceOptions,
+        slicePoints: [positions[0], positions[positions.length - 1]],
+      };
+    } else {
+      this.sliceOptions = {
+        ...this.sliceOptions,
+        slicePoints: positions,
+      };
+    }
+
+    this.activateSlicing();
+  }
+
+  activateSlicing() {
+    this.sliceActive = true;
+    this.slicingTool!.activate(this.sliceOptions);
+    if (this.sliceOptions.activationCallback)
+      this.sliceOptions.activationCallback();
   }
 
 

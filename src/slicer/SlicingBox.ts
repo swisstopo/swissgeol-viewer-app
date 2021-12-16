@@ -4,8 +4,9 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
 import type {BBox} from './helper';
 import {
-  createClippingPlanes, getBboxFromRectangle,
+  createClippingPlanes,
   createCPCModelMatrixFromSphere,
+  getBboxFromRectangle,
   getBboxFromViewRatio,
   moveSlicingBoxCorners
 } from './helper';
@@ -13,13 +14,17 @@ import {Plane} from 'cesium';
 import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
-  SLICE_BOX_ARROWS_INSIDE, SLICE_BOX_ARROWS_OUTSIDE,
+  SLICE_BOX_ARROWS_INSIDE,
+  SLICE_BOX_ARROWS_OUTSIDE,
   SLICING_BOX_MIN_SIZE,
   SLICING_GEOMETRY_COLOR
 } from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import {
-  pickCenterOnEllipsoid, planeFromTwoPoints, projectPointOnSegment, updateHeightForCartesianPositions
+  pickCenterOnEllipsoid,
+  planeFromTwoPoints,
+  projectPointOnSegment,
+  updateHeightForCartesianPositions
 } from '../cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
@@ -165,7 +170,7 @@ export default class SlicingBox extends SlicingToolBase {
     this.leftPlane = null;
     this.rightPlane = null;
     this.boxCenter = null;
-    this.slicerArrows!.hide();
+    this.slicerArrows?.hide();
   }
 
   addClippingPlanes(primitive) {

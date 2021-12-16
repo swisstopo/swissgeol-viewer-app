@@ -16,6 +16,7 @@ import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
 import {skip} from 'rxjs';
+import DrawStore from '../store/draw';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
@@ -34,12 +35,16 @@ export class NgmSlicer extends LitElementI18n {
     ToolboxStore.slicer.subscribe(slicer => {
       if (!slicer) return;
       this.slicer = slicer;
+      this.slicer.draw.addEventListener('statechanged', evt => {
+        DrawStore.setDrawState((<CustomEvent>evt).detail.active);
+        this.requestUpdate();
+      });
       this.syncSlice();
     });
     ToolboxStore.sliceGeometry.pipe(skip(1)).subscribe(geom => this.toggleGeomSlicer(geom));
     ToolboxStore.openedGeometryOptions.subscribe(options => {
       this.editingEnabled = !!(options?.editing);
-      if (this.editingEnabled && this.slicer?.active)
+      if (this.editingEnabled && (this.slicer?.active || this.slicer?.draw.active))
         this.toggleSlicer();
     });
     ToolboxStore.syncSlice.subscribe(() => this.syncSlice());
@@ -47,7 +52,9 @@ export class NgmSlicer extends LitElementI18n {
 
   protected update(changedProperties) {
     if (changedProperties.get('slicerHidden') && !this.slicerHidden && !this.slicer?.active && !this.editingEnabled)
-      this.toggleSlicer('view-box');
+      this.toggleSlicer('view-line');
+    else if (changedProperties.has('slicerHidden') && !changedProperties.get('slicerHidden'))
+      this.slicer?.deactivateDrawing();
     super.update(changedProperties);
   }
 
@@ -107,7 +114,12 @@ export class NgmSlicer extends LitElementI18n {
           type: 'line',
           slicePoints: [geom.positions[0], geom.positions[geom.positions.length - 1]],
           negate: this.negateSlice,
-          deactivationCallback: () => this.onGeomSliceDeactivation(geom)
+          deactivationCallback: () => this.onGeomSliceDeactivation(geom),
+          activationCallback: () => this.syncSliceInfo({
+            type: 'view-line',
+            negate: this.negateSlice,
+            slicePoints: this.slicer!.sliceOptions.slicePoints
+          })
         };
       } else {
         this.slicer.sliceOptions = {
@@ -117,7 +129,8 @@ export class NgmSlicer extends LitElementI18n {
           height: geom.volumeHeightLimits?.height,
           negate: this.negateSlice,
           showBox: this.showBox,
-          deactivationCallback: () => this.onGeomSliceDeactivation(geom)
+          deactivationCallback: () => this.onGeomSliceDeactivation(geom),
+          syncBoxPlanesCallback: (sliceInfo) => this.syncSliceInfo({...sliceInfo, type: 'view-box'})
         };
       }
       const entity = this.geometriesDataSource!.entities.getById(geom.id!);
@@ -151,6 +164,7 @@ export class NgmSlicer extends LitElementI18n {
       hideVolume(entity);
     }
     entity.show = true;
+    syncSliceParam();
     this.requestUpdate();
   }
 
@@ -164,7 +178,7 @@ export class NgmSlicer extends LitElementI18n {
   }
 
   get slicingEnabled() {
-    return this.slicer!.active;
+    return this.slicer!.active || this.slicer!.draw.active;
   }
 
   addCurrentSliceToToolbox(sliceType) {
@@ -213,7 +227,13 @@ export class NgmSlicer extends LitElementI18n {
       type = options.geom.type === 'line' ? 'line' : 'box';
     }
     return html`
-      <div class="ngm-slice-options" ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId}>
+      <div class="ngm-draw-hint"
+           ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || !this.slicer!.draw.active}>
+        ${i18next.t('tbx_slice_draw_hint')}
+        <div class="ngm-info-icon"></div>
+      </div>
+      <div class="ngm-slice-options"
+           ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || this.slicer!.draw.active}>
         <div class="ngm-slice-type-label">${i18next.t('tbx_slicing_type')}</div>
         <div class="ngm-slice-side">
           <div class=${classMap({active: !this.negateSlice})}
