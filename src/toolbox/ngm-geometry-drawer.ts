@@ -523,7 +523,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         this.pickArea(options.id);
         break;
       case 'downloadAll':
-        this.downloadVisibleGeometries();
+        this.downloadVisibleGeometries(options.type);
         break;
     }
   }
@@ -539,10 +539,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
-  async downloadVisibleGeometries() {
+  async downloadVisibleGeometries(type?: GeometryTypes) {
     const visibleGeometries = new EntityCollection();
     this.geometriesDataSource!.entities.values.forEach(ent => {
-      if (ent.isShowing) {
+      if (ent.isShowing && (!type || type === getValueOrUndefined(ent.properties!.type))) {
         visibleGeometries.add(ent);
       }
     });
