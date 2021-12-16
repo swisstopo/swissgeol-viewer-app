@@ -27,7 +27,7 @@ import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
 import Transforms from 'cesium/Source/Core/Transforms';
 import Matrix4 from 'cesium/Source/Core/Matrix4';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import type {ImageryLayer} from 'cesium';
+import {DirectionalLight, ImageryLayer} from 'cesium';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -181,8 +181,25 @@ export function setupViewer(container: Element, rethrowRenderErrors) {
   }
 
   // Position the sun the that shadows look nice
-  viewer.clock.currentTime = JulianDate.fromDate(new Date('June 21, 2018 12:00:00 GMT+0200'));
+  let sunDate = new Date('2018-06-21T10:00:00.000Z');
+  if (searchParams.has('date')) {
+    const betterDate = new Date(searchParams.get('date') || 'qwer');
+    if (Number.isNaN(betterDate.getDate())) {
+      console.error(`Provided date is wrong: ${searchParams.get('date')}`);
+    } else {
+      sunDate = betterDate;
+    }
+  }
+  viewer.clock.currentTime = JulianDate.fromDate(sunDate);
 
+  if (searchParams.has('light')) {
+    const p = searchParams.get('light')?.split('-').map(parseFloat) as number[];
+    scene.light = new DirectionalLight({
+      direction: new Cartesian3(p[0], p[1], p[2]),
+      color: Color.WHITE,
+      intensity: p[3],
+    });
+  }
 
   // Limit the volume inside which the user can navigate
   if (!noLimit) {
