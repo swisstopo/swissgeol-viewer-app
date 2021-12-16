@@ -139,7 +139,7 @@ export class NgmGeometryInfo extends LitElementI18n {
     return html`
       <div>
         <button class="ui button ngm-download-obj-btn ngm-action-btn"
-                ?hidden=${!this.activeLayersForDownload().length}
+                ?hidden=${this.geometry?.type !== 'rectangle' || !this.activeLayersForDownload().length}
                 @click=${() => {
                   const rectangle = geom.positions.map(cartesianToDegrees);
                   rectangle.pop();
