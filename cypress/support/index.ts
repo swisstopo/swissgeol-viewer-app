@@ -1,5 +1,5 @@
-Cypress.Commands.add('loadPage', (doNotHideCookie = false) => {
-  cy.visit('/');
+Cypress.Commands.add('loadPage', (doNotHideCookie = false, reload = false) => {
+  reload ? cy.reload() : cy.visit('/');
   cy.get('.ngm-main-load-dimmer .ngm-determinate-loader > .loader', {timeout: 4000}).should('have.class', 'determinate');
   cy.get('.ngm-main-load-dimmer').not('.active', {timeout: 60000});
   if (!doNotHideCookie)

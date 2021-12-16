@@ -203,3 +203,7 @@ export function getTargetParam(): Cartesian3 | undefined {
   const position = parseJson(params.get(TARGET_PARAM));
   return position && Cartesian3.fromDegrees(Number(position.lon), Number(position.lat), Number(position.height));
 }
+
+export function getCesiumToolbarParam(): boolean {
+  return getURLSearchParams().has('cesiumToolbar');
+}

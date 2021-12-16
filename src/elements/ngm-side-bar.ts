@@ -25,7 +25,7 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
-import {showWarning} from '../notifications';
+import {showSnackbarError} from '../notifications';
 import auth from '../store/auth';
 import './ngm-share-link.ts';
 import '../layers/ngm-layers-upload';
@@ -33,7 +33,7 @@ import MainStore from '../store/main';
 import {classMap} from 'lit/directives/class-map.js';
 import {zoomTo} from '../utils';
 import $ from '../jquery';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import type {Cartesian2, Viewer} from 'cesium';
 import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
@@ -46,6 +46,7 @@ export class SideBar extends LitElementI18n {
   @state() activePanel: string | null = null;
   @state() showHeader = false;
   @state() globeQueueLength_ = 0;
+  @query('.ngm-side-bar-panel > .ngm-toast-placeholder') toastPlaceholder;
   private viewer: Viewer | null = null;
   private layerActions: any;
   private zoomedToPosition = false;
@@ -173,6 +174,7 @@ export class SideBar extends LitElementI18n {
         <div class="ngm-panel-header">${i18next.t('dtd_displayed_data_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
+        <div class="ngm-toast-placeholder"></div>
         <div class="ngm-panel-content">
           <ngm-layers
             .layers=${this.activeLayers}
@@ -185,7 +187,7 @@ export class SideBar extends LitElementI18n {
             @layerChanged=${() => this.onLayerChanged()}>
           </ngm-layers>
           <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
-          <ngm-layers-upload .viewer="${this.viewer}"></ngm-layers-upload>
+          <ngm-layers-upload .viewer="${this.viewer}" .toastPlaceholder=${this.toastPlaceholder}></ngm-layers-upload>
           <h5 class="ui header">
             ${i18next.t('dtd_background_map_label')}
             <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
@@ -207,32 +209,6 @@ export class SideBar extends LitElementI18n {
     }
     this.activePanel = panelName;
   }
-
-  // todo not use for now
-  // get activeLayersForDownload() {
-  //   const result = this.activeLayers
-  //     .filter(l => l.visible && !!l.downloadDataType)
-  //     .map(l => ({
-  //       layer: l.layer,
-  //       url: l.downloadDataPath,
-  //       type: l.downloadDataType
-  //     }));
-  //   return result;
-  // }
-  //
-  // async downloadActiveData(evt) {
-  //   const {bbox4326} = evt.detail;
-  //   const specs = this.activeLayersForDownload;
-  //   const data = [];
-  //   for await (const d of createDataGenerator(specs, bbox4326)) data.push(d);
-  //   if (data.length === 0) {
-  //     showWarning(i18next.t('tbx_no_data_to_download_warning'));
-  //     return;
-  //   }
-  //   const zip = await createZipFromData(data);
-  //   const blob = await zip.generateAsync({type: 'blob'});
-  //   saveAs(blob, 'swissgeol_data.zip');
-  // }
 
   async syncActiveLayers() {
     const attributeParams = getAttribute();
@@ -504,7 +480,7 @@ export class SideBar extends LitElementI18n {
             } else {
               eventHandler.destroy();
               if (triesCounter > maxTries) {
-                showWarning(i18next.t('dtd_object_on_coordinates_not_found_warning'));
+                showSnackbarError(i18next.t('dtd_object_on_coordinates_not_found_warning'));
               }
             }
           }, 500);

@@ -2,7 +2,7 @@ import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {degreesToLv95, round} from '../projection.js';
 import {borehole, horizontalCrossSection, verticalCrossSection} from '../gst';
-import {showError, showSnackbarInfo} from '../notifications';
+import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import IonResource from 'cesium/Source/Core/IonResource';
@@ -16,13 +16,13 @@ import CesiumMath from 'cesium/Source/Core/Math';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
 import MainStore from '../store/main';
+import type {Viewer} from 'cesium';
 import {JulianDate} from 'cesium';
 import type {NgmToolbox} from './ngm-toolbox';
 import {classMap} from 'lit-html/directives/class-map.js';
 import ToolboxStore from '../store/toolbox';
 import type {NgmGeometry} from './interfaces';
 import {pointInPolygon} from '../cesiumutils';
-import type {Viewer} from 'cesium';
 
 export type OutputFormat = 'pdf' | 'png' | 'svg';
 
@@ -113,7 +113,7 @@ export class NgmGstInteraction extends LitElementI18n {
       promise
         .then(json => {
           if (json.error) {
-            showError(json.error);
+            showSnackbarError(json.error);
           } else {
             (<NgmToolbox> this.parentElement).showSectionModal(json.imageUrl);
           }
@@ -123,7 +123,7 @@ export class NgmGstInteraction extends LitElementI18n {
             showSnackbarInfo(i18next.t('tbx_request_aborted_warning'));
           } else {
             console.error(err);
-            showError(`${err.name}: ${err.message}`);
+            showSnackbarError(`${err.name}: ${err.message}`);
           }
         })
         .finally(() => this.loading = false);

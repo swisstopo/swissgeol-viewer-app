@@ -46,6 +46,10 @@ ngm-geometry-info .ngm-action-btn.ui.button {
   color: #495057;
 }
 
+ngm-geometry-info .ngm-file-download-icon {
+  background-color: #495057;
+}
+
 .ngm-geom-info-content {
   margin-top: 12px;
 }

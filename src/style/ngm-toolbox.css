@@ -122,7 +122,7 @@ ngm-slicer .ui.button.ngm-transform-btn:hover {
   background-color: #D0F5F9;
   color: #357183;
 }
-
+ngm-slicer .ngm-draw-hint,
 ngm-slicer .ngm-divider {
   margin-top: 12px;
 }

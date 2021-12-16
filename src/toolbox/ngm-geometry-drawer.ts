@@ -20,7 +20,7 @@ import {
   POINT_SYMBOLS
 } from '../constants';
 import {getAreaPositions, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
-import {showWarning} from '../notifications';
+import {showBannerError, showSnackbarInfo} from '../notifications';
 import {LitElementI18n} from '../i18n';
 import type {CesiumDraw} from '../draw/CesiumDraw.js';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
@@ -66,6 +66,8 @@ const DEFAULT_AREAS_COUNTER = {
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
   @property({type: Boolean}) downloadActiveDataEnabled = false;
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
+  @property({type: Boolean}) drawerHidden = true;
+  @property({type: Object}) toastPlaceholder!: HTMLElement;
   @state() selectedArea: Entity | undefined;
   julianDate = new JulianDate();
   swissforagesService = new SwissforagesService();
@@ -99,7 +101,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         this.draw.addEventListener('drawend', (evt) => this.endDrawing_((<CustomEvent>evt).detail));
         this.draw.addEventListener('drawerror', evt => {
           if (this.draw!.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
-            showWarning(i18next.t('tbx_error_need_more_points_warning'));
+            showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
           }
         });
       }
@@ -116,7 +118,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   update(changedProperties) {
     this.initAoi();
-
+    if (changedProperties.has('drawerHidden') && !changedProperties.get('drawerHidden') && this.draw) {
+      this.draw.active = false;
+      this.draw.clear();
+    }
     super.update(changedProperties);
   }
 
@@ -263,7 +268,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       } else if (file.name.toLowerCase().endsWith('.gpx')) {
         return this.uploadGpx(file);
       } else {
-        showWarning(i18next.t('tbx_unsupported_file_warning'));
+        showBannerError(this.toastPlaceholder, i18next.t('tbx_unsupported_file_warning'));
         return;
       }
     }
@@ -278,7 +283,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
     let entities = kmlDataSource.entities.values;
     if (entities.length > 10) {
-      showWarning(i18next.t('tbx_kml_large_warning'));
+      showBannerError(this.toastPlaceholder, i18next.t('tbx_kml_large_warning'));
       entities = entities.slice(0, 10);
     }
     let atLeastOneValid = false;
@@ -288,12 +293,12 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         atLeastOneValid = this.addUploadedArea(ent, kmlDataSource.name);
       } else {
         atLeastOneValid = true;
-        showWarning(i18next.t('tbx_kml_area_existing_warning'));
+        showBannerError(this.toastPlaceholder, i18next.t('tbx_kml_area_existing_warning'));
       }
     });
 
     if (!atLeastOneValid) {
-      showWarning(i18next.t('tbx_unsupported_kml_warning'));
+      showBannerError(this.toastPlaceholder, i18next.t('tbx_unsupported_kml_warning'));
     } else {
       this.viewer!.zoomTo(entities);
     }
@@ -519,7 +524,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         this.pickArea(options.id);
         break;
       case 'downloadAll':
-        this.downloadVisibleGeometries();
+        this.downloadVisibleGeometries(options.type);
         break;
     }
   }
@@ -535,10 +540,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
-  async downloadVisibleGeometries() {
+  async downloadVisibleGeometries(type?: GeometryTypes) {
     const visibleGeometries = new EntityCollection();
     this.geometriesDataSource!.entities.values.forEach(ent => {
-      if (ent.isShowing) {
+      if (ent.isShowing && (!type || type === getValueOrUndefined(ent.properties!.type))) {
         visibleGeometries.add(ent);
       }
     });

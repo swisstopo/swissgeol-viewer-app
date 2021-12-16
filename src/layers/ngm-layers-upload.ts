@@ -4,7 +4,7 @@ import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {showSnackbarError, showSnackbarInfo} from '../notifications';
+import {showBannerError, showSnackbarInfo} from '../notifications';
 import {DEFAULT_LAYER_OPACITY} from '../constants';
 import type {Config} from './ngm-layers-item';
 import $ from '../jquery.js';
@@ -14,13 +14,14 @@ import {classMap} from 'lit-html/directives/class-map.js';
 @customElement('ngm-layers-upload')
 export default class LayersUpload extends LitElementI18n {
   @property({type: Object}) viewer!: Viewer;
+  @property({type: Object}) toastPlaceholder!: HTMLElement;
   @state() loading = false;
 
   async uploadKml(file: File) {
     if (!file) {
       showSnackbarInfo(i18next.t('dtd_no_file_to_upload_warn'));
     } else if (!file.name.toLowerCase().endsWith('kml')) {
-      showSnackbarInfo(i18next.t('dtd_file_not_kml'));
+      showBannerError(this.toastPlaceholder, i18next.t('dtd_file_not_kml'));
     } else {
       try {
         this.loading = true;
@@ -61,7 +62,7 @@ export default class LayersUpload extends LitElementI18n {
       } catch (e) {
         this.loading = false;
         console.error(e);
-        showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
+        showBannerError(this.toastPlaceholder, i18next.t('dtd_cant_upload_kml_error'));
       }
     }
   }

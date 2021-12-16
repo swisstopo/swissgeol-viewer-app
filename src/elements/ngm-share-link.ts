@@ -1,17 +1,18 @@
 import {LitElementI18n} from '../i18n';
 import {html} from 'lit';
-import {showSnackbarInfo, showWarning} from '../notifications';
+import {showBannerSuccess, showBannerWarning} from '../notifications';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/popup.js';
 import './ngm-i18n-content.js';
 import {SHORTLINK_HOST_BY_PAGE_HOST} from '../constants';
 import {classMap} from 'lit/directives/class-map.js';
-import {customElement, state} from 'lit/decorators.js';
+import {customElement, query, state} from 'lit/decorators.js';
 
 @customElement('ngm-share-link')
 export class NgmShareLink extends LitElementI18n {
   @state() shortlink = '';
   @state() displayLoader = false;
+  @query('.ngm-toast-placeholder') toastPlaceholder;
 
   async getShortlink() {
     const serviceHost = SHORTLINK_HOST_BY_PAGE_HOST[window.location.host];
@@ -30,7 +31,7 @@ export class NgmShareLink extends LitElementI18n {
       return response ? response.url_short : undefined;
     } catch (e) {
       console.error(e);
-      showWarning(i18next.t('welcome_get_shortlink_error'));
+      showBannerWarning(this.toastPlaceholder, i18next.t('welcome_get_shortlink_error'));
       return window.location.href;
     }
   }
@@ -50,7 +51,7 @@ export class NgmShareLink extends LitElementI18n {
     if (!this.shortlink) return;
     try {
       await navigator.clipboard.writeText(this.shortlink);
-      showSnackbarInfo(i18next.t('shortlink_copied'));
+      showBannerSuccess(this.toastPlaceholder, i18next.t('shortlink_copied'));
     } catch (e) {
       console.error(e);
     }
@@ -61,6 +62,7 @@ export class NgmShareLink extends LitElementI18n {
       <div class="ui very light dimmer ${classMap({active: this.displayLoader})}">
         <div class="ui loader"></div>
       </div>
+      <div class="ngm-toast-placeholder"></div>
       <div class="ngm-share-label">${i18next.t('shortlink_copy_btn_label')}</div>
       <div class="ngm-input ${classMap({disabled: this.displayLoader})}">
         <input type="text" placeholder="required" readonly
