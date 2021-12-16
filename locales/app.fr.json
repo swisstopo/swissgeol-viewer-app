@@ -32,6 +32,7 @@
   "dtd_no_file_to_upload_warn": "Aucun fichier à télécharger",
   "dtd_object_on_coordinates_not_found_warning": "Objet non trouvé ou caméra éloignée de sa position initiale",
   "dtd_opacity_base_map": "Opacité de la carte d'arrière-plan",
+  "dtd_user_content_label": "",
   "header_search_placeholder": "Recherche...",
   "link": "Lien",
   "lsb_close": "Fermer",
