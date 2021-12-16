@@ -66,6 +66,7 @@ const DEFAULT_AREAS_COUNTER = {
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
   @property({type: Boolean}) downloadActiveDataEnabled = false;
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
+  @property({type: Boolean}) drawerHidden = true;
   @property({type: Object}) toastPlaceholder!: HTMLElement;
   @state() selectedArea: Entity | undefined;
   julianDate = new JulianDate();
@@ -117,7 +118,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
 
   update(changedProperties) {
     this.initAoi();
-
+    if (changedProperties.has('drawerHidden') && !changedProperties.get('drawerHidden') && this.draw) {
+      this.draw.active = false;
+      this.draw.clear();
+    }
     super.update(changedProperties);
   }
 
@@ -520,7 +524,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         this.pickArea(options.id);
         break;
       case 'downloadAll':
-        this.downloadVisibleGeometries();
+        this.downloadVisibleGeometries(options.type);
         break;
     }
   }
@@ -536,10 +540,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
-  async downloadVisibleGeometries() {
+  async downloadVisibleGeometries(type?: GeometryTypes) {
     const visibleGeometries = new EntityCollection();
     this.geometriesDataSource!.entities.values.forEach(ent => {
-      if (ent.isShowing) {
+      if (ent.isShowing && (!type || type === getValueOrUndefined(ent.properties!.type))) {
         visibleGeometries.add(ent);
       }
     });

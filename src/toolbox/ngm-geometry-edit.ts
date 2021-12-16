@@ -5,7 +5,7 @@ import type {Event, Viewer} from 'cesium';
 import {Entity, PropertyBag} from 'cesium';
 import i18next from 'i18next';
 import MainStore from '../store/main';
-import {hideVolume, updateEntityVolume, updateVolumePositions} from './helpers';
+import {getAreaProperties, hideVolume, updateEntityVolume, updateVolumePositions} from './helpers';
 import {getEntityColor, getValueOrUndefined} from '../cesiumutils';
 import ToolboxStore from '../store/toolbox';
 import CesiumMath from 'cesium/Source/Core/Math';
@@ -103,7 +103,7 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   save() {
     if (this.entity && this.editingEntity) {
-      this.entity.properties = this.editingEntity.properties;
+      this.entity.properties = <any> getAreaProperties(this.editingEntity, this.editingEntity.properties!.type.getValue());
       if (this.entity.billboard) {
         this.entity.position = this.editingEntity.position;
         this.entity.billboard.color = this.editingEntity.billboard!.color;
