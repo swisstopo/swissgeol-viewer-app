@@ -45,7 +45,8 @@ export default class LayersUpload extends LitElementI18n {
           promise: uploadedLayer,
           zoomToBbox: true,
           hideUpDown: false,
-          opacity: DEFAULT_LAYER_OPACITY
+          opacity: DEFAULT_LAYER_OPACITY,
+          notSaveToPermalink: true
         };
 
         this.requestUpdate();

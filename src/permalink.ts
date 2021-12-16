@@ -86,7 +86,7 @@ export function syncLayersParam(activeLayers) {
   const layersTransparency: string[] = [];
   const layersVisibility: boolean[] = [];
   activeLayers.forEach(l => {
-    if (!l.customAsset) {
+    if (!l.customAsset && !l.notSaveToPermalink) {
       layerNames.push(l.layer);
       const transparency = isNaN(l.opacity) ? 0 : (1 - l.opacity);
       layersTransparency.push(transparency.toFixed(2));
