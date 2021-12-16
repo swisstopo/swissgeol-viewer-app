@@ -33,7 +33,11 @@ export default class LayersAction {
   }
 
   changeVisibility(config: Config, checked: boolean) {
-    config.setVisibility(checked);
+    if (config.setVisibility) {
+      config.setVisibility(checked);
+    } else {
+      this.viewer.dataSources.getByName(config.promise.name)[0].show = checked;
+    }
     config.visible = checked;
     this.viewer.scene.requestRender();
   }

@@ -16,6 +16,7 @@ export interface Config extends LayerTreeNode {
   setOpacity?: any;
   hideUpDown: any;
   promise: any;
+  notSaveToPermalink?: boolean;
 }
 
 @customElement('ngm-layers-item')

@@ -32,6 +32,7 @@
   "dtd_no_file_to_upload_warn": "Keine Datei vorhanden",
   "dtd_object_on_coordinates_not_found_warning": "Objekt wurde nicht gefunden oder Kamera wurde von initialer Position wegbewegt",
   "dtd_opacity_base_map": "Deckkraft Hintergrundkarte",
+  "dtd_user_content_label": "",
   "header_search_placeholder": "Suche...",
   "link": "Link",
   "lsb_close": "Schliessen",
