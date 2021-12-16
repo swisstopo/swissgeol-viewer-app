@@ -14,30 +14,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 @customElement('ngm-layers-upload')
 export default class LayersUpload extends LitElementI18n {
   @property({type: Object}) viewer!: Viewer;
-  @state() uploadedLayers: Config[] = [];
-  @state() actions: any;
   @state() loading = false;
-
-  constructor() {
-    super();
-    this.actions = {
-      changeVisibility: (config: Config, visible: boolean) => this.changeVisibility(config, visible)
-    };
-  }
-
-  onLayerRemove(evt) {
-    const source = evt.detail.config.promise;
-    this.uploadedLayers = this.uploadedLayers.filter(c => c.promise.name !== source.name);
-    this.viewer.dataSources.remove(source);
-    this.viewer.scene.requestRender();
-    this.requestUpdate();
-  }
-
-  changeVisibility(config: Config, visible: boolean) {
-    const source = this.viewer.dataSources.getByName(config.promise.name);
-    source[0].show = visible;
-    this.viewer.scene.requestRender();
-  }
 
   async uploadKml(file: File) {
     if (!file) {
@@ -63,15 +40,20 @@ export default class LayersUpload extends LitElementI18n {
         uploadedLayer.name = `${name}_${Date.now()}`;
         await this.viewer.dataSources.add(uploadedLayer);
         // done like this to have correct rerender of component
-        this.uploadedLayers = [...this.uploadedLayers, {
+        const config: Config = {
           label: name,
           promise: uploadedLayer,
           zoomToBbox: true,
-          hideUpDown: true,
-          visible: true,
+          hideUpDown: false,
           opacity: DEFAULT_LAYER_OPACITY
-        }];
+        };
+
         this.requestUpdate();
+        await (<any> document.getElementsByTagName('ngm-side-bar')[0]).onCatalogLayerClicked({
+          detail: {
+            layer: config
+          }
+        });
         await this.viewer.zoomTo(uploadedLayer);
         (<HTMLInputElement> this.querySelector('.ngm-upload-kml')).value = '';
         this.loading = false;
@@ -108,13 +90,6 @@ export default class LayersUpload extends LitElementI18n {
       </button>
       <input class="ngm-upload-kml" type='file' accept=".kml,.KML" hidden
              @change=${(e) => this.uploadKml(e.target ? e.target.files[0] : null)}/>
-      ${this.uploadedLayers.length ? html`
-        <ngm-layers
-          @removeDisplayedLayer=${this.onLayerRemove}
-          @zoomTo=${evt => this.viewer.zoomTo(evt.detail.promise)}
-          .layers=${this.uploadedLayers}
-          .actions=${this.actions}>
-        </ngm-layers>` : ''}
     `;
   }
 

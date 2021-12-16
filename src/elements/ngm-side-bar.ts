@@ -397,7 +397,11 @@ export class SideBar extends LitElementI18n {
   }
 
   removeLayerWithoutSync(config) {
-    config.setVisibility(false);
+    if (config.setVisibility) {
+      config.setVisibility(false);
+    } else {
+      this.viewer!.dataSources.getByName(config.promise.name)[0].show = false;
+    }
     config.visible = false;
     config.displayed = false;
     if (config.remove) {
