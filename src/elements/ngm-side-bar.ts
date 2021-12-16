@@ -207,32 +207,6 @@ export class SideBar extends LitElementI18n {
     this.activePanel = panelName;
   }
 
-  // todo not use for now
-  // get activeLayersForDownload() {
-  //   const result = this.activeLayers
-  //     .filter(l => l.visible && !!l.downloadDataType)
-  //     .map(l => ({
-  //       layer: l.layer,
-  //       url: l.downloadDataPath,
-  //       type: l.downloadDataType
-  //     }));
-  //   return result;
-  // }
-  //
-  // async downloadActiveData(evt) {
-  //   const {bbox4326} = evt.detail;
-  //   const specs = this.activeLayersForDownload;
-  //   const data = [];
-  //   for await (const d of createDataGenerator(specs, bbox4326)) data.push(d);
-  //   if (data.length === 0) {
-  //     showWarning(i18next.t('tbx_no_data_to_download_warning'));
-  //     return;
-  //   }
-  //   const zip = await createZipFromData(data);
-  //   const blob = await zip.generateAsync({type: 'blob'});
-  //   saveAs(blob, 'swissgeol_data.zip');
-  // }
-
   async syncActiveLayers() {
     const attributeParams = getAttribute();
     const callback = attributeParams ?
