@@ -1,33 +1,18 @@
 import {MANTEL_COLOR, SWITZERLAND_RECTANGLE} from './constants';
 
-import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
-import RequestScheduler from 'cesium/Source/Core/RequestScheduler';
-import CesiumTerrainProvider from 'cesium/Source/Core/CesiumTerrainProvider';
-import IonResource from 'cesium/Source/Core/IonResource';
-import JulianDate from 'cesium/Source/Core/JulianDate';
-import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import Color from 'cesium/Source/Core/Color';
-import Ion from 'cesium/Source/Core/Ion';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
-import Rectangle from 'cesium/Source/Core/Rectangle';
-import SingleTileImageryProvider from 'cesium/Source/Scene/SingleTileImageryProvider';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import PostProcessStage from 'cesium/Source/Scene/PostProcessStage';
-import Cartesian4 from 'cesium/Source/Core/Cartesian4';
-import CesiumInspector from 'cesium/Source/Widgets/CesiumInspector/CesiumInspector';
-import CameraEventType from 'cesium/Source/Scene/CameraEventType';
-import KeyboardEventModifier from 'cesium/Source/Core/KeyboardEventModifier';
-import Transforms from 'cesium/Source/Core/Transforms';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import {DirectionalLight, ImageryLayer} from 'cesium';
+
+import type {ImageryLayer} from 'cesium';
+import {DirectionalLight, ScreenSpaceEventHandler, Matrix4, Transforms, KeyboardEventModifier,
+  CameraEventType, SingleTileImageryProvider, ScreenSpaceEventType, PostProcessStage, Cartesian4, CesiumInspector,
+  Rectangle, Ion, Color, Cartesian3, Ellipsoid, JulianDate, IonResource, CesiumTerrainProvider, RequestScheduler,
+  Viewer} from 'cesium';
 
 
 window['CESIUM_BASE_URL'] = '.';
