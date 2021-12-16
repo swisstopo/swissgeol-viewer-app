@@ -9,7 +9,7 @@ import type {Event, exportKmlResultKml, Viewer} from 'cesium';
 import {BoundingSphere, Entity, EntityCollection, exportKml, HeadingPitchRange, PropertyBag} from 'cesium';
 
 import {html} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 
 import {
   AOI_LINE_ALPHA,
@@ -66,8 +66,8 @@ const DEFAULT_AREAS_COUNTER = {
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
   @property({type: Boolean}) downloadActiveDataEnabled = false;
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
+  @property({type: Object}) toastPlaceholder!: HTMLElement;
   @state() selectedArea: Entity | undefined;
-  @query('.ngm-toast-placeholder') toastPlaceholder;
   julianDate = new JulianDate();
   swissforagesService = new SwissforagesService();
   viewer: Viewer | null = null;
@@ -559,7 +559,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
     const disabled = this.draw!.active && this.draw!.entityForEdit;
     return html`
-      <div class="ngm-toast-placeholder"></div>
       <div class="ngm-draw-list">
         ${this.drawGeometries.map(it => {
           const active = !disabled && this.draw!.active && it.type === this.draw!.type;

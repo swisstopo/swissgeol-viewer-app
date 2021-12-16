@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
 import './ngm-geometry-drawer';
 import './ngm-slicer';
@@ -24,6 +24,7 @@ export class NgmToolbox extends LitElementI18n {
   @property({type: Boolean}) toolsHidden = true;
   @state() activeTool: 'draw' | 'slicing' | 'gst' | undefined;
   @state() sectionImageUrl: string | undefined;
+  @query('.ngm-toast-placeholder') toastPlaceholder;
   geometriesDataSource: CustomDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
@@ -137,8 +138,11 @@ export class NgmToolbox extends LitElementI18n {
           <div>${i18next.t('tbx_gst')}</div>
         </div>
       </div>
+      <div class="ngm-toast-placeholder"></div>
       <ngm-geometry-drawer .hidden="${this.activeTool !== 'draw'}"
-                           .geometriesDataSource=${this.geometriesDataSource}></ngm-geometry-drawer>
+                           .geometriesDataSource=${this.geometriesDataSource}
+                           .toastPlaceholder=${this.toastPlaceholder}>
+      </ngm-geometry-drawer>
       <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
                   .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
                   .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>

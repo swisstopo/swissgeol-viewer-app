@@ -46,6 +46,14 @@
 .ngm-toast-placeholder > .ui.toast-container.attached {
   position: relative;
   margin-bottom: 5px;
+  left: -10px;
+  width: calc(100% + 20px);
+  box-shadow: none;
+}
+
+.ngm-toast-placeholder > .ui.toast-container.attached .floating.toast-box,
+.ngm-toast-placeholder > .ui.toast-container.attached .snackbar {
+  box-shadow: none;
 }
 
 .ngm-toast-placeholder div.snackbar {
@@ -55,4 +63,8 @@
 
 .ngm-toast-placeholder div.snackbar > img {
   margin-right: 12px;
+}
+
+.ngm-toast-placeholder div.snackbar > i {
+  margin-left: auto;
 }

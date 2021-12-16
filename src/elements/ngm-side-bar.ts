@@ -46,7 +46,7 @@ export class SideBar extends LitElementI18n {
   @state() activePanel: string | null = null;
   @state() showHeader = false;
   @state() globeQueueLength_ = 0;
-  @query('.ngm-toast-placeholder') toastPlaceholder;
+  @query('.ngm-side-bar-panel > .ngm-toast-placeholder') toastPlaceholder;
   private viewer: Viewer | null = null;
   private layerActions: any;
   private zoomedToPosition = false;
@@ -174,8 +174,8 @@ export class SideBar extends LitElementI18n {
         <div class="ngm-panel-header">${i18next.t('dtd_displayed_data_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
+        <div class="ngm-toast-placeholder"></div>
         <div class="ngm-panel-content">
-          <div class="ngm-toast-placeholder"></div>
           <ngm-layers
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
