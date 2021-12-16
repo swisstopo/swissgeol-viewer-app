@@ -5,10 +5,10 @@ import {executeForAllPrimitives} from '../utils';
 import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 import SlicingToolBase from './SlicingToolBase';
-import {showWarning} from '../notifications';
 import i18next from 'i18next';
 import {CesiumDraw} from '../draw/CesiumDraw';
 import {DEFAULT_AOI_COLOR} from '../constants';
+import {showSnackbarInfo} from '../notifications';
 
 
 interface SliceOptions {
@@ -83,7 +83,7 @@ export default class Slicer {
     this.draw.addEventListener('drawend', (evt) => this.endDrawing((<CustomEvent>evt).detail));
     this.draw.addEventListener('drawerror', evt => {
       if (this.draw.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
-        showWarning(i18next.t('tbx_error_need_more_points_warning'));
+        showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
       }
     });
   }
