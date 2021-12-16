@@ -141,8 +141,8 @@ export class NgmToolbox extends LitElementI18n {
       <div class="ngm-toast-placeholder"></div>
       <ngm-geometry-drawer .hidden="${this.activeTool !== 'draw'}"
                            .drawerHidden="${this.activeTool !== 'draw' || this.toolsHidden}"
-                           .geometriesDataSource=${this.geometriesDataSource}></ngm-geometry-drawer>
-                           .toastPlaceholder=${this.toastPlaceholder}>
+                           .geometriesDataSource=${this.geometriesDataSource}
+                           .toastPlaceholder=${this.toastPlaceholder}></ngm-geometry-drawer>
       </ngm-geometry-drawer>
       <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
                   .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
