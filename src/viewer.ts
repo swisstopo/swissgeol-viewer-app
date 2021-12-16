@@ -197,7 +197,6 @@ export function setupViewer(container: Element, rethrowRenderErrors) {
   scene.useDepthPicking = true;
   scene.pickTranslucentDepth = true;
   scene.backgroundColor = Color.TRANSPARENT;
-
   globe.baseColor = Color.TRANSPARENT;
   globe.depthTestAgainstTerrain = true;
   globe.showGroundAtmosphere = false;

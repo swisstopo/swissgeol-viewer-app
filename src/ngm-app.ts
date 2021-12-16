@@ -13,6 +13,7 @@ import './elements/ngm-cam-configuration';
 import './elements/ngm-height-slider';
 import './toolbox/ngm-geometry-info';
 import './elements/ngm-layer-legend';
+import './cesium-toolbar';
 
 import '@geoblocks/cesium-view-cube';
 
@@ -21,7 +22,7 @@ import {DEFAULT_VIEW} from './constants';
 import {setupSearch} from './search.js';
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 
-import {getCameraView, getZoomToPosition, syncCamera} from './permalink';
+import {getCameraView, getCesiumToolbarParam, getZoomToPosition, syncCamera} from './permalink';
 import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
@@ -73,6 +74,7 @@ export class NgmApp extends LitElementI18n {
   @state() showTrackingConsent = false;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
+  private showCesiumToolbar = getCesiumToolbarParam();
 
   constructor() {
     super();
@@ -302,6 +304,7 @@ export class NgmApp extends LitElementI18n {
             <a class="disclaimer-link" target="_blank"
                href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
           </div>
+          ${this.showCesiumToolbar ? html`<cesium-toolbar></cesium-toolbar>` : ''}
           ${this.showTrackingConsent ? html`
             <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>` : ''}
         </div>

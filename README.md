@@ -43,6 +43,7 @@ A few URL parameters will modify the behaviour of the viewer:
 - `preserveDrawingBuffer` allow to read canvas from the DOM, probably helping hotjar record the canvas
 - `date` a date to be used for illumination (default to "2018-06-21T10:00:00.000Z")
 - `light` a white light source from infinity (ex: 1-2-0-1000 will have direction (1, 2, 0) and intensity 1000)
+- `cesiumToolbar` display configuration panel for fog, ambient, background color and terrain underground color
 
 ## Notes
 
