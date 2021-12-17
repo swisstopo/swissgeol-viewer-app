@@ -13,7 +13,7 @@ import type {BBox} from '../slicer/helper';
 import type {Cartesian3} from 'cesium';
 import type {NgmGeometry} from './interfaces';
 import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {hideVolume, updateEntityVolume} from './helpers';
+import {flyToGeom, hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
 import {skip} from 'rxjs';
 import DrawStore from '../store/draw';
@@ -134,6 +134,7 @@ export class NgmSlicer extends LitElementI18n {
         };
       }
       const entity = this.geometriesDataSource!.entities.getById(geom.id!);
+      this.flyToSlicingGeom(entity);
       entity!.show = false;
       this.sliceGeomId = geom.id;
       this.slicer.active = true;
@@ -218,6 +219,11 @@ export class NgmSlicer extends LitElementI18n {
     const type = this.slicer!.sliceOptions.type;
     this.slicer!.active = false;
     geom ? this.toggleGeomSlicer(geom) : this.toggleSlicer(type, this.sliceInfo);
+  }
+
+  flyToSlicingGeom(entity) {
+    const scene = MainStore.viewerValue!.scene;
+    flyToGeom(scene, entity, -(Math.PI / 4), 2);
   }
 
   sliceOptionsTemplate(options) {
