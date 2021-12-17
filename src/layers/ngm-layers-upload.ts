@@ -42,7 +42,7 @@ export default class LayersUpload extends LitElementI18n {
         await this.viewer.dataSources.add(uploadedLayer);
         // done like this to have correct rerender of component
         const config: Config = {
-          label: name,
+          label: `${name} (${i18next.t('dtd_own_kml_tag')})`,
           promise: uploadedLayer,
           zoomToBbox: true,
           hideUpDown: false,
