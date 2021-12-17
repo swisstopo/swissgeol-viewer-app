@@ -19,7 +19,7 @@ import {
   HIGHLIGHTED_AOI_COLOR,
   POINT_SYMBOLS
 } from '../constants';
-import {getAreaPositions, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
+import {flyToGeom, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
 import {showBannerError, showSnackbarInfo} from '../notifications';
 import {LitElementI18n} from '../i18n';
 import type {CesiumDraw} from '../draw/CesiumDraw.js';
