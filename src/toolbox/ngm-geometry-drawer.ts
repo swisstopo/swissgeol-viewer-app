@@ -6,7 +6,7 @@ import i18next from 'i18next';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
 import type {Event, exportKmlResultKml, Viewer} from 'cesium';
-import {BoundingSphere, Entity, EntityCollection, exportKml, HeadingPitchRange, PropertyBag} from 'cesium';
+import {Entity, EntityCollection, exportKml, PropertyBag} from 'cesium';
 
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
@@ -19,7 +19,7 @@ import {
   HIGHLIGHTED_AOI_COLOR,
   POINT_SYMBOLS
 } from '../constants';
-import {getAreaPositions, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
+import {flyToGeom, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
 import {showWarning} from '../notifications';
 import {LitElementI18n} from '../i18n';
 import type {CesiumDraw} from '../draw/CesiumDraw.js';
@@ -42,7 +42,7 @@ import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import type {AreasCounter, GeometryTypes, NgmGeometry, SwissforagesModalOptions} from './interfaces';
-import {extendKmlWithProperties, getValueOrUndefined, updateHeightForCartesianPositions} from '../cesiumutils';
+import {extendKmlWithProperties, getValueOrUndefined} from '../cesiumutils';
 import NavToolsStore from '../store/navTools';
 
 const fileUploadInputId = 'fileUpload';
@@ -243,18 +243,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     NavToolsStore.hideTargetPoint();
     if (!entity.isShowing)
       entity.show = true;
-    const flyToEntity = (repeat) => {
-      let positions = getAreaPositions(entity, this.julianDate);
-      positions = updateHeightForCartesianPositions(positions, undefined, this.viewer!.scene);
-      const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
-      const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 2), 0);
-      this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
-        duration: repeat ? 2 : 0,
-        offset: zoomHeadingPitchRange,
-        complete: () => repeat && flyToEntity(false)
-      });
-    };
-    flyToEntity(true);
+    flyToGeom(this.viewer!.scene, entity);
     this.pickArea(id);
   }
 

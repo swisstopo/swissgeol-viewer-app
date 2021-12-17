@@ -5,16 +5,15 @@ import {LitElementI18n} from '../i18n.js';
 import {getSliceParam, syncSliceParam} from '../permalink';
 import 'fomantic-ui-css/components/checkbox';
 import ToolboxStore from '../store/toolbox';
-import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
+import {getMeasurements} from '../cesiumutils';
 import type Slicer from '../slicer/Slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
 import type SlicingBox from '../slicer/SlicingBox';
 import type {BBox} from '../slicer/helper';
 import type {Cartesian3} from 'cesium';
-import {BoundingSphere, HeadingPitchRange, JulianDate} from 'cesium';
 import type {NgmGeometry} from './interfaces';
 import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {getAreaPositions, hideVolume, updateEntityVolume} from './helpers';
+import {flyToGeom, hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
 import {skip} from 'rxjs';
 import DrawStore from '../store/draw';
@@ -29,7 +28,6 @@ export class NgmSlicer extends LitElementI18n {
   @state() editingEnabled = false;
   private sliceGeomId: string | undefined;
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
-  private julianDate = new JulianDate();
 
 
   constructor() {
@@ -224,20 +222,8 @@ export class NgmSlicer extends LitElementI18n {
   }
 
   flyToSlicingGeom(entity) {
-    const flyToEntity = (repeat) => {
-      let positions = getAreaPositions(entity, this.julianDate);
-      const scene = MainStore.viewerValue!.scene;
-      positions = updateHeightForCartesianPositions(positions, undefined, scene);
-      const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
-      boundingSphere.radius *= 2;
-      const zoomHeadingPitchRange = new HeadingPitchRange(0, -(Math.PI / 4), 0);
-      scene.camera.flyToBoundingSphere(boundingSphere, {
-        duration: repeat ? 2 : 0,
-        offset: zoomHeadingPitchRange,
-        complete: () => repeat && flyToEntity(false)
-      });
-    };
-    flyToEntity(true);
+    const scene = MainStore.viewerValue!.scene;
+    flyToGeom(scene, entity, -(Math.PI / 4), 2);
   }
 
   sliceOptionsTemplate(options) {

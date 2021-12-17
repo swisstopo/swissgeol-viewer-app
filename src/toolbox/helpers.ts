@@ -1,7 +1,7 @@
 import {CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_VOLUME_HEIGHT_LIMITS} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
-import type {Entity, exportKmlResultKml, Globe} from 'cesium';
-import {exportKml, JulianDate} from 'cesium';
+import type {Entity, exportKmlResultKml, Globe, Scene} from 'cesium';
+import {BoundingSphere, exportKml, HeadingPitchRange, JulianDate} from 'cesium';
 import {extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import Cartesian2 from 'cesium/Source/Core/Cartesian2';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
@@ -154,4 +154,20 @@ export function getAreaProperties(entity: Entity, type: GeometryTypes) {
     numberOfSegments: measurements.numberOfSegments,
     sidesLength: measurements.sidesLength,
   };
+}
+
+export function flyToGeom(scene: Scene, entity: Entity, pitch = -(Math.PI / 2), boundingSphereScale = 1) {
+  const flyToEntity = (repeat) => {
+    let positions = getAreaPositions(entity, julianDate);
+    positions = updateHeightForCartesianPositions(positions, undefined, scene);
+    const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
+    boundingSphere.radius *= boundingSphereScale;
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, pitch, 0);
+    scene.camera.flyToBoundingSphere(boundingSphere, {
+      duration: repeat ? 2 : 0,
+      offset: zoomHeadingPitchRange,
+      complete: () => repeat && flyToEntity(false)
+    });
+  };
+  flyToEntity(true);
 }
