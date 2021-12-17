@@ -17,6 +17,7 @@ ngm-share-link > div {
 ngm-share-link .ui.button.ngm-action-btn {
   width: 150px;
   justify-content: center;
+  margin-bottom: 13px;
 }
 
 ngm-share-link .ngm-input input {

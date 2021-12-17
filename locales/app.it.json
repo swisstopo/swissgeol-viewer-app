@@ -157,6 +157,7 @@
   "shortlink_copied": "Link copiato",
   "shortlink_copy_btn_label": "Copiare il link",
   "shortlink_link_label": "Link",
+  "shortlink_mailto_btn_label": "",
   "slow_connection_label": "È lento?",
   "slow_connection_latest_stable_version": "Ultima versione stabile",
   "slow_connection_text": "L'applicazione sembra caricarsi molto lentamente.",
