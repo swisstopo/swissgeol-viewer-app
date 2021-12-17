@@ -47,7 +47,7 @@ jobs:
 
       - name: Build
         env:
-          RELEASE_NAME: ${scripts/get_github_name.sh}
+          RELEASE_NAME: ${{scripts/get_github_name.sh}}
         run: echo $RELEASE_NAME; npm run build
 
       - name: Build storybook
