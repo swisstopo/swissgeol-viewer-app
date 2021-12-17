@@ -4,7 +4,7 @@ import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {showSnackbarError, showSnackbarInfo} from '../notifications';
+import {showBannerError, showSnackbarInfo} from '../notifications';
 import {DEFAULT_LAYER_OPACITY} from '../constants';
 import type {Config} from './ngm-layers-item';
 import $ from '../jquery.js';
@@ -14,36 +14,14 @@ import {classMap} from 'lit-html/directives/class-map.js';
 @customElement('ngm-layers-upload')
 export default class LayersUpload extends LitElementI18n {
   @property({type: Object}) viewer!: Viewer;
-  @state() uploadedLayers: Config[] = [];
-  @state() actions: any;
+  @property({type: Object}) toastPlaceholder!: HTMLElement;
   @state() loading = false;
-
-  constructor() {
-    super();
-    this.actions = {
-      changeVisibility: (config: Config, visible: boolean) => this.changeVisibility(config, visible)
-    };
-  }
-
-  onLayerRemove(evt) {
-    const source = evt.detail.config.promise;
-    this.uploadedLayers = this.uploadedLayers.filter(c => c.promise.name !== source.name);
-    this.viewer.dataSources.remove(source);
-    this.viewer.scene.requestRender();
-    this.requestUpdate();
-  }
-
-  changeVisibility(config: Config, visible: boolean) {
-    const source = this.viewer.dataSources.getByName(config.promise.name);
-    source[0].show = visible;
-    this.viewer.scene.requestRender();
-  }
 
   async uploadKml(file: File) {
     if (!file) {
       showSnackbarInfo(i18next.t('dtd_no_file_to_upload_warn'));
     } else if (!file.name.toLowerCase().endsWith('kml')) {
-      showSnackbarInfo(i18next.t('dtd_file_not_kml'));
+      showBannerError(this.toastPlaceholder, i18next.t('dtd_file_not_kml'));
     } else {
       try {
         this.loading = true;
@@ -63,22 +41,28 @@ export default class LayersUpload extends LitElementI18n {
         uploadedLayer.name = `${name}_${Date.now()}`;
         await this.viewer.dataSources.add(uploadedLayer);
         // done like this to have correct rerender of component
-        this.uploadedLayers = [...this.uploadedLayers, {
+        const config: Config = {
           label: name,
           promise: uploadedLayer,
           zoomToBbox: true,
-          hideUpDown: true,
-          visible: true,
-          opacity: DEFAULT_LAYER_OPACITY
-        }];
+          hideUpDown: false,
+          opacity: DEFAULT_LAYER_OPACITY,
+          notSaveToPermalink: true
+        };
+
         this.requestUpdate();
+        await (<any> document.getElementsByTagName('ngm-side-bar')[0]).onCatalogLayerClicked({
+          detail: {
+            layer: config
+          }
+        });
         await this.viewer.zoomTo(uploadedLayer);
         (<HTMLInputElement> this.querySelector('.ngm-upload-kml')).value = '';
         this.loading = false;
       } catch (e) {
         this.loading = false;
         console.error(e);
-        showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
+        showBannerError(this.toastPlaceholder, i18next.t('dtd_cant_upload_kml_error'));
       }
     }
   }
@@ -108,13 +92,6 @@ export default class LayersUpload extends LitElementI18n {
       </button>
       <input class="ngm-upload-kml" type='file' accept=".kml,.KML" hidden
              @change=${(e) => this.uploadKml(e.target ? e.target.files[0] : null)}/>
-      ${this.uploadedLayers.length ? html`
-        <ngm-layers
-          @removeDisplayedLayer=${this.onLayerRemove}
-          @zoomTo=${evt => this.viewer.zoomTo(evt.detail.promise)}
-          .layers=${this.uploadedLayers}
-          .actions=${this.actions}>
-        </ngm-layers>` : ''}
     `;
   }
 

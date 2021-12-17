@@ -7,11 +7,11 @@ import $ from '../jquery.js';
 import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';
 import 'fomantic-ui-css/components/dropdown.js';
-import {showWarning} from '../notifications';
+import {showSnackbarInfo} from '../notifications';
 
 interface UserWorkgroup {
-  workgroup: string
-  id: string
+  workgroup: string;
+  id: string;
 }
 
 @customElement('ngm-swissforages-modal')
@@ -64,7 +64,7 @@ export class NgmSwissforagesModal extends LitElementI18n {
 
   async login() {
     if (!this.username.length || !this.password.length) {
-      showWarning(i18next.t('tbx_swissforages_incorrect_creds_warning'));
+      showSnackbarInfo(i18next.t('tbx_swissforages_incorrect_creds_warning'));
       return;
     }
     this.toggleLoading();
@@ -78,7 +78,7 @@ export class NgmSwissforagesModal extends LitElementI18n {
         this.options.onLoggedIn();
       }
     } catch (e) {
-      showWarning(<string>e);
+      showSnackbarInfo(<string>e);
       this.loading = false;
     }
   }
@@ -94,7 +94,7 @@ export class NgmSwissforagesModal extends LitElementI18n {
       this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.options.depth);
       this.toggleLoading();
     } catch (e) {
-      showWarning(<string>e);
+      showSnackbarInfo(<string>e);
       this.loading = false;
     }
   }

@@ -14,7 +14,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {downloadGeometry, hideVolume, updateEntityVolume} from './helpers';
 import './ngm-geometry-edit';
 import {styleMap} from 'lit/directives/style-map.js';
-import {showSnackbarInfo, showWarning} from '../notifications';
+import {showSnackbarInfo} from '../notifications';
 import {createDataGenerator, createZipFromData} from '../download';
 import {saveAs} from 'file-saver';
 import {cartesianToDegrees} from '../cesiumutils';
@@ -125,7 +125,7 @@ export class NgmGeometryInfo extends LitElementI18n {
     const data: any[] = [];
     for await (const d of createDataGenerator(specs, bbox4326)) data.push(d);
     if (data.length === 0) {
-      showWarning(i18next.t('tbx_no_data_to_download_warning'));
+      showSnackbarInfo(i18next.t('tbx_no_data_to_download_warning'));
       return;
     }
     const zip = await createZipFromData(data);
@@ -139,7 +139,7 @@ export class NgmGeometryInfo extends LitElementI18n {
     return html`
       <div>
         <button class="ui button ngm-download-obj-btn ngm-action-btn"
-                ?hidden=${!this.activeLayersForDownload().length}
+                ?hidden=${this.geometry?.type !== 'rectangle' || !this.activeLayersForDownload().length}
                 @click=${() => {
                   const rectangle = geom.positions.map(cartesianToDegrees);
                   rectangle.pop();

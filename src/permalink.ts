@@ -86,7 +86,7 @@ export function syncLayersParam(activeLayers) {
   const layersTransparency: string[] = [];
   const layersVisibility: boolean[] = [];
   activeLayers.forEach(l => {
-    if (!l.customAsset) {
+    if (!l.customAsset && !l.notSaveToPermalink) {
       layerNames.push(l.layer);
       const transparency = isNaN(l.opacity) ? 0 : (1 - l.opacity);
       layersTransparency.push(transparency.toFixed(2));
@@ -202,4 +202,8 @@ export function getTargetParam(): Cartesian3 | undefined {
   const params = getURLSearchParams();
   const position = parseJson(params.get(TARGET_PARAM));
   return position && Cartesian3.fromDegrees(Number(position.lon), Number(position.lat), Number(position.height));
+}
+
+export function getCesiumToolbarParam(): boolean {
+  return getURLSearchParams().has('cesiumToolbar');
 }

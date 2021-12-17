@@ -6,7 +6,6 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 import {updateBoreholeHeights} from './helpers';
 import {SWISSFORAGES_EDITOR_URL, SWISSFORAGES_VIEWER_URL} from '../constants';
 import {lv95ToDegrees} from '../projection';
-import {showWarning} from '../notifications';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
 import MainStore from '../store/main';
@@ -14,6 +13,7 @@ import type {Viewer} from 'cesium';
 import type {SwissforagesService} from './SwissforagesService';
 import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import type {NgmGeometry} from './interfaces';
+import {showSnackbarInfo} from '../notifications';
 
 @customElement('ngm-swissforages-interaction')
 export class NgmSwissforagesInteraction extends LitElementI18n {
@@ -105,13 +105,13 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
           entity.name = boreholeData.custom.public_name;
         }
       } else {
-        showWarning(i18next.t('tbx_swissforages_borehole_not_exists_warning'));
+        showSnackbarInfo(i18next.t('tbx_swissforages_borehole_not_exists_warning'));
         entity.ellipse!.show = <any>false;
         entity.properties.swissforagesId = undefined;
       }
       this.toggleSwissforagesSyncLoader();
     } catch (e) {
-      showWarning(<string>e);
+      showSnackbarInfo(<string>e);
       this.toggleSwissforagesSyncLoader();
     }
   }

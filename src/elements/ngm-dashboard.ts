@@ -33,14 +33,16 @@ export class NgmDashboard extends LitElementI18n {
     window.history.pushState({path: url}, '', url);
     MainStore.nextLayersSync();
     MainStore.nextMapSync();
-    ToolboxStore.nextSliceSync();
     const {destination, orientation} = getCameraView();
     if (destination && orientation)
       viewer.camera.flyTo({
         destination: destination,
         orientation: orientation,
         duration: 3,
-        complete: () => NavToolsStore.nextTargetPointSync()
+        complete: () => {
+          ToolboxStore.nextSliceSync();
+          NavToolsStore.nextTargetPointSync();
+        }
       });
   }
 
