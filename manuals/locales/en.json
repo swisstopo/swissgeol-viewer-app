@@ -5,11 +5,11 @@
   },
   {
     "tag": "welcome_label",
-    "text": "Welcome to swissgeol.ch, the 3D underground viewer!"
+    "text": "Welcome to swissgeol.ch, the 3D subsurface viewer!"
   },
   {
     "tag": "welcome_subtitle",
-    "text": "Swissgeol.ch is the 3D underground viewer from swisstopo. With this intuitive web application, which puts geological models in a geographical context, data from different sources and topics can be combined."
+    "text": "Swissgeol.ch is the 3D subsurface viewer from swisstopo. With this intuitive web application, which puts geological models in a geographical context, data from different sources and topics can be combined."
   },
   {
     "tag": "table_of_contents",
