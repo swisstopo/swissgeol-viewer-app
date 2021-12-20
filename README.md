@@ -5,7 +5,7 @@
 Swissgeol is the new geology 3D viewer of [Swisstopo](https://swisstopo.ch), available at https://beta.swissgeol.ch and developed by [Camptocamp](https://www.camptocamp.com/).
 It is Open Source and based on the Open Source CesiumJS 3D library.
 
-You are welcome to use and adapt this software for your own uses; see See [LICENCE.md](./LICENCE.md). If you want to get started off rapidely, Camptocamp offers [support and expertise](https://www.camptocamp.com/geospatial_solutions) to meet your needs rapidely.
+You are welcome to use and adapt this software for your own uses; see [LICENSE](./LICENSE). If you want to get started off rapidly, Camptocamp offers [support and expertise](https://www.camptocamp.com/geospatial_solutions) to meet your needs rapidly.
 
 
 ## Your own version: getting started
@@ -27,7 +27,7 @@ See [DEVELOPING.md](./DEVELOPING.md).
 
 ## URL Parameters
 
-A few URL parameters will modify the behaviour of the viewer:
+A few URL parameters will modify the behavior of the viewer:
 
 - `noLimit` disable the navigation limits (sphere and lava). Use noLimit=false to enforce limits on local dev.
 - `assetIds` display some additional Cesium ION 3dtilesets (coma separated list of CesiumIon ids)
