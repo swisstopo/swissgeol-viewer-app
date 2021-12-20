@@ -69,6 +69,7 @@ export class NgmApp extends LitElementI18n {
   @state() slicer_: Slicer | undefined;
   @state() showMinimap = false;
   @state() showCamConfig = false;
+  @state() showMobileSearch = false;
   @state() loading = true;
   @state() determinateLoading = false;
   @state() queueLength = 0;
@@ -299,16 +300,23 @@ export class NgmApp extends LitElementI18n {
 
   render() {
     return html`
-      <header>
-        <a id="ngm-home-link" href=""><img class="logo" src="src/images/logo-CH.svg"></a>
-        <ga-search class="ui big icon input" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
+      <header class="${classMap({'mobile-search-active': this.showMobileSearch})}">
+        <a id="ngm-home-link" href="" .hidden="${this.showMobileSearch}">
+          <img class="hidden-mobile" src="src/images/logo-CH.svg">
+          <img class="visible-mobile" src="src/images/logo-CH-small.svg">
+          <div class="logo-text visible-mobile">Swissgeol</div>
+        </a>
+        <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
           <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
           <div class="ngm-search-icon-container ngm-search-icon"></div>
           <ul class="search-results"></ul>
         </ga-search>
-        <div class="ngm-map-icon ${classMap({'ngm-map-active': this.showMinimap})}"
+        <div style="flex: 1;" .hidden="${this.showMobileSearch}"></div>
+        <div class="ngm-search-icon-mobile ngm-search-icon visible-mobile ${classMap({'active': this.showMobileSearch})}"
+             @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
+        <div class="ngm-map-icon ${classMap({'active': this.showMinimap})}" .hidden="${this.showMobileSearch}"
              @click=${() => this.showMinimap = !this.showMinimap}></div>
-        <ngm-camera-information .viewer="${this.viewer}"></ngm-camera-information>
+        <ngm-camera-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-camera-information>
       </header>
       <main>
         <div class="ui dimmer ngm-main-load-dimmer ${classMap({active: this.loading})}">
