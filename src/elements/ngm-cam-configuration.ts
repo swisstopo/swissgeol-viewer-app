@@ -19,6 +19,7 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit/directives/class-map.js';
 import './ngm-cam-coordinates';
 import NavToolsStore from '../store/navTools';
+import {dragArea} from './helperElements';
 
 export type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
 
@@ -289,12 +290,7 @@ export class NgmCamConfiguration extends LitElementI18n {
           <ngm-cam-coordinates .coordinates=${this.coordinates}></ngm-cam-coordinates>
         </div>
       </div>
-      <div class="ngm-drag-area drag-handle">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      ${dragArea}
     `;
   }
 

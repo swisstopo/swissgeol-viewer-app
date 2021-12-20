@@ -15,6 +15,7 @@ import i18next from 'i18next';
 import {debounce} from '../utils';
 import {getTargetParam, syncTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
+import {dragArea} from './helperElements';
 import type {LockType} from './ngm-cam-configuration';
 
 @customElement('ngm-nav-tools')
@@ -239,13 +240,7 @@ export class NgmNavTools extends LitElementI18n {
         })}" @click=${() => this.toggleReference()}>
         </div>
       </div>
-      <div class="ngm-drag-area">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      ${dragArea}
     `;
   }
 

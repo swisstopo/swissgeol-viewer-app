@@ -329,6 +329,22 @@
   background-color: var(--ngm-interaction);
 }
 
+.ngm-play-last-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_play_the_last.svg') no-repeat center;
+  -webkit-mask: url('./images/i_play_the_last.svg') no-repeat center;
+  background-color: var(--ngm-interaction);
+}
+
+.ngm-play-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_play.svg') no-repeat center;
+  -webkit-mask: url('./images/i_play.svg') no-repeat center;
+  background-color: var(--ngm-interaction);
+}
+
 .ngm-view-all-icon {
   width: 24px;
   height: 24px;

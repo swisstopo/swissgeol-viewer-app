@@ -317,6 +317,13 @@ ngm-full-screen-view.full-active {
   padding-bottom: 10px;
 }
 
+.ngm-floating-window-header-title {
+  white-space: nowrap;
+  width: 85%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 .ngm-floating-window-header .ngm-close-icon {
   width: 24px;
   height: 24px;

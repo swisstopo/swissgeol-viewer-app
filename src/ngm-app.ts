@@ -14,6 +14,7 @@ import './elements/ngm-height-slider';
 import './toolbox/ngm-geometry-info';
 import './elements/ngm-layer-legend';
 import './cesium-toolbar';
+import './elements/ngm-project-popup';
 
 import '@geoblocks/cesium-view-cube';
 
@@ -72,6 +73,7 @@ export class NgmApp extends LitElementI18n {
   @state() queueLength = 0;
   @state() legendConfigs: Config[] = [];
   @state() showTrackingConsent = false;
+  @state() showProjectPopup = false;
   @state() mobileView = false;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
@@ -301,6 +303,10 @@ export class NgmApp extends LitElementI18n {
                                    .viewer=${this.viewer}
                                    @close=${() => this.showCamConfig = false}>
             </ngm-cam-configuration>
+            <ngm-project-popup class="ngm-floating-window"
+                               .hidden=${!this.showProjectPopup}
+                               @close=${() => this.showProjectPopup = false}>
+            </ngm-project-popup>
             <ngm-height-slider .viewer=${this.viewer}></ngm-height-slider>
             ${[...this.legendConfigs].map(config => config ? html`
               <ngm-layer-legend class="ngm-floating-window" .config=${config}
