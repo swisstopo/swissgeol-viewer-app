@@ -19,6 +19,7 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit/directives/class-map.js';
 import './ngm-cam-coordinates';
 import NavToolsStore from '../store/navTools';
+import {showSnackbarInfo} from '../notifications';
 
 export type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
 
@@ -103,6 +104,16 @@ export class NgmCamConfiguration extends LitElementI18n {
       lock: () => this.toggleLock('pitch')
     },
   ];
+
+  constructor() {
+    super();
+    const observer = new MutationObserver(((mutationsList) => {
+      if (mutationsList[0].attributeName === 'hidden' && !this.hidden) {
+        (<HTMLElement>document.querySelector('.ngm-cam-lock-info'))?.parentElement?.remove();
+      }
+    }));
+    observer.observe(this, {attributes: true});
+  }
 
   connectedCallback() {
     draggable(this, {
@@ -259,12 +270,35 @@ export class NgmCamConfiguration extends LitElementI18n {
     }
   }
 
+  onClose() {
+    this.dispatchEvent(new CustomEvent('close'));
+    if (this.lockType) {
+      // keep commented tags to have translations
+      // i18next.t('cam_lock_info_elevation') i18next.t('cam_lock_info_angle')
+      // i18next.t('cam_lock_info_pitch') i18next.t('cam_lock_info_move')
+      showSnackbarInfo(i18next.t(`cam_lock_info_${this.lockType}`),
+        {
+          displayTime: 0,
+          class: 'ngm-cam-lock-info',
+          actions: [
+            {
+              text: i18next.t('app_cancel_btn_label'),
+              click: () => this.disableLock()
+            }]
+        });
+      // closeOnClick doesn't work with actions
+      document.querySelector('.ngm-cam-lock-info')?.addEventListener('click', () => {
+        (<HTMLElement>document.querySelector('.ngm-cam-lock-info'))?.parentElement?.remove();
+      });
+    }
+  }
+
 
   render() {
     return html`
       <div class="ngm-floating-window-header drag-handle">
         ${i18next.t('cam_configuration_header')}
-        <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
+        <div class="ngm-close-icon" @click=${this.onClose}></div>
       </div>
       <div class="ngm-cam-container">
         ${this.configurations.map(c => html`

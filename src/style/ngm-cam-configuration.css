@@ -66,6 +66,7 @@ ngm-cam-configuration {
   border-radius: 0;
   box-shadow: 0 3px 4px #00000029;
 }
+
 .ngm-cam-coord .ui.dropdown .menu .item:hover {
   background-color: var(--ngm-hover);
 }
@@ -73,4 +74,21 @@ ngm-cam-configuration {
 .ngm-cam-conf-slider,
 .ngm-cam-coord {
   width: 180px;
+}
+
+.ngm-cam-lock-info .actions {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.ngm-cam-lock-info .actions button.ui.button {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  color: white;
+}
+
+.ngm-cam-lock-info .actions button.ui.button:hover {
+  color: var(--ngm-interaction-hover);
 }

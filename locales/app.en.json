@@ -1,5 +1,10 @@
 {
+  "app_cancel_btn_label": "Cancel",
   "cam_configuration_header": "Camera configuration",
+  "cam_lock_info_angle": "You currently can only change the angle in the 3D view.",
+  "cam_lock_info_elevation": "You currently can only change the height in the 3D view.",
+  "cam_lock_info_move": "You currently can only change the coordinates in the 3D view.",
+  "cam_lock_info_pitch": "You currently can only change the pitch in the 3D view.",
   "camera_position_angle_label": "Angle (N±)",
   "camera_position_coordinates_label": "Coordinates",
   "camera_position_coordinates_system_label": "Coordinate system",
@@ -162,7 +167,6 @@
   "tbx_add_rect_area_btn_label": "Draw rectangle",
   "tbx_all_label": "All",
   "tbx_area_of_interest_add_hint": "Click in the 3D viewer to draw. Double click to end drawing",
-  "tbx_cancel_area_btn_label": "Cancel",
   "tbx_copy_btn": "Copy",
   "tbx_copy_of_label": "Copy of",
   "tbx_create_section_label": "Create section",

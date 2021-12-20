@@ -251,7 +251,7 @@ export class NgmGeometryEdit extends LitElementI18n {
           ${i18next.t('tbx_save_editing_btn_label')}
         </button>
         <button @click="${() => this.endEditing()}" class="ui button ngm-action-btn ngm-cancel-btn">
-          ${i18next.t('tbx_cancel_area_btn_label')}
+          ${i18next.t('app_cancel_btn_label')}
         </button>
       </div>
     `;
