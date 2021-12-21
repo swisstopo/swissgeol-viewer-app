@@ -1,4 +1,4 @@
 [defaults]
-url = https://sentry.io/
-org = camptocamp
-project = ngm
+url=https://sentry.io/
+org=camptocamp
+project=ngm
