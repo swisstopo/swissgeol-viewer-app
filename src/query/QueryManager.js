@@ -11,6 +11,7 @@ import HeightReference from 'cesium/Source/Scene/HeightReference';
 import DrawStore from '../store/draw';
 import QueryStore from '../store/query';
 import ToolboxStore from '../store/toolbox';
+import NavToolsStore from '../store/navTools';
 
 
 export default class QueryManager {
@@ -50,6 +51,7 @@ export default class QueryManager {
 
       const zoom = () => {
         if (!this.highlightEntity) return;
+        NavToolsStore.hideTargetPoint();
         this.viewer.zoomTo(this.highlightEntity);
       };
 
