@@ -1,6 +1,8 @@
 import proj4 from 'proj4';
 import {Cartographic, Math as CMath} from 'cesium';
 
+import type {Cartesian3} from 'cesium';
+
 proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs');
 
 export function degreesToLv95(coordinates: Array<number>): Array<number> {
@@ -10,6 +12,17 @@ export function degreesToLv95(coordinates: Array<number>): Array<number> {
 export function radiansToLv95(coordinates: Array<number>): Array<number> {
   const coordinatesInDegrees = coordinates.map(coord => CMath.toDegrees(coord));
   return proj4('EPSG:4326', 'EPSG:2056', coordinatesInDegrees.slice());
+}
+
+export function cartesianToLv95(position: Cartesian3): Array<number> {
+  return degreesToLv95(cartesianToDegrees(position));
+}
+
+export function cartesianToDegrees(position: Cartesian3): Array<number> {
+  const cartographicPosition = Cartographic.fromCartesian(position);
+  const lon = CMath.toDegrees(cartographicPosition.longitude);
+  const lat = CMath.toDegrees(cartographicPosition.latitude);
+  return [lon, lat, cartographicPosition.height];
 }
 
 export function lv95ToDegrees(coordinates: Array<number>): Array<number> {

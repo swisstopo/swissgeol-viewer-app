@@ -3,13 +3,13 @@ import {customElement, property} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import {getValueOrUndefined, prepareCoordinatesForUi} from '../cesiumutils';
+import {getValueOrUndefined} from '../cesiumutils';
 import CesiumMath from 'cesium/Source/Core/Math';
 import {updateBoreholeHeights} from './helpers';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import MainStore from '../store/main';
 import type {Entity, Viewer} from 'cesium';
+import {cartesianToDegrees, cartesianToLv95} from '../projection';
 
 @customElement('ngm-point-edit')
 export class NgmPointEdit extends LitElementI18n {
@@ -32,12 +32,20 @@ export class NgmPointEdit extends LitElementI18n {
   }
 
   updateInputValues() {
-    if (!this.entity || !this.entity.position) return;
-    const cartographicPosition = Cartographic.fromCartesian(this.entity.position.getValue(this.julianDate));
-    const coordinates = prepareCoordinatesForUi(this.viewer!.scene, cartographicPosition, this.coordsType);
-    this.xValue = coordinates.x;
-    this.yValue = coordinates.y;
-    this.heightValue = coordinates.height;
+    if (this.entity && this.entity.position) {
+      const position = this.entity.position.getValue(this.julianDate);
+      if (this.coordsType === 'lv95') {
+        const coords = cartesianToLv95(position);
+        this.xValue = Math.round(coords[0]);
+        this.yValue = Math.round(coords[1]);
+        this.heightValue = Math.round(coords[2]);
+      } else {
+        const coords = cartesianToDegrees(position);
+        this.xValue = Number(coords[0].toFixed(3));
+        this.yValue = Number(coords[1].toFixed(3));
+        this.heightValue = Math.round(coords[2]);
+      }
+    }
   }
 
   onPositionChange() {

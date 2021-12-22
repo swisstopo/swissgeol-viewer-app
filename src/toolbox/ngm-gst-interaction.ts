@@ -1,6 +1,6 @@
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {degreesToLv95, round} from '../projection';
+import {cartesianToLv95, round} from '../projection';
 import {borehole, horizontalCrossSection, verticalCrossSection} from '../gst';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
@@ -12,7 +12,6 @@ import Cartographic from 'cesium/Source/Core/Cartographic';
 
 import './ngm-gst-modal';
 import '../elements/ngm-i18n-content.js';
-import CesiumMath from 'cesium/Source/Core/Math';
 import $ from '../jquery';
 import 'fomantic-ui-css/components/popup.js';
 import MainStore from '../store/main';
@@ -93,21 +92,16 @@ export class NgmGstInteraction extends LitElementI18n {
     }
   }
 
-  getGST(geom) {
+  getGST(geom: NgmGeometry) {
     if (this.hasValidParams(geom)) {
-      const coordinates = geom.positions.map(position => {
-        const cartographicPosition = Cartographic.fromCartesian(position);
-        const lon = CesiumMath.toDegrees(cartographicPosition.longitude);
-        const lat = CesiumMath.toDegrees(cartographicPosition.latitude);
-        return degreesToLv95([lon, lat, cartographicPosition.height]);
-      }).map(round);
+      const coordinates = geom.positions.map(position => cartesianToLv95(position)).map(round);
       let promise;
       if (geom.type === 'point') {
         promise = borehole(coordinates, this.abortController.signal, this.outputFormat);
       } else if (geom.type === 'line') {
         promise = verticalCrossSection(coordinates, this.abortController.signal, this.outputFormat);
       } else if (geom.type === 'rectangle') {
-        promise = horizontalCrossSection(coordinates, this.abortController.signal, this.depth[geom.id], this.outputFormat);
+        promise = horizontalCrossSection(coordinates, this.abortController.signal, this.depth[geom.id!], this.outputFormat);
       }
       this.loading = true;
       promise
@@ -148,7 +142,7 @@ export class NgmGstInteraction extends LitElementI18n {
     return this.depth[id] >= this.minDepth_ && this.depth[id] <= this.maxDepth_;
   }
 
-  hasValidParams(geom) {
+  hasValidParams(geom: NgmGeometry) {
     if (geom.positions) {
       if (geom.type === 'rectangle') {
         return this.hasValidDepth(geom.id);
