@@ -13,7 +13,7 @@ import {
   SceneTransforms,
   Transforms
 } from 'cesium';
-import {degreesToLv95} from './projection.js';
+import {degreesToLv95} from './projection';
 import type {NgmGeometry} from './toolbox/interfaces';
 import earcut from 'earcut';
 

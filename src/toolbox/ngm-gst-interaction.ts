@@ -1,6 +1,6 @@
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {degreesToLv95, round} from '../projection.js';
+import {degreesToLv95, round} from '../projection';
 import {borehole, horizontalCrossSection, verticalCrossSection} from '../gst';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';

@@ -2,7 +2,7 @@ import {html} from 'lit';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import CesiumMath from 'cesium/Source/Core/Math';
-import {formatCartographicAs2DLv95} from '../projection.js';
+import {formatCartographicAs2DLv95} from '../projection';
 
 class NgmCameraInformation extends LitElementI18n {
 
