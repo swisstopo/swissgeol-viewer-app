@@ -84,8 +84,6 @@ export class NgmApp extends LitElementI18n {
 
   constructor() {
     super();
-    // disable drag events to avoid appearing of drag&drop zone
-    this.addEventListener('dragstart', e => e.preventDefault());
 
     const boundingRect = document.body.getBoundingClientRect();
     this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
