@@ -63,7 +63,7 @@ export class NgmMapConfiguration extends LitElementI18n {
       <div class="base-map-labels">
         <label>${i18next.t('dtd_aerial_map_label')}</label><label>${i18next.t('dtd_grey_map_label')}</label><label>${i18next.t('dtd_lakes_rivers_map_label')}</label>
       </div>
-      <ngm-map-chooser></ngm-map-chooser>
+      <ngm-map-chooser @change=${() => this.requestUpdate()}></ngm-map-chooser>
       <div class="ui divider"></div>
       <div class="ngm-base-layer">
         <div class="ngm-layer-icon ${classMap({
