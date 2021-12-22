@@ -25,8 +25,9 @@ ngm-camera-information .ngm-nci-value {
 }
 
 .ngm-nci-direction {
-  max-width: 196px;
+  max-width: 200px;
   display: flex;
+  white-space: nowrap;
 }
 
 .ngm-nci-direction > div:nth-child(2) {
