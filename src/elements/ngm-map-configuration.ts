@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {customElement, state} from 'lit/decorators.js';
+import {customElement, query, state} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
@@ -15,26 +15,34 @@ export class NgmMapConfiguration extends LitElementI18n {
   @state() mapChooser: MapChooser | null | undefined;
   @state() opacity: number = getMapOpacityParam();
   @state() baseMapId = 'ch.swisstopo.pixelkarte-grau';
+  @query('ngm-map-chooser') mapChooserElement;
 
   constructor() {
     super();
 
-    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe(viewer => {
+      this.viewer = viewer;
+    });
     MainStore.mapChooser.subscribe(chooser => {
       this.mapChooser = chooser;
+      this.updateOpacity(getMapOpacityParam());
       this.requestUpdate();
     });
     MainStore.syncMap.subscribe(() => this.updateOpacity(getMapOpacityParam()));
   }
 
-  updateOpacity(opacity: number) {
-    this.opacity = opacity;
-    if (this.opacity === 1) {
+  firstUpdated() {
+    this.mapChooser!.addMapChooser(this.mapChooserElement);
+  }
+
+  updateOpacity(opacity: number, skipUpdate = false) {
+    if (!skipUpdate) this.opacity = opacity;
+    if (opacity === 1 && this.mapChooser!.selectedMap.id !== 'empty_map') {
       this.viewer!.scene.globe.translucency.enabled = !!this.mapChooser!.selectedMap.hasAlphaChannel;
       this.viewer!.scene.globe.translucency.backFaceAlpha = 1;
     } else {
       this.viewer!.scene.globe.translucency.backFaceAlpha = 0;
-      this.viewer!.scene.globe.translucency.frontFaceAlpha = this.opacity;
+      this.viewer!.scene.globe.translucency.frontFaceAlpha = opacity;
       if (!this.viewer!.scene.globe.translucency.enabled) {
         this.viewer!.scene.globe.translucency.enabled = true;
       }
@@ -54,8 +62,12 @@ export class NgmMapConfiguration extends LitElementI18n {
     this.requestUpdate();
   }
 
-  firstUpdated() {
-    this.mapChooser!.addMapChooser(this.querySelector('ngm-map-chooser')!);
+  onMapChange(evt) {
+    if (evt.detail.active.id === 'empty_map')
+      this.updateOpacity(1, true);
+    else
+      this.updateOpacity(this.opacity);
+    this.requestUpdate();
   }
 
   render() {
@@ -63,7 +75,7 @@ export class NgmMapConfiguration extends LitElementI18n {
       <div class="base-map-labels">
         <label>${i18next.t('dtd_aerial_map_label')}</label><label>${i18next.t('dtd_grey_map_label')}</label><label>${i18next.t('dtd_lakes_rivers_map_label')}</label>
       </div>
-      <ngm-map-chooser @change=${() => this.requestUpdate()}></ngm-map-chooser>
+      <ngm-map-chooser @change=${this.onMapChange}></ngm-map-chooser>
       <div class="ui divider"></div>
       <div class="ngm-base-layer">
         <div class="ngm-layer-icon ${classMap({
@@ -76,10 +88,11 @@ export class NgmMapConfiguration extends LitElementI18n {
             <label>${i18next.t('dtd_opacity_base_map')}</label>
             <label>${(this.opacity * 100).toFixed()} %</label>
           </div>
-          <input type="range" class="ngm-slider"
+          <input type="range"
+                 class="ngm-slider ${classMap({'ngm-disabled': this.mapChooser!.selectedMap.id === 'empty_map'})}"
                  style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.opacity * 100}%, white ${this.opacity * 100}%)"
                  min=0 max=1 step=0.01
-                 value=${!isNaN(this.opacity) ? this.opacity : 0.4}
+                 .value=${!isNaN(this.opacity) ? this.opacity : 0.4}
                  @input=${evt => this.updateOpacity(Number((<HTMLInputElement>evt.target).value))}/>
         </div>
       </div>

@@ -176,3 +176,13 @@ ngm-auth:hover {
 .ngm-side-bar-panel.ngm-layer-catalog {
   z-index: 4;
 }
+
+.ngm-background-label.ui.header {
+  display: flex;
+  height: 24px;
+  margin-bottom: 6px;
+}
+
+.ngm-background-label > .ui.mini.loader {
+  margin-left: 5px;
+}
