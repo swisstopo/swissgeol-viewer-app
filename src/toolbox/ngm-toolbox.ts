@@ -25,6 +25,7 @@ export class NgmToolbox extends LitElementI18n {
   @state() activeTool: 'draw' | 'slicing' | 'gst' | undefined;
   @state() sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder') toastPlaceholder;
+  @query('ngm-slicer') slicerElement;
   geometriesDataSource: CustomDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
@@ -117,10 +118,17 @@ export class NgmToolbox extends LitElementI18n {
     });
   }
 
+  onBackClick() {
+    if (this.activeTool === 'slicing') {
+      this.slicerElement.toggleSlicer();
+    }
+    this.activeTool = undefined;
+  }
+
   render() {
     return html`
       <div class="ngm-panel-header">
-        <div ?hidden=${!this.activeTool} class="ngm-back-icon" @click=${() => this.activeTool = undefined}></div>
+        <div ?hidden=${!this.activeTool} class="ngm-back-icon" @click=${this.onBackClick}></div>
         ${i18next.t(this.activeTool ? `tbx_${this.activeTool}` : 'lsb_tools')}
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
