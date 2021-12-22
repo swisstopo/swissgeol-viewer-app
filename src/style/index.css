@@ -57,6 +57,7 @@
 @import 'ngm-share-link.css';
 @import 'ngm-dashboard.css';
 @import 'ngm-action-list-item.css';
+@import 'topographic-profile.css';
 
 * {
   scrollbar-color: light;

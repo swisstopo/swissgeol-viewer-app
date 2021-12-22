@@ -1,0 +1,24 @@
+topographic-profile {
+  position: absolute;
+  width: 50vw;
+  max-height: 300px;
+  /* top: auto; */
+  bottom: 0px;
+  left: 25vw;
+  /* right: 25vw; */
+  z-index: 2;
+}
+
+/* topographic-profile .htmlpopup-header {
+  font-weight: bold;
+  border-bottom: 2px solid #DFE2E6;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+topographic-profile .content-container {
+  margin-bottom: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 505px;
+} */
