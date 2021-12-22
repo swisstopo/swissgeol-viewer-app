@@ -18,7 +18,7 @@ export interface LayerTreeNode {
   pickable?: boolean;
   zoomToBbox?: boolean;
   opacity?: number;
-  opacityDisabled?: boolean
+  opacityDisabled?: boolean;
   style?: any;
   legend?: string;
   backgroundId?: string;
@@ -28,6 +28,7 @@ export interface LayerTreeNode {
   restricted?: string;
   aws_s3_bucket?: string;
   aws_s3_key?: string;
+  previewColor?: string;
   children?: LayerTreeNode[];
 }
 
@@ -551,6 +552,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CENOZOIC_BEDROCK_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Bedrock.zip',
           geocatId: '133b54a9-60d1-481c-85e8-e1a222d6ac3f',
+          previewColor: '#dbdb22'
         },
       ]
     },
@@ -567,6 +569,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip',
           geocatId: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
+          previewColor: '#cad0c3'
         },
         {
           type: LayerType.tiles3d,
@@ -578,6 +581,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerFreshwaterMolasse.zip',
           geocatId: '2d7a0729-dd29-40fa-ad4f-b09f94b7fb00',
+          previewColor: '#cdd0d0'
         },
         {
           type: LayerType.tiles3d,
@@ -589,6 +593,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMarineMolasse.zip',
           geocatId: 'fedb8d24-a000-4b78-9e6e-fb90305ad3ea',
+          previewColor: '#d3cfc0'
         },
         {
           type: LayerType.tiles3d,
@@ -600,6 +605,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CENOZOIC_BEDROCK_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Cenozoic.zip',
           geocatId: '0e780e6c-18e2-4014-ad16-b35124706580',
+          previewColor: '#d6d91a'
         },
         {
           type: LayerType.tiles3d,
@@ -611,6 +617,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Cretaceous.zip',
           geocatId: '09334747-14e7-40d6-881b-00e552b71f61',
+          previewColor: '#b8d0c6'
         },
         {
           type: LayerType.tiles3d,
@@ -622,6 +629,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMalm.zip',
           geocatId: '2378cab1-4673-4837-b12e-a35aefab389a',
+          previewColor: '#bdd1de'
         },
         {
           type: LayerType.tiles3d,
@@ -633,6 +641,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMalm.zip',
           geocatId: 'af51f4eb-1430-4e4e-a679-3c0eefb4a6b3',
+          previewColor: '#c3d1da'
         },
         {
           type: LayerType.tiles3d,
@@ -644,6 +653,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Dogger.zip',
           geocatId: '0dea083d-23b0-4c5b-b82d-1cd7bda3d583',
+          previewColor: '#c6c7c5'
         },
         {
           type: LayerType.tiles3d,
@@ -655,6 +665,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Lias.zip',
           geocatId: '793a40d6-ab83-4e1e-80d7-d7c49bf00f3c',
+          previewColor: '#c6c5d9'
         },
         {
           type: LayerType.tiles3d,
@@ -666,6 +677,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Keuper.zip',
           geocatId: 'e2344c21-2139-4494-8679-36fe30d034f9',
+          previewColor: '#d8cecc'
         },
         {
           type: LayerType.tiles3d,
@@ -677,6 +689,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Muschelkalk.zip',
           geocatId: 'dae3dd91-a04c-46c5-aa49-de6235c0478a',
+          previewColor: '#d2c493'
         },
         {
           type: LayerType.tiles3d,
@@ -688,6 +701,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CENOZOIC_BEDROCK_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Mesozoic.zip',
           geocatId: 'ec67a58d-531e-4dae-98da-85c49525b4d2',
+          previewColor: '#c4e0e0'
         },
         {
           type: LayerType.tiles3d,
@@ -699,6 +713,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous.zip',
           geocatId: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
+          previewColor: '#bb9f8a'
         },
         {
           type: LayerType.tiles3d,
@@ -710,6 +725,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous-inferred.zip',
           geocatId: '0f1acc23-bdfc-40bf-94b7-7be10f0f78ed',
+          previewColor: '#c9b19e'
         },
       ]
     },
@@ -728,6 +744,7 @@ const subsurface: LayerTreeNode = {
           downloadDataType: 'indexed_download',
           downloadDataPath: 'https://download.swissgeol.ch/Faults/footprints_boxed.geojson',
           geocatId: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+          previewColor: '#c40001'
         },
       ]
     },

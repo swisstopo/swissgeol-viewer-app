@@ -6,6 +6,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import $ from '../jquery.js';
 import type {LayerTreeNode} from '../layertree';
+import {styleMap} from 'lit/directives/style-map.js';
 
 export interface Config extends LayerTreeNode {
   add?: any;
@@ -144,6 +145,9 @@ export class LayerTreeItem extends LitElementI18n {
                .value=${this.config.opacity?.toString() || '1'}
                @input=${this.changeOpacity}/>
       </div>
+      </div>
+      <div .hidden=${!this.config.previewColor} class="ngm-displayed-color"
+           style=${styleMap({backgroundColor: this.config.previewColor})}>
       </div>
       <div class="ngm-displayed-menu">
         <div class="ngm-layer-icon ngm-zoom-plus-icon" ?hidden=${!this.config.zoomToBbox}

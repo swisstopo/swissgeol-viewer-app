@@ -21,7 +21,7 @@
   max-width: 22px;
 }
 
-.ngm-layer-icon.ngm-visible-icon  {
+.ngm-layer-icon.ngm-visible-icon {
   margin-left: 2px;
 }
 
@@ -221,4 +221,10 @@ ngm-layers-upload .ngm-action-menu-icon {
 
 .ngm-upload-kml-btn {
   margin-bottom: 16px;
+}
+
+.ngm-displayed-color {
+  width: 24px;
+  height: 24px;
+  margin-left: 15px;
 }
