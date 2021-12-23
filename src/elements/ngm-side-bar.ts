@@ -46,6 +46,8 @@ export class SideBar extends LitElementI18n {
   @state() activePanel: string | null = null;
   @state() showHeader = false;
   @state() globeQueueLength_ = 0;
+  @state() mobileView = false;
+  @state() mobileShowAll = false;
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder') toastPlaceholder;
   private viewer: Viewer | null = null;
   private layerActions: any;
@@ -75,6 +77,13 @@ export class SideBar extends LitElementI18n {
       this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
       this.syncActiveLayers();
     });
+
+    const boundingRect = document.body.getBoundingClientRect();
+    this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
+    window.addEventListener('resize', () => {
+      const boundingRect = document.body.getBoundingClientRect();
+      this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
+    });
   }
 
   firstUpdated() {
@@ -91,7 +100,31 @@ export class SideBar extends LitElementI18n {
     this.queryManager.activeLayers = this.activeLayers
       .filter(config => config.visible && !config.noQuery);
 
+    const shareBtn = html`
+      <div class="ngm-share ${classMap({'ngm-active-section': this.activePanel === 'share'})}"
+           @click=${() => this.togglePanel('share')}>
+        <div class="ngm-share-icon"></div>
+        ${i18next.t('lsb_share')}
+      </div>`;
+    const helpBtn = html`
+      <div class="ngm-help" @click=${() => (<HTMLInputElement> this.querySelector('.ngm-help-link')).click()}>
+        <div class="ngm-help-icon"></div>
+        ${i18next.t('lsb_help')}
+        <a href="/manuals/manual_en.html" target="_blank" .hidden=${true} class="ngm-help-link"></a>
+      </div>`;
+    const settingsBtn = html`
+      <div class="ngm-settings ${classMap({'ngm-active-section': this.activePanel === 'settings'})}"
+           @click=${() => this.togglePanel('settings')}>
+        <div class="ngm-settings-icon"></div>
+        ${i18next.t('lsb_settings')}
+      </div>`;
+
     return html`
+      <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
+        ${shareBtn}
+        ${helpBtn}
+        ${settingsBtn}
+      </div>
       <div class="ngm-menu">
         <div class="ngm-menu-1">
           <div class="ngm-dashboard ${classMap({'ngm-active-section': this.activePanel === 'dashboard'})}"
@@ -109,31 +142,28 @@ export class SideBar extends LitElementI18n {
             <div class="ngm-tools-icon"></div>
             ${i18next.t('lsb_tools')}
           </div>
-          <div class="ngm-share ${classMap({'ngm-active-section': this.activePanel === 'share'})}"
-               @click=${() => this.togglePanel('share')}>
-            <div class="ngm-share-icon"></div>
-            ${i18next.t('lsb_share')}
-          </div>
+          ${!this.mobileView ? shareBtn : ''}
         </div>
         <div class="ngm-menu-2">
           <ngm-auth class="ngm-user"
                     endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
                     clientId='6brvjsufv7fdubr12r9u0gajnj'
           ></ngm-auth>
-          <div class="ngm-help" @click=${() => (<HTMLInputElement> this.querySelector('.ngm-help-link')).click()}>
-            <div class="ngm-help-icon"></div>
-            ${i18next.t('lsb_help')}
-            <a href="/manuals/manual_en.html" target="_blank" .hidden=${true} class="ngm-help-link"></a>
-          </div>
-          <div class="ngm-settings ${classMap({'ngm-active-section': this.activePanel === 'settings'})}"
-               @click=${() => this.togglePanel('settings')}>
-            <div class="ngm-settings-icon"></div>
-            ${i18next.t('lsb_settings')}
-          </div>
-          <div class="ngm-nav-close ${classMap({'ngm-disabled': !this.activePanel})}"
+          ${!this.mobileView ? helpBtn : ''}
+          ${!this.mobileView ? settingsBtn : ''}
+          <div .hidden=${this.mobileView} class="ngm-nav-close ${classMap({'ngm-disabled': !this.activePanel})}"
                @click=${() => this.togglePanel('')}>
             <div class="ngm-nav-close-icon"></div>
             ${i18next.t('lsb_close')}
+          </div>
+          <div .hidden=${!this.mobileView}
+               class="ngm-mob-menu-toggle"
+               @click=${() => this.mobileShowAll = !this.mobileShowAll}>
+            <div class="${classMap({
+              'ngm-view-all-icon': !this.mobileShowAll,
+              'ngm-view-less-icon': this.mobileShowAll
+            })}"></div>
+            ${this.mobileShowAll ? i18next.t('lsb_close') : i18next.t('lsb_view_all')}
           </div>
         </div>
       </div>
