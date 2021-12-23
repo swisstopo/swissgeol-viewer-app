@@ -61,4 +61,4 @@ jobs:
       - name: Notify sentry
         env:
           SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
-        run: node_modules/.bin/sentry-cli releases files ${git rev-parse --abbrev-ref HEAD} upload-sourcemaps --ext ts --ext js --ext map dist --validate
+        run: scripts/sentry_upload.sh
