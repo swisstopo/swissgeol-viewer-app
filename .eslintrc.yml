@@ -27,7 +27,7 @@ rules:
   no-trailing-spaces: error
   no-var: error
   object-curly-spacing: error
-  object-shorthand: [error, consistent]
+  object-shorthand: off
   prefer-arrow-callback: error
   prefer-const: error
   quotes: [error, single, {avoidEscape: true}]
