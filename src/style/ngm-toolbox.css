@@ -28,11 +28,6 @@ ngm-slicer {
   background-color: var(--ngm-interaction-hover);
 }
 
-.ngm-slice-types > .ngm-action-list-item:nth-child(1) {
-  margin-top: 12px;
-  height: 36px;
-}
-
 .ngm-draw-list-item:hover,
 .ngm-tools-list-item:hover,
 .ngm-slice-side > div:hover {
