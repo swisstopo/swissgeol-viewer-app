@@ -37,7 +37,6 @@ export default class LayerTree extends LitElementI18n {
       <ngm-layers-item
         .actions=${this.actions}
         .config=${config}
-        label=${config.label}
         @removeDisplayedLayer=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}))}
         @zoomTo=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}
         @layerChanged=${() => {
