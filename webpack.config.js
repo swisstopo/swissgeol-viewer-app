@@ -115,7 +115,6 @@ export default {
         {from: 'src/images/', to: 'images/'},
         {from: 'node_modules/@fontsource/inter/files/*', to: 'fonts/[name][ext]'},
         {from: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', to: 'fonts/[name][ext]'},
-        {from: 'node_modules/@webcomponents/webcomponentsjs/*', to: 'webcomponentsjs/[name][ext]'},
         {from: 'manuals/dist/', to: './manuals/'},
         {from: 'manuals/style.css', to: './manuals/'},
         {from: 'manuals/images', to: './manuals/images/'},
