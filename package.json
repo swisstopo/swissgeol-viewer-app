@@ -31,7 +31,6 @@
     "@geoblocks/cesium-view-cube": "0.1.0",
     "@geoblocks/ga-search": "0.0.20",
     "@sentry/browser": "^6.16.1",
-    "@webcomponents/webcomponentsjs": "^2.6.0",
     "cesium": "^1.88.0",
     "earcut": "^2.2.3",
     "event-target-shim": "^6.0.2",
