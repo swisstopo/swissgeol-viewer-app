@@ -9,14 +9,14 @@ import type {LayerTreeNode} from '../layertree';
 import {styleMap} from 'lit/directives/style-map.js';
 
 export interface Config extends LayerTreeNode {
-  add?: any;
-  remove?: any;
+  add?: (number) => void;
+  remove?: () => void;
   heightOffset?: number;
-  load?: any;
-  setVisibility?: any;
-  setOpacity?: any;
-  hideUpDown: any;
-  promise: any;
+  load: () => Promise<any>;
+  setVisibility?: (boolean) => void;
+  setOpacity?: (number) => void;
+  hideUpDown?: boolean;
+  promise?: Promise<any>;
   notSaveToPermalink?: boolean;
 }
 
