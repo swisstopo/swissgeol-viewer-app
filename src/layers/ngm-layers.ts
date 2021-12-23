@@ -2,7 +2,7 @@ import {html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {repeat} from 'lit/directives/repeat.js';
 import {LitElementI18n} from '../i18n.js';
-import type {Config} from './ngm-layers-item';
+import type {Config, LayerTreeItem as NgmLayersItem} from './ngm-layers-item';
 // eslint-disable-next-line no-duplicate-imports
 import './ngm-layers-item';
 import {Sortable, MultiDrag} from 'sortablejs';
@@ -34,7 +34,7 @@ export default class LayerTree extends LitElementI18n {
       onEnd: () => {
         // it is painful to correctly map the ordering
         // instead we read it from the DOM itself ;)
-        const layerItems = this.querySelectorAll('ngm-layers-item');
+        const layerItems = this.querySelectorAll('ngm-layers-item') as NodeListOf<NgmLayersItem>;
         const layers = Array.from(layerItems).map(l => l.config);
         this.actions.reorderLayers(this.layers, layers);
         this.dispatchEvent(new CustomEvent('layerChanged'));

@@ -41,9 +41,11 @@ export default class LayersUpload extends LitElementI18n {
         uploadedLayer.name = `${name}_${Date.now()}`;
         await this.viewer.dataSources.add(uploadedLayer);
         // done like this to have correct rerender of component
+        const promise = Promise.resolve(uploadedLayer);
         const config: Config = {
+          load() {return promise;},
           label: `${name} (${i18next.t('dtd_own_kml_tag')})`,
-          promise: uploadedLayer,
+          promise: promise,
           zoomToBbox: true,
           hideUpDown: false,
           opacity: DEFAULT_LAYER_OPACITY,
