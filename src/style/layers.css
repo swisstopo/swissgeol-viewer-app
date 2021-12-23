@@ -21,6 +21,7 @@
   max-width: 22px;
 }
 
+.ngm-layer-icon.ngm-invisible-icon,
 .ngm-layer-icon.ngm-visible-icon {
   margin-left: 2px;
 }
