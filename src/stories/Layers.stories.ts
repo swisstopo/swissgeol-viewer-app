@@ -12,6 +12,11 @@ export default {
   title: 'Components/NgmLayers',
 };
 
+const someActions = {
+  reorderLayers(_, layers) {
+    console.log('newOrder', layers.map(l => l.label));
+  }
+};
 
 const someConfigs: Config[] = [
   {
@@ -49,6 +54,6 @@ function whenReady(partial) {
 export const Default = whenReady(() => html`
   <div style="width: 450px">
   <ngm-layers
-    .layers=${someConfigs}>
+    .layers=${someConfigs} .actions=${someActions}>
   </ngm-layers>
   </div>`);

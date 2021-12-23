@@ -5,6 +5,10 @@ import {LitElementI18n} from '../i18n.js';
 import type {Config} from './ngm-layers-item';
 // eslint-disable-next-line no-duplicate-imports
 import './ngm-layers-item';
+import {Sortable, MultiDrag} from 'sortablejs';
+
+Sortable.mount(new MultiDrag());
+
 
 @customElement('ngm-layers')
 export default class LayerTree extends LitElementI18n {
@@ -17,6 +21,26 @@ export default class LayerTree extends LitElementI18n {
     this.actions.moveLayer(this.layers, config, delta);
     this.dispatchEvent(new CustomEvent('layerChanged'));
     this.requestUpdate();
+  }
+
+  firstUpdated() {
+    new Sortable(this, {
+      handle: 'ngm-layers-item',
+      animation: 100,
+      // forceFallback: true,
+      multiDrag: true,
+      selectedClass: 'selected',
+      fallbackTolerance: 3,
+      onEnd: () => {
+        // it is painful to correctly map the ordering
+        // instead we read it from the DOM itself ;)
+        const layerItems = this.querySelectorAll('ngm-layers-item');
+        const layers = Array.from(layerItems).map(l => l.config);
+        this.actions.reorderLayers(this.layers, layers);
+        this.dispatchEvent(new CustomEvent('layerChanged'));
+        this.requestUpdate(); // why this?
+      }
+    });
   }
 
   createLayerTemplate(config: Config, idx: number, len: number) {
@@ -48,7 +72,6 @@ export default class LayerTree extends LitElementI18n {
         .downClassMap=${downClassMap}
       >
       </ngm-layers-item>
-      <div class="ui divider"></div>
     `;
   }
 

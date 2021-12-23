@@ -80,6 +80,17 @@ export default class LayersAction {
     }
   }
 
+  async reorderLayers(_: Config[], newLayers: Config[]) {
+    const imageries = this.viewer.scene.imageryLayers;
+    for (const config of newLayers) {
+      if (config.type === LayerType.swisstopoWMTS) {
+        const imagery: ImageryLayer = await config.promise;
+        imageries.raiseToTop(imagery);
+      }
+    }
+    syncLayersParam(newLayers);
+  }
+
   // changes layer position in 'Displayed Layers'
   moveLayer(layers, config: Config, delta: number) {
     console.assert(delta === -1 || delta === 1);

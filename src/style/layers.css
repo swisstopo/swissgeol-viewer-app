@@ -229,3 +229,10 @@ ngm-layers-upload .ngm-action-menu-icon {
   height: 24px;
   margin-left: 15px;
 }
+
+ngm-layers-item {
+  padding: 10px;
+}
+ngm-layers-item.selected {
+  background-color: lightblue;
+}
