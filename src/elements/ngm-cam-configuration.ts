@@ -151,6 +151,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   }
 
   updateAngle(value: number) {
+    NavToolsStore.hideTargetPoint();
     this.scene!.camera.setView({
       orientation: {
         heading: CesiumMath.toRadians(value),
@@ -160,6 +161,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   }
 
   updatePitch(value: number) {
+    NavToolsStore.hideTargetPoint();
     this.scene!.camera.setView({
       orientation: {
         heading: CesiumMath.toRadians(this.heading),
