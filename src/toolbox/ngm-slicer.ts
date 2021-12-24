@@ -275,12 +275,6 @@ export class NgmSlicer extends LitElementI18n {
     if (!this.slicer) return '';
     return html`
       <div class="ngm-slice-types ${classMap({disabled: this.editingEnabled})}">
-        <div class="ngm-action-list-item ${classMap({active: !this.slicingEnabled})}"
-             @click=${() => this.toggleSlicer()}>
-          <div class="ngm-action-list-item-header">
-            <div>${i18next.t('tbx_disable_slice_btn_label')}</div>
-          </div>
-        </div>
         <div class="ngm-action-list-item ${classMap({active: this.slicingType === 'view-box'})}">
           <div class="ngm-action-list-item-header" @click=${() => this.toggleSlicer('view-box')}>
             <div>${i18next.t('tbx_slice_box')}</div>
