@@ -1,9 +1,11 @@
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
+import type {LockType} from '../elements/ngm-cam-configuration';
 
 export default class NavToolsStore {
   private static syncTargetPointSubject = new Subject<void>();
   private static cameraHeightSubject = new Subject<number>();
   private static hideTargetPointSubject = new Subject<void>();
+  private static navLockTypeSubject = new BehaviorSubject<LockType>('');
 
 
   static get syncTargetPoint() {
@@ -28,6 +30,18 @@ export default class NavToolsStore {
 
   static hideTargetPoint() {
     this.hideTargetPointSubject.next();
+  }
+
+  static get navLockType(): BehaviorSubject<LockType> {
+    return this.navLockTypeSubject;
+  }
+
+  static get navLockTypeValue(): LockType {
+    return this.navLockTypeSubject.getValue();
+  }
+
+  static setNavLockType(value) {
+    this.navLockTypeSubject.next(value);
   }
 
 }

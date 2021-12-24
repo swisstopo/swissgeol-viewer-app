@@ -17,6 +17,7 @@ import {flyToGeom, hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
 import {skip} from 'rxjs';
 import DrawStore from '../store/draw';
+import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
@@ -222,6 +223,7 @@ export class NgmSlicer extends LitElementI18n {
   }
 
   flyToSlicingGeom(entity) {
+    NavToolsStore.hideTargetPoint();
     const scene = MainStore.viewerValue!.scene;
     flyToGeom(scene, entity, -(Math.PI / 4), 2);
   }

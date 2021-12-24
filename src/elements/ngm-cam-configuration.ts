@@ -1,4 +1,5 @@
 import {LitElementI18n} from '../i18n';
+import type {PropertyValues} from 'lit';
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import draggable from './draggable';
@@ -19,7 +20,7 @@ import {classMap} from 'lit/directives/class-map.js';
 import './ngm-cam-coordinates';
 import NavToolsStore from '../store/navTools';
 
-type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
+export type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
 
 /*
  * Convert cartographic height (between -30'000m and +300'000) to input value (between 0 and 1)
@@ -117,13 +118,16 @@ export class NgmCamConfiguration extends LitElementI18n {
     super.disconnectedCallback();
   }
 
-  updated() {
+  updated(changedProperties: PropertyValues) {
     if (this.viewer && !this.unlistenPostRender) {
       this.scene = this.viewer.scene;
       this.handler = new ScreenSpaceEventHandler(this.viewer!.canvas);
       this.unlistenPostRender = this.scene.postRender.addEventListener(() => this.updateFromCamera());
       this.updateFromCamera();
     }
+    if (changedProperties.has('lockType'))
+      NavToolsStore.setNavLockType(this.lockType);
+    super.updated(changedProperties);
   }
 
   updateFromCamera() {
@@ -147,6 +151,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   }
 
   updateAngle(value: number) {
+    NavToolsStore.hideTargetPoint();
     this.scene!.camera.setView({
       orientation: {
         heading: CesiumMath.toRadians(value),
@@ -156,6 +161,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   }
 
   updatePitch(value: number) {
+    NavToolsStore.hideTargetPoint();
     this.scene!.camera.setView({
       orientation: {
         heading: CesiumMath.toRadians(this.heading),
@@ -173,7 +179,7 @@ export class NgmCamConfiguration extends LitElementI18n {
 
     return {
       'background-image': `linear-gradient(to right, #fff ${start}%, var(--ngm-interaction-active) ${start}% ${stop}%, #fff ${stop}% 100%)`
-   };
+    };
   }
 
   toggleLock(type: LockType) {

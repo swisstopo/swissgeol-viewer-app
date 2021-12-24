@@ -15,6 +15,7 @@ import i18next from 'i18next';
 import {debounce} from '../utils';
 import {getTargetParam, syncTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
+import type {LockType} from './ngm-cam-configuration';
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
@@ -22,7 +23,8 @@ export class NgmNavTools extends LitElementI18n {
   @property({type: Boolean}) showCamConfig = false;
   @state() moveAmount = 200;
   @state() interaction: Interactable | null = null;
-  @state() showRefPoint = false;
+  @state() showTargetPoint = false;
+  @state() lockType: LockType = '';
   private zoomingIn = false;
   private zoomingOut = false;
   private unlistenFromPostRender: Event.RemoveCallback | null = null;
@@ -47,10 +49,14 @@ export class NgmNavTools extends LitElementI18n {
     NavToolsStore.hideTargetPointListener.subscribe(() => this.removeTargetPoint());
     NavToolsStore.cameraHeightUpdate.subscribe(height => {
       if (!this.viewer) return;
-      this.showRefPoint && this.stopTracking();
+      this.showTargetPoint && this.stopTracking();
       const pc = this.viewer.camera.positionCartographic;
       this.viewer.camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, height);
-      this.showRefPoint && this.startTracking();
+      this.showTargetPoint && this.startTracking();
+    });
+    NavToolsStore.navLockType.subscribe(type => {
+      if (type !== '' && type !== 'elevation' && this.showTargetPoint) this.removeTargetPoint();
+      this.lockType = type;
     });
   }
 
@@ -89,7 +95,7 @@ export class NgmNavTools extends LitElementI18n {
 
   syncPoint() {
     const initialTarget = getTargetParam();
-    if (!initialTarget && !this.showRefPoint) return;
+    if (!initialTarget && !this.showTargetPoint) return;
     this.toggleReference(initialTarget);
   }
 
@@ -114,22 +120,21 @@ export class NgmNavTools extends LitElementI18n {
 
   flyToHome() {
     if (!this.viewer) return;
-    this.showRefPoint && this.stopTracking();
+    this.showTargetPoint && this.removeTargetPoint();
     this.viewer.camera.flyTo({
-      ...DEFAULT_VIEW,
-      complete: () => this.showRefPoint && this.startTracking()
+      ...DEFAULT_VIEW
     });
   }
 
   toggleReference(forcePosition?) {
     if (!this.eventHandler) return;
     let position: Cartesian3 | undefined = forcePosition;
-    if (this.showRefPoint && !forcePosition) {
+    if (this.showTargetPoint && !forcePosition) {
       this.eventHandler.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
       this.eventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOWN);
       this.eventHandler.removeInputAction(ScreenSpaceEventType.LEFT_UP);
       this.removeTargetPoint();
-    } else {
+    } else if (!this.lockType || this.lockType === 'elevation') {
       this.eventHandler.setInputAction(debounce(event => this.onMouseMove(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
       this.eventHandler.setInputAction(event => this.onLeftDown(event), ScreenSpaceEventType.LEFT_DOWN);
       this.eventHandler.setInputAction(() => this.onLeftUp(), ScreenSpaceEventType.LEFT_UP);
@@ -144,7 +149,7 @@ export class NgmNavTools extends LitElementI18n {
   }
 
   addTargetPoint(center: Cartesian3, lookAtTransform = false) {
-    this.showRefPoint = true;
+    this.showTargetPoint = true;
     this.refIcon.position = <any>center;
     const cam = this.viewer!.camera;
     this.refIcon.show = true;
@@ -157,7 +162,7 @@ export class NgmNavTools extends LitElementI18n {
 
   removeTargetPoint() {
     document.removeEventListener('keydown', this.ctrlListener);
-    this.showRefPoint = false;
+    this.showTargetPoint = false;
     this.refIcon.show = false;
     this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
   }
@@ -228,8 +233,10 @@ export class NgmNavTools extends LitElementI18n {
         <div class="ngm-cam-icon ${classMap({'ngm-active-icon': this.showCamConfig})}"
              @click=${() => this.dispatchEvent(new CustomEvent('togglecamconfig'))}>
         </div>
-        <div class="ngm-coords-icon ${classMap({'ngm-active-icon': this.showRefPoint})}"
-             @click=${() => this.toggleReference()}>
+        <div class="ngm-coords-icon ${classMap({
+          'ngm-active-icon': this.showTargetPoint,
+          'ngm-disabled': this.lockType !== '' && this.lockType !== 'elevation'
+        })}" @click=${() => this.toggleReference()}>
         </div>
       </div>
       <div class="ngm-drag-area">

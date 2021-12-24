@@ -117,6 +117,7 @@ export default class KeyboardNavigation {
       }
 
       const key = event.key.toLowerCase();
+      let hideTargetPoint = false;
 
       if (!this.hasKeyDown_()) {
         // reset acceleration
@@ -128,20 +129,28 @@ export default class KeyboardNavigation {
         this.flags_.moveDown = pressed;
       } else if (this.moveForwardKeys_.includes(key)) {
         this.flags_.moveForward = pressed;
+        hideTargetPoint = pressed;
       } else if (this.moveBackwardKeys_.includes(key)) {
         this.flags_.moveBackward = pressed;
+        hideTargetPoint = pressed;
       } else if (this.moveLeftKeys_.includes(key)) {
         this.flags_.moveLeft = pressed;
+        hideTargetPoint = pressed;
       } else if (this.moveRightKeys_.includes(key)) {
         this.flags_.moveRight = pressed;
+        hideTargetPoint = pressed;
       } else if (this.lookUpKeys_.includes(key)) {
         this.flags_.lookUp = pressed;
+        hideTargetPoint = pressed;
       } else if (this.lookDownKeys_.includes(key)) {
         this.flags_.lookDown = pressed;
+        hideTargetPoint = pressed;
       } else if (this.lookLeftKeys_.includes(key)) {
         this.flags_.lookLeft = pressed;
+        hideTargetPoint = pressed;
       } else if (this.lookRightKeys_.includes(key)) {
         this.flags_.lookRight = pressed;
+        hideTargetPoint = pressed;
       } else if (this.zoomInKeys_.includes(key)) {
         this.flags_.zoomIn = pressed;
       } else if (this.zoomOutKeys_.includes(key)) {
@@ -149,6 +158,8 @@ export default class KeyboardNavigation {
       } else if (this.cancelKeys_.includes(key)) {
         this.cancel_();
       }
+
+      if (hideTargetPoint) NavToolsStore.hideTargetPoint();
 
       if (this.hasKeyDown_()) {
         this.flags_.acceleration *= this.accelerationFactor_;
