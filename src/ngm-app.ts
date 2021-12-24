@@ -72,6 +72,7 @@ export class NgmApp extends LitElementI18n {
   @state() queueLength = 0;
   @state() legendConfigs: Config[] = [];
   @state() showTrackingConsent = false;
+  @state() mobileView = false;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
   private showCesiumToolbar = getCesiumToolbarParam();
@@ -80,6 +81,13 @@ export class NgmApp extends LitElementI18n {
     super();
     // disable drag events to avoid appearing of drag&drop zone
     this.addEventListener('dragstart', e => e.preventDefault());
+
+    const boundingRect = document.body.getBoundingClientRect();
+    this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
+    window.addEventListener('resize', () => {
+      const boundingRect = document.body.getBoundingClientRect();
+      this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
+    });
   }
 
   /**
@@ -273,6 +281,7 @@ export class NgmApp extends LitElementI18n {
         </div>
         <ngm-side-bar
           .queryManager=${this.queryManager}
+          .mobileView=${this.mobileView}
           @layeradded=${this.onLayerAdded}
           @showLayerLegend=${this.onShowLayerLegend}>
         </ngm-side-bar>
@@ -297,14 +306,16 @@ export class NgmApp extends LitElementI18n {
               <ngm-layer-legend class="ngm-floating-window" .config=${config}
                                 @close=${this.onCloseLayerLegend}></ngm-layer-legend>
             ` : '')}
-            <ngm-map-chooser class="ngm-bg-chooser-map" .initiallyOpened=${false}></ngm-map-chooser>
-            <cesium-view-cube .scene="${this.viewer?.scene}"></cesium-view-cube>
+            <ngm-map-chooser .hidden=${this.mobileView} class="ngm-bg-chooser-map"
+                             .initiallyOpened=${false}></ngm-map-chooser>
+            <cesium-view-cube .hidden=${this.mobileView} .scene="${this.viewer?.scene}"></cesium-view-cube>
             <a class="contact-mailto-link" target="_blank"
                href="mailto:swissgeol@swisstopo.ch">${i18next.t('contact_mailto_text')}</a>
             <a class="disclaimer-link" target="_blank"
                href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
           </div>
-          ${this.showCesiumToolbar ? html`<cesium-toolbar></cesium-toolbar>` : ''}
+          ${this.showCesiumToolbar ? html`
+            <cesium-toolbar></cesium-toolbar>` : ''}
           ${this.showTrackingConsent ? html`
             <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>` : ''}
         </div>

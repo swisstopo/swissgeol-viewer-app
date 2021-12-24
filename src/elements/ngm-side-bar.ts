@@ -41,13 +41,14 @@ import NavToolsStore from '../store/navTools';
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
   @property({type: Object}) queryManager: QueryManager | null = null;
+  @property({type: Boolean}) mobileView = false;
   @state() catalogLayers: any;
   @state() activeLayers: any;
   @state() activePanel: string | null = null;
   @state() showHeader = false;
   @state() globeQueueLength_ = 0;
-  @state() mobileView = false;
   @state() mobileShowAll = false;
+  @state() showDataCatalog = true;
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder') toastPlaceholder;
   private viewer: Viewer | null = null;
   private layerActions: any;
@@ -76,13 +77,6 @@ export class SideBar extends LitElementI18n {
     MainStore.syncLayers.subscribe(() => {
       this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
       this.syncActiveLayers();
-    });
-
-    const boundingRect = document.body.getBoundingClientRect();
-    this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
-    window.addEventListener('resize', () => {
-      const boundingRect = document.body.getBoundingClientRect();
-      this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
     });
   }
 
@@ -118,12 +112,29 @@ export class SideBar extends LitElementI18n {
         <div class="ngm-settings-icon"></div>
         ${i18next.t('lsb_settings')}
       </div>`;
+    const authBtn = html`
+      <ngm-auth class="ngm-user"
+                endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
+                clientId='6brvjsufv7fdubr12r9u0gajnj'
+      ></ngm-auth>`;
+    const dataMobileHeader = html`
+      <div @click=${() => this.showDataCatalog = true}
+           class="ngm-data-catalog-label ${classMap({active: this.showDataCatalog})}">
+        ${i18next.t('lyr_geocatalog_label')}
+      </div>
+      <div @click=${() => this.showDataCatalog = false}
+           class="ngm-data-catalog-label ${classMap({active: !this.showDataCatalog})}">
+        ${i18next.t('dtd_displayed_data_label')}
+      </div>`;
 
     return html`
       <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
         ${shareBtn}
         ${helpBtn}
         ${settingsBtn}
+        <!-- required for correct positioning -->
+        <div></div>
+        <div></div>
       </div>
       <div class="ngm-menu">
         <div class="ngm-menu-1">
@@ -142,20 +153,8 @@ export class SideBar extends LitElementI18n {
             <div class="ngm-tools-icon"></div>
             ${i18next.t('lsb_tools')}
           </div>
+          ${this.mobileView ? authBtn : ''}
           ${!this.mobileView ? shareBtn : ''}
-        </div>
-        <div class="ngm-menu-2">
-          <ngm-auth class="ngm-user"
-                    endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
-                    clientId='6brvjsufv7fdubr12r9u0gajnj'
-          ></ngm-auth>
-          ${!this.mobileView ? helpBtn : ''}
-          ${!this.mobileView ? settingsBtn : ''}
-          <div .hidden=${this.mobileView} class="ngm-nav-close ${classMap({'ngm-disabled': !this.activePanel})}"
-               @click=${() => this.togglePanel('')}>
-            <div class="ngm-nav-close-icon"></div>
-            ${i18next.t('lsb_close')}
-          </div>
           <div .hidden=${!this.mobileView}
                class="ngm-mob-menu-toggle"
                @click=${() => this.mobileShowAll = !this.mobileShowAll}>
@@ -166,11 +165,23 @@ export class SideBar extends LitElementI18n {
             ${this.mobileShowAll ? i18next.t('lsb_close') : i18next.t('lsb_view_all')}
           </div>
         </div>
+        <div .hidden=${this.mobileView} class="ngm-menu-2">
+          ${authBtn}
+          ${helpBtn}
+          ${settingsBtn}
+          <div class="ngm-nav-close ${classMap({'ngm-disabled': !this.activePanel})}"
+               @click=${() => this.togglePanel('')}>
+            <div class="ngm-nav-close-icon"></div>
+            ${i18next.t('lsb_close')}
+          </div>
+        </div>
       </div>
       <ngm-dashboard ?hidden=${this.activePanel !== 'dashboard'} @close=${() => this.activePanel = ''}
                      class="ngm-side-bar-panel ngm-large-panel"></ngm-dashboard>
-      <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-layer-catalog">
-        <div class="ngm-panel-header">${i18next.t('lyr_geocatalog_label')}
+      <div .hidden=${this.activePanel !== 'data' || (this.mobileView && !this.showDataCatalog)}
+           class="ngm-side-bar-panel ngm-layer-catalog">
+        <div class="ngm-panel-header">
+          ${this.mobileView ? dataMobileHeader : i18next.t('lyr_geocatalog_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
         <ngm-catalog class="ui accordion ngm-panel-content" .layers=${this.catalogLayers}
@@ -200,8 +211,10 @@ export class SideBar extends LitElementI18n {
           </div>
         </div>
       </div>
-      <div .hidden=${this.activePanel !== 'data'} class="ngm-side-bar-panel ngm-extension-panel">
-        <div class="ngm-panel-header">${i18next.t('dtd_displayed_data_label')}
+      <div .hidden=${this.activePanel !== 'data' || (this.mobileView && this.showDataCatalog)}
+           class="ngm-side-bar-panel ngm-extension-panel">
+        <div class="ngm-panel-header">
+          ${this.mobileView ? dataMobileHeader : i18next.t('dtd_displayed_data_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
         <div class="ngm-toast-placeholder"></div>
