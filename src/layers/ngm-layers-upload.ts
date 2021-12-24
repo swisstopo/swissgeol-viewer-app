@@ -47,7 +47,6 @@ export default class LayersUpload extends LitElementI18n {
           label: `${name} (${i18next.t('dtd_own_kml_tag')})`,
           promise: promise,
           zoomToBbox: true,
-          hideUpDown: false,
           opacity: DEFAULT_LAYER_OPACITY,
           notSaveToPermalink: true
         };

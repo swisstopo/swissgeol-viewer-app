@@ -91,37 +91,6 @@ export default class LayersAction {
     syncLayersParam(newLayers);
   }
 
-  // changes layer position in 'Displayed Layers'
-  moveLayer(layers, config: Config, delta: number) {
-    console.assert(delta === -1 || delta === 1);
-    const previousIndex = layers.indexOf(config);
-    const toIndex = previousIndex + delta;
-    if (toIndex < 0 || toIndex > layers.length - 1) {
-      // should not happen with proper UI
-      return;
-    }
-
-    // Swap values
-    const otherConfig = layers[toIndex];
-    layers[toIndex] = layers[previousIndex];
-    layers[previousIndex] = otherConfig;
-
-    // FIXME: this is nonsensical, all imageries should be handled
-    // permute imageries order
-    if (config.type === LayerType.swisstopoWMTS && otherConfig.type === LayerType.swisstopoWMTS) {
-      const imageries = this.viewer.scene.imageryLayers;
-      config.promise!.then((i: ImageryLayer) => {
-        if (delta < 0) {
-          imageries.lower(i);
-        } else {
-          imageries.raise(i);
-        }
-      });
-    }
-
-    syncLayersParam(layers);
-  }
-
 
   listenForEvent(config: Config, eventName, callback) {
     const stuff = config.promise!; // yes, this is not a promise ! Why?

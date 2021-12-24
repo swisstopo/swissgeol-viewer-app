@@ -13,38 +13,25 @@ export default {
 };
 
 const someActions = {
+  changeVisibility(config, visible) {
+    config.visible = visible;
+  },
   reorderLayers(_, layers) {
     console.log('newOrder', layers.map(l => l.label));
   }
 };
 
-const someConfigs: Config[] = [
-  {
-    label: 'layer 1',
-    load() {
-      return Promise.resolve('bidon');
-    },
-  },
-  {
-    label: 'layer 2',
-    load() {
-      return Promise.resolve('bidon');
-    }
-  },
-  {
-    label: 'layer 3',
-    load() {
-      return Promise.resolve('bidon');
-    }
-  },
-  {
-    label: 'layer 4',
-    load() {
-      return Promise.resolve('bidon');
-    }
-  }
+const someConfigs: Config[] = ['layer 1', 'layer 2', 'layer 3', 'layer 4'].map(
+  label => ({
+    label: label,
+    opacity: 0.7,
+    setOpacity: () => {},
 
-];
+    load() {
+      return Promise.resolve(`bidon ${label}`);
+    },
+  })
+);
 
 function whenReady(partial) {
   // to render translated text, we need to wait for the i18next promise to be resolved

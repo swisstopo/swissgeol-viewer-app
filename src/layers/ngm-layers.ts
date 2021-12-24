@@ -14,20 +14,15 @@ Sortable.mount(new MultiDrag());
 export default class LayerTree extends LitElementI18n {
   @property({type: Array}) layers: Config[] = [];
   @property({type: Object}) actions: any;
+  private sortable: Sortable;
 
-
-  // changes layer position in 'Displayed Layers'
-  moveLayer(config: Config, delta: number) {
-    this.actions.moveLayer(this.layers, config, delta);
-    this.dispatchEvent(new CustomEvent('layerChanged'));
-    this.requestUpdate();
-  }
-
-  firstUpdated() {
-    new Sortable(this, {
-      handle: 'ngm-layers-item',
+  connectedCallback() {
+    super.connectedCallback();
+    this.sortable = new Sortable(this, {
+      handle: '.grip',
+      sort: true,
       animation: 100,
-      // forceFallback: true,
+      forceFallback: true,
       multiDrag: true,
       selectedClass: 'selected',
       fallbackTolerance: 3,
@@ -35,12 +30,18 @@ export default class LayerTree extends LitElementI18n {
         // it is painful to correctly map the ordering
         // instead we read it from the DOM itself ;)
         const layerItems = this.querySelectorAll('ngm-layers-item') as NodeListOf<NgmLayersItem>;
-        const layers = Array.from(layerItems).map(l => l.config);
+        const layers = Array.from(layerItems).map(l => l.config).reverse();
         this.actions.reorderLayers(this.layers, layers);
         this.dispatchEvent(new CustomEvent('layerChanged'));
-        this.requestUpdate(); // why this?
       }
     });
+  }
+
+  disconnectedCallback() {
+    if (this.sortable) {
+      this.sortable.destroy();
+    }
+    super.disconnectedCallback();
   }
 
   createLayerTemplate(config: Config, idx: number, len: number) {
@@ -67,9 +68,6 @@ export default class LayerTree extends LitElementI18n {
         this.dispatchEvent(new CustomEvent('layerChanged'));
         this.requestUpdate(); // force update to render visibility changes
       }}
-        @moveLayer=${evt => this.moveLayer(config, evt.detail)}
-        .upClassMap=${upClassMap}
-        .downClassMap=${downClassMap}
       >
       </ngm-layers-item>
     `;

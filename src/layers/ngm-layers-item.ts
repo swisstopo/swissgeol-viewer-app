@@ -15,7 +15,6 @@ export interface Config extends LayerTreeNode {
   load: () => Promise<any>;
   setVisibility?: (boolean) => void;
   setOpacity?: (number) => void;
-  hideUpDown?: boolean;
   promise?: Promise<any>;
   notSaveToPermalink?: boolean;
 }
@@ -26,8 +25,6 @@ export class LayerTreeItem extends LitElementI18n {
   @property({type: Object}) config!: Config;
   @state() loading = 0;
   @state() determinateLoading = false;
-  @state() upClassMap: any;
-  @state() downClassMap: any;
   @state() loadProgressRemover_: any;
 
   firstUpdated() {
@@ -102,15 +99,6 @@ export class LayerTreeItem extends LitElementI18n {
                @click=${() => this.showLayerLegend(this.config)}>
             ${i18next.t('dtd_legend_geocat_hint')}
           </div>` : ''}
-        ${!this.config?.hideUpDown ? html`
-          <div class="item ${classMap(this.downClassMap)}"
-               @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: -1}))}>
-            ${i18next.t('dtd_layer_down_label')}
-          </div>
-          <div class="item ${classMap(this.upClassMap)}"
-               @click=${() => this.dispatchEvent(new CustomEvent('moveLayer', {detail: +1}))}>
-            ${i18next.t('dtd_layer_up_label')}
-          </div>` : ''}
         ${this.config?.downloadUrl && this.config?.type !== LayerType.earthquakes ? html`
           <div class="item"
                @click=${() => window.open(this.config?.downloadUrl)}>
@@ -122,6 +110,7 @@ export class LayerTreeItem extends LitElementI18n {
 
   render() {
     return html`
+      <i class="grip vertical icon"></i>
       <div ?hidden=${this.loading > 0} class="ngm-layer-icon ${classMap({
         'ngm-visible-icon': !!this.config.visible,
         'ngm-invisible-icon': !this.config.visible
@@ -172,5 +161,12 @@ export class LayerTreeItem extends LitElementI18n {
 
   createRenderRoot() {
     return this;
+  }
+
+  cloneNode(deep) {
+    const node = super.cloneNode(deep) as LayerTreeItem;
+    node.config = this.config;
+    node.actions = this.actions;
+    return node;
   }
 }
