@@ -211,6 +211,7 @@ export class SideBar extends LitElementI18n {
           </div>
         </div>
       </div>
+      ${this.activePanel !== 'data' ? '' : html`
       <div .hidden=${this.activePanel !== 'data' || (this.mobileView && this.showDataCatalog)}
            class="ngm-side-bar-panel ngm-extension-panel">
         <div class="ngm-panel-header">
@@ -240,7 +241,7 @@ export class SideBar extends LitElementI18n {
           <ngm-map-configuration></ngm-map-configuration>
           <div class="ui divider"></div>
         </div>
-      </div>
+      </div>`}
     `;
   }
 
