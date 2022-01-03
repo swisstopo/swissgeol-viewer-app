@@ -45,10 +45,7 @@ export default class LayerTree extends LitElementI18n {
   }
 
   createLayerTemplate(config: Config, idx: number, len: number) {
-    const upClassMap = {disabled: (idx === 0)};
     idx = len - 1 - idx; // we want to create in reverse order
-    const downClassMap = {disabled: idx === 0};
-
     if (!config.promise) {
       config.promise = config.load();
     }
