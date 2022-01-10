@@ -40,5 +40,26 @@
         "permalink": "?lon=8.59559&lat=46.69875&elevation=417&heading=21&pitch=23&map=ch.swisstopo.swissimage&map_transparency=0.43&layers=ch.swisstopo.swisstlm3d.3d,ch.swisstopo.geologie-geocover,water_tunnel,rail_tunnel,road_tunnel&layers_visibility=true,false,true,true,true&layers_transparency=0.00,0.82,0.00,0.00,0.000&target={\"lon\":\"8.60072\",\"lat\":\"46.70794\",\"height\":881.8231693363072}"
       }
     ]
+  },
+  {
+    "title": "Water Tower Switzerland",
+    "description": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
+    "created": "10 am January 2022",
+    "image": "./images/dam_LacDesDix.png",
+    "color": "#B9271A",
+    "views": [
+      {
+        "title": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year",
+        "permalink": "?lon=7.21753&lat=46.22802&elevation=3516&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.41&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C1.00&target=%7B%22lon%22%3A%228.60100%22%2C%22lat%22%3A%2246.70688%22%2C%22height%22%3A932.9088491526485%7D&lang=en"
+      },
+      {
+        "title": "Geology of the Rhone Valley",
+        "permalink": "?lon=7.20907&lat=46.24121&elevation=4165&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.41&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.51&target=%7B%22lon%22%3A%228.60100%22%2C%22lat%22%3A%2246.70688%22%2C%22height%22%3A932.9088491520051%7D&lang=en"
+      },
+      {
+        "title": "Natural hazards: Can earthquakes be a threat?",
+        "permalink": "https://int.swissgeol.ch/?lon=7.21753&lat=46.22802&elevation=3516&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.76&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cearthquakes%2Chistorical_earthquakes%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.97&target=%7B%22lon%22%3A%228.60100%22%2C%22lat%22%3A%2246.70688%22%2C%22height%22%3A932.9088491520051%7D&lang=en"
+      }
+    ]
   }
 ]
