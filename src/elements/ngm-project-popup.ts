@@ -38,9 +38,9 @@ export class NgmProjectPopup extends LitElementI18n {
   }
 
   render() {
-    const project = this.selectedView?.project;
-    const viewIndex = this.selectedView?.viewIndex;
-    if (!project || typeof viewIndex !== 'number') return '';
+    if (!this.selectedView) return '';
+    const project = this.selectedView.project;
+    const viewIndex = this.selectedView.viewIndex;
     return html`
       <div class="ngm-floating-window-header drag-handle">
         <div class="ngm-floating-window-header-title">${project.title}</div>
