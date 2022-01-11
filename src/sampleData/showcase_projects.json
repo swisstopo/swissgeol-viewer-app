@@ -2,7 +2,7 @@
   {
     "title": "Hot springs in Switzerland",
     "description": "A small tour on heat and water sources of hot springs in the Swiss midlands. Depending on the place, the geological situation can be very different.",
-    "created": "11 am January 2021",
+    "created": "11 January 2021",
     "image": "./images/spashing_water.png",
     "color": "#B9271A",
     "views": [
@@ -24,7 +24,7 @@
     "title": "The church of Wassen",
     "description": "Infrastructure at the Gotthard transit route can be well seen on the earth surface, but what is actually hidden below the surface? Click on the different views to see the situation around the church of Wassen along the Gotthard transit route.",
     "image": "./images/wassen.png",
-    "created": "12 am September 2021",
+    "created": "12 September 2021",
     "color": "#B9271A",
     "views": [
       {
@@ -38,6 +38,27 @@
       {
         "title": "Subsurface infrastructure",
         "permalink": "?lon=8.59559&lat=46.69875&elevation=417&heading=21&pitch=23&map=ch.swisstopo.swissimage&map_transparency=0.43&layers=ch.swisstopo.swisstlm3d.3d,ch.swisstopo.geologie-geocover,water_tunnel,rail_tunnel,road_tunnel&layers_visibility=true,false,true,true,true&layers_transparency=0.00,0.82,0.00,0.00,0.000&target={\"lon\":\"8.60072\",\"lat\":\"46.70794\",\"height\":881.8231693363072}"
+      }
+    ]
+  },
+  {
+    "title": "Water Tower Switzerland",
+    "description": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
+    "created": "10 January 2022",
+    "image": "./images/dam_LacDesDix.png",
+    "color": "#B9271A",
+    "views": [
+      {
+        "title": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year",
+        "permalink": "?lon=7.22560&lat=46.21887&elevation=3490&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.45&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C1.00&lang=en"
+      },
+      {
+        "title": "Geology of the Rhone Valley",
+        "permalink": "?lon=7.19082&lat=46.18561&elevation=3347&heading=98&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.40&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.49&lang=en"
+      },
+      {
+        "title": "Natural hazards: Can earthquakes be a threat?",
+        "permalink": "?lon=7.21497&lat=46.23202&elevation=3713&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.69&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cearthquakes%2Chistorical_earthquakes%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.34&lang=en"
       }
     ]
   }
