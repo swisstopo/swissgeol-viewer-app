@@ -108,3 +108,10 @@ ga-search > .search-results i {
 ga-search > .search-results b {
   font: normal normal bold 16px/24px Inter;
 }
+
+/*todo remove*/
+@media (max-width: 600px) {
+  ga-search {
+    display: none !important;
+  }
+}
