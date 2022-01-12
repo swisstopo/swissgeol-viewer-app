@@ -10,15 +10,19 @@ import {area} from 'd3-shape';
  * @param width
  * @param hight
  */
-export function plotProfile(data: number[][], width = 900, hight = 200) {
+export function plotProfile(data: number[][], parentContainer = 'profile-plot') {
+  const div = document.getElementById(parentContainer) as Element;
+  const style = getComputedStyle(div);
+  const width = div.clientWidth - parseInt(style.paddingLeft) - parseInt(style.paddingRight);
+  const height = width / 6;
+
   // set the dimensions and margins of the graph
-  const margin = {top: 10, right: 10, bottom: 40, left: 60};
+  const margin = {top: 10, right: 0, bottom: 40, left: 60};
   const w = width - margin.left - margin.right;
-  const h = hight - margin.top - margin.bottom;
+  const h = height - margin.top - margin.bottom;
 
   // append the svg object
-  const svg = select('#profile-plot')
-    .append('svg')
+  const svg = select(`#${parentContainer}`).append('svg')
     .attr('width', w + margin.left + margin.right)
     .attr('height', h + margin.top + margin.bottom)
     .append('g')
@@ -44,21 +48,21 @@ export function plotProfile(data: number[][], width = 900, hight = 200) {
   svg.append('text')
     .attr('text-anchor', 'end')
     .attr('x', w / 2 + margin.left)
-    .attr('y', h + margin.top + 20)
+    .attr('y', h + margin.top + 25)
     .text('Distance [km]');
 
   // Add Y axis label
   svg.append('text')
     .attr('text-anchor', 'end')
     .attr('transform', 'rotate(-90)')
-    .attr('y', -margin.left + 20)
+    .attr('y', -margin.left + 15)
     .attr('x', -margin.top)
     .text('Elevation [m]');
 
   // Add the area
   svg.append('path')
     .datum(data)
-    .attr('fill', '#FF0000')
+    .attr('fill', '#B9271A')
     .attr('stroke', '#B9271A')
     .attr('stroke-width', 1.5)
     .attr('d', area()

@@ -65,16 +65,16 @@ export class TopographicProfile extends LitElementI18n {
 
   setDownloadLinks() {
     // get svg source
-    const svg = document.getElementById("profile-plot")?.firstChild as Node;
+    const svg = document.getElementById('profile-plot')?.firstChild as Node;
 
-    var serializer = new XMLSerializer();
-    var source = serializer.serializeToString(svg);
+    const serializer = new XMLSerializer();
+    let source = serializer.serializeToString(svg);
 
     // add name spaces
-    if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+    if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
       source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
     }
-    if (!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)) {
+    if (!source.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
       source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
     }
 
@@ -82,10 +82,10 @@ export class TopographicProfile extends LitElementI18n {
     source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
 
     // convert svg source to URI data scheme
-    var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+    const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
 
-    //set url value to a element's href attribute.
-    (document.getElementById("svg-link")! as any).href = url;
+    // set url value to a element's href attribute
+    (document.getElementById('svg-link')! as any).href = url;
   }
 
   render() {
@@ -95,7 +95,7 @@ export class TopographicProfile extends LitElementI18n {
       <div class="ngm-close-icon" @click=${() => this.hidden = true}></div>
     </div>
     <div class="content-container">
-      <p>
+      <p>${i18next.t('topographic_profile_downloads')}:
         <a href=${this.profileServiceUrl('csv')}>CSV</a>
         <a id="svg-link" download="${this.name}_profile">SVG</a>
       </p>
