@@ -12,6 +12,7 @@ import {LitElementI18n} from '../i18n';
 import NavToolsStore from '../store/navTools';
 import type {Interactable} from '@interactjs/types';
 import type {Event, Viewer} from 'cesium';
+import {dragArea} from './helperElements';
 
 // calculate difference between minimap extent and container
 const width = CesiumMath.toRadians(MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
@@ -145,13 +146,7 @@ export class NgmMinimap extends LitElementI18n {
         </div>
         <ngm-nadir-view .viewer=${this.viewer}></ngm-nadir-view>
       </div>
-      <div class="ngm-drag-area drag-handle">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      ${dragArea}
     `;
   }
 

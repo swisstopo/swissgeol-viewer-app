@@ -121,3 +121,33 @@ ngm-dashboard .ngm-divider {
   font: normal normal 500 12px/15px Inter;
   letter-spacing: 0.41px;
 }
+
+ngm-project-popup {
+  width: 260px;
+}
+
+.ngm-project-popup-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 0 1px 3px #00000033;
+  margin-bottom: 12px;
+  height: 36px;
+}
+
+.ngm-project-view-title {
+  white-space: nowrap;
+  width: 140px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.ngm-project-popup-content > .ngm-play-last-icon,
+.ngm-project-popup-content > .ngm-play-icon {
+  cursor: pointer;
+}
+
+.ngm-project-popup-content > .ngm-play-last-icon:hover,
+.ngm-project-popup-content > .ngm-play-icon:hover {
+  background-color: var(--ngm-interaction-hover);
+}

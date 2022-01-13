@@ -8,13 +8,40 @@ import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
 import {getCameraView, syncTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
+import DashboardStore from '../store/dashboard';
+
+export interface DashboardProjectView {
+  title: string,
+  permalink: string
+}
+
+export interface DashboardProject {
+  title: string,
+  description: string,
+  created: string,
+  image: string,
+  color: string,
+  views: DashboardProjectView[]
+}
+
+export interface SelectedView {
+  project: DashboardProject,
+  viewIndex: number
+}
 
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
   @property({type: Boolean}) hidden = true;
   @state() activeTab: 'dashboard' | 'project' = 'dashboard';
-  @state() selectedProject: any | undefined;
-  @state() projects: any | undefined;
+  @state() selectedProject: DashboardProject | undefined;
+  @state() projects: DashboardProject[] | undefined;
+
+  constructor() {
+    super();
+    DashboardStore.viewIndex.subscribe(viewIndex => {
+      this.selectView(viewIndex);
+    });
+  }
 
   async update(changedProperties) {
     if (!this.hidden && !this.projects) {
@@ -23,12 +50,14 @@ export class NgmDashboard extends LitElementI18n {
     super.update(changedProperties);
   }
 
-  selectView(permalink) {
+  selectView(viewIndex: number) {
     const viewer = MainStore.viewerValue;
-    if (!viewer) return;
+    if (!viewer || !this.selectedProject) return;
     syncTargetParam(undefined);
     NavToolsStore.nextTargetPointSync();
     this.dispatchEvent(new CustomEvent('close'));
+    DashboardStore.setSelectedView({project: this.selectedProject, viewIndex: viewIndex});
+    const permalink = this.selectedProject.views[viewIndex].permalink;
     const url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${permalink}`;
     window.history.pushState({path: url}, '', url);
     MainStore.nextLayersSync();
@@ -86,8 +115,8 @@ export class NgmDashboard extends LitElementI18n {
         <div>${i18next.t('dashboard_views')}</div>
       </div>
       <div class="ngm-project-views">
-        ${this.selectedProject.views.map(view => html`
-          <div class="ngm-action-list-item" @click=${() => this.selectView(view.permalink)}>
+        ${this.selectedProject.views.map((view, index) => html`
+          <div class="ngm-action-list-item" @click=${() => this.selectView(index)}>
             <div class="ngm-action-list-item-header">
               <div>${view.title}</div>
             </div>

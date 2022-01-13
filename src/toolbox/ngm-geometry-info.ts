@@ -19,6 +19,7 @@ import {createDataGenerator, createZipFromData} from '../download';
 import {saveAs} from 'file-saver';
 import {cartesianToDegrees} from '../cesiumutils';
 import {coordinatesToBbox} from '../utils';
+import {dragArea} from '../elements/helperElements';
 
 @customElement('ngm-geometry-info')
 export class NgmGeometryInfo extends LitElementI18n {
@@ -256,13 +257,7 @@ export class NgmGeometryInfo extends LitElementI18n {
           this.infoTemplate
         }
       </div>
-      <div class="ngm-drag-area drag-handle">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      ${dragArea}
     `;
   }
 

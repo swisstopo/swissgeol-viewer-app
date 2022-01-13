@@ -4,6 +4,7 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import QueryStore from '../store/query';
+import {dragArea} from './helperElements';
 
 class NgmObjectInformation extends LitElementI18n {
 
@@ -58,7 +59,8 @@ class NgmObjectInformation extends LitElementI18n {
                 return html`
                   <tr class="top aligned">
                     <td class="key">${i18next.t(`assets:${key}`)}</td>
-                    <td class="value"><a href="${value}" target="_blank" rel="noopener">${value.split('/').pop()}</a></td>
+                    <td class="value"><a href="${value}" target="_blank" rel="noopener">${value.split('/').pop()}</a>
+                    </td>
                   </tr>
                 `;
               } else {
@@ -93,13 +95,7 @@ class NgmObjectInformation extends LitElementI18n {
         <div class="content-container">
           ${content}
         </div>
-        <div class="ngm-drag-area drag-handle">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
+        ${dragArea}
       `;
     } else {
       return html``;
