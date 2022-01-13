@@ -435,7 +435,7 @@ ngm-full-screen-view.full-active {
 }
 
 .contact-mailto-link:hover, .disclaimer-link:hover {
-  color: #FF0000;
+  color: var(--ngm-interaction-hover);
   text-shadow: none;
 }
 

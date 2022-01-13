@@ -1,4 +1,5 @@
 import {LitElementI18n} from './i18n';
+import type {PropertyValues} from 'lit';
 import {html} from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
@@ -35,7 +36,7 @@ import {initSentry} from './sentry.js';
 import MainStore from './store/main';
 import ToolboxStore from './store/toolbox';
 import {classMap} from 'lit/directives/class-map.js';
-import {customElement, state} from 'lit/decorators.js';
+import {customElement, query, state} from 'lit/decorators.js';
 import {showSnackbarInfo} from './notifications';
 import type MapChooser from './MapChooser';
 import type {NgmSlowLoading} from './elements/ngm-slow-loading';
@@ -75,6 +76,7 @@ export class NgmApp extends LitElementI18n {
   @state() showTrackingConsent = false;
   @state() showProjectPopup = false;
   @state() mobileView = false;
+  @query('ngm-cam-configuration') camConfigElement;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
   private showCesiumToolbar = getCesiumToolbarParam();
@@ -221,6 +223,45 @@ export class NgmApp extends LitElementI18n {
         }
       });
     });
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('showCamConfig')) {
+      if (this.showCamConfig) {
+        (<HTMLElement>document.querySelector('.ngm-cam-lock-info'))?.parentElement?.remove();
+      } else if (this.camConfigElement.lockType) {
+        let message = '';
+        switch (this.camConfigElement.lockType) {
+          case 'angle':
+            message = i18next.t('cam_lock_info_angle');
+            break;
+          case 'elevation':
+            message = i18next.t('cam_lock_info_elevation');
+            break;
+          case 'move':
+            message = i18next.t('cam_lock_info_move');
+            break;
+          case 'pitch':
+            message = i18next.t('cam_lock_info_pitch');
+            break;
+        }
+        showSnackbarInfo(message,
+          {
+            displayTime: 0,
+            class: 'ngm-cam-lock-info',
+            actions: [
+              {
+                text: i18next.t('app_cancel_btn_label'),
+                click: () => this.camConfigElement.disableLock()
+              }]
+          });
+        // closeOnClick doesn't work with actions
+        document.querySelector('.ngm-cam-lock-info')?.addEventListener('click', () => {
+          (<HTMLElement>document.querySelector('.ngm-cam-lock-info'))?.parentElement?.remove();
+        });
+      }
+    }
+    super.updated(changedProperties);
   }
 
   showSlowLoadingWindow() {

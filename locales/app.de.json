@@ -1,5 +1,10 @@
 {
+  "app_cancel_btn_label": "Abbrechen",
   "cam_configuration_header": "Kameraeinstellungen",
+  "cam_lock_info_angle": "",
+  "cam_lock_info_elevation": "",
+  "cam_lock_info_move": "",
+  "cam_lock_info_pitch": "",
   "camera_position_angle_label": "Position",
   "camera_position_coordinates_label": "Koordinaten",
   "camera_position_coordinates_system_label": "Koordinatensystem",
@@ -162,7 +167,6 @@
   "tbx_add_rect_area_btn_label": "Rechteck zeichnen",
   "tbx_all_label": "Alle",
   "tbx_area_of_interest_add_hint": "Auf die Karte klicken, um zu zeichnen. Doppelt klicken, um Zeichnen zu beenden",
-  "tbx_cancel_area_btn_label": "Abbrechen",
   "tbx_copy_btn": "Kopieren",
   "tbx_copy_of_label": "Kopieren von...",
   "tbx_create_section_label": "Schnitte erstellen",

@@ -54,7 +54,7 @@ export function showSnackbarConfirmation(message: string, callbacks: { onApprove
       },
       {
         class: 'deny ngm-action-btn ngm-cancel-btn',
-        text: i18next.t('tbx_cancel_area_btn_label'),
+        text: i18next.t('app_cancel_btn_label'),
         click: callbacks.onDeny
       }]
   });

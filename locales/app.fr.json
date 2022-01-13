@@ -1,5 +1,10 @@
 {
+  "app_cancel_btn_label": "Annuler",
   "cam_configuration_header": "Configuration de la caméra",
+  "cam_lock_info_angle": "",
+  "cam_lock_info_elevation": "",
+  "cam_lock_info_move": "",
+  "cam_lock_info_pitch": "",
   "camera_position_angle_label": "Angle",
   "camera_position_coordinates_label": "Coordonnées",
   "camera_position_coordinates_system_label": "Système de coordonnées",
@@ -162,7 +167,6 @@
   "tbx_add_rect_area_btn_label": "Dessiner un rectangle",
   "tbx_all_label": "Tous",
   "tbx_area_of_interest_add_hint": "Cliquez sur le visualisateur 3D pour dessiner. Double-cliquez pour terminer le dessin",
-  "tbx_cancel_area_btn_label": "Annuler",
   "tbx_copy_btn": "Copier",
   "tbx_copy_of_label": "Copie de",
   "tbx_create_section_label": "Créer des coupes",
