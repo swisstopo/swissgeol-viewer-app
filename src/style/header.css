@@ -1,7 +1,7 @@
 header {
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 0 10px;
   height: var(--ngm-header-height);
   box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -15,21 +15,41 @@ header > * {
 header > a {
   margin-left: 10px;
   margin-right: 102px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #212529;
 }
 
-.ngm-map-icon {
+header > a .logo-text {
+  padding-left: 8px;
+}
+
+header.mobile-search-active {
+  padding: 0;
+}
+
+.ngm-search-icon-mobile, .ngm-map-icon {
   margin-right: 17px;
   background-color: var(--ngm-interaction);
-  margin-left: auto;
   cursor: pointer;
 }
 
-.ngm-map-icon.ngm-map-active {
+.ngm-search-icon-mobile {
+  width: 24px;
+  height: 24px;
+}
+
+.ngm-search-icon-mobile.active, .ngm-map-icon.active {
   background-color: var(--ngm-interaction-active);
 }
 
-.ngm-map-icon:hover {
+.ngm-search-icon-mobile:hover, .ngm-map-icon:hover {
   background-color: var(--ngm-interaction-hover);
+}
+
+.mobile-search-active .ngm-search-icon-mobile {
+  margin: 0 10px;
 }
 
 @media (max-width: 710px) {

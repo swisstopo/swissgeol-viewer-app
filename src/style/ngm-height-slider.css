@@ -33,3 +33,10 @@ ngm-height-slider input::-moz-range-thumb {
   background: center/100% url('./images/i_cam_position.svg');
   cursor: pointer;
 }
+
+@media (max-height: 629px), (max-width: 599px) {
+  ngm-height-slider input {
+    max-width: 72vh;
+    width: calc(100vh - (var(--ngm-header-height-mobile) + var(--ngm-bottom-menu-height) + 15px));
+  }
+}

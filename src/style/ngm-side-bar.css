@@ -220,11 +220,11 @@ ngm-auth:hover {
 
   .ngm-side-bar-panel {
     margin-left: 0;
-    height: calc(100vh - (var(--ngm-header-height) + var(--ngm-bottom-menu-height)));
+    height: calc(100% - (var(--ngm-header-height-mobile) + var(--ngm-bottom-menu-height)));
   }
 
   .ngm-side-bar-panel .ngm-panel-content {
-    max-height: calc(100vh - (var(--ngm-header-height) + var(--ngm-bottom-menu-height) + 34px));
+    max-height: calc(100vh - (var(--ngm-header-height-mobile) + var(--ngm-bottom-menu-height) + 34px));
   }
 
   .ngm-side-bar-panel.ngm-large-panel {
@@ -262,6 +262,9 @@ ngm-auth:hover {
   .ngm-side-bar-panel.ngm-side-bar-panel,
   .ngm-side-bar-panel.ngm-large-panel {
     width: 100%;
+  }
+
+  .ngm-side-bar-panel.ngm-large-panel {
     overflow: auto;
   }
 

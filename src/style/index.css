@@ -163,12 +163,6 @@ cesium-view-cube {
   right: 100px;
 }
 
-@media (max-height: 630px) {
-  cesium-view-cube {
-    bottom: 80px;
-  }
-}
-
 #cesium {
   display: flex;
   flex: auto;
@@ -404,7 +398,30 @@ ngm-full-screen-view.full-active {
   font-size: 20px;
 }
 
+.visible-mobile {
+  display: none;
+}
+
 @media (max-height: 629px), (max-width: 599px)  {
+  .visible-mobile {
+    display: initial;
+  }
+
+  .hidden-mobile {
+    display: none !important;
+  }
+
+  header {
+    height: var(--ngm-header-height-mobile);
+  }
+  ga-search {
+    height: var(--ngm-header-height-mobile);
+    max-width: initial;
+    display: none !important;
+  }
+  ga-search.active {
+    display: flex !important;
+  }
   .map {
     margin-bottom: var(--ngm-bottom-menu-height);
     height: calc(100% - var(--ngm-bottom-menu-height));

@@ -45,9 +45,7 @@ ga-search.ui.input > input::-webkit-search-results-decoration {
 
 .ngm-search-icon-container {
   width: 30px;
-  height: 56px;
-  display: flex;
-  align-items: center;
+  height: 100%;
   position: absolute;
   right: 12px;
   color: #66D9E8;
@@ -56,6 +54,10 @@ ga-search.ui.input > input::-webkit-search-results-decoration {
 
 .ngm-search-icon-container.ngm-close-icon {
   cursor: pointer;
+}
+
+.mobile-search-active ga-search .ngm-search-icon {
+  display: none;
 }
 
 /* FIXME: use existing fomantic component */
@@ -107,11 +109,4 @@ ga-search > .search-results i {
 
 ga-search > .search-results b {
   font: normal normal bold 16px/24px Inter;
-}
-
-/*todo remove*/
-@media (max-width: 600px) {
-  ga-search {
-    display: none !important;
-  }
 }
