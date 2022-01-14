@@ -1,0 +1,42 @@
+topographic-profile {
+  position: absolute;
+  left: 0;
+  right: 0 !important;
+  margin-left: auto;
+  margin-right: auto;
+  top: auto !important;
+  max-width: 1280px;
+  bottom: 10px;
+  z-index: 2;
+}
+
+topographic-profile .htmlpopup-header {
+  font-weight: bold;
+  border-bottom: 2px solid #DFE2E6;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+topographic-profile .content-container {
+  position: relative;
+}
+
+topographic-profile .content-container p {
+  float: right;
+  margin: 0;
+  position: absolute;
+  right: 0;
+}
+
+topographic-profile .content-container a {
+  color: var(--ngm-interaction);
+  font-weight: bold;
+  background-color: #DEE2E6;
+  border-radius: 5px;
+  padding: 2px 8px;
+  margin-left: 4px;
+}
+
+topographic-profile .content-container a:hover {
+  color: var(--ngm-interaction-hover);
+}

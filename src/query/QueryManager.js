@@ -3,7 +3,7 @@ import SwisstopoIdentify from './SwisstopoIdentify';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import i18next from 'i18next';
 import {OBJECT_HIGHLIGHT_COLOR} from '../constants';
-import {lv95ToDegrees} from '../projection.js';
+import {lv95ToDegrees} from '../projection';
 import Entity from 'cesium/Source/DataSources/Entity';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import Cartographic from 'cesium/Source/Core/Cartographic';

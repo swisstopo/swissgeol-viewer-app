@@ -10,10 +10,8 @@ import {
   Matrix4,
   Plane,
   Rectangle,
-  SceneTransforms,
   Transforms
 } from 'cesium';
-import {degreesToLv95} from './projection.js';
 import type {NgmGeometry} from './toolbox/interfaces';
 import earcut from 'earcut';
 
@@ -144,46 +142,6 @@ export function getMeasurements(positions, type) {
     result.area = getPolygonArea(positions).toFixed(3);
   }
   return result;
-}
-
-/**
- * Returns window position of point on map
- * @param {import('cesium/Source/Scene/Scene.js').default} scene
- * @param {Cartographic} cartographicPosition
- * @return {Cartesian2}
- */
-export function convertCartographicToScreenCoordinates(scene, cartographicPosition) {
-  const lon = CMath.toDegrees(cartographicPosition.longitude);
-  const lat = CMath.toDegrees(cartographicPosition.latitude);
-  return SceneTransforms.wgs84ToWindowCoordinates(scene, Cartesian3.fromDegrees(lon, lat, cartographicPosition.height));
-}
-
-/**
- * Returns x,y in lv95 or wsg84 and height relative to ground
- * @param {import('cesium/Source/Scene/Scene.js').default} scene
- * @param {Cartographic} position
- * @param {'lv95' | 'wsg84'} coordinatesType
- * @param {boolean} useAltitude
- * @return {{x: number, y: number, height: number}}
- */
-export function prepareCoordinatesForUi(scene, position, coordinatesType, useAltitude = false) {
-  let x, y;
-  const lon = CMath.toDegrees(position.longitude);
-  const lat = CMath.toDegrees(position.latitude);
-  if (coordinatesType === 'lv95') {
-    const coords = degreesToLv95([lon, lat]);
-    x = Math.round(coords[0]);
-    y = Math.round(coords[1]);
-  } else {
-    x = Number(lon.toFixed(3));
-    y = Number(lat.toFixed(3));
-  }
-  let altitude = 0;
-  if (useAltitude) {
-    altitude = scene.globe.getHeight(position) || 0;
-  }
-  const height = Math.round(position.height - altitude);
-  return {x, y, height};
 }
 
 /**

@@ -7,10 +7,10 @@ interface OpenedGeometryOptions {
   editing?: boolean
 }
 
-interface GeometryAction {
+export interface GeometryAction {
   id?: string,
   type?: string,
-  action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll'
+  action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll' | 'profile'
 }
 
 export default class ToolboxStore {

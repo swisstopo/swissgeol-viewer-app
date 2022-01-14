@@ -65,6 +65,11 @@ export default class NgmGeometriesList extends LitElementI18n {
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'copy'})}>
           ${i18next.t('tbx_copy_btn')}
         </div>
+        ${(geom.type === 'line') ? html`
+        <div class="item"
+             @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'profile'})}>
+          ${i18next.t('tbx_profile_btn')}
+        </div>` : html``}
         <div class="item"
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: geom.show ? 'hide' : 'show'})}>
           ${geom.show ? i18next.t('tbx_hide_btn_label') : i18next.t('tbx_unhide_btn_label')}
