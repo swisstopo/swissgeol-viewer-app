@@ -158,6 +158,7 @@
   "shortlink_copy_btn_label": "Copier le lien",
   "shortlink_link_label": "Lien",
   "slow_connection_label": "Est-ce que c'est lent?",
+  "shortlink_mailto_btn_label": "",
   "slow_connection_latest_stable_version": "Dernière version stable",
   "slow_connection_text": "L'application semble se charger très lentement.",
   "slow_connection_text_2": "Pour profiter au mieux de swissgeol, veuillez vous assurer que vous disposez d'une bonne connexion internet et que vous utilisez l'un des navigateurs suivants dans sa version la plus récente :",

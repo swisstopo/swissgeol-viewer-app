@@ -71,8 +71,12 @@ export class NgmShareLink extends LitElementI18n {
       </div>
       <button class="ui button ngm-action-btn ${classMap({disabled: this.displayLoader})}" @click=${this.onClick}>
         ${i18next.t('shortlink_copy_btn_label')}
-      </button>`;
-  }
+      </button>
+      <a class="ui button ngm-action-btn ${classMap({disabled: this.displayLoader})}" target="_blank" href="mailto:?body=${this.shortlink}">
+        ${i18next.t('shortlink_mailto_btn_label')}
+      </a>
+    `;
+}
 
   createRenderRoot() {
     // no shadow dom

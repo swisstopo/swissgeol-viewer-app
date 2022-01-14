@@ -157,6 +157,7 @@
   "shortlink_copied": "Link kopiert",
   "shortlink_copy_btn_label": "Link kopieren",
   "shortlink_link_label": "Link",
+  "shortlink_mailto_btn_label": "",
   "slow_connection_label": "Noch nicht geladen?",
   "slow_connection_latest_stable_version": "Neueste stabile Version",
   "slow_connection_text": "swissgeol.ch scheint langsam zu laden.",
