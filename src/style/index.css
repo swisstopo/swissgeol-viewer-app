@@ -403,9 +403,10 @@ ngm-full-screen-view.full-active {
   font-size: 20px;
 }
 
-@media (max-height: 630px) {
+@media (max-height: 629px), (max-width: 599px)  {
   .map {
     margin-bottom: var(--ngm-bottom-menu-height);
+    height: calc(100% - var(--ngm-bottom-menu-height));
   }
 }
 
