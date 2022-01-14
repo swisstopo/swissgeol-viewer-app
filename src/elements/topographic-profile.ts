@@ -40,6 +40,7 @@ export class TopographicProfile extends LitElementI18n {
 
   async handleActions(options: GeometryAction) {
     if (options.action === 'profile') {
+      this.hidden = true;
       const geom = ToolboxStore.geometries.getValue().find(geom => geom.id === options.id);
       this.linestring = geom!.positions.map(c => cartesianToLv95(c));
       this.name = geom!.name;
