@@ -5,7 +5,7 @@ import {LitElementI18n} from '../i18n.js';
 import type {Config, LayerTreeItem as NgmLayersItem} from './ngm-layers-item';
 // eslint-disable-next-line no-duplicate-imports
 import './ngm-layers-item';
-import {Sortable, MultiDrag} from 'sortablejs';
+import {MultiDrag, Sortable} from 'sortablejs';
 
 Sortable.mount(new MultiDrag());
 
@@ -14,12 +14,14 @@ Sortable.mount(new MultiDrag());
 export default class LayerTree extends LitElementI18n {
   @property({type: Array}) layers: Config[] = [];
   @property({type: Object}) actions: any;
+  @property({type: Boolean}) changeOrderActive = false;
   private sortable: Sortable;
 
   connectedCallback() {
     super.connectedCallback();
     this.sortable = new Sortable(this, {
-      handle: '.grip',
+      disabled: !this.changeOrderActive,
+      handle: '.selected',
       sort: true,
       animation: 100,
       forceFallback: true,
@@ -35,6 +37,11 @@ export default class LayerTree extends LitElementI18n {
         this.dispatchEvent(new CustomEvent('layerChanged'));
       }
     });
+    // for some reason avoidImplicitDeselect doesn't work, hack instead
+    const deselectMultiDrag = this.sortable.multiDrag._deselectMultiDrag;
+    document.removeEventListener('pointerup', deselectMultiDrag, false);
+    document.removeEventListener('mouseup', deselectMultiDrag, false);
+    document.removeEventListener('touchend', deselectMultiDrag, false);
   }
 
   disconnectedCallback() {
@@ -59,12 +66,13 @@ export default class LayerTree extends LitElementI18n {
       <ngm-layers-item
         .actions=${this.actions}
         .config=${config}
+        .changeOrderActive=${this.changeOrderActive}
         @removeDisplayedLayer=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}))}
         @zoomTo=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}
         @layerChanged=${() => {
-        this.dispatchEvent(new CustomEvent('layerChanged'));
-        this.requestUpdate(); // force update to render visibility changes
-      }}
+          this.dispatchEvent(new CustomEvent('layerChanged'));
+          this.requestUpdate(); // force update to render visibility changes
+        }}
       >
       </ngm-layers-item>
     `;
@@ -72,14 +80,15 @@ export default class LayerTree extends LitElementI18n {
 
   // builds ui structure of layertree and makes render
   render() {
+    this.sortable.option('disabled', !this.changeOrderActive);
     const len = this.layers ? this.layers.length : 0;
     const reverse = [...this.layers].reverse();
     return html`
       ${repeat(
-      reverse,
-      (config) => config.label,
-      (config, idx) => this.createLayerTemplate(config, idx, len)
-    )}
+        reverse,
+        (config) => config.label,
+        (config, idx) => this.createLayerTemplate(config, idx, len)
+      )}
     `;
   }
 

@@ -7,6 +7,7 @@ import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import $ from '../jquery.js';
 import type {LayerTreeNode} from '../layertree';
 import {styleMap} from 'lit/directives/style-map.js';
+import {Sortable} from 'sortablejs';
 
 export interface Config extends LayerTreeNode {
   add?: (number) => void;
@@ -23,15 +24,25 @@ export interface Config extends LayerTreeNode {
 export class LayerTreeItem extends LitElementI18n {
   @property({type: Object}) actions: any;
   @property({type: Object}) config!: Config;
+  @property({type: Boolean}) changeOrderActive = false;
   @state() loading = 0;
   @state() determinateLoading = false;
   @state() loadProgressRemover_: any;
+  @state() movable = false;
+  private toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
 
   firstUpdated() {
     $(this.querySelector('.ui.dropdown')).dropdown();
     if (!this.config.opacity) {
       this.config.opacity = DEFAULT_LAYER_OPACITY;
     }
+  }
+
+  updated(changedProps) {
+    if (changedProps.has('changeOrderActive')) {
+      this.updateMovableState();
+    }
+    super.updated(changedProps);
   }
 
   connectedCallback() {
@@ -70,6 +81,7 @@ export class LayerTreeItem extends LitElementI18n {
     this.config.opacity = Number(input.value);
     this.actions.changeOpacity(this.config, this.config.opacity);
     this.dispatchEvent(new CustomEvent('layerChanged'));
+    this.requestUpdate();
   }
 
   onLabelClicked(evt) {
@@ -108,10 +120,28 @@ export class LayerTreeItem extends LitElementI18n {
     `;
   }
 
+  updateMovableState() {
+    // prevent select/deselect on click on item (not checkbox)
+    if (this.changeOrderActive) {
+      this.addEventListener('click', this.toggleItemSelection);
+    } else {
+      this.removeEventListener('click', this.toggleItemSelection);
+      if (this.movable) {
+        this.movable = false;
+        Sortable.utils.deselect(this);
+      }
+    }
+  }
+
   render() {
     return html`
-      <i class="grip vertical icon"></i>
-      <div ?hidden=${this.loading > 0} class="ngm-layer-icon ${classMap({
+      <div ?hidden=${!this.changeOrderActive} class="ngm-checkbox ${this.movable ? 'active' : ''}"
+           @click=${() => this.movable = !this.movable}>
+        <input type="checkbox" .checked=${this.movable}>
+        <span class="ngm-checkbox-icon"></span>
+      </div>
+
+      <div ?hidden=${this.loading > 0 || this.changeOrderActive} class="ngm-layer-icon ${classMap({
         'ngm-visible-icon': !!this.config.visible,
         'ngm-invisible-icon': !this.config.visible
       })}" @click=${this.changeVisibility}>

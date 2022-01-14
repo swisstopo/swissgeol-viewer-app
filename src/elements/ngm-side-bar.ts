@@ -49,6 +49,7 @@ export class SideBar extends LitElementI18n {
   @state() globeQueueLength_ = 0;
   @state() mobileShowAll = false;
   @state() showDataCatalog = true;
+  @state() layerOrderChangeActive = false;
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder') toastPlaceholder;
   private viewer: Viewer | null = null;
   private layerActions: any;
@@ -211,7 +212,6 @@ export class SideBar extends LitElementI18n {
           </div>
         </div>
       </div>
-      ${this.activePanel !== 'data' ? '' : html`
       <div .hidden=${this.activePanel !== 'data' || (this.mobileView && this.showDataCatalog)}
            class="ngm-side-bar-panel ngm-extension-panel">
         <div class="ngm-panel-header">
@@ -220,9 +220,14 @@ export class SideBar extends LitElementI18n {
         </div>
         <div class="ngm-toast-placeholder"></div>
         <div class="ngm-panel-content">
+          <div class="ngm-change-order-btn ${classMap({active: this.layerOrderChangeActive})}"
+               @click=${this.toggleLayerOrderChange}>
+            ${i18next.t('dtd_change_order_label')}
+          </div>
           <ngm-layers
             .layers=${this.activeLayers}
             .actions=${this.layerActions}
+            .changeOrderActive=${this.layerOrderChangeActive}
             @zoomTo=${evt => {
               NavToolsStore.hideTargetPoint();
               zoomTo(this.viewer!, evt.detail);
@@ -241,7 +246,7 @@ export class SideBar extends LitElementI18n {
           <ngm-map-configuration></ngm-map-configuration>
           <div class="ui divider"></div>
         </div>
-      </div>`}
+      </div>
     `;
   }
 
@@ -557,6 +562,10 @@ export class SideBar extends LitElementI18n {
       }
     }));
     return layer.promise;
+  }
+
+  toggleLayerOrderChange() {
+    this.layerOrderChangeActive = !this.layerOrderChangeActive;
   }
 
   createRenderRoot() {

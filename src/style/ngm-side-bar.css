@@ -152,6 +152,24 @@ ngm-auth:hover {
   margin-left: 5px;
 }
 
+.ngm-change-order-btn {
+  margin-left: auto;
+  font: normal normal 500 14px/20px Inter;
+  letter-spacing: 0;
+  color: var(--ngm-interaction);
+  opacity: 1;
+  margin-right: 17px;
+  cursor: pointer;
+}
+
+.ngm-change-order-btn.active {
+  color: var(--ngm-interaction-active);
+}
+
+.ngm-change-order-btn:hover {
+  color: var(--ngm-interaction-hover);
+}
+
 @media (max-height: 629px), (max-width: 599px) {
   .ngm-menu,
   .ngm-menu-1,
