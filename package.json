@@ -19,7 +19,7 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --browser chrome",
     "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
-    "storybook": "start-storybook -p 6006 --modern -s .storybook/static",
+    "storybook": "start-storybook -p 6006 --modern",
     "build-storybook": "build-storybook && cp -R locales storybook-static && cp -R node_modules/cesium/Build/Cesium/Assets node_modules/cesium/Build/Cesium/Widgets node_modules/cesium/Build/Cesium/Workers storybook-static"
   },
   "dependencies": {
