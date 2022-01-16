@@ -19,7 +19,7 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --browser chrome",
     "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
-    "storybook": "start-storybook -p 6006 --modern --static-dir .storybook/static",
+    "storybook": "start-storybook -p 6006 --modern -s .storybook/static",
     "build-storybook": "build-storybook && cp -R locales storybook-static && cp -R node_modules/cesium/Build/Cesium/Assets node_modules/cesium/Build/Cesium/Widgets node_modules/cesium/Build/Cesium/Workers storybook-static"
   },
   "dependencies": {
@@ -101,6 +101,7 @@
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-strip-pragma": "^1.0.0",
     "rollup-plugin-terser": "^7.0.2",
+    "sortablejs": "^1.14.0",
     "source-map-loader": "^3.0.1",
     "start-server-and-test": "^1.14.0",
     "stream-to-promise": "^3.0.0",

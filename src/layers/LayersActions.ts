@@ -32,18 +32,18 @@ export default class LayersAction {
     });
   }
 
-  changeVisibility(config: Config, checked: boolean) {
+  async changeVisibility(config: Config, checked: boolean) {
     if (config.setVisibility) {
       config.setVisibility(checked);
     } else {
-      this.viewer.dataSources.getByName(config.promise.name)[0].show = checked;
+      this.viewer.dataSources.getByName((await config.promise)!.name)[0].show = checked;
     }
     config.visible = checked;
     this.viewer.scene.requestRender();
   }
 
   changeOpacity(config: Config, value: number) {
-    config.setOpacity(value);
+    config.setOpacity!(value);
     config.opacity = value;
     this.viewer.scene.requestRender();
   }
@@ -80,40 +80,20 @@ export default class LayersAction {
     }
   }
 
-  // changes layer position in 'Displayed Layers'
-  moveLayer(layers, config: Config, delta: number) {
-    console.assert(delta === -1 || delta === 1);
-    const previousIndex = layers.indexOf(config);
-    const toIndex = previousIndex + delta;
-    if (toIndex < 0 || toIndex > layers.length - 1) {
-      // should not happen with proper UI
-      return;
+  async reorderLayers(_: Config[], newLayers: Config[]) {
+    const imageries = this.viewer.scene.imageryLayers;
+    for (const config of newLayers) {
+      if (config.type === LayerType.swisstopoWMTS) {
+        const imagery: ImageryLayer = await config.promise;
+        imageries.raiseToTop(imagery);
+      }
     }
-
-    // Swap values
-    const otherConfig = layers[toIndex];
-    layers[toIndex] = layers[previousIndex];
-    layers[previousIndex] = otherConfig;
-
-    // FIXME: this is nonsensical, all imageries should be handled
-    // permute imageries order
-    if (config.type === LayerType.swisstopoWMTS && otherConfig.type === LayerType.swisstopoWMTS) {
-      const imageries = this.viewer.scene.imageryLayers;
-      config.promise.then((i: ImageryLayer) => {
-        if (delta < 0) {
-          imageries.lower(i);
-        } else {
-          imageries.raise(i);
-        }
-      });
-    }
-
-    syncLayersParam(layers);
+    syncLayersParam(newLayers);
   }
 
 
   listenForEvent(config: Config, eventName, callback) {
-    const stuff = config.promise; // yes, this is not a promise !
+    const stuff = config.promise!; // yes, this is not a promise ! Why?
     if (stuff[eventName]) {
       console.debug('Adding event', eventName, 'on', config.layer);
       stuff[eventName].addEventListener(callback);

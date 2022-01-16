@@ -26,6 +26,12 @@
   margin-left: 2px;
 }
 
+ngm-layers-item .ngm-checkbox {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 0;
+}
+
 .ngm-layer-icon:hover, .ngm-layer-icon:focus {
   background-color: var(--ngm-interaction-hover);
 }
@@ -228,4 +234,12 @@ ngm-layers-upload .ngm-action-menu-icon {
   width: 24px;
   height: 24px;
   margin-left: 15px;
+}
+
+ngm-layers-item {
+  padding: 10px;
+}
+
+ngm-layers-item.selected {
+  background-color: var(--ngm-hover);
 }
