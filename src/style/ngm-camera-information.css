@@ -1,7 +1,4 @@
 ngm-camera-information {
-  max-width: 328px;
-  height: 57px;
-  display: flex;
   flex-wrap: wrap;
   align-items: center;
   align-self: center;
@@ -12,11 +9,11 @@ ngm-camera-information {
 }
 
 ngm-camera-information .ngm-nci-value {
-  font: normal normal 600 14px/20px Inter;
+  font-weight: 600;
 }
 
 .ngm-nci-height {
-  min-width: 88px;
+  min-width: 75px;
 }
 
 .ngm-nci-position {
@@ -25,9 +22,12 @@ ngm-camera-information .ngm-nci-value {
 }
 
 .ngm-nci-direction {
-  max-width: 200px;
   display: flex;
   white-space: nowrap;
+}
+
+.ngm-nci-direction-labels {
+  margin-right: 8px;
 }
 
 .ngm-nci-direction > div:nth-child(2) {
