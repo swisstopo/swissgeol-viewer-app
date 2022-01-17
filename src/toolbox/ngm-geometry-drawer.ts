@@ -4,7 +4,6 @@ import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
 import type {CesiumDraw} from '../draw/CesiumDraw.js';
-import {SwissforagesService} from './SwissforagesService';
 
 
 import {clickOnElement} from '../utils';
@@ -13,26 +12,16 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-swissforages-modal';
 import './ngm-swissforages-interaction';
 import ToolboxStore from '../store/toolbox';
-import type {GeometryTypes, NgmGeometry, SwissforagesModalOptions} from './interfaces';
+import type {GeometryTypes, NgmGeometry} from './interfaces';
 import DrawStore from '../store/draw';
 
 const fileUploadInputId = 'fileUpload';
-const DEFAULT_SWISSFORAGES_MODAL_OPTIONS = {
-  name: undefined,
-  id: undefined,
-  position: undefined,
-  onLoggedIn: undefined,
-  onSwissforagesBoreholeCreated: undefined,
-  show: false
-};
 
 @customElement('ngm-geometry-drawer')
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
   @property({type: Boolean}) drawerHidden = true;
   @state() selectedAreaId: string | undefined;
-  swissforagesService = new SwissforagesService();
   private draw: CesiumDraw | undefined;
-  private swissforagesModalOptions: SwissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS;
   private drawGeometries = [
     {label: () => i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},
     {label: () => i18next.t('tbx_add_line_btn_label'), type: 'line', icon: 'ngm-line-draw-icon'},
@@ -58,14 +47,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     }
     super.update(changedProperties);
   }
-
-  // initAoi() {
-  //   if (this.aoiInited || !this.viewer) return;
-  //
-  //   this.swissforagesModalOptions = DEFAULT_SWISSFORAGES_MODAL_OPTIONS;
-  //
-  //   this.aoiInited = true;
-  // }
 
   private uploadFile(evt) {
     const file: File | null = evt.target ? evt.target.files[0] : null;
@@ -107,12 +88,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
           ToolboxStore.nextGeometryAction({id: evt.detail.id, action: 'zoom'});
           ToolboxStore.setOpenedGeometryOptions({id: evt.detail.id!});
         }}>
-      </ngm-geometries-list>
-      <ngm-swissforages-modal
-        .service="${this.swissforagesService}"
-        .options="${this.swissforagesModalOptions}">
-      </ngm-swissforages-modal>
-    `;
+      </ngm-geometries-list>`;
   }
 
   createRenderRoot() {
