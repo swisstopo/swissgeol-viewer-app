@@ -211,6 +211,8 @@ export class NgmGstInteraction extends LitElementI18n {
 
   render() {
     return html`
+      <ngm-draw-section></ngm-draw-section>
+      <div class="ngm-divider"></div>
       <ngm-geometries-list
         .selectedId=${this.selectedId}
         .disabledTypes=${['polygon']}

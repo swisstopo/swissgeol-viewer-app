@@ -1,9 +1,10 @@
 import {html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
-import './ngm-geometry-drawer';
+import './ngm-draw-tool';
 import './ngm-slicer';
 import './ngm-geometries-list';
+import './ngm-draw-section';
 import i18next from 'i18next';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {AOI_DATASOURCE_NAME, DEFAULT_AOI_COLOR} from '../constants';
@@ -154,11 +155,9 @@ export class NgmToolbox extends LitElementI18n {
         </div>
       </div>
       <div class="ngm-toast-placeholder"></div>
-      <ngm-geometry-drawer .hidden="${this.activeTool !== 'draw'}"
-                           .drawerHidden="${this.activeTool !== 'draw' || this.toolsHidden}"
-                           .geometriesDataSource=${this.geometriesDataSource}
-                           .toastPlaceholder=${this.toastPlaceholder}></ngm-geometry-drawer>
-      </ngm-geometry-drawer>
+      <ngm-draw-tool .hidden="${this.activeTool !== 'draw'}"
+                     .drawerHidden="${this.activeTool !== 'draw' || this.toolsHidden}">
+      </ngm-draw-tool>
       <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
                   .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
                   .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>

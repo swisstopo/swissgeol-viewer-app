@@ -1,26 +1,18 @@
-import i18next from 'i18next';
-
-import {html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
-import type {CesiumDraw} from '../draw/CesiumDraw.js';
-
-
-import {clickOnElement} from '../utils';
-import './ngm-gst-interaction';
+import {customElement} from 'lit/decorators.js';
+import {html} from 'lit';
+import i18next from 'i18next';
 import {classMap} from 'lit-html/directives/class-map.js';
-import './ngm-swissforages-modal';
-import './ngm-swissforages-interaction';
 import ToolboxStore from '../store/toolbox';
-import type {GeometryTypes, NgmGeometry} from './interfaces';
+import type {GeometryTypes} from './interfaces';
+import {clickOnElement} from '../utils';
 import DrawStore from '../store/draw';
+import type {CesiumDraw} from '../draw/CesiumDraw';
 
 const fileUploadInputId = 'fileUpload';
 
-@customElement('ngm-geometry-drawer')
-export class NgmAreaOfInterestDrawer extends LitElementI18n {
-  @property({type: Boolean}) drawerHidden = true;
-  @state() selectedAreaId: string | undefined;
+@customElement('ngm-draw-section')
+export class NgmDrawSection extends LitElementI18n {
   private draw: CesiumDraw | undefined;
   private drawGeometries = [
     {label: () => i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},
@@ -35,17 +27,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       this.draw = draw;
       if (draw) draw.addEventListener('statechanged', () => this.requestUpdate());
     });
-    ToolboxStore.openedGeometryOptions.subscribe(options => {
-      this.selectedAreaId = options ? options.id : undefined;
-    });
-  }
-
-  update(changedProperties) {
-    if (changedProperties.has('drawerHidden') && !changedProperties.get('drawerHidden') && this.draw) {
-      this.draw.active = false;
-      this.draw.clear();
-    }
-    super.update(changedProperties);
   }
 
   private uploadFile(evt) {
@@ -81,18 +62,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       </div>
       <input id="${fileUploadInputId}" type='file' accept=".kml,.KML,.gpx,.GPX" hidden
              @change=${evt => this.uploadFile(evt)}/>
-      <div class="ngm-divider"></div>
-      <ngm-geometries-list
-        .selectedId=${this.selectedAreaId}
-        @geomclick=${(evt: CustomEvent<NgmGeometry>) => {
-          ToolboxStore.nextGeometryAction({id: evt.detail.id, action: 'zoom'});
-          ToolboxStore.setOpenedGeometryOptions({id: evt.detail.id!});
-        }}>
-      </ngm-geometries-list>`;
+    `;
   }
 
   createRenderRoot() {
     return this;
   }
-
 }
