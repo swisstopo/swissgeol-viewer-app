@@ -1,6 +1,6 @@
 import {BehaviorSubject, Subject} from 'rxjs';
 import type Slicer from '../slicer/Slicer';
-import type {NgmGeometry} from '../toolbox/interfaces';
+import type {GeometryTypes, NgmGeometry} from '../toolbox/interfaces';
 
 interface OpenedGeometryOptions {
   id: string,
@@ -9,8 +9,9 @@ interface OpenedGeometryOptions {
 
 export interface GeometryAction {
   id?: string,
-  type?: string,
-  action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll' | 'profile'
+  type?: GeometryTypes,
+  file?: File,
+  action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll' | 'profile' | 'add' | 'upload'
 }
 
 export default class ToolboxStore {

@@ -18,6 +18,7 @@ import {getAreaPositions, updateBoreholeHeights, updateEntityVolume} from './hel
 import {getSliceParam} from '../permalink';
 import {CesiumDraw} from '../draw/CesiumDraw';
 import DrawStore from '../store/draw';
+import {GeometryController} from './GeometryController';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
@@ -30,6 +31,7 @@ export class NgmToolbox extends LitElementI18n {
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;
+  private geometryController: GeometryController | undefined;
 
   constructor() {
     super();
@@ -76,6 +78,11 @@ export class NgmToolbox extends LitElementI18n {
     const sliceOptions = getSliceParam();
     if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints)
       this.activeTool = 'slicing';
+  }
+
+  updated() {
+    if (!this.geometryController && this.viewer && this.toastPlaceholder)
+      this.geometryController = new GeometryController(this.geometriesDataSource, this.toastPlaceholder);
   }
 
   showSectionModal(imageUrl) {
