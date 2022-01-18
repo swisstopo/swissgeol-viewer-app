@@ -169,7 +169,7 @@ export class NgmGstInteraction extends LitElementI18n {
     ToolboxStore.nextGeometryAction({id: geom.id, action: 'pick'});
   }
 
-  geometryInsideExtent(geom) {
+  geometryOutsideExtent(geom) {
     const points = geom.positions.map(p => Cartographic.fromCartesian(p));
     let inside = false;
     for (let i = 0; i < points.length; i++) {
@@ -177,6 +177,22 @@ export class NgmGstInteraction extends LitElementI18n {
       if (inside) break;
     }
     return !inside;
+  }
+
+  onGeometryAdded(newGeometries: NgmGeometry[]) {
+    let valid = false;
+    for (const geom of newGeometries) {
+      if (geom.type !== 'polygon') {
+        valid = !this.geometryOutsideExtent(geom);
+        if (valid) {
+          this.onGeomClick(geom);
+          break;
+        }
+      }
+    }
+    if (!valid) {
+      showSnackbarError(i18next.t('tbx_gst_no_models_in_region_error'));
+    }
   }
 
   interactionTemplate(geom: NgmGeometry, active: boolean) {
@@ -211,14 +227,15 @@ export class NgmGstInteraction extends LitElementI18n {
 
   render() {
     return html`
-      <ngm-draw-section></ngm-draw-section>
+      <ngm-draw-section .enabledTypes=${['line', 'rectangle', 'point']}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
         .selectedId=${this.selectedId}
         .disabledTypes=${['polygon']}
-        .disabledCallback=${geom => this.geometryInsideExtent(geom)}
+        .disabledCallback=${geom => this.geometryOutsideExtent(geom)}
         .optionsTemplate=${(geom, active) => this.interactionTemplate(geom, active)}
-        @geomclick=${evt => this.onGeomClick(evt.detail)}>
+        @geomclick=${evt => this.onGeomClick(evt.detail)}
+        @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}>
       </ngm-geometries-list>`;
   }
 

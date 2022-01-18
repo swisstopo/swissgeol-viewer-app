@@ -1,5 +1,6 @@
 ngm-draw-tool,
-ngm-slicer {
+ngm-slicer,
+ngm-gst-interaction {
   height: calc(100vh - 142px);
   display: block;
   overflow-y: auto;
@@ -117,6 +118,7 @@ ngm-slicer .ui.button.ngm-transform-btn:hover {
   background-color: #D0F5F9;
   color: #357183;
 }
+
 ngm-slicer .ngm-draw-hint,
 ngm-slicer .ngm-divider {
   margin-top: 12px;

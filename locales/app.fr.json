@@ -184,6 +184,7 @@
   "tbx_geometry": "Géométrie",
   "tbx_gst": "Demande de modèles 3D",
   "tbx_gst_close_label": "Fermer",
+  "tbx_gst_no_models_in_region_error": "",
   "tbx_hide_all_btn": "Cacher toutes les géométries de la liste",
   "tbx_hide_btn_label": "Cacher",
   "tbx_image_label": "Image URL",

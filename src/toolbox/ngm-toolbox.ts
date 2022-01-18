@@ -7,7 +7,7 @@ import './ngm-geometries-list';
 import './ngm-draw-section';
 import i18next from 'i18next';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {AOI_DATASOURCE_NAME, DEFAULT_AOI_COLOR} from '../constants';
+import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME} from '../constants';
 import MainStore from '../store/main';
 import type {Viewer} from 'cesium';
 import {JulianDate} from 'cesium';
@@ -28,7 +28,7 @@ export class NgmToolbox extends LitElementI18n {
   @state() sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder') toastPlaceholder;
   @query('ngm-slicer') slicerElement;
-  geometriesDataSource: CustomDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
+  geometriesDataSource: CustomDataSource = new CustomDataSource(GEOMETRY_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;

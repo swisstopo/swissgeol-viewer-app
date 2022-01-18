@@ -31,8 +31,14 @@ export default class NgmGeometriesList extends LitElementI18n {
   }
 
   updated(changedProperties) {
-    if (changedProperties.get('geometries') || changedProperties.get('selectedFilter')) {
+    const geoms = changedProperties.get('geometries');
+    if (geoms || changedProperties.get('selectedFilter')) {
       this.querySelectorAll('.ngm-action-menu').forEach(el => $(el).dropdown());
+    }
+
+    if (geoms && geoms.length < this.geometries.length) {
+      const newGeometries = this.geometries.filter(leftValue => !geoms.some(rightValue => leftValue.id === rightValue.id));
+      this.dispatchEvent(new CustomEvent('geometriesadded', {detail: {newGeometries}}));
     }
 
     super.updated(changedProperties);
@@ -66,10 +72,10 @@ export default class NgmGeometriesList extends LitElementI18n {
           ${i18next.t('tbx_copy_btn')}
         </div>
         ${(geom.type === 'line') ? html`
-        <div class="item"
-             @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'profile'})}>
-          ${i18next.t('tbx_profile_btn')}
-        </div>` : html``}
+          <div class="item"
+               @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'profile'})}>
+            ${i18next.t('tbx_profile_btn')}
+          </div>` : html``}
         <div class="item"
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: geom.show ? 'hide' : 'show'})}>
           ${geom.show ? i18next.t('tbx_hide_btn_label') : i18next.t('tbx_unhide_btn_label')}
@@ -134,20 +140,20 @@ export default class NgmGeometriesList extends LitElementI18n {
           const active = !disabled && this.selectedId === i.id;
           const hidden = !disabled && !active && !i.show;
           return html`
-          <div class="ngm-action-list-item ${classMap({active, disabled, hidden})}">
-            <div class="ngm-action-list-item-header">
-              <div
-                @click=${() => !disabled && this.dispatchEvent(new CustomEvent('geomclick', {detail: i}))}>
-                ${i.name}
+            <div class="ngm-action-list-item ${classMap({active, disabled, hidden})}">
+              <div class="ngm-action-list-item-header">
+                <div
+                  @click=${() => !disabled && this.dispatchEvent(new CustomEvent('geomclick', {detail: i}))}>
+                  ${i.name}
+                </div>
+                <div class="ui dropdown right pointing ngm-action-menu">
+                  <div class="ngm-action-menu-icon"></div>
+                  ${this.actionMenuTemplate(i)}
+                </div>
               </div>
-              <div class="ui dropdown right pointing ngm-action-menu">
-                <div class="ngm-action-menu-icon"></div>
-                ${this.actionMenuTemplate(i)}
-              </div>
+              ${this.optionsTemplate ? this.optionsTemplate(i, active) : ''}
             </div>
-            ${this.optionsTemplate ? this.optionsTemplate(i, active) : ''}
-          </div>
-        `;
+          `;
         })}
       </div>
       </div>`;
