@@ -43,7 +43,10 @@ export class NgmGstInteraction extends LitElementI18n {
     super();
     MainStore.viewer.subscribe(viewer => {
       this.viewer = viewer;
-      this.initExtent();
+      this.initExtent().then(() => {
+        if (this.gstExtent?.show !== !this.hidden)
+          this.switchExtent(!this.hidden);
+      });
     });
 
     document.addEventListener('keydown', event => {
