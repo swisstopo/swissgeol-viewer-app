@@ -41,7 +41,10 @@ export class NgmGstInteraction extends LitElementI18n {
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe(viewer => {
+      this.viewer = viewer;
+      this.initExtent();
+    });
 
     document.addEventListener('keydown', event => {
       if (event.code === 'Escape') {
@@ -52,10 +55,8 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   update(changedProperties) {
-    this.initExtent().then(() => {
-      if (this.gstExtent?.show !== !this.hidden)
-        this.switchExtent(!this.hidden);
-    });
+    if (this.gstExtent?.show !== !this.hidden)
+      this.switchExtent(!this.hidden);
     if (changedProperties.has('selectedId')) this.initDropdowns();
     super.update(changedProperties);
   }
