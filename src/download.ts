@@ -131,3 +131,8 @@ export async function* createDataGenerator(specs, bbox, fetcher = fetch) {
     }
   }
 }
+
+export function activeLayersForDownload(): Config[] {
+  return (<any>document.getElementsByTagName('ngm-side-bar')[0]).activeLayers
+    .filter((l: Config) => l.visible && !!l.downloadDataType);
+}

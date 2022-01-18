@@ -24,7 +24,7 @@ import {GeometryController} from './GeometryController';
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
   @property({type: Boolean}) toolsHidden = true;
-  @state() activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | undefined;
+  @property() activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | undefined;
   @state() sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder') toastPlaceholder;
   @query('ngm-slicer') slicerElement;

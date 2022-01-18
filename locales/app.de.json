@@ -178,6 +178,7 @@
   "tbx_download_btn_label": "Download",
   "tbx_download_kml_btn_label": "Als kml-Datei herunterladen",
   "tbx_download_section_output_label": "Herunterladen",
+  "tbx_download_selected": "",
   "tbx_draw": "Zeichnen",
   "tbx_edit_btn": "Bearbeiten",
   "tbx_error_need_more_points_warning": "Bitte mehr Punkte zeichnen",
