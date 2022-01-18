@@ -306,11 +306,11 @@
 }
 
 .ngm-download-icon {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   mask: url('./images/i_download.svg') no-repeat center;
   -webkit-mask: url('./images/i_download.svg') no-repeat center;
-  background-color: #495057;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-screenshot-icon {
