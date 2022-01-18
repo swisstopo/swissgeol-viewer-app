@@ -53,17 +53,19 @@ describe('Toolbox', () => {
   it('GST point', () => {
     (<any>cy).loadPage();
     cy.get('.ngm-tools').click();
-    cy.get('.ngm-vector-icon').click();
-    cy.get('.ngm-draw-list-item:first-child').click();
-    cy.get('.cesium-widget > canvas').click(450, 280);
-    cy.get('.ngm-back-icon').click();
     cy.get('.ngm-gst-icon').click();
+    cy.get('ngm-gst-interaction .ngm-draw-list-item:first-child').click();
+    cy.get('.cesium-widget > canvas').click(450, 280);
     cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').should('have.class', 'disabled');
-    cy.get('.cesium-widget > canvas').click(450, 275);
-    cy.get('.ngm-edit-icon').click();
+    cy.get('.ngm-back-icon').click();
+    cy.get('.ngm-vector-icon').click();
+    cy.get('ngm-draw-tool div.ngm-action-list-item:not(.ngm-geom-filter) .ngm-action-menu-icon').click();
+    cy.get('div.menu.transition.visible > div:nth-child(3)').click();
     cy.get('.ngm-coord-y-input').invoke('val', 46.956).trigger('change');
     cy.get('.ngm-geom-edit-actions > button:first-child').click();
-    cy.get('ngm-gst-interaction .ngm-point-draw-icon').click();
+    cy.get('.ngm-back-icon').click();
+    cy.get('.ngm-gst-icon').click();
+    cy.get('ngm-gst-interaction .ngm-geom-list .ngm-point-draw-icon').click();
     testGstOutput();
   });
 
@@ -71,11 +73,12 @@ describe('Toolbox', () => {
     (<any>cy).loadPage();
     cy.get('.ngm-tools').click();
     cy.get('.ngm-vector-icon').click();
-    cy.get('.ngm-draw-list-item:nth-child(3)').click();
+    cy.get('ngm-draw-tool .ngm-draw-list-item:nth-child(3)').click();
     cy.get('.cesium-widget > canvas').click(450, 280);
     cy.get('.cesium-widget > canvas').dblclick(450, 200);
     cy.get('.ngm-back-icon').click();
     cy.get('.ngm-gst-icon').click();
+    cy.get('ngm-gst-interaction .ngm-geom-list .ngm-line-draw-icon').click();
     testGstOutput();
   });
 });
