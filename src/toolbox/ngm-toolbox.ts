@@ -5,6 +5,7 @@ import './ngm-draw-tool';
 import './ngm-slicer';
 import './ngm-geometries-list';
 import './ngm-draw-section';
+import './data-download';
 import i18next from 'i18next';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME} from '../constants';

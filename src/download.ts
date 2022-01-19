@@ -1,6 +1,7 @@
 import JSZip from 'jszip/dist/jszip.js';
 import {coordinatesToBbox, areBboxIntersectings, filterCsvString} from './utils';
 
+import type {Config} from './layers/ngm-layers-item';
 
 /**
  * @typedef {Object} DataPiece

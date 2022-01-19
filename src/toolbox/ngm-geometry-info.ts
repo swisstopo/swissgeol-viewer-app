@@ -121,7 +121,7 @@ export class NgmGeometryInfo extends LitElementI18n {
                 }
               }>
           ${i18next.t('tbx_download_btn_label')}
-          <div class='ngm-download-icon"></div>
+          <div class='ngm-download-icon'></div>
         </button>
         <button class="ui button ngm-download-obj-btn ngm-action-btn"
                 @click=${() => downloadGeometry(this.geometriesDataSource?.entities.getById(geom.id!))}>
