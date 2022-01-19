@@ -184,6 +184,7 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   onGeometryAdded(newGeometries: NgmGeometry[]) {
+    if (this.hidden) return;
     let valid = false;
     for (const geom of newGeometries) {
       if (geom.type !== 'polygon') {

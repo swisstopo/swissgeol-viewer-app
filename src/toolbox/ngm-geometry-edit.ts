@@ -1,7 +1,7 @@
 import {LitElementI18n} from '../i18n';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {html} from 'lit';
-import type {Event, Viewer} from 'cesium';
+import type {ConstantProperty, Event, Viewer} from 'cesium';
 import {Entity, PropertyBag} from 'cesium';
 import i18next from 'i18next';
 import MainStore from '../store/main';
@@ -103,16 +103,18 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   save() {
     if (this.entity && this.editingEntity) {
-      this.entity.properties = <any> getAreaProperties(this.editingEntity, this.editingEntity.properties!.type.getValue());
+      this.entity.properties = <any>getAreaProperties(this.editingEntity, this.editingEntity.properties!.type.getValue());
       if (this.entity.billboard) {
-        this.entity.position = this.editingEntity.position;
+        this.entity.position = <any> this.editingEntity.position?.getValue(this.julianDate);
         this.entity.billboard.color = this.editingEntity.billboard!.color;
         this.entity.billboard.image = this.editingEntity.billboard!.image;
       } else if (this.entity.polyline) {
-        this.entity.polyline.positions = this.editingEntity.polyline!.positions;
+        const positions = this.editingEntity.polyline!.positions?.getValue(this.julianDate);
+        (<ConstantProperty> this.entity.polyline.positions).setValue(positions);
         this.entity.polyline.material = this.editingEntity.polyline!.material;
       } else if (this.entity.polygon) {
-        this.entity.polygon.hierarchy = this.editingEntity.polygon!.hierarchy;
+        const hierarchy = this.editingEntity.polygon!.hierarchy?.getValue(this.julianDate);
+        (<ConstantProperty> this.entity.polygon.hierarchy).setValue(hierarchy);
         this.entity.polygon.material = this.editingEntity.polygon!.material;
       }
       if (this.editingEntity.properties!.volumeShowed && this.entity.polylineVolume) {

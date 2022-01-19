@@ -10,8 +10,9 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import Intersections2D from 'cesium/Source/Core/Intersections2D';
 
 import {getDimensionLabel, rectanglify} from './helpers';
-import {getMeasurements} from '../cesiumutils.ts';
+import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils.ts';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import {PolygonHierarchy} from 'cesium';
 
 /**
  * @typedef {"point" | "line" | "polygon" | "rectangle"} ShapeType
@@ -51,9 +52,7 @@ export class CesiumDraw extends EventTarget {
     this.eventHandler_ = undefined;
     this.activePoints_ = [];
     this.activePoint_ = undefined;
-    this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
-    this.sketchLine_ = undefined;
     this.activeDistance_ = 0;
     this.activeDistances_ = [];
     this.entityForEdit = undefined;
@@ -108,19 +107,26 @@ export class CesiumDraw extends EventTarget {
   activateEditing() {
     this.eventHandler_.setInputAction(event => this.onLeftDown_(event), ScreenSpaceEventType.LEFT_DOWN);
     this.eventHandler_.setInputAction(event => this.onLeftUp_(event), ScreenSpaceEventType.LEFT_UP);
+    const position = this.entityForEdit.position?.getValue(this.julianDate);
     let positions = [];
     let createVirtualSPs = false;
     switch (this.type) {
+      case 'point':
+        this.entityForEdit.position = new CallbackProperty(() => this.activePoints_[0] || position, false);
+        break;
       case 'line':
         positions = [...this.entityForEdit.polyline.positions.getValue()];
+        this.entityForEdit.polyline.positions = new CallbackProperty(() => this.activePoints_, false);
         createVirtualSPs = true;
         break;
       case 'polygon':
         positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
+        this.entityForEdit.polygon.hierarchy = new CallbackProperty(() => new PolygonHierarchy(this.activePoints_), false);
         createVirtualSPs = true;
         break;
       case 'rectangle':
         positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
+        this.entityForEdit.polygon.hierarchy = new CallbackProperty(() => new PolygonHierarchy(this.activePoints_), false);
         this.drawingDataSource.entities.add({
           position: new CallbackProperty(() => {
             positions = this.activePoints_.length ? this.activePoints_ : positions;
@@ -163,9 +169,6 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.scene.requestRender();
   }
 
-  /**
-   *
-   */
   finishDrawing() {
     let positions = this.activePoints_;
     if ((this.type === 'polygon' || this.type === 'rectangle') && positions.length < 3) {
@@ -208,9 +211,7 @@ export class CesiumDraw extends EventTarget {
 
     this.activePoints_ = [];
     this.activePoint_ = undefined;
-    this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
-    this.sketchLine_ = undefined;
     this.activeDistance_ = 0;
     this.activeDistances_ = [];
     this.entityForEdit = undefined;
@@ -344,7 +345,7 @@ export class CesiumDraw extends EventTarget {
         this.sketchPoint_ = this.createSketchPoint_(position);
         this.activePoint_ = position;
 
-        this.sketchLine_ = this.createSketchLine_(this.dynamicSketLinePositions());
+        this.createSketchLine_(this.dynamicSketLinePositions());
         this.viewer_.scene.requestRender();
         if (this.type === 'point') {
           this.activePoints_.push(position);
@@ -409,7 +410,6 @@ export class CesiumDraw extends EventTarget {
       sp.position = positions[key];
       this.activePoints_[key] = positions[key];
     });
-    this.entityForEdit.polygon.hierarchy = {positions};
     this.viewer_.scene.requestRender();
   }
 
@@ -421,10 +421,8 @@ export class CesiumDraw extends EventTarget {
       if (this.moveEntity) {
         if (this.type === 'point') {
           const cartographicPosition = Cartographic.fromCartesian(this.entityForEdit.position.getValue(this.julianDate));
-          const updatedCartographicPosition = Cartographic.fromCartesian(position);
-          // save height after move
-          updatedCartographicPosition.height = cartographicPosition.height;
-          this.entityForEdit.position = Cartographic.toCartesian(updatedCartographicPosition);
+          this.activePoints_[0] = position;
+          updateHeightForCartesianPositions(this.activePoints_, cartographicPosition.height, undefined, true);
         } else {
           const pointProperties = this.sketchPoint_.properties;
           const index = pointProperties.index;
@@ -461,7 +459,6 @@ export class CesiumDraw extends EventTarget {
               const nextVirtualPosition = this.halfwayPosition_(nextRealSP, this.sketchPoint_);
               this.sketchPoints_[(idx + 1) * 2 - 1].position = nextVirtualPosition;
             }
-            this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
             const positions = this.activePoints_;
             if (this.type === 'rectangle') {
@@ -499,7 +496,6 @@ export class CesiumDraw extends EventTarget {
                 sp.position = positions[key];
               });
             }
-            this.entityForEdit.polygon.hierarchy = {positions};
           }
         }
       }
@@ -543,9 +539,9 @@ export class CesiumDraw extends EventTarget {
       }
       if (this.moveEntity) {
         this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
+        this.dispatchEvent(new CustomEvent('leftdown'));
       }
     }
-    this.dispatchEvent(new CustomEvent('leftdown'));
   }
 
   /**
@@ -587,22 +583,7 @@ export class CesiumDraw extends EventTarget {
   }
 
   insertVertexToPolylineOrPolygon_(idx, coordinates) {
-    const e = this.entityForEdit;
     this.activePoints_.splice(idx, 0, coordinates);
-    switch (this.type) {
-      case 'polygon': {
-        const hierarchy = e.polygon.hierarchy.getValue();
-        hierarchy.positions = this.activePoints_;
-        e.polygon.hierarchy.setValue({...hierarchy});
-        break;
-      }
-      case 'line': {
-        e.polyline.positions = this.activePoints_;
-        break;
-      }
-      default:
-        break;
-    }
   }
 
   /**
@@ -614,10 +595,11 @@ export class CesiumDraw extends EventTarget {
     if (wasAClick) {
       this.onLeftDownThenUp_(event);
     }
+    if (this.moveEntity)
+      this.dispatchEvent(new CustomEvent('leftup'));
     this.moveEntity = false;
     this.leftPressedPixel_ = undefined;
     this.sketchPoint_ = undefined;
-    this.dispatchEvent(new CustomEvent('leftup'));
   }
 
   /**
@@ -636,8 +618,6 @@ export class CesiumDraw extends EventTarget {
             return;
           }
           this.activePoints_.splice(this.sketchPoint_.properties.index, 1);
-          hierarchy.positions = this.activePoints_;
-          e.polygon.hierarchy.setValue({...hierarchy});
           divider = 2;
           break;
         }
@@ -647,7 +627,6 @@ export class CesiumDraw extends EventTarget {
             return;
           }
           this.activePoints_.splice(this.sketchPoint_.properties.index, 1);
-          e.polyline.positions = this.activePoints_;
           divider = 2;
           break;
         }

@@ -60,6 +60,10 @@ export class NgmToolbox extends LitElementI18n {
           const type = getValueOrUndefined(this.draw!.entityForEdit.properties.type);
           if (volumeShowedProp && type !== 'point') {
             this.draw!.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
+            if (type === 'line')
+              this.draw!.entityForEdit.polyline.show = true;
+            else
+              this.draw!.entityForEdit.polygon.show = true;
             this.viewer!.scene.requestRender();
           }
         });
