@@ -17,8 +17,8 @@ import type {Config} from '../layers/ngm-layers-item';
 @customElement('data-download')
 export class DataDownload extends LitElementI18n {
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
-  @property({type: String}) selectedId = '';
-  selected: Map<string, Set<string>> = new Map;
+  @property({type: String}) selectedGeometryId = '';
+  selectedLayers: Map<string, Set<string>> = new Map;
 
 
   async downloadSelectedData(geom: NgmGeometry) {
@@ -27,10 +27,7 @@ export class DataDownload extends LitElementI18n {
     rectangle.pop();
     const bbox = coordinatesToBbox(rectangle);
     // Get selected layers
-    // const children: HTMLCollection = evt.currentTarget.parentElement.children;
-    // const layers = Array.from().filter(e => e.classList.contains("active") && e.id).map(e => e.id);
-    console.log(this.selected);
-    const selectedLayers = this.selected.get(geom.id!)!;
+    const selectedLayers = this.selectedLayers.get(geom.id!)!;
     const specs = activeLayersForDownload().filter(l => selectedLayers.has(l.layer!)).map(l => ({
       layer: l.layer,
       url: l.downloadDataPath,
@@ -50,19 +47,19 @@ export class DataDownload extends LitElementI18n {
   }
 
   downloadOptionsTemplate(geom: NgmGeometry) {
-    if (geom.id !== this.selectedId) {
+    if (geom.id !== this.selectedGeometryId) {
       return html``;
     }
 
     const activeLayers = activeLayersForDownload();
 
-    if (!this.selected.has(geom.id!)) {
-      this.selected.set(geom.id!, new Set);
+    if (!this.selectedLayers.has(geom.id!)) {
+      this.selectedLayers.set(geom.id!, new Set);
     }
 
     const content = activeLayers.length ? html`
       ${activeLayers.map((config: Config) => {
-        const selectedLayers = this.selected.get(geom.id!)!;
+        const selectedLayers = this.selectedLayers.get(geom.id!)!;
         return html`
         <div class="ngm-checkbox ${classMap({active: selectedLayers.has(config.layer!)})}"
              @click=${() => {
@@ -96,11 +93,11 @@ export class DataDownload extends LitElementI18n {
       <ngm-draw-section .enabledTypes=${['rectangle']} .showUpload=${false}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
-        .selectedId=${this.selectedId}
+        .selectedId=${this.selectedGeometryId}
         .disabledTypes=${['point', 'polygon', 'line']}
         .optionsTemplate=${(geom: NgmGeometry) => this.downloadOptionsTemplate(geom)}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => {
-          this.selectedId = this.selectedId !== evt.detail.id ? evt.detail.id! : '';
+          this.selectedGeometryId = this.selectedGeometryId !== evt.detail.id ? evt.detail.id! : '';
         }}
       ></ngm-geometries-list>
     `;
