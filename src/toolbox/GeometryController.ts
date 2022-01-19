@@ -220,7 +220,6 @@ export class GeometryController {
         atLeastOneValid = this.addUploadedGeometry(ent, kmlDataSource.name);
       } else {
         atLeastOneValid = true;
-        console.log(this.toastPlaceholder);
         showBannerError(this.toastPlaceholder, i18next.t('tbx_kml_area_existing_warning'));
       }
     });
