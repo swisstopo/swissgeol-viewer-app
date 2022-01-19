@@ -56,22 +56,22 @@ export class NgmToolbox extends LitElementI18n {
           this.viewer!.scene.requestRender();
         });
         this.draw.addEventListener('leftdown', () => {
-          const volumeShowedProp = getValueOrUndefined(this.draw!.entityForEdit.properties.volumeShowed);
-          const type = getValueOrUndefined(this.draw!.entityForEdit.properties.type);
+          const volumeShowedProp = getValueOrUndefined(this.draw!.entityForEdit!.properties!.volumeShowed);
+          const type = getValueOrUndefined(this.draw!.entityForEdit!.properties!.type);
           if (volumeShowedProp && type !== 'point') {
-            this.draw!.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
+            this.draw!.entityForEdit!.polylineVolume!.show = <any> false; // to avoid jumping when mouse over entity
             if (type === 'line')
-              this.draw!.entityForEdit.polyline.show = true;
+              this.draw!.entityForEdit!.polyline!.show = <any> true;
             else
-              this.draw!.entityForEdit.polygon.show = true;
+              this.draw!.entityForEdit!.polygon!.show = <any> true;
             this.viewer!.scene.requestRender();
           }
         });
         this.draw.addEventListener('leftup', () => {
-          if (getValueOrUndefined(this.draw!.entityForEdit.properties.type) === 'point') {
-            updateBoreholeHeights(this.draw!.entityForEdit, this.julianDate);
-          } else if (getValueOrUndefined(this.draw!.entityForEdit.properties.volumeShowed)) {
-            updateEntityVolume(this.draw!.entityForEdit, this.viewer!.scene.globe);
+          if (getValueOrUndefined(this.draw!.entityForEdit!.properties!.type) === 'point') {
+            updateBoreholeHeights(this.draw!.entityForEdit!, this.julianDate);
+          } else if (getValueOrUndefined(this.draw!.entityForEdit!.properties!.volumeShowed)) {
+            updateEntityVolume(this.draw!.entityForEdit!, this.viewer!.scene.globe);
           }
         });
         DrawStore.setDraw(this.draw);
