@@ -184,6 +184,7 @@
   "tbx_geometry": "Geometria",
   "tbx_gst": "Interrogare i modelli 3D",
   "tbx_gst_close_label": "Chiudere",
+  "tbx_gst_no_models_in_region_error": "",
   "tbx_hide_all_btn": "Nascondi tutte le geometrie dalla lista",
   "tbx_hide_btn_label": "Nascondere",
   "tbx_image_label": "Immagine URL",

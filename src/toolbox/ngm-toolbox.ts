@@ -1,12 +1,13 @@
 import {html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
-import './ngm-geometry-drawer';
+import './ngm-draw-tool';
 import './ngm-slicer';
 import './ngm-geometries-list';
+import './ngm-draw-section';
 import i18next from 'i18next';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {AOI_DATASOURCE_NAME, DEFAULT_AOI_COLOR} from '../constants';
+import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME} from '../constants';
 import MainStore from '../store/main';
 import type {Viewer} from 'cesium';
 import {JulianDate} from 'cesium';
@@ -18,6 +19,7 @@ import {getAreaPositions, updateBoreholeHeights, updateEntityVolume} from './hel
 import {getSliceParam} from '../permalink';
 import {CesiumDraw} from '../draw/CesiumDraw';
 import DrawStore from '../store/draw';
+import {GeometryController} from './GeometryController';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
@@ -26,10 +28,11 @@ export class NgmToolbox extends LitElementI18n {
   @state() sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder') toastPlaceholder;
   @query('ngm-slicer') slicerElement;
-  geometriesDataSource: CustomDataSource = new CustomDataSource(AOI_DATASOURCE_NAME);
+  geometriesDataSource: CustomDataSource = new CustomDataSource(GEOMETRY_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;
+  private geometryController: GeometryController | undefined;
 
   constructor() {
     super();
@@ -76,6 +79,11 @@ export class NgmToolbox extends LitElementI18n {
     const sliceOptions = getSliceParam();
     if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints)
       this.activeTool = 'slicing';
+  }
+
+  updated() {
+    if (!this.geometryController && this.viewer && this.toastPlaceholder)
+      this.geometryController = new GeometryController(this.geometriesDataSource, this.toastPlaceholder);
   }
 
   showSectionModal(imageUrl) {
@@ -147,11 +155,9 @@ export class NgmToolbox extends LitElementI18n {
         </div>
       </div>
       <div class="ngm-toast-placeholder"></div>
-      <ngm-geometry-drawer .hidden="${this.activeTool !== 'draw'}"
-                           .drawerHidden="${this.activeTool !== 'draw' || this.toolsHidden}"
-                           .geometriesDataSource=${this.geometriesDataSource}
-                           .toastPlaceholder=${this.toastPlaceholder}></ngm-geometry-drawer>
-      </ngm-geometry-drawer>
+      <ngm-draw-tool .hidden="${this.activeTool !== 'draw'}"
+                     .drawerHidden="${this.activeTool !== 'draw' || this.toolsHidden}">
+      </ngm-draw-tool>
       <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
                   .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
                   .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>

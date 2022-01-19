@@ -6,7 +6,7 @@ import type {Entity, Viewer} from 'cesium';
 import {Cartographic} from 'cesium';
 import MainStore from '../store/main';
 import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {AOI_DATASOURCE_NAME} from '../constants';
+import {GEOMETRY_DATASOURCE_NAME} from '../constants';
 import ToolboxStore from '../store/toolbox';
 import i18next from 'i18next';
 import type {NgmGeometry} from './interfaces';
@@ -35,7 +35,7 @@ export class NgmGeometryInfo extends LitElementI18n {
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
     ToolboxStore.openedGeometryOptions.subscribe(options => {
       if (this.viewer && !this.geometriesDataSource)
-        this.geometriesDataSource = this.viewer.dataSources.getByName(AOI_DATASOURCE_NAME)[0];
+        this.geometriesDataSource = this.viewer.dataSources.getByName(GEOMETRY_DATASOURCE_NAME)[0];
       if (!options?.id) {
         this.editing = false;
         this.geomEntity = undefined;

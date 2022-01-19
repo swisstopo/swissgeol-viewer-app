@@ -36,14 +36,14 @@ export const TARGET_PARAM = 'target';
 export const MANTEL_COLOR = Color.fromCssColorString('#383838');
 
 export const DEFAULT_AOI_COLOR = Color.BLUE;
-export const AOI_LINE_ALPHA = 0.8;
-export const AOI_POLYGON_ALPHA = 0.3;
-export const HIGHLIGHTED_AOI_COLOR = Color.YELLOW;
+export const GEOMETRY_LINE_ALPHA = 0.8;
+export const GEOMETRY_POLYGON_ALPHA = 0.3;
+export const HIGHLIGHTED_GEOMETRY_COLOR = Color.YELLOW;
 
 export const CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD = ['polygon', 'polyline', 'point'];
-export const AVAILABLE_AOI_TYPES = ['polygon', 'line', 'point', 'rectangle'];
+export const AVAILABLE_GEOMETRY_TYPES = ['polygon', 'line', 'point', 'rectangle'];
 
-export const AOI_DATASOURCE_NAME = 'interestAreas';
+export const GEOMETRY_DATASOURCE_NAME = 'toolboxGeometry';
 
 export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Color());
 export const OBJECT_ZOOMTO_RADIUS = 500;

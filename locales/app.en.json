@@ -184,6 +184,7 @@
   "tbx_geometry": "Geometry",
   "tbx_gst": "Query 3D Models",
   "tbx_gst_close_label": "Close",
+  "tbx_gst_no_models_in_region_error": "No 3D model available in this region.",
   "tbx_hide_all_btn": "Hide all geometries in the list",
   "tbx_hide_btn_label": "Hide",
   "tbx_image_label": "Image URL",
