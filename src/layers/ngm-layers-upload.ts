@@ -44,11 +44,12 @@ export default class LayersUpload extends LitElementI18n {
         const promise = Promise.resolve(uploadedLayer);
         const config: Config = {
           load() {return promise;},
-          label: `${name} (${i18next.t('dtd_own_kml_tag')})`,
+          label: name,
           promise: promise,
           zoomToBbox: true,
           opacity: DEFAULT_LAYER_OPACITY,
-          notSaveToPermalink: true
+          notSaveToPermalink: true,
+          ownKml: true
         };
 
         this.requestUpdate();
