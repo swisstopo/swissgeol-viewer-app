@@ -302,7 +302,7 @@ export class NgmApp extends LitElementI18n {
         <a id="ngm-home-link" href="" .hidden="${this.showMobileSearch}">
           <img class="hidden-mobile" src="src/images/logo-CH.svg">
           <img class="visible-mobile" src="src/images/logo-CH-small.svg">
-          <div class="logo-text visible-mobile">Swissgeol</div>
+          <div class="logo-text visible-mobile">swissgeol</div>
         </a>
         <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
           <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
