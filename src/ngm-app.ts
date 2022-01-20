@@ -4,7 +4,6 @@ import {html} from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
-import './elements/ngm-feature-height';
 import './elements/ngm-auth';
 import './elements/ngm-tracking-consent';
 import './elements/ngm-camera-information.js';
