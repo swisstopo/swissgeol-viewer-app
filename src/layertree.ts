@@ -573,6 +573,18 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.tiles3d,
+          url: 'https://download.swissgeol.ch/tilesets/03-TOMM_test/tileset.json',
+          label: 'TOMM (CLI test)',
+          layer: 'top_omm_cli',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip',
+          geocatId: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
+          previewColor: '#cad0c3'
+        },
+        {
+          type: LayerType.tiles3d,
           assetId: 267961,
           label: t('lyr_top_usm_label'),
           layer: 'top_usm',
