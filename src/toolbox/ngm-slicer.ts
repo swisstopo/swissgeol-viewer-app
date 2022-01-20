@@ -22,7 +22,7 @@ import NavToolsStore from '../store/navTools';
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
-  @property({type: Boolean}) slicerHidden = true;
+  @property({type: Boolean}) hidden = true;
   @state() slicer: Slicer | null = null;
   @state() showBox = true;
   @state() negateSlice = false;
@@ -52,10 +52,8 @@ export class NgmSlicer extends LitElementI18n {
   }
 
   protected update(changedProperties) {
-    if (changedProperties.get('slicerHidden') && !this.slicerHidden && !this.slicer?.active && !this.editingEnabled)
+    if (changedProperties.get('hidden') && !this.hidden && !this.slicer?.active && !this.editingEnabled)
       this.toggleSlicer('view-line');
-    else if (changedProperties.has('slicerHidden') && !changedProperties.get('slicerHidden'))
-      this.slicer?.deactivateDrawing();
     super.update(changedProperties);
   }
 
@@ -226,6 +224,10 @@ export class NgmSlicer extends LitElementI18n {
     NavToolsStore.hideTargetPoint();
     const scene = MainStore.viewerValue!.scene;
     flyToGeom(scene, entity, -(Math.PI / 4), 2);
+  }
+
+  get sceneSlicingActive() {
+    return (this.slicer?.active && !this.sliceGeomId) || this.slicer?.draw.active;
   }
 
   sliceOptionsTemplate(options) {

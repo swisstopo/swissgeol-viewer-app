@@ -232,7 +232,7 @@ export class NgmGstInteraction extends LitElementI18n {
 
   render() {
     return html`
-      <ngm-draw-section .enabledTypes=${['line', 'rectangle', 'point']}></ngm-draw-section>
+      <ngm-draw-section ?hidden=${this.hidden} .enabledTypes=${['line', 'rectangle', 'point']}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
         .selectedId=${this.selectedId}
