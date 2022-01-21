@@ -17,6 +17,7 @@ export default class NgmGeometriesList extends LitElementI18n {
   @state() geometries: NgmGeometry[] = [];
   @state() editingEnabled = false;
   @state() selectedFilter: GeometryTypes | undefined;
+  private scrollDown = false;
 
   constructor() {
     super();
@@ -36,8 +37,17 @@ export default class NgmGeometriesList extends LitElementI18n {
       this.querySelectorAll('.ngm-action-menu').forEach(el => $(el).dropdown());
     }
 
+    if (this.scrollDown) {
+      this.parentElement!.scrollTop = this.parentElement!.scrollHeight;
+      this.scrollDown = false;
+    }
+
     if (geoms && geoms.length < this.geometries.length) {
       const newGeometries = this.geometries.filter(leftValue => !geoms.some(rightValue => leftValue.id === rightValue.id));
+      if (newGeometries.length) {
+        this.selectedFilter = undefined;
+        this.scrollDown = true;
+      }
       this.dispatchEvent(new CustomEvent('geometriesadded', {detail: {newGeometries}}));
     }
 
