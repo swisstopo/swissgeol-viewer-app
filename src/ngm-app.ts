@@ -351,7 +351,7 @@ export class NgmApp extends LitElementI18n {
                                    .viewer=${this.viewer}
                                    @close=${() => this.showCamConfig = false}>
             </ngm-cam-configuration>
-            <ngm-project-popup class="ngm-floating-window"
+            <ngm-project-popup class="ngm-floating-window ${classMap({'compact': this.mobileView})}"
                                .hidden=${!this.showProjectPopup}
                                @close=${() => this.showProjectPopup = false}>
             </ngm-project-popup>
