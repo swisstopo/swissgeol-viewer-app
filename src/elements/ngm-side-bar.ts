@@ -48,7 +48,7 @@ export class SideBar extends LitElementI18n {
   @state() showHeader = false;
   @state() globeQueueLength_ = 0;
   @state() mobileShowAll = false;
-  @state() showDataCatalog = true;
+  @state() hideDataDisplayed = false;
   @state() layerOrderChangeActive = false;
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder') toastPlaceholder;
   private viewer: Viewer | null = null;
@@ -117,12 +117,12 @@ export class SideBar extends LitElementI18n {
                 clientId='6brvjsufv7fdubr12r9u0gajnj'
       ></ngm-auth>`;
     const dataMobileHeader = html`
-      <div @click=${() => this.showDataCatalog = true}
-           class="ngm-data-catalog-label ${classMap({active: this.showDataCatalog})}">
+      <div @click=${() => this.hideDataDisplayed = true}
+           class="ngm-data-catalog-label ${classMap({active: this.hideDataDisplayed})}">
         ${i18next.t('lyr_geocatalog_label')}
       </div>
-      <div @click=${() => this.showDataCatalog = false}
-           class="ngm-data-catalog-label ${classMap({active: !this.showDataCatalog})}">
+      <div @click=${() => this.hideDataDisplayed = false}
+           class="ngm-data-catalog-label ${classMap({active: !this.hideDataDisplayed})}">
         ${i18next.t('dtd_displayed_data_label')}
       </div>`;
 
@@ -177,11 +177,15 @@ export class SideBar extends LitElementI18n {
       </div>
       <ngm-dashboard ?hidden=${this.activePanel !== 'dashboard'} @close=${() => this.activePanel = ''}
                      class="ngm-side-bar-panel ngm-large-panel"></ngm-dashboard>
-      <div .hidden=${this.activePanel !== 'data' || (this.mobileView && !this.showDataCatalog)}
+      <div .hidden=${this.activePanel !== 'data' || (this.mobileView && !this.hideDataDisplayed)}
            class="ngm-side-bar-panel ngm-layer-catalog">
         <div class="ngm-panel-header">
           ${this.mobileView ? dataMobileHeader : i18next.t('lyr_geocatalog_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+        </div>
+        <div ?hidden=${this.mobileView} class="ngm-label-btn ngm-configure-data ${classMap({active: !this.hideDataDisplayed})}"
+             @click=${() => this.hideDataDisplayed = !this.hideDataDisplayed}>
+          ${i18next.t('dtd_configure_data_btn')}
         </div>
         <ngm-catalog class="ui accordion ngm-panel-content" .layers=${this.catalogLayers}
                      @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
@@ -212,15 +216,16 @@ export class SideBar extends LitElementI18n {
           </div>
         </div>
       </div>
-      <div .hidden=${this.activePanel !== 'data' || (this.mobileView && this.showDataCatalog)}
+      <div .hidden=${this.activePanel !== 'data' || this.hideDataDisplayed}
            class="ngm-side-bar-panel ngm-extension-panel">
         <div class="ngm-panel-header">
           ${this.mobileView ? dataMobileHeader : i18next.t('dtd_displayed_data_label')}
-          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+          <div class="ngm-close-icon"
+               @click=${() => this.mobileView ? this.activePanel = '' : this.hideDataDisplayed = true}></div>
         </div>
         <div class="ngm-toast-placeholder"></div>
         <div class="ngm-panel-content">
-          <div class="ngm-change-order-btn ${classMap({active: this.layerOrderChangeActive})}"
+          <div class="ngm-label-btn ${classMap({active: this.layerOrderChangeActive})}"
                @click=${this.toggleLayerOrderChange}>
             ${i18next.t('dtd_change_order_label')}
           </div>
@@ -257,6 +262,7 @@ export class SideBar extends LitElementI18n {
       return;
     }
     this.activePanel = panelName;
+    if (this.activePanel === 'data' && !this.mobileView) this.hideDataDisplayed = false;
   }
 
   async syncActiveLayers() {
