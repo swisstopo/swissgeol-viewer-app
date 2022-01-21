@@ -136,7 +136,7 @@ export class LayerTreeItem extends LitElementI18n {
 
   render() {
     return html`
-      <div ?hidden=${!this.changeOrderActive} class="ngm-checkbox ${this.movable ? 'active' : ''}"
+      <div ?hidden=${!this.changeOrderActive || this.loading > 0} class="ngm-checkbox ${this.movable ? 'active' : ''}"
            @click=${() => this.movable = !this.movable}>
         <input type="checkbox" .checked=${this.movable}>
         <span class="ngm-checkbox-icon"></span>
