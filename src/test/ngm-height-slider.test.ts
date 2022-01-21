@@ -5,7 +5,7 @@ import {heightToValue, valueToHeight} from '../elements/ngm-height-slider';
 describe('ngm-height-slider', () => {
   describe('heightToValue', () => {
     it('should return value from height', () => {
-      assert.equal(round(heightToValue(30000)), 2.68);
+      assert.equal(round(heightToValue(30000)), 2.73);
       assert.equal(round(heightToValue(0)), 1.35);
       assert.equal(round(heightToValue(-18000)), 0.54);
       assert.equal(round(heightToValue(-30000)), 0);
