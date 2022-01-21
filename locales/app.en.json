@@ -197,6 +197,7 @@
   "tbx_my_geometries": "My Geometries",
   "tbx_name_label": "Name",
   "tbx_no_data_to_download_warning": "Nothing to download",
+  "tbx_open_slicing_tool": "Click here to open slicing and save it to your geometries",
   "tbx_point_depth_label": "Depth (BGL)",
   "tbx_profile_btn": "Show height profile",
   "tbx_remove_btn_label": "Remove",
