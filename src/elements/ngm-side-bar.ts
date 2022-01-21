@@ -415,17 +415,18 @@ export class SideBar extends LitElementI18n {
     syncLayersParam(this.activeLayers);
   }
 
-  onRemoveDisplayedLayer(evt) {
+  async onRemoveDisplayedLayer(evt) {
     const {config, idx} = evt.detail;
     this.activeLayers.splice(idx, 1);
-    this.removeLayer(config);
+    await this.removeLayer(config);
   }
 
-  removeLayerWithoutSync(config) {
+  async removeLayerWithoutSync(config) {
     if (config.setVisibility) {
       config.setVisibility(false);
     } else {
-      this.viewer!.dataSources.getByName(config.promise.name)[0].show = false;
+      const c = await config.promise;
+      this.viewer!.dataSources.getByName(c.name)[0].show = false;
     }
     config.visible = false;
     config.displayed = false;
@@ -434,8 +435,8 @@ export class SideBar extends LitElementI18n {
     }
   }
 
-  removeLayer(config) {
-    this.removeLayerWithoutSync(config);
+  async removeLayer(config) {
+    await this.removeLayerWithoutSync(config);
     this.viewer!.scene.requestRender();
     syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];
