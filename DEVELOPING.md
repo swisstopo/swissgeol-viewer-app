@@ -39,11 +39,10 @@ scripts/deploy_to_prod.sh
 
 ## Deploy to prod-viewer (from local machine)
 ```bash
-RELEASE_NAME="RELEASE_NAME_FOR_SENTRY" npm run build
-
 export VERSION="THE_TAG_YOU_WANT_DEPLOYED"
-
 git checkout $VERSION
+RELEASE_NAME="prod_$VERSION" npm run build
+
 # use gopass to export the S3 access key and secret
 export AWS_REGION=eu-west-1
 export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
@@ -53,7 +52,7 @@ scripts/deploy_to_prod_viewer.sh
 [ $? -eq 0 ] && echo OK || echo failed
 ```
 
-* Check the site is upgraded: https://test.viewer.swissgeol.ch/versions.json
+* Check the site is upgraded: https://viewer.swissgeol.ch/versions.json
 
 
 ## i18n: add new string to translate
