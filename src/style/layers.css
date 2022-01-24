@@ -5,7 +5,6 @@
 
 .ngm-displayed-slider label:first-of-type {
   word-wrap: break-word;
-  display: inline;
   display: inline-block;
   max-width: 210px;
 }
