@@ -1,3 +1,4 @@
+import type {PropertyValues} from 'lit';
 import {html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
@@ -21,6 +22,7 @@ import {getSliceParam} from '../permalink';
 import {CesiumDraw} from '../draw/CesiumDraw';
 import DrawStore from '../store/draw';
 import {GeometryController} from './GeometryController';
+import {showSnackbarInfo} from '../notifications';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
@@ -34,6 +36,7 @@ export class NgmToolbox extends LitElementI18n {
   private julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;
   private geometryController: GeometryController | undefined;
+  private forceSlicingToolOpen = false;
 
   constructor() {
     super();
@@ -57,29 +60,50 @@ export class NgmToolbox extends LitElementI18n {
           this.viewer!.scene.requestRender();
         });
         this.draw.addEventListener('leftdown', () => {
-          const volumeShowedProp = getValueOrUndefined(this.draw!.entityForEdit.properties.volumeShowed);
-          const type = getValueOrUndefined(this.draw!.entityForEdit.properties.type);
+          const volumeShowedProp = getValueOrUndefined(this.draw!.entityForEdit!.properties!.volumeShowed);
+          const type = getValueOrUndefined(this.draw!.entityForEdit!.properties!.type);
           if (volumeShowedProp && type !== 'point') {
-            this.draw!.entityForEdit.polylineVolume.show = false; // to avoid jumping when mouse over entity
+            this.draw!.entityForEdit!.polylineVolume!.show = <any>false; // to avoid jumping when mouse over entity
+            if (type === 'line')
+              this.draw!.entityForEdit!.polyline!.show = <any>true;
+            else
+              this.draw!.entityForEdit!.polygon!.show = <any>true;
             this.viewer!.scene.requestRender();
           }
         });
         this.draw.addEventListener('leftup', () => {
-          if (getValueOrUndefined(this.draw!.entityForEdit.properties.type) === 'point') {
-            updateBoreholeHeights(this.draw!.entityForEdit, this.julianDate);
-          } else if (getValueOrUndefined(this.draw!.entityForEdit.properties.volumeShowed)) {
-            updateEntityVolume(this.draw!.entityForEdit, this.viewer!.scene.globe);
+          if (getValueOrUndefined(this.draw!.entityForEdit!.properties!.type) === 'point') {
+            updateBoreholeHeights(this.draw!.entityForEdit!, this.julianDate);
+          } else if (getValueOrUndefined(this.draw!.entityForEdit!.properties!.volumeShowed)) {
+            updateEntityVolume(this.draw!.entityForEdit!, this.viewer!.scene.globe);
           }
         });
         DrawStore.setDraw(this.draw);
       }
     });
+
+    const sliceOptions = getSliceParam();
+    if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
+      this.activeTool = 'slicing';
+      this.forceSlicingToolOpen = true;
+    }
   }
 
-  firstUpdated() {
-    const sliceOptions = getSliceParam();
-    if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints)
-      this.activeTool = 'slicing';
+  protected update(changedProperties: PropertyValues) {
+    const resumeSlicing = !this.slicerElement || (this.forceSlicingToolOpen && this.slicerElement?.sceneSlicingActive);
+    if (!resumeSlicing && changedProperties.has('toolsHidden') && !this.toolsHidden) {
+      if (this.activeTool === 'slicing' && this.slicerElement) {
+        this.slicerElement.slicer?.deactivateDrawing();
+        if (this.slicerElement.slicingEnabled) {
+          this.slicerElement.toggleSlicer();
+        }
+      }
+      this.activeTool = undefined;
+      document.querySelector('.ngm-open-slicing-toast')?.parentElement?.remove();
+    }
+    else if (this.forceSlicingToolOpen)
+      this.forceSlicingToolOpen = false;
+    super.update(changedProperties);
   }
 
   updated() {
@@ -134,12 +158,27 @@ export class NgmToolbox extends LitElementI18n {
     this.activeTool = undefined;
   }
 
+  onClose() {
+    if (this.slicerElement?.sceneSlicingActive) {
+      showSnackbarInfo(i18next.t('tbx_open_slicing_tool'), {
+        displayTime: 0,
+        class: 'ngm-open-slicing-toast',
+        onClick: () => {
+          this.forceSlicingToolOpen = true;
+          this.dispatchEvent(new CustomEvent('open'));
+          return true;
+        }
+      });
+    }
+    this.dispatchEvent(new CustomEvent('close'));
+  }
+
   render() {
     return html`
       <div class="ngm-panel-header">
         <div ?hidden=${!this.activeTool} class="ngm-back-icon" @click=${this.onBackClick}></div>
         ${i18next.t(this.activeTool ? `tbx_${this.activeTool}` : 'lsb_tools')}
-        <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
+        <div class="ngm-close-icon" @click=${() => this.onClose()}></div>
       </div>
       <div class="ngm-tools-list" .hidden="${this.activeTool}">
         <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'draw'}>
@@ -160,11 +199,9 @@ export class NgmToolbox extends LitElementI18n {
         </div>
       </div>
       <div class="ngm-toast-placeholder"></div>
-      <ngm-draw-tool .hidden="${this.activeTool !== 'draw'}"
-                     .drawerHidden="${this.activeTool !== 'draw' || this.toolsHidden}">
+      <ngm-draw-tool ?hidden="${this.activeTool !== 'draw'}">
       </ngm-draw-tool>
-      <ngm-slicer .hidden=${this.activeTool !== 'slicing'}
-                  .slicerHidden="${this.activeTool !== 'slicing' || this.toolsHidden}"
+      <ngm-slicer ?hidden=${this.activeTool !== 'slicing'}
                   .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>
       <ngm-gst-interaction ?hidden="${this.activeTool !== 'gst'}"></ngm-gst-interaction>
       <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>

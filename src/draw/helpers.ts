@@ -5,12 +5,9 @@ import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
 import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
 import i18next from 'i18next';
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import type {GeometryTypes} from '../toolbox/interfaces';
 
-/**
- * @param {import('./CesiumDraw').ShapeType} type
- * @param {Array<number>} distances
- */
-export function getDimensionLabelText(type, distances) {
+export function getDimensionLabelText(type: GeometryTypes, distances: number[]) {
   let text;
   if (type === 'rectangle') {
     text = `${Number(distances[0]).toFixed(3)}km x ${Number(distances[1]).toFixed(3)}km`;
@@ -21,11 +18,7 @@ export function getDimensionLabelText(type, distances) {
   return text.includes('undefined') ? '' : text;
 }
 
-/**
- * @param {import('./CesiumDraw').ShapeType} type
- * @param {Array<number>} distances
- */
-export function getDimensionLabel(type, distances) {
+export function getDimensionLabel(type: GeometryTypes, distances: number[]) {
   return {
     text: getDimensionLabelText(type, distances),
     font: '8pt arial',
@@ -46,7 +39,7 @@ const scratchAM = new Cartesian3();
 const scratchAP = new Cartesian3();
 const scratchBP = new Cartesian3();
 
-export function rectanglify(coordinates) {
+export function rectanglify(coordinates: Cartesian3[]) {
   if (coordinates.length === 3) {
     // A and B are the base of the triangle, C is the point currently moving:
     //

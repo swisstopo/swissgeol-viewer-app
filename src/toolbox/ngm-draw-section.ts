@@ -17,6 +17,7 @@ export class NgmDrawSection extends LitElementI18n {
   // show all draw types if undefined or passed types
   @property({type: Array}) enabledTypes: GeometryTypes[] | undefined;
   @property({type: Boolean}) showUpload = true;
+  @property({type: Boolean}) hidden = true;
   private draw: CesiumDraw | undefined;
   private drawGeometries = [
     {label: () => i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},
@@ -39,6 +40,10 @@ export class NgmDrawSection extends LitElementI18n {
     if (changedProperties.has('enabledTypes') && this.enabledTypes) {
       this.shownDrawTypes = this.drawGeometries.filter(geom => this.enabledTypes!.includes(<GeometryTypes>geom.type));
     }
+    if (this.draw && changedProperties.has('hidden') && !changedProperties.get('hidden')) {
+      this.draw.active = false;
+      this.draw.clear();
+    }
     super.update(changedProperties);
   }
 
@@ -50,7 +55,7 @@ export class NgmDrawSection extends LitElementI18n {
   }
 
   render() {
-    const disabled = this.draw!.active && this.draw!.entityForEdit;
+    const disabled = !!(this.draw!.active && this.draw!.entityForEdit);
     return html`
       <div class="ngm-draw-list">
         ${this.shownDrawTypes.map(it => {

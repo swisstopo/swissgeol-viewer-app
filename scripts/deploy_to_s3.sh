@@ -53,4 +53,8 @@ $S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' --ex
 $S3_CMD sync --cache-control max-age=600 dist/Workers/ $DESTINATION/Workers
 $S3_CMD cp --cache-control no-cache dist/index.html $DESTINATION/index.html
 $S3_CMD cp --recursive --cache-control no-cache storybook-static $DESTINATION/storybook-static
-exit $?
+
+if [ "$ENV" = "prod-viewer" ]
+then
+    $S3_CMD cp --cache-control max-age=600 robots_prod.txt $DESTINATION/robots.txt
+fi

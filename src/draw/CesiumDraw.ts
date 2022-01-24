@@ -10,60 +10,51 @@ import JulianDate from 'cesium/Source/Core/JulianDate';
 import Intersections2D from 'cesium/Source/Core/Intersections2D';
 
 import {getDimensionLabel, rectanglify} from './helpers';
-import {getMeasurements} from '../cesiumutils.ts';
+import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import type {ConstantPositionProperty, ConstantProperty, Entity, Viewer} from 'cesium';
+import {PolygonHierarchy} from 'cesium';
+import type {GeometryTypes} from '../toolbox/interfaces';
 
-/**
- * @typedef {"point" | "line" | "polygon" | "rectangle"} ShapeType
- */
-
-/**
- * @typedef {object} Options
- * @property {string|Color} [strokeColor='rgba(0, 153, 255, 0.75)']
- * @property {number} [strokeWidth=4]
- * @property {string|Color} [fillColor='rgba(0, 153, 255, 0.3)']
- * @property {boolean} [minPointsStop] finish drawing when min count of points added
- */
+export interface DrawOptions {
+  fillColor: string | Color;
+  strokeColor?: string | Color;
+  strokeWidth?: number;
+  minPointsStop?: boolean;
+}
 
 export class CesiumDraw extends EventTarget {
+  private viewer_: Viewer;
+  private strokeColor_: Color;
+  private strokeWidth_: number;
+  private fillColor_: Color;
+  private eventHandler_: ScreenSpaceEventHandler | undefined;
+  private activePoints_: Cartesian3[] = [];
+  private activePoint_: Cartesian3 | undefined;
+  private sketchPoint_: Entity | undefined;
+  private activeDistance_ = 0;
+  private activeDistances_: number[] = [];
+  private leftPressedPixel_: Cartesian2 | undefined;
+  private sketchPoints_: Entity[] = [];
+  type: GeometryTypes;
+  julianDate = new JulianDate();
+  drawingDataSource = new CustomDataSource('drawing');
+  minPointsStop: boolean;
+  moveEntity = false;
+  entityForEdit: Entity | undefined;
+  ERROR_TYPES = {needMorePoints: 'need_more_points'};
 
-  /**
-   * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
-   * @param {ShapeType} type
-   * @param {Options} [options]
-   */
-  constructor(viewer, type, options = {}) {
+  constructor(viewer: Viewer, type: GeometryTypes, options: DrawOptions) {
     super();
     this.viewer_ = viewer;
     this.type = type;
-    this.julianDate = new JulianDate();
-
-    this.drawingDataSource = new CustomDataSource('drawing');
     this.viewer_.dataSources.add(this.drawingDataSource);
-
     this.strokeColor_ = options.strokeColor instanceof Color ?
       options.strokeColor : Color.fromCssColorString(options.strokeColor || 'rgba(0, 153, 255, 0.75)');
     this.strokeWidth_ = options.strokeWidth !== undefined ? options.strokeWidth : 4;
     this.fillColor_ = options.fillColor instanceof Color ?
       options.fillColor : Color.fromCssColorString(options.fillColor || 'rgba(0, 153, 255, 0.3)');
     this.minPointsStop = !!options.minPointsStop;
-
-    this.eventHandler_ = undefined;
-    this.activePoints_ = [];
-    this.activePoint_ = undefined;
-    this.activeEntity_ = undefined;
-    this.sketchPoint_ = undefined;
-    this.sketchLine_ = undefined;
-    this.activeDistance_ = 0;
-    this.activeDistances_ = [];
-    this.entityForEdit = undefined;
-    this.leftPressedPixel_ = undefined;
-    this.moveEntity = false;
-    this.sketchPoints_ = [];
-
-    this.entities_ = [];
-
-    this.ERROR_TYPES = {needMorePoints: 'need_more_points'};
   }
 
   renderSceneIfTranslucent() {
@@ -106,23 +97,31 @@ export class CesiumDraw extends EventTarget {
   }
 
   activateEditing() {
+    if (!this.eventHandler_ || !this.entityForEdit) return;
     this.eventHandler_.setInputAction(event => this.onLeftDown_(event), ScreenSpaceEventType.LEFT_DOWN);
     this.eventHandler_.setInputAction(event => this.onLeftUp_(event), ScreenSpaceEventType.LEFT_UP);
-    let positions = [];
+    const position = this.entityForEdit.position?.getValue(this.julianDate);
+    let positions: Cartesian3[] = [];
     let createVirtualSPs = false;
     switch (this.type) {
+      case 'point':
+        this.entityForEdit.position = <any> new CallbackProperty(() => this.activePoints_[0] || position, false);
+        break;
       case 'line':
-        positions = [...this.entityForEdit.polyline.positions.getValue()];
+        positions = [...this.entityForEdit.polyline!.positions!.getValue(this.julianDate)];
+        this.entityForEdit.polyline!.positions = new CallbackProperty(() => this.activePoints_, false);
         createVirtualSPs = true;
         break;
       case 'polygon':
-        positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
+        positions = [...this.entityForEdit.polygon!.hierarchy!.getValue(this.julianDate).positions];
+        this.entityForEdit.polygon!.hierarchy = new CallbackProperty(() => new PolygonHierarchy(this.activePoints_), false);
         createVirtualSPs = true;
         break;
       case 'rectangle':
-        positions = [...this.entityForEdit.polygon.hierarchy.getValue().positions];
+        positions = [...this.entityForEdit.polygon!.hierarchy!.getValue(this.julianDate).positions];
+        this.entityForEdit.polygon!.hierarchy = new CallbackProperty(() => new PolygonHierarchy(this.activePoints_), false);
         this.drawingDataSource.entities.add({
-          position: new CallbackProperty(() => {
+          position: <any> new CallbackProperty(() => {
             positions = this.activePoints_.length ? this.activePoints_ : positions;
             return Cartesian3.midpoint(positions[0], positions[1], new Cartesian3());
           }, false),
@@ -143,12 +142,12 @@ export class CesiumDraw extends EventTarget {
     positions.forEach((p, idx) => {
       this.activePoints_.push(p);
       const sketchPoint = this.createSketchPoint_(p, {edit: true, positionIndex: idx});
-      sketchPoint.properties.index = idx;
+      sketchPoint.properties!.index = idx;
       this.sketchPoints_.push(sketchPoint);
       if (createVirtualSPs && (idx + 1) < positions.length) {
         const p2 = this.halfwayPosition_(p, positions[idx + 1]);
         const virtualSketchPoint = this.createSketchPoint_(p2, {edit: true, virtual: true});
-        virtualSketchPoint.properties.index = idx;
+        virtualSketchPoint.properties!.index = idx;
         this.sketchPoints_.push(virtualSketchPoint);
       }
     });
@@ -157,15 +156,12 @@ export class CesiumDraw extends EventTarget {
       const lastIdx = positions.length - 1;
       const p2 = this.halfwayPosition_(positions[lastIdx], positions[0]);
       const virtualSketchPoint = this.createSketchPoint_(p2, {edit: true, virtual: true});
-      virtualSketchPoint.properties.index = lastIdx;
+      virtualSketchPoint.properties!.index = lastIdx;
       this.sketchPoints_.push(virtualSketchPoint);
     }
     this.viewer_.scene.requestRender();
   }
 
-  /**
-   *
-   */
   finishDrawing() {
     let positions = this.activePoints_;
     if ((this.type === 'polygon' || this.type === 'rectangle') && positions.length < 3) {
@@ -177,17 +173,17 @@ export class CesiumDraw extends EventTarget {
       return;
     }
     if (this.type === 'point') {
-      positions.push(this.activePoint_);
-      this.entities_.push(this.drawShape_(this.activePoint_));
+      positions.push(this.activePoint_!);
+      this.drawShape_(this.activePoint_);
     } else if (this.type === 'rectangle') {
       positions = rectanglify(this.activePoints_);
-      this.entities_.push(this.drawShape_(positions));
+      this.drawShape_(positions);
     } else {
       if (this.type === 'polygon') {
         const distance = Cartesian3.distance(this.activePoints_[this.activePoints_.length - 1], this.activePoints_[0]);
         this.activeDistances_.push(distance / 1000);
       }
-      this.entities_.push(this.drawShape_(this.activePoints_));
+      this.drawShape_(this.activePoints_);
     }
     this.viewer_.scene.requestRender();
 
@@ -208,9 +204,7 @@ export class CesiumDraw extends EventTarget {
 
     this.activePoints_ = [];
     this.activePoint_ = undefined;
-    this.activeEntity_ = undefined;
     this.sketchPoint_ = undefined;
-    this.sketchLine_ = undefined;
     this.activeDistance_ = 0;
     this.activeDistances_ = [];
     this.entityForEdit = undefined;
@@ -226,15 +220,15 @@ export class CesiumDraw extends EventTarget {
     this.removeSketches();
   }
 
-  createSketchPoint_(position, options = {}) {
-    const entity = {
+  createSketchPoint_(position, options: { edit?: boolean, virtual?: boolean, positionIndex?: number } = {}) {
+    const entity: any = {
       position: position,
       point: {
         color: options.virtual ? Color.GREY : Color.WHITE,
         outlineWidth: 1,
         outlineColor: Color.BLACK,
         pixelSize: options.edit ? 9 : 5,
-        heightReference: HeightReference.CLAMP_TO_GROUND
+        heightReference: HeightReference.CLAMP_TO_GROUND,
       },
       properties: {}
     };
@@ -244,7 +238,7 @@ export class CesiumDraw extends EventTarget {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
     const pointEntity = this.drawingDataSource.entities.add(entity);
-    pointEntity.properties.virtual = options.virtual;
+    pointEntity.properties!.virtual = options.virtual;
     return pointEntity;
   }
 
@@ -261,7 +255,7 @@ export class CesiumDraw extends EventTarget {
 
   drawShape_(positions) {
     if (this.type === 'point') {
-      return this.drawingDataSource.entities.add({
+      this.drawingDataSource.entities.add({
         position: positions,
         point: {
           color: this.fillColor_,
@@ -273,7 +267,7 @@ export class CesiumDraw extends EventTarget {
       });
 
     } else if (this.type === 'line') {
-      return this.drawingDataSource.entities.add({
+      this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polyline: {
           positions: positions,
@@ -284,7 +278,7 @@ export class CesiumDraw extends EventTarget {
         label: getDimensionLabel(this.type, this.activeDistances_)
       });
     } else if (this.type === 'polygon' || this.type === 'rectangle') {
-      return this.drawingDataSource.entities.add({
+      this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polygon: {
           hierarchy: positions,
@@ -313,6 +307,7 @@ export class CesiumDraw extends EventTarget {
   }
 
   updateSketchPoint() {
+    if (!this.sketchPoint_) return;
     const activePoints = [...this.activePoints_, this.activePoint_];
     const positions = this.type === 'rectangle' ? rectanglify(activePoints) : activePoints;
     const pointsLength = positions.length;
@@ -322,17 +317,17 @@ export class CesiumDraw extends EventTarget {
         const b = positions[1]; //according to rectanglify
         const bp = positions[2];
         distance = Cartesian3.distance(b, bp);
-        this.sketchPoint_.position.setValue(bp);
+        (<ConstantPositionProperty> this.sketchPoint_.position).setValue(bp);
       } else {
         const lastPoint = positions[pointsLength - 1];
         distance = Cartesian3.distance(positions[pointsLength - 2], lastPoint);
-        this.sketchPoint_.position.setValue(lastPoint);
+        (<ConstantPositionProperty> this.sketchPoint_.position).setValue(lastPoint);
       }
       this.activeDistance_ = distance / 1000;
-      this.sketchPoint_.label.text.setValue(`${this.activeDistance_.toFixed(3)}km`);
+      (<ConstantProperty> this.sketchPoint_.label!.text).setValue(`${this.activeDistance_.toFixed(3)}km`);
       return;
     }
-    this.sketchPoint_.label.text.setValue('0km');
+    (<ConstantProperty> this.sketchPoint_.label!.text).setValue('0km');
   }
 
   onLeftClick_(event) {
@@ -344,7 +339,7 @@ export class CesiumDraw extends EventTarget {
         this.sketchPoint_ = this.createSketchPoint_(position);
         this.activePoint_ = position;
 
-        this.sketchLine_ = this.createSketchLine_(this.dynamicSketLinePositions());
+        this.createSketchLine_(this.dynamicSketLinePositions());
         this.viewer_.scene.requestRender();
         if (this.type === 'point') {
           this.activePoints_.push(position);
@@ -354,7 +349,7 @@ export class CesiumDraw extends EventTarget {
       } else if (!this.activeDistances_.includes(this.activeDistance_)) {
         this.activeDistances_.push(this.activeDistance_);
       }
-      this.activePoints_.push(Cartesian3.clone(this.activePoint_));
+      this.activePoints_.push(Cartesian3.clone(this.activePoint_!));
       const forceFinish = this.minPointsStop && (
         (this.type === 'polygon' && this.activePoints_.length === 3) ||
         (this.type === 'line' && this.activePoints_.length === 2)
@@ -406,10 +401,9 @@ export class CesiumDraw extends EventTarget {
       positions[indx] = Cartographic.toCartesian(new Cartographic(lon, lat));
     });
     this.sketchPoints_.forEach((sp, key) => {
-      sp.position = positions[key];
+      sp.position = <any>positions[key];
       this.activePoints_[key] = positions[key];
     });
-    this.entityForEdit.polygon.hierarchy = {positions};
     this.viewer_.scene.requestRender();
   }
 
@@ -420,53 +414,50 @@ export class CesiumDraw extends EventTarget {
     if (this.entityForEdit && !!this.leftPressedPixel_) {
       if (this.moveEntity) {
         if (this.type === 'point') {
-          const cartographicPosition = Cartographic.fromCartesian(this.entityForEdit.position.getValue(this.julianDate));
-          const updatedCartographicPosition = Cartographic.fromCartesian(position);
-          // save height after move
-          updatedCartographicPosition.height = cartographicPosition.height;
-          this.entityForEdit.position = Cartographic.toCartesian(updatedCartographicPosition);
+          const cartographicPosition = Cartographic.fromCartesian(this.entityForEdit.position!.getValue(this.julianDate));
+          this.activePoints_[0] = position;
+          updateHeightForCartesianPositions(this.activePoints_, cartographicPosition.height, undefined, true);
         } else {
-          const pointProperties = this.sketchPoint_.properties;
+          const pointProperties = this.sketchPoint_!.properties!;
           const index = pointProperties.index;
           let prevPosition = new Cartesian3();
           if (typeof index === 'number') {
-            this.sketchPoint_.position = position;
+            this.sketchPoint_!.position = <any>position;
             prevPosition = Cartesian3.clone(this.activePoints_[index]);
             this.activePoints_[index] = position;
           }
           if (this.type === 'polygon') {
             // move virtual SPs
-            const idx = this.sketchPoint_.properties.index;
+            const idx = this.sketchPoint_!.properties!.index;
             const spLen = this.sketchPoints_.length;
             const prevRealSPIndex = ((spLen + idx - 1) * 2) % spLen;
             const prevRealSP = this.sketchPoints_[prevRealSPIndex];
             const prevVirtualPosition = this.halfwayPosition_(prevRealSP, this.sketchPoint_);
-            this.sketchPoints_[prevRealSPIndex + 1].position = prevVirtualPosition;
+            this.sketchPoints_[prevRealSPIndex + 1].position = <any>prevVirtualPosition;
 
             const nextRealSPIndex = ((spLen + idx + 1) * 2) % spLen;
             const nextRealSP = this.sketchPoints_[nextRealSPIndex];
             const nextVirtualPosition = this.halfwayPosition_(nextRealSP, this.sketchPoint_);
-            this.sketchPoints_[idx * 2 + 1].position = nextVirtualPosition;
+            this.sketchPoints_[idx * 2 + 1].position = <any>nextVirtualPosition;
           }
           if (this.type === 'line') {
             // move virtual SPs
-            const idx = this.sketchPoint_.properties.index;
+            const idx = this.sketchPoint_!.properties!.index;
             if (idx > 0) {
               const prevRealSP = this.sketchPoints_[(idx - 1) * 2];
               const prevVirtualPosition = this.halfwayPosition_(prevRealSP, this.sketchPoint_);
-              this.sketchPoints_[(idx - 1) * 2 + 1].position = prevVirtualPosition;
+              this.sketchPoints_[(idx - 1) * 2 + 1].position = <any>prevVirtualPosition;
             }
             if (idx < (this.activePoints_.length - 1)) {
               const nextRealSP = this.sketchPoints_[(idx + 1) * 2];
               const nextVirtualPosition = this.halfwayPosition_(nextRealSP, this.sketchPoint_);
-              this.sketchPoints_[(idx + 1) * 2 - 1].position = nextVirtualPosition;
+              this.sketchPoints_[(idx + 1) * 2 - 1].position = <any>nextVirtualPosition;
             }
-            this.entityForEdit.polyline.positions = this.activePoints_;
           } else {
             const positions = this.activePoints_;
             if (this.type === 'rectangle') {
               if (pointProperties.type && pointProperties.type.getValue() === 'rotate') {
-                const oldPosition = this.sketchPoint_.position.getValue();
+                const oldPosition = this.sketchPoint_!.position!.getValue(this.julianDate);
                 this.rotateRectangle(oldPosition, position);
                 return;
               }
@@ -484,7 +475,7 @@ export class CesiumDraw extends EventTarget {
               const midDistPrev = Cartesian3.distance(prevPosition, midPointPrev);
               const midScale = midDist / midDistPrev;
 
-              const negate = this.checkForNegateMove(draggedPoint, oppositePoint, leftPoint, rightPoint, prevPosition);
+              const negate = this.checkForNegateMove(draggedPoint, oppositePoint, leftPoint, rightPoint);
               leftPoint = this.updateRectCorner(leftPoint, oppositePoint, midPoint, midPointPrev, midScale, negate.left);
               rightPoint = this.updateRectCorner(rightPoint, oppositePoint, midPoint, midPointPrev, midScale, negate.right);
 
@@ -496,10 +487,9 @@ export class CesiumDraw extends EventTarget {
               positions[leftIndex] = leftPoint;
               positions[rightIndex] = rightPoint;
               this.sketchPoints_.forEach((sp, key) => {
-                sp.position = positions[key];
+                sp.position = <any>positions[key];
               });
             }
-            this.entityForEdit.polygon.hierarchy = {positions};
           }
         }
       }
@@ -535,17 +525,17 @@ export class CesiumDraw extends EventTarget {
         const properties = selectedEntity.properties;
         // checks if picked entity is point geometry or one of the sketch points for other geometries
         this.moveEntity = selectedEntity.id === this.entityForEdit.id ||
-          !!this.sketchPoints_.some(sp => sp.id === selectedEntity.id) ||
+          this.sketchPoints_.some(sp => sp.id === selectedEntity.id) ||
           (properties && properties.type && properties.type.getValue() === 'rotate');
-        if (this.moveEntity && this.sketchPoint_.properties.virtual) {
+        if (this.moveEntity && this.sketchPoint_?.properties!.virtual) {
           this.extendOrSplitLineOrPolygonPositions_();
         }
       }
       if (this.moveEntity) {
         this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
+        this.dispatchEvent(new CustomEvent('leftdown'));
       }
     }
-    this.dispatchEvent(new CustomEvent('leftdown'));
   }
 
   /**
@@ -567,9 +557,9 @@ export class CesiumDraw extends EventTarget {
   extendOrSplitLineOrPolygonPositions_() {
     // Add new line vertex
     // Create SPs, reuse the pressed virtual SP for first segment
-    const pressedVirtualSP = this.sketchPoint_;
-    const pressedPosition = Cartesian3.clone(pressedVirtualSP.position.getValue(this.julianDate));
-    const pressedIdx = pressedVirtualSP.properties.index;
+    const pressedVirtualSP = this.sketchPoint_!;
+    const pressedPosition = Cartesian3.clone(pressedVirtualSP.position!.getValue(this.julianDate));
+    const pressedIdx = pressedVirtualSP.properties!.index;
     const realSP0 = this.sketchPoints_[pressedIdx * 2];
     const realSP2 = this.sketchPoints_[((pressedIdx + 1) * 2) % (this.sketchPoints_.length)];
     const virtualPosition0 = this.halfwayPosition_(realSP0, pressedPosition);
@@ -577,32 +567,17 @@ export class CesiumDraw extends EventTarget {
     const realSP1 = this.createSketchPoint_(pressedPosition, {edit: true});
     const virtualSP1 = this.createSketchPoint_(virtualPosition1, {edit: true, virtual: true});
     const virtualSP0 = pressedVirtualSP; // the pressed SP is reused
-    virtualSP0.position = virtualPosition0; // but its position is changed
+    virtualSP0.position = <any>virtualPosition0; // but its position is changed
 
     this.insertVertexToPolylineOrPolygon_(pressedIdx + 1, pressedPosition.clone());
     this.sketchPoints_.splice((pressedIdx + 1) * 2, 0, realSP1, virtualSP1);
-    this.sketchPoints_.forEach((sp, idx) => sp.properties.index = Math.floor(idx / 2));
+    this.sketchPoints_.forEach((sp, idx) => sp.properties!.index = Math.floor(idx / 2));
     this.sketchPoint_ = realSP1;
     this.viewer_.scene.requestRender();
   }
 
   insertVertexToPolylineOrPolygon_(idx, coordinates) {
-    const e = this.entityForEdit;
     this.activePoints_.splice(idx, 0, coordinates);
-    switch (this.type) {
-      case 'polygon': {
-        const hierarchy = e.polygon.hierarchy.getValue();
-        hierarchy.positions = this.activePoints_;
-        e.polygon.hierarchy.setValue({...hierarchy});
-        break;
-      }
-      case 'line': {
-        e.polyline.positions = this.activePoints_;
-        break;
-      }
-      default:
-        break;
-    }
   }
 
   /**
@@ -614,40 +589,34 @@ export class CesiumDraw extends EventTarget {
     if (wasAClick) {
       this.onLeftDownThenUp_(event);
     }
+    if (this.moveEntity)
+      this.dispatchEvent(new CustomEvent('leftup'));
     this.moveEntity = false;
     this.leftPressedPixel_ = undefined;
     this.sketchPoint_ = undefined;
-    this.dispatchEvent(new CustomEvent('leftup'));
   }
 
-  /**
-   * @param event
-   */
-  onLeftDownThenUp_(event) {
-    const e = this.entityForEdit;
-    const sp = this.sketchPoint_;
-    if (sp && sp.properties.index !== undefined && !sp.properties.virtual) {
+  onLeftDownThenUp_(_event) {
+    const e = this.entityForEdit!;
+    if (this.sketchPoint_ && this.sketchPoint_.properties!.index !== undefined && !this.sketchPoint_.properties!.virtual) {
       // remove clicked position from the edited geometry
       let divider = 1;
       switch (this.type) {
         case 'polygon': {
-          const hierarchy = e.polygon.hierarchy.getValue();
+          const hierarchy = e.polygon!.hierarchy!.getValue(this.julianDate);
           if (hierarchy.positions.length <= 3) {
             return;
           }
-          this.activePoints_.splice(this.sketchPoint_.properties.index, 1);
-          hierarchy.positions = this.activePoints_;
-          e.polygon.hierarchy.setValue({...hierarchy});
+          this.activePoints_.splice(this.sketchPoint_.properties!.index, 1);
           divider = 2;
           break;
         }
         case 'line': {
-          const pPositions = e.polyline.positions.getValue();
+          const pPositions = e.polyline!.positions!.getValue(this.julianDate);
           if (pPositions.length <= 2) {
             return;
           }
-          this.activePoints_.splice(this.sketchPoint_.properties.index, 1);
-          e.polyline.positions = this.activePoints_;
+          this.activePoints_.splice(this.sketchPoint_.properties!.index, 1);
           divider = 2;
           break;
         }
@@ -656,7 +625,7 @@ export class CesiumDraw extends EventTarget {
       }
       // a real sketch point was clicked => remove it
       if (divider === 2) {
-        const pressedIdx = this.sketchPoint_.properties.index;
+        const pressedIdx = this.sketchPoint_.properties!.index;
         const pressedIdx2 = pressedIdx * 2;
         const isLine = this.type === 'line';
         const firstPointClicked = isLine && pressedIdx === 0;
@@ -670,7 +639,7 @@ export class CesiumDraw extends EventTarget {
           const prevVirtualSP = this.sketchPoints_[prevRealSPIndex2 + 1];
           const nextRealSP = this.sketchPoints_[nextRealSPIndex2];
           const newPosition = this.halfwayPosition_(prevRealSP, nextRealSP);
-          prevVirtualSP.position = newPosition;
+          prevVirtualSP.position = <any>newPosition;
         }
 
         let removedSPs;
@@ -681,11 +650,11 @@ export class CesiumDraw extends EventTarget {
           // remove 2 SP forward
           removedSPs = this.sketchPoints_.splice(pressedIdx2, 2);
         }
-        this.sketchPoints_.forEach((s, index) => s.properties.index = Math.floor(index / divider));
+        this.sketchPoints_.forEach((s, index) => s.properties!.index = Math.floor(index / divider));
         removedSPs.forEach(s => this.drawingDataSource.entities.remove(s));
       } else if (this.type === 'polygon' || this.type === 'line') {
-        this.sketchPoints_.splice(this.sketchPoint_.properties.index, 1);
-        this.sketchPoints_.forEach((sp, idx) => sp.properties.index = idx);
+        this.sketchPoints_.splice(this.sketchPoint_.properties!.index, 1);
+        this.sketchPoints_.forEach((sp, idx) => sp.properties!.index = idx);
         this.drawingDataSource.entities.remove(this.sketchPoint_);
       }
       this.viewer_.scene.requestRender();
@@ -712,27 +681,27 @@ export class CesiumDraw extends EventTarget {
         left: false
       };
     }
-    const intersectionArgsR = [
-      draggedPoint2D.x,
-      draggedPoint2D.y,
-      rightPoint2D.x,
-      rightPoint2D.y,
-      leftPoint2D.x,
-      leftPoint2D.y,
-      oppositePoint2D.x,
-      oppositePoint2D.y];
-    const intersectionArgsL = [
-      draggedPoint2D.x,
-      draggedPoint2D.y,
-      leftPoint2D.x,
-      leftPoint2D.y,
-      rightPoint2D.x,
-      rightPoint2D.y,
-      oppositePoint2D.x,
-      oppositePoint2D.y];
     return {
-      right: !!Intersections2D.computeLineSegmentLineSegmentIntersection(...intersectionArgsR),
-      left: !!Intersections2D.computeLineSegmentLineSegmentIntersection(...intersectionArgsL)
+      right: !!Intersections2D.computeLineSegmentLineSegmentIntersection(
+        draggedPoint2D.x,
+        draggedPoint2D.y,
+        rightPoint2D.x,
+        rightPoint2D.y,
+        leftPoint2D.x,
+        leftPoint2D.y,
+        oppositePoint2D.x,
+        oppositePoint2D.y
+      ),
+      left: !!Intersections2D.computeLineSegmentLineSegmentIntersection(
+        draggedPoint2D.x,
+        draggedPoint2D.y,
+        leftPoint2D.x,
+        leftPoint2D.y,
+        rightPoint2D.x,
+        rightPoint2D.y,
+        oppositePoint2D.x,
+        oppositePoint2D.y
+      )
     };
   }
 }

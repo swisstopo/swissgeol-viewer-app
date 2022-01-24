@@ -123,28 +123,33 @@ ngm-dashboard .ngm-divider {
 }
 
 ngm-project-popup {
+  width: 480px;
+}
+
+ngm-project-popup.compact {
   width: 260px;
 }
 
 .ngm-project-popup-content {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   box-shadow: 0 1px 3px #00000033;
   margin-bottom: 12px;
-  height: 36px;
 }
 
 .ngm-project-view-title {
-  white-space: nowrap;
-  width: 140px;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  padding: 8px 0;
+  max-width: 380px;
+}
+.compact .ngm-project-view-title {
+  max-width: 170px;
 }
 
 .ngm-project-popup-content > .ngm-play-last-icon,
 .ngm-project-popup-content > .ngm-play-icon {
   cursor: pointer;
+  margin: 4px;
 }
 
 .ngm-project-popup-content > .ngm-play-last-icon:hover,

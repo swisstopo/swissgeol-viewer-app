@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import {formatCartographicAs2DLv95} from '../projection';
+import './ngm-feature-height';
 
 class NgmCameraInformation extends LitElementI18n {
 
@@ -80,20 +81,15 @@ class NgmCameraInformation extends LitElementI18n {
           <label class="ngm-nci-value">${coordinates[1]}</label>
         </div>
         <div class="ngm-nci-direction">
-          <div>
+          <div class="ngm-nci-direction-labels">
             <div>${i18next.t('camera_position_height_label')}</div>
-            <div>${i18next.t('camera_position_angle_label')}</div>
-            <div>${i18next.t('camera_position_pitch_label')}</div>
+            <div>${i18next.t('camera_position_angle_label')}, ${i18next.t('camera_position_pitch_label')}</div>
+            <div>${i18next.t('nav_object_height_label')}</div>
           </div>
           <div>
-            <div class="ngm-nci-value ngm-nci-height">${height}</div>
-            <div class="ngm-nci-value">${angle}</div>
-            <div class="ngm-nci-value">${pitch}</div>
-          </div>
-          <div>
-            <div class="ngm-nci-value">&nbsp;m</div>
-            <div class="ngm-nci-value">°</div>
-            <div class="ngm-nci-value">°</div>
+            <div class="ngm-nci-value ngm-nci-height">${height} m</div>
+            <div class="ngm-nci-value">${angle}°, ${pitch}°</div>
+            <div class="ngm-nci-value"><ngm-feature-height .viewer=${this.viewer}></ngm-feature-height></div>
           </div>
         </div>
       `;

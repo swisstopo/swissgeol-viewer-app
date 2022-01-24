@@ -48,7 +48,7 @@ export class SideBar extends LitElementI18n {
   @state() showHeader = false;
   @state() globeQueueLength_ = 0;
   @state() mobileShowAll = false;
-  @state() showDataCatalog = true;
+  @state() hideDataDisplayed = false;
   @state() layerOrderChangeActive = false;
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder') toastPlaceholder;
   private viewer: Viewer | null = null;
@@ -79,9 +79,7 @@ export class SideBar extends LitElementI18n {
       this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
       this.syncActiveLayers();
     });
-  }
 
-  firstUpdated() {
     const sliceOptions = getSliceParam();
     if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
@@ -119,12 +117,12 @@ export class SideBar extends LitElementI18n {
                 clientId='6brvjsufv7fdubr12r9u0gajnj'
       ></ngm-auth>`;
     const dataMobileHeader = html`
-      <div @click=${() => this.showDataCatalog = true}
-           class="ngm-data-catalog-label ${classMap({active: this.showDataCatalog})}">
+      <div @click=${() => this.hideDataDisplayed = true}
+           class="ngm-data-catalog-label ${classMap({active: this.hideDataDisplayed})}">
         ${i18next.t('lyr_geocatalog_label')}
       </div>
-      <div @click=${() => this.showDataCatalog = false}
-           class="ngm-data-catalog-label ${classMap({active: !this.showDataCatalog})}">
+      <div @click=${() => this.hideDataDisplayed = false}
+           class="ngm-data-catalog-label ${classMap({active: !this.hideDataDisplayed})}">
         ${i18next.t('dtd_displayed_data_label')}
       </div>`;
 
@@ -179,18 +177,24 @@ export class SideBar extends LitElementI18n {
       </div>
       <ngm-dashboard ?hidden=${this.activePanel !== 'dashboard'} @close=${() => this.activePanel = ''}
                      class="ngm-side-bar-panel ngm-large-panel"></ngm-dashboard>
-      <div .hidden=${this.activePanel !== 'data' || (this.mobileView && !this.showDataCatalog)}
+      <div .hidden=${this.activePanel !== 'data' || (this.mobileView && !this.hideDataDisplayed)}
            class="ngm-side-bar-panel ngm-layer-catalog">
         <div class="ngm-panel-header">
           ${this.mobileView ? dataMobileHeader : i18next.t('lyr_geocatalog_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+        </div>
+        <div ?hidden=${this.mobileView} class="ngm-label-btn ngm-configure-data ${classMap({active: !this.hideDataDisplayed})}"
+             @click=${() => this.hideDataDisplayed = !this.hideDataDisplayed}>
+          ${i18next.t('dtd_configure_data_btn')}
         </div>
         <ngm-catalog class="ui accordion ngm-panel-content" .layers=${this.catalogLayers}
                      @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
         </ngm-catalog>
       </div>
       <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
-        <ngm-tools .toolsHidden=${this.activePanel !== 'tools'} @close=${() => this.activePanel = ''}></ngm-tools>
+        <ngm-tools .toolsHidden=${this.activePanel !== 'tools'}
+                   @open=${() => this.activePanel = 'tools'}
+                   @close=${() => this.activePanel = ''}></ngm-tools>
       </div>
       <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel">
         <div class="ngm-panel-header">${i18next.t('lsb_share')}
@@ -212,15 +216,16 @@ export class SideBar extends LitElementI18n {
           </div>
         </div>
       </div>
-      <div .hidden=${this.activePanel !== 'data' || (this.mobileView && this.showDataCatalog)}
+      <div .hidden=${this.activePanel !== 'data' || this.hideDataDisplayed}
            class="ngm-side-bar-panel ngm-extension-panel">
         <div class="ngm-panel-header">
           ${this.mobileView ? dataMobileHeader : i18next.t('dtd_displayed_data_label')}
-          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+          <div class="ngm-close-icon"
+               @click=${() => this.mobileView ? this.activePanel = '' : this.hideDataDisplayed = true}></div>
         </div>
         <div class="ngm-toast-placeholder"></div>
         <div class="ngm-panel-content">
-          <div class="ngm-change-order-btn ${classMap({active: this.layerOrderChangeActive})}"
+          <div class="ngm-label-btn ${classMap({active: this.layerOrderChangeActive})}"
                @click=${this.toggleLayerOrderChange}>
             ${i18next.t('dtd_change_order_label')}
           </div>
@@ -257,6 +262,7 @@ export class SideBar extends LitElementI18n {
       return;
     }
     this.activePanel = panelName;
+    if (this.activePanel === 'data' && !this.mobileView) this.hideDataDisplayed = false;
   }
 
   async syncActiveLayers() {
@@ -415,17 +421,18 @@ export class SideBar extends LitElementI18n {
     syncLayersParam(this.activeLayers);
   }
 
-  onRemoveDisplayedLayer(evt) {
+  async onRemoveDisplayedLayer(evt) {
     const {config, idx} = evt.detail;
     this.activeLayers.splice(idx, 1);
-    this.removeLayer(config);
+    await this.removeLayer(config);
   }
 
-  removeLayerWithoutSync(config) {
+  async removeLayerWithoutSync(config) {
     if (config.setVisibility) {
       config.setVisibility(false);
     } else {
-      this.viewer!.dataSources.getByName(config.promise.name)[0].show = false;
+      const c = await config.promise;
+      this.viewer!.dataSources.getByName(c.name)[0].show = false;
     }
     config.visible = false;
     config.displayed = false;
@@ -434,8 +441,8 @@ export class SideBar extends LitElementI18n {
     }
   }
 
-  removeLayer(config) {
-    this.removeLayerWithoutSync(config);
+  async removeLayer(config) {
+    await this.removeLayerWithoutSync(config);
     this.viewer!.scene.requestRender();
     syncLayersParam(this.activeLayers);
     this.catalogLayers = [...this.catalogLayers];

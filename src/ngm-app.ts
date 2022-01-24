@@ -4,7 +4,6 @@ import {html} from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
-import './elements/ngm-feature-height';
 import './elements/ngm-auth';
 import './elements/ngm-tracking-consent';
 import './elements/ngm-camera-information.js';
@@ -303,7 +302,7 @@ export class NgmApp extends LitElementI18n {
         <a id="ngm-home-link" href="" .hidden="${this.showMobileSearch}">
           <img class="hidden-mobile" src="src/images/logo-CH.svg">
           <img class="visible-mobile" src="src/images/logo-CH-small.svg">
-          <div class="logo-text visible-mobile">Swissgeol</div>
+          <div class="logo-text visible-mobile">swissgeol</div>
         </a>
         <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
           <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
@@ -352,7 +351,7 @@ export class NgmApp extends LitElementI18n {
                                    .viewer=${this.viewer}
                                    @close=${() => this.showCamConfig = false}>
             </ngm-cam-configuration>
-            <ngm-project-popup class="ngm-floating-window"
+            <ngm-project-popup class="ngm-floating-window ${classMap({'compact': this.mobileView})}"
                                .hidden=${!this.showProjectPopup}
                                @close=${() => this.showProjectPopup = false}>
             </ngm-project-popup>

@@ -18,6 +18,7 @@ export interface Config extends LayerTreeNode {
   setOpacity?: (number) => void;
   promise?: Promise<any>;
   notSaveToPermalink?: boolean;
+  ownKml?: boolean;
 }
 
 @customElement('ngm-layers-item')
@@ -135,7 +136,7 @@ export class LayerTreeItem extends LitElementI18n {
 
   render() {
     return html`
-      <div ?hidden=${!this.changeOrderActive} class="ngm-checkbox ${this.movable ? 'active' : ''}"
+      <div ?hidden=${!this.changeOrderActive || this.loading > 0} class="ngm-checkbox ${this.movable ? 'active' : ''}"
            @click=${() => this.movable = !this.movable}>
         <input type="checkbox" .checked=${this.movable}>
         <span class="ngm-checkbox-icon"></span>
@@ -155,7 +156,7 @@ export class LayerTreeItem extends LitElementI18n {
       <div class="ngm-displayed-slider">
         <label class="ngm-layer-label">
           <i class=${this.config.restricted ? 'lock icon' : ''}></i>
-          ${i18next.t(this.config.label)}
+          ${i18next.t(this.config.label)} ${this.config.ownKml ? `(${i18next.t('dtd_own_kml_tag')})` : ''}
         </label>
         <label ?hidden=${!this.config.setOpacity}>${(this.config.opacity! * 100).toFixed()} %</label>
         <input type="range" class="ngm-slider" ?hidden=${!this.config.setOpacity}

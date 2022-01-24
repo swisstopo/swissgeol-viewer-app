@@ -1,5 +1,4 @@
 import {html} from 'lit';
-import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
@@ -86,9 +85,7 @@ class NgmFeatureHeight extends LitElementI18n {
 
   render() {
     if (this.height !== undefined) {
-      return html`
-        ${i18next.t('nav_object_height_label')}: ${this.integerFormat.format(this.height)} m
-      `;
+      return html`${this.integerFormat.format(this.height)} m`;
     } else {
       return html``;
     }
