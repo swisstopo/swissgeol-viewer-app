@@ -82,6 +82,7 @@
   "lyr_natural_hazard_label": "Natural hazards",
   "lyr_rail_tunnel_label": "Railway tunnel",
   "lyr_road_tunnel_label": "Road tunnel",
+  "lyr_subsurface_hint": "Underground data is displayed, please navigate underground or slice the view.",
   "lyr_subsurface_label": "Subsurface geometry",
   "lyr_swiss_buildings_label": "SwissBUILDINGS3D",
   "lyr_swissnames_label": "SwissNAMES3D",

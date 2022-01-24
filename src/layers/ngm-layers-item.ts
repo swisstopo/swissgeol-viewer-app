@@ -8,6 +8,7 @@ import $ from '../jquery.js';
 import type {LayerTreeNode} from '../layertree';
 import {styleMap} from 'lit/directives/style-map.js';
 import {Sortable} from 'sortablejs';
+import {showSnackbarInfo} from '../notifications';
 
 export interface Config extends LayerTreeNode {
   add?: (number) => void;
@@ -75,6 +76,16 @@ export class LayerTreeItem extends LitElementI18n {
     this.config.visible = !this.config.visible;
     this.actions.changeVisibility(this.config, this.config.visible);
     this.dispatchEvent(new CustomEvent('layerChanged'));
+    // display visibility hint for subsurface layers
+    if (this.config.visible
+      && [LayerType.tiles3d, LayerType.earthquakes].includes(this.config.type!)) {
+      const sidebar = <any> document.getElementsByTagName('ngm-side-bar')[0];
+      if (sidebar.displayUndergroundHint
+        && !sidebar.viewer?.scene.cameraUnderground) {
+        showSnackbarInfo(i18next.t('lyr_subsurface_hint'));
+        sidebar.displayUndergroundHint = false;
+      }
+    }
   }
 
   changeOpacity(event: Event) {

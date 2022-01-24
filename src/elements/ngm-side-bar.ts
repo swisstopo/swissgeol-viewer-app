@@ -25,7 +25,7 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
-import {showSnackbarError} from '../notifications';
+import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
 import './ngm-share-link.ts';
 import '../layers/ngm-layers-upload';
@@ -42,6 +42,7 @@ import NavToolsStore from '../store/navTools';
 export class SideBar extends LitElementI18n {
   @property({type: Object}) queryManager: QueryManager | null = null;
   @property({type: Boolean}) mobileView = false;
+  @property({type: Boolean}) displayUndergroundHint = true;
   @state() catalogLayers: any;
   @state() activeLayers: any;
   @state() activePanel: string | null = null;
@@ -406,6 +407,13 @@ export class SideBar extends LitElementI18n {
       layer.visible = true;
       layer.displayed = true;
       this.activeLayers.push(layer);
+      // display visibility hint for subsurface layers
+      if (this.displayUndergroundHint
+        && [LayerType.tiles3d, LayerType.earthquakes].includes(layer.type!)
+        && !this.viewer?.scene.cameraUnderground) {
+        showSnackbarInfo(i18next.t('lyr_subsurface_hint'));
+        this.displayUndergroundHint = false;
+      }
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
 
