@@ -14,7 +14,7 @@ export function heightToValue(height: number): number {
   if (height < 30000) {
     return (1.35 / 30000) * height + 1.35;
   } else {
-    return (0.3 / 270000) * height + 2.65;
+    return (0.3 / 270000) * height + 2.7;
   }
 }
 
