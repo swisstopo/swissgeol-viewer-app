@@ -26,7 +26,7 @@
     "@aws-sdk/client-cognito-identity": "^3.46.0",
     "@aws-sdk/client-s3": "^3.46.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.46.0",
-    "@aws-sdk/s3-request-presigner": "^3.46.0",
+    "@aws-sdk/s3-request-presigner": "^3.48.0",
     "@fontsource/inter": "^4.5.1",
     "@geoblocks/cesium-view-cube": "0.1.0",
     "@geoblocks/ga-search": "0.0.20",
