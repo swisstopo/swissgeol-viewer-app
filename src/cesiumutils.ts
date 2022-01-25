@@ -1,5 +1,6 @@
-import type {Camera} from 'cesium';
+import type {Camera, Scene} from 'cesium';
 import {
+  BoundingSphere,
   Cartesian2,
   Cartesian3,
   Cartographic,
@@ -426,4 +427,38 @@ export function pointInPolygon(point: Cartographic, polygonPositions: Cartograph
 export function triangulate(positions, holes) {
   const flattenedPositions = Cartesian2.packArray(positions);
   return earcut(flattenedPositions, holes, 2);
+}
+
+
+const scratchBoundingSphere: BoundingSphere = new BoundingSphere();
+const scratchPosition = new Cartesian3();
+const moveVector3dScratch = new Cartesian3();
+const axisVector3dScratch = new Cartesian3();
+
+/**
+ * Gets Cartesian3 position and distance in pixels and calculates second Cartesian3 position on passed axes and side
+ *
+ * @param scene
+ * @param firstPoint cartesian3 position of known point
+ * @param distancePx distance between points in pixels
+ * @param axis configures on which axis second points should be placed (x or y axis according to map rectangle)
+ * @param side configures where second point will be placed (left/right or above/below first point)
+ */
+export function positionFromPxDistance(scene: Scene, firstPoint: Cartesian3, distancePx: number, axis: 'x' | 'y', side: 1 | -1) {
+  const mapRect = scene.globe.cartographicLimitRectangle;
+  scratchBoundingSphere.center = firstPoint;
+  const pixelSize = scene.camera.getPixelSize(scratchBoundingSphere, scene.drawingBufferWidth, scene.drawingBufferHeight);
+  const distance = distancePx * pixelSize;
+  let corners;
+  if (axis === 'y') {
+    corners = [Cartographic.toCartesian(Rectangle.northeast(mapRect)), Cartographic.toCartesian(Rectangle.southeast(mapRect))];
+  } else {
+    corners = [Cartographic.toCartesian(Rectangle.northwest(mapRect)), Cartographic.toCartesian(Rectangle.northeast(mapRect))];
+  }
+  Cartesian3.midpoint(corners[0], corners[1], scratchPosition);
+  const pos = projectPointOnSegment(firstPoint, corners[0], corners[1], 0, 1, 0);
+  Cartesian3.subtract(pos, scratchPosition, axisVector3dScratch);
+  const scalar3d = distance / Cartesian3.distance(pos, scratchPosition) * side;
+  Cartesian3.multiplyByScalar(axisVector3dScratch, scalar3d, moveVector3dScratch);
+  return Cartesian3.add(firstPoint, moveVector3dScratch, new Cartesian3());
 }

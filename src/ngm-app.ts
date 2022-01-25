@@ -77,6 +77,7 @@ export class NgmApp extends LitElementI18n {
   @state() showTrackingConsent = false;
   @state() showProjectPopup = false;
   @state() mobileView = false;
+  @state() showAxisOnMap = false;
   @query('ngm-cam-configuration') camConfigElement;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
@@ -304,14 +305,16 @@ export class NgmApp extends LitElementI18n {
           <img class="visible-mobile" src="src/images/logo-CH-small.svg">
           <div class="logo-text visible-mobile">swissgeol</div>
         </a>
-        <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,layer" locationOrigins="zipcode,gg25,gazetteer">
+        <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,layer"
+                   locationOrigins="zipcode,gg25,gazetteer">
           <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
           <div class="ngm-search-icon-container ngm-search-icon"></div>
           <ul class="search-results"></ul>
         </ga-search>
         <div style="flex: 1;" .hidden="${this.showMobileSearch}"></div>
-        <div class="ngm-search-icon-mobile ngm-search-icon visible-mobile ${classMap({'active': this.showMobileSearch})}"
-             @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
+        <div
+          class="ngm-search-icon-mobile ngm-search-icon visible-mobile ${classMap({'active': this.showMobileSearch})}"
+          @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
         <div class="ngm-map-icon ${classMap({'active': this.showMinimap})}" .hidden="${this.showMobileSearch}"
              @click=${() => this.showMinimap = !this.showMinimap}></div>
         <ngm-camera-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-camera-information>
@@ -340,8 +343,9 @@ export class NgmApp extends LitElementI18n {
             <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
             <ngm-object-information class="ngm-floating-window"></ngm-object-information>
             <topographic-profile class="ngm-floating-window"></topographic-profile>
-            <ngm-nav-tools class="ngm-floating-window" .viewer=${this.viewer} .showCamConfig=${this.showCamConfig}
-                           @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}>
+            <ngm-nav-tools class="ngm-floating-window" .showCamConfig=${this.showCamConfig}
+                           @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}
+                           @axisstate=${evt => this.showAxisOnMap = evt.detail.showAxis}>
             </ngm-nav-tools>
             <ngm-minimap class="ngm-floating-window" .viewer=${this.viewer} .hidden=${!this.showMinimap}
                          @close=${() => this.showMinimap = false}>
@@ -362,7 +366,8 @@ export class NgmApp extends LitElementI18n {
             ` : '')}
             <ngm-map-chooser .hidden=${this.mobileView} class="ngm-bg-chooser-map"
                              .initiallyOpened=${false}></ngm-map-chooser>
-            <cesium-view-cube .hidden=${this.mobileView} .scene="${this.viewer?.scene}"></cesium-view-cube>
+            <cesium-view-cube ?hidden=${this.mobileView || this.showAxisOnMap}
+                              .scene="${this.viewer?.scene}"></cesium-view-cube>
             <a class="contact-mailto-link" target="_blank"
                href="mailto:swissgeol@swisstopo.ch">${i18next.t('contact_mailto_text')}</a>
             <a class="disclaimer-link" target="_blank"

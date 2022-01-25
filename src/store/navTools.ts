@@ -1,11 +1,13 @@
 import {BehaviorSubject, Subject} from 'rxjs';
 import type {LockType} from '../elements/ngm-cam-configuration';
+import type {Cartesian3} from 'cesium';
 
 export default class NavToolsStore {
   private static syncTargetPointSubject = new Subject<void>();
   private static cameraHeightSubject = new Subject<number>();
   private static hideTargetPointSubject = new Subject<void>();
   private static navLockTypeSubject = new BehaviorSubject<LockType>('');
+  private static targetPointPositionSubject = new BehaviorSubject<Cartesian3 | undefined>(undefined);
 
 
   static get syncTargetPoint() {
@@ -42,6 +44,18 @@ export default class NavToolsStore {
 
   static setNavLockType(value) {
     this.navLockTypeSubject.next(value);
+  }
+
+  static get targetPointPosition(): BehaviorSubject<Cartesian3 | undefined> {
+    return this.targetPointPositionSubject;
+  }
+
+  static get targetPointPositionValue(): Cartesian3 | undefined {
+    return this.targetPointPositionSubject.getValue();
+  }
+
+  static setTargetPointPosition(value) {
+    this.targetPointPositionSubject.next(value);
   }
 
 }
