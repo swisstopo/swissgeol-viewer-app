@@ -15,7 +15,6 @@ import {downloadGeometry, hideVolume, updateEntityVolume} from './helpers';
 import './ngm-geometry-edit';
 import {styleMap} from 'lit/directives/style-map.js';
 import {showSnackbarInfo} from '../notifications';
-import {activeLayersForDownload} from '../download';
 import {dragArea} from '../elements/helperElements';
 
 @customElement('ngm-geometry-info')
@@ -112,17 +111,6 @@ export class NgmGeometryInfo extends LitElementI18n {
     if (!geom) return;
     return html`
       <div>
-        <button class="ui button ngm-download-obj-btn ngm-action-btn"
-                ?hidden=${this.geometry?.type !== 'rectangle' || !activeLayersForDownload().length}
-                @click=${() => {
-                  document.getElementsByTagName('ngm-side-bar')[0].setAttribute('activePanel', 'tools');
-                  document.getElementsByTagName('ngm-tools')[0].setAttribute('activeTool', 'data-download');
-                  document.getElementsByTagName('data-download')[0].setAttribute('selectedId', this.geometry!.id!);
-                }
-              }>
-          ${i18next.t('tbx_download_btn_label')}
-          <div class='ngm-download-icon'></div>
-        </button>
         <button class="ui button ngm-download-obj-btn ngm-action-btn"
                 @click=${() => downloadGeometry(this.geometriesDataSource?.entities.getById(geom.id!))}>
           ${i18next.t('tbx_download_kml_btn_label')}

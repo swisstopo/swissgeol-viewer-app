@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import {html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {activeLayersForDownload, createDataGenerator, createZipFromData} from '../download';
+import {createDataGenerator, createZipFromData} from '../download';
 import {LitElementI18n} from '../i18n';
 import {showSnackbarInfo} from '../notifications';
 import {cartesianToDegrees} from '../projection';
@@ -17,6 +17,17 @@ import type {Config} from '../layers/ngm-layers-item';
 export class DataDownload extends LitElementI18n {
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
   @property({type: String}) selectedGeometryId = '';
+
+
+  /**
+   * Get configs of all displayed and downloadable layers.
+   *
+   * @returns {Config[]}
+   */
+  activeLayersForDownload(): Config[] {
+    return (<any>document.getElementsByTagName('ngm-side-bar')[0]).activeLayers
+      .filter((l: Config) => l.visible && (!!l.downloadDataType || l.downloadUrl));
+  }
 
 
   async downloadData(config: Config, geom: NgmGeometry) {
@@ -39,7 +50,7 @@ export class DataDownload extends LitElementI18n {
     // Zip data
     const zip = await createZipFromData(data);
     const blob = await zip.generateAsync({type: 'blob'});
-    saveAs(blob, 'swissgeol_data.zip');
+    saveAs(blob, `${config.layer!}_${geom.name}.zip`.replace(/\s/g, '_'));
   }
 
   downloadOptionsTemplate(geom: NgmGeometry) {
@@ -47,7 +58,7 @@ export class DataDownload extends LitElementI18n {
       return html``;
     }
 
-    const activeLayers = activeLayersForDownload();
+    const activeLayers = this.activeLayersForDownload();
     const content = activeLayers.length ? html`
       ${activeLayers.map((config: Config) => {
       return html`

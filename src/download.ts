@@ -1,7 +1,6 @@
 import JSZip from 'jszip/dist/jszip.js';
 import {coordinatesToBbox, areBboxIntersectings, filterCsvString} from './utils';
 
-import type {Config} from './layers/ngm-layers-item';
 
 type DataPiece = {
   layer: string,
@@ -20,28 +19,23 @@ type IndexEntry = {
   extent: number[],
 }
 
-/**
- * Get configs of all displayed and downloadable layers.
- *
- * @returns {Config[]}
- */
- export function activeLayersForDownload(): Config[] {
-  return (<any>document.getElementsByTagName('ngm-side-bar')[0]).activeLayers
-    .filter((l: Config) => l.visible && (!!l.downloadDataType || l.downloadUrl));
-}
-
 
 /**
- * Create a ZIP containing values like: /swissgeol-data/layer_name/filename.ext
+ * Create a ZIP containing values like: /layer/filename.ext
+ * or /filename.ext if all DataPieces belong to the same layer.
  *
  * @param {DataPiece[]} pieces
  * @return {JSZip}
  */
  export function createZipFromData(pieces: DataPiece[]): JSZip {
   const zip = new JSZip();
-  const subZip = zip.folder('swissgeol-data');
+  const layers = new Set(pieces.map(p => p.layer));
   for (const {layer, filename, content} of pieces) {
-    subZip.folder(layer).file(filename, content);
+    if (layers.size === 1) {
+      zip.file(filename, content);
+    } else {
+      zip.folder(layer).file(filename, content);
+    }
   }
   return zip;
 }
