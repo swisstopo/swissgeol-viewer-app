@@ -1,4 +1,4 @@
-topographic-profile {
+ngm-topo-profile-modal {
   position: absolute;
   left: 0;
   right: 0 !important;
@@ -10,25 +10,25 @@ topographic-profile {
   z-index: 2;
 }
 
-topographic-profile .htmlpopup-header {
+ngm-topo-profile-modal .htmlpopup-header {
   font-weight: bold;
   border-bottom: 2px solid #DFE2E6;
   padding-bottom: 8px;
   margin-bottom: 8px;
 }
 
-topographic-profile .content-container {
+ngm-topo-profile-modal .content-container {
   position: relative;
 }
 
-topographic-profile .content-container p {
+ngm-topo-profile-modal .content-container p {
   float: right;
   margin: 0;
   position: absolute;
   right: 0;
 }
 
-topographic-profile .content-container a {
+ngm-topo-profile-modal .content-container a {
   color: var(--ngm-interaction);
   font-weight: bold;
   background-color: #DEE2E6;
@@ -37,6 +37,6 @@ topographic-profile .content-container a {
   margin-left: 4px;
 }
 
-topographic-profile .content-container a:hover {
+ngm-topo-profile-modal .content-container a:hover {
   color: var(--ngm-interaction-hover);
 }
