@@ -38,6 +38,8 @@ import type {Cartesian2, Viewer} from 'cesium';
 import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
 
+import type {Config} from '../layers/ngm-layers-item.js';
+
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
   @property({type: Object}) queryManager: QueryManager | null = null;
@@ -239,7 +241,7 @@ export class SideBar extends LitElementI18n {
               zoomTo(this.viewer!, evt.detail);
             }}
             @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
-            @layerChanged=${() => this.onLayerChanged()}>
+            @layerChanged=${evt => this.onLayerChanged(evt)}>
           </ngm-layers>
           <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
           <ngm-layers-upload .viewer="${this.viewer}" .toastPlaceholder=${this.toastPlaceholder}></ngm-layers-upload>
@@ -407,13 +409,8 @@ export class SideBar extends LitElementI18n {
       layer.visible = true;
       layer.displayed = true;
       this.activeLayers.push(layer);
-      // display visibility hint for subsurface layers
-      if (this.displayUndergroundHint
-        && [LayerType.tiles3d, LayerType.earthquakes].includes(layer.type!)
-        && !this.viewer?.scene.cameraUnderground) {
-        showSnackbarInfo(i18next.t('lyr_subsurface_hint'));
-        this.displayUndergroundHint = false;
-      }
+      this.maybeShowVisibilityHint(layer);
+
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
 
@@ -423,10 +420,23 @@ export class SideBar extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
-  onLayerChanged() {
+  onLayerChanged(evt) {
     this.queryManager!.hideObjectInformation();
     this.catalogLayers = [...this.catalogLayers];
     syncLayersParam(this.activeLayers);
+    if (evt.detail) {
+      this.maybeShowVisibilityHint(evt.detail);
+    }
+  }
+
+  maybeShowVisibilityHint(config: Config) {
+    if (this.displayUndergroundHint
+      && config.visible
+      && [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!)
+      && !this.viewer?.scene.cameraUnderground) {
+      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {displayTime: 20000});
+      this.displayUndergroundHint = false;
+    }
   }
 
   async onRemoveDisplayedLayer(evt) {
