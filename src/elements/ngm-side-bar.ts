@@ -44,7 +44,7 @@ export class SideBar extends LitElementI18n {
   @property({type: Boolean}) mobileView = false;
   @state() catalogLayers: any;
   @state() activeLayers: any;
-  @property() activePanel: string | null = null;
+  @state() activePanel: string | null = null;
   @state() showHeader = false;
   @state() globeQueueLength_ = 0;
   @state() mobileShowAll = false;

@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import {html} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import {createDataGenerator, createZipFromData} from '../download';
 import {LitElementI18n} from '../i18n';
 import {showSnackbarInfo} from '../notifications';
@@ -16,7 +16,7 @@ import type {Config} from '../layers/ngm-layers-item';
 @customElement('data-download')
 export class DataDownload extends LitElementI18n {
   @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
-  @property({type: String}) selectedGeometryId = '';
+  @state() selectedGeometryId = '';
 
 
   /**

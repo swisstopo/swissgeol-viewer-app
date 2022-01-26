@@ -27,7 +27,7 @@ import {showSnackbarInfo} from '../notifications';
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
   @property({type: Boolean}) toolsHidden = true;
-  @property() activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | undefined;
+  @state() activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | undefined;
   @state() sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder') toastPlaceholder;
   @query('ngm-slicer') slicerElement;
