@@ -15,10 +15,6 @@ import {downloadGeometry, hideVolume, updateEntityVolume} from './helpers';
 import './ngm-geometry-edit';
 import {styleMap} from 'lit/directives/style-map.js';
 import {showSnackbarInfo} from '../notifications';
-import {createDataGenerator, createZipFromData} from '../download';
-import {saveAs} from 'file-saver';
-import {cartesianToDegrees} from '../cesiumutils';
-import {coordinatesToBbox} from '../utils';
 import {dragArea} from '../elements/helperElements';
 
 @customElement('ngm-geometry-info')
@@ -110,51 +106,11 @@ export class NgmGeometryInfo extends LitElementI18n {
     this.infoBodyElement.scrollTop = this.infoBodyElement.scrollHeight;
   }
 
-  activeLayersForDownload() {
-    return (<any> document.getElementsByTagName('ngm-side-bar')[0]).activeLayers
-      .filter(l => l.visible && !!l.downloadDataType)
-      .map(l => ({
-        layer: l.layer,
-        url: l.downloadDataPath,
-        type: l.downloadDataType
-      }));
-  }
-
-  async downloadActiveData(evt) {
-    const {bbox4326} = evt.detail;
-    const specs = this.activeLayersForDownload();
-    const data: any[] = [];
-    for await (const d of createDataGenerator(specs, bbox4326)) data.push(d);
-    if (data.length === 0) {
-      showSnackbarInfo(i18next.t('tbx_no_data_to_download_warning'));
-      return;
-    }
-    const zip = await createZipFromData(data);
-    const blob = await zip.generateAsync({type: 'blob'});
-    saveAs(blob, 'swissgeol_data.zip');
-  }
-
   get infoTemplate() {
     const geom: NgmGeometry | undefined = this.geometry;
     if (!geom) return;
     return html`
       <div>
-        <button class="ui button ngm-download-obj-btn ngm-action-btn"
-                ?hidden=${this.geometry?.type !== 'rectangle' || !this.activeLayersForDownload().length}
-                @click=${() => {
-                  const rectangle = geom.positions.map(cartesianToDegrees);
-                  rectangle.pop();
-                  const bbox = coordinatesToBbox(rectangle);
-                  this.downloadActiveData({
-                    detail: {
-                      bbox4326: bbox
-                    }
-                  });
-                }
-              }>
-          ${i18next.t('tbx_download_btn_label')}
-          <div class="ngm-download-icon"></div>
-        </button>
         <button class="ui button ngm-download-obj-btn ngm-action-btn"
                 @click=${() => downloadGeometry(this.geometriesDataSource?.entities.getById(geom.id!))}>
           ${i18next.t('tbx_download_kml_btn_label')}

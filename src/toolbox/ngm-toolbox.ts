@@ -6,6 +6,7 @@ import './ngm-draw-tool';
 import './ngm-slicer';
 import './ngm-geometries-list';
 import './ngm-draw-section';
+import './data-download';
 import i18next from 'i18next';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME} from '../constants';
@@ -26,7 +27,7 @@ import {showSnackbarInfo} from '../notifications';
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
   @property({type: Boolean}) toolsHidden = true;
-  @state() activeTool: 'draw' | 'slicing' | 'gst' | undefined;
+  @state() activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | undefined;
   @state() sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder') toastPlaceholder;
   @query('ngm-slicer') slicerElement;
@@ -192,6 +193,10 @@ export class NgmToolbox extends LitElementI18n {
           <div class="ngm-gst-icon"></div>
           <div>${i18next.t('tbx_gst')}</div>
         </div>
+        <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'data-download'}>
+          <div class="ngm-download-icon"></div>
+          <div>${i18next.t('tbx_data-download')}</div>
+        </div>
       </div>
       <div class="ngm-toast-placeholder"></div>
       <ngm-draw-tool ?hidden="${this.activeTool !== 'draw'}">
@@ -199,7 +204,9 @@ export class NgmToolbox extends LitElementI18n {
       <ngm-slicer ?hidden=${this.activeTool !== 'slicing'}
                   .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>
       <ngm-gst-interaction ?hidden="${this.activeTool !== 'gst'}"></ngm-gst-interaction>
-      <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>`;
+      <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
+      <data-download .hidden="${this.activeTool !== 'data-download'}"
+                     .geometriesDataSource=${this.geometriesDataSource}></data-download>`;
   }
 
   createRenderRoot() {

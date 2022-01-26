@@ -2,38 +2,40 @@ import JSZip from 'jszip/dist/jszip.js';
 import {coordinatesToBbox, areBboxIntersectings, filterCsvString} from './utils';
 
 
-/**
- * @typedef {Object} DataPiece
- * @property {string} layer
- * @property {string} filename
- * @property {string|ArrayBuffer} content
- */
+type DataPiece = {
+  layer: string,
+  filename: string,
+  content: string | ArrayBuffer,
+}
 
-/**
- * @typedef {Object} DataSpec
- * @property {string} layer
- * @property {string} url
- * @property {string} type
- */
+type DataSpec = {
+  layer: string,
+  url: string,
+  type: string,
+}
 
-/**
- * @typedef {Object} IndexEntry
- * @property {string} filename
- * @property {number[]} extent
- */
+type IndexEntry = {
+  filename: string,
+  extent: number[],
+}
 
 
 /**
- * Create a ZIP containing values like:
- * /swissgeol-data/layer_name/filename.ext
+ * Create a ZIP containing values like: /layer/filename.ext
+ * or /filename.ext if all DataPieces belong to the same layer.
+ *
  * @param {DataPiece[]} pieces
  * @return {JSZip}
  */
-export function createZipFromData(pieces) {
+ export function createZipFromData(pieces: DataPiece[]): JSZip {
   const zip = new JSZip();
-  const subZip = zip.folder('swissgeol-data');
+  const layers = new Set(pieces.map(p => p.layer));
   for (const {layer, filename, content} of pieces) {
-    subZip.folder(layer).file(filename, content);
+    if (layers.size === 1) {
+      zip.file(filename, content);
+    } else {
+      zip.folder(layer).file(filename, content);
+    }
   }
   return zip;
 }
@@ -46,8 +48,8 @@ export function createZipFromData(pieces) {
  * @param {fetch} fetcher
  * @return {Promise<DataPiece>}
  */
-async function handleCSV(spec, bbox, fetcher) {
-  const filename = 'filtered_' + spec.url.substr(spec.url.lastIndexOf('/') + 1);
+async function handleCSV(spec: DataSpec, bbox: number[], fetcher: typeof fetch): Promise<DataPiece> {
+  const filename = 'filtered_' + spec.url.substring(spec.url.lastIndexOf('/') + 1);
   const filteredCSV = await fetcher(spec.url)
     .then(r => r.text())
     .then(txt => filterCsvString(txt, bbox));
@@ -66,7 +68,7 @@ async function handleCSV(spec, bbox, fetcher) {
  * @param {fetch} fetcher
  * @return {Promise<IndexEntry[]>}
  */
-export async function getIndex(indices, spec, fetcher) {
+async function getIndex(indices: {[s: string]: IndexEntry[];}, spec: DataSpec, fetcher: typeof fetch): Promise<IndexEntry[]> {
   let index = indices[spec.layer];
   if (!index) {
     index = indices[spec.layer] = await fetcher(spec.url)
@@ -92,9 +94,9 @@ export async function getIndex(indices, spec, fetcher) {
  * @param {fetch} fetcher
  * @yields {DataPiece}
  */
-export async function* createIndexedDataGenerator(indices, spec, bbox, fetcher) {
+async function* createIndexedDataGenerator(indices: {[s: string]: IndexEntry[];}, spec: DataSpec, bbox: number[], fetcher: typeof fetch) {
   const index = await getIndex(indices, spec, fetcher);
-  const path = spec.url.substr(0, spec.url.lastIndexOf('/'));
+  const path = spec.url.substring(0, spec.url.lastIndexOf('/'));
   for await (const {filename, extent} of index) {
     if (areBboxIntersectings(extent, bbox)) {
       const content = await fetcher(path + '/' + filename).then(r => r.arrayBuffer());
@@ -114,15 +116,15 @@ export async function* createIndexedDataGenerator(indices, spec, bbox, fetcher) 
  * @param {fetch|null} fetcher
  * @yields {DataPiece}
  */
-export async function* createDataGenerator(specs, bbox, fetcher = fetch) {
+export async function* createDataGenerator(specs: DataSpec[], bbox: number[], fetcher: typeof fetch | null = fetch) {
   const indices = {};
   for await (const spec of specs) {
     switch (spec.type) {
       case 'csv':
-        yield await handleCSV(spec, bbox, fetcher);
+        yield await handleCSV(spec, bbox, fetcher!);
         break;
       case 'indexed_download':
-        for await (const result of createIndexedDataGenerator(indices, spec, bbox, fetcher)) {
+        for await (const result of createIndexedDataGenerator(indices, spec, bbox, fetcher!)) {
           yield result;
         }
         break;

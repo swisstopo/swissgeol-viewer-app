@@ -173,6 +173,8 @@
   "tbx_create_section_label": "Creare delle sezioni",
   "tbx_cross_sections_depth_label": "Profondità delle sezioni",
   "tbx_cross_sections_format_label": "Formato del risultato",
+  "tbx_data_download_hint": "",
+  "tbx_data-download": "",
   "tbx_description_label": "Descrizione",
   "tbx_download_all_btn": "Download kml",
   "tbx_download_btn_label": "Download",

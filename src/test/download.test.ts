@@ -80,10 +80,11 @@ describe('Download', () => {
   describe('createZipFromData', () => {
     it('should be able to create a good-looking zip file', async () => {
       const zip = createZipFromData([
-        {layer: 'the_layer', filename: 'file1.csv', content: 'coco'}
+        {layer: 'the_layer', filename: 'file1.csv', content: 'coco'},
+        {layer: 'another_layer', filename: 'file1.dxf', content: 'toto'}
       ]);
       const keys = Object.keys(zip.files).join('|');
-      // CSV files are stored in a subdirectory of the layer
+      // CSV files are stored in a subdirectory of the layer if there are multiple layers
       chaiAssert.include(keys, 'the_layer/file1.csv');
 
       const result = await zip.generateAsync({type: 'arraybuffer'});
