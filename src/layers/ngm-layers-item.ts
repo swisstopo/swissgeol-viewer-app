@@ -75,6 +75,7 @@ export class LayerTreeItem extends LitElementI18n {
     this.config.visible = !this.config.visible;
     this.actions.changeVisibility(this.config, this.config.visible);
     this.dispatchEvent(new CustomEvent('layerChanged'));
+    this.requestUpdate();
   }
 
   changeOpacity(event: Event) {
