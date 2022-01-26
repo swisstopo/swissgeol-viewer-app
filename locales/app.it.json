@@ -82,6 +82,7 @@
   "lyr_natural_hazard_label": "Rischi naturali",
   "lyr_rail_tunnel_label": "Tunnel ferroviario",
   "lyr_road_tunnel_label": "Tunnel stradale",
+  "lyr_subsurface_hint": "",
   "lyr_subsurface_label": "Geometria del sottosuolo",
   "lyr_swiss_buildings_label": "SwissBUILDINGS3D",
   "lyr_swissnames_label": "SwissNAMES3D",
