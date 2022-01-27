@@ -96,8 +96,8 @@ export class NgmMapConfiguration extends LitElementI18n {
                  .value=${!isNaN(this.opacity) ? this.opacity : 0.4}
                  @input=${evt => {
                    this.opacity = Number((<HTMLInputElement>evt.target).value);
-                   this.debouncedOpacityUpdate(evt);
-                 }}/>
+                 }}
+                 @change=${evt => this.updateOpacity(Number((<HTMLInputElement>evt.target).value))}/>
         </div>
       </div>
     `;

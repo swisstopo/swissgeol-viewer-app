@@ -91,7 +91,6 @@ export class LayerTreeItem extends LitElementI18n {
     const input = event.target as HTMLInputElement;
     this.config.opacity = Number(input.value);
     this.requestUpdate();
-    this.debouncedOpacityChange();
   }
 
   onLabelClicked(evt) {
@@ -172,7 +171,8 @@ export class LayerTreeItem extends LitElementI18n {
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
                .value=${this.config.opacity?.toString() || '1'}
-               @input=${this.inputOpacity}/>
+               @input=${this.inputOpacity}
+               @change=${this.changeOpacity}/>
       </div>
       </div>
       <div .hidden=${!this.config.previewColor} class="ngm-displayed-color"
