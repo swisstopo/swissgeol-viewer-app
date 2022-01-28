@@ -8,6 +8,7 @@ import {getMapOpacityParam, syncMapOpacityParam} from '../permalink';
 import MainStore from '../store/main';
 import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import type MapChooser from '../MapChooser.js';
+import {debounce} from '../utils';
 
 @customElement('ngm-map-configuration')
 export class NgmMapConfiguration extends LitElementI18n {
@@ -16,6 +17,7 @@ export class NgmMapConfiguration extends LitElementI18n {
   @state() opacity: number = getMapOpacityParam();
   @state() baseMapId = 'ch.swisstopo.pixelkarte-grau';
   @query('ngm-map-chooser') mapChooserElement;
+  private debouncedOpacityUpdate = debounce((evt: Event) => this.updateOpacity(Number((<HTMLInputElement>evt.target).value)), 250, true);
 
   constructor() {
     super();
@@ -26,7 +28,6 @@ export class NgmMapConfiguration extends LitElementI18n {
     MainStore.mapChooser.subscribe(chooser => {
       this.mapChooser = chooser;
       this.updateOpacity(getMapOpacityParam());
-      this.requestUpdate();
     });
     MainStore.syncMap.subscribe(() => this.updateOpacity(getMapOpacityParam()));
   }
@@ -93,7 +94,10 @@ export class NgmMapConfiguration extends LitElementI18n {
                  style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.opacity * 100}%, white ${this.opacity * 100}%)"
                  min=0 max=1 step=0.01
                  .value=${!isNaN(this.opacity) ? this.opacity : 0.4}
-                 @input=${evt => this.updateOpacity(Number((<HTMLInputElement>evt.target).value))}/>
+                 @input=${evt => {
+                   this.opacity = Number((<HTMLInputElement>evt.target).value);
+                   this.debouncedOpacityUpdate(evt);
+                 }}/>
         </div>
       </div>
     `;

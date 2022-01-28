@@ -173,15 +173,24 @@ export async function zoomTo(viewer: Viewer, config): Promise<void> {
   }
 }
 
-export function debounce(f, ms) {
+export function debounce(f, ms, skipFirst = false) {
   let isCooldown = false;
+  let argumentsArr: any[] = [];
   return (...args) => {
-    if (isCooldown) return;
-    f(...args);
+    if (isCooldown) {
+      argumentsArr.push([...args]);
+      return;
+    }
+    !skipFirst && f(...args);
     isCooldown = true;
     setTimeout(() => {
       isCooldown = false;
+      skipFirst = false;
+      const indx = argumentsArr.length - 1;
+      if (indx > -1) {
+        f(...argumentsArr[indx]);
+        argumentsArr = argumentsArr.splice(indx, argumentsArr.length - 1);
+      }
     }, ms);
   };
-
 }

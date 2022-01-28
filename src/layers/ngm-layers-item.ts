@@ -8,6 +8,8 @@ import $ from '../jquery.js';
 import type {LayerTreeNode} from '../layertree';
 import {styleMap} from 'lit/directives/style-map.js';
 import {Sortable} from 'sortablejs';
+import type LayersAction from './LayersActions';
+import {debounce} from '../utils';
 
 export interface Config extends LayerTreeNode {
   add?: (number) => void;
@@ -23,7 +25,7 @@ export interface Config extends LayerTreeNode {
 
 @customElement('ngm-layers-item')
 export class LayerTreeItem extends LitElementI18n {
-  @property({type: Object}) actions: any;
+  @property({type: Object}) actions!: LayersAction;
   @property({type: Object}) config!: Config;
   @property({type: Boolean}) changeOrderActive = false;
   @state() loading = 0;
@@ -31,6 +33,7 @@ export class LayerTreeItem extends LitElementI18n {
   @state() loadProgressRemover_: any;
   @state() movable = false;
   private toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
+  private debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
 
   firstUpdated() {
     $(this.querySelector('.ui.dropdown')).dropdown();
@@ -78,12 +81,17 @@ export class LayerTreeItem extends LitElementI18n {
     this.requestUpdate();
   }
 
-  changeOpacity(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.config.opacity = Number(input.value);
+  changeOpacity() {
+    if (!this.config.opacity) return;
     this.actions.changeOpacity(this.config, this.config.opacity);
     this.dispatchEvent(new CustomEvent('layerChanged'));
+  }
+
+  inputOpacity(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.config.opacity = Number(input.value);
     this.requestUpdate();
+    this.debouncedOpacityChange();
   }
 
   onLabelClicked(evt) {
@@ -164,7 +172,7 @@ export class LayerTreeItem extends LitElementI18n {
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
                .value=${this.config.opacity?.toString() || '1'}
-               @input=${this.changeOpacity}/>
+               @input=${this.inputOpacity}/>
       </div>
       </div>
       <div .hidden=${!this.config.previewColor} class="ngm-displayed-color"

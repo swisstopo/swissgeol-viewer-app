@@ -302,6 +302,7 @@ export class SideBar extends LitElementI18n {
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
+      layer.setOpacity && layer.setOpacity(layer.opacity);
       layer.displayed = true;
       layer.setVisibility && layer.setVisibility(layer.visible);
       activeLayers.push(layer);
