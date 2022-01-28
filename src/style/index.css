@@ -402,6 +402,11 @@ ngm-full-screen-view.full-active {
   display: none;
 }
 
+.drag-handle {
+  -ms-touch-action: none;
+  touch-action: none;
+}
+
 @media (max-height: 629px), (max-width: 599px)  {
   .visible-mobile {
     display: initial;
