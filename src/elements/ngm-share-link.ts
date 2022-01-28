@@ -16,23 +16,28 @@ export class NgmShareLink extends LitElementI18n {
 
   async getShortlink() {
     const serviceHost = SHORTLINK_HOST_BY_PAGE_HOST[window.location.host];
+    const url = window.location.href;
     try {
-      const result = await fetch(`https://${serviceHost}/admin_shrink_url`, {
+      const response = await fetch(`https://${serviceHost}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;charset=UTF-8'
         },
         body: JSON.stringify({
-          'url_long': window.location.href,
-          'cdn_prefix': serviceHost
+          'url': url,
         }),
       });
-      const response = await result.json();
-      return response ? response.url_short : undefined;
+      if (!response.ok) {
+        throw `Service response status ${response.status}, body: ${await response.text}`;
+      } else if (response.headers.has('location')) {
+        return response.headers.get('location')!;
+      } else {
+        throw 'Location header is missing';
+      }
     } catch (e) {
       console.error(e);
       showBannerWarning(this.toastPlaceholder, i18next.t('welcome_get_shortlink_error'));
-      return window.location.href;
+      return url;
     }
   }
 
@@ -42,9 +47,7 @@ export class NgmShareLink extends LitElementI18n {
   }
 
   async onConnect() {
-    this.displayLoader = true;
     this.shortlink = await this.getShortlink();
-    this.displayLoader = false;
   }
 
   async onClick() {
@@ -59,14 +62,11 @@ export class NgmShareLink extends LitElementI18n {
 
   render() {
     return html`
-      <div class="ui very light dimmer ${classMap({active: this.displayLoader})}">
-        <div class="ui loader"></div>
-      </div>
       <div class="ngm-toast-placeholder"></div>
       <div class="ngm-share-label">${i18next.t('shortlink_copy_btn_label')}</div>
       <div class="ngm-input ${classMap({disabled: this.displayLoader})}">
         <input type="text" placeholder="required" readonly
-               .value=${this.shortlink}/>
+               .value=${this.shortlink} />
         <span class="ngm-floating-label">${i18next.t('shortlink_link_label')}</span>
       </div>
       <button class="ui button ngm-action-btn ${classMap({disabled: this.displayLoader})}" @click=${this.onClick}>
