@@ -70,7 +70,7 @@ export default class LayerTree extends LitElementI18n {
         @removeDisplayedLayer=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}))}
         @zoomTo=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}
         @layerChanged=${() => {
-          this.dispatchEvent(new CustomEvent('layerChanged'));
+          this.dispatchEvent(new CustomEvent('layerChanged', {detail: config}));
           this.requestUpdate(); // force update to render visibility changes
         }}
       >

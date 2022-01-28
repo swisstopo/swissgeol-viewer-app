@@ -81,9 +81,9 @@ export class GeometryController {
     });
     ToolboxStore.geometryAction.subscribe(options => this.handleActions(options));
     ToolboxStore.openedGeometryOptions.subscribe(options => {
-      if (!options || !options.id || options.editing)
+      if (!options || !options.id || options.editing) {
         this.deselectGeometry();
-      else if (options.id) {
+      } else if (options.id) {
         this.pickGeometry(options.id);
       }
     });
@@ -142,11 +142,11 @@ export class GeometryController {
     if (this.selectedArea && this.selectedArea.id === id) {
       return;
     }
-    const entity = this.geometriesDataSource!.entities.getById(id);
     if (this.selectedArea) {
       this.deselectGeometry();
     }
-    this.selectedArea = entity;
+    if (!id) return;
+    this.selectedArea = this.geometriesDataSource!.entities.getById(id);
     this.updateHighlight(this.selectedArea, true);
   }
 

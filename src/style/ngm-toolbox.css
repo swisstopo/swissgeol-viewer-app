@@ -1,6 +1,7 @@
 ngm-draw-tool,
 ngm-slicer,
-ngm-gst-interaction {
+ngm-gst-interaction,
+data-download {
   height: calc(100vh - 142px);
   display: block;
   overflow-y: auto;
@@ -25,7 +26,8 @@ ngm-gst-interaction {
 
 .ngm-slice-side > div:hover > div:nth-child(1),
 .ngm-draw-list-item:hover div:nth-child(1),
-.ngm-tools-list-item:hover div:nth-child(1) {
+.ngm-tools-list-item:hover div:nth-child(1),
+.data-download-item > .ngm-file-download-icon:hover {
   background-color: var(--ngm-interaction-hover);
 }
 
@@ -41,7 +43,8 @@ ngm-gst-interaction {
 }
 
 ngm-gst-interaction .ngm-action-list-item.active,
-ngm-slicer .ngm-action-list-item.active {
+ngm-slicer .ngm-action-list-item.active,
+data-download .ngm-action-list-item.active  {
   height: auto;
 }
 
@@ -57,7 +60,8 @@ ngm-slicer .ngm-action-list-item.active {
 }
 
 .ngm-slice-to-draw,
-.ngm-draw-hint {
+.ngm-draw-hint,
+.data-download-hint {
   background-color: var(--ngm-hover);
   color: #212529;
   font: normal normal bold 14px/20px Inter;
@@ -79,7 +83,8 @@ ngm-slicer .ngm-action-list-item.active {
   background-color: var(--ngm-action-hover);
 }
 
-.ngm-draw-hint > .ngm-info-icon {
+.ngm-draw-hint > .ngm-info-icon,
+.data-download-hint > .ngm-info-icon {
   margin-left: auto;
 }
 
@@ -120,7 +125,8 @@ ngm-slicer .ui.button.ngm-transform-btn:hover {
 }
 
 ngm-slicer .ngm-draw-hint,
-ngm-slicer .ngm-divider {
+ngm-slicer .ngm-divider,
+.data-download-hint {
   margin-top: 12px;
 }
 
@@ -183,4 +189,25 @@ ngm-slicer .ngm-divider {
 
 .ngm-section-format-container .ui.dropdown .menu .item:hover {
   background-color: var(--ngm-hover);
+}
+
+.data-download-options {
+  margin-top: 12px;
+}
+
+.data-download-item {
+  margin: 8px 0;
+  display: flex;
+}
+
+.data-download-item > label {
+  color: black;
+  font-weight: normal;
+  margin-left: 6px;
+  max-width: 180px;
+}
+
+.data-download-item > .ngm-file-download-icon {
+  width: 24px;
+  height: 24px;
 }

@@ -6,6 +6,8 @@ import './ngm-draw-tool';
 import './ngm-slicer';
 import './ngm-geometries-list';
 import './ngm-draw-section';
+import './data-download';
+import './ngm-profile-tool';
 import i18next from 'i18next';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME} from '../constants';
@@ -26,7 +28,7 @@ import {showSnackbarInfo} from '../notifications';
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
   @property({type: Boolean}) toolsHidden = true;
-  @state() activeTool: 'draw' | 'slicing' | 'gst' | undefined;
+  @state() activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | 'profile' | undefined;
   @state() sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder') toastPlaceholder;
   @query('ngm-slicer') slicerElement;
@@ -80,6 +82,14 @@ export class NgmToolbox extends LitElementI18n {
         DrawStore.setDraw(this.draw);
       }
     });
+    ToolboxStore.geometryAction.subscribe(options => {
+      if (options.action === 'profile' && options.id) {
+        if (this.slicerElement.slicingEnabled) {
+          this.slicerElement.toggleSlicer();
+        }
+        this.activeTool = 'profile';
+      }
+    });
 
     const sliceOptions = getSliceParam();
     if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints) {
@@ -99,8 +109,7 @@ export class NgmToolbox extends LitElementI18n {
       }
       this.activeTool = undefined;
       document.querySelector('.ngm-open-slicing-toast')?.parentElement?.remove();
-    }
-    else if (this.forceSlicingToolOpen)
+    } else if (this.forceSlicingToolOpen)
       this.forceSlicingToolOpen = false;
     super.update(changedProperties);
   }
@@ -192,6 +201,14 @@ export class NgmToolbox extends LitElementI18n {
           <div class="ngm-gst-icon"></div>
           <div>${i18next.t('tbx_gst')}</div>
         </div>
+        <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'data-download'}>
+          <div class="ngm-download-icon"></div>
+          <div>${i18next.t('tbx_data-download')}</div>
+        </div>
+        <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'profile'}>
+          <div class="ngm-profile-icon"></div>
+          <div>${i18next.t('tbx_profile')}</div>
+        </div>
       </div>
       <div class="ngm-toast-placeholder"></div>
       <ngm-draw-tool ?hidden="${this.activeTool !== 'draw'}">
@@ -199,7 +216,10 @@ export class NgmToolbox extends LitElementI18n {
       <ngm-slicer ?hidden=${this.activeTool !== 'slicing'}
                   .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>
       <ngm-gst-interaction ?hidden="${this.activeTool !== 'gst'}"></ngm-gst-interaction>
-      <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>`;
+      <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
+      <data-download .hidden="${this.activeTool !== 'data-download'}"
+                     .geometriesDataSource=${this.geometriesDataSource}></data-download>
+      <ngm-profile-tool ?hidden="${this.activeTool !== 'profile'}"></ngm-profile-tool>`;
   }
 
   createRenderRoot() {

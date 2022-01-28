@@ -25,7 +25,7 @@ import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import CMath from 'cesium/Source/Core/Math';
-import {showSnackbarError} from '../notifications';
+import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
 import './ngm-share-link.ts';
 import '../layers/ngm-layers-upload';
@@ -38,10 +38,13 @@ import type {Cartesian2, Viewer} from 'cesium';
 import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
 
+import type {Config} from '../layers/ngm-layers-item.js';
+
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
   @property({type: Object}) queryManager: QueryManager | null = null;
   @property({type: Boolean}) mobileView = false;
+  @property({type: Boolean}) displayUndergroundHint = true;
   @state() catalogLayers: any;
   @state() activeLayers: any;
   @state() activePanel: string | null = null;
@@ -238,7 +241,7 @@ export class SideBar extends LitElementI18n {
               zoomTo(this.viewer!, evt.detail);
             }}
             @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
-            @layerChanged=${() => this.onLayerChanged()}>
+            @layerChanged=${evt => this.onLayerChanged(evt)}>
           </ngm-layers>
           <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
           <ngm-layers-upload .viewer="${this.viewer}" .toastPlaceholder=${this.toastPlaceholder}></ngm-layers-upload>
@@ -406,6 +409,8 @@ export class SideBar extends LitElementI18n {
       layer.visible = true;
       layer.displayed = true;
       this.activeLayers.push(layer);
+      this.maybeShowVisibilityHint(layer);
+
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
 
@@ -415,10 +420,23 @@ export class SideBar extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
-  onLayerChanged() {
+  onLayerChanged(evt) {
     this.queryManager!.hideObjectInformation();
     this.catalogLayers = [...this.catalogLayers];
     syncLayersParam(this.activeLayers);
+    if (evt.detail) {
+      this.maybeShowVisibilityHint(evt.detail);
+    }
+  }
+
+  maybeShowVisibilityHint(config: Config) {
+    if (this.displayUndergroundHint
+      && config.visible
+      && [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!)
+      && !this.viewer?.scene.cameraUnderground) {
+      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {displayTime: 20000});
+      this.displayUndergroundHint = false;
+    }
   }
 
   async onRemoveDisplayedLayer(evt) {

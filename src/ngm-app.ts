@@ -11,7 +11,7 @@ import './elements/ngm-nav-tools';
 import './elements/ngm-minimap';
 import './elements/ngm-cam-configuration';
 import './elements/ngm-height-slider';
-import './elements/topographic-profile';
+import './toolbox/ngm-topo-profile-modal';
 import './toolbox/ngm-geometry-info';
 import './elements/ngm-layer-legend';
 import './cesium-toolbar';
@@ -342,7 +342,7 @@ export class NgmApp extends LitElementI18n {
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
             <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
             <ngm-object-information class="ngm-floating-window"></ngm-object-information>
-            <topographic-profile class="ngm-floating-window"></topographic-profile>
+            <ngm-topo-profile-modal class="ngm-floating-window"></ngm-topo-profile-modal>
             <ngm-nav-tools class="ngm-floating-window" .showCamConfig=${this.showCamConfig}
                            @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}
                            @axisstate=${evt => this.showAxisOnMap = evt.detail.showAxis}>

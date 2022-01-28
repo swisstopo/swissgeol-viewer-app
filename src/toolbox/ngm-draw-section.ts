@@ -37,9 +37,8 @@ export class NgmDrawSection extends LitElementI18n {
   }
 
   update(changedProperties: PropertyValues) {
-    const types: GeometryTypes[] | undefined = <GeometryTypes[] | undefined>changedProperties.get('enabledTypes');
-    if (types) {
-      this.shownDrawTypes = this.drawGeometries.filter(geom => types.includes(<GeometryTypes>geom.type));
+    if (changedProperties.has('enabledTypes') && this.enabledTypes) {
+      this.shownDrawTypes = this.drawGeometries.filter(geom => this.enabledTypes!.includes(<GeometryTypes>geom.type));
     }
     if (this.draw && changedProperties.has('hidden') && !changedProperties.get('hidden')) {
       this.draw.active = false;
