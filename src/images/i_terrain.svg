@@ -1,0 +1,5 @@
+<svg id="i_terrain" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <rect id="Rechteck_1927" data-name="Rechteck 1927" width="24" height="24" fill="none"/>
+  <rect id="Rechteck_1925" data-name="Rechteck 1925" width="24" height="24" fill="none"/>
+  <path id="icons8-earth_element" d="M13.063,5.094l-.781.938L3,17.75,4.563,19,13.094,8.219l7.375,8.75L22,15.688l-2.969-3.5,1-1.125,5.5,6.031,1.438-1.406-6.25-6.781-.75-.812-.719.813-1.5,1.719L13.844,6.031ZM3,21v2H27V21Zm0,4v2H27V25Z" transform="translate(-3 -4.094)" fill="#0b7285"/>
+</svg>

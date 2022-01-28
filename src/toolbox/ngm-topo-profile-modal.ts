@@ -2,17 +2,16 @@ import {LitElementI18n} from '../i18n.js';
 import {html} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
 import i18next from 'i18next';
-import draggable from './draggable';
+import draggable from '../elements/draggable';
+import type {GeometryAction} from '../store/toolbox';
 import ToolboxStore from '../store/toolbox';
 import {cartesianToLv95} from '../projection';
 import {plotProfile} from '../graphs';
 
-import type {GeometryAction} from '../store/toolbox';
-
 type ProfileServiceFormat = 'json' | 'csv'
 
-@customElement('topographic-profile')
-export class TopographicProfile extends LitElementI18n {
+@customElement('ngm-topo-profile-modal')
+export class NgmTopoProfileModal extends LitElementI18n {
   @state() hidden = true;
   private linestring: number[][] | undefined;
   private profile: number[][] | undefined;
@@ -41,13 +40,14 @@ export class TopographicProfile extends LitElementI18n {
   async handleActions(options: GeometryAction) {
     if (options.action === 'profile') {
       this.hidden = true;
+      if (!options.id) return;
       const geom = ToolboxStore.geometries.getValue().find(geom => geom.id === options.id);
       this.linestring = geom!.positions.map(c => cartesianToLv95(c));
       this.name = geom!.name;
 
       this.profile = await fetch(this.profileServiceUrl('json')).then(
         respnse => respnse.json()).then(
-          data => data.map(record => [record.dist, record.alts.DTM2]));
+        data => data.map(record => [record.dist, record.alts.DTM2]));
 
       this.hidden = false;
       await this.updateComplete;
@@ -91,17 +91,17 @@ export class TopographicProfile extends LitElementI18n {
 
   render() {
     return this.hidden ? html`` : html`
-    <div class="ngm-floating-window-header drag-handle">
-    ${i18next.t('topographic_profile_header')} (${this.name})
-      <div class="ngm-close-icon" @click=${() => this.hidden = true}></div>
-    </div>
-    <div class="content-container">
-      <p>${i18next.t('topographic_profile_downloads')}:
-        <a href=${this.profileServiceUrl('csv')}>CSV</a>
-        <a id="svg-link" download="${this.name}_profile">SVG</a>
-      </p>
-      <div id="profile-plot"></div>
-    </div>
+      <div class="ngm-floating-window-header drag-handle">
+        ${i18next.t('topographic_profile_header')} (${this.name})
+        <div class="ngm-close-icon" @click=${() => ToolboxStore.nextGeometryAction({action: 'profile'})}></div>
+      </div>
+      <div class="content-container">
+        <p>${i18next.t('topographic_profile_downloads')}:
+          <a href=${this.profileServiceUrl('csv')}>CSV</a>
+          <a id="svg-link" download="${this.name}_profile">SVG</a>
+        </p>
+        <div id="profile-plot"></div>
+      </div>
     `;
   }
 
