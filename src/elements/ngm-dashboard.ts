@@ -1,4 +1,4 @@
-import {LitElementI18n} from '../i18n';
+import {LitElementI18n, toLocaleDateString} from '../i18n';
 import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import i18next from 'i18next';
@@ -26,6 +26,7 @@ export interface DashboardProject {
   title: TranslatedText,
   description: TranslatedText,
   created: string,
+  modified: string,
   image: string,
   color: string,
   views: DashboardProjectView[]
@@ -53,6 +54,8 @@ export class NgmDashboard extends LitElementI18n {
   async update(changedProperties) {
     if (!this.hidden && !this.projects) {
       this.projects = await (await fetch('./src/sampleData/showcase_projects.json')).json();
+      // sort by newest first
+      this.projects?.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
     }
     super.update(changedProperties);
   }
@@ -102,7 +105,7 @@ export class NgmDashboard extends LitElementI18n {
       <div>
         <div class="ngm-proj-title">${translated(this.selectedProject.title)}</div>
         <div class="ngm-proj-data">
-          ${`${i18next.t('dashboard_created_title')} ${this.selectedProject.created} ${i18next.t('dashboard_by_swisstopo_title')}`}
+          ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(this.selectedProject.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
         </div>
         <div class="ngm-proj-information">
           <div>
