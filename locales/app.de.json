@@ -147,6 +147,7 @@
   "nav_info_zoom_label": "Herein-/herauszoomen",
   "nav_not_full_screen_view_hint": "Vollbildmodus beenden",
   "nav_object_height_label": "Objekthöhe",
+  "nav_terrain_height_label": "",
   "nav_tools_out_glob_warn": "Position ausserhalb des Globus",
   "navigation_hint": "Tipp: <b>CTRL</b> + Click + Drag oder <b>Zwei-Finger-Drag</b> um die Ansicht zu drehen und kippen.",
   "obj_info_area_label": "Fläche",

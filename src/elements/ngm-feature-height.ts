@@ -3,40 +3,23 @@ import {LitElementI18n} from '../i18n.js';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import {getValueOrUndefined} from '../cesiumutils';
+import {customElement, property, state} from 'lit/decorators.js';
+import type {Viewer} from 'cesium';
 
 
-class NgmFeatureHeight extends LitElementI18n {
-
-  /**
-   * @type {import('lit-element').PropertyDeclarations}
-   */
-  static get properties() {
-    return {
-      viewer: {type: Object},
-      height: {type: Number, attribute: false}
-    };
-  }
-
-  constructor() {
-    super();
-
-    /**
-     * @type {import('cesium/Source/Widgets/Viewer/Viewer').default}
-     */
-    this.viewer = null;
-
-    this.height = undefined;
-    this.eventHandler = undefined;
-
-    this.cameraMoving = false;
-    this.unlistenMoveStart = undefined;
-    this.unlistenMoveEnd = undefined;
-
-    // always use the 'de-CH' locale to always have the simple tick as thousands separator
-    this.integerFormat = new Intl.NumberFormat('de-CH', {
-      maximumFractionDigits: 0
-    });
-  }
+@customElement('ngm-feature-height')
+export class NgmFeatureHeight extends LitElementI18n {
+  @property({type: Object}) viewer: Viewer | undefined;
+  @state() height: number | undefined;
+  private eventHandler: ScreenSpaceEventHandler | undefined;
+  private cameraMoving = false;
+  private unlistenMoveStart: any;
+  private unlistenMoveEnd: any;
+  // always use the 'de-CH' locale to always have the simple tick as thousands separator
+  private integerFormat = new Intl.NumberFormat('de-CH', {
+    maximumFractionDigits: 0
+  });
 
   updated() {
     if (this.viewer) {
@@ -66,17 +49,22 @@ class NgmFeatureHeight extends LitElementI18n {
   }
 
   onMouseMove(movement) {
-    if (!this.cameraMoving) {
+    if (!this.cameraMoving && this.viewer) {
       const feature = this.viewer.scene.pick(movement.endPosition);
-      if (feature) {
-        const cartesian = this.viewer.scene.pickPosition(movement.endPosition);
-        if (cartesian) {
-          const position = Cartographic.fromCartesian(cartesian);
-          const altitude = this.viewer.scene.globe.getHeight(position);
-          if (altitude !== undefined) {
+      const cartesian = this.viewer.scene.pickPosition(movement.endPosition);
+      if (cartesian) {
+        const position = Cartographic.fromCartesian(cartesian);
+        const altitude = this.viewer.scene.globe.getHeight(position) || 0;
+        if (altitude !== undefined) {
+          const lineOrPolygon = getValueOrUndefined(feature?.id?.polyline?.show) || getValueOrUndefined(feature?.id?.polygon?.show);
+          if (feature && !lineOrPolygon) {
             this.height = position.height - altitude;
-            return;
+            this.dispatchEvent(new CustomEvent('updatelabel', {detail: {terrainHeight: false}}));
+          } else {
+            this.height = position.height;
+            this.dispatchEvent(new CustomEvent('updatelabel', {detail: {terrainHeight: true}}));
           }
+          return;
         }
       }
     }
@@ -91,5 +79,3 @@ class NgmFeatureHeight extends LitElementI18n {
     }
   }
 }
-
-customElements.define('ngm-feature-height', NgmFeatureHeight);

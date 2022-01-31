@@ -443,12 +443,14 @@ export class GeometryController {
         DEFAULT_AOI_COLOR.withAlpha(GEOMETRY_POLYGON_ALPHA);
       if (type === 'rectangle' || type === 'polygon') {
         entityAttrs.polygon = {
+          show: true,
           hierarchy: <any>attributes.positions,
           material: material,
         };
         entityAttrs.properties!.showSlicingBox = attributes.showSlicingBox;
       } else if (type === 'line') {
         entityAttrs.polyline = {
+          show: true,
           positions: attributes.positions,
           clampToGround: true,
           width: 4,

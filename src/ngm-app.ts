@@ -6,7 +6,7 @@ import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
 import './elements/ngm-auth';
 import './elements/ngm-tracking-consent';
-import './elements/ngm-camera-information.js';
+import './elements/ngm-camera-information';
 import './elements/ngm-nav-tools';
 import './elements/ngm-minimap';
 import './elements/ngm-cam-configuration';

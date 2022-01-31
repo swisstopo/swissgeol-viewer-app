@@ -4,39 +4,23 @@ import {LitElementI18n} from '../i18n.js';
 import CesiumMath from 'cesium/Source/Core/Math';
 import {formatCartographicAs2DLv95} from '../projection';
 import './ngm-feature-height';
+import {customElement, property, state} from 'lit/decorators.js';
+import type {Scene, Viewer} from 'cesium';
 
-class NgmCameraInformation extends LitElementI18n {
-
-  static get properties() {
-    return {
-      viewer: {type: Object},
-      elevation: {type: Number},
-      heading: {type: Number},
-      coordinates: {type: String},
-    };
-  }
-
-  constructor() {
-    super();
-
-    this.viewer = null;
-
-    /**
-     * @type {import('cesium/Source/Scene/Scene').default}
-     */
-    this.scene = null;
-
-    this.elevation = undefined;
-    this.heading = undefined;
-    this.pitch = undefined;
-    this.coordinates = undefined;
-    this.unlistenPostRender = null;
-
-    // always use the 'de-CH' locale to always have the simple tick as thousands separator
-    this.integerFormat = new Intl.NumberFormat('de-CH', {
-      maximumFractionDigits: 0
-    });
-  }
+@customElement('ngm-camera-information')
+export class NgmCameraInformation extends LitElementI18n {
+  @property({type: Object}) viewer: Viewer | undefined;
+  @state() elevation = 0;
+  @state() heading = 0;
+  @state() pitch = 0;
+  @state() coordinates: string[] = [];
+  @state() showTerrainHeight = false;
+  private scene: Scene | undefined;
+  private unlistenPostRender: any | undefined;
+  // always use the 'de-CH' locale to always have the simple tick as thousands separator
+  private integerFormat = new Intl.NumberFormat('de-CH', {
+    maximumFractionDigits: 0
+  });
 
   updated() {
     if (this.viewer && !this.unlistenPostRender) {
@@ -53,6 +37,7 @@ class NgmCameraInformation extends LitElementI18n {
   }
 
   updateFromCamera() {
+    if (!this.scene) return;
     const camera = this.scene.camera;
     let altitude = this.scene.globe.getHeight(camera.positionCartographic);
     altitude = altitude ? altitude : 0;
@@ -84,12 +69,18 @@ class NgmCameraInformation extends LitElementI18n {
           <div class="ngm-nci-direction-labels">
             <div>${i18next.t('camera_position_height_label')}</div>
             <div>${i18next.t('camera_position_angle_label')}, ${i18next.t('camera_position_pitch_label')}</div>
-            <div>${i18next.t('nav_object_height_label')}</div>
+            <div>
+              ${this.showTerrainHeight ? i18next.t('nav_terrain_height_label') : i18next.t('nav_object_height_label')}
+            </div>
           </div>
           <div>
             <div class="ngm-nci-value ngm-nci-height">${height} m</div>
             <div class="ngm-nci-value">${angle}°, ${pitch}°</div>
-            <div class="ngm-nci-value"><ngm-feature-height .viewer=${this.viewer}></ngm-feature-height></div>
+            <div class="ngm-nci-value">
+              <ngm-feature-height .viewer=${this.viewer}
+                                  @updatelabel=${evt => this.showTerrainHeight = evt.detail.terrainHeight}>
+              </ngm-feature-height>
+            </div>
           </div>
         </div>
       `;
@@ -102,5 +93,3 @@ class NgmCameraInformation extends LitElementI18n {
     return this;
   }
 }
-
-customElements.define('ngm-camera-information', NgmCameraInformation);
