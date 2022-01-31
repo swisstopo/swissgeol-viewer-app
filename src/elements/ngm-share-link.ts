@@ -28,7 +28,7 @@ export class NgmShareLink extends LitElementI18n {
         }),
       });
       if (!response.ok) {
-        throw `Service response status ${response.status}, body: ${await response.text}`;
+        throw `Service response status ${response.status}: ${await response.text()}`;
       } else if (response.headers.has('location')) {
         return response.headers.get('location')!;
       } else {
