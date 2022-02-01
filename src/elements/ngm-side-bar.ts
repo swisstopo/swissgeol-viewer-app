@@ -60,7 +60,7 @@ export class SideBar extends LitElementI18n {
   private accordionInited = false;
   private shareListenerAdded = false;
   private shareDownListener = evt => {
-    if (!evt.path.includes(this)) this.activePanel = null;
+    if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
 
   constructor() {

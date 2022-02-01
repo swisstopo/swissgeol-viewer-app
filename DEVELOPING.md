@@ -89,3 +89,30 @@ See https://docs.aws.amazon.com/cli/latest/reference/cloudfront/create-invalidat
 ```
 aws cloudfront create-invalidation --distribution-id $THE_DISTRIB_ID --paths /somepath
 ```
+
+## Update & Deploy URL Shortener (abbreviator)
+
+1. Bump the version of the package in the `Cargo.toml` file of the `camptocamp/abbreviator` [github repository](https://github.com/camptocamp/abbreviator) and create a release.
+
+2. Create a tag starting with `int` or `prod` to trigger the gihub action to build and push a docker image to `camptocamp/abbreviator` on [dockerhub](https://hub.docker.com/repository/docker/camptocamp/abbreviator).
+
+3. Redeploy the instances on Fargate. 
+
+    ```bash
+    # development
+    aws ecs update-service --cluster urlshortener_dev --service urlshortener_dev --force-new-deployment
+    # integration
+    aws ecs update-service --cluster urlshortener_int --service urlshortener_int --force-new-deployment
+    # production
+    aws ecs update-service --cluster urlshortener_prod --service urlshortener_prod --force-new-deployment
+    ```
+
+    The aws credetials are stored in the [ngm gopass password store](https://git.swisstopo.admin.ch/ngm/password-store-ngm).
+    ```bash
+    gopass show ngm/ecs/update-service
+    ```
+4. Test by checking the version number returned by the `/health_check` endpoint.
+
+    ```bash
+    curl -v https://link.int.swissgeol.ch/health_check
+    ```
