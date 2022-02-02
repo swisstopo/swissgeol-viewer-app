@@ -40,3 +40,26 @@ ngm-topo-profile-modal .content-container a {
 ngm-topo-profile-modal .content-container a:hover {
   color: var(--ngm-interaction-hover);
 }
+
+.ngm-profile-tooltip {
+  position: absolute;
+  height: auto;
+  width: fit-content;
+  width: -moz-fit-content;
+  background-color: black;
+  color: white;
+  opacity: 0.8;
+  margin-top: -45px;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.ngm-profile-tooltip-arrow {
+  border-color: black transparent transparent;
+  border-style: solid;
+  border-width: 10px 10px 0 10px;
+  position: absolute;
+  bottom: -10px;
+  left: calc(50% - 10px);
+}
+

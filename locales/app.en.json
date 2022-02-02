@@ -156,6 +156,8 @@
   "obj_info_perimeter_label": "Perimeter",
   "obj_info_website_label": "Website Link",
   "obj_info_zoom_to_object_btn_label": "Zoom to object",
+  "profile_distance": "Distance",
+  "profile_elevation": "Elevation",
   "shortlink_copied": "Link copied",
   "shortlink_copy_btn_label": "Copy the link",
   "shortlink_link_label": "Link",
