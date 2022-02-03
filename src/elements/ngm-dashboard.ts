@@ -10,14 +10,21 @@ import {getCameraView, syncTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
 import DashboardStore from '../store/dashboard';
 
+export interface TranslatedText {
+  de: string,
+  fr: string,
+  it: string,
+  en: string,
+}
+
 export interface DashboardProjectView {
-  title: string,
+  title: TranslatedText,
   permalink: string
 }
 
 export interface DashboardProject {
-  title: string,
-  description: string,
+  title: TranslatedText,
+  description: TranslatedText,
   created: string,
   image: string,
   color: string,
@@ -83,9 +90,9 @@ export class NgmDashboard extends LitElementI18n {
       }}>
         <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage: `url('${data.image}')`})}></div>
         <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: data.color})}>
-          <span>${data.title}</span>
+          <span>${translated(data.title)}</span>
         </div>
-        <div class="ngm-proj-preview-subtitle"><span>${data.description}</span></div>
+        <div class="ngm-proj-preview-subtitle"><span>${translated(data.description)}</span></div>
       </div>`;
   }
 
@@ -93,7 +100,7 @@ export class NgmDashboard extends LitElementI18n {
     if (!this.selectedProject) return '';
     return html`
       <div>
-        <div class="ngm-proj-title">${this.selectedProject.title}</div>
+        <div class="ngm-proj-title">${translated(this.selectedProject.title)}</div>
         <div class="ngm-proj-data">
           ${`${i18next.t('dashboard_created_title')} ${this.selectedProject.created} ${i18next.t('dashboard_by_swisstopo_title')}`}
         </div>
@@ -105,7 +112,7 @@ export class NgmDashboard extends LitElementI18n {
           </div>
           <div class="ngm-proj-description">
             <div class="ngm-proj-description-title">${i18next.t('dashboard_description')}</div>
-            <div class="ngm-proj-description-content">${this.selectedProject.description}</div>
+            <div class="ngm-proj-description-content">${translated(this.selectedProject.description)}</div>
           </div>
         </div>
       </div>
@@ -118,7 +125,7 @@ export class NgmDashboard extends LitElementI18n {
         ${this.selectedProject.views.map((view, index) => html`
           <div class="ngm-action-list-item" @click=${() => this.selectView(index)}>
             <div class="ngm-action-list-item-header">
-              <div>${view.title}</div>
+              <div>${translated(view.title)}</div>
             </div>
           </div>
         `)}
@@ -159,4 +166,9 @@ export class NgmDashboard extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+}
+
+
+function translated(property: TranslatedText): string {
+  return property[i18next.language];
 }

@@ -1,63 +1,138 @@
 [
   {
-    "title": "Hot springs in Switzerland",
-    "description": "A small tour on heat and water sources of hot springs in the Swiss midlands. Depending on the place, the geological situation can be very different.",
+    "title": {
+      "de": "Hot springs in Switzerland",
+      "fr": "Hot springs in Switzerland",
+      "it": "Hot springs in Switzerland",
+      "en": "Hot springs in Switzerland"
+    },
+    "description": {
+      "de": "A small tour on heat and water sources of hot springs in the Swiss midlands. Depending on the place, the geological situation can be very different.",
+      "fr": "A small tour on heat and water sources of hot springs in the Swiss midlands. Depending on the place, the geological situation can be very different.",
+      "it": "A small tour on heat and water sources of hot springs in the Swiss midlands. Depending on the place, the geological situation can be very different.",
+      "en": "A small tour on heat and water sources of hot springs in the Swiss midlands. Depending on the place, the geological situation can be very different."
+    },
     "created": "11 January 2021",
     "image": "./images/spashing_water.png",
     "color": "#B9271A",
     "views": [
       {
-        "title": "Thermalbad Egelsee",
+        "title": {
+          "de": "Thermalbad Egelsee",
+          "fr": "Thermalbad Egelsee",
+          "it": "Thermalbad Egelsee",
+          "en": "Thermalbad Egelsee"
+        },
         "permalink": "?layers=boreholes,ch.swisstopo.geologie-tiefengeothermie_projekte,temperature_model,faults_geomol,ch.swisstopo.swisstlm3d.3d,top_omm,top_usm,top_umm,base_cenozoic&layers_visibility=true,true,true,true,true,true,true,true,true&layers_transparency=0,0.5,1,0,0,0.2,0.3,0.15,0.2&map_transparency=0&map=ch.swisstopo.swissimage&lon=9.16541&lat=47.67935&elevation=2763&heading=176&pitch=-36&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4249855.295002234,\"y\":687067.3765101306,\"z\":4690313.160185342},{\"x\":4249844.886360756,\"y\":686029.243426846,\"z\":4690473.465777454}]}"
       },
       {
-        "title": "Thermalbad Baden",
+        "title": {
+          "de": "Thermalbad Baden",
+          "fr": "Thermalbad Baden",
+          "it": "Thermalbad Baden",
+          "en": "Thermalbad Baden"
+        },
         "permalink": "?layers=boreholes,ch.swisstopo.geologie-tiefengeothermie_projekte,temperature_model,faults_geomol,ch.swisstopo.swisstlm3d.3d,top_muschelkalk,top_keuper,top_lias,top_dogger,top_lower_malm,top_upper_malm,base_mesozoic&layers_visibility=true,true,true,true,true,true,true,true,true,true,true,true&layers_transparency=0,0.5,1,0.5,0,0,0,0,0,0,0,0&map_transparency=0&map=ch.swisstopo.swissimage&lon=8.36491&lat=47.46059&elevation=2669&heading=299&pitch=-31&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4273763.245676614,\"y\":624541.26385917,\"z\":4677401.016558762},{\"x\":4272270.9806707995,\"y\":624286.9741874507,\"z\":4678788.655482157}]}"
       },
       {
-        "title": "Les Bains d'Yverdon",
+        "title": {
+          "de": "Les Bains d'Yverdon",
+          "fr": "Les Bains d'Yverdon",
+          "it": "Les Bains d'Yverdon",
+          "en": "Les Bains d'Yverdon"
+        },
         "permalink": "?layers=boreholes,ch.swisstopo.geologie-tiefengeothermie_projekte,temperature_model,top_upper_malm,base_cenozoic,top_lower_malm,top_dogger,top_lias,top_keuper,top_muschelkalk,base_mesozoic,base_permocarboniferous,base_permocarboniferous_supposed,faults_geomol,ch.swisstopo.swisstlm3d.3d&layers_visibility=true,true,true,true,true,true,true,true,true,true,true,true,true,true,true&layers_transparency=0,0.5,1,0,0,0,0,0,0,0,0,0,0,0.5,0&map_transparency=0&map=ch.swisstopo.swissimage&lon=6.59900&lat=46.81160&elevation=3429&heading=144&pitch=-33&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4345748.030793835,\"y\":507468.31110827957,\"z\":4625300.076949739},{\"x\":4347816.352357404,\"y\":505325.9842407562,\"z\":4623601.9831696395}]}"
       }
     ]
   },
   {
-    "title": "The church of Wassen",
-    "description": "Infrastructure at the Gotthard transit route can be well seen on the earth surface, but what is actually hidden below the surface? Click on the different views to see the situation around the church of Wassen along the Gotthard transit route.",
+    "title": {
+      "de": "The church of Wassen",
+      "fr": "The church of Wassen",
+      "it": "The church of Wassen",
+      "en": "The church of Wassen"
+    },
+    "description": {
+      "de": "Infrastructure at the Gotthard transit route can be well seen on the earth surface, but what is actually hidden below the surface? Click on the different views to see the situation around the church of Wassen along the Gotthard transit route.",
+      "fr": "Infrastructure at the Gotthard transit route can be well seen on the earth surface, but what is actually hidden below the surface? Click on the different views to see the situation around the church of Wassen along the Gotthard transit route.",
+      "it": "Infrastructure at the Gotthard transit route can be well seen on the earth surface, but what is actually hidden below the surface? Click on the different views to see the situation around the church of Wassen along the Gotthard transit route.",
+      "en": "Infrastructure at the Gotthard transit route can be well seen on the earth surface, but what is actually hidden below the surface? Click on the different views to see the situation around the church of Wassen along the Gotthard transit route."
+    },
     "image": "./images/wassen.png",
     "created": "12 September 2021",
     "color": "#B9271A",
     "views": [
       {
-        "title": "Wassen as you know it",
+        "title": {
+          "de": "Wassen as you know it",
+          "fr": "Wassen as you know it",
+          "it": "Wassen as you know it",
+          "en": "Wassen as you know it"
+        },
         "permalink": "?lon=8.59946&lat=46.70489&elevation=974&heading=28&pitch=-9&map=ch.swisstopo.swissimage&map_transparency=0.00&layers=ch.swisstopo.swisstlm3d.3d&layers_visibility=true&layers_transparency=0.00&target={\"lon\":\"8.60100\",\"lat\":\"46.70688\",\"height\":932.9088491525921}"
       },
       {
-        "title": "Geological situation (click on a color to get more information)",
+        "title": {
+          "de": "Geological situation (click on a color to get more information)",
+          "fr": "Geological situation (click on a color to get more information)",
+          "it": "Geological situation (click on a color to get more information)",
+          "en": "Geological situation (click on a color to get more information)"
+        },
         "permalink": "?lon=8.59533&lat=46.69436&elevation=2346&heading=20&pitch=-44&map=ch.swisstopo.swissimage&map_transparency=0.00&layers=ch.swisstopo.swisstlm3d.3d,ch.swisstopo.geologie-geocover&layers_visibility=true,true&layers_transparency=0.00,0.30"
       },
       {
-        "title": "Subsurface infrastructure",
+        "title": {
+          "de": "Subsurface infrastructure",
+          "fr": "Subsurface infrastructure",
+          "it": "Subsurface infrastructure",
+          "en": "Subsurface infrastructure"
+        },
         "permalink": "?lon=8.59559&lat=46.69875&elevation=417&heading=21&pitch=23&map=ch.swisstopo.swissimage&map_transparency=0.43&layers=ch.swisstopo.swisstlm3d.3d,ch.swisstopo.geologie-geocover,water_tunnel,rail_tunnel,road_tunnel&layers_visibility=true,false,true,true,true&layers_transparency=0.00,0.82,0.00,0.00,0.000&target={\"lon\":\"8.60072\",\"lat\":\"46.70794\",\"height\":881.8231693363072}"
       }
     ]
   },
   {
-    "title": "Water Tower Switzerland",
-    "description": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
+    "title": {
+      "de": "Water Tower Switzerland",
+      "fr": "Water Tower Switzerland",
+      "it": "Water Tower Switzerland",
+      "en": "Water Tower Switzerland"
+    },
+    "description": {
+      "de": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
+      "fr": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
+      "it": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
+      "en": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy."
+    },
     "created": "10 January 2022",
     "image": "./images/dam_LacDesDix.png",
     "color": "#B9271A",
     "views": [
       {
-        "title": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year",
+        "title": {
+          "de": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year",
+          "fr": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year",
+          "it": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year",
+          "en": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year"
+        },
         "permalink": "?lon=7.22560&lat=46.21887&elevation=3490&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.45&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C1.00&lang=en"
       },
       {
-        "title": "Geology of the Rhone Valley",
+        "title": {
+          "de": "Geology of the Rhone Valley",
+          "fr": "Geology of the Rhone Valley",
+          "it": "Geology of the Rhone Valley",
+          "en": "Geology of the Rhone Valley"
+        },
         "permalink": "?lon=7.19082&lat=46.18561&elevation=3347&heading=98&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.40&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.49&lang=en"
       },
       {
-        "title": "Natural hazards: Can earthquakes be a threat?",
+        "title": {
+          "de": "Natural hazards: Can earthquakes be a threat?",
+          "fr": "Natural hazards: Can earthquakes be a threat?",
+          "it": "Natural hazards: Can earthquakes be a threat?",
+          "en": "Natural hazards: Can earthquakes be a threat?"
+        },
         "permalink": "?lon=7.21497&lat=46.23202&elevation=3713&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.69&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cearthquakes%2Chistorical_earthquakes%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.34&lang=en"
       }
     ]
