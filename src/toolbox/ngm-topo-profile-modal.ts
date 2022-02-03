@@ -8,13 +8,15 @@ import ToolboxStore from '../store/toolbox';
 import {cartesianToLv95} from '../projection';
 import {plotProfile} from '../graphs';
 import {pointer} from 'd3-selection';
-import {styleMap} from 'lit/directives/style-map.js';
 import MainStore from '../store/main';
 import type {Viewer} from 'cesium';
 import {CallbackProperty, Cartesian3, Entity} from 'cesium';
 import Color from 'cesium/Source/Core/Color';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import {projectPointOnSegment} from '../cesiumutils';
+import {getPointOnPolylineByPercentage} from '../cesiumutils';
+import type {NgmGeometry} from './interfaces';
+import {styleMap} from 'lit/directives/style-map.js';
+import {bisector} from 'd3-array';
 
 type ProfileServiceFormat = 'json' | 'csv'
 
@@ -40,14 +42,16 @@ export class NgmTopoProfileModal extends LitElementI18n {
   @state() showTooltip = false;
   @query('.ngm-profile-plot') profilePlot;
   @query('.svg-link') svgLink;
+  @query('.ngm-profile-tooltip') profileTooltip;
   private viewer: Viewer | null | undefined;
+  private bisect = bisector((d) => d.domainDist).left;
   private linestring: number[][] | undefined;
   private data: ProfileData[] = [];
   private name: string | undefined;
   private profileInfo: any | undefined;
   private domain: any;
   private distInKM = false;
-  private highlightPointPosition: Cartesian3 = Cartesian3.ZERO;
+  private highlightPointPosition: Cartesian3 = new Cartesian3();
   private highlightPoint = new Entity({
     position: <any> new CallbackProperty(() => this.highlightPointPosition, false),
     point: {
@@ -89,9 +93,10 @@ export class NgmTopoProfileModal extends LitElementI18n {
     if (options.action === 'profile') {
       this.hidden = true;
       if (!options.id) return;
-      const geom = ToolboxStore.geometries.getValue().find(geom => geom.id === options.id);
-      this.linestring = geom!.positions.map(c => cartesianToLv95(c));
-      this.name = geom!.name;
+      const geom: NgmGeometry | undefined = ToolboxStore.geometries.getValue().find(geom => geom.id === options.id);
+      if (!geom) return;
+      this.linestring = geom.positions.map(c => cartesianToLv95(c));
+      this.name = geom.name;
 
       this.data = await fetch(this.profileServiceUrl('json')).then(
         respnse => respnse.json()).then(
@@ -108,7 +113,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
       this.profileInfo = plotProfile(this.data, this.profilePlot, this.distInKM);
       this.domain = this.profileInfo.domain;
 
-      this.attachPathListeners(this.profileInfo.group.select('.ngm-profile-area'), geom);
+      this.attachPathListeners(geom);
       this.setDownloadLinks();
     }
   }
@@ -143,53 +148,28 @@ export class NgmTopoProfileModal extends LitElementI18n {
     this.svgLink.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
   }
 
-  attachPathListeners(areaChartPath, geom) {
+  attachPathListeners(geometry: NgmGeometry) {
+    const areaChartPath = this.profileInfo.group.select('.ngm-profile-area');
     areaChartPath.on('mousemove', (evt) => {
       const x = pointer(evt)[0];
-      let pos = evt.target.getPointAtLength(x);
-      const start = x;
-      const end = pos.x;
-      const accuracy = 5;
-      for (let i = start; i > end; i += accuracy) {
-        pos = evt.target.getPointAtLength(i);
-        if (pos.x >= x) {
-          break;
-        }
-      }
       const xCoord = this.domain.X.invert(x);
-      const yCoord = this.domain.Y.invert(pos.y);
-      const positionX = this.domain.X(xCoord);
-      const positionY = this.domain.Y(yCoord);
+
+      const selectedData = this.data[this.bisect(this.data, xCoord, 0)];
+      const yCoord = selectedData.alts['DTM2'];
+      const y = this.domain.Y(yCoord);
+
       this.tooltipData = {
-        position: {left: `${positionX}px`, top: `${positionY}px`},
+        position: {left: `${x}px`, top: `${y}px`},
         values: {
           dist: `${xCoord.toFixed(2)} ${this.distInKM ? 'km' : 'm'}`,
           elev: `${yCoord.toFixed(2)} m`
         }
       };
-
       let ratio = xCoord / this.data[this.data.length - 1].domainDist;
       if (ratio < 0) ratio = 0;
       else if (ratio > 1) ratio = 1;
-
-      const totalPoints = geom!.positions.length - 1;
-      let prevR = 0;
-      let currR = 0;
-      let indx = 0;
-      let newRatio = 0;
-      for (let i = 0; i <= totalPoints; i++) {
-        if (i > 0) prevR = currR;
-        currR = i / totalPoints;
-        if (ratio > prevR && ratio <= currR) {
-          indx = i;
-          newRatio = ((ratio - prevR) / currR) * i;
-          break;
-        }
-      }
-      if (indx > 0) {
-        this.highlightPointPosition = projectPointOnSegment(this.highlightPointPosition, geom!.positions[indx - 1], geom!.positions[indx], newRatio, newRatio, 0);
-        this.viewer?.scene.requestRender();
-      }
+      getPointOnPolylineByPercentage(geometry!.positions, ratio, this.highlightPointPosition);
+      this.viewer?.scene.requestRender();
     });
     areaChartPath.on('mouseover', () => {
       this.showTooltip = true;

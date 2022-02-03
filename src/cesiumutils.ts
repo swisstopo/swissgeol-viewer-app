@@ -284,6 +284,34 @@ export function projectPointOnSegment(point, startPoint, endPoint, start, end, h
   return updateHeightForCartesianPositions([position], height)[0];
 }
 
+/**
+ * Gets distance to point in percentage and returns cartesian position on the line
+ *
+ * @param linePositions
+ * @param distance - distance to point in percentage (value from 0 to 1 where 0 first point of the line and 1 is last)
+ * @param result
+ */
+export function getPointOnPolylineByPercentage(linePositions: Cartesian3[], distance: number, result = new Cartesian3()) {
+  const totalPoints = linePositions.length - 1;
+  let prevRatio, currRatio, newRatio, indx = 0;
+  for (let i = 0; i <= totalPoints; i++) {
+    if (i > 0) prevRatio = currRatio;
+    currRatio = i / totalPoints;
+    if (distance > prevRatio && distance <= currRatio) {
+      indx = i;
+      newRatio = ((distance - prevRatio) / currRatio) * i;
+      break;
+    }
+  }
+  if (indx > 0) {
+    Cartesian3.clone(
+      projectPointOnSegment(result, linePositions[indx - 1], linePositions[indx], newRatio, newRatio, 0),
+      result
+    );
+  }
+  return result;
+}
+
 const axisScratch = new Cartesian3();
 
 /**

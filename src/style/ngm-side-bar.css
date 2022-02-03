@@ -76,7 +76,7 @@ ngm-auth:hover {
   padding: 10px;
   position: absolute;
   margin-left: 80px;
-  z-index: 3;
+  z-index: 5;
   display: flex;
   flex-direction: column;
 }

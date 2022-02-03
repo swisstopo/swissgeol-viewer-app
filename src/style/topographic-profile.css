@@ -46,12 +46,15 @@ ngm-topo-profile-modal .content-container a:hover {
   height: auto;
   width: fit-content;
   width: -moz-fit-content;
+  min-width: 155px;
   background-color: black;
   color: white;
   opacity: 0.8;
-  margin-top: -45px;
+  margin-top: -50px;
+  margin-left: -17px;
   border-radius: 5px;
-  padding: 5px;
+  padding: 5px 10px;
+  text-align: center;
 }
 
 .ngm-profile-tooltip-arrow {
