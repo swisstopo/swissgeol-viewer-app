@@ -156,3 +156,18 @@ ngm-project-popup.compact {
 .ngm-project-popup-content > .ngm-play-icon:hover {
   background-color: var(--ngm-interaction-hover);
 }
+
+ngm-dashboard .ngm-label-btn {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+
+ngm-dashboard .ngm-label-btn .ngm-back-icon {
+  background-color: var(--ngm-interaction);
+  margin-right: 8px;
+}
+
+ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
+  background-color: var(--ngm-interaction-hover);
+}
