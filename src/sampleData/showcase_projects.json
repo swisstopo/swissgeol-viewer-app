@@ -12,7 +12,8 @@
       "it": "A small tour on heat and water sources of hot springs in the Swiss midlands. Depending on the place, the geological situation can be very different.",
       "en": "A small tour on heat and water sources of hot springs in the Swiss midlands. Depending on the place, the geological situation can be very different."
     },
-    "created": "11 January 2021",
+    "created": "2021-01-11",
+    "modified": "2021-01-11",
     "image": "./images/spashing_water.png",
     "color": "#B9271A",
     "views": [
@@ -59,7 +60,8 @@
       "en": "Infrastructure at the Gotthard transit route can be well seen on the earth surface, but what is actually hidden below the surface? Click on the different views to see the situation around the church of Wassen along the Gotthard transit route."
     },
     "image": "./images/wassen.png",
-    "created": "12 September 2021",
+    "created": "2021-09-12",
+    "modified": "2021-09-12",
     "color": "#B9271A",
     "views": [
       {
@@ -104,7 +106,8 @@
       "it": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
       "en": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy."
     },
-    "created": "10 January 2022",
+    "created": "2022-01-10",
+    "modified": "2022-01-10",
     "image": "./images/dam_LacDesDix.png",
     "color": "#B9271A",
     "views": [

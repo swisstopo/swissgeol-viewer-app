@@ -90,3 +90,15 @@ export class LitElementI18n extends LitElement {
     super.disconnectedCallback();
   }
 }
+
+/**
+ * @param {string} dateString
+ * @return {string}
+ */
+export function toLocaleDateString(dateString) {
+  const date = new Date(dateString);
+
+  return date.toLocaleDateString(`${i18next.language}-CH`, {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
+}
