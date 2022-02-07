@@ -173,6 +173,6 @@ export class NgmDashboard extends LitElementI18n {
 }
 
 
-function translated(property: TranslatedText): string {
+export function translated(property: TranslatedText): string {
   return property[i18next.language];
 }

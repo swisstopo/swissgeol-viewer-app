@@ -4,6 +4,7 @@ import {html} from 'lit';
 import {dragArea} from './helperElements';
 import draggable from './draggable';
 import DashboardStore from '../store/dashboard';
+import {translated} from './ngm-dashboard';
 import type {SelectedView} from './ngm-dashboard';
 
 @customElement('ngm-project-popup')
@@ -43,12 +44,12 @@ export class NgmProjectPopup extends LitElementI18n {
     const viewIndex = this.selectedView.viewIndex;
     return html`
       <div class="ngm-floating-window-header drag-handle">
-        <div class="ngm-floating-window-header-title">${project.title}</div>
+        <div class="ngm-floating-window-header-title">${translated(project.title)}</div>
         <div class="ngm-close-icon" @click=${() => this.hidden = true}></div>
       </div>
       <div class="ngm-project-popup-content">
         <div class="ngm-play-last-icon" @click=${() => this.changeView(-1)}></div>
-        <div class="ngm-project-view-title">${project.views[viewIndex].title}</div>
+        <div class="ngm-project-view-title">${translated(project.views[viewIndex].title)}</div>
         <div class="ngm-play-icon" @click=${() => this.changeView(1)}></div>
       </div>
       ${dragArea}`;
