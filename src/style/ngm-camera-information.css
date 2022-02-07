@@ -28,6 +28,7 @@ ngm-camera-information .ngm-nci-value {
 
 .ngm-nci-direction-labels {
   margin-right: 8px;
+  width: 160px;
 }
 
 .ngm-nci-direction > div:nth-child(2) {

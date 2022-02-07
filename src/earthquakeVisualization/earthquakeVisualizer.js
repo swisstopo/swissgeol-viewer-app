@@ -1,11 +1,12 @@
 import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import {parseEarthquakeData, EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime} from './helpers';
+import {EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime, parseEarthquakeData} from './helpers';
 import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
 import CMath from 'cesium/Source/Core/Math';
 import {LayerType} from '../constants';
 import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
 import Rectangle from 'cesium/Source/Core/Rectangle';
+import {Cartographic} from 'cesium';
 
 export default class EarthquakeVisualizer {
   /**
@@ -41,6 +42,10 @@ export default class EarthquakeVisualizer {
           delete data.Longitude;
           delete data.Latitude;
           const position = Cartesian3.fromDegrees(longitude, latitude, -depthMeters);
+          const posCart = Cartographic.fromCartesian(position);
+          const altitude = this.viewer.scene.globe.getHeight(posCart) || 0;
+          posCart.height = posCart.height + altitude;
+          Cartographic.toCartesian(posCart, undefined, position);
           const cameraDistance = size * 4;
           const zoomHeadingPitchRange = new HeadingPitchRange(0, CMath.toRadians(25), cameraDistance);
           data['Details'] = this.config.detailsUrl;
