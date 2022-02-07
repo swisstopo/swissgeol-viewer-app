@@ -54,7 +54,7 @@ export class NgmFeatureHeight extends LitElementI18n {
       const cartesian = this.viewer.scene.pickPosition(movement.endPosition);
       if (cartesian) {
         const position = Cartographic.fromCartesian(cartesian);
-        const altitude = this.viewer.scene.globe.getHeight(position) || 0;
+        const altitude = this.viewer.scene.globe.getHeight(position);
         if (altitude !== undefined) {
           const lineOrPolygon = getValueOrUndefined(feature?.id?.polyline?.show) || getValueOrUndefined(feature?.id?.polygon?.show);
           if (feature && !lineOrPolygon) {
