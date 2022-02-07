@@ -44,7 +44,18 @@
         },
         "permalink": "?layers=boreholes,ch.swisstopo.geologie-tiefengeothermie_projekte,temperature_model,top_upper_malm,base_cenozoic,top_lower_malm,top_dogger,top_lias,top_keuper,top_muschelkalk,base_mesozoic,base_permocarboniferous,base_permocarboniferous_supposed,faults_geomol,ch.swisstopo.swisstlm3d.3d&layers_visibility=true,true,true,true,true,true,true,true,true,true,true,true,true,true,true&layers_transparency=0,0.5,1,0,0,0,0,0,0,0,0,0,0,0.5,0&map_transparency=0&map=ch.swisstopo.swissimage&lon=6.59900&lat=46.81160&elevation=3429&heading=144&pitch=-33&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4345748.030793835,\"y\":507468.31110827957,\"z\":4625300.076949739},{\"x\":4347816.352357404,\"y\":505325.9842407562,\"z\":4623601.9831696395}]}"
       }
-    ]
+    ],
+    "assets": {
+      "asset_1": {
+        "href": "https://download.swissgeol.ch/assets/KML-Line_3D.kml"
+      },
+      "asset_2": {
+        "href": "https://download.swissgeol.ch/assets/KML-Point_3D.kml"
+      },
+      "asset_3": {
+        "href": "https://download.swissgeol.ch/assets/Komplex_Volume.kml"
+      }
+    }
   },
   {
     "title": {

@@ -9,6 +9,12 @@ import ToolboxStore from '../store/toolbox';
 import {getCameraView, syncTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
 import DashboardStore from '../store/dashboard';
+import {CustomDataSource, KmlDataSource} from 'cesium';
+import {showSnackbarError} from '../notifications';
+import {DEFAULT_LAYER_OPACITY} from '../constants';
+
+import type {Viewer} from 'cesium';
+import type {Config} from '../layers/ngm-layers-item';
 
 export interface TranslatedText {
   de: string,
@@ -19,7 +25,11 @@ export interface TranslatedText {
 
 export interface DashboardProjectView {
   title: TranslatedText,
-  permalink: string
+  permalink: string,
+}
+
+export interface Asset {
+  href: string,
 }
 
 export interface DashboardProject {
@@ -29,12 +39,13 @@ export interface DashboardProject {
   modified: string,
   image: string,
   color: string,
-  views: DashboardProjectView[]
+  views: DashboardProjectView[],
+  assets: Map<string, Asset> | undefined,
 }
 
 export interface SelectedView {
   project: DashboardProject,
-  viewIndex: number
+  viewIndex: number,
 }
 
 @customElement('ngm-dashboard')
@@ -60,6 +71,49 @@ export class NgmDashboard extends LitElementI18n {
     super.update(changedProperties);
   }
 
+  async fetchAssets(viewer: Viewer, assets: Map<string, Asset>) {
+    for (const asset of Object.values(assets)) {
+      try {
+        const kmlDataSource = await KmlDataSource.load(asset.href, {
+          camera: viewer.scene.camera,
+          canvas: viewer.scene.canvas
+        });
+        const uploadedLayer = new CustomDataSource();
+        let name = kmlDataSource.name;
+        kmlDataSource.entities.values.forEach((ent, indx) => {
+          if (indx === 0 && !name) {
+            name = ent.name!;
+          }
+          uploadedLayer.entities.add(ent);
+        });
+        // name used as id for datasource
+        uploadedLayer.name = `${name}_${Date.now()}`;
+        await viewer.dataSources.add(uploadedLayer);
+        // done like this to have correct rerender of component
+        const promise = Promise.resolve(uploadedLayer);
+        const config: Config = {
+          load() {return promise;},
+          label: name,
+          promise: promise,
+          zoomToBbox: true,
+          opacity: DEFAULT_LAYER_OPACITY,
+          notSaveToPermalink: true,
+          ownKml: true
+        };
+
+        this.requestUpdate();
+        await (<any>document.getElementsByTagName('ngm-side-bar')[0]).onCatalogLayerClicked({
+          detail: {
+            layer: config
+          }
+        });
+      } catch (e) {
+        console.error(e);
+        showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
+      }
+    }
+  }
+
   selectView(viewIndex: number) {
     const viewer = MainStore.viewerValue;
     if (!viewer || !this.selectedProject) return;
@@ -72,6 +126,9 @@ export class NgmDashboard extends LitElementI18n {
     window.history.pushState({path: url}, '', url);
     MainStore.nextLayersSync();
     MainStore.nextMapSync();
+    if (this.selectedProject.assets) {
+      this.fetchAssets(viewer, this.selectedProject.assets);
+    }
     const {destination, orientation} = getCameraView();
     if (destination && orientation)
       viewer.camera.flyTo({
