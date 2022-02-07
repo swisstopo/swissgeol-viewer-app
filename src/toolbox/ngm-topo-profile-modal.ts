@@ -13,7 +13,7 @@ import type {Viewer} from 'cesium';
 import {CallbackProperty, Cartesian3, Entity} from 'cesium';
 import Color from 'cesium/Source/Core/Color';
 import HeightReference from 'cesium/Source/Scene/HeightReference';
-import {getPointOnPolylineByPercentage} from '../cesiumutils';
+import {getPointOnPolylineByRatio} from '../cesiumutils';
 import type {NgmGeometry} from './interfaces';
 import {styleMap} from 'lit/directives/style-map.js';
 import {bisector} from 'd3-array';
@@ -168,7 +168,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
       let ratio = xCoord / this.data[this.data.length - 1].domainDist;
       if (ratio < 0) ratio = 0;
       else if (ratio > 1) ratio = 1;
-      getPointOnPolylineByPercentage(geometry!.positions, ratio, this.highlightPointPosition);
+      getPointOnPolylineByRatio(geometry!.positions, ratio, this.highlightPointPosition);
       this.viewer?.scene.requestRender();
     });
     areaChartPath.on('mouseover', () => {
