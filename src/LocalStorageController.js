@@ -1,4 +1,5 @@
 const LOCALSTORAGE_AOI_KEY = 'aoi';
+const LOCALSTORAGE_VIEW_KEY = 'view';
 
 export default class LocalStorageController {
 
@@ -12,5 +13,17 @@ export default class LocalStorageController {
 
   static setAoiInStorage(areas) {
     localStorage.setItem(LOCALSTORAGE_AOI_KEY, JSON.stringify(areas));
+  }
+
+  static storeCurrentView() {
+    localStorage.setItem(LOCALSTORAGE_VIEW_KEY, location.search);
+  }
+
+  static removeStoredView() {
+    localStorage.removeItem(LOCALSTORAGE_VIEW_KEY);
+  }
+
+  static get storedView() {
+    return localStorage.getItem(LOCALSTORAGE_VIEW_KEY);
   }
 }

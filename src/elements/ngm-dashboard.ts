@@ -6,9 +6,11 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
-import {getCameraView, syncTargetParam} from '../permalink';
+import {getCameraView, setPermalink, syncStoredView, syncTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
 import DashboardStore from '../store/dashboard';
+import LocalStorageController from '../LocalStorageController';
+import type {Viewer} from 'cesium';
 
 export interface TranslatedText {
   de: string,
@@ -32,23 +34,21 @@ export interface DashboardProject {
   views: DashboardProjectView[]
 }
 
-export interface SelectedView {
-  project: DashboardProject,
-  viewIndex: number
-}
-
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
   @property({type: Boolean}) hidden = true;
   @state() activeTab: 'topics' | 'project' = 'topics';
   @state() selectedProject: DashboardProject | undefined;
   @state() projects: DashboardProject[] | undefined;
+  @state() selectedViewIndx: number | undefined;
+  private viewer: Viewer | null = null;
 
   constructor() {
     super();
     DashboardStore.viewIndex.subscribe(viewIndex => {
       this.selectView(viewIndex);
     });
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
   }
 
   async update(changedProperties) {
@@ -60,21 +60,38 @@ export class NgmDashboard extends LitElementI18n {
     super.update(changedProperties);
   }
 
-  selectView(viewIndex: number) {
-    const viewer = MainStore.viewerValue;
-    if (!viewer || !this.selectedProject) return;
+  selectView(viewIndex: number | undefined) {
+    this.selectedViewIndx = viewIndex;
     syncTargetParam(undefined);
     NavToolsStore.nextTargetPointSync();
-    this.dispatchEvent(new CustomEvent('close'));
-    DashboardStore.setSelectedView({project: this.selectedProject, viewIndex: viewIndex});
-    const permalink = this.selectedProject.views[viewIndex].permalink;
-    const url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${permalink}`;
-    window.history.pushState({path: url}, '', url);
+    if (this.viewer && this.selectedProject && viewIndex !== undefined) {
+      if (!LocalStorageController.storedView) LocalStorageController.storeCurrentView();
+      this.dispatchEvent(new CustomEvent('close'));
+      const permalink = this.selectedProject.views[viewIndex].permalink;
+      setPermalink(permalink);
+    } else if (viewIndex === undefined) {
+      syncStoredView(LocalStorageController.storedView);
+      LocalStorageController.removeStoredView();
+    }
+    this.setDataFromPermalink();
+  }
+
+  selectProject(project) {
+    this.selectedProject = project;
+    DashboardStore.setSelectedProject(this.selectedProject);
+  }
+
+  deselectProject() {
+    this.selectedProject = undefined;
+    DashboardStore.setSelectedProject(undefined);
+  }
+
+  setDataFromPermalink() {
     MainStore.nextLayersSync();
     MainStore.nextMapSync();
     const {destination, orientation} = getCameraView();
     if (destination && orientation)
-      viewer.camera.flyTo({
+      this.viewer!.camera.flyTo({
         destination: destination,
         orientation: orientation,
         duration: 3,
@@ -85,16 +102,14 @@ export class NgmDashboard extends LitElementI18n {
       });
   }
 
-  previewTemplate(data) {
+  previewTemplate(proj) {
     return html`
-      <div class="ngm-proj-preview" @click=${() => {
-        this.selectedProject = data;
-      }}>
-        <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage: `url('${data.image}')`})}></div>
-        <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: data.color})}>
-          <span>${translated(data.title)}</span>
+      <div class="ngm-proj-preview" @click=${() => this.selectProject(proj)}>
+        <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage: `url('${proj.image}')`})}></div>
+        <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: proj.color})}>
+          <span>${translated(proj.title)}</span>
         </div>
-        <div class="ngm-proj-preview-subtitle"><span>${translated(data.description)}</span></div>
+        <div class="ngm-proj-preview-subtitle"><span>${translated(proj.description)}</span></div>
       </div>`;
   }
 
@@ -125,7 +140,8 @@ export class NgmDashboard extends LitElementI18n {
       </div>
       <div class="ngm-project-views">
         ${this.selectedProject.views.map((view, index) => html`
-          <div class="ngm-action-list-item" @click=${() => this.selectView(index)}>
+          <div class="ngm-action-list-item ${classMap({active: this.selectedViewIndx === index})}"
+               @click=${() => DashboardStore.setViewIndex(this.selectedViewIndx === index ? undefined : index)}>
             <div class="ngm-action-list-item-header">
               <div>${translated(view.title)}</div>
             </div>
@@ -133,7 +149,7 @@ export class NgmDashboard extends LitElementI18n {
         `)}
       </div>
       <div class="ngm-divider"></div>
-      <div class="ngm-label-btn" @click=${() => this.selectedProject = undefined}>
+      <div class="ngm-label-btn" @click=${this.deselectProject}>
         <div class="ngm-back-icon"></div>
         ${i18next.t('dashboard_back_to_topics')}
       </div>
@@ -148,7 +164,7 @@ export class NgmDashboard extends LitElementI18n {
           <div class=${classMap({active: this.activeTab === 'topics'})}
                @click=${() => {
                  this.activeTab = 'topics';
-                 this.selectedProject = undefined;
+                 this.deselectProject();
                }}>
             ${i18next.t('dashboard_topics')}
           </div>
