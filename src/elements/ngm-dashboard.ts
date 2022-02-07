@@ -40,7 +40,7 @@ export interface SelectedView {
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
   @property({type: Boolean}) hidden = true;
-  @state() activeTab: 'dashboard' | 'project' = 'dashboard';
+  @state() activeTab: 'topics' | 'project' = 'topics';
   @state() selectedProject: DashboardProject | undefined;
   @state() projects: DashboardProject[] | undefined;
 
@@ -89,7 +89,6 @@ export class NgmDashboard extends LitElementI18n {
     return html`
       <div class="ngm-proj-preview" @click=${() => {
         this.selectedProject = data;
-        this.activeTab = 'project';
       }}>
         <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage: `url('${data.image}')`})}></div>
         <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: data.color})}>
@@ -133,6 +132,11 @@ export class NgmDashboard extends LitElementI18n {
           </div>
         `)}
       </div>
+      <div class="ngm-divider"></div>
+      <div class="ngm-label-btn" @click=${() => this.selectedProject = undefined}>
+        <div class="ngm-back-icon"></div>
+        ${i18next.t('dashboard_back_to_topics')}
+      </div>
     `;
   }
 
@@ -141,15 +145,12 @@ export class NgmDashboard extends LitElementI18n {
     return html`
       <div class="ngm-panel-header">
         <div class="ngm-dashboard-tabs">
-          <div class=${classMap({active: this.activeTab === 'dashboard'})}
+          <div class=${classMap({active: this.activeTab === 'topics'})}
                @click=${() => {
-                 this.activeTab = 'dashboard';
+                 this.activeTab = 'topics';
                  this.selectedProject = undefined;
                }}>
-            ${i18next.t('lsb_dashboard')}
-          </div>
-          <div class=${classMap({active: this.activeTab === 'project'})} @click=${() => this.activeTab = 'project'}>
-            ${i18next.t('dashboard_swisstopo_template')}
+            ${i18next.t('dashboard_topics')}
           </div>
         </div>
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
