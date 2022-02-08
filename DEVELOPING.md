@@ -98,6 +98,14 @@ aws cloudfront create-invalidation --distribution-id $THE_DISTRIB_ID --paths /so
 
 3. Redeploy the instances on Fargate. 
 
+    The aws credetials are stored in the [ngm gopass password store](https://git.swisstopo.admin.ch/ngm/password-store-ngm).
+
+    ```bash
+    export AWS_REGION=eu-west-1
+    export AWS_ACCESS_KEY_ID=$(gopass show ngm/fargate/AWS_ACCESS_KEY_ID)
+    export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/fargate/AWS_SECRET_ACCESS_KEY)
+    ```
+
     ```bash
     # development
     aws ecs update-service --cluster urlshortener_dev --service urlshortener_dev --force-new-deployment
@@ -105,11 +113,6 @@ aws cloudfront create-invalidation --distribution-id $THE_DISTRIB_ID --paths /so
     aws ecs update-service --cluster urlshortener_int --service urlshortener_int --force-new-deployment
     # production
     aws ecs update-service --cluster urlshortener_prod --service urlshortener_prod --force-new-deployment
-    ```
-
-    The aws credetials are stored in the [ngm gopass password store](https://git.swisstopo.admin.ch/ngm/password-store-ngm).
-    ```bash
-    gopass show ngm/ecs/update-service
     ```
 4. Test by checking the version number returned by the `/health_check` endpoint.
 
