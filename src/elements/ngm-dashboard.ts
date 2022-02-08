@@ -6,14 +6,14 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
-import {getCameraView, syncTargetParam} from '../permalink';
+import {getCameraView, setPermalink, syncStoredView, syncTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
 import DashboardStore from '../store/dashboard';
+import LocalStorageController from '../LocalStorageController';
+import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
 import {showSnackbarError} from '../notifications';
 import {DEFAULT_LAYER_OPACITY} from '../constants';
-
-import type {Viewer} from 'cesium';
 import type {Config} from '../layers/ngm-layers-item';
 
 export interface TranslatedText {
@@ -43,23 +43,21 @@ export interface DashboardProject {
   assets: Map<string, Asset> | undefined,
 }
 
-export interface SelectedView {
-  project: DashboardProject,
-  viewIndex: number,
-}
-
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
   @property({type: Boolean}) hidden = true;
   @state() activeTab: 'topics' | 'project' = 'topics';
   @state() selectedProject: DashboardProject | undefined;
   @state() projects: DashboardProject[] | undefined;
+  @state() selectedViewIndx: number | undefined;
+  private viewer: Viewer | null = null;
 
   constructor() {
     super();
-    DashboardStore.viewIndex.subscribe(viewIndex => {
-      this.selectView(viewIndex);
+    DashboardStore.viewIndex.subscribe(async viewIndex => {
+      await this.selectView(viewIndex);
     });
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
   }
 
   async update(changedProperties) {
@@ -71,12 +69,13 @@ export class NgmDashboard extends LitElementI18n {
     super.update(changedProperties);
   }
 
-  async fetchAssets(viewer: Viewer, assets: Map<string, Asset>) {
+  async fetchAssets(assets: Map<string, Asset>) {
+    if (!this.viewer) return;
     for (const asset of Object.values(assets)) {
       try {
         const kmlDataSource = await KmlDataSource.load(asset.href, {
-          camera: viewer.scene.camera,
-          canvas: viewer.scene.canvas
+          camera: this.viewer.scene.camera,
+          canvas: this.viewer.scene.canvas
         });
         const uploadedLayer = new CustomDataSource();
         let name = kmlDataSource.name;
@@ -88,7 +87,7 @@ export class NgmDashboard extends LitElementI18n {
         });
         // name used as id for datasource
         uploadedLayer.name = `${name}_${Date.now()}`;
-        await viewer.dataSources.add(uploadedLayer);
+        await this.viewer.dataSources.add(uploadedLayer);
         // done like this to have correct rerender of component
         const promise = Promise.resolve(uploadedLayer);
         const config: Config = {
@@ -114,24 +113,41 @@ export class NgmDashboard extends LitElementI18n {
     }
   }
 
-  selectView(viewIndex: number) {
-    const viewer = MainStore.viewerValue;
-    if (!viewer || !this.selectedProject) return;
+  async selectView(viewIndex: number | undefined) {
+    this.selectedViewIndx = viewIndex;
     syncTargetParam(undefined);
     NavToolsStore.nextTargetPointSync();
-    this.dispatchEvent(new CustomEvent('close'));
-    DashboardStore.setSelectedView({project: this.selectedProject, viewIndex: viewIndex});
-    const permalink = this.selectedProject.views[viewIndex].permalink;
-    const url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${permalink}`;
-    window.history.pushState({path: url}, '', url);
+    if (this.viewer && this.selectedProject && viewIndex !== undefined) {
+      if (!LocalStorageController.storedView) LocalStorageController.storeCurrentView();
+      this.dispatchEvent(new CustomEvent('close'));
+      const permalink = this.selectedProject.views[viewIndex].permalink;
+      setPermalink(permalink);
+    } else if (viewIndex === undefined) {
+      syncStoredView(LocalStorageController.storedView);
+      LocalStorageController.removeStoredView();
+    }
+    await this.setDataFromPermalink();
+  }
+
+  selectProject(project) {
+    this.selectedProject = project;
+    DashboardStore.setSelectedProject(this.selectedProject);
+  }
+
+  deselectProject() {
+    this.selectedProject = undefined;
+    DashboardStore.setSelectedProject(undefined);
+  }
+
+  async setDataFromPermalink() {
     MainStore.nextLayersSync();
     MainStore.nextMapSync();
-    if (this.selectedProject.assets) {
-      this.fetchAssets(viewer, this.selectedProject.assets);
+    if (this.selectedProject?.assets) {
+      await this.fetchAssets(this.selectedProject.assets);
     }
     const {destination, orientation} = getCameraView();
     if (destination && orientation)
-      viewer.camera.flyTo({
+      this.viewer!.camera.flyTo({
         destination: destination,
         orientation: orientation,
         duration: 3,
@@ -142,16 +158,14 @@ export class NgmDashboard extends LitElementI18n {
       });
   }
 
-  previewTemplate(data) {
+  previewTemplate(proj) {
     return html`
-      <div class="ngm-proj-preview" @click=${() => {
-        this.selectedProject = data;
-      }}>
-        <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage: `url('${data.image}')`})}></div>
-        <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: data.color})}>
-          <span>${translated(data.title)}</span>
+      <div class="ngm-proj-preview" @click=${() => this.selectProject(proj)}>
+        <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage: `url('${proj.image}')`})}></div>
+        <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: proj.color})}>
+          <span>${translated(proj.title)}</span>
         </div>
-        <div class="ngm-proj-preview-subtitle"><span>${translated(data.description)}</span></div>
+        <div class="ngm-proj-preview-subtitle"><span>${translated(proj.description)}</span></div>
       </div>`;
   }
 
@@ -182,7 +196,8 @@ export class NgmDashboard extends LitElementI18n {
       </div>
       <div class="ngm-project-views">
         ${this.selectedProject.views.map((view, index) => html`
-          <div class="ngm-action-list-item" @click=${() => this.selectView(index)}>
+          <div class="ngm-action-list-item ${classMap({active: this.selectedViewIndx === index})}"
+               @click=${() => DashboardStore.setViewIndex(this.selectedViewIndx === index ? undefined : index)}>
             <div class="ngm-action-list-item-header">
               <div>${translated(view.title)}</div>
             </div>
@@ -190,7 +205,7 @@ export class NgmDashboard extends LitElementI18n {
         `)}
       </div>
       <div class="ngm-divider"></div>
-      <div class="ngm-label-btn" @click=${() => this.selectedProject = undefined}>
+      <div class="ngm-label-btn" @click=${this.deselectProject}>
         <div class="ngm-back-icon"></div>
         ${i18next.t('dashboard_back_to_topics')}
       </div>
@@ -205,7 +220,7 @@ export class NgmDashboard extends LitElementI18n {
           <div class=${classMap({active: this.activeTab === 'topics'})}
                @click=${() => {
                  this.activeTab = 'topics';
-                 this.selectedProject = undefined;
+                 this.deselectProject();
                }}>
             ${i18next.t('dashboard_topics')}
           </div>

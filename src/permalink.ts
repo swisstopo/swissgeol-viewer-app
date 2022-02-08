@@ -207,3 +207,20 @@ export function getTargetParam(): Cartesian3 | undefined {
 export function getCesiumToolbarParam(): boolean {
   return getURLSearchParams().has('cesiumToolbar');
 }
+
+export function syncStoredView(stored) {
+  const params = getURLSearchParams();
+  const storedParams = new URLSearchParams(stored);
+  const skipParams = [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch'];
+  for (const param of storedParams.entries()) {
+    if (!skipParams.includes(param[0])) {
+      params.set(param[0], param[1]);
+    }
+  }
+  setURLSearchParams(params);
+}
+
+export function setPermalink(permalink) {
+  const params = new URLSearchParams(permalink);
+  setURLSearchParams(params);
+}

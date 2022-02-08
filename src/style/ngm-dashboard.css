@@ -22,6 +22,7 @@ ngm-dashboard .ngm-panel-header,
 
 .ngm-dashboard-tabs > div:hover {
   color: var(--ngm-interaction-hover);
+  cursor: pointer;
 }
 
 .ngm-dashboard-tabs > div.active {

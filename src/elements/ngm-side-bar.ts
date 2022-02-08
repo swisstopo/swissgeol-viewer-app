@@ -54,6 +54,7 @@ export class SideBar extends LitElementI18n {
   @state() hideDataDisplayed = false;
   @state() layerOrderChangeActive = false;
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder') toastPlaceholder;
+  @query('ngm-catalog') catalogElement;
   private viewer: Viewer | null = null;
   private layerActions: any;
   private zoomedToPosition = false;
@@ -78,9 +79,10 @@ export class SideBar extends LitElementI18n {
         });
       }
     });
-    MainStore.syncLayers.subscribe(() => {
+    MainStore.syncLayers.subscribe(async () => {
       this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
-      this.syncActiveLayers();
+      await this.syncActiveLayers();
+      this.catalogElement.requestUpdate();
     });
 
     const sliceOptions = getSliceParam();
