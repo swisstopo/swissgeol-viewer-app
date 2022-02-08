@@ -9,6 +9,7 @@ import {
   Math as CMath,
   Matrix3,
   Matrix4,
+  OrientedBoundingBox,
   Plane,
   Rectangle,
   Transforms
@@ -461,4 +462,21 @@ export function positionFromPxDistance(scene: Scene, firstPoint: Cartesian3, dis
   const scalar3d = distance / Cartesian3.distance(pos, scratchPosition) * side;
   Cartesian3.multiplyByScalar(axisVector3dScratch, scalar3d, moveVector3dScratch);
   return Cartesian3.add(firstPoint, moveVector3dScratch, new Cartesian3());
+}
+
+/**
+ * Checks is geometry of part of geometry inside viewport
+ * @param viewer
+ * @param positions - positions of geometry
+ */
+export function isGeometryInViewport(viewer, positions) {
+  const camera = viewer.camera;
+  const frustum = camera.frustum;
+  const cullingVolume = frustum.computeCullingVolume(
+    camera.position,
+    camera.direction,
+    camera.up
+  );
+
+  return cullingVolume.computeVisibility(OrientedBoundingBox.fromPoints(positions)) !== -1;
 }

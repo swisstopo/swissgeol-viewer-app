@@ -5,7 +5,7 @@ import {LitElementI18n} from '../i18n.js';
 import {getSliceParam, syncSliceParam} from '../permalink';
 import 'fomantic-ui-css/components/checkbox';
 import ToolboxStore from '../store/toolbox';
-import {getMeasurements} from '../cesiumutils';
+import {getMeasurements, isGeometryInViewport} from '../cesiumutils';
 import type Slicer from '../slicer/Slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
 import type SlicingBox from '../slicer/SlicingBox';
@@ -133,7 +133,7 @@ export class NgmSlicer extends LitElementI18n {
         };
       }
       const entity = this.geometriesDataSource!.entities.getById(geom.id!);
-      this.flyToSlicingGeom(entity);
+      !isGeometryInViewport(MainStore.viewerValue!, geom) && this.flyToSlicingGeom(entity);
       entity!.show = false;
       this.sliceGeomId = geom.id;
       this.slicer.active = true;
