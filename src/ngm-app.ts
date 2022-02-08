@@ -24,7 +24,7 @@ import {DEFAULT_VIEW} from './constants';
 import {setupSearch} from './search.js';
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 
-import {getCameraView, getCesiumToolbarParam, getZoomToPosition, syncCamera} from './permalink';
+import {getCameraView, getCesiumToolbarParam, getZoomToPosition, syncCamera, syncStoredView} from './permalink';
 import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
@@ -42,6 +42,7 @@ import type MapChooser from './MapChooser';
 import type {NgmSlowLoading} from './elements/ngm-slow-loading';
 import type {Viewer} from 'cesium';
 import type {Config} from './layers/ngm-layers-item';
+import LocalStorageController from './LocalStorageController';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -193,7 +194,11 @@ export class NgmApp extends LitElementI18n {
     window['viewer'] = viewer; // for debugging
 
     this.startCesiumLoadingProcess(viewer);
-
+    const storedView = LocalStorageController.storedView;
+    if (storedView) {
+      syncStoredView(storedView);
+      LocalStorageController.removeStoredView();
+    }
     const {destination, orientation} = getCameraView();
     const zoomToPosition = getZoomToPosition();
     if (!zoomToPosition) {

@@ -1,27 +1,24 @@
 import {BehaviorSubject, Subject} from 'rxjs';
-import type {SelectedView} from '../elements/ngm-dashboard';
+import type {DashboardProject} from '../elements/ngm-dashboard';
 
 export default class DashboardStore {
-  private static selectedViewSubject = new BehaviorSubject<SelectedView | undefined>(undefined);
-  private static viewIndexSubject = new Subject<number>();
+  private static selectedProjectSubject = new BehaviorSubject<DashboardProject | undefined>(undefined);
+  private static viewIndexSubject = new Subject<number | undefined>();
 
-  static get selectedView(): BehaviorSubject<SelectedView | undefined> {
-    return this.selectedViewSubject;
+  static get selectedProject(): BehaviorSubject<DashboardProject | undefined> {
+    return this.selectedProjectSubject;
   }
 
-  static get selectedViewValue(): SelectedView | undefined {
-    return this.selectedViewSubject.getValue();
+  static setSelectedProject(value: DashboardProject | undefined): void {
+    this.selectedProjectSubject.next(value);
+    if (!value) this.viewIndexSubject.next(undefined);
   }
 
-  static setSelectedView(value: SelectedView): void {
-    this.selectedViewSubject.next(value);
-  }
-
-  static setViewIndex(value: number): void {
+  static setViewIndex(value: number | undefined): void {
     this.viewIndexSubject.next(value);
   }
 
-  static get viewIndex(): Subject<number> {
+  static get viewIndex(): Subject<number | undefined> {
     return this.viewIndexSubject;
   }
 }
