@@ -1,0 +1,70 @@
+version: "2"
+services:
+  api:
+    image: camptocamp/ngm_api:latest
+    ports:
+      - 8480:3000
+    volumes:
+      - "./api/src:/app/src:ro"
+    working_dir: /app
+    command: ['cargo', 'watch', '-x', 'run']
+    environment:
+      AWS_HOST: http://minio:9000
+      AWS_ACCESS_KEY_ID: &minio_user minio
+      AWS_SECRET_ACCESS_KEY: &minio_pass minio123
+      ENVIRONMENT_NAME: local-dev
+      POSTGRES_USER: &db_user www-data
+      POSTGRES_PASSWORD: &db_pass www-data
+    links:
+      - db
+
+  ui:
+    image: node:16
+    ports:
+      - 8000:8000
+    environment:
+      ENVIRONMENT_NAME: local-dev
+    working_dir: /app
+    command: ['node_modules/.bin/webpack', 'serve']
+    links:
+      - api
+      - abbreviator
+    volumes:
+      - "./:/app:ro"
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address :9001
+    volumes:
+      - miniodata:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_BROWSER: 'on'
+      MINIO_ROOT_USER: *minio_user
+      MINIO_ROOT_PASSWORD: *minio_pass
+
+  abbreviator:
+    image: camptocamp/abbreviator:latest
+    ports:
+      - "8001:8080"
+    environment:
+      ID_LENGTH: 5
+      DATABASE_URL: "sqlite::memory:"
+      HOST_WHITELIST: "localhost"
+
+  db:
+    image: camptocamp/postgres:11
+    environment:
+      POSTGRES_USER: *db_user
+      POSTGRES_PASSWORD: *db_pass
+      # this image forcefuly create one (and only one) db but as we have 2 db to create,
+      # we let it creates an unused "postgres" (default name) db, and manage the db creation
+      # in an external script with alembic
+    ports:
+      - 15432:5432
+    # command: postgres -c log_statement=all for debugging
+
+volumes:
+  miniodata:
