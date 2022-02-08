@@ -83,6 +83,7 @@ export class SideBar extends LitElementI18n {
       this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
       await this.syncActiveLayers();
       this.catalogElement.requestUpdate();
+      MainStore.nextLayersRemove();
     });
 
     const sliceOptions = getSliceParam();
@@ -413,7 +414,6 @@ export class SideBar extends LitElementI18n {
       layer.displayed = true;
       this.activeLayers.push(layer);
       this.maybeShowVisibilityHint(layer);
-
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
 

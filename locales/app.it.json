@@ -39,6 +39,7 @@
   "dtd_object_on_coordinates_not_found_warning": "Oggetto non trovato o camera spostata dalla sua posizione originale",
   "dtd_opacity_base_map": "Opacità della mappa di sfondo",
   "dtd_own_kml_tag": "Propio kml",
+  "dtd_topic_kml_tag": "",
   "dtd_user_content_label": "Aggiungere propio contenuto",
   "header_search_placeholder": "Ricercare...",
   "link": "Link",

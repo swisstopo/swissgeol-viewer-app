@@ -21,6 +21,7 @@ export interface Config extends LayerTreeNode {
   promise?: Promise<any>;
   notSaveToPermalink?: boolean;
   ownKml?: boolean;
+  topicKml?: boolean;
 }
 
 @customElement('ngm-layers-item')
@@ -104,6 +105,14 @@ export class LayerTreeItem extends LitElementI18n {
     this.dispatchEvent(new CustomEvent('removeDisplayedLayer'));
   }
 
+  get sublabel() {
+    if (this.config.ownKml)
+      return `(${i18next.t('dtd_own_kml_tag')})`;
+    else if (this.config.topicKml)
+      return `(${i18next.t('dtd_topic_kml_tag')})`;
+    else return '';
+  }
+
   showLayerLegend(config: Config) {
     this.dispatchEvent(new CustomEvent('showLayerLegend', {
       bubbles: true,
@@ -165,7 +174,7 @@ export class LayerTreeItem extends LitElementI18n {
       <div class="ngm-displayed-slider">
         <label class="ngm-layer-label">
           <i class=${this.config.restricted ? 'lock icon' : ''}></i>
-          ${i18next.t(this.config.label)} ${this.config.ownKml ? `(${i18next.t('dtd_own_kml_tag')})` : ''}
+          ${i18next.t(this.config.label)} ${this.sublabel}
         </label>
         <label ?hidden=${!this.config.setOpacity}>${(this.config.opacity! * 100).toFixed()} %</label>
         <input type="range" class="ngm-slider" ?hidden=${!this.config.setOpacity}

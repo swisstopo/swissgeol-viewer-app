@@ -51,6 +51,8 @@ export class NgmDashboard extends LitElementI18n {
   @state() projects: DashboardProject[] | undefined;
   @state() selectedViewIndx: number | undefined;
   private viewer: Viewer | null = null;
+  private assetConfigs: any = {};
+  private assets: Config[] | undefined;
 
   constructor() {
     super();
@@ -58,6 +60,17 @@ export class NgmDashboard extends LitElementI18n {
       await this.selectView(viewIndex);
     });
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.layersRemoved.subscribe(async () => {
+      if (this.selectedViewIndx !== undefined && this.assets) {
+        await Promise.all(this.assets.map(async layer => {
+          const data = await layer.promise;
+          data.show = true;
+          await (<any>document.getElementsByTagName('ngm-side-bar')[0]).onCatalogLayerClicked({
+            detail: {layer}
+          });
+        }));
+      }
+    });
   }
 
   async update(changedProperties) {
@@ -69,48 +82,53 @@ export class NgmDashboard extends LitElementI18n {
     super.update(changedProperties);
   }
 
-  async fetchAssets(assets: Map<string, Asset>) {
-    if (!this.viewer) return;
+  async fetchAssets(assets: Map<string, Asset>): Promise<Config[]> {
+    const assetsData: Config[] = [];
+    if (!this.viewer) return assetsData;
     for (const asset of Object.values(assets)) {
       try {
-        const kmlDataSource = await KmlDataSource.load(asset.href, {
-          camera: this.viewer.scene.camera,
-          canvas: this.viewer.scene.canvas
-        });
-        const uploadedLayer = new CustomDataSource();
-        let name = kmlDataSource.name;
-        kmlDataSource.entities.values.forEach((ent, indx) => {
-          if (indx === 0 && !name) {
-            name = ent.name!;
-          }
-          uploadedLayer.entities.add(ent);
-        });
-        // name used as id for datasource
-        uploadedLayer.name = `${name}_${Date.now()}`;
-        await this.viewer.dataSources.add(uploadedLayer);
-        // done like this to have correct rerender of component
+        const dataSources = this.viewer.dataSources.getByName(asset.href);
+        let uploadedLayer: CustomDataSource;
+        if (dataSources.length) {
+          uploadedLayer = dataSources[0];
+          uploadedLayer.show = true;
+        } else {
+          const kmlDataSource = await KmlDataSource.load(asset.href, {
+            camera: this.viewer.scene.camera,
+            canvas: this.viewer.scene.canvas
+          });
+          uploadedLayer = new CustomDataSource(asset.href);
+          let name = kmlDataSource.name;
+          kmlDataSource.entities.values.forEach((ent, indx) => {
+            if (indx === 0 && !name) {
+              name = ent.name!;
+            }
+            uploadedLayer.entities.add(ent);
+          });
+          this.assetConfigs[asset.href] = {
+            label: name,
+            zoomToBbox: true,
+            opacity: DEFAULT_LAYER_OPACITY,
+            notSaveToPermalink: true,
+            topicKml: true
+          };
+          await this.viewer.dataSources.add(uploadedLayer);
+        }
         const promise = Promise.resolve(uploadedLayer);
-        const config: Config = {
-          load() {return promise;},
-          label: name,
-          promise: promise,
-          zoomToBbox: true,
-          opacity: DEFAULT_LAYER_OPACITY,
-          notSaveToPermalink: true,
-          ownKml: true
-        };
-
-        this.requestUpdate();
-        await (<any>document.getElementsByTagName('ngm-side-bar')[0]).onCatalogLayerClicked({
-          detail: {
-            layer: config
-          }
+        assetsData.push({
+          ...this.assetConfigs[asset.href],
+          displayed: false,
+          load() {
+            return promise;
+          },
+          promise
         });
       } catch (e) {
         console.error(e);
         showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
       }
     }
+    return assetsData;
   }
 
   async selectView(viewIndex: number | undefined) {
@@ -129,22 +147,22 @@ export class NgmDashboard extends LitElementI18n {
     await this.setDataFromPermalink();
   }
 
-  selectProject(project) {
+  async selectProject(project) {
     this.selectedProject = project;
+    if (this.selectedProject?.assets)
+      this.assets = await this.fetchAssets(this.selectedProject.assets);
     DashboardStore.setSelectedProject(this.selectedProject);
   }
 
   deselectProject() {
     this.selectedProject = undefined;
+    this.assets = [];
     DashboardStore.setSelectedProject(undefined);
   }
 
   async setDataFromPermalink() {
     MainStore.nextLayersSync();
     MainStore.nextMapSync();
-    if (this.selectedProject?.assets) {
-      await this.fetchAssets(this.selectedProject.assets);
-    }
     const {destination, orientation} = getCameraView();
     if (destination && orientation)
       this.viewer!.camera.flyTo({
