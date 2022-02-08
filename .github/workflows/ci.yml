@@ -32,13 +32,13 @@ jobs:
         run: scripts/github_add_link_for_reviews.sh
 
       - name: Npm setup
-        run: npm ci && du -sh node_modules
+        run: cd ui && npm ci && du -sh node_modules
 
       - name: Lint
-        run: npm run lint
+        run: cd ui && npm run lint
 
       - name: Test
-        run: npm run test
+        run: cd ui && npm run test
 
       - name: Cypress run
         uses: cypress-io/github-action@v2
@@ -46,17 +46,17 @@ jobs:
           command: npm run test:e2e
 
       - name: Build
-        run: export RELEASE_NAME="${scripts/get_github_name.sh}"; echo $RELEASE_NAME; npm run build
+        run: export RELEASE_NAME="${scripts/get_github_name.sh}"; echo $RELEASE_NAME; cd ui; npm run build
 
       - name: Build storybook
-        run: npm run build-storybook
+        run: cd ui; npm run build-storybook
 
       - name: Deploy to S3
         env:
           AWS_REGION: "eu-west-1"
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        run: scripts/github_deploy.sh
+        run: cd ui ; scripts/github_deploy.sh
 
       - name: Notify sentry
         env:
