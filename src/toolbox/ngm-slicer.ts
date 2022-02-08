@@ -133,7 +133,7 @@ export class NgmSlicer extends LitElementI18n {
         };
       }
       const entity = this.geometriesDataSource!.entities.getById(geom.id!);
-      !isGeometryInViewport(MainStore.viewerValue!, geom) && this.flyToSlicingGeom(entity);
+      !isGeometryInViewport(MainStore.viewerValue!, geom.positions) && this.flyToSlicingGeom(entity);
       entity!.show = false;
       this.sliceGeomId = geom.id;
       this.slicer.active = true;
