@@ -1,3 +1,3 @@
-async fn main() {
-    println("Hello")
+fn main() {
+    println!("Hello")
 }
