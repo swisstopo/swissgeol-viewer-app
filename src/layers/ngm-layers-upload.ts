@@ -53,11 +53,11 @@ export default class LayersUpload extends LitElementI18n {
         };
 
         this.requestUpdate();
-        await (<any> document.getElementsByTagName('ngm-side-bar')[0]).onCatalogLayerClicked({
+        this.dispatchEvent(new CustomEvent('layerclick', {
           detail: {
             layer: config
           }
-        });
+        }));
         await this.viewer.zoomTo(uploadedLayer);
         (<HTMLInputElement> this.querySelector('.ngm-upload-kml')).value = '';
         this.loading = false;

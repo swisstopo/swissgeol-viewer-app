@@ -65,9 +65,9 @@ export class NgmDashboard extends LitElementI18n {
         await Promise.all(this.assets.map(async layer => {
           const data = await layer.promise;
           data.show = true;
-          await (<any>document.getElementsByTagName('ngm-side-bar')[0]).onCatalogLayerClicked({
+          this.dispatchEvent(new CustomEvent('layerclick', {
             detail: {layer}
-          });
+          }));
         }));
       }
     });
