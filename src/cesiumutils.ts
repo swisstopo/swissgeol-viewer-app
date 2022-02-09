@@ -291,17 +291,25 @@ export function projectPointOnSegment(point, startPoint, endPoint, start, end, h
  * @param ratio - distance to point in percentage (value from 0 to 1 where 0 first point of the line and 1 is last)
  * @param result
  */
-export function getPointOnPolylineByRatio(linePositions: Cartesian3[], ratio: number, result = new Cartesian3()) {
-  const totalPoints = linePositions.length - 1;
-  let prevRatio, currRatio, segmentRatio, indx = 0;
-  for (let i = 0; i <= totalPoints; i++) {
-    if (i > 0) prevRatio = currRatio;
-    currRatio = i / totalPoints;
-    if (ratio > prevRatio && ratio <= currRatio) {
+export function getPointOnPolylineByRatio(linePositions: Cartesian3[], ratio: number, result) {
+  let indx, segmentRatio = 0;
+  const distances = linePositions.map((pos, indx) => {
+    if (indx === 0) return 0;
+    return Cartesian3.distance(linePositions[indx - 1], pos);
+  });
+  const distance = distances.reduce((partialSum, a) => partialSum + a, 0);
+  const distanceToPoint = distance * ratio;
+  let currDist = 0, pervDist = 0;
+  for (let i = 1; i < distances.length; i++) {
+    currDist += distances[i];
+    if (distanceToPoint > pervDist && distanceToPoint <= currDist) {
+      const d1 = currDist - pervDist;
+      const d2 = distanceToPoint - pervDist;
+      segmentRatio = d2 / d1;
       indx = i;
-      segmentRatio = ((ratio - prevRatio) / currRatio) * i;
       break;
     }
+    pervDist = currDist;
   }
 
   return indx > 0 ?
