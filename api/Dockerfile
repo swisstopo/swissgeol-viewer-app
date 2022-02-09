@@ -24,7 +24,7 @@ WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
 COPY ./src/stub.rs ./src/main.rs
-RUN cargo fetch --target x86_64-unknown-linux-musl
+RUN cargo build --target x86_64-unknown-linux-musl
 
 COPY ./ .
 RUN cargo build --target x86_64-unknown-linux-musl

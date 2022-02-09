@@ -30,7 +30,7 @@ services:
       - api
       - abbreviator
     volumes:
-      - "./:/app:ro"
+      - "./ui:/app:ro"
 
   minio:
     image: minio/minio:latest
