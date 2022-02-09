@@ -1,6 +1,8 @@
 import interact from 'interactjs';
 
 const MARGIN_BETWEEN_WINDOWS = 5;
+const TARGET_WINDOW_Z = '4';
+const DEFAULT_WINDOW_Z = '1';
 
 /**
  * @param {HTMLElement} target
@@ -32,17 +34,17 @@ function translate(event) {
   target.setAttribute('data-x', x);
   target.setAttribute('data-y', y);
   // show target window above other windows
-  if (!target.style.zIndex || target.style.zIndex === '1') {
-    document.querySelectorAll<HTMLElement>('.ngm-floating-window').forEach(elem => elem.style.zIndex = '1');
-    target.style.zIndex = '2';
+  if (!target.style.zIndex || target.style.zIndex === DEFAULT_WINDOW_Z) {
+    document.querySelectorAll<HTMLElement>('.ngm-floating-window').forEach(elem => elem.style.zIndex = DEFAULT_WINDOW_Z);
+    target.style.zIndex = TARGET_WINDOW_Z;
   }
 }
 
 
 function updateZIndex(target) {
-  target.style.zIndex = '2';
+  target.style.zIndex = TARGET_WINDOW_Z;
   document.querySelectorAll<HTMLElement>('.ngm-floating-window').forEach(elem => {
-    if (elem !== target) elem.style.zIndex = '1';
+    if (elem !== target) elem.style.zIndex = DEFAULT_WINDOW_Z;
   });
 }
 

@@ -158,6 +158,8 @@
   "obj_info_perimeter_label": "Umfang",
   "obj_info_website_label": "Website Link",
   "obj_info_zoom_to_object_btn_label": "Auf Objekt Zoomen",
+  "profile_distance": "",
+  "profile_elevation": "",
   "shortlink_copied": "Link kopiert",
   "shortlink_copy_btn_label": "Link kopieren",
   "shortlink_link_label": "Link",

@@ -291,7 +291,7 @@ export class CesiumDraw extends EventTarget {
 
   dynamicSketLinePositions() {
     return new CallbackProperty(() => {
-      const activePoints = [...this.activePoints_, this.activePoint_];
+      const activePoints: Cartesian3[] = [...this.activePoints_!, this.activePoint_!];
       const positions = this.type === 'rectangle' ? rectanglify(activePoints) : activePoints;
       if (this.type === 'rectangle' && activePoints.length === 4) { // to avoid showing of confusing lines
         return [];
@@ -308,7 +308,7 @@ export class CesiumDraw extends EventTarget {
 
   updateSketchPoint() {
     if (!this.sketchPoint_) return;
-    const activePoints = [...this.activePoints_, this.activePoint_];
+    const activePoints: Cartesian3[] = [...this.activePoints_!, this.activePoint_!];
     const positions = this.type === 'rectangle' ? rectanglify(activePoints) : activePoints;
     const pointsLength = positions.length;
     if (pointsLength > 1) {

@@ -158,6 +158,8 @@
   "obj_info_perimeter_label": "Perimetro",
   "obj_info_website_label": "Link al sito web",
   "obj_info_zoom_to_object_btn_label": "Zoom sull'oggetto",
+  "profile_distance": "",
+  "profile_elevation": "",
   "shortlink_copied": "Link copiato",
   "shortlink_copy_btn_label": "Copiare il link",
   "shortlink_link_label": "Link",
