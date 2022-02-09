@@ -1,5 +1,5 @@
 import {html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
@@ -16,6 +16,7 @@ export default class LayersUpload extends LitElementI18n {
   @property({type: Object}) viewer!: Viewer;
   @property({type: Object}) toastPlaceholder!: HTMLElement;
   @state() loading = false;
+  @query('.ngm-upload-kml') uploadKmlInput!: HTMLInputElement;
 
   async uploadKml(file: File) {
     if (!file) {
@@ -59,7 +60,7 @@ export default class LayersUpload extends LitElementI18n {
           }
         });
         await this.viewer.zoomTo(uploadedLayer);
-        (<HTMLInputElement> this.querySelector('.ngm-upload-kml')).value = '';
+        this.uploadKmlInput.value = '';
         this.loading = false;
       } catch (e) {
         this.loading = false;
@@ -81,7 +82,7 @@ export default class LayersUpload extends LitElementI18n {
 
   render() {
     return html`
-      <button class="ngm-upload-kml-btn" @click="${() => $(this.querySelector('.ngm-upload-kml')).click()}"
+      <button class="ngm-upload-kml-btn" @click="${() => this.uploadKmlInput.click()}"
               @drop="${this.onDrop}"
               @dragenter=${(event: DragEvent) => $(event.target).addClass('active')}
               @dragover="${(event: DragEvent) => event.preventDefault()}"
