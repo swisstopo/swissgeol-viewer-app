@@ -41,7 +41,7 @@ jobs:
         run: cd ui && npm run test
 
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@2f2f346ca14c89ebbc0c92d50d1cd29f4c6d3339
         with:
           command: npm run test:e2e
           working-directory: ui
