@@ -4,10 +4,6 @@ services:
     image: camptocamp/ngm_api:latest
     ports:
       - 8480:3000
-    volumes:
-      - "./api/src:/app/src:ro"
-    working_dir: /app
-    command: ['cargo', 'watch', '-x', 'run']
     environment:
       AWS_HOST: http://minio:9000
       AWS_ACCESS_KEY_ID: &minio_user minio
