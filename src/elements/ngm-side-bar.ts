@@ -181,7 +181,7 @@ export class SideBar extends LitElementI18n {
         </div>
       </div>
       <ngm-dashboard ?hidden=${this.activePanel !== 'dashboard'} @close=${() => this.activePanel = ''}
-                     class="ngm-side-bar-panel ngm-large-panel"></ngm-dashboard>
+                     class="ngm-side-bar-panel ngm-large-panel" .mobileView="${this.mobileView}"></ngm-dashboard>
       <div .hidden=${this.activePanel !== 'data' || (this.mobileView && !this.hideDataDisplayed)}
            class="ngm-side-bar-panel ngm-layer-catalog">
         <div class="ngm-panel-header">

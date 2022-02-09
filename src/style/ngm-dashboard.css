@@ -1,6 +1,7 @@
 ngm-dashboard .ngm-panel-header,
 .ngm-proj-title,
-.ngm-proj-views-title {
+.ngm-proj-views-title,
+.ngm-projects-list {
   margin-bottom: 12px;
 }
 
