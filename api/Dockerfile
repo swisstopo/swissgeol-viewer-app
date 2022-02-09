@@ -1,5 +1,4 @@
-## Builder
-FROM rust:latest AS builder
+FROM rust:latest
 
 RUN rustup target add x86_64-unknown-linux-musl
 RUN cargo install cargo-watch
@@ -22,27 +21,14 @@ RUN adduser \
 
 WORKDIR /app
 
+# First we handle fetching and building our dependencies
+# We need a stub entry point for that
 COPY Cargo.toml Cargo.lock ./
 COPY ./src/stub.rs ./src/main.rs
 RUN cargo build --target x86_64-unknown-linux-musl
 
+# In a second step we build our
 COPY ./ .
-RUN cargo build --target x86_64-unknown-linux-musl
 
-
-# ## Final image
-# FROM alpine
-
-# # Import from builder.
-# COPY --from=builder /etc/passwd /etc/passwd
-# COPY --from=builder /etc/group /etc/group
-
-# WORKDIR /app
-
-# # Copy our build
-# COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/api ./
-
-# # Use an unprivileged user.
-# USER api:api
-
-CMD ["/app/api"]
+VOLUME ["./api/src:/app/src:ro"]
+CMD ["cargo", "watch", "-x", "run"]
