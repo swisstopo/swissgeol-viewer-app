@@ -43,11 +43,8 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: npm start
-          wait-on: http://localhost:8000
+          command: npm run test:e2e
           working-directory: ui
-          browser: chrome
-          headless: true
 
       - name: Build
         run: export RELEASE_NAME="${scripts/get_github_name.sh}"; echo $RELEASE_NAME; cd ui; npm run build
