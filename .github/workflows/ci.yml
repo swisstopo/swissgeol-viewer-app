@@ -19,17 +19,57 @@ env:
   IN_CI: "1"
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
-    timeout-minutes: 24
 
+  add_review_links:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v2
-
       - name: Add review links
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: scripts/github_add_link_for_reviews.sh
+
+  validate_local_api:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 12
+    steps:
+      - run: docker system prune --all --force --volumes
+      - uses: actions/checkout@v2
+      - name: Log into Docker hub
+        env:
+          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
+        run: |
+          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - name: Build api
+        run: make build_local_api
+
+  validate_api:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 12
+    steps:
+      - run: docker system prune --all --force --volumes
+      - uses: actions/checkout@v2
+      - name: Log into Docker hub
+        env:
+          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
+        run: |
+          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - name: Build api
+        run: make build_api
+
+  validate_ui:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
 
       - name: Npm setup
         run: cd ui && npm ci && du -sh node_modules
@@ -41,6 +81,7 @@ jobs:
         run: cd ui && npm run test
 
       - name: Cypress run
+        # v3: https://github.com/cypress-io/github-action/releases
         uses: cypress-io/github-action@2f2f346ca14c89ebbc0c92d50d1cd29f4c6d3339
         with:
           command: npm run test:e2e
@@ -52,12 +93,41 @@ jobs:
       - name: Build storybook
         run: cd ui; npm run build-storybook
 
+
+  deploy_ui:
+    needs: [validate_api, validate_ui]
+    runs-on: ubuntu-20.04
+    timeout-minutes: 24
+    steps:
       - name: Deploy to S3
         env:
           AWS_REGION: "eu-west-1"
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
         run: cd ui ; scripts/github_deploy.sh
+      - name: Log into Docker hub
+        env:
+          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
+        run: |
+          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - name: Publish docker images
+        run: |
+          if [[ ${{github.ref}} =~ ^refs/tags/([0-9]+(\.[0-9]+)*)$ ]]
+          then
+            DOCKER_TAG="${BASH_REMATCH[1]}"
+          elif [[ ${{github.ref}} == "refs/heads/master" ]]
+          then
+            DOCKER_TAG=latest
+          else
+            echo "No release to do for ${{github.ref}}"
+          fi
+
+          if [[ -n "$DOCKER_TAG" ]]
+          then
+            echo "Release tag ${DOCKER_TAG}"
+            make push
+          fi
 
       - name: Notify sentry
         env:

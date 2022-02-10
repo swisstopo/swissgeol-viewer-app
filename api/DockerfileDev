@@ -1,0 +1,34 @@
+FROM rust:latest
+
+RUN rustup target add x86_64-unknown-linux-musl
+RUN cargo install cargo-watch
+RUN apt update && apt install -y musl-tools musl-dev
+RUN update-ca-certificates
+
+# Create appuser
+ENV USER=api
+ENV UID=10001
+
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    "${USER}"
+
+
+WORKDIR /app
+
+# First we handle fetching and building our dependencies
+# We need a stub entry point for that
+COPY Cargo.toml Cargo.lock ./
+COPY ./src/stub.rs ./src/main.rs
+RUN cargo build --target x86_64-unknown-linux-musl
+
+# In a second step we build our
+COPY ./ .
+
+VOLUME ["./api/src:/app/src:ro"]
+CMD ["cargo", "watch", "-x", "run"]
