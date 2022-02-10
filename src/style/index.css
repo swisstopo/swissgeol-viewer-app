@@ -370,6 +370,7 @@ ngm-full-screen-view.full-active {
 .ngm-action-btn.ui.button {
   display: flex;
   justify-content: space-between;
+  overflow-wrap: break-word;
   align-items: center;
   width: 208px;
   height: 36px;
