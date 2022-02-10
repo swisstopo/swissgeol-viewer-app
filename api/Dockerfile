@@ -1,12 +1,13 @@
-FROM rust:latest
+## Builder
+FROM rust:latest AS builder
 
 RUN rustup target add x86_64-unknown-linux-musl
-RUN cargo install cargo-watch
-RUN apt update && apt install -y musl-tools musl-dev
-RUN update-ca-certificates
+RUN rustup component add clippy rustfmt
+RUN apt-get update && apt-get install -y musl-tools musl-dev
+#RUN update-ca-certificates
 
 # Create appuser
-ENV USER=api
+ENV USER=appuser
 ENV UID=10001
 
 RUN adduser \
@@ -25,10 +26,31 @@ WORKDIR /app
 # We need a stub entry point for that
 COPY Cargo.toml Cargo.lock ./
 COPY ./src/stub.rs ./src/main.rs
-RUN cargo build --target x86_64-unknown-linux-musl
+RUN cargo clippy --tests --examples -- -D warnings
+RUN cargo fmt --all -- --check
+RUN cargo build --target x86_64-unknown-linux-musl --release
+RUN cargo doc --no-deps
 
-# In a second step we build our
 COPY ./ .
+RUN cargo clippy --tests --examples -- -D warnings
+RUN cargo fmt --all -- --check
+RUN cargo build --target x86_64-unknown-linux-musl --release
+RUN cargo doc --no-deps
 
-VOLUME ["./api/src:/app/src:ro"]
-CMD ["cargo", "watch", "-x", "run"]
+## Final image
+FROM alpine
+
+RUN apk add util-linux
+
+# Import from builder.
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+
+WORKDIR /app
+
+# Copy our build
+COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/api ./
+COPY --from=builder /app/target/doc ./doc/
+
+USER 10001
+CMD ["/app/api"]
