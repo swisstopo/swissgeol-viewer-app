@@ -1,8 +1,11 @@
 ngm-object-information {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   z-index: 2;
   width: 528px;
-  max-height: 643px;
+  max-width: 100%;
+  max-height: 100%;
   font-size: 14px;
   font-weight: bold;
 }
