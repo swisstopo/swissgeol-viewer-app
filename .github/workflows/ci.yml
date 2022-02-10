@@ -62,4 +62,4 @@ jobs:
       - name: Notify sentry
         env:
           SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
-        run: scripts/sentry_upload.sh
+        run: cd ui; scripts/sentry_upload.sh
