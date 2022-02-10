@@ -4,6 +4,7 @@ use clap::StructOpt;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    // Load the variable from `.env` into the environment.
     dotenv::dotenv().ok();
 
     // Set the RUST_LOG, if it hasn't been explicitly defined
