@@ -13,9 +13,11 @@ import LocalStorageController from '../LocalStorageController';
 import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
 import {showSnackbarError} from '../notifications';
-import {DEFAULT_LAYER_OPACITY} from '../constants';
 import type {Config} from '../layers/ngm-layers-item';
-import {RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE} from '../constants';
+import {
+  DEFAULT_LAYER_OPACITY,
+  RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE
+} from '../constants';
 
 export interface TranslatedText {
   de: string,
