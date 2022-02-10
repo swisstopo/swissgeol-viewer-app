@@ -2,20 +2,24 @@
 name = "bedrock"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[lib]
-
 [dependencies]
+anyhow = "1"
 axum = "0.4.4"
+dotenv = "0.15.0"
 hyper = { version = "0.14", features = ["full"] }
 serde = {version = "1", features = ["derive"]}
 serde_json = "1"
+sqlx = { version = "0.5", features = ["runtime-tokio-rustls", "postgres", "uuid", "time"] }
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = { version="0.3", features = ["env-filter"] }
-tower-http = { version = "0.2.0", features = ["trace"] }
+tower = "0.4.11"
+tower-http = { version = "0.2.0", features = ["cors", "trace"] }
+uuid = { version = "0.8", features = ["serde"] }
 
 [dev-dependencies]
 tower = { version = "0.4", features = ["util"] }

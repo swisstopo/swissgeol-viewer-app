@@ -1,17 +1,21 @@
 use axum::{
     routing::{get, post},
-    Router,
+    AddExtensionLayer, Router,
 };
-use tower_http::trace::TraceLayer;
+use sqlx::PgPool;
+use tower::ServiceBuilder;
+use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
 mod handlers;
 
-pub fn run() -> Router {
+pub fn run(pool: PgPool) -> Router {
     Router::new()
-        // `GET /` goes to `root`
         .route("/", get(handlers::root))
-        // `POST /users` goes to `create_user`
-        .route("/users", post(handlers::create_user))
-        .layer(TraceLayer::new_for_http())
-    // .layer(AddExtensionLayer::new(pool))
+        .route("/projects", post(handlers::create_user))
+        .layer(
+            ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
+                .layer(CorsLayer::permissive())
+                .layer(AddExtensionLayer::new(pool)),
+        )
 }
