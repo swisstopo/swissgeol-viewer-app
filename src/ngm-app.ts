@@ -19,12 +19,19 @@ import './elements/ngm-project-popup';
 
 import '@geoblocks/cesium-view-cube';
 
-import {DEFAULT_VIEW} from './constants';
+import {DEFAULT_VIEW, TARGET_PARAM} from './constants';
 
 import {setupSearch} from './search.js';
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 
-import {getCameraView, getCesiumToolbarParam, getZoomToPosition, syncCamera, syncStoredView} from './permalink';
+import {
+  getCameraView,
+  getCesiumToolbarParam,
+  getTopic,
+  getZoomToPosition,
+  syncCamera,
+  syncStoredView
+} from './permalink';
 import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
@@ -43,6 +50,8 @@ import type {NgmSlowLoading} from './elements/ngm-slow-loading';
 import type {Viewer} from 'cesium';
 import type {Config} from './layers/ngm-layers-item';
 import LocalStorageController from './LocalStorageController';
+import DashboardStore from './store/dashboard';
+import type {SideBar} from './elements/ngm-side-bar';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -185,7 +194,7 @@ export class NgmApp extends LitElementI18n {
     });
   }
 
-  firstUpdated() {
+  async firstUpdated() {
     setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
     const cesiumContainer = this.querySelector('#cesium')!;
@@ -194,10 +203,16 @@ export class NgmApp extends LitElementI18n {
     window['viewer'] = viewer; // for debugging
 
     this.startCesiumLoadingProcess(viewer);
-    const storedView = LocalStorageController.storedView;
-    if (storedView) {
-      syncStoredView(storedView);
-      LocalStorageController.removeStoredView();
+    const topicParam = getTopic();
+    if (topicParam) {
+      (<SideBar> this.querySelector('ngm-side-bar')).togglePanel('dashboard');
+      DashboardStore.setTopicParam(topicParam);
+    } else {
+      const storedView = LocalStorageController.storedView;
+      if (storedView) {
+        syncStoredView(storedView, [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch']);
+        LocalStorageController.removeStoredView();
+      }
     }
     const {destination, orientation} = getCameraView();
     const zoomToPosition = getZoomToPosition();

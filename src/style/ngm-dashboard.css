@@ -12,6 +12,10 @@ ngm-dashboard .ngm-panel-header,
   font: normal normal bold 14px/20px Inter;
 }
 
+.ngm-proj-title {
+  justify-content: space-between;
+}
+
 .ngm-proj-views-title > div:first-child {
   margin-right: 15px;
 }
@@ -169,5 +173,14 @@ ngm-dashboard .ngm-label-btn .ngm-back-icon {
 }
 
 ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
+  background-color: var(--ngm-interaction-hover);
+}
+
+.ngm-view-icon {
+  background-color: var(--ngm-interaction);
+  cursor: pointer;
+}
+
+.ngm-view-icon:hover, .ngm-view-icon:focus {
   background-color: var(--ngm-interaction-hover);
 }

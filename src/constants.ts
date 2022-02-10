@@ -32,6 +32,8 @@ export const ATTRIBUTE_VALUE_PARAM = 'attribute_value';
 export const ZOOM_TO_PARAM = 'zoom_to';
 export const SLICE_PARAM = 'slice';
 export const TARGET_PARAM = 'target';
+export const TOPIC_PARAM = 'topicId';
+export const VIEW_PARAM = 'viewId';
 
 export const MANTEL_COLOR = Color.fromCssColorString('#383838');
 
