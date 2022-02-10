@@ -11,7 +11,13 @@ import NavToolsStore from '../store/navTools';
 import DashboardStore from '../store/dashboard';
 import LocalStorageController from '../LocalStorageController';
 import type {Viewer} from 'cesium';
-import {RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE} from '../constants';
+import {CustomDataSource, KmlDataSource} from 'cesium';
+import {showSnackbarError} from '../notifications';
+import type {Config} from '../layers/ngm-layers-item';
+import {
+  DEFAULT_LAYER_OPACITY,
+  RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE
+} from '../constants';
 
 export interface TranslatedText {
   de: string,
@@ -22,7 +28,11 @@ export interface TranslatedText {
 
 export interface DashboardProjectView {
   title: TranslatedText,
-  permalink: string
+  permalink: string,
+}
+
+export interface Asset {
+  href: string,
 }
 
 export interface DashboardProject {
@@ -32,7 +42,8 @@ export interface DashboardProject {
   modified: string,
   image: string,
   color: string,
-  views: DashboardProjectView[]
+  views: DashboardProjectView[],
+  assets: Map<string, Asset> | undefined,
 }
 
 @customElement('ngm-dashboard')
@@ -44,14 +55,27 @@ export class NgmDashboard extends LitElementI18n {
   @state() projects: DashboardProject[] | undefined;
   @state() selectedViewIndx: number | undefined;
   private viewer: Viewer | null = null;
+  private assetConfigs: any = {};
+  private assets: Config[] | undefined;
   private recentlyViewed: Array<number> = [];
 
   constructor() {
     super();
-    DashboardStore.viewIndex.subscribe(viewIndex => {
-      this.selectView(viewIndex);
+    DashboardStore.viewIndex.subscribe(async viewIndex => {
+      await this.selectView(viewIndex);
     });
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.layersRemoved.subscribe(async () => {
+      if (this.selectedViewIndx !== undefined && this.assets) {
+        await Promise.all(this.assets.map(async layer => {
+          const data = await layer.promise;
+          data.show = true;
+          this.dispatchEvent(new CustomEvent('layerclick', {
+            detail: {layer}
+          }));
+        }));
+      }
+    });
   }
 
   async update(changedProperties) {
@@ -68,7 +92,56 @@ export class NgmDashboard extends LitElementI18n {
     super.update(changedProperties);
   }
 
-  selectView(viewIndex: number | undefined) {
+  async fetchAssets(assets: Map<string, Asset>): Promise<Config[]> {
+    const assetsData: Config[] = [];
+    if (!this.viewer) return assetsData;
+    for (const asset of Object.values(assets)) {
+      try {
+        const dataSources = this.viewer.dataSources.getByName(asset.href);
+        let uploadedLayer: CustomDataSource;
+        if (dataSources.length) {
+          uploadedLayer = dataSources[0];
+          uploadedLayer.show = true;
+        } else {
+          const kmlDataSource = await KmlDataSource.load(asset.href, {
+            camera: this.viewer.scene.camera,
+            canvas: this.viewer.scene.canvas
+          });
+          uploadedLayer = new CustomDataSource(asset.href);
+          let name = kmlDataSource.name;
+          kmlDataSource.entities.values.forEach((ent, indx) => {
+            if (indx === 0 && !name) {
+              name = ent.name!;
+            }
+            uploadedLayer.entities.add(ent);
+          });
+          this.assetConfigs[asset.href] = {
+            label: name,
+            zoomToBbox: true,
+            opacity: DEFAULT_LAYER_OPACITY,
+            notSaveToPermalink: true,
+            topicKml: true
+          };
+          await this.viewer.dataSources.add(uploadedLayer);
+        }
+        const promise = Promise.resolve(uploadedLayer);
+        assetsData.push({
+          ...this.assetConfigs[asset.href],
+          displayed: false,
+          load() {
+            return promise;
+          },
+          promise
+        });
+      } catch (e) {
+        console.error(e);
+        showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
+      }
+    }
+    return assetsData;
+  }
+
+  async selectView(viewIndex: number | undefined) {
     this.selectedViewIndx = viewIndex;
     syncTargetParam(undefined);
     NavToolsStore.nextTargetPointSync();
@@ -81,21 +154,24 @@ export class NgmDashboard extends LitElementI18n {
       syncStoredView(LocalStorageController.storedView);
       LocalStorageController.removeStoredView();
     }
-    this.setDataFromPermalink();
+    await this.setDataFromPermalink();
   }
 
-  selectProject(project) {
+  async selectProject(project) {
     this.selectedProject = project;
+    if (this.selectedProject?.assets)
+      this.assets = await this.fetchAssets(this.selectedProject.assets);
     DashboardStore.setSelectedProject(this.selectedProject);
     this.addRecentlyViewed(project);
   }
 
   deselectProject() {
     this.selectedProject = undefined;
+    this.assets = [];
     DashboardStore.setSelectedProject(undefined);
   }
 
-  setDataFromPermalink() {
+  async setDataFromPermalink() {
     MainStore.nextLayersSync();
     MainStore.nextMapSync();
     const {destination, orientation} = getCameraView();

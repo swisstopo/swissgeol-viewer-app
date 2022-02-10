@@ -40,6 +40,7 @@
   "dtd_object_on_coordinates_not_found_warning": "Object not found or you moved camera away from initial position",
   "dtd_opacity_base_map": "Base map opacity",
   "dtd_own_kml_tag": "own KML",
+  "dtd_topic_kml_tag": "topic model",
   "dtd_user_content_label": "Add user content",
   "header_search_placeholder": "Search...",
   "link": "Link",
