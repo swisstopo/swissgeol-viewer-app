@@ -4,6 +4,15 @@
 
 * psql (postgresql-client)
 * sqlx-cli
+* docker
+
+## Develop
+
+Initialize the database by spawning a docker container with
+
+```bash
+./scripts/init_db.sh
+```
 
 ## Database Migrations
 

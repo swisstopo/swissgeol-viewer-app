@@ -1,6 +1,6 @@
 use std::net::SocketAddr;
 
-use sqlx::postgres::PgPoolOptions;
+use clap::StructOpt;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -12,27 +12,21 @@ async fn main() -> anyhow::Result<()> {
     }
     tracing_subscriber::fmt::init();
 
-    let db_url = std::env::var("DATABASE_URL").expect("Read `DATABASE_URL` environmnet variable");
+    // Panic if we can't parse configuration
+    let config = bedrock::config::Settings::parse();
 
-    // Database connection pool
-    let pool = PgPoolOptions::new()
-        .max_connections(50)
-        .connect(&db_url)
-        .await
-        .expect("connect to database");
+    // Setup a database connection pool & run any pending migrations
+    let pool = config.database.setup().await;
 
-    // This embeds database migrations in the application binary so we can ensure the database
-    // is migrated correctly on startup
-    sqlx::migrate!().run(&pool).await?;
-
-    // build our application with a route
-    let app = bedrock::run(pool);
+    // Build our application
+    let app = bedrock::app(pool);
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
+    let address = SocketAddr::from(([127, 0, 0, 1], config.application_port));
+    tracing::debug!("listening on {}", address);
+
+    axum::Server::bind(&address)
         .serve(app.into_make_service())
         .await
         .unwrap();

@@ -1,17 +1,14 @@
-use axum::{
-    routing::{get, post},
-    AddExtensionLayer, Router,
-};
+use axum::{routing::get, AddExtensionLayer, Router};
 use sqlx::PgPool;
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
+pub mod config;
 mod handlers;
 
-pub fn run(pool: PgPool) -> Router {
+pub fn app(pool: PgPool) -> Router {
     Router::new()
-        .route("/", get(handlers::root))
-        .route("/projects", post(handlers::create_user))
+        .route("/health_check", get(handlers::health_check))
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
