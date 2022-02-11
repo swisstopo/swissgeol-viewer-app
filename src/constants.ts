@@ -54,15 +54,17 @@ export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
 };
 
 export const GEOMETRY_COLORS = [
-  {color: 'black', value: Color.BLACK},
   {color: 'blue', value: Color.BLUE},
-  {color: 'gray', value: Color.GRAY},
   {color: 'green', value: Color.GREEN},
+  {color: 'yellow', value: Color.YELLOW},
   {color: 'orange', value: Color.ORANGE},
   {color: 'red', value: Color.RED},
   {color: 'white', value: Color.WHITE},
-  {color: 'yellow', value: Color.YELLOW},
+  {color: 'gray', value: Color.GRAY},
+  {color: 'black', value: Color.BLACK},
 ];
+
+export const COLORS_WITH_BLACK_TICK = ['white', 'yellow', 'orange'];
 
 export const POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
 

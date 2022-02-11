@@ -130,8 +130,9 @@ ngm-geometry-edit .ngm-cancel-btn.ui.button {
 }
 
 .ngm-geom-color {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 5px;
 }
 
 .ngm-geom-colorpicker,
@@ -139,6 +140,7 @@ ngm-geometry-edit .ngm-cancel-btn.ui.button {
   display: flex;
   width: 100%;
   justify-content: start;
+  flex-wrap: wrap;
 }
 
 .ngm-geom-symbolpicker > .ngm-geom-symbol:not(:last-child),
@@ -150,6 +152,13 @@ ngm-geometry-edit .ngm-cancel-btn.ui.button {
 .ngm-geom-colorpicker .ngm-geom-color:hover,
 .ngm-geom-colorpicker .ngm-geom-color.active {
   background-image: url('./images/i_colorpicker_check.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.ngm-geom-colorpicker .ngm-geom-color.black-tick:hover,
+.ngm-geom-colorpicker .ngm-geom-color.active.black-tick  {
+  background-image: url('./images/i_colorpicker_check_black.svg');
 }
 
 .ngm-geom-symbolpicker .ngm-geom-symbol:hover,
@@ -165,6 +174,13 @@ ngm-geometry-edit .ngm-cancel-btn.ui.button {
   -webkit-mask-size: contain;
   mask-size: contain;
 }
+
+.geom-styles-title {
+  margin-bottom: 12px;
+  font: normal normal 500 14px/20px Inter;
+  color: #212529;
+}
+
 
 @media (max-height: 630px) {
   ngm-geometry-info {
