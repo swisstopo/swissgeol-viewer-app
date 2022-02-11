@@ -1,5 +1,5 @@
 export DOCKER_TAG ?= latest
-export DOCKER_BASE = camptocamp/ngm
+export DOCKER_BASE = camptocamp/swissgeol
 GIT_HASH := $(shell git rev-parse HEAD)
 
 .PHONY: run

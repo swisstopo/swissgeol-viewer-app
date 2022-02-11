@@ -4,19 +4,10 @@ on:
   push:
     branches:
       - master
-      - oldmaster
-    tags:
-      - "int_*"
-      # - "prod_*" # prod is deployed through the branch, not the tag
-      # - "prod_viewer_*" # prod-viewer is deployed through the branch, not the tag
   pull_request:
     branches:
       - master
       - next-prod
-      - oldmaster
-
-env:
-  IN_CI: "1"
 
 jobs:
 
@@ -47,7 +38,7 @@ jobs:
 
   validate_api:
     runs-on: ubuntu-20.04
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - run: docker system prune --all --force --volumes
       - uses: actions/checkout@v2
@@ -59,6 +50,14 @@ jobs:
           docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
       - name: Build api
         run: make build_api
+      - name: Push to docker hub
+        run: |
+          if [[ ${{github.ref}} == "refs/heads/master" ]]
+          then
+            docker push camptocamp/swissgeol_api:latest
+          fi
+      - name: Deploy to dev / review
+        run: "echo TODO: deploy image to dev"
 
   validate_ui:
     runs-on: ubuntu-20.04
@@ -93,40 +92,18 @@ jobs:
       - name: Build storybook
         run: cd ui; npm run build-storybook
 
-
-  deploy_ui:
-    needs: [validate_api, validate_ui]
-    runs-on: ubuntu-20.04
-    timeout-minutes: 24
-    steps:
       - name: Deploy to S3
         env:
           AWS_REGION: "eu-west-1"
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        run: cd ui ; scripts/github_deploy.sh
-      - name: Log into Docker hub
-        env:
-          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
-          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
         run: |
-          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-      - name: Publish docker images
-        run: |
-          if [[ ${{github.ref}} =~ ^refs/tags/([0-9]+(\.[0-9]+)*)$ ]]
+          if [[ ${{github.ref}} == "refs/heads/master" ]]
           then
-            DOCKER_TAG="${BASH_REMATCH[1]}"
-          elif [[ ${{github.ref}} == "refs/heads/master" ]]
+            scripts/deploy_to_s3.sh dev
+          elif [[ $GITHUB_EVENT_NAME == "pull_request" ]]
           then
-            DOCKER_TAG=latest
-          else
-            echo "No release to do for ${{github.ref}}"
-          fi
-
-          if [[ -n "$DOCKER_TAG" ]]
-          then
-            echo "Release tag ${DOCKER_TAG}"
-            make push
+            scripts/deploy_to_s3.sh review $GITHUB_HEAD_REF
           fi
 
       - name: Notify sentry
