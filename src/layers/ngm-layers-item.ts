@@ -160,10 +160,12 @@ export class LayerTreeItem extends LitElementI18n {
         <span class="ngm-checkbox-icon"></span>
       </div>
 
-      <div ?hidden=${this.loading > 0 || this.changeOrderActive} class="ngm-layer-icon ${classMap({
-        'ngm-visible-icon': !!this.config.visible,
-        'ngm-invisible-icon': !this.config.visible
-      })}" @click=${this.changeVisibility}>
+      <div ?hidden=${this.loading > 0 || this.changeOrderActive}
+           title=${this.config.visible ? i18next.t('dtd_hide') : i18next.t('dtd_show')}
+           class="ngm-layer-icon ${classMap({
+             'ngm-visible-icon': !!this.config.visible,
+             'ngm-invisible-icon': !this.config.visible
+           })}" @click=${this.changeVisibility}>
       </div>
       <div ?hidden=${this.loading === 0} class="ngm-determinate-loader">
         <div
@@ -188,7 +190,8 @@ export class LayerTreeItem extends LitElementI18n {
            style=${styleMap({backgroundColor: this.config.previewColor})}>
       </div>
       <div class="ngm-displayed-menu">
-        <div class="ngm-layer-icon ngm-zoom-plus-icon" ?hidden=${!this.config.zoomToBbox}
+        <div title=${i18next.t('dtd_zoom_to')}
+             class="ngm-layer-icon ngm-zoom-plus-icon" ?hidden=${!this.config.zoomToBbox}
              @mouseenter=${() => {
                if (this.actions && this.actions.showBoundingBox) this.actions.showBoundingBox(this.config);
              }}
@@ -197,7 +200,8 @@ export class LayerTreeItem extends LitElementI18n {
              }}
              @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
         </div>
-        <div class="ngm-layer-icon ngm-delete-icon"
+        <div title=${i18next.t('dtd_remove')}
+             class="ngm-layer-icon ngm-delete-icon"
              @click=${this.onRemove}>
         </div>
         <div class="ui dropdown right pointing ngm-action-menu">

@@ -320,7 +320,7 @@ export class NgmApp extends LitElementI18n {
         <div
           class="ngm-search-icon-mobile ngm-search-icon visible-mobile ${classMap({'active': this.showMobileSearch})}"
           @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
-        <div class="ngm-map-icon ${classMap({'active': this.showMinimap})}" .hidden="${this.showMobileSearch}"
+        <div title="${i18next.t('header_show_minimap')}" class="ngm-map-icon ${classMap({'active': this.showMinimap})}" .hidden="${this.showMobileSearch}"
              @click=${() => this.showMinimap = !this.showMinimap}></div>
         <ngm-camera-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-camera-information>
       </header>
