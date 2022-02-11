@@ -187,19 +187,17 @@ export class NgmDashboard extends LitElementI18n {
       });
   }
 
-  isRecentlyViewed(data: DashboardProject | null, index: number) {
-    return this.recentlyViewed.includes(index);
-  }
-
   addRecentlyViewed(data: DashboardProject) {
     const index = this.projects.indexOf(data);
-    if (!this.isRecentlyViewed(null, index)) {
-      this.recentlyViewed.push(index);
-      if (this.recentlyViewed.length > RECENTLY_VIEWED_TOPICS_COUNT) {
-        this.recentlyViewed.length = RECENTLY_VIEWED_TOPICS_COUNT;
-      }
-      localStorage.setItem('recentlyViewedTopics', JSON.stringify(this.recentlyViewed));
+    this.recentlyViewed.unshift(index);
+
+    // remove duplicates
+    this.recentlyViewed = [...new Set(this.recentlyViewed)];
+
+    if (this.recentlyViewed.length > RECENTLY_VIEWED_TOPICS_COUNT) {
+      this.recentlyViewed.length = RECENTLY_VIEWED_TOPICS_COUNT;
     }
+    localStorage.setItem('recentlyViewedTopics', JSON.stringify(this.recentlyViewed));
   }
 
   previewTemplate(proj) {
@@ -274,12 +272,10 @@ export class NgmDashboard extends LitElementI18n {
       <div ?hidden=${this.selectedProject || this.recentlyViewed.length === 0}>
         <div class="ngm-proj-title">${i18next.t('dashboard_recently_viewed')}</div>
         <div class="ngm-projects-list">
-          ${this.projects
-              // only show recently viewed projects
-              .filter(this.isRecentlyViewed, this)
-              // only display RECENTLY_VIEWED_TOPICS_COUNT_MOBILE items on mobile
+          ${fromIndexes(this.projects, this.recentlyViewed)
               .slice(0, this.mobileView ? RECENTLY_VIEWED_TOPICS_COUNT_MOBILE : undefined)
-              .map(data => this.previewTemplate(data))}
+              .map(data => this.previewTemplate(data))
+          }
         </div>
       </div>
       <div ?hidden=${this.selectedProject}>
@@ -302,4 +298,13 @@ export class NgmDashboard extends LitElementI18n {
 
 function translated(property: TranslatedText): string {
   return property[i18next.language];
+}
+
+
+function fromIndexes(arr: any[], indexes: number[]): any[] {
+  const result: any[] = [];
+  for (let i = 0; i < indexes.length; i++) {
+    result.push(arr[indexes[i]]);
+  }
+  return result;
 }
