@@ -79,11 +79,13 @@ export class NgmMapConfiguration extends LitElementI18n {
       <ngm-map-chooser @change=${this.onMapChange}></ngm-map-chooser>
       <div class="ui divider"></div>
       <div class="ngm-base-layer">
-        <div class="ngm-layer-icon ${classMap({
-          'ngm-visible-icon': this.mapChooser!.selectedMap.id !== 'empty_map',
-          'ngm-invisible-icon': this.mapChooser!.selectedMap.id === 'empty_map'
-        })}"
-             @click=${this.changeVisibility}></div>
+        <div
+          title=${this.mapChooser!.selectedMap.id !== 'empty_map' ? i18next.t('dtd_hide') : i18next.t('dtd_show')}
+          class="ngm-layer-icon ${classMap({
+            'ngm-visible-icon': this.mapChooser!.selectedMap.id !== 'empty_map',
+            'ngm-invisible-icon': this.mapChooser!.selectedMap.id === 'empty_map'
+          })}"
+          @click=${this.changeVisibility}></div>
         <div class="ngm-displayed-slider">
           <div>
             <label>${i18next.t('dtd_opacity_base_map')}</label>

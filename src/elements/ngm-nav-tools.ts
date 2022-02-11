@@ -329,17 +329,20 @@ export class NgmNavTools extends LitElementI18n {
     if (!this.viewer) return '';
     return html`
       <div class="ngm-nav-buttons">
-        <div class="ngm-zoom-p-icon" @pointerdown=${e => this.startZoomIn(e)}></div>
-        <div class="ngm-zoom-o-icon" @click=${() => this.flyToHome()}></div>
-        <div class="ngm-zoom-m-icon" @pointerdown=${e => this.startZoomOut(e)}></div>
+        <div title="${i18next.t('nav_zoom_in')}" class="ngm-zoom-p-icon" @pointerdown=${e => this.startZoomIn(e)}></div>
+        <div title="${i18next.t('nav_fly_home')}" class="ngm-zoom-o-icon" @click=${() => this.flyToHome()}></div>
+        <div title="${i18next.t('nav_zoom_out')}" class="ngm-zoom-m-icon"
+             @pointerdown=${e => this.startZoomOut(e)}></div>
         <div class="ngm-divider"></div>
-        <div class="ngm-cam-icon ${classMap({'ngm-active-icon': this.showCamConfig})}"
+        <div title="${i18next.t('cam_configuration_header')}"
+             class="ngm-cam-icon ${classMap({'ngm-active-icon': this.showCamConfig})}"
              @click=${() => this.dispatchEvent(new CustomEvent('togglecamconfig'))}>
         </div>
-        <div class="ngm-coords-icon ${classMap({
-          'ngm-active-icon': this.showTargetPoint,
-          'ngm-disabled': this.lockType !== '' && this.lockType !== 'elevation'
-        })}" @click=${() => this.toggleReference()}>
+        <div title="${i18next.t('nav_target_point')}"
+             class="ngm-coords-icon ${classMap({
+               'ngm-active-icon': this.showTargetPoint,
+               'ngm-disabled': this.lockType !== '' && this.lockType !== 'elevation'
+             })}" @click=${() => this.toggleReference()}>
         </div>
       </div>
       ${dragArea}
