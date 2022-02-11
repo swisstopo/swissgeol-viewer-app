@@ -8,7 +8,6 @@ import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
 import {getCameraView, removeTopic, setPermalink, syncStoredView, syncTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
-import type {TopicParam} from '../store/dashboard';
 import DashboardStore from '../store/dashboard';
 import LocalStorageController from '../LocalStorageController';
 import type {Viewer} from 'cesium';
@@ -60,19 +59,36 @@ export class NgmDashboard extends LitElementI18n {
   private assetConfigs: any = {};
   private assets: Config[] | undefined;
   private recentlyViewed: Array<number> = [];
-  private topicParam: TopicParam | undefined;
 
   constructor() {
     super();
-    DashboardStore.topicParam.subscribe(param => {
-      if (!param) return;
-      this.topicParam = param;
-      this.hidden = false;
-    });
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    fetch('./src/sampleData/topics.json').then(topicsResponse =>
+      topicsResponse.json().then(topics => {
+        this.projects = topics;
+        // sort by newest first
+        this.projects?.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
+        const recentlyViewed = localStorage.getItem('recentlyViewedTopics');
+        if (recentlyViewed) {
+          this.recentlyViewed = JSON.parse(recentlyViewed);
+        }
+        DashboardStore.topicParam.subscribe(async param => {
+          if (!param) return;
+          const {viewId, topicId} = param;
+          removeTopic();
+          const project = this.projects?.find(p => p.id === topicId);
+          await this.selectProject(project);
+          if (viewId) {
+            const viewIndex = this.selectedProject?.views.findIndex(v => v.id === viewId);
+            if (viewIndex !== -1)
+              DashboardStore.setViewIndex(viewIndex);
+          }
+          this.hidden = false;
+        });
+      }));
     DashboardStore.viewIndex.subscribe(async viewIndex => {
       await this.selectView(viewIndex);
     });
-    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
     MainStore.layersRemoved.subscribe(async () => {
       if (this.selectedViewIndx !== undefined && this.assets) {
         await Promise.all(this.assets.map(async layer => {
@@ -84,33 +100,6 @@ export class NgmDashboard extends LitElementI18n {
         }));
       }
     });
-  }
-
-  async update(changedProperties) {
-    if (!this.hidden && !this.projects) {
-      this.projects = await (await fetch('./src/sampleData/topics.json')).json();
-      // sort by newest first
-      this.projects?.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
-
-      const recentlyViewed = localStorage.getItem('recentlyViewedTopics');
-      if (recentlyViewed) {
-        this.recentlyViewed = JSON.parse(recentlyViewed);
-      }
-
-      if (this.topicParam) {
-        const {viewId, topicId} = this.topicParam;
-        this.topicParam = undefined;
-        removeTopic();
-        const project = this.projects?.find(p => p.id === topicId);
-        await this.selectProject(project);
-        if (viewId) {
-          const viewIndex = this.selectedProject?.views.findIndex(v => v.id === viewId);
-          if (viewIndex !== -1)
-            DashboardStore.setViewIndex(viewIndex);
-        }
-      }
-    }
-    super.update(changedProperties);
   }
 
   updated(changedProperties) {
@@ -311,10 +300,7 @@ export class NgmDashboard extends LitElementI18n {
               <div @click=${() => DashboardStore.setViewIndex(this.selectedViewIndx === index ? undefined : index)}>
                 ${translated(view.title)}
               </div>
-              <div class="ui dropdown right pointing ngm-action-menu">
-                <div class="ngm-view-icon ngm-share-icon"></div>
-                ${this.contextMenu(view.id)}
-              </div>
+              <div class="ngm-view-icon ngm-share-icon" @click=${() => this.copyLink(view.id)}></div>
             </div>
           </div>
         `)}
