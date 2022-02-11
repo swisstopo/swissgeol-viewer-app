@@ -79,6 +79,7 @@ ngm-auth:hover {
   z-index: 5;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .ngm-side-bar-panel.ngm-large-panel {

@@ -36,10 +36,7 @@ ngm-dashboard .ngm-panel-header,
 
 .ngm-projects-list {
   display: flex;
-}
-
-.ngm-projects-list > div:not(:last-child) {
-  margin-right: 16px;
+  flex-wrap: wrap;
 }
 
 .ngm-proj-preview {
@@ -51,6 +48,7 @@ ngm-dashboard .ngm-panel-header,
   width: 240px;
   height: 228px;
   cursor: pointer;
+  margin: 8px;
 }
 
 .ngm-proj-preview-img {

@@ -194,7 +194,7 @@ export class NgmDashboard extends LitElementI18n {
   addRecentlyViewed(data: DashboardProject) {
     const index = this.projects.indexOf(data);
     if (!this.isRecentlyViewed(null, index)) {
-      this.recentlyViewed.unshift(index);
+      this.recentlyViewed.push(index);
       if (this.recentlyViewed.length > RECENTLY_VIEWED_TOPICS_COUNT) {
         this.recentlyViewed.length = RECENTLY_VIEWED_TOPICS_COUNT;
       }
