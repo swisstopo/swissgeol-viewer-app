@@ -201,13 +201,13 @@ export class NgmToolbox extends LitElementI18n {
           <div class="ngm-gst-icon"></div>
           <div>${i18next.t('tbx_gst')}</div>
         </div>
-        <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'data-download'}>
-          <div class="ngm-download-icon"></div>
-          <div>${i18next.t('tbx_data-download')}</div>
-        </div>
         <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'profile'}>
           <div class="ngm-profile-icon"></div>
           <div>${i18next.t('tbx_profile')}</div>
+        </div>
+        <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'data-download'}>
+          <div class="ngm-download-icon"></div>
+          <div>${i18next.t('tbx_data-download')}</div>
         </div>
       </div>
       <div class="ngm-toast-placeholder"></div>
