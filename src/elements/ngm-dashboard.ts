@@ -299,7 +299,9 @@ export class NgmDashboard extends LitElementI18n {
               <div @click=${() => DashboardStore.setViewIndex(this.selectedViewIndx === index ? undefined : index)}>
                 ${translated(view.title)}
               </div>
-              <div class="ngm-view-icon ngm-share-icon" @click=${() => this.copyLink(view.id)}></div>
+              <div title="${i18next.t('dashboard_share_topic')}"
+                   class="ngm-view-icon ngm-share-icon"
+                   @click=${() => this.copyLink(view.id)}></div>
             </div>
           </div>
         `)}
@@ -332,8 +334,8 @@ export class NgmDashboard extends LitElementI18n {
         <div class="ngm-proj-title">${i18next.t('dashboard_recently_viewed')}</div>
         <div class="ngm-projects-list">
           ${fromIndexes(this.projects, this.recentlyViewed)
-              .slice(0, this.mobileView ? RECENTLY_VIEWED_TOPICS_COUNT_MOBILE : undefined)
-              .map(data => this.previewTemplate(data))
+            .slice(0, this.mobileView ? RECENTLY_VIEWED_TOPICS_COUNT_MOBILE : undefined)
+            .map(data => this.previewTemplate(data))
           }
         </div>
       </div>
