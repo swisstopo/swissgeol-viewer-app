@@ -12,7 +12,7 @@ import CesiumMath from 'cesium/Source/Core/Math';
 import JulianDate from 'cesium/Source/Core/JulianDate';
 import DrawStore from '../store/draw';
 import type {CesiumDraw} from '../draw/CesiumDraw';
-import {GEOMETRY_COLORS, POINT_SYMBOLS} from '../constants';
+import {COLORS_WITH_BLACK_TICK, GEOMETRY_COLORS, POINT_SYMBOLS} from '../constants';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import './ngm-point-edit';
@@ -224,14 +224,20 @@ export class NgmGeometryEdit extends LitElementI18n {
         </div>
       </div>
       <ngm-point-edit ?hidden=${type !== 'point'} .entity=${this.editingEntity}></ngm-point-edit>
-      <div class="ngm-geom-colorpicker">
-        ${GEOMETRY_COLORS.map(color => html`
-          <div
-            style="background-color: ${color.color};"
-            @click=${() => this.onColorChange(color.value)}
-            class="ngm-geom-color ${classMap({active: this.selectedColor === color.value.toCssColorString()})}">
-          </div>`
-        )}
+      <div>
+        <div class="geom-styles-title">${i18next.t('tbx_styles_title')}</div>
+        <div class="ngm-geom-colorpicker">
+          ${GEOMETRY_COLORS.map(color => html`
+            <div
+              style="background-color: ${color.color};"
+              @click=${() => this.onColorChange(color.value)}
+              class="ngm-geom-color ${classMap({
+                active: this.selectedColor === color.value.toCssColorString(),
+                'black-tick': COLORS_WITH_BLACK_TICK.includes(color.color)
+              })}">
+            </div>`
+          )}
+        </div>
       </div>
       <div class="ngm-geom-symbolpicker" ?hidden=${!this.editingEntity.billboard}>
         ${POINT_SYMBOLS.map(image => {
