@@ -1,9 +1,9 @@
-/node_modules
-/dist
+/ui/node_modules
+/ui/dist
 /.cache
-src/environment.js
-src/environments
-manuals/dist
-/types
+/ui/src/environment.js
+/ui/src/environments
+/ui/manuals/dist
+/ui/types
 /docs
 /secrets.txt

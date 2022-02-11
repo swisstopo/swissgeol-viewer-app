@@ -11,6 +11,7 @@ git fetch
 git checkout prod
 git reset --hard origin/prod
 git pull origin $VERSION
+cd ui
 make dist
 scripts/deploy_to_s3.sh prod
 git tag $PROD_TAG -m $PROD_TAG
