@@ -1,4 +1,5 @@
-# Swissgeol NGM
+# Swissgeol viewer
+
 
 ## A Geology 3D viewer
 
@@ -20,9 +21,11 @@ npm start
 open http://localhost:8000
 
 
-## Developing the Swisstopo version
+## Developing/deploying the Swisstopo version
 
 See [DEVELOPING.md](./DEVELOPING.md).
+See [DEPLOY_VIEWER.md](./DEPLOY_VIEWER.md).
+See [DEPLOY_ABBREVIATOR.md](./DEPLOY_ABBREVIATOR.md).
 
 
 ## URL Parameters

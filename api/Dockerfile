@@ -31,7 +31,7 @@ RUN cargo fmt --all -- --check
 RUN cargo build --target x86_64-unknown-linux-musl --release
 RUN cargo doc --no-deps
 
-COPY ./ .
+COPY ./src ./src
 RUN cargo clippy --tests --examples -- -D warnings
 RUN cargo fmt --all -- --check
 RUN cargo build --target x86_64-unknown-linux-musl --release
