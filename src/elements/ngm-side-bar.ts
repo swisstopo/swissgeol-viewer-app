@@ -253,7 +253,7 @@ export class SideBar extends LitElementI18n {
           <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
           <ngm-layers-upload .viewer="${this.viewer}" .toastPlaceholder=${this.toastPlaceholder}
             @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
-          ></ngm-layers-upload>
+          </ngm-layers-upload>
           <h5 class="ui header ngm-background-label">
             ${i18next.t('dtd_background_map_label')}
             <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
