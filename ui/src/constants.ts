@@ -100,15 +100,15 @@ export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/';
 export const SWISSFORAGES_EDITOR_URL = `${SWISSFORAGES_VIEWER_URL}editor/`;
 export const SWISSFORAGES_API_URL = `${SWISSFORAGES_VIEWER_URL}api/v1`;
 
-export const SHORTLINK_HOST_BY_PAGE_HOST = {
-  'localhost:8000': 'link.dev.swissgeol.ch',
-  'review.swissgeol.ch': 'link.dev.swissgeol.ch',
-  'dev.swissgeol.ch': 'link.dev.swissgeol.ch',
-  'int.swissgeol.ch': 'link.int.swissgeol.ch',
-  'beta.swissgeol.ch': 'link.swissgeol.ch',
-  'swissgeol.ch': 'link.swissgeol.ch',
-  'test.viewer.swissgeol.ch': 'link.swissgeol.ch',
-  'viewer.swissgeol.ch': 'link.swissgeol.ch',
+export const SHORTLINK_URL_BY_PAGE_HOST = {
+  'localhost:8000': '/abbr',
+  'review.swissgeol.ch': 'https://link.dev.swissgeol.ch',
+  'dev.swissgeol.ch': 'https://link.dev.swissgeol.ch',
+  'int.swissgeol.ch': 'https://link.int.swissgeol.ch',
+  'beta.swissgeol.ch': 'https://link.swissgeol.ch',
+  'swissgeol.ch': 'https://link.swissgeol.ch',
+  'test.viewer.swissgeol.ch': 'https://link.swissgeol.ch',
+  'viewer.swissgeol.ch': 'https://link.swissgeol.ch',
 };
 
 export const RECENTLY_VIEWED_TOPICS_COUNT = 4;

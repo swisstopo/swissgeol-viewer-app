@@ -97,6 +97,19 @@ export default {
     static: {
       directory: join(__dirname, 'dist'),
     },
+    proxy: {
+      '/api': {
+           target: 'http://api:3000',
+           logLevel: 'debug'
+      },
+      '/abbr': {
+        target: 'http://abbreviator:8080',
+        pathRewrite: {
+          '^/abbr': ''
+        },
+        logLevel: 'debug'
+      }
+   },
     compress: true,
     port: 8000,
 

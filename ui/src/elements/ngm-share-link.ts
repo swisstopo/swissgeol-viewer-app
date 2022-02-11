@@ -4,7 +4,7 @@ import {showBannerSuccess, showBannerWarning} from '../notifications';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/popup.js';
 import './ngm-i18n-content.js';
-import {SHORTLINK_HOST_BY_PAGE_HOST} from '../constants';
+import {SHORTLINK_URL_BY_PAGE_HOST} from '../constants';
 import {classMap} from 'lit/directives/class-map.js';
 import {customElement, query, state} from 'lit/decorators.js';
 
@@ -15,10 +15,10 @@ export class NgmShareLink extends LitElementI18n {
   @query('.ngm-toast-placeholder') toastPlaceholder;
 
   async getShortlink() {
-    const serviceHost = SHORTLINK_HOST_BY_PAGE_HOST[window.location.host];
+    const serviceUrl = SHORTLINK_URL_BY_PAGE_HOST[window.location.host];
     const url = window.location.href;
     try {
-      const response = await fetch(`https://${serviceHost}/`, {
+      const response = await fetch(serviceUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;charset=UTF-8'
