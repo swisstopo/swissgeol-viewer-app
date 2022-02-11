@@ -128,15 +128,19 @@ export default class NgmGeometriesList extends LitElementI18n {
               ${i18next.t('tbx_all_label')}
             </div>
             <div class="ngm-point-draw-icon ${classMap({active: this.selectedFilter === 'point'})}"
+                 title=${i18next.t('tbx_filter_point')}
                  @click=${() => this.selectFilter('point')}>
             </div>
             <div class="ngm-line-draw-icon ${classMap({active: this.selectedFilter === 'line'})}"
+                 title=${i18next.t('tbx_filter_line')}
                  @click=${() => this.selectFilter('line')}>
             </div>
             <div class="ngm-polygon-draw-icon ${classMap({active: this.selectedFilter === 'polygon'})}"
+                 title=${i18next.t('tbx_filter_polygon')}
                  @click=${() => this.selectFilter('polygon')}>
             </div>
             <div class="ngm-rectangle-draw-icon ${classMap({active: this.selectedFilter === 'rectangle'})}"
+                 title=${i18next.t('tbx_filter_rectangle')}
                  @click=${() => this.selectFilter('rectangle')}>
             </div>
             <div class="ui dropdown right pointing ngm-action-menu">

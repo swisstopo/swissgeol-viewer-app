@@ -270,7 +270,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       <div class="ngm-cam-container">
         ${this.configurations.map(c => html`
           <div>
-            <div class=${c.iconClass()} @click=${c.lock}></div>
+            <div class=${c.iconClass()} title=${i18next.t('cam_lock')} @click=${c.lock}></div>
             <div class="ngm-cam-conf-slider">
               <div>
                 <label>${c.label()}</label>

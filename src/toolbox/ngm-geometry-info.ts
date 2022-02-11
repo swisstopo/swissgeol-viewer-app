@@ -198,11 +198,14 @@ export class NgmGeometryInfo extends LitElementI18n {
         ${`${this.geometry.name}`}
         <div class="ngm-geom-actions">
           <div ?hidden=${this.geometry.type === 'point' || this.geometry.type === 'polygon'}
+               title=${i18next.t('tbx_slicing')}
                class="ngm-slicing-icon ${classMap({active: ToolboxStore.geomSliceActive})}"
                @click=${() => this.onSliceClick()}></div>
           <div class="ngm-extrusion-icon ${classMap({active: !!this.geometry.volumeShowed})}"
+               title=${i18next.t('tbx_extrusion')}
                @click=${() => this.toggleGeomVolume(this.geometry!)}></div>
           <div class="ngm-edit-icon ${classMap({active: this.editing})}"
+               title=${i18next.t('tbx_edit_btn')}
                @click=${() => this.onEditClick()}>
           </div>
         </div>
