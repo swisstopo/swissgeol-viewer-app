@@ -24,7 +24,14 @@ import {DEFAULT_VIEW} from './constants';
 import {setupSearch} from './search.js';
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 
-import {getCameraView, getCesiumToolbarParam, getZoomToPosition, syncCamera, syncStoredView} from './permalink';
+import {
+  getCameraView,
+  getCesiumToolbarParam,
+  getTopic,
+  getZoomToPosition,
+  syncCamera,
+  syncStoredView
+} from './permalink';
 import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
@@ -43,6 +50,8 @@ import type {NgmSlowLoading} from './elements/ngm-slow-loading';
 import type {Viewer} from 'cesium';
 import type {Config} from './layers/ngm-layers-item';
 import LocalStorageController from './LocalStorageController';
+import DashboardStore from './store/dashboard';
+import type {SideBar} from './elements/ngm-side-bar';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -83,6 +92,7 @@ export class NgmApp extends LitElementI18n {
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
   private showCesiumToolbar = getCesiumToolbarParam();
+  private waitForViewLoading = false;
 
   constructor() {
     super();
@@ -129,11 +139,16 @@ export class NgmApp extends LitElementI18n {
   }
 
   onStep2Finished(viewer) {
-    this.loading = false;
-    this.showTrackingConsent = true;
-    const loadingTime = performance.now() / 1000;
-    console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
-    (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
+    if (!this.waitForViewLoading) {
+      this.removeLoading();
+    } else {
+      const subscription = DashboardStore.viewIndex.subscribe(indx => {
+        if (typeof indx !== 'number') return;
+        this.removeLoading();
+        this.waitForViewLoading = false;
+        subscription.unsubscribe();
+      });
+    }
     this.slicer_ = new Slicer(viewer);
     ToolboxStore.setSlicer(this.slicer_);
 
@@ -147,6 +162,14 @@ export class NgmApp extends LitElementI18n {
     const sideBar = this.querySelector('ngm-side-bar');
 
     setupSearch(viewer, this.querySelector('ga-search')!, sideBar);
+  }
+
+  removeLoading() {
+    this.loading = false;
+    this.showTrackingConsent = true;
+    const loadingTime = performance.now() / 1000;
+    console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
+    (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
   }
 
   /**
@@ -185,7 +208,7 @@ export class NgmApp extends LitElementI18n {
     });
   }
 
-  firstUpdated() {
+  async firstUpdated() {
     setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
     const cesiumContainer = this.querySelector('#cesium')!;
@@ -194,10 +217,17 @@ export class NgmApp extends LitElementI18n {
     window['viewer'] = viewer; // for debugging
 
     this.startCesiumLoadingProcess(viewer);
-    const storedView = LocalStorageController.storedView;
-    if (storedView) {
-      syncStoredView(storedView);
-      LocalStorageController.removeStoredView();
+    const topicParam = getTopic();
+    if (topicParam) {
+      this.waitForViewLoading = !!topicParam.viewId;
+      !this.waitForViewLoading && (<SideBar> this.querySelector('ngm-side-bar')).togglePanel('dashboard');
+      DashboardStore.setTopicParam(topicParam);
+    } else {
+      const storedView = LocalStorageController.storedView;
+      if (storedView) {
+        syncStoredView(storedView);
+        LocalStorageController.removeStoredView();
+      }
     }
     const {destination, orientation} = getCameraView();
     const zoomToPosition = getZoomToPosition();

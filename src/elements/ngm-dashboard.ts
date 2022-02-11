@@ -1,23 +1,21 @@
 import {LitElementI18n, toLocaleDateString} from '../i18n';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import i18next from 'i18next';
 import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import MainStore from '../store/main';
 import ToolboxStore from '../store/toolbox';
-import {getCameraView, setPermalink, syncStoredView, syncTargetParam} from '../permalink';
+import {getCameraView, removeTopic, setPermalink, syncStoredView, syncTargetParam} from '../permalink';
 import NavToolsStore from '../store/navTools';
 import DashboardStore from '../store/dashboard';
 import LocalStorageController from '../LocalStorageController';
 import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
-import {showSnackbarError} from '../notifications';
+import {showBannerSuccess, showSnackbarError} from '../notifications';
 import type {Config} from '../layers/ngm-layers-item';
-import {
-  DEFAULT_LAYER_OPACITY,
-  RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE
-} from '../constants';
+import {DEFAULT_LAYER_OPACITY, RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE} from '../constants';
+import $ from '../jquery';
 
 export interface TranslatedText {
   de: string,
@@ -27,6 +25,7 @@ export interface TranslatedText {
 }
 
 export interface DashboardProjectView {
+  id: string,
   title: TranslatedText,
   permalink: string,
 }
@@ -36,6 +35,7 @@ export interface Asset {
 }
 
 export interface DashboardProject {
+  id: string,
   title: TranslatedText,
   description: TranslatedText,
   created: string,
@@ -54,6 +54,7 @@ export class NgmDashboard extends LitElementI18n {
   @state() selectedProject: DashboardProject | undefined;
   @state() projects: DashboardProject[] | undefined;
   @state() selectedViewIndx: number | undefined;
+  @query('.ngm-toast-placeholder') toastPlaceholder;
   private viewer: Viewer | null = null;
   private assetConfigs: any = {};
   private assets: Config[] | undefined;
@@ -61,10 +62,33 @@ export class NgmDashboard extends LitElementI18n {
 
   constructor() {
     super();
+    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    fetch('./src/sampleData/topics.json').then(topicsResponse =>
+      topicsResponse.json().then(topics => {
+        this.projects = topics;
+        // sort by newest first
+        this.projects?.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
+        const recentlyViewed = localStorage.getItem('recentlyViewedTopics');
+        if (recentlyViewed) {
+          this.recentlyViewed = JSON.parse(recentlyViewed);
+        }
+        DashboardStore.topicParam.subscribe(async param => {
+          if (!param) return;
+          const {viewId, topicId} = param;
+          removeTopic();
+          const project = this.projects?.find(p => p.id === topicId);
+          await this.selectProject(project);
+          if (viewId) {
+            const viewIndex = this.selectedProject?.views.findIndex(v => v.id === viewId);
+            if (viewIndex !== -1)
+              DashboardStore.setViewIndex(viewIndex);
+          }
+          this.hidden = false;
+        });
+      }));
     DashboardStore.viewIndex.subscribe(async viewIndex => {
       await this.selectView(viewIndex);
     });
-    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
     MainStore.layersRemoved.subscribe(async () => {
       if (this.selectedViewIndx !== undefined && this.assets) {
         await Promise.all(this.assets.map(async layer => {
@@ -78,18 +102,11 @@ export class NgmDashboard extends LitElementI18n {
     });
   }
 
-  async update(changedProperties) {
-    if (!this.hidden && !this.projects) {
-      this.projects = await (await fetch('./src/sampleData/showcase_projects.json')).json();
-      // sort by newest first
-      this.projects?.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
-
-      const recentlyViewed = localStorage.getItem('recentlyViewedTopics');
-      if (recentlyViewed) {
-        this.recentlyViewed = JSON.parse(recentlyViewed);
-      }
+  updated(changedProperties) {
+    if ((changedProperties.has('selectedProject') || changedProperties.has('hidden')) && this.selectedProject) {
+      this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown());
     }
-    super.update(changedProperties);
+    super.updated(changedProperties);
   }
 
   async fetchAssets(assets: Map<string, Asset>): Promise<Config[]> {
@@ -146,6 +163,8 @@ export class NgmDashboard extends LitElementI18n {
     syncTargetParam(undefined);
     NavToolsStore.nextTargetPointSync();
     if (this.viewer && this.selectedProject && viewIndex !== undefined) {
+      if (this.selectedProject?.assets)
+        this.assets = await this.fetchAssets(this.selectedProject.assets);
       if (!LocalStorageController.storedView) LocalStorageController.storeCurrentView();
       this.dispatchEvent(new CustomEvent('close'));
       const permalink = this.selectedProject.views[viewIndex].permalink;
@@ -159,8 +178,6 @@ export class NgmDashboard extends LitElementI18n {
 
   async selectProject(project) {
     this.selectedProject = project;
-    if (this.selectedProject?.assets)
-      this.assets = await this.fetchAssets(this.selectedProject.assets);
     DashboardStore.setSelectedProject(this.selectedProject);
     this.addRecentlyViewed(project);
   }
@@ -188,6 +205,7 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   addRecentlyViewed(data: DashboardProject) {
+    if (!this.projects) return;
     const index = this.projects.indexOf(data);
     this.recentlyViewed.unshift(index);
 
@@ -200,7 +218,39 @@ export class NgmDashboard extends LitElementI18n {
     localStorage.setItem('recentlyViewedTopics', JSON.stringify(this.recentlyViewed));
   }
 
+  getLink(viewId?: string): string | undefined {
+    if (!this.selectedProject) return;
+    let link = `${location.protocol}//${location.host}${location.pathname}?topicId=${this.selectedProject.id}`;
+    if (viewId) link = `${link}&viewId=${viewId}`;
+    return link;
+  }
+
+  async copyLink(viewId?: string) {
+    try {
+      const link = this.getLink(viewId);
+      if (link) await navigator.clipboard.writeText(link);
+      showBannerSuccess(this.toastPlaceholder, i18next.t('shortlink_copied'));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  contextMenu(viewId?) {
+    return html`
+      <div class="menu">
+        <div class="item"
+             @click=${() => this.copyLink(viewId)}>
+          ${i18next.t('dashboard_share_topic')}
+        </div>
+        <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink(viewId) || '')}">
+          ${i18next.t('dashboard_share_topic_email')}
+        </a>
+      </div>
+    `;
+  }
+
   previewTemplate(proj) {
+    if (!proj) return '';
     return html`
       <div class="ngm-proj-preview" @click=${() => this.selectProject(proj)}>
         <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage: `url('${proj.image}')`})}></div>
@@ -215,7 +265,13 @@ export class NgmDashboard extends LitElementI18n {
     if (!this.selectedProject) return '';
     return html`
       <div>
-        <div class="ngm-proj-title">${translated(this.selectedProject.title)}</div>
+        <div class="ngm-proj-title">
+          ${translated(this.selectedProject.title)}
+          <div class="ui dropdown right pointing ngm-action-menu">
+            <div class="ngm-view-icon ngm-action-menu-icon"></div>
+            ${this.contextMenu()}
+          </div>
+        </div>
         <div class="ngm-proj-data">
           ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(this.selectedProject.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
         </div>
@@ -238,10 +294,12 @@ export class NgmDashboard extends LitElementI18n {
       </div>
       <div class="ngm-project-views">
         ${this.selectedProject.views.map((view, index) => html`
-          <div class="ngm-action-list-item ${classMap({active: this.selectedViewIndx === index})}"
-               @click=${() => DashboardStore.setViewIndex(this.selectedViewIndx === index ? undefined : index)}>
+          <div class="ngm-action-list-item ${classMap({active: this.selectedViewIndx === index})}">
             <div class="ngm-action-list-item-header">
-              <div>${translated(view.title)}</div>
+              <div @click=${() => DashboardStore.setViewIndex(this.selectedViewIndx === index ? undefined : index)}>
+                ${translated(view.title)}
+              </div>
+              <div class="ngm-view-icon ngm-share-icon" @click=${() => this.copyLink(view.id)}></div>
             </div>
           </div>
         `)}
@@ -269,6 +327,7 @@ export class NgmDashboard extends LitElementI18n {
         </div>
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
+      <div class="ngm-toast-placeholder"></div>
       <div ?hidden=${this.selectedProject || this.recentlyViewed.length === 0}>
         <div class="ngm-proj-title">${i18next.t('dashboard_recently_viewed')}</div>
         <div class="ngm-projects-list">

@@ -300,17 +300,17 @@ export function getPointOnPolylineByRatio(linePositions: Cartesian3[], ratio: nu
   });
   const distance = distances.reduce((partialSum, a) => partialSum + a, 0);
   const distanceToPoint = distance * ratio;
-  let currDist = 0, pervDist = 0;
+  let currDist = 0, prevDist = 0;
   for (let i = 1; i < distances.length; i++) {
     currDist += distances[i];
-    if (distanceToPoint > pervDist && distanceToPoint <= currDist) {
-      const d1 = currDist - pervDist;
-      const d2 = distanceToPoint - pervDist;
+    if (distanceToPoint > prevDist && distanceToPoint <= currDist) {
+      const d1 = currDist - prevDist;
+      const d2 = distanceToPoint - prevDist;
       segmentRatio = d2 / d1;
       indx = i;
       break;
     }
-    pervDist = currDist;
+    prevDist = currDist;
   }
 
   return indx > 0 ?

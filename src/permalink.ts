@@ -13,9 +13,12 @@ import {
   MAP_URL_PARAM,
   SLICE_PARAM,
   TARGET_PARAM,
+  TOPIC_PARAM,
+  VIEW_PARAM,
   ZOOM_TO_PARAM
 } from './constants';
 import type {Cartographic} from 'cesium';
+import type {TopicParam} from './store/dashboard';
 
 export function getCameraView() {
   let destination;
@@ -208,14 +211,14 @@ export function getCesiumToolbarParam(): boolean {
   return getURLSearchParams().has('cesiumToolbar');
 }
 
-export function syncStoredView(stored) {
+export function syncStoredView(stored, skipParams: string[] = [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch']) {
   const params = getURLSearchParams();
   const storedParams = new URLSearchParams(stored);
-  const skipParams = [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch'];
+  for (const param of params.entries()) {
+    if (!skipParams.includes(param[0])) params.delete(param[0]);
+  }
   for (const param of storedParams.entries()) {
-    if (!skipParams.includes(param[0])) {
-      params.set(param[0], param[1]);
-    }
+    if (!skipParams.includes(param[0])) params.set(param[0], param[1]);
   }
   setURLSearchParams(params);
 }
@@ -223,4 +226,26 @@ export function syncStoredView(stored) {
 export function setPermalink(permalink) {
   const params = new URLSearchParams(permalink);
   setURLSearchParams(params);
+}
+
+export function getTopic(): TopicParam | undefined {
+  const params = getURLSearchParams();
+  const topicId = params.get(TOPIC_PARAM);
+  return topicId ? {topicId: topicId, viewId: params.get(VIEW_PARAM)} : undefined;
+}
+
+export function setTopic(topicId, viewId) {
+  const params = getURLSearchParams();
+  params.set(TOPIC_PARAM, topicId);
+  viewId && params.set(VIEW_PARAM, viewId);
+  setURLSearchParams(params);
+
+}
+
+export function removeTopic() {
+  const params = getURLSearchParams();
+  params.delete(TOPIC_PARAM);
+  params.delete(VIEW_PARAM);
+  setURLSearchParams(params);
+
 }
