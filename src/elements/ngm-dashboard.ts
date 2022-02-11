@@ -163,6 +163,8 @@ export class NgmDashboard extends LitElementI18n {
     syncTargetParam(undefined);
     NavToolsStore.nextTargetPointSync();
     if (this.viewer && this.selectedProject && viewIndex !== undefined) {
+      if (this.selectedProject?.assets)
+        this.assets = await this.fetchAssets(this.selectedProject.assets);
       if (!LocalStorageController.storedView) LocalStorageController.storeCurrentView();
       this.dispatchEvent(new CustomEvent('close'));
       const permalink = this.selectedProject.views[viewIndex].permalink;
@@ -176,8 +178,6 @@ export class NgmDashboard extends LitElementI18n {
 
   async selectProject(project) {
     this.selectedProject = project;
-    if (this.selectedProject?.assets)
-      this.assets = await this.fetchAssets(this.selectedProject.assets);
     DashboardStore.setSelectedProject(this.selectedProject);
     this.addRecentlyViewed(project);
   }
