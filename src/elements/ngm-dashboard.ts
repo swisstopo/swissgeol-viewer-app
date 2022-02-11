@@ -250,6 +250,7 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   previewTemplate(proj) {
+    if (!proj) return '';
     return html`
       <div class="ngm-proj-preview" @click=${() => this.selectProject(proj)}>
         <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage: `url('${proj.image}')`})}></div>
