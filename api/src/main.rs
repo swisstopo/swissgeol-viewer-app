@@ -14,13 +14,13 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
     // Panic if we can't parse configuration
-    let config = bedrock::config::Settings::parse();
+    let config = api::config::Settings::parse();
 
     // Setup a database connection pool & run any pending migrations
     let pool = config.database.setup().await;
 
     // Build our application
-    let app = bedrock::app(pool);
+    let app = api::app(pool);
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`

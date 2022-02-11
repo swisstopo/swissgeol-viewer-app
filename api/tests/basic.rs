@@ -7,7 +7,7 @@ use uuid::Uuid; // for `app.oneshot()`
 async fn spawn_app() -> Router {
     dotenv::dotenv().ok();
 
-    let config = bedrock::config::Settings::parse();
+    let config = api::config::Settings::parse();
 
     // Create & setup a new database
     let pool = config
@@ -15,7 +15,7 @@ async fn spawn_app() -> Router {
         .setup_with(&Uuid::new_v4().to_string(), true)
         .await;
 
-    bedrock::app(pool)
+    api::app(pool)
 }
 
 #[tokio::test]
