@@ -19,7 +19,7 @@ import './elements/ngm-project-popup';
 
 import '@geoblocks/cesium-view-cube';
 
-import {DEFAULT_VIEW, TARGET_PARAM} from './constants';
+import {DEFAULT_VIEW} from './constants';
 
 import {setupSearch} from './search.js';
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
@@ -225,7 +225,7 @@ export class NgmApp extends LitElementI18n {
     } else {
       const storedView = LocalStorageController.storedView;
       if (storedView) {
-        syncStoredView(storedView, [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch']);
+        syncStoredView(storedView);
         LocalStorageController.removeStoredView();
       }
     }
