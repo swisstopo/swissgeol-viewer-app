@@ -56,8 +56,8 @@ jobs:
           then
             docker push camptocamp/swissgeol_api:latest
           fi
-      - name: Deploy to dev / review
-        run: "echo TODO: deploy image to dev"
+      - name: Deploy to dev
+        run: "echo TODO: deploy image to dev with aws ecs XXX"
 
   validate_ui:
     runs-on: ubuntu-20.04
@@ -100,10 +100,10 @@ jobs:
         run: |
           if [[ ${{github.ref}} == "refs/heads/master" ]]
           then
-            scripts/deploy_to_s3.sh dev
+            cd ui; scripts/deploy_to_s3.sh dev
           elif [[ $GITHUB_EVENT_NAME == "pull_request" ]]
           then
-            scripts/deploy_to_s3.sh review $GITHUB_HEAD_REF
+            cd ui; scripts/deploy_to_s3.sh review $GITHUB_HEAD_REF
           fi
 
       - name: Notify sentry
