@@ -8,7 +8,7 @@ mod handlers;
 
 pub fn app(pool: PgPool) -> Router {
     Router::new()
-        .route("/health_check", get(handlers::health_check))
+        .route("/api/health_check", get(handlers::health_check))
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())

@@ -61,7 +61,7 @@ cd api; scripts/release_api.sh; cd -
 #### Deployment of a new version
 
 - the UI is copied from S3 releases/$VERSION to int;
-- the ngm_api:int tag is set and pushed to docker hub;
+- the swissgeol_api:int tag is set and pushed to docker hub;
 - fargate is redeployed on int.
 
 ```bash

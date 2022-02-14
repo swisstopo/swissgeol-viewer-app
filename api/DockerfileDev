@@ -9,5 +9,4 @@ COPY ./ .
 
 ENV SQLX_OFFLINE true
 
-VOLUME ["./api/src:/app/src:ro"]
 CMD ["cargo", "watch", "-x", "run"]
