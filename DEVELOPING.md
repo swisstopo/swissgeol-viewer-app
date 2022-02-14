@@ -4,7 +4,7 @@
 
 - dev https://dev.swissgeol.ch/
 - int https://int.swissgeol.ch/
-- prod https://beta.swissgeol.ch/
+- prod https://viewer.swissgeol.ch/
 
 ## Deploy to integration (from local machine)
 

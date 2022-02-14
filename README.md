@@ -2,7 +2,7 @@
 
 ## A Geology 3D viewer
 
-Swissgeol is the new geology 3D viewer of [Swisstopo](https://swisstopo.ch), available at https://beta.swissgeol.ch and developed by [Camptocamp](https://www.camptocamp.com/).
+Swissgeol is the new geology 3D viewer of [Swisstopo](https://swisstopo.ch), available at https://viewer.swissgeol.ch and developed by [Camptocamp](https://www.camptocamp.com/).
 It is Open Source and based on the Open Source CesiumJS 3D library.
 
 You are welcome to use and adapt this software for your own uses; see [LICENSE](./LICENSE). If you want to get started off rapidly, Camptocamp offers [support and expertise](https://www.camptocamp.com/geospatial_solutions) to meet your needs rapidly.
