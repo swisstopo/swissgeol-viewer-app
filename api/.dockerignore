@@ -1,1 +1,5 @@
 /target
+/tests
+/scripts
+Dockerfile*
+.env

@@ -1,7 +1,7 @@
 version: "2.2"
 services:
   api:
-    image: camptocamp/ngm_local_api:latest
+    image: camptocamp/swissgeol_local_api:latest
     init: true # handle kill signals for rust
     ports:
       - 8480:3000

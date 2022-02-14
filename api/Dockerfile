@@ -22,16 +22,10 @@ RUN adduser \
 
 WORKDIR /app
 
-# First we handle fetching and building our dependencies
-# We need a stub entry point for that
-COPY Cargo.toml Cargo.lock ./
-COPY ./src/stub.rs ./src/main.rs
-RUN cargo clippy --tests --examples -- -D warnings
-RUN cargo fmt --all -- --check
-RUN cargo build --target x86_64-unknown-linux-musl --release
-RUN cargo doc --no-deps
+COPY . .
 
-COPY ./src ./src
+ENV SQLX_OFFLINE true
+
 RUN cargo clippy --tests --examples -- -D warnings
 RUN cargo fmt --all -- --check
 RUN cargo build --target x86_64-unknown-linux-musl --release
