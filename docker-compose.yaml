@@ -16,7 +16,7 @@ services:
       DB_PASSWORD: &db_pass www-data
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: ngm
+      DB_NAME: swissgeol
     links:
       - db
 
@@ -61,7 +61,7 @@ services:
     environment:
       POSTGRES_USER: *db_user
       POSTGRES_PASSWORD: *db_pass
-      POSTGRES_DB: ngm
+      POSTGRES_DB: swissgeol
       # this image forcefuly create one (and only one) db but as we have 2 db to create,
       # we let it creates an unused "postgres" (default name) db, and manage the db creation
       # in an external script with alembic
