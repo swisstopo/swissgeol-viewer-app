@@ -15,19 +15,19 @@ pub struct Settings {
 #[derive(clap::Parser)]
 pub struct Database {
     /// The database username
-    #[clap(long = "db_username", env = "DB_USER")]
+    #[clap(long = "db_username", env = "PGUSER")]
     pub user: String,
     /// The database password
-    #[clap(long = "db_password", env = "DB_PASSWORD", hide_env_values = true)]
+    #[clap(long = "db_password", env = "PGPASSWORD", hide_env_values = true)]
     pub password: String,
     /// The database host name
-    #[clap(long = "db_host", env = "DB_HOST")]
+    #[clap(long = "db_host", env = "PGHOST")]
     pub host: String,
     /// The database port
-    #[clap(long = "db_port", env = "DB_PORT")]
+    #[clap(long = "db_port", env = "PGPORT")]
     pub port: u16,
     /// The database name
-    #[clap(long = "db_name", env = "DB_NAME")]
+    #[clap(long = "db_name", env = "PGDATABASE")]
     pub name: String,
 }
 

@@ -14,8 +14,7 @@ You are welcome to use and adapt this software for your own uses; see [LICENSE](
 ```bash
 git clone https://github.com/swissgeol/ngm.git
 cd ngm
-npm i
-npm start
+make run
 ```
 
 open http://localhost:8000

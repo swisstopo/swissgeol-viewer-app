@@ -29,7 +29,7 @@ async fn health_check_works() {
     let response = app
         .oneshot(
             Request::builder()
-                .uri("/health_check")
+                .uri("/api/health_check")
                 .body(Body::empty())
                 .unwrap(),
         )

@@ -34,6 +34,7 @@ RUN cargo doc --no-deps
 COPY ./ .
 RUN cargo clippy --tests --examples -- -D warnings
 RUN cargo fmt --all -- --check
+ENV SQLX_OFFLINE=true
 RUN cargo build --target x86_64-unknown-linux-musl --release
 RUN cargo doc --no-deps
 

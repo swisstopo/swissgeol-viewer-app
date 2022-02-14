@@ -1,7 +1,7 @@
 version: "2.2"
 services:
   api:
-    image: camptocamp/ngm_local_api:latest
+    image: camptocamp/swissgeol_local_api:latest
     init: true # handle kill signals for rust
     ports:
       - 8480:3000
@@ -10,9 +10,20 @@ services:
       AWS_ACCESS_KEY_ID: &minio_user minio
       AWS_SECRET_ACCESS_KEY: &minio_pass minio123
       ENVIRONMENT_NAME: local-dev
-      POSTGRES_USER: &db_user www-data
-      POSTGRES_PASSWORD: &db_pass www-data
-      DATABASE_URL: postgres://www-data:www-data@db:5432/swissgeol-local
+      PGUSER: &db_user www-data
+      PGPASSWORD: &db_pass www-data
+      PGDATABASE: swissgeol-local
+      PGHOST: db
+      PGPORT: "5432"
+      APP_PORT: "3000"
+      SQLX_OFFLINE: "true"
+    command: ["cargo", "watch", "-x", "run"]
+    # command: ["/app/scripts/init_db_local_dev.sh"]
+    volumes:
+      - ./api/Cargo.toml:/app/Cargo.toml:ro
+      - ./api/src:/app/src:ro
+      - ./api/scripts:/app/scripts:ro
+      - ./api/migrations:/app/migrations:ro
     links:
       - db
 

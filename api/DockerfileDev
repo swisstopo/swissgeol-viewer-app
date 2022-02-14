@@ -1,9 +1,10 @@
 FROM rust:latest
 
 RUN rustup target add x86_64-unknown-linux-musl
-RUN cargo install cargo-watch
-RUN apt update && apt install -y musl-tools musl-dev
+RUN apt update && apt install -y musl-tools musl-dev postgresql-client-13
 RUN update-ca-certificates
+RUN cargo install cargo-watch
+RUN cargo install sqlx-cli --no-default-features --features postgres,rustls
 
 # Create appuser
 ENV USER=api
@@ -30,5 +31,4 @@ RUN cargo build --target x86_64-unknown-linux-musl
 # In a second step we build our
 COPY ./ .
 
-VOLUME ["./api/src:/app/src:ro"]
 CMD ["cargo", "watch", "-x", "run"]
