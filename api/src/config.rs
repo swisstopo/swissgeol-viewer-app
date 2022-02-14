@@ -6,10 +6,19 @@ use sqlx::{
 #[derive(clap::Parser)]
 pub struct Settings {
     #[clap(flatten)]
+    pub application: Application,
+    #[clap(flatten)]
     pub database: Database,
+}
+
+#[derive(clap::Parser)]
+pub struct Application {
     /// The application port
-    #[clap(long, env = "APP_PORT")]
-    pub application_port: u16,
+    #[clap(long = "app-host", env = "APP_HOST")]
+    pub app_host: String,
+    /// The application port
+    #[clap(long = "app-port", env = "APP_PORT")]
+    pub app_port: u16,
 }
 
 #[derive(clap::Parser)]

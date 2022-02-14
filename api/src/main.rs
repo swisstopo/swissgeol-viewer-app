@@ -1,5 +1,3 @@
-use std::net::SocketAddr;
-
 use clap::StructOpt;
 
 #[tokio::main]
@@ -22,9 +20,13 @@ async fn main() -> anyhow::Result<()> {
     // Build our application
     let app = api::app(pool);
 
-    // run our app with hyper
-    // `axum::Server` is a re-export of `hyper::Server`
-    let address = SocketAddr::from(([127, 0, 0, 1], config.application_port));
+    // run our app with hyperer`
+    let address = format!(
+        "{}:{}",
+        config.application.app_host, config.application.app_port
+    )
+    .parse()
+    .expect("Parse application address from config.");
     tracing::debug!("listening on {}", address);
 
     axum::Server::bind(&address)

@@ -10,8 +10,13 @@ services:
       AWS_ACCESS_KEY_ID: &minio_user minio
       AWS_SECRET_ACCESS_KEY: &minio_pass minio123
       ENVIRONMENT_NAME: local-dev
-      POSTGRES_USER: &db_user www-data
-      POSTGRES_PASSWORD: &db_pass www-data
+      APP_HOST: 0.0.0.0
+      APP_PORT: 3000
+      DB_USER: &db_user www-data
+      DB_PASSWORD: &db_pass www-data
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ngm
     links:
       - db
 
@@ -56,6 +61,7 @@ services:
     environment:
       POSTGRES_USER: *db_user
       POSTGRES_PASSWORD: *db_pass
+      POSTGRES_DB: ngm
       # this image forcefuly create one (and only one) db but as we have 2 db to create,
       # we let it creates an unused "postgres" (default name) db, and manage the db creation
       # in an external script with alembic

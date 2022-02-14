@@ -3,20 +3,6 @@ FROM rust:latest
 RUN cargo install cargo-watch
 RUN update-ca-certificates
 
-# Create appuser
-ENV USER=api
-ENV UID=10001
-
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    "${USER}"
-
-
 WORKDIR /app
 
 COPY ./ .
