@@ -1,0 +1,21 @@
+{
+  "db": "PostgreSQL",
+  "d75605fa616adb896223a42ec68c8d619f63e26c1fbc7931d42e6d02e5611378": {
+    "query": "SELECT 1 AS test",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "test",
+          "type_info": "Int4"
+        }
+      ],
+      "parameters": {
+        "Left": []
+      },
+      "nullable": [
+        null
+      ]
+    }
+  }
+}

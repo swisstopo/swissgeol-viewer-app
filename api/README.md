@@ -4,7 +4,7 @@
 
 ## Development
 
-This section describes how to develop the backend locally leveraging `cargo` and create database migrations. 
+This section describes how to develop the swissgeol viewer api locally leveraging `cargo` and create database migrations. 
 
 
 
@@ -54,3 +54,15 @@ sqlx migrate add -r <DESCRIPTION>
 ```
 
 Check the documentation for further commands.
+
+### sqlx offline
+
+To use sqlx compile time verification without acces to a running database use it's `offline` mode.
+
+Creating and updating the database/query definitions run
+
+```bash
+cargo sqlx prepare -- --lib
+```
+
+This creates/updates the [sqlx-data.json](./sqlx-data.json) file.
