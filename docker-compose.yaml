@@ -12,6 +12,7 @@ services:
       ENVIRONMENT_NAME: local-dev
       POSTGRES_USER: &db_user www-data
       POSTGRES_PASSWORD: &db_pass www-data
+      DATABASE_URL: postgres://www-data:www-data@db:5432/swissgeol-local
     links:
       - db
 
