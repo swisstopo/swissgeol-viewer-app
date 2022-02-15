@@ -1,6 +1,4 @@
-# bedrock
-
-
+# API
 
 ## Development
 
@@ -21,31 +19,20 @@ The latter can be installed with the following command
 cargo install sqlx-cli --no-default-features --features rustls,postgres
 ```
 
-### Setup
-
-Initialize a database for development by spawning a docker container with
+### Quickstart
 
 ```bash
-./scripts/init_db.sh
+# Start the docker-compose development composition
+make run
+# Run tests
+carg test
+# Format
+cargo fmt
+# Lint
+cargo clippy
 ```
 
-### Run
-
-Start the application.
-
-```bash
-cargo run
-```
-
-### Test
-
-Run all tests.
-
-```bash
-cargo test
-```
-
-### Migrations
+### Database Migrations
 
 To create a reversible migration run
 
@@ -53,16 +40,18 @@ To create a reversible migration run
 sqlx migrate add -r <DESCRIPTION>
 ```
 
-Check the documentation for further commands.
-
-### sqlx offline
-
-To use sqlx compile time verification without access to a running database use it's `offline` mode.
-
-Creating and updating the database/query definitions run
+While editing existing migrations alredy applied, use the following command to reset the database.
 
 ```bash
-cargo sqlx prepare -- --lib
+sqlx database reset
 ```
 
-This creates/updates the [sqlx-data.json](./sqlx-data.json) file.
+### `sqlx` offline
+
+To use sqlx compile time verification without access to a running database use it's `offline` mode which creates creates & updates the [sqlx-data.json](./sqlx-data.json) file.
+
+This is only required for building release grade containers and can be kept in sync with with
+
+```bash
+cargo sqlx prepare -- --bin
+```
