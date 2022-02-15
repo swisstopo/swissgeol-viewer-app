@@ -26,17 +26,15 @@ WORKDIR /app
 # We need a stub entry point for that
 COPY Cargo.toml Cargo.lock ./
 COPY ./src/stub.rs ./src/main.rs
-RUN cargo clippy --tests --examples -- -D warnings
-RUN cargo fmt --all -- --check
-RUN cargo build --target x86_64-unknown-linux-musl --release
-RUN cargo doc --no-deps
+RUN cargo fetch --target x86_64-unknown-linux-musl
+RUN cargo build --offline --target x86_64-unknown-linux-musl --release
 
 COPY ./ .
-RUN cargo clippy --tests --examples -- -D warnings
-RUN cargo fmt --all -- --check
 ENV SQLX_OFFLINE=true
-RUN cargo build --target x86_64-unknown-linux-musl --release
-RUN cargo doc --no-deps
+RUN cargo clippy --target x86_64-unknown-linux-musl --tests --examples --offline -- -D warnings
+RUN cargo fmt --all -- --check
+RUN cargo build --target x86_64-unknown-linux-musl --release --offline
+RUN cargo doc --no-deps --offline
 
 ## Final image
 FROM alpine

@@ -12,15 +12,13 @@ services:
       ENVIRONMENT_NAME: local-dev
       PGUSER: &db_user www-data
       PGPASSWORD: &db_pass www-data
-      PGDATABASE: swissgeol-local
+      PGDATABASE: &db_name swissgeol-local
       PGHOST: db
       PGPORT: "5432"
       APP_PORT: "3000"
       SQLX_OFFLINE: "true"
-    command: ["cargo", "watch", "-x", "run"]
-    # command: ["/app/scripts/init_db_local_dev.sh"]
+    command: ["cargo", "watch", "--shell", "cargo run --offline"]
     volumes:
-      - ./api/Cargo.toml:/app/Cargo.toml:ro
       - ./api/src:/app/src:ro
       - ./api/scripts:/app/scripts:ro
       - ./api/migrations:/app/migrations:ro
@@ -68,9 +66,7 @@ services:
     environment:
       POSTGRES_USER: *db_user
       POSTGRES_PASSWORD: *db_pass
-      # this image forcefuly create one (and only one) db but as we have 2 db to create,
-      # we let it creates an unused "postgres" (default name) db, and manage the db creation
-      # in an external script with alembic
+      POSTGRES_DB: *db_name
     ports:
       - 15432:5432
     # command: postgres -c log_statement=all for debugging
