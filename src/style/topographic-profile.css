@@ -26,6 +26,7 @@ ngm-topo-profile-modal .content-container p {
   margin: 0;
   position: absolute;
   right: 0;
+  bottom: 0;
 }
 
 ngm-topo-profile-modal .content-container a {

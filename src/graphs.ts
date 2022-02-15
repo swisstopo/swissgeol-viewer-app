@@ -7,7 +7,7 @@ import i18next from 'i18next';
 import type {ProfileData} from './toolbox/ngm-topo-profile-modal';
 
 
-export function plotProfile(data: ProfileData[], parentContainer: HTMLElement, distInKM: boolean) {
+export function plotProfile(data: ProfileData[], extremePoints: any[], parentContainer: HTMLElement, distInKM: boolean) {
   const style = getComputedStyle(parentContainer);
   const width = parentContainer.clientWidth - parseInt(style.paddingLeft) - parseInt(style.paddingRight);
   const height = width / 6;
@@ -22,7 +22,7 @@ export function plotProfile(data: ProfileData[], parentContainer: HTMLElement, d
 
   // append the svg object
   const svg = select(parentContainer).append('svg')
-    .attr('width', width)
+    .attr('width', width + 5)
     .attr('height', height);
 
   const group = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
@@ -55,6 +55,25 @@ export function plotProfile(data: ProfileData[], parentContainer: HTMLElement, d
     .attr('x', -margin.top)
     .text(`${i18next.t('profile_elevation')} [m]`);
 
+  extremePoints.forEach((val, indx) => {
+      const g = group.append('g').attr('transform', `translate(${domain.X(val.dist)}, 0)`);
+      g.append('path')
+        .attr('d', `M0,0L0,${h}`)
+        .attr('stroke', '#000000')
+        .attr('stroke-width', 1.5);
+      const textN = g.append('text').text(`N: ${val.position[0].toFixed(3)}`);
+      const textE = g.append('text').text(`E: ${val.position[1].toFixed(3)}`);
+      const lastPoint = indx === extremePoints.length - 1;
+      if (lastPoint) {
+        textN.attr('text-anchor', 'end');
+        textE.attr('text-anchor', 'end');
+      }
+      const textLeftMrg = 2;
+      textN.attr('transform', `translate(${lastPoint ? -textLeftMrg : textLeftMrg}, 2)`);
+      textE.attr('transform', `translate(${lastPoint ? -textLeftMrg : textLeftMrg}, 17)`);
+    }
+  );
+
   // Add the area
   group
     .append('path')
@@ -68,6 +87,7 @@ export function plotProfile(data: ProfileData[], parentContainer: HTMLElement, d
       .y0(h)
       .y1(d => domain.Y(d.alts[elevationModel]))
     );
+
   return {domain, group};
 }
 
