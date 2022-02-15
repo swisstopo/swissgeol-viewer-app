@@ -1,0 +1,18 @@
+FROM rust:latest
+
+RUN rustup target add x86_64-unknown-linux-musl
+RUN apt update && apt install -y musl-tools musl-dev postgresql-client-13
+RUN update-ca-certificates
+RUN cargo install cargo-watch
+RUN cargo install sqlx-cli --no-default-features --features postgres,rustls
+
+WORKDIR /app
+
+# First we handle fetching and building our dependencies
+# We need a stub entry point for that
+COPY Cargo.toml Cargo.lock ./
+COPY ./src/stub.rs ./src/main.rs
+RUN cargo build --target x86_64-unknown-linux-musl
+
+# Now we copy all files, building will be handled on run
+COPY ./ .
