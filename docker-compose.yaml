@@ -17,7 +17,7 @@ services:
       PGPORT: "5432"
       APP_PORT: "3000"
       SQLX_OFFLINE: "true"
-    command: ["cargo", "watch", "--shell", "cargo run --offline"]
+    command: ["cargo", "watch", "--shell", "cargo run --offline --target x86_64-unknown-linux-musl"]
     volumes:
       - ./api/src:/app/src:ro
       - ./api/scripts:/app/scripts:ro
