@@ -1,0 +1,75 @@
+version: "2.2"
+services:
+  api:
+    image: camptocamp/swissgeol_local_api:latest
+    init: true # handle kill signals for rust
+    ports:
+      - 8480:3000
+    environment:
+      AWS_HOST: http://minio:9000
+      AWS_ACCESS_KEY_ID: &minio_user minio
+      AWS_SECRET_ACCESS_KEY: &minio_pass minio123
+      ENVIRONMENT_NAME: local-dev
+      PGUSER: &db_user www-data
+      PGPASSWORD: &db_pass www-data
+      PGDATABASE: &db_name swissgeol-local
+      PGHOST: db
+      PGPORT: "5432"
+      APP_PORT: "3000"
+      SQLX_OFFLINE: "true"
+    command: ["cargo", "watch", "--shell", "cargo run --offline"]
+    volumes:
+      - ./api/src:/app/src:ro
+      - ./api/scripts:/app/scripts:ro
+      - ./api/migrations:/app/migrations:ro
+    links:
+      - db
+
+  ui:
+    image: node:16
+    ports:
+      - 8000:8000
+    environment:
+      ENVIRONMENT_NAME: local-dev
+    working_dir: /app
+    command: ['node_modules/.bin/webpack', 'serve']
+    links:
+      - api
+      - abbreviator
+    volumes:
+      - "./ui:/app:ro"
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address :9001
+    volumes:
+      - miniodata:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_BROWSER: 'on'
+      MINIO_ROOT_USER: *minio_user
+      MINIO_ROOT_PASSWORD: *minio_pass
+
+  abbreviator:
+    image: camptocamp/abbreviator:latest
+    ports:
+      - "8001:8080"
+    environment:
+      ID_LENGTH: 5
+      DATABASE_URL: "sqlite::memory:"
+      HOST_WHITELIST: "localhost"
+
+  db:
+    image: camptocamp/postgres:11
+    environment:
+      POSTGRES_USER: *db_user
+      POSTGRES_PASSWORD: *db_pass
+      POSTGRES_DB: *db_name
+    ports:
+      - 15432:5432
+    # command: postgres -c log_statement=all for debugging
+
+volumes:
+  miniodata:

@@ -4,61 +4,109 @@ on:
   push:
     branches:
       - master
-      - oldmaster
-    tags:
-      - "int_*"
-      # - "prod_*" # prod is deployed through the branch, not the tag
-      # - "prod_viewer_*" # prod-viewer is deployed through the branch, not the tag
   pull_request:
     branches:
       - master
       - next-prod
-      - oldmaster
-
-env:
-  IN_CI: "1"
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
-    timeout-minutes: 24
 
+  add_review_links:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v2
-
       - name: Add review links
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: scripts/github_add_link_for_reviews.sh
 
+  validate_local_api:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+    steps:
+      - run: docker system prune --all --force --volumes
+      - uses: actions/checkout@v2
+      - name: Log into Docker hub
+        env:
+          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
+        run: |
+          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - name: Build api
+        run: make build_local_api
+
+  validate_api:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+    steps:
+      - run: docker system prune --all --force --volumes
+      - uses: actions/checkout@v2
+      - name: Log into Docker hub
+        env:
+          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
+        run: |
+          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - name: Build api
+        run: make build_api
+      - name: Push to docker hub
+        run: |
+          if [[ ${{github.ref}} == "refs/heads/master" ]]
+          then
+            docker push camptocamp/swissgeol_api:latest
+          fi
+      - name: Deploy to dev
+        run: "echo TODO: deploy image to dev with aws ecs XXX"
+
+  validate_ui:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+
       - name: Npm setup
-        run: npm ci && du -sh node_modules
+        run: cd ui && npm ci && du -sh node_modules
 
       - name: Lint
-        run: npm run lint
+        run: cd ui && npm run lint
 
       - name: Test
-        run: npm run test
+        run: cd ui && npm run test
 
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        # v3: https://github.com/cypress-io/github-action/releases
+        uses: cypress-io/github-action@2f2f346ca14c89ebbc0c92d50d1cd29f4c6d3339
         with:
           command: npm run test:e2e
+          working-directory: ui
 
       - name: Build
-        run: export RELEASE_NAME="${scripts/get_github_name.sh}"; echo $RELEASE_NAME; npm run build
+        run: export RELEASE_NAME="${scripts/get_github_name.sh}"; echo $RELEASE_NAME; cd ui; npm run build
 
       - name: Build storybook
-        run: npm run build-storybook
+        run: cd ui; npm run build-storybook
 
       - name: Deploy to S3
         env:
           AWS_REGION: "eu-west-1"
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        run: scripts/github_deploy.sh
+        run: |
+          if [[ ${{github.ref}} == "refs/heads/master" ]]
+          then
+            cd ui; scripts/deploy_to_s3.sh dev
+          elif [[ $GITHUB_EVENT_NAME == "pull_request" ]]
+          then
+            cd ui; scripts/deploy_to_s3.sh review $GITHUB_HEAD_REF
+          fi
 
       - name: Notify sentry
         env:
           SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
-        run: scripts/sentry_upload.sh
+        run: cd ui; scripts/sentry_upload.sh

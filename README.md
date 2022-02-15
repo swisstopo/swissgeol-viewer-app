@@ -1,4 +1,5 @@
-# Swissgeol NGM
+# Swissgeol viewer
+
 
 ## A Geology 3D viewer
 
@@ -13,16 +14,17 @@ You are welcome to use and adapt this software for your own uses; see [LICENSE](
 ```bash
 git clone https://github.com/swissgeol/ngm.git
 cd ngm
-npm i
-npm start
+make run
 ```
 
 open http://localhost:8000
 
 
-## Developing the Swisstopo version
+## Developing/deploying the Swisstopo version
 
 See [DEVELOPING.md](./DEVELOPING.md).
+See [DEPLOY_VIEWER.md](./DEPLOY_VIEWER.md).
+See [DEPLOY_ABBREVIATOR.md](./DEPLOY_ABBREVIATOR.md).
 
 
 ## URL Parameters

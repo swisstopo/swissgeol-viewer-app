@@ -1,0 +1,10 @@
+#!/bin/bash
+
+RUN="node_modules/.bin/cypress run"
+
+if which chromium-browser
+then
+  $RUN --browser chromium
+else
+  $RUN --browser chrome
+fi
