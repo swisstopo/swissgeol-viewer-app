@@ -1,10 +1,19 @@
-## Builder
+## Setup builder
 FROM rust:latest AS builder
 
+ARG CARGO_WATCH
+ENV CARGO_WATCH=$CARGO_WATCH
+
 RUN rustup target add x86_64-unknown-linux-musl
-RUN rustup component add clippy rustfmt
 RUN apt-get update && apt-get install -y musl-tools musl-dev
-#RUN update-ca-certificates
+RUN if [ "$CARGO_WATCH" = "true" ] ; then cargo install cargo-watch ; fi
+
+WORKDIR /app
+
+COPY ./ .
+
+## Begin release
+FROM builder
 
 # Create appuser
 ENV USER=appuser
@@ -49,7 +58,6 @@ WORKDIR /app
 
 # Copy our build
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/api ./
-COPY --from=builder /app/target/doc ./doc/
 
 USER 10001
 CMD ["/app/api"]

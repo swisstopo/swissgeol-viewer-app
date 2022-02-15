@@ -15,35 +15,35 @@ pub struct Settings {
 #[derive(clap::Parser)]
 pub struct Database {
     /// The database username
-    #[clap(long = "db_username", env = "PGUSER")]
-    pub user: String,
+    #[clap(long, env)]
+    pub pguser: String,
     /// The database password
-    #[clap(long = "db_password", env = "PGPASSWORD", hide_env_values = true)]
-    pub password: String,
+    #[clap(long, env, hide_env_values = true)]
+    pub pgpassword: String,
     /// The database host name
-    #[clap(long = "db_host", env = "PGHOST")]
-    pub host: String,
+    #[clap(long, env)]
+    pub pghost: String,
     /// The database port
-    #[clap(long = "db_port", env = "PGPORT")]
-    pub port: u16,
+    #[clap(long, env)]
+    pub pgport: u16,
     /// The database name
-    #[clap(long = "db_name", env = "PGDATABASE")]
-    pub name: String,
+    #[clap(long, env)]
+    pub pgdatabase: String,
 }
 
 impl Database {
     /// Create
     pub async fn setup(&self) -> PgPool {
-        self.setup_with(&self.name, false).await
+        self.setup_with(&self.pgdatabase, false).await
     }
 
     pub async fn setup_with(&self, name: &str, create: bool) -> PgPool {
         // Connection options
         let options = PgConnectOptions::new_without_pgpass()
-            .host(&self.host)
-            .port(self.port)
-            .username(&self.user)
-            .password(&self.password);
+            .host(&self.pghost)
+            .port(self.pgport)
+            .username(&self.pguser)
+            .password(&self.pgpassword);
 
         if create {
             // Create database

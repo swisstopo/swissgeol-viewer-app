@@ -1,27 +1,31 @@
-version: "2.2"
+version: "3"
 services:
   api:
-    image: camptocamp/swissgeol_local_api:latest
     init: true # handle kill signals for rust
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      args:
+        - CARGO_WATCH=true
+      target: builder
     ports:
       - 8480:3000
     environment:
       AWS_HOST: http://minio:9000
       AWS_ACCESS_KEY_ID: &minio_user minio
       AWS_SECRET_ACCESS_KEY: &minio_pass minio123
-      ENVIRONMENT_NAME: local-dev
       PGUSER: &db_user www-data
       PGPASSWORD: &db_pass www-data
       PGDATABASE: &db_name swissgeol-local
       PGHOST: db
       PGPORT: "5432"
       APP_PORT: "3000"
-      SQLX_OFFLINE: "true"
     command: ["cargo", "watch", "--shell", "cargo run --offline --target x86_64-unknown-linux-musl"]
+      DATABASE_URL: "postgres://${PGUSER}:${PGPASSWORD}@db:5432/${PGDATABASE}"
     volumes:
       - ./api/src:/app/src:ro
-      - ./api/scripts:/app/scripts:ro
       - ./api/migrations:/app/migrations:ro
+      - ./api/Cargo.toml:/app/Cargo.toml:ro
     links:
       - db
 

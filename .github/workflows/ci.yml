@@ -21,21 +21,6 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: scripts/github_add_link_for_reviews.sh
 
-  validate_local_api:
-    runs-on: ubuntu-20.04
-    timeout-minutes: 15
-    steps:
-      - run: docker system prune --all --force --volumes
-      - uses: actions/checkout@v2
-      - name: Log into Docker hub
-        env:
-          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
-          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
-        run: |
-          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-      - name: Build api
-        run: make build_local_api
-
   validate_api:
     runs-on: ubuntu-20.04
     timeout-minutes: 15
