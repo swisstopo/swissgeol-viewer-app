@@ -8,18 +8,18 @@ services:
         - ENV=development
       target: builder
     ports:
-      - 8480:3000
+      - 8480:${APP_PORT}
     environment:
       AWS_HOST: http://minio:9000
       AWS_ACCESS_KEY_ID: &minio_user minio
       AWS_SECRET_ACCESS_KEY: &minio_pass minio123
-      PGUSER: &db_user www-data
-      PGPASSWORD: &db_pass www-data
-      PGDATABASE: &db_name swissgeol-local
-      PGHOST: db
-      PGPORT: "5432"
-      APP_PORT: "3000"
-      DATABASE_URL: "postgres://www-data:www-data@db:5432/swissgeol-local"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: db
+      DB_PORT: 5432
+      APP_PORT: ${APP_PORT}
+      DATABASE_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}"
     volumes:
       - ./api/src:/app/src:ro
       - ./api/migrations:/app/migrations:ro
@@ -56,7 +56,7 @@ services:
       MINIO_ROOT_PASSWORD: *minio_pass
 
   abbreviator:
-    image: camptocamp/abbreviator:latest
+    image: camptocamp/abbreviator:main
     ports:
       - "8001:8080"
     environment:
@@ -65,13 +65,13 @@ services:
       HOST_WHITELIST: "localhost"
 
   db:
-    image: camptocamp/postgres:11
+    image: postgres:latest
     environment:
-      POSTGRES_USER: *db_user
-      POSTGRES_PASSWORD: *db_pass
-      POSTGRES_DB: *db_name
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - 5432:5432
+      - ${DB_PORT}:5432
     # command: postgres -c log_statement=all for debugging
 
 volumes:

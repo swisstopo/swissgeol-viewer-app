@@ -4,8 +4,6 @@
 
 This section describes how to develop the swissgeol viewer api locally leveraging `cargo` and create database migrations.
 
-
-
 ### Prerequisites
 
 * [Docker](https://docs.docker.com/get-docker/)
@@ -25,7 +23,7 @@ cargo install sqlx-cli --no-default-features --features rustls,postgres
 # Start the docker-compose development composition
 make run
 # Run tests
-carg test
+cargo test
 # Format
 cargo fmt
 # Lint
@@ -48,10 +46,10 @@ sqlx database reset
 
 ### `sqlx` offline
 
-To use sqlx compile time verification without access to a running database use it's `offline` mode which creates creates & updates the [sqlx-data.json](./sqlx-data.json) file.
+To use sqlx compile time verification without access to a running database use it's `offline` mode which creates & updates the [sqlx-data.json](./sqlx-data.json) file.
 
 This is only required for building release grade containers and can be kept in sync with with
 
 ```bash
-cargo sqlx prepare -- --bin
+cargo sqlx prepare -- --lib
 ```

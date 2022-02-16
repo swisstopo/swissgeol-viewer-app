@@ -1,0 +1,101 @@
+name: Rust
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+    paths:
+      - 'api/**'
+
+env:
+  CARGO_TERM_COLOR: always
+
+
+jobs:
+  build_and_test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: swissgeol
+        ports:
+          - 5434:5432
+    env:
+      SQLX_VERSION: 0.5.10
+      SQLX_FEATURES: postgres,rustls
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Cache dependencies
+        id: cache-dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            api/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt,clippy
+
+      - name: Cache sqlx-cli
+        uses: actions/cache@v2
+        id: cache-sqlx
+        with:
+          path: |
+            ~/.cargo/bin/sqlx
+            ~/.cargo/bin/cargo-sqlx
+          key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}-postgres.rustls
+
+      - name: Install sqlx-cli
+        uses: actions-rs/cargo@v1
+        if: steps.cache-sqlx.outputs.cache-hit == false
+        with:
+          command: install
+          args: >
+            sqlx-cli
+            --force
+            --version=${{ env.SQLX_VERSION }}
+            --features=${{ env.SQLX_FEATURES }}
+            --no-default-features
+            --locked
+
+      - name: Migrate database
+        run: sqlx database reset -y
+        working-directory: ./api
+
+      - name: Check sqlx-data.json is up-to-date
+        run: cargo sqlx prepare --check -- --bin api
+        working-directory: ./api
+
+      - name: Check
+        run: cargo check
+        working-directory: ./api
+
+      - name: Test Suite
+        run: cargo test
+        working-directory: ./api
+
+      - name: Clippy
+        run: cargo clippy --tests --examples -- -D warnings
+        working-directory: ./api
+
+      - name: Format
+        run: cargo fmt --all -- --check
+        working-directory: ./api
+
+      - name: Docs
+        run: cargo doc --no-deps
+        working-directory: ./api

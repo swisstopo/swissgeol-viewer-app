@@ -4,7 +4,7 @@ GIT_HASH := $(shell git rev-parse HEAD)
 
 .PHONY: run
 run:
-	docker-compose up
+	docker-compose --env-file ./api/.env up
 
 .PHONY: build_api
 build_api:
