@@ -1,11 +1,11 @@
-version: "2.2"
+version: "3"
 services:
   api:
     build:
       context: ./api
       dockerfile: Dockerfile
       args:
-        - ENV=development
+        - CARGO_WATCH=true
       target: builder
     ports:
       - 8480:${APP_PORT}

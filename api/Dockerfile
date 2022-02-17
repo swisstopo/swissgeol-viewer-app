@@ -1,9 +1,12 @@
 ## Setup builder
 FROM rust:latest AS builder
 
+ARG CARGO_WATCH
+ENV CARGO_WATCH=$CARGO_WATCH
+
 RUN rustup target add x86_64-unknown-linux-musl
 RUN apt-get update && apt-get install -y musl-tools musl-dev
-RUN if [ "$ENV" = "development"] ; then cargo install cargo-watch ; fi
+RUN if [ "$CARGO_WATCH" = "true" ] ; then cargo install cargo-watch ; fi
 
 WORKDIR /app
 
