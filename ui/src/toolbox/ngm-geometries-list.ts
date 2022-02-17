@@ -11,6 +11,8 @@ import $ from '../jquery.js';
 @customElement('ngm-geometries-list')
 export default class NgmGeometriesList extends LitElementI18n {
   @property({type: String}) selectedId = '';
+  @property({type: String}) title = i18next.t('tbx_my_geometries');
+  @property({type: Function}) geometryFilter: (geom: NgmGeometry) => boolean = (geom) => !geom.fromTopic;
   @property({type: Function}) optionsTemplate: ((geom: NgmGeometry, active: boolean) => TemplateResult) | undefined;
   @property({type: Array}) disabledTypes: string[] = [];
   @property({type: Function}) disabledCallback: ((geom: NgmGeometry) => boolean) | undefined;
@@ -73,11 +75,11 @@ export default class NgmGeometriesList extends LitElementI18n {
              @click=${() => ToolboxStore.setOpenedGeometryOptions({id: geom.id!})}>
           ${i18next.t('tbx_info_btn')}
         </div>
-        <div class="item"
+        <div class="item ${classMap({'disabled': !geom.editable})}"
              @click=${() => ToolboxStore.setOpenedGeometryOptions({id: geom.id!, editing: true})}>
           ${i18next.t('tbx_edit_btn')}
         </div>
-        <div class="item"
+        <div class="item ${classMap({'disabled': !geom.copyable})}"
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'copy'})}>
           ${i18next.t('tbx_copy_btn')}
         </div>
@@ -90,7 +92,7 @@ export default class NgmGeometriesList extends LitElementI18n {
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: geom.show ? 'hide' : 'show'})}>
           ${geom.show ? i18next.t('tbx_hide_btn_label') : i18next.t('tbx_unhide_btn_label')}
         </div>
-        <div class="item"
+        <div class="item ${classMap({'disabled': !geom.editable})}"
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'remove'})}>
           ${i18next.t('tbx_remove_btn_label')}
         </div>
@@ -118,9 +120,13 @@ export default class NgmGeometriesList extends LitElementI18n {
   }
 
   render() {
-    const geometries = this.selectedFilter ? this.geometries.filter(geom => geom.type === this.selectedFilter) : this.geometries;
+    const geometries = this.selectedFilter ? this.geometries.filter(geom => geom.type === this.selectedFilter) : this.geometries.filter(this.geometryFilter);
+
+    if (!geometries.length) {
+      return html``;
+    }
     return html`
-      <div class="ngm-geom-label">${i18next.t('tbx_my_geometries')}</div>
+      <div class="ngm-geom-label">${this.title}</div>
       <div class="ngm-geom-list">
         <div class="ngm-action-list-item ngm-geom-filter">
           <div class="ngm-action-list-item-header">

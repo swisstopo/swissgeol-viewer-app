@@ -3,6 +3,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import type {NgmGeometry} from './interfaces';
 import ToolboxStore from '../store/toolbox';
+import i18next from 'i18next';
 
 @customElement('ngm-profile-tool')
 export class NgmProfileTool extends LitElementI18n {
@@ -52,7 +53,12 @@ export class NgmProfileTool extends LitElementI18n {
         .disabledTypes=${['polygon', 'rectangle', 'point']}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.onGeomClick(evt.detail.id)}
         @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}>
-      </ngm-geometries-list>`;
+      </ngm-geometries-list>
+      <ngm-geometries-list
+        title=${i18next.t('tbx_geometries_from_topic')}
+        .disabledTypes=${['polygon', 'rectangle', 'point']}
+        .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
+      ></ngm-geometries-list>`;
   }
 
   createRenderRoot() {

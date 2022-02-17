@@ -241,7 +241,13 @@ export class NgmGstInteraction extends LitElementI18n {
         .optionsTemplate=${(geom, active) => this.interactionTemplate(geom, active)}
         @geomclick=${evt => this.onGeomClick(evt.detail)}
         @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}>
-      </ngm-geometries-list>`;
+      </ngm-geometries-list>
+      <ngm-geometries-list
+        title=${i18next.t('tbx_geometries_from_topic')}
+        .disabledTypes=${['polygon']}
+        .disabledCallback=${geom => this.geometryOutsideExtent(geom)}
+        .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
+      ></ngm-geometries-list>`;
   }
 
   createRenderRoot() {

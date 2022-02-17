@@ -404,7 +404,10 @@ export class GeometryController {
         volumeHeightLimits: attributes.volumeHeightLimits || null,
         description: attributes.description || '',
         image: attributes.image || '',
-        website: attributes.website || ''
+        website: attributes.website || '',
+        editable: attributes.editable === undefined ? true : attributes.editable,
+        copyable: attributes.copyable === undefined ? true : attributes.copyable,
+        fromTopic: attributes.fromTopic === undefined ? false : attributes.fromTopic,
       }
     };
     const color = attributes.color;

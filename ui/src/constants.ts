@@ -105,9 +105,7 @@ export const SHORTLINK_URL_BY_PAGE_HOST = {
   'review.swissgeol.ch': 'https://link.dev.swissgeol.ch',
   'dev.swissgeol.ch': 'https://link.dev.swissgeol.ch',
   'int.swissgeol.ch': 'https://link.int.swissgeol.ch',
-  'beta.swissgeol.ch': 'https://link.swissgeol.ch',
   'swissgeol.ch': 'https://link.swissgeol.ch',
-  'test.viewer.swissgeol.ch': 'https://link.swissgeol.ch',
   'viewer.swissgeol.ch': 'https://link.swissgeol.ch',
 };
 
