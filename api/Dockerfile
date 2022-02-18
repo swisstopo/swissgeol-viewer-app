@@ -31,7 +31,7 @@ RUN adduser \
 # Build release
 ENV SQLX_OFFLINE=true
 
-RUN cargo build --target x86_64-unknown-linux-musl --release
+RUN cargo build --target x86_64-unknown-linux-musl --release --offline
 
 ## Final image
 FROM alpine

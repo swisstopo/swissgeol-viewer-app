@@ -24,7 +24,7 @@ services:
       - ./api/src:/app/src:ro
       - ./api/migrations:/app/migrations:ro
       - ./api/Cargo.toml:/app/Cargo.toml:ro
-    command: cargo watch -x "run --target x86_64-unknown-linux-musl"
+    command: cargo watch --poll -x "run --target x86_64-unknown-linux-musl"
     links:
       - db
 
