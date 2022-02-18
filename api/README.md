@@ -46,9 +46,9 @@ sqlx database reset
 
 ### `sqlx` offline
 
-To use sqlx compile time verification without access to a running database use it's `offline` mode which creates & updates the [sqlx-data.json](./sqlx-data.json) file.
+To use sqlx macros without access to a running database, use the `offline` feature to create & update the [sqlx-data.json](./sqlx-data.json) file.
 
-This is only required for building release grade containers and can be kept in sync with with
+This is only required for building production ready containers and can be kept in sync with
 
 ```bash
 cargo sqlx prepare -- --lib
