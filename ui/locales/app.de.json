@@ -195,7 +195,7 @@
   "tbx_draw": "Zeichnen",
   "tbx_edit_btn": "Bearbeiten",
   "tbx_error_need_more_points_warning": "Bitte mehr Punkte zeichnen",
-  "tbx_extrusion": "",
+  "tbx_extrusion": "Extrusion",
   "tbx_filter_line": "Linien filtern",
   "tbx_filter_point": "Punkte filtern",
   "tbx_filter_polygon": "Polygone filtern",
