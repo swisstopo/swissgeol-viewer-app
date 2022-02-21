@@ -12,4 +12,5 @@ build_local_api:
 
 .PHONY: build_api
 build_api:
+	docker build --target builder -t $(DOCKER_BASE)_api_builder:latest --build-arg "GIT_HASH=$(GIT_HASH)" api
 	docker build -t $(DOCKER_BASE)_api:latest --build-arg "GIT_HASH=$(GIT_HASH)" api

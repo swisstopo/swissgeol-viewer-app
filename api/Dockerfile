@@ -7,19 +7,6 @@ RUN apt-get update && apt-get install -y musl-tools musl-dev
 RUN rustup target add x86_64-unknown-linux-musl
 RUN rustup component add clippy rustfmt
 
-# Create appuser
-ENV USER=appuser
-ENV UID=10001
-
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    "${USER}"
-
 
 WORKDIR /app
 
@@ -37,8 +24,15 @@ RUN cargo build --offline --target x86_64-unknown-linux-musl --release
 COPY ./ .
 ENV SQLX_OFFLINE=true
 RUN cargo fmt --all -- --check
-RUN cargo clippy --target x86_64-unknown-linux-musl --tests --examples --offline -- -D warnings --no-deps
-RUN cargo test tests --target x86_64-unknown-linux-musl
+
+# we don't care about linting dependencies, but clippy still does so despite our use
+# of --package and --no-deps flags
+# this is relatively fast so not a blocker
+RUN cargo clippy --package api --target x86_64-unknown-linux-musl --tests --examples --offline --release -- -D warnings  --no-deps
+
+# The tests actually requires a live DB so it must be run after the image is built
+# This can be handled cleanly with a composition dedicated to acceptance and using --exit-code-from
+# RUN cargo test --target x86_64-unknown-linux-musl --release
 
 
 # We build the app
@@ -55,6 +49,19 @@ COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 
 WORKDIR /app
+
+# Create appuser
+ENV USER=appuser
+ENV UID=10001
+
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    "${USER}"
 
 # Copy the app (we assume the musl libc from alpine is available and compatible)
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/api ./
