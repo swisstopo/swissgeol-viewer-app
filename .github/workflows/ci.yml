@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 15
     steps:
-      - run: docker system prune --all --force --volumes
+      # - run: docker system prune --all --force --volumes
       - uses: actions/checkout@v2
       - name: Log into Docker hub
         env:

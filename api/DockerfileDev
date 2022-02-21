@@ -1,10 +1,13 @@
+# local dev and dev/int/prod images are separate because they
+# are built using a different and incompatible mode (default vs release)
+
 FROM rust:latest
 
 RUN rustup target add x86_64-unknown-linux-musl
-RUN apt update && apt install -y musl-tools musl-dev postgresql-client-13
-RUN update-ca-certificates
-RUN cargo install cargo-watch
-RUN cargo install sqlx-cli --no-default-features --features postgres,rustls
+RUN apt update && apt install -y musl-tools musl-dev
+RUN curl -L https://github.com/watchexec/cargo-watch/releases/download/v8.1.2/cargo-watch-v8.1.2-x86_64-unknown-linux-gnu.tar.xz -o cargo-watch.tar.xz
+RUN tar xvf cargo-watch.tar.xz
+RUN cp cargo-watch-v8.1.2-x86_64-unknown-linux-gnu/cargo-watch /usr/bin
 
 WORKDIR /app
 
