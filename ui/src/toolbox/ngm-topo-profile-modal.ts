@@ -107,10 +107,16 @@ export class NgmTopoProfileModal extends LitElementI18n {
             return {...record, domainDist: record.dist / denom};
           });
         });
+      const denom = this.distInKM ? 1000 : 1;
+      let totalDist = 0;
+      const extremPoints = geom.positions.map((pos, indx) => {
+        totalDist += indx === 0 ? 0 : Cartesian3.distance(geom.positions[indx - 1], pos) / denom;
+        return {dist: totalDist, position: this.linestring![indx]};
+      });
 
       this.hidden = false;
       await this.updateComplete;
-      this.profileInfo = plotProfile(this.data, this.profilePlot, this.distInKM);
+      this.profileInfo = plotProfile(this.data, extremPoints, this.profilePlot, this.distInKM);
       this.domain = this.profileInfo.domain;
 
       this.attachPathListeners(geom);
