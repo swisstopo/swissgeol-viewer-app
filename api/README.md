@@ -38,7 +38,7 @@ To create a reversible migration run
 sqlx migrate add -r <DESCRIPTION>
 ```
 
-While editing existing migrations alredy applied, use the following command to reset the database.
+While editing existing migrations already applied, use the following command to reset the database.
 
 ```bash
 sqlx database reset
@@ -46,7 +46,7 @@ sqlx database reset
 
 ### `sqlx` offline
 
-To use sqlx macros without acces to a running database, use the `offline` feature to create & update the [sqlx-data.json](./sqlx-data.json) file.
+To use sqlx macros without access to a running database, use the `offline` feature to create & update the [sqlx-data.json](./sqlx-data.json) file.
 
 This is only required for building production ready containers and can be kept in sync with
 

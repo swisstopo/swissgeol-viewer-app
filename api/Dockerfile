@@ -37,7 +37,8 @@ RUN cargo build --offline --target x86_64-unknown-linux-musl --release
 COPY ./ .
 ENV SQLX_OFFLINE=true
 RUN cargo fmt --all -- --check
-RUN cargo clippy --target x86_64-unknown-linux-musl --tests --examples --offline --no-deps -- -D warnings
+RUN cargo clippy --target x86_64-unknown-linux-musl --tests --examples --offline -- -D warnings --no-deps
+RUN cargo test tests --target x86_64-unknown-linux-musl
 
 
 # We build the app
