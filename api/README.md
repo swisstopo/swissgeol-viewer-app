@@ -57,7 +57,7 @@ Check the documentation for further commands.
 
 ### sqlx offline
 
-To use sqlx compile time verification without acces to a running database use it's `offline` mode.
+To use sqlx compile time verification without access to a running database use it's `offline` mode.
 
 Creating and updating the database/query definitions run
 
