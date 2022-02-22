@@ -1,0 +1,16 @@
+version: "3"
+services:
+  tests:
+    init: true # handle kill signals for rust
+    image: camptocamp/swissgeol_local_api:latest
+    environment:
+      PGUSER: www-data
+      PGPASSWORD: www-data
+      PGDATABASE: swissgeol-local
+      PGHOST: db
+      PGPORT: "5432"
+      APP_PORT: "3000"
+      DATABASE_URL: "postgres://www-data:www-data@db:5432/swissgeol-local"
+    command: "scripts/wait_db.sh && cargo test --offline --target x86_64-unknown-linux-musl"
+    links:
+      - db

@@ -1,7 +1,7 @@
 # local dev and dev/int/prod images are separate because they
 # are built using a different and incompatible mode (default vs release)
 
-FROM rust:latest AS builder
+FROM rust:1.58 AS builder
 RUN apt-get update && apt-get install -y musl-tools musl-dev
 
 RUN rustup target add x86_64-unknown-linux-musl
@@ -31,9 +31,7 @@ RUN cargo fmt --all -- --check
 RUN cargo clippy --package api --target x86_64-unknown-linux-musl --tests --examples --offline --release -- -D warnings  --no-deps
 
 # The tests actually requires a live DB so it must be run after the image is built
-# This can be handled cleanly with a composition dedicated to acceptance and using --exit-code-from
-# RUN cargo test --target x86_64-unknown-linux-musl --release
-
+# See "make acceptance"
 
 # We build the app
 RUN cargo build --target x86_64-unknown-linux-musl --release --offline

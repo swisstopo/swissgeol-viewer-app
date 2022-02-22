@@ -16,7 +16,7 @@ services:
       PGPORT: "5432"
       APP_PORT: "3000"
       DATABASE_URL: "postgres://www-data:www-data@db:5432/swissgeol-local"
-    command: ["cargo", "watch", "--shell", "cargo run --offline --target x86_64-unknown-linux-musl"]
+    command: ["cargo", "watch", "--poll", "--shell", "cargo run --offline --target x86_64-unknown-linux-musl"]
     volumes:
       - ./api/src:/app/src:ro
       - ./api/migrations:/app/migrations:ro

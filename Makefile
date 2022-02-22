@@ -4,7 +4,11 @@ GIT_HASH := $(shell git rev-parse HEAD)
 
 .PHONY: run
 run: build_local_api
-	docker-compose up
+	docker-compose up --remove-orphans --force-recreate
+
+.PHONY: acceptance
+acceptance: build_local_api
+	docker-compose -f docker-compose.yaml -f docker-compose-tests.yaml up --force-recreate --abort-on-container-exit --exit-code-from tests
 
 .PHONY: build_local_api
 build_local_api:

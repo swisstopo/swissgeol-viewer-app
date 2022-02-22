@@ -21,7 +21,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: scripts/github_add_link_for_reviews.sh
 
-  validate_api:
+  build_and_test_local_api:
     runs-on: ubuntu-20.04
     timeout-minutes: 15
     steps:
@@ -33,18 +33,36 @@ jobs:
           DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
         run: |
           docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - run: docker pull rust:1.58
+      - name: Run local api tests
+        run: make acceptance
+
+  build_and_deploy_api:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+    steps:
+      # - run: docker system prune --all --force --volumes
+      - uses: actions/checkout@v2
+      - name: Log into Docker hub
+        env:
+          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
+        run: |
+          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      # Make sure we are building and deploying image with latest security fixes
+      - run: docker pull rust:1.58
+      - run: docker pull alpine:3.15
       - name: Build api
         run: make build_api
-      - name: Push to docker hub
+      - name: Push to docker hub and deploy to dev
         run: |
           if [[ ${{github.ref}} == "refs/heads/master" ]]
           then
             docker push camptocamp/swissgeol_api:latest
+            echo TODO: deploy image to dev with aws ecs XXX
           fi
-      - name: Deploy to dev
-        run: "echo TODO: deploy image to dev with aws ecs XXX"
 
-  validate_ui:
+  build_and_deploy_ui:
     runs-on: ubuntu-20.04
     timeout-minutes: 24
     steps:
