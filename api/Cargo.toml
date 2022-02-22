@@ -24,3 +24,5 @@ tracing-subscriber = { version="0.3.8", features = ["env-filter"] }
 uuid = { version = "0.8.2", features = ["serde", "v4"] }
 aws-config = "0.7.0"
 aws-sdk-s3 = "0.7.0"
+jsonwebtokens-cognito = "0.1.0-alpha"
+jsonwebtokens = "1.1.0"
