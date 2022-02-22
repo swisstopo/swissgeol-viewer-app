@@ -28,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
     tracing::debug!("listening on {}", address);
 
     axum::Server::bind(&address)
-        .serve(app.into_make_service())
+        .serve(app.await.into_make_service())
         .await
         .unwrap();
 
