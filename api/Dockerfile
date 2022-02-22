@@ -14,7 +14,7 @@ WORKDIR /app
 # This rarely changes so is done once and for all
 # Cargo needs a stub entry point otherwise it fails
 COPY Cargo.toml Cargo.lock ./
-COPY ./src/stub.rs ./src/main.rs
+RUN mkdir src; echo "fn main() {}" > src/main.rs
 RUN cargo fetch --target x86_64-unknown-linux-musl
 RUN cargo build --offline --target x86_64-unknown-linux-musl --release
 
