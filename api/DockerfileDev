@@ -4,7 +4,7 @@
 FROM rust:1.58
 
 RUN rustup target add x86_64-unknown-linux-musl
-RUN apt update && apt install -y musl-tools musl-dev postgresql-client-13
+RUN apt update && apt install -y musl-tools musl-dev postgresql-client-13 libssl-dev
 RUN curl -L https://github.com/watchexec/cargo-watch/releases/download/v8.1.2/cargo-watch-v8.1.2-x86_64-unknown-linux-gnu.tar.xz -o cargo-watch.tar.xz
 RUN tar xvf cargo-watch.tar.xz
 RUN cp cargo-watch-v8.1.2-x86_64-unknown-linux-gnu/cargo-watch /usr/bin
