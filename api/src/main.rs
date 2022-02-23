@@ -20,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
     let pool = config.database.setup().await;
 
     // Build our application
-    let app = api::app(pool);
+    let app = api::app(pool).await;
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`

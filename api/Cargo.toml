@@ -9,6 +9,7 @@ publish = false
 [dependencies]
 anyhow = "1"
 axum = "0.4.5"
+axum-macros = "0.1.0"
 clap = { version = "3.0.14", features = ["derive", "env"]}
 dotenv = "0.15.0"
 hyper = { version = "0.14.16", features = ["full"] }
@@ -21,3 +22,5 @@ tower-http = { version = "0.2.2", features = ["cors", "trace"] }
 tracing = "0.1.30"
 tracing-subscriber = { version="0.3.8", features = ["env-filter"] }
 uuid = { version = "0.8.2", features = ["serde", "v4"] }
+aws-config = "0.7.0"
+aws-sdk-s3 = "0.7.0"
