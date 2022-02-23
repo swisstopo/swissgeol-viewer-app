@@ -16,7 +16,6 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 RUN mkdir src; echo "fn main() {}" > src/main.rs
 RUN cargo fetch --target x86_64-unknown-linux-musl
-RUN cargo build --offline --target x86_64-unknown-linux-musl --release
 
 # Then we copy every files, and detect linting / formating errors
 # This is only detection, fixing the errors should be done outside docker
