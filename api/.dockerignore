@@ -1,4 +1,3 @@
 /target
-/Dockerfile*
+/Dockerfile
 /.env
-/scripts
