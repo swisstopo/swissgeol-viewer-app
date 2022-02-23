@@ -17,11 +17,14 @@ COPY Cargo.toml Cargo.lock ./
 RUN mkdir src; echo "fn main() {}" > src/main.rs
 RUN cargo fetch --target x86_64-unknown-linux-musl
 
+ENV SQLX_OFFLINE=true
+RUN cargo build --offline --target x86_64-unknown-linux-musl --release
+
 # Then we copy every files, and detect linting / formating errors
 # This is only detection, fixing the errors should be done outside docker
 # We handle this section in offline mode to avoid unecessary and terribly long crates index update
 COPY ./ .
-ENV SQLX_OFFLINE=true
+
 RUN cargo fmt --all -- --check
 
 # we don't care about linting dependencies, but clippy still does so despite our use

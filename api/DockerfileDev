@@ -15,7 +15,8 @@ WORKDIR /app
 # We need a stub entry point for that
 COPY Cargo.toml Cargo.lock ./
 RUN mkdir src; echo "fn main() {}" > src/main.rs
-RUN cargo fetch --target x86_64-unknown-linux-musl
+ENV SQLX_OFFLINE=true
+RUN cargo build --target x86_64-unknown-linux-musl
 
 # Now we copy all files, building will be handled on run
 COPY ./ .
