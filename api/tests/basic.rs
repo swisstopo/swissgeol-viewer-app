@@ -15,7 +15,7 @@ async fn spawn_app() -> Router {
         .setup_with(&Uuid::new_v4().to_string(), true)
         .await;
 
-    api::app(pool)
+    api::app(pool).await
 }
 
 #[tokio::test]

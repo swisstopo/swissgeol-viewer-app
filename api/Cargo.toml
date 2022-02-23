@@ -10,7 +10,6 @@ publish = false
 anyhow = "1"
 axum = "0.4.5"
 axum-macros = "0.1.0"
-async-trait = "0.1.52"
 clap = { version = "3.0.14", features = ["derive", "env"]}
 dotenv = "0.15.0"
 hyper = { version = "0.14.16", features = ["full"] }
