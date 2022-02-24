@@ -15,6 +15,7 @@ services:
       PGHOST: db
       PGPORT: "5432"
       APP_PORT: "3000"
+      SQLX_OFFLINE: "true"
       DATABASE_URL: "postgres://www-data:www-data@db:5432/swissgeol-local"
     command: ["cargo", "watch", "--poll", "--shell", "cargo run --offline --target x86_64-unknown-linux-musl"]
     volumes:
