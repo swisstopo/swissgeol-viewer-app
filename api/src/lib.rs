@@ -1,10 +1,7 @@
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::{Client, Region};
 use axum::{routing::get, routing::post, AddExtensionLayer, Router};
-use clap::StructOpt;
-use cognito::{CognitoClient, CognitoConfig};
 use sqlx::PgPool;
-use std::sync::Arc;
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
@@ -17,7 +14,7 @@ pub async fn app(pool: PgPool) -> Router {
     let shared_config = aws_config::from_env().region(region_provider).load().await;
     let aws_client = Client::new(&shared_config);
 
-    let cognito = CognitoClient::new(&CognitoConfig::parse());
+    // let cognito = CognitoClient::new(&CognitoConfig::parse());
 
     Router::new()
         .route("/api/health_check", get(handlers::health_check))
@@ -32,7 +29,6 @@ pub async fn app(pool: PgPool) -> Router {
                 .layer(TraceLayer::new_for_http())
                 .layer(CorsLayer::permissive())
                 .layer(AddExtensionLayer::new(pool))
-                .layer(AddExtensionLayer::new(aws_client))
-                .layer(AddExtensionLayer::new(Arc::new(cognito))),
+                .layer(AddExtensionLayer::new(aws_client)), // .layer(AddExtensionLayer::new(Arc::new(cognito))),
         )
 }

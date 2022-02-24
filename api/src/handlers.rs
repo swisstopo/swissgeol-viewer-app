@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use aws_sdk_s3::error::CopyObjectError;
 use aws_sdk_s3::output::CopyObjectOutput;
 use aws_sdk_s3::types::SdkError;
@@ -12,8 +10,6 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
-
-use crate::cognito::CognitoClient;
 
 // Derive Serialize to return as Json
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -46,12 +42,9 @@ pub struct GetRequest {
 }
 
 // Health check endpoint
-pub async fn health_check(
-    Extension(pool): Extension<PgPool>,
-    Extension(_c): Extension<Arc<CognitoClient>>,
-) -> (StatusCode, String) {
+pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, String) {
     let version = format!("CARGO_PKG_VERSION: {}", env!("CARGO_PKG_VERSION"));
-    let status = if sqlx::query("SELECT 2 AS test")
+    let status = if sqlx::query!("SELECT 1 AS test")
         .fetch_one(&pool)
         .await
         .is_ok()
