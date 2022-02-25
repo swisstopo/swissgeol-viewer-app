@@ -4,7 +4,7 @@ use sqlx::{
 };
 
 #[derive(clap::Parser)]
-pub struct Settings {
+pub struct Config {
     #[clap(flatten)]
     pub database: Database,
     /// The application port

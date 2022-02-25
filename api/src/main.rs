@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
     // Panic if we can't parse configuration
-    let config = api::config::Settings::parse();
+    let config = api::Config::parse();
 
     // Setup a database connection pool & run any pending migrations
     let pool = config.database.setup().await;

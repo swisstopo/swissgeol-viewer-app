@@ -9,6 +9,9 @@ services:
       AWS_HOST: http://minio:9000
       AWS_ACCESS_KEY_ID: &minio_user minio
       AWS_SECRET_ACCESS_KEY: &minio_pass minio123
+      AWSREGION: eu-west-1
+      CLIENTID: 6brvjsufv7fdubr12r9u0gajnj
+      POOLID: eu-west-1_1NcmOhPt4
       PGUSER: &db_user www-data
       PGPASSWORD: &db_pass www-data
       PGDATABASE: &db_name swissgeol-local
