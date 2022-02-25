@@ -57,8 +57,10 @@ pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, St
 pub async fn insert_project(
     Extension(pool): Extension<PgPool>,
     Json(mut project): Json<Project>,
+    claims: Claims,
 ) -> Result<Json<Uuid>> {
     project.id = Uuid::new_v4();
+    project.owner = claims.email;
     let result = sqlx::query_scalar!(
         "INSERT INTO projects (id, project) VALUES ($1, $2) RETURNING id",
         project.id.to_owned(),
@@ -75,8 +77,10 @@ pub async fn duplicate_project(
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
     Json(mut project): Json<Project>,
+    claims: Claims,
 ) -> Result<Json<Uuid>> {
     project.id = Uuid::new_v4();
+    project.owner = claims.email;
     project.viewers = None;
     project.moderators = None;
 
