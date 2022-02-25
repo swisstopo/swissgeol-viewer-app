@@ -8,7 +8,7 @@ use clap::StructOpt;
 use jsonwebtoken::jwk::{AlgorithmParameters, JwkSet};
 use jsonwebtoken::{DecodingKey, Validation};
 use once_cell::sync::Lazy;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tokio::runtime::Handle;
 
 use crate::Error;
@@ -48,7 +48,7 @@ impl CognitoConfig {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Claims {
     pub email: String,
 }

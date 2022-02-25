@@ -163,7 +163,7 @@ pub async fn get_project(
 }
 
 #[axum_macros::debug_handler]
-pub async fn token_test(claims: Claims) -> Result<&'static str, StatusCode> {
+pub async fn token_test(claims: Claims) -> Result<Json<Claims>> {
     tracing::info!("{:#?}", claims);
-    Ok("success")
+    Ok(Json(claims))
 }
