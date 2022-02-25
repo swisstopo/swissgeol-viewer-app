@@ -59,7 +59,111 @@
       "asset_3": {
         "href": "https://download.swissgeol.ch/assets/Komplex_Volume.kml"
       }
-    }
+    },
+    "geometries": [{
+      "type": "Feature",
+      "id": "1",
+      "properties": {
+        "name": "feature one",
+        "color": "#B9271A"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            6.832122802734375,
+            46.684305180613265
+          ],
+          [
+            6.785430908203125,
+            46.74550709985597
+          ],
+          [
+            6.882934570312499,
+            46.74362499884437
+          ]
+        ]
+      }
+    }, {
+      "type": "Feature",
+      "id": "2",
+      "properties": {
+        "name": "feature two",
+        "type": "rectangle"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              6.866455078125,
+              46.765265193338
+            ],
+            [
+              6.994171142578125,
+              46.765265193338
+            ],
+            [
+              6.994171142578125,
+              46.807579571992385
+            ],
+            [
+              6.866455078125,
+              46.807579571992385
+            ],
+            [
+              6.866455078125,
+              46.765265193338
+            ]
+          ]
+        ]
+      }
+    }, {
+      "type": "Feature",
+      "id": "3",
+      "properties": {
+        "website": "https://swissgeol.ch/",
+        "pointSymbol": "/images/triangle-icon-white.png"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.779937744140625,
+          46.69089949154197
+        ]
+      }
+    }, {
+      "type": "Feature",
+      "id": "4",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              6.690673828125,
+              46.74738913515841
+            ],
+            [
+              6.75933837890625,
+              46.74080172412175
+            ],
+            [
+              6.792297363281249,
+              46.76808718675661
+            ],
+            [
+              6.766204833984375,
+              46.770909032336775
+            ],
+            [
+              6.690673828125,
+              46.74738913515841
+            ]
+          ]
+        ]
+      }
+    }]
   },
   {
     "id": "2",

@@ -16,6 +16,8 @@ import {showBannerSuccess, showSnackbarError} from '../notifications';
 import type {Config} from '../layers/ngm-layers-item';
 import {DEFAULT_LAYER_OPACITY, RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE} from '../constants';
 import $ from '../jquery';
+import {fromGeoJSON} from '../toolbox/helpers';
+import type {NgmGeometry} from '../toolbox/interfaces';
 
 export interface TranslatedText {
   de: string,
@@ -44,6 +46,7 @@ export interface DashboardProject {
   color: string,
   views: DashboardProjectView[],
   assets: Map<string, Asset> | undefined,
+  geometries: Array<GeoJSON.Feature> | undefined,
 }
 
 @customElement('ngm-dashboard')
@@ -58,6 +61,7 @@ export class NgmDashboard extends LitElementI18n {
   private viewer: Viewer | null = null;
   private assetConfigs: any = {};
   private assets: Config[] | undefined;
+  private geometries: NgmGeometry[] = [];
   private recentlyViewed: Array<number> = [];
 
   constructor() {
@@ -107,6 +111,16 @@ export class NgmDashboard extends LitElementI18n {
       this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown());
     }
     super.updated(changedProperties);
+  }
+
+  getGeometries(features: Array<GeoJSON.Feature>) {
+    return features.map(feature => {
+      return Object.assign(fromGeoJSON(feature), {
+        fromTopic: true,
+        editable: false,
+        copyable: false,
+      });
+    });
   }
 
   async fetchAssets(assets: Map<string, Asset>): Promise<Config[]> {
@@ -165,19 +179,24 @@ export class NgmDashboard extends LitElementI18n {
     if (this.viewer && this.selectedProject && viewIndex !== undefined) {
       if (this.selectedProject?.assets)
         this.assets = await this.fetchAssets(this.selectedProject.assets);
+      this.geometries.forEach(geometry => ToolboxStore.setGeometryToCreate(geometry));
       if (!LocalStorageController.storedView) LocalStorageController.storeCurrentView();
       this.dispatchEvent(new CustomEvent('close'));
       const permalink = this.selectedProject.views[viewIndex].permalink;
       setPermalink(permalink);
     } else if (viewIndex === undefined) {
+      this.geometries.forEach(geometry => ToolboxStore.nextGeometryAction({id: geometry.id!, action: 'remove'}));
       syncStoredView(LocalStorageController.storedView);
       LocalStorageController.removeStoredView();
     }
     await this.setDataFromPermalink();
   }
 
-  async selectProject(project) {
+  async selectProject(project: DashboardProject) {
     this.selectedProject = project;
+    if (this.selectedProject.geometries) {
+      this.geometries = this.getGeometries(this.selectedProject.geometries);
+    }
     DashboardStore.setSelectedProject(this.selectedProject);
     this.addRecentlyViewed(project);
   }
@@ -185,6 +204,7 @@ export class NgmDashboard extends LitElementI18n {
   deselectProject() {
     this.selectedProject = undefined;
     this.assets = [];
+    this.geometries = [];
     DashboardStore.setSelectedProject(undefined);
   }
 

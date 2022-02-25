@@ -204,7 +204,7 @@ export class NgmGeometryInfo extends LitElementI18n {
           <div class="ngm-extrusion-icon ${classMap({active: !!this.geometry.volumeShowed})}"
                title=${i18next.t('tbx_extrusion')}
                @click=${() => this.toggleGeomVolume(this.geometry!)}></div>
-          <div class="ngm-edit-icon ${classMap({active: this.editing})}"
+          <div class="ngm-icon ngm-edit-icon ${classMap({active: this.editing, disabled: !this.geometry.editable})}"
                title=${i18next.t('tbx_edit_btn')}
                @click=${() => this.onEditClick()}>
           </div>

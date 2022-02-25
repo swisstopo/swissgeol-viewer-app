@@ -39,5 +39,8 @@ export interface NgmGeometry {
   volumeShowed?: boolean;
   volumeHeightLimits?: { lowerLimit: number, height: number };
   swissforagesId?: string;
-  depth?: number
+  depth?: number;
+  editable?: boolean;
+  copyable?: boolean;
+  fromTopic?: boolean;
 }

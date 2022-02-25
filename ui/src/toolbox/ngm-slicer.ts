@@ -299,6 +299,11 @@ export class NgmSlicer extends LitElementI18n {
         .optionsTemplate=${(geom) => this.sliceOptionsTemplate({geom})}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => ToolboxStore.setSliceGeometry(evt.detail)}>
       </ngm-geometries-list>
+      <ngm-geometries-list
+        title=${i18next.t('tbx_geometries_from_topic')}
+        .disabledTypes=${['point', 'polygon']}
+        .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
+      ></ngm-geometries-list>
     `;
   }
 

@@ -1,14 +1,11 @@
 import {CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_VOLUME_HEIGHT_LIMITS} from '../constants';
 import Cartographic from 'cesium/Source/Core/Cartographic';
 import type {Entity, exportKmlResultKml, Globe, Scene} from 'cesium';
-import {BoundingSphere, exportKml, HeadingPitchRange, JulianDate} from 'cesium';
+import {BoundingSphere, exportKml, HeadingPitchRange, JulianDate, Cartesian2, Cartesian3, Color, EntityCollection} from 'cesium';
 import {extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
-import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import {calculateBoxHeight} from '../slicer/helper';
-import EntityCollection from 'cesium/Source/DataSources/EntityCollection';
 import {saveAs} from 'file-saver';
-import type {GeometryTypes} from './interfaces';
+import type {GeometryTypes, NgmGeometry} from './interfaces';
 
 const julianDate = new JulianDate();
 
@@ -170,4 +167,41 @@ export function flyToGeom(scene: Scene, entity: Entity, pitch = -(Math.PI / 2), 
     });
   };
   flyToEntity(true);
+}
+
+
+const GeomTypeMapping = {
+  'Point': 'point',
+  'LineString': 'line',
+  'Polygon': 'polygon',
+};
+
+function toCartesian(coordinates: Array<number>): Cartesian3 {
+  return Cartesian3.fromDegrees(coordinates[0], coordinates[1], coordinates[2]);
+}
+
+const CoordinatesParser = {
+  'point': (coordinates) => [toCartesian(coordinates)],
+  'line': (coordinates) => coordinates.map(toCartesian),
+  'polygon': (coordinates) => coordinates[0].map(toCartesian),
+  'rectangle': (coordinates) => coordinates[0].map(toCartesian),
+};
+
+export function fromGeoJSON(feature: GeoJSON.Feature): NgmGeometry {
+  let type = GeomTypeMapping[feature.geometry.type];
+  if (feature.properties?.type === 'rectangle') {
+    type = 'rectangle';
+  }
+
+  const coordinates = (feature.geometry as GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon).coordinates;
+  return {
+    id: feature.id?.toString(),
+    type: type,
+    positions: CoordinatesParser[type](coordinates),
+    name: feature.properties?.name,
+    image: feature.properties?.image,
+    website: feature.properties?.website,
+    pointSymbol: feature.properties?.pointSymbol,
+    color: feature.properties?.color ? Color.fromCssColorString(feature.properties.color) : undefined
+  };
 }

@@ -111,6 +111,11 @@ export class DataDownload extends LitElementI18n {
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.onGeomClick(evt.detail.id)}
         @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}
       ></ngm-geometries-list>
+      <ngm-geometries-list
+        title=${i18next.t('tbx_geometries_from_topic')}
+        .disabledTypes=${['point', 'polygon', 'line']}
+        .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
+      ></ngm-geometries-list>
     `;
   }
 

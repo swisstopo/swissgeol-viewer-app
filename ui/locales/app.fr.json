@@ -207,6 +207,7 @@
   "tbx_filter_polygon": "Filtrer polygons",
   "tbx_filter_rectangle": "Filtrer rectangles",
   "tbx_fly_to_btn_hint": "Zoom sur",
+  "tbx_geometries_from_topic": "",
   "tbx_geometry": "Géométrie",
   "tbx_gst": "Demande de modèles 3D",
   "tbx_gst_close_label": "Fermer",
