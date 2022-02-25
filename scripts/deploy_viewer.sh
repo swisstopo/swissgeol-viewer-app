@@ -15,12 +15,12 @@ fi
 
 
 export AWS_REGION=eu-west-1
-export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
-export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
 
 
 function deploy_ui {
   TARGET_BUCKET="$1"
+  export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
+  export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
   if [ "$TARGET_BUCKET" -ne "$PROD_BUCKET" -a  "$TARGET_BUCKET" -ne "$INT_BUCKET" ]
   then
     echo wrong target bucket: $TARGET_BUCKET
@@ -38,10 +38,12 @@ function deploy_ui {
 
 function deploy_api {
   tag="$1"
+  export AWS_ACCESS_KEY_ID=$(gopass show ngm/fargate/api/AWS_ACCESS_KEY_ID)
+  export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/fargate/api/AWS_SECRET_ACCESS_KEY)
   docker pull $IMAGE_NAME:$VERSION
   docker tag $IMAGE_NAME:$VERSION $IMAGE_NAME:$tag
   docker push $IMAGE_NAME:$tag
-  aws ecs update-service --cluster viewer_$tag --service viewer_$tag --force-new-deployment
+  aws ecs update-service --cluster api_$tag --service api_$tag --force-new-deployment
 }
 
 
