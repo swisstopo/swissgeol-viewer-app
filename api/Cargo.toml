@@ -1,6 +1,6 @@
 [package]
 name = "api"
-version = "0.1.1"
+version = "0.1.0"
 edition = "2021"
 publish = false
 
@@ -24,9 +24,9 @@ tower-http = { version = "0.2.3", features = ["cors", "trace"] }
 sqlx = { version = "0.5.11", features = ["runtime-tokio-rustls", "postgres", "offline", "uuid", "time"] }
 
 # AWS
-aws-config = "0.7.0"
-aws-types = "0.7.0"
-aws-sdk-s3 = "0.7.0"
+aws-config = "0.8.0"
+aws-types = "0.8.0"
+aws-sdk-s3 = "0.8.0"
 
 # Serialization
 serde = {version = "1", features = ["derive"]}
