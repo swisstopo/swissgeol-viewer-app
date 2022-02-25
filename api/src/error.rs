@@ -5,9 +5,6 @@ use serde_json::json;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("jsonwebtoken error")]
-    Jwt(&'static str),
-
     /// Return `401 Unauthorized`
     #[error("authentication required")]
     Unauthorized,
@@ -15,6 +12,10 @@ pub enum Error {
     /// Return `403 Forbidden`
     #[error("user may not perform that action")]
     Forbidden,
+
+    /// Return `403 Forbidden`
+    #[error("jsonwebtoken error")]
+    Jwt(&'static str),
 
     /// Return `404 Not Found`
     #[error("request path not found")]
@@ -33,10 +34,9 @@ impl Error {
     fn status_code(&self) -> StatusCode {
         match self {
             Self::Unauthorized => StatusCode::UNAUTHORIZED,
-            Self::Forbidden => StatusCode::FORBIDDEN,
+            Self::Forbidden | Self::Jwt(_) => StatusCode::FORBIDDEN,
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::Sqlx(_) | Self::Anyhow(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
@@ -63,7 +63,7 @@ impl IntoResponse for Error {
             Self::Jwt(m) => {
                 tracing::error!("Jsonwebtoken error: {:?}", m);
                 let body = json!({
-                  "status": StatusCode::FORBIDDEN.as_u16(),
+                  "status": self.status_code().as_u16(),
                   "message": m,
                 });
                 return (self.status_code(), Json(body)).into_response();
