@@ -23,8 +23,8 @@ The data is stored in a sqlite db located in a shared NFS drive.
 
     ```bash
     export AWS_REGION=eu-west-1
-    export AWS_ACCESS_KEY_ID=$(gopass show ngm/fargate/AWS_ACCESS_KEY_ID)
-    export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/fargate/AWS_SECRET_ACCESS_KEY)
+    export AWS_ACCESS_KEY_ID=$(gopass show ngm/fargate/urlshortener/AWS_ACCESS_KEY_ID)
+    export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/fargate/urlshortener/AWS_SECRET_ACCESS_KEY)
     ```
 
     ```bash

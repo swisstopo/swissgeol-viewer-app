@@ -47,22 +47,17 @@ This is handled in .github/workflows/ci.yml
 ### Int (manual)
 
 #### Creation of a new release
-- a version is chosen (the sprint number + some patch increment);
-- the UI is built and copied to S3 on releases/$VERSION;
-- the API is built, published to docker hub with the swissgeol_api:$VERSION tag.
 
 ```bash
+git checkout XXX # the commit you want to release
 export VERSION="" # the version (like 2022.02.0)
-git checkout $VERSION
+git tag $VERSION -m $VERSION
 cd ui; scripts/release_ui.sh; cd -
 cd api; scripts/release_api.sh; cd -
 ```
+```
 
 #### Deployment of a new version
-
-- the UI is copied from S3 releases/$VERSION to int;
-- the swissgeol_api:int tag is set and pushed to docker hub;
-- fargate is redeployed on int.
 
 ```bash
 export VERSION="" # the version (like 2022.02.0)
