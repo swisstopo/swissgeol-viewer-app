@@ -4,8 +4,9 @@ use sqlx::PgPool;
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
-mod cognito;
+mod auth;
 mod config;
+mod database;
 mod error;
 mod handlers;
 

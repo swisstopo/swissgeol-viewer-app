@@ -4,52 +4,62 @@ use axum::{
     extract::{FromRequest, RequestParts, TypedHeader},
     headers::{authorization::Bearer, Authorization},
 };
-use clap::StructOpt;
 use jsonwebtoken::jwk::{AlgorithmParameters, JwkSet};
 use jsonwebtoken::{DecodingKey, Validation};
-use once_cell::sync::Lazy;
+use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
-use tokio::runtime::Handle;
 
 use crate::Error;
 
-static JWKS: Lazy<JwkSet> = Lazy::new(|| {
-    tokio::task::block_in_place(move || {
-        Handle::current().block_on(async move {
-            let config = CognitoConfig::parse();
-            config.get_keys().await.expect("Get decoding key")
-        })
-    })
-});
+/// JSON Web Key Set (JWKS)
+static JWKS: OnceCell<JwkSet> = OnceCell::new();
 
+/// Audience
+static AUD: OnceCell<String> = OnceCell::new();
+
+/// Issuer
+static ISS: OnceCell<String> = OnceCell::new();
+
+/// Configuration for AWS Cognito JWKS
 #[derive(clap::Parser)]
-pub struct CognitoConfig {
-    // The AWS region
+pub struct Auth {
+    /// The AWS region
     #[clap(long, env)]
     pub awsregion: String,
-    // The cognito client id
+    /// The cognito client id
     #[clap(long, env)]
     pub clientid: String,
-    // The identity pool id
+    /// The identity pool id
     #[clap(long, env)]
     pub poolid: String,
 }
 
-impl CognitoConfig {
-    pub async fn get_keys(&self) -> Result<JwkSet, anyhow::Error> {
+impl Auth {
+    pub async fn inizialize(&self) -> anyhow::Result<()> {
         let url = format!(
             "https://cognito-idp.{}.amazonaws.com/{}/.well-known/jwks.json",
             self.awsregion, self.poolid
         );
+        let keyset = reqwest::get(url).await?.json().await?;
 
-        let keyset: JwkSet = reqwest::get(url).await?.json().await?;
+        JWKS.get_or_init(|| keyset);
+        AUD.get_or_init(|| self.clientid.clone());
+        ISS.get_or_init(|| {
+            format!(
+                "https://cognito-idp.{}.amazonaws.com/{}",
+                self.awsregion, self.poolid
+            )
+        });
 
-        Ok(keyset)
+        Ok(())
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
+    aud: String,
+    exp: usize,
+    iss: String,
     pub email: String,
 }
 
@@ -66,25 +76,36 @@ where
             TypedHeader::<Authorization<Bearer>>::from_request(req)
                 .await
                 .map_err(|_| Error::Unauthorized)?;
-        // Decode the user data
         let token = bearer.token();
-        let header = jsonwebtoken::decode_header(token).context("Failed to decode token header")?;
-        let kid = header.kid.ok_or(Error::Jwt("Token is missing `kid`"))?;
-        let j = JWKS
+
+        // Decode the user data
+        let header = jsonwebtoken::decode_header(token)
+            .map_err(|_| Error::Jwt("Failed to decode token header"))?;
+        let kid = header.kid.ok_or(Error::Jwt("Token is missing `kid` parameter"))?;
+        let jwk = JWKS
+            .get()
+            .context("Once cell `JWKS` not initialized")?
             .find(&kid)
             .ok_or(Error::Jwt("No matching key found in keyset"))?;
-        match j.algorithm {
+
+        match jwk.algorithm {
             AlgorithmParameters::RSA(ref rsa) => {
                 let decoding_key = DecodingKey::from_rsa_components(&rsa.n, &rsa.e)
                     .map_err(|_| Error::Jwt("Failed to create decoding key"))?;
-                let algorithm = j
+
+                let algorithm = jwk
                     .common
                     .algorithm
-                    .ok_or(Error::Jwt("JWK is missing algorithm parameter"))?;
-                let validation = Validation::new(algorithm);
+                    .ok_or(Error::Jwt("JWK is missing `algorithm` parameter"))?;
+
+                let mut validation = Validation::new(algorithm);
+                validation.set_audience(&[AUD.get().context("Once cell `AUD` not initialized")?]);
+                validation.set_issuer(&[ISS.get().context("Once cell `ISS` not initialized")?]);
+
                 let decoded_token =
                     jsonwebtoken::decode::<Claims>(token, &decoding_key, &validation)
                         .map_err(|_| Error::Jwt("failed to decode token"))?;
+                
                 return Ok(decoded_token.claims);
             }
             _ => return Err(Error::Jwt("Unreachable!")),

@@ -19,6 +19,9 @@ async fn main() -> anyhow::Result<()> {
     // Setup a database connection pool & run any pending migrations
     let pool = config.database.setup().await;
 
+    // Initialize JSON Web Key Set (JWKS)
+    config.auth.inizialize().await?;
+
     // Build our application
     let app = api::app(pool).await;
 

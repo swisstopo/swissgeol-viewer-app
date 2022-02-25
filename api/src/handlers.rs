@@ -10,7 +10,7 @@ use sqlx::{FromRow, PgPool};
 use url::Url;
 use uuid::Uuid;
 
-use crate::cognito::Claims;
+use crate::auth::Claims;
 use crate::Result;
 
 // Derive Serialize to return as Json
