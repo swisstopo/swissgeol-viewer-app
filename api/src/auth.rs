@@ -81,7 +81,9 @@ where
         // Decode the user data
         let header = jsonwebtoken::decode_header(token)
             .map_err(|_| Error::Jwt("Failed to decode token header"))?;
-        let kid = header.kid.ok_or(Error::Jwt("Token is missing `kid` parameter"))?;
+        let kid = header
+            .kid
+            .ok_or(Error::Jwt("Token is missing `kid` parameter"))?;
         let jwk = JWKS
             .get()
             .context("Once cell `JWKS` not initialized")?
@@ -103,9 +105,14 @@ where
                 validation.set_issuer(&[ISS.get().context("Once cell `ISS` not initialized")?]);
 
                 let decoded_token =
-                    jsonwebtoken::decode::<Claims>(token, &decoding_key, &validation)
-                        .map_err(|_| Error::Jwt("failed to decode token"))?;
-                
+                    jsonwebtoken::decode::<Claims>(token, &decoding_key, &validation).map_err(
+                        |_e| {
+                            // TODO: Better error handling
+                            // tracing::error!("{}", e);
+                            Error::Jwt("Failed to decode token")
+                        },
+                    )?;
+
                 return Ok(decoded_token.claims);
             }
             _ => return Err(Error::Jwt("Unreachable!")),
