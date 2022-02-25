@@ -35,7 +35,7 @@ pub struct Auth {
 }
 
 impl Auth {
-    pub async fn inizialize(&self) -> anyhow::Result<()> {
+    pub async fn initialize(&self) -> anyhow::Result<()> {
         let url = format!(
             "https://cognito-idp.{}.amazonaws.com/{}/.well-known/jwks.json",
             self.awsregion, self.poolid

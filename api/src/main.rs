@@ -20,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
     let pool = config.database.setup().await;
 
     // Initialize JSON Web Key Set (JWKS)
-    config.auth.inizialize().await?;
+    config.auth.initialize().await?;
 
     // Build our application
     let app = api::app(pool).await;
