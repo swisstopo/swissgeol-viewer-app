@@ -1,20 +1,63 @@
 {
   "db": "PostgreSQL",
-  "d75605fa616adb896223a42ec68c8d619f63e26c1fbc7931d42e6d02e5611378": {
-    "query": "SELECT 1 AS test",
+  "07e758c9cc8183419e5430d03663541f427568d97432b0257fea3620658074ed": {
+    "query": "\n        SELECT project AS \"project: sqlx::types::Json<Project>\"\n        FROM projects\n        WHERE project->>'owner' = $1 OR\n        project->'viewers' ? $1 OR\n        project->'moderators' ? $1\n        ",
     "describe": {
       "columns": [
         {
           "ordinal": 0,
-          "name": "test",
-          "type_info": "Int4"
+          "name": "project: sqlx::types::Json<Project>",
+          "type_info": "Jsonb"
         }
       ],
       "parameters": {
-        "Left": []
+        "Left": [
+          "Text"
+        ]
       },
       "nullable": [
-        null
+        false
+      ]
+    }
+  },
+  "2a6e57347e722fa816878abb646721e312bca857b29ddec55cd565fc1cabf857": {
+    "query": "INSERT INTO projects (id, project) VALUES ($1, $2) RETURNING id",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Uuid"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Jsonb"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
+  "e095c0532f567775207992f3f873038bb748b4554e068b386d4dd5d041027b28": {
+    "query": "\n        SELECT project as \"project: sqlx::types::Json<Project>\"\n        FROM projects WHERE id = $1\n        ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "project: sqlx::types::Json<Project>",
+          "type_info": "Jsonb"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      },
+      "nullable": [
+        false
       ]
     }
   }

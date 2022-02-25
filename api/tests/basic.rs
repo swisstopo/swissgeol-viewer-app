@@ -7,7 +7,7 @@ use uuid::Uuid; // for `app.oneshot()`
 async fn spawn_app() -> Router {
     dotenv::dotenv().ok();
 
-    let config = api::config::Settings::parse();
+    let config = api::Config::parse();
 
     // Create & setup a new database
     let pool = config

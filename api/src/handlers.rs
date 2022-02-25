@@ -1,6 +1,4 @@
-use aws_sdk_s3::error::CopyObjectError;
-use aws_sdk_s3::output::CopyObjectOutput;
-use aws_sdk_s3::types::SdkError;
+use anyhow::Context;
 use aws_sdk_s3::Client;
 use axum::extract::Path;
 use axum::{
@@ -9,7 +7,11 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
+use url::Url;
 use uuid::Uuid;
+
+use crate::auth::Claims;
+use crate::Result;
 
 // Derive Serialize to return as Json
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -26,7 +28,7 @@ pub struct Project {
     pub image: String,
     pub color: String,
     pub views: Vec<ProjectView>,
-    pub assets: Option<Vec<String>>,
+    pub assets: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -36,15 +38,10 @@ pub struct ProjectView {
     pub permalink: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct GetRequest {
-    pub email: String,
-}
-
 // Health check endpoint
 pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, String) {
     let version = format!("CARGO_PKG_VERSION: {}", env!("CARGO_PKG_VERSION"));
-    let status = if sqlx::query!("SELECT 1 AS test")
+    let status = if sqlx::query("SELECT 1 AS test")
         .fetch_one(&pool)
         .await
         .is_ok()
@@ -60,17 +57,19 @@ pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, St
 pub async fn insert_project(
     Extension(pool): Extension<PgPool>,
     Json(mut project): Json<Project>,
-) -> Result<axum::Json<Uuid>, StatusCode> {
+    claims: Claims,
+) -> Result<Json<Uuid>> {
     project.id = Uuid::new_v4();
-    match sqlx::query_scalar("insert into projects (id, project) values ($1, $2) returning id")
-        .bind(project.id.to_owned())
-        .bind(sqlx::types::Json(project))
-        .fetch_one(&pool)
-        .await
-    {
-        Ok(result) => Ok(axum::Json(result)),
-        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
-    }
+    project.owner = claims.email;
+    let result = sqlx::query_scalar!(
+        "INSERT INTO projects (id, project) VALUES ($1, $2) RETURNING id",
+        project.id.to_owned(),
+        sqlx::types::Json(project) as _
+    )
+    .fetch_one(&pool)
+    .await?;
+
+    Ok(Json(result))
 }
 
 #[axum_macros::debug_handler]
@@ -78,99 +77,92 @@ pub async fn duplicate_project(
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
     Json(mut project): Json<Project>,
-) -> Result<axum::Json<Uuid>, StatusCode> {
+    claims: Claims,
+) -> Result<Json<Uuid>> {
     project.id = Uuid::new_v4();
+    project.owner = claims.email;
     project.viewers = None;
     project.moderators = None;
-    let mut new_assets: Vec<String> = Vec::new();
-    if let Some(ref assets) = project.assets {
-        let bucket_link = "https://download.swissgeol.ch/";
-        for href in assets {
-            let bucket_name = "ngmpub-download-bgdi-ch";
-            let path_opt = href.split(bucket_link).nth(1);
-            let name_opt = href.split('/').last();
-            if path_opt.is_some() && name_opt.is_some() {
-                let path: &str = path_opt.unwrap();
-                let new_path: String = format!("assets/{}/{}", project.id, name_opt.unwrap());
-                copy_aws_object(&client, bucket_name, path, &new_path)
-                    .await
-                    .map_err(|e| {
-                        tracing::error!("{}", e);
-                        StatusCode::INTERNAL_SERVER_ERROR
-                    })?;
-                new_assets.push(format!("{bucket_link}{new_path}"));
-            }
+
+    let mut assets: Vec<String> = Vec::new();
+
+    for href in &project.assets {
+        let url = Url::parse(href).context("Failed to parse asset url")?;
+        let path = &url.path()[1..];
+        let name_opt = path.split('/').last();
+        if !path.is_empty() && name_opt.is_some() {
+            let new_path = format!("assets/{}/{}", project.id, name_opt.unwrap());
+            client
+                .copy_object()
+                .copy_source(format!("ngmpub-download-bgdi-ch/{path}"))
+                .bucket("ngmpub-download-bgdi-ch")
+                .key(&new_path)
+                .send()
+                .await
+                .context("Failed to copy object")?;
+            assets.push(format!("https://download.swissgeol.ch/{new_path}"));
         }
     }
-    project.assets = Option::from(new_assets);
 
-    match sqlx::query_scalar("insert into projects (id, project) values ($1, $2) returning id")
-        .bind(project.id)
-        .bind(sqlx::types::Json(project))
-        .fetch_one(&pool)
-        .await
-    {
-        Ok(result) => Ok(axum::Json(result)),
-        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
-    }
+    project.assets = assets;
+
+    let result = sqlx::query_scalar!(
+        "INSERT INTO projects (id, project) VALUES ($1, $2) RETURNING id",
+        project.id,
+        sqlx::types::Json(&project) as _
+    )
+    .fetch_one(&pool)
+    .await?;
+
+    Ok(Json(result))
 }
 
 #[axum_macros::debug_handler]
 pub async fn get_projects_by_email(
     Extension(pool): Extension<PgPool>,
-    Json(req): Json<GetRequest>,
-) -> Result<axum::Json<Vec<Project>>, StatusCode> {
-    match sqlx::query_scalar(
+    claims: Claims,
+) -> Result<Json<Vec<Project>>> {
+    let result = sqlx::query_scalar!(
         r#"
-          SELECT project as "project: sqlx::types::Json<Project>"
-          FROM projects
-          WHERE project->>'owner' = $1 OR
-          project->'viewers' ? $1 OR
-          project->'moderators' ? $1
-    "#,
+        SELECT project AS "project: sqlx::types::Json<Project>"
+        FROM projects
+        WHERE project->>'owner' = $1 OR
+        project->'viewers' ? $1 OR
+        project->'moderators' ? $1
+        "#,
+        claims.email
     )
-    .bind(req.email)
     .fetch_all(&pool)
-    .await
-    {
-        Ok(result) => Ok(axum::Json(
-            result
-                .iter()
-                .map(|v: &sqlx::types::Json<Project>| v.to_owned().0)
-                .collect(),
-        )),
-        Err(_e) => Err(StatusCode::INTERNAL_SERVER_ERROR),
-    }
+    .await?;
+
+    Ok(Json(
+        result
+            .iter()
+            .map(|v: &sqlx::types::Json<Project>| v.to_owned().0)
+            .collect(),
+    ))
 }
 
 #[axum_macros::debug_handler]
 pub async fn get_project(
     Extension(pool): Extension<PgPool>,
     Path(id): Path<Uuid>,
-) -> Result<axum::Json<Project>, StatusCode> {
-    match sqlx::query_scalar::<_, sqlx::types::Json<Project>>(
-        r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
+) -> Result<Json<Project>> {
+    let result = sqlx::query_scalar!(
+        r#"
+        SELECT project as "project: sqlx::types::Json<Project>"
+        FROM projects WHERE id = $1
+        "#,
+        id
     )
-    .bind(id)
     .fetch_one(&pool)
-    .await
-    {
-        Ok(result) => Ok(axum::Json(result.0)),
-        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
-    }
+    .await?;
+
+    Ok(Json(result.0))
 }
 
-pub async fn copy_aws_object(
-    client: &Client,
-    bucket_name: &str,
-    object_key: &str,
-    target_key: &str,
-) -> Result<CopyObjectOutput, SdkError<CopyObjectError>> {
-    client
-        .copy_object()
-        .copy_source(format!("{bucket_name}/{object_key}"))
-        .bucket(bucket_name)
-        .key(target_key)
-        .send()
-        .await
+#[axum_macros::debug_handler]
+pub async fn token_test(claims: Claims) -> Result<Json<Claims>> {
+    tracing::info!("{:#?}", claims);
+    Ok(Json(claims))
 }
