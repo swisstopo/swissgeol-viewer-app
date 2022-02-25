@@ -21,7 +21,7 @@ function deploy_ui {
   TARGET_BUCKET="$1"
   export AWS_ACCESS_KEY_ID=$(gopass cat ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
   export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
-  if [ "$TARGET_BUCKET" -ne "$PROD_BUCKET" -a  "$TARGET_BUCKET" -ne "$INT_BUCKET" ]
+  if [ "$TARGET_BUCKET" != "$PROD_BUCKET" -a  "$TARGET_BUCKET" != "$INT_BUCKET" ]
   then
     echo wrong target bucket: $TARGET_BUCKET
     exit 1
