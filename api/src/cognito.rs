@@ -84,7 +84,7 @@ where
                 let validation = Validation::new(algorithm);
                 let decoded_token =
                     jsonwebtoken::decode::<Claims>(token, &decoding_key, &validation)
-                        .context("failed to decoe token")?;
+                        .map_err(|_| Error::Jwt("failed to decode token"))?;
                 return Ok(decoded_token.claims);
             }
             _ => return Err(Error::Jwt("Unreachable!")),

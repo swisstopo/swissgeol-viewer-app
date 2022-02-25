@@ -35,7 +35,8 @@ impl Error {
             Self::Unauthorized => StatusCode::UNAUTHORIZED,
             Self::Forbidden => StatusCode::FORBIDDEN,
             Self::NotFound => StatusCode::NOT_FOUND,
-            Self::Sqlx(_) | Self::Anyhow(_) | _ => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::Sqlx(_) | Self::Anyhow(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
@@ -60,7 +61,7 @@ impl IntoResponse for Error {
             }
 
             Self::Jwt(m) => {
-              tracing::error!("Jsonwebtoken error: {:?}", m);
+                tracing::error!("Jsonwebtoken error: {:?}", m);
                 let body = json!({
                   "status": StatusCode::FORBIDDEN.as_u16(),
                   "message": m,

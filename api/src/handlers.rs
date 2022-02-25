@@ -88,7 +88,7 @@ pub async fn duplicate_project(
     let mut assets: Vec<String> = Vec::new();
 
     for href in &project.assets {
-        let url = Url::parse(&href).context("Failed to parse asset url")?;
+        let url = Url::parse(href).context("Failed to parse asset url")?;
         let path = &url.path()[1..];
         let name_opt = path.split('/').last();
         if !path.is_empty() && name_opt.is_some() {
