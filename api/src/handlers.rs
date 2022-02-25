@@ -38,11 +38,6 @@ pub struct ProjectView {
     pub permalink: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct GetRequest {
-    pub email: String,
-}
-
 // Health check endpoint
 pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, String) {
     let version = format!("CARGO_PKG_VERSION: {}", env!("CARGO_PKG_VERSION"));
@@ -121,7 +116,7 @@ pub async fn duplicate_project(
 #[axum_macros::debug_handler]
 pub async fn get_projects_by_email(
     Extension(pool): Extension<PgPool>,
-    Json(req): Json<GetRequest>,
+    claims: Claims,
 ) -> Result<Json<Vec<Project>>> {
     let result = sqlx::query_scalar!(
         r#"
@@ -131,7 +126,7 @@ pub async fn get_projects_by_email(
         project->'viewers' ? $1 OR
         project->'moderators' ? $1
         "#,
-        req.email
+        claims.email
     )
     .fetch_all(&pool)
     .await?;
