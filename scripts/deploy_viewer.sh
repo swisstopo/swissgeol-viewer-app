@@ -2,6 +2,7 @@
 
 RELEASES_BUCKET="ngmpub-review-bgdi-ch"
 INT_BUCKET="ngmpub-int-bgdi-ch"
+DEV_BUCKET="ngmpub-dev-bgdi-ch"
 RELEASES_BUCKET="ngmpub-review-bgdi-ch"
 PROD_BUCKET="ngmpub-prod-viewer-bgdi-ch"
 IMAGE_NAME="camptocamp/swissgeol_api"
@@ -21,7 +22,7 @@ function deploy_ui {
   TARGET_BUCKET="$1"
   export AWS_ACCESS_KEY_ID=$(gopass cat ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
   export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
-  if [ "$TARGET_BUCKET" != "$PROD_BUCKET" -a  "$TARGET_BUCKET" != "$INT_BUCKET" ]
+  if [ "$TARGET_BUCKET" != "$PROD_BUCKET" -a  "$TARGET_BUCKET" != "$INT_BUCKET" -a "$TARGET_BUCKET" != "$DEV_BUCKET" ]
   then
     echo wrong target bucket: $TARGET_BUCKET
     exit 1
@@ -49,7 +50,7 @@ function deploy_api {
 
 if [[ "$1" == "prod" ]]
 then
-  deploy_api $1
+  deploy_api prod
   deploy_ui $PROD_BUCKET
   curl https://viewer.swissgeol.ch/versions.json
   watch --interval=5 curl -s https://viewer.swissgeol.ch/api/health_check
@@ -58,12 +59,21 @@ fi
 
 if [[ "$1" == "int" ]]
 then
-  deploy_api $1
+  deploy_api int
   deploy_ui $INT_BUCKET
   curl https://int.swissgeol.ch/versions.json
   watch --interval=5 curl -s https://int.swissgeol.ch/api/health_check
   exit 0
 fi
 
-echo you should pass prod or int parameter
+if [[ "$1" == "dev" ]]
+then
+  deploy_api latest
+  deploy_ui $DEV_BUCKET
+  curl https://dev.swissgeol.ch/versions.json
+  watch --interval=5 curl -s https://dev.swissgeol.ch/api/health_check
+  exit 0
+fi
+
+echo you should pass prod, int or dev parameter
 exit 1
