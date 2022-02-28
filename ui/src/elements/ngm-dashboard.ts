@@ -209,7 +209,7 @@ export class NgmDashboard extends LitElementI18n {
       const permalink = this.selectedTopic.views[viewIndex].permalink;
       setPermalink(permalink);
     } else if (viewIndex === undefined) {
-      this.geometries.forEach(geometry => ToolboxStore.nextGeometryAction({id: geometry.id!, action: 'remove'}));
+      this.removeGeometries();
       syncStoredView(LocalStorageController.storedView);
       LocalStorageController.removeStoredView();
     }
@@ -225,10 +225,15 @@ export class NgmDashboard extends LitElementI18n {
     this.addRecentlyViewed(topic);
   }
 
+  removeGeometries() {
+    this.geometries.forEach(geometry => ToolboxStore.nextGeometryAction({id: geometry.id!, action: 'remove'}));
+    this.geometries = [];
+  }
+
   deselectTopic() {
     this.selectedTopic = undefined;
     this.assets = [];
-    this.geometries = [];
+    this.removeGeometries();
     DashboardStore.setselectedTopic(undefined);
   }
 
