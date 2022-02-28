@@ -52,7 +52,7 @@ export interface DashboardTopic {
   image: string,
   color: string,
   views: DashboardTopicView[],
-  assets: Map<string, Asset> | undefined,
+  assets: Asset[],
   geometries: Array<GeoJSON.Feature> | undefined,
 }
 
@@ -65,7 +65,7 @@ export interface DashboardProject {
   image: string,
   color: string,
   views: DashboardProjectView[],
-  assets: Map<string, Asset> | undefined,
+  assets: Asset[],
   geometries: Array<GeoJSON.Feature> | undefined,
   owner: string,
   members: string[],
@@ -147,10 +147,10 @@ export class NgmDashboard extends LitElementI18n {
     });
   }
 
-  async fetchAssets(assets: Map<string, Asset>): Promise<Config[]> {
+  async fetchAssets(assets: Asset[]): Promise<Config[]> {
     const assetsData: Config[] = [];
     if (!this.viewer) return assetsData;
-    for (const asset of Object.values(assets)) {
+    for (const asset of assets) {
       try {
         const dataSources = this.viewer.dataSources.getByName(asset.href);
         let uploadedLayer: CustomDataSource;
