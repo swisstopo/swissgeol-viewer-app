@@ -12,7 +12,8 @@ export default class LocalStorageController {
   }
 
   static setAoiInStorage(areas) {
-    localStorage.setItem(LOCALSTORAGE_AOI_KEY, JSON.stringify(areas));
+    const aoi = areas.filter(area => !area.fromTopic);
+    localStorage.setItem(LOCALSTORAGE_AOI_KEY, JSON.stringify(aoi));
   }
 
   static storeCurrentView() {
