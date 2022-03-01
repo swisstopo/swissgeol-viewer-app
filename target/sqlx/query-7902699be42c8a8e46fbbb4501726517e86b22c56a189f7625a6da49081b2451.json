@@ -1,0 +1,21 @@
+{
+  "query": "\n        SELECT project AS \"project: sqlx::types::Json<Project>\"\n        FROM projects\n        WHERE project->>'owner' = $1 OR\n        project->'viewers' ? $1 OR\n        project->'members' ? $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "project: sqlx::types::Json<Project>",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "d1ca70f156e663001444e6252fdcc2f97b3fed1666d177f09c03353f30caf76c"
+}

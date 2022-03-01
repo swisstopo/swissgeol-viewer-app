@@ -19,8 +19,8 @@ pub struct Project {
     #[serde(default = "Uuid::new_v4")]
     pub id: Uuid,
     pub owner: String,
-    pub viewers: Option<Vec<String>>,
-    pub moderators: Option<Vec<String>>,
+    pub viewers: Vec<String>,
+    pub members: Vec<String>,
     pub title: String,
     pub description: String,
     pub created: String,
@@ -28,7 +28,12 @@ pub struct Project {
     pub image: String,
     pub color: String,
     pub views: Vec<ProjectView>,
-    pub assets: Vec<String>,
+    pub assets: Vec<Asset>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct Asset {
+    pub href: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -81,13 +86,13 @@ pub async fn duplicate_project(
 ) -> Result<Json<Uuid>> {
     project.id = Uuid::new_v4();
     project.owner = claims.email;
-    project.viewers = None;
-    project.moderators = None;
+    project.viewers = Vec::new();
+    project.members = Vec::new();
 
-    let mut assets: Vec<String> = Vec::new();
+    let mut assets: Vec<Asset> = Vec::new();
 
-    for href in &project.assets {
-        let url = Url::parse(href).context("Failed to parse asset url")?;
+    for asset in &project.assets {
+        let url = Url::parse(asset.href.as_str()).context("Failed to parse asset url")?;
         let path = &url.path()[1..];
         let name_opt = path.split('/').last();
         if !path.is_empty() && name_opt.is_some() {
@@ -100,7 +105,9 @@ pub async fn duplicate_project(
                 .send()
                 .await
                 .context("Failed to copy object")?;
-            assets.push(format!("https://download.swissgeol.ch/{new_path}"));
+            assets.push(Asset {
+                href: format!("https://download.swissgeol.ch/{new_path}"),
+            });
         }
     }
 
@@ -128,7 +135,7 @@ pub async fn get_projects_by_email(
         FROM projects
         WHERE project->>'owner' = $1 OR
         project->'viewers' ? $1 OR
-        project->'moderators' ? $1
+        project->'members' ? $1
         "#,
         claims.email
     )

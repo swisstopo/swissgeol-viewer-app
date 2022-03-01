@@ -1,7 +1,7 @@
 {
   "db": "PostgreSQL",
   "07e758c9cc8183419e5430d03663541f427568d97432b0257fea3620658074ed": {
-    "query": "\n        SELECT project AS \"project: sqlx::types::Json<Project>\"\n        FROM projects\n        WHERE project->>'owner' = $1 OR\n        project->'viewers' ? $1 OR\n        project->'moderators' ? $1\n        ",
+    "query": "\n        SELECT project AS \"project: sqlx::types::Json<Project>\"\n        FROM projects\n        WHERE project->>'owner' = $1 OR\n        project->'viewers' ? $1 OR\n        project->'members' ? $1\n        ",
     "describe": {
       "columns": [
         {
