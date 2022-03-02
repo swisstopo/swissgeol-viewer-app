@@ -1,25 +1,5 @@
 {
   "db": "PostgreSQL",
-  "07e758c9cc8183419e5430d03663541f427568d97432b0257fea3620658074ed": {
-    "query": "\n        SELECT project AS \"project: sqlx::types::Json<Project>\"\n        FROM projects\n        WHERE project->>'owner' = $1 OR\n        project->'viewers' ? $1 OR\n        project->'members' ? $1\n        ",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "project: sqlx::types::Json<Project>",
-          "type_info": "Jsonb"
-        }
-      ],
-      "parameters": {
-        "Left": [
-          "Text"
-        ]
-      },
-      "nullable": [
-        false
-      ]
-    }
-  },
   "2a6e57347e722fa816878abb646721e312bca857b29ddec55cd565fc1cabf857": {
     "query": "INSERT INTO projects (id, project) VALUES ($1, $2) RETURNING id",
     "describe": {
@@ -34,6 +14,26 @@
         "Left": [
           "Uuid",
           "Jsonb"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
+  "d1ca70f156e663001444e6252fdcc2f97b3fed1666d177f09c03353f30caf76c": {
+    "query": "\n        SELECT project AS \"project: sqlx::types::Json<Project>\"\n        FROM projects\n        WHERE project->>'owner' = $1 OR\n        project->'viewers' ? $1 OR\n        project->'members' ? $1\n        ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "project: sqlx::types::Json<Project>",
+          "type_info": "Jsonb"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
         ]
       },
       "nullable": [
