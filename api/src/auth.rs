@@ -24,7 +24,7 @@ static ISS: OnceCell<String> = OnceCell::new();
 #[derive(clap::Parser)]
 pub struct Auth {
     /// The AWS region
-    #[clap(long, env)]
+    #[clap(long, env="AWS_DEFAULT_REGION")]
     pub awsregion: String,
     /// The cognito client id
     #[clap(long, env)]

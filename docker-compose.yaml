@@ -6,10 +6,11 @@ services:
     ports:
       - 8480:3000
     environment:
-      AWS_HOST: http://minio:9000
+      S3_ENDPOINT: http://minio:9000
       AWS_ACCESS_KEY_ID: &minio_user minio
       AWS_SECRET_ACCESS_KEY: &minio_pass minio123
-      AWSREGION: eu-west-1
+      AWS_DEFAULT_REGION: &minio_region eu-west-1
+      PROJECT_BUCKET: ngmpub-userdata-local
       CLIENTID: 6brvjsufv7fdubr12r9u0gajnj
       POOLID: eu-west-1_1NcmOhPt4
       PGUSER: &db_user www-data
@@ -43,8 +44,10 @@ services:
       - "./ui:/app:ro"
 
   minio:
+    init: true # handle kill signals
     image: minio/minio:latest
-    command: server /data --console-address :9001
+    entrypoint: sh
+    command: -c 'mkdir -p /data/ngmpub-userdata-local && /usr/bin/minio server /data --console-address :9001'
     volumes:
       - miniodata:/data
     ports:
@@ -52,6 +55,7 @@ services:
       - "9001:9001"
     environment:
       MINIO_BROWSER: 'on'
+      MINIO_SITE_REGION: *minio_region
       MINIO_ROOT_USER: *minio_user
       MINIO_ROOT_PASSWORD: *minio_pass
 
