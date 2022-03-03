@@ -23,33 +23,37 @@ static ISS: OnceCell<String> = OnceCell::new();
 /// Configuration for AWS Cognito JWKS
 #[derive(clap::Parser)]
 pub struct Auth {
-    /// The AWS region
-    #[clap(long, env="AWS_DEFAULT_REGION")]
-    pub awsregion: String,
     /// The cognito client id
-    #[clap(long, env)]
-    pub clientid: String,
+    #[clap(env)]
+    pub cognito_client_id: String,
     /// The identity pool id
-    #[clap(long, env)]
-    pub poolid: String,
+    #[clap(env)]
+    pub cognito_pool_id: String,
+    /// The AWS region
+    #[clap(env, default_value = "eu-west-1")]
+    pub cognito_aws_region: String,
 }
 
 impl Auth {
     pub async fn initialize(&self) -> anyhow::Result<()> {
+        // Fetch & set JSON Web Key Set
         let url = format!(
             "https://cognito-idp.{}.amazonaws.com/{}/.well-known/jwks.json",
-            self.awsregion, self.poolid
+            self.cognito_aws_region, self.cognito_pool_id
         );
         let keyset = reqwest::get(url).await?.json().await?;
-
         JWKS.get_or_init(|| keyset);
-        AUD.get_or_init(|| self.clientid.clone());
-        ISS.get_or_init(|| {
-            format!(
-                "https://cognito-idp.{}.amazonaws.com/{}",
-                self.awsregion, self.poolid
-            )
-        });
+
+        // Set auience
+        let audience = self.cognito_client_id.clone();
+        AUD.get_or_init(|| audience);
+
+        // Set issuer
+        let issuer = format!(
+            "https://cognito-idp.{}.amazonaws.com/{}",
+            self.cognito_aws_region, self.cognito_pool_id
+        );
+        ISS.get_or_init(|| issuer);
 
         Ok(())
     }

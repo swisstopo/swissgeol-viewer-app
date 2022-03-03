@@ -90,7 +90,8 @@ pub async fn duplicate_project(
     project.members = Vec::new();
 
     let mut assets: Vec<Asset> = Vec::new();
-    let bucket = env!("PROJECT_BUCKET");
+    // TODO: make static
+    let bucket = std::env::var("S3_BUCKET").unwrap();
 
     for asset in &project.assets {
         let url = Url::parse(asset.href.as_str()).context("Failed to parse asset url")?;
@@ -100,8 +101,8 @@ pub async fn duplicate_project(
             let new_path = format!("assets/{}/{}", project.id, name_opt.unwrap());
             client
                 .copy_object()
-                .copy_source(format!("{bucket}/{path}"))
-                .bucket(bucket)
+                .copy_source(format!("{}/{}", &bucket, &path))
+                .bucket(&bucket)
                 .key(&new_path)
                 .send()
                 .await
