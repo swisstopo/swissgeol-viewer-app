@@ -50,8 +50,7 @@ services:
   minio:
     init: true # handle kill signals
     image: minio/minio:latest
-    entrypoint: sh
-    command: -c 'mkdir -p /data/ngmpub-userdata-local && /usr/bin/minio server /data --console-address :9001'
+    command: server /data --console-address :9001
     volumes:
       - miniodata:/data
     ports:
