@@ -90,28 +90,29 @@ pub async fn duplicate_project(
     project.members = Vec::new();
 
     let mut assets: Vec<Asset> = Vec::new();
-    // TODO: make static
-    let bucket = std::env::var("S3_BUCKET").unwrap();
+    
+    // // TODO: make static
+    // let bucket = std::env::var("S3_BUCKET").unwrap();
 
-    for asset in &project.assets {
-        let url = Url::parse(asset.href.as_str()).context("Failed to parse asset url")?;
-        let path = &url.path()[1..];
-        let name_opt = path.split('/').last();
-        if !path.is_empty() && name_opt.is_some() {
-            let new_path = format!("assets/{}/{}", project.id, name_opt.unwrap());
-            client
-                .copy_object()
-                .copy_source(format!("{}/{}", &bucket, &path))
-                .bucket(&bucket)
-                .key(&new_path)
-                .send()
-                .await
-                .context("Failed to copy object")?;
-            assets.push(Asset {
-                href: format!("https://download.swissgeol.ch/{new_path}"),
-            });
-        }
-    }
+    // for asset in &project.assets {
+    //     let url = Url::parse(asset.href.as_str()).context("Failed to parse asset url")?;
+    //     let path = &url.path()[1..];
+    //     let name_opt = path.split('/').last();
+    //     if !path.is_empty() && name_opt.is_some() {
+    //         let new_path = format!("assets/{}/{}", project.id, name_opt.unwrap());
+    //         client
+    //             .copy_object()
+    //             .copy_source(format!("{}/{}", &bucket, &path))
+    //             .bucket(&bucket)
+    //             .key(&new_path)
+    //             .send()
+    //             .await
+    //             .context("Failed to copy object")?;
+    //         assets.push(Asset {
+    //             href: format!("https://download.swissgeol.ch/{new_path}"),
+    //         });
+    //     }
+    // }
 
     project.assets = assets;
 
