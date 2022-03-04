@@ -1,19 +1,19 @@
 import {BehaviorSubject, Subject} from 'rxjs';
-import type {DashboardProject} from '../elements/ngm-dashboard';
+import type {DashboardTopic} from '../elements/ngm-dashboard';
 
 export type TopicParam = { topicId: string, viewId?: string | null }
 
 export default class DashboardStore {
-  private static selectedProjectSubject = new BehaviorSubject<DashboardProject | undefined>(undefined);
+  private static selectedTopicSubject = new BehaviorSubject<DashboardTopic | undefined>(undefined);
   private static viewIndexSubject = new Subject<number | undefined>();
   private static topicParamSubject = new BehaviorSubject<TopicParam | undefined>(undefined);
 
-  static get selectedProject(): BehaviorSubject<DashboardProject | undefined> {
-    return this.selectedProjectSubject;
+  static get selectedTopic(): BehaviorSubject<DashboardTopic | undefined> {
+    return this.selectedTopicSubject;
   }
 
-  static setSelectedProject(value: DashboardProject | undefined): void {
-    this.selectedProjectSubject.next(value);
+  static setselectedTopic(value: DashboardTopic | undefined): void {
+    this.selectedTopicSubject.next(value);
     if (!value) this.viewIndexSubject.next(undefined);
   }
 

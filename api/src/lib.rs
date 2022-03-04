@@ -1,5 +1,5 @@
-use aws_types::region::Region;
-use axum::{routing::get, routing::post, AddExtensionLayer, Router};
+use axum::{extract::Extension, routing::get, routing::post, Router};
+use clap::StructOpt;
 use sqlx::PgPool;
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
@@ -9,6 +9,7 @@ mod config;
 mod database;
 mod error;
 mod handlers;
+mod s3;
 
 pub use config::Config;
 pub use error::Error;
@@ -16,12 +17,8 @@ pub use error::Error;
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 pub async fn app(pool: PgPool) -> Router {
-    let aws_config = aws_config::from_env()
-        .region(Region::new("eu-west-1"))
-        .load()
-        .await;
-
-    let aws_client = aws_sdk_s3::Client::new(&aws_config);
+    let aws_config = s3::S3::parse();
+    let aws_client = aws_config.create_client().await;
 
     Router::new()
         .route("/api/health_check", get(handlers::health_check))
@@ -36,7 +33,7 @@ pub async fn app(pool: PgPool) -> Router {
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
                 .layer(CorsLayer::permissive())
-                .layer(AddExtensionLayer::new(pool))
-                .layer(AddExtensionLayer::new(aws_client)),
+                .layer(Extension(pool))
+                .layer(Extension(aws_client)),
         )
 }

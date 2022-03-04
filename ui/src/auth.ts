@@ -24,6 +24,10 @@ export interface AuthUser {
 
 }
 
+export function getAccessToken() {
+  return Auth.getAccessToken();
+}
+
 let _AWSCredentials: CognitoIdentityCredentialProvider | null = null;
 export default class Auth {
 

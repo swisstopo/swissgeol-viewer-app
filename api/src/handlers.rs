@@ -1,4 +1,3 @@
-use anyhow::Context;
 use aws_sdk_s3::Client;
 use axum::extract::Path;
 use axum::{
@@ -7,7 +6,6 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
-use url::Url;
 use uuid::Uuid;
 
 use crate::auth::Claims;
@@ -19,8 +17,8 @@ pub struct Project {
     #[serde(default = "Uuid::new_v4")]
     pub id: Uuid,
     pub owner: String,
-    pub viewers: Option<Vec<String>>,
-    pub moderators: Option<Vec<String>>,
+    pub viewers: Vec<String>,
+    pub members: Vec<String>,
     pub title: String,
     pub description: String,
     pub created: String,
@@ -28,7 +26,12 @@ pub struct Project {
     pub image: String,
     pub color: String,
     pub views: Vec<ProjectView>,
-    pub assets: Vec<String>,
+    pub assets: Vec<Asset>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct Asset {
+    pub href: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -75,34 +78,39 @@ pub async fn insert_project(
 #[axum_macros::debug_handler]
 pub async fn duplicate_project(
     Extension(pool): Extension<PgPool>,
-    Extension(client): Extension<Client>,
+    Extension(_client): Extension<Client>,
     Json(mut project): Json<Project>,
     claims: Claims,
 ) -> Result<Json<Uuid>> {
     project.id = Uuid::new_v4();
     project.owner = claims.email;
-    project.viewers = None;
-    project.moderators = None;
+    project.viewers = Vec::new();
+    project.members = Vec::new();
 
-    let mut assets: Vec<String> = Vec::new();
+    let assets: Vec<Asset> = Vec::new();
 
-    for href in &project.assets {
-        let url = Url::parse(href).context("Failed to parse asset url")?;
-        let path = &url.path()[1..];
-        let name_opt = path.split('/').last();
-        if !path.is_empty() && name_opt.is_some() {
-            let new_path = format!("assets/{}/{}", project.id, name_opt.unwrap());
-            client
-                .copy_object()
-                .copy_source(format!("ngmpub-download-bgdi-ch/{path}"))
-                .bucket("ngmpub-download-bgdi-ch")
-                .key(&new_path)
-                .send()
-                .await
-                .context("Failed to copy object")?;
-            assets.push(format!("https://download.swissgeol.ch/{new_path}"));
-        }
-    }
+    // // TODO: make static
+    // let bucket = std::env::var("S3_BUCKET").unwrap();
+
+    // for asset in &project.assets {
+    //     let url = Url::parse(asset.href.as_str()).context("Failed to parse asset url")?;
+    //     let path = &url.path()[1..];
+    //     let name_opt = path.split('/').last();
+    //     if !path.is_empty() && name_opt.is_some() {
+    //         let new_path = format!("assets/{}/{}", project.id, name_opt.unwrap());
+    //         client
+    //             .copy_object()
+    //             .copy_source(format!("{}/{}", &bucket, &path))
+    //             .bucket(&bucket)
+    //             .key(&new_path)
+    //             .send()
+    //             .await
+    //             .context("Failed to copy object")?;
+    //         assets.push(Asset {
+    //             href: format!("https://download.swissgeol.ch/{new_path}"),
+    //         });
+    //     }
+    // }
 
     project.assets = assets;
 
@@ -128,7 +136,7 @@ pub async fn get_projects_by_email(
         FROM projects
         WHERE project->>'owner' = $1 OR
         project->'viewers' ? $1 OR
-        project->'moderators' ? $1
+        project->'members' ? $1
         "#,
         claims.email
     )

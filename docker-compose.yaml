@@ -6,17 +6,22 @@ services:
     ports:
       - 8480:3000
     environment:
-      AWS_HOST: http://minio:9000
+      # S3
+      S3_AWS_REGION: &minio_region eu-west-1
       AWS_ACCESS_KEY_ID: &minio_user minio
       AWS_SECRET_ACCESS_KEY: &minio_pass minio123
-      AWSREGION: eu-west-1
-      CLIENTID: 6brvjsufv7fdubr12r9u0gajnj
-      POOLID: eu-west-1_1NcmOhPt4
+      S3_BUCKET: ngmpub-userdata-local
+      S3_ENDPOINT: http://minio:9000
+      # Cognito
+      COGNITO_CLIENT_ID: 6brvjsufv7fdubr12r9u0gajnj
+      COGNITO_POOL_ID: eu-west-1_1NcmOhPt4
+      # Postgres
       PGUSER: &db_user www-data
       PGPASSWORD: &db_pass www-data
       PGDATABASE: &db_name swissgeol-local
       PGHOST: db
       PGPORT: "5432"
+      # Api
       APP_PORT: "3000"
       SQLX_OFFLINE: "true"
       DATABASE_URL: "postgres://www-data:www-data@db:5432/swissgeol-local"
@@ -43,6 +48,7 @@ services:
       - "./ui:/app:ro"
 
   minio:
+    init: true # handle kill signals
     image: minio/minio:latest
     command: server /data --console-address :9001
     volumes:
@@ -52,6 +58,7 @@ services:
       - "9001:9001"
     environment:
       MINIO_BROWSER: 'on'
+      MINIO_SITE_REGION: *minio_region
       MINIO_ROOT_USER: *minio_user
       MINIO_ROOT_PASSWORD: *minio_pass
 
