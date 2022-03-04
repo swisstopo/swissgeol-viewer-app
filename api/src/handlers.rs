@@ -1,4 +1,3 @@
-use anyhow::Context;
 use aws_sdk_s3::Client;
 use axum::extract::Path;
 use axum::{
@@ -7,7 +6,6 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
-use url::Url;
 use uuid::Uuid;
 
 use crate::auth::Claims;
@@ -80,7 +78,7 @@ pub async fn insert_project(
 #[axum_macros::debug_handler]
 pub async fn duplicate_project(
     Extension(pool): Extension<PgPool>,
-    Extension(client): Extension<Client>,
+    Extension(_client): Extension<Client>,
     Json(mut project): Json<Project>,
     claims: Claims,
 ) -> Result<Json<Uuid>> {
@@ -89,8 +87,8 @@ pub async fn duplicate_project(
     project.viewers = Vec::new();
     project.members = Vec::new();
 
-    let mut assets: Vec<Asset> = Vec::new();
-    
+    let assets: Vec<Asset> = Vec::new();
+
     // // TODO: make static
     // let bucket = std::env::var("S3_BUCKET").unwrap();
 
