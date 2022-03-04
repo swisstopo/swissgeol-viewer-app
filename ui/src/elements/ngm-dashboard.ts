@@ -221,7 +221,7 @@ export class NgmDashboard extends LitElementI18n {
     if (this.selectedTopic.geometries) {
       this.geometries = this.getGeometries(this.selectedTopic.geometries);
     }
-    DashboardStore.setselectedTopic(this.selectedTopic);
+    DashboardStore.setSelectedTopic(this.selectedTopic);
     this.addRecentlyViewed(topic);
   }
 
@@ -234,7 +234,7 @@ export class NgmDashboard extends LitElementI18n {
     this.selectedTopic = undefined;
     this.assets = [];
     this.removeGeometries();
-    DashboardStore.setselectedTopic(undefined);
+    DashboardStore.setSelectedTopic(undefined);
   }
 
   async setDataFromPermalink() {
