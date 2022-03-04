@@ -8,6 +8,11 @@ PROD_BUCKET="ngmpub-prod-viewer-bgdi-ch"
 IMAGE_NAME="camptocamp/swissgeol_api"
 
 
+if [[ "$1" == "dev" ]]
+then
+  export VERSION="latest"
+fi
+
 if [[ -z "${VERSION}" ]]
 then
   echo Missing VERSION environment variable
@@ -68,12 +73,13 @@ fi
 
 if [[ "$1" == "dev" ]]
 then
-  deploy_api latest
-  deploy_ui $DEV_BUCKET
-  curl https://dev.swissgeol.ch/versions.json
+  echo "Special api-only deploy"
+  export AWS_ACCESS_KEY_ID=$(gopass cat ngm/fargate/api/AWS_ACCESS_KEY_ID)
+  export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/fargate/api/AWS_SECRET_ACCESS_KEY)
+  aws ecs update-service --cluster api_dev --service api_dev --force-new-deployment
   watch --interval=5 curl -s https://dev.swissgeol.ch/api/health_check
   exit 0
 fi
 
-echo you should pass prod, int or dev parameter
+echo you should pass prod, int, or dev parameter
 exit 1
