@@ -7,6 +7,11 @@ import i18next from 'i18next';
 import type {ProfileData} from './toolbox/ngm-topo-profile-modal';
 
 
+const integerFormat = new Intl.NumberFormat('de-CH', {
+  maximumFractionDigits: 0
+});
+
+
 export function plotProfile(data: ProfileData[], extremePoints: any[], parentContainer: HTMLElement, distInKM: boolean) {
   const style = getComputedStyle(parentContainer);
   const width = parentContainer.clientWidth - parseInt(style.paddingLeft) - parseInt(style.paddingRight);
@@ -61,16 +66,16 @@ export function plotProfile(data: ProfileData[], extremePoints: any[], parentCon
         .attr('d', `M0,0L0,${h}`)
         .attr('stroke', '#000000')
         .attr('stroke-width', 1.5);
-      const textN = g.append('text').text(`N: ${val.position[0].toFixed(3)}`);
-      const textE = g.append('text').text(`E: ${val.position[1].toFixed(3)}`);
+      const textE = g.append('text').text(`E: ${integerFormat.format(val.position[0])}`);
+      const textN = g.append('text').text(`N: ${integerFormat.format(val.position[1])}`);
       const lastPoint = indx === extremePoints.length - 1;
       if (lastPoint) {
-        textN.attr('text-anchor', 'end');
         textE.attr('text-anchor', 'end');
+        textN.attr('text-anchor', 'end');
       }
       const textLeftMrg = 2;
-      textN.attr('transform', `translate(${lastPoint ? -textLeftMrg : textLeftMrg}, 2)`);
-      textE.attr('transform', `translate(${lastPoint ? -textLeftMrg : textLeftMrg}, 17)`);
+      textE.attr('transform', `translate(${lastPoint ? -textLeftMrg : textLeftMrg}, 2)`);
+      textN.attr('transform', `translate(${lastPoint ? -textLeftMrg : textLeftMrg}, 17)`);
     }
   );
 
