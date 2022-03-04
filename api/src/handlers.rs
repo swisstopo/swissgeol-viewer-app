@@ -26,6 +26,7 @@ pub struct Project {
     pub image: String,
     pub color: String,
     pub views: Vec<ProjectView>,
+    #[serde(default)]
     pub assets: Vec<Asset>,
 }
 

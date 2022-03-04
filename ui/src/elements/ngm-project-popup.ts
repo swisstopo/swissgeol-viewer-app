@@ -4,12 +4,12 @@ import {html} from 'lit';
 import {dragArea} from './helperElements';
 import draggable from './draggable';
 import DashboardStore from '../store/dashboard';
-import type {DashboardTopic} from './ngm-dashboard';
+import type {Topic} from './ngm-dashboard';
 import i18next from 'i18next';
 
 @customElement('ngm-project-popup')
 export class NgmProjectPopup extends LitElementI18n {
-  @state() selectedTopic: DashboardTopic | undefined;
+  @state() selectedTopic: Topic | undefined;
   @state() viewIndex: number | undefined;
 
   constructor() {
