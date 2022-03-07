@@ -115,28 +115,28 @@
   {
     "id": "3",
     "title": {
-      "de": "Water Tower Switzerland",
-      "fr": "Water Tower Switzerland",
-      "it": "Water Tower Switzerland",
+      "de": "Wasserschloss Schweiz",
+      "fr": "Château d'eau Suisse",
+      "it": "Castello d'acqua Svizzera",
       "en": "Water Tower Switzerland"
     },
     "description": {
-      "de": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
-      "fr": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
-      "it": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy.",
+      "de": "Mit Wasserkraft wurden 2020 rund 57 % des inländischen Stroms erzeugt. Wie Adern durchziehen unzählige Wasserstollen und Leitungsschächte die Alpen und leiten die wertvolle Ressource mit dem Ziel, Energie zu produzieren.",
+      "fr": "La force hydraulique est à l’origine de 57 % de la production d’électricité en Suisse.Telles des veines, d'innombrables galeries d'eau et puits de conduite sillonnent les Alpes et acheminent la précieuse ressource dans le but de produire de l'énergie.",
+      "it": "L’energia idroelettrica rappresenta circa il 57 % della produzione svizzera di elettricità. Come vene, innumerevoli gallerie d'acqua e pozzi di conduzione attraversano le Alpi, incanalando la preziosa risorsa con lo scopo di produrre energia.",
       "en": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy."
     },
     "created": "2022-01-10",
     "modified": "2022-01-10",
-    "image": "./images/dam_LacDesDix.png",
+    "image": "./images/watertower_rivers.jpg",
     "color": "#B9271A",
     "views": [
       {
         "id": "1",
         "title": {
-          "de": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year",
-          "fr": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year",
-          "it": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year",
+          "de": "Grösstes Speicherwasserkraftwerk in Bieudron VS mit 2271 GWh pro Jahr",
+          "fr": "La plus grande centrale à accumulation d'eau à Bieudron VS avec 2271 GWh par an",
+          "it": "Il più grande impianto con serbatoio di Bieudron VS con 2271 GWh all'anno",
           "en": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year"
         },
         "permalink": "?lon=7.22560&lat=46.21887&elevation=3490&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.45&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C1.00&lang=en"
@@ -144,9 +144,9 @@
       {
         "id": "2",
         "title": {
-          "de": "Geology of the Rhone Valley",
-          "fr": "Geology of the Rhone Valley",
-          "it": "Geology of the Rhone Valley",
+          "de": "Geologie im Rhonetal",
+          "fr": "La géologie dans la Vallée du Rhône",
+          "it": "La geologia nella Valle del Rodano",
           "en": "Geology of the Rhone Valley"
         },
         "permalink": "?lon=7.19082&lat=46.18561&elevation=3347&heading=98&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.40&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.49&lang=en"
@@ -154,10 +154,10 @@
       {
         "id": "3",
         "title": {
-          "de": "Natural hazards: Can earthquakes be a threat?",
-          "fr": "Natural hazards: Can earthquakes be a threat?",
-          "it": "Natural hazards: Can earthquakes be a threat?",
-          "en": "Natural hazards: Can earthquakes be a threat?"
+          "de": "Naturgefahren: Können Erdbeben eine Bedrohung sein?",
+          "fr": "Les dangers naturels :  Les tremblements de terre peuvent-ils être une menace?",
+          "it": "Natural hazards: Can earthquakes be a threat? ",
+          "en": "I rischi naturali:  I terremoti possono essere una minaccia? "
         },
         "permalink": "?lon=7.21497&lat=46.23202&elevation=3713&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.69&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cearthquakes%2Chistorical_earthquakes%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.34&lang=en"
       }
