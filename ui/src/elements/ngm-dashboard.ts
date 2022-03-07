@@ -209,7 +209,7 @@ export class NgmDashboard extends LitElementI18n {
       const permalink = this.selectedTopic.views[viewIndex].permalink;
       setPermalink(permalink);
     } else if (viewIndex === undefined) {
-      this.geometries.forEach(geometry => ToolboxStore.nextGeometryAction({id: geometry.id!, action: 'remove'}));
+      this.removeGeometries();
       syncStoredView(LocalStorageController.storedView);
       LocalStorageController.removeStoredView();
     }
@@ -221,15 +221,20 @@ export class NgmDashboard extends LitElementI18n {
     if (this.selectedTopic.geometries) {
       this.geometries = this.getGeometries(this.selectedTopic.geometries);
     }
-    DashboardStore.setselectedTopic(this.selectedTopic);
+    DashboardStore.setSelectedTopic(this.selectedTopic);
     this.addRecentlyViewed(topic);
+  }
+
+  removeGeometries() {
+    this.geometries.forEach(geometry => ToolboxStore.nextGeometryAction({id: geometry.id!, action: 'remove'}));
+    this.geometries = [];
   }
 
   deselectTopic() {
     this.selectedTopic = undefined;
     this.assets = [];
-    this.geometries = [];
-    DashboardStore.setselectedTopic(undefined);
+    this.removeGeometries();
+    DashboardStore.setSelectedTopic(undefined);
   }
 
   async setDataFromPermalink() {

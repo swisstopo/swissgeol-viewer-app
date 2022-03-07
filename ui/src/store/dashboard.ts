@@ -12,7 +12,7 @@ export default class DashboardStore {
     return this.selectedTopicSubject;
   }
 
-  static setselectedTopic(value: DashboardTopic | undefined): void {
+  static setSelectedTopic(value: DashboardTopic | undefined): void {
     this.selectedTopicSubject.next(value);
     if (!value) this.viewIndexSubject.next(undefined);
   }
