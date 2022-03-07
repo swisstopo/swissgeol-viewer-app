@@ -27,6 +27,11 @@ jobs:
     steps:
       # - run: docker system prune --all --force --volumes
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
       - name: Log into Docker hub
         env:
           DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
