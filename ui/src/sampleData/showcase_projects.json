@@ -103,7 +103,7 @@
       {
         "id": "3",
         "title": {
-          "de": "Untergrund-Infrastruktur infrastructure",
+          "de": "Untergrund-Infrastruktur",
           "fr": "Infrastructure du sous-sol",
           "it": "Infrastruttura sotterranea",
           "en": "Subsurface infrastructure"
@@ -134,32 +134,32 @@
       {
         "id": "1",
         "title": {
-          "de": "Grösstes Speicherwasserkraftwerk in Bieudron VS mit 2271 GWh pro Jahr",
-          "fr": "La plus grande centrale à accumulation d'eau à Bieudron VS avec 2271 GWh par an",
-          "it": "Il più grande impianto con serbatoio di Bieudron VS con 2271 GWh all'anno",
-          "en": "Largest storage hydropower storage plant in Bieudron with 2271 GWh per year"
+          "de": "Kraftwerkkomplex Cleuson-Dixence mit unterirdischem Speicherwasserkraftwerk in Bieudron (VS)",
+          "fr": "L'ensemble de l'aménagement de Cleuson-Dixence avec l'usine hydroélectrique à accumulation souterraine à Bieudron (VS)",
+          "it": " Il complesso Cleuson-Dixence con la centrale idroelettrica ad accumulazione sotterranea di Bieudron (VS)",
+          "en": "The Cleuson-Dixence development with underground hydroelectric power plant in Bieudron (VS)"
         },
-        "permalink": "?lon=7.22560&lat=46.21887&elevation=3490&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.45&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C1.00&lang=en"
+        "permalink": "https://int.swissgeol.ch/?lon=7.13860&lat=46.21970&elevation=7268&heading=124&pitch=-23&map=ch.swisstopo.pixelkarte-grau&map_transparency=0.56&layers=water_tunnel%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue&layers_transparency=0.00%2C0.00&lang=en"
       },
       {
         "id": "2",
         "title": {
-          "de": "Geologie im Rhonetal",
-          "fr": "La géologie dans la Vallée du Rhône",
-          "it": "La geologia nella Valle del Rodano",
-          "en": "Geology of the Rhone Valley"
+          "de": "Stollen beim Grimsel (BE) von unten",
+          "fr": "Galeries du Grimsel (BE) vues d'en bas",
+          "it": " Gallerie Grimsel (BE) viste dal basso",
+          "en": "Tunnels at the Grimsel (BE) from below"
         },
-        "permalink": "?lon=7.19082&lat=46.18561&elevation=3347&heading=98&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.40&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.49&lang=en"
+        "permalink": "https://int.swissgeol.ch/?lon=8.32215&lat=46.53671&elevation=-7098&heading=344&pitch=61&map=ch.swisstopo.swissimage&map_transparency=0.00&layers=water_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00&lang=en"
       },
       {
         "id": "3",
         "title": {
-          "de": "Naturgefahren: Können Erdbeben eine Bedrohung sein?",
-          "fr": "Les dangers naturels :  Les tremblements de terre peuvent-ils être une menace?",
-          "it": "Natural hazards: Can earthquakes be a threat? ",
-          "en": "I rischi naturali:  I terremoti possono essere una minaccia? "
+          "de": "Reuss und Limmat treffen auf die Aare in Turgi (AG)",
+          "fr": "La Reuss et la Limmat rejoignent l'Aar à Turgi (AG)",
+          "it": "La Reuss e la Limmat incontrano l'Aare a Turgi (AG)",
+          "en": "Reuss and Limmat meet the Aare in Turgi (AG)"
         },
-        "permalink": "?lon=7.21497&lat=46.23202&elevation=3713&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.69&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cearthquakes%2Chistorical_earthquakes%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.34&lang=en"
+        "permalink": "https://int.swissgeol.ch/?lon=8.16037&lat=47.42715&elevation=7065&heading=31&pitch=-42&map=empty_map&map_transparency=0.00&layers=water_tunnel%2Cboreholes%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.33&lang=en&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4273725.003467042%2C%22y%22%3A623012.9065260108%2C%22z%22%3A4677638.631077907%7D%2C%7B%22x%22%3A4275949.630435885%2C%22y%22%3A617405.8993783433%2C%22z%22%3A4676357.857397468%7D%2C%7B%22x%22%3A4269092.545138242%2C%22y%22%3A620129.3239353738%2C%22z%22%3A4682218.555868269%7D%2C%7B%22x%22%3A4271317.179821282%2C%22y%22%3A614522.2444183214%2C%22z%22%3A4680937.791495348%7D%5D%2C%22lowerLimit%22%3A-4999.740328461114%2C%22height%22%3A6516.170948680485%2C%22showBox%22%3Atrue%2C%22negate%22%3Afalse%7D"
       }
     ]
   }
