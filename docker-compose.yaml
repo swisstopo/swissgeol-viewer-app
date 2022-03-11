@@ -63,7 +63,7 @@ services:
       MINIO_ROOT_PASSWORD: *minio_pass
 
   abbreviator:
-    image: camptocamp/abbreviator:latest
+    image: camptocamp/abbreviator:main
     ports:
       - "8001:8080"
     environment:
