@@ -183,6 +183,7 @@
   "profile_distance": "Distance",
   "profile_elevation": "Elevation",
   "project_description": "Project description",
+  "project_lost_changes_warning": "Please save or cancel your changes.",
   "project_title": "Project title",
   "project_view": "Project view",
   "save_project": "Save project",

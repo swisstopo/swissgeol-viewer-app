@@ -58,6 +58,7 @@ ngm-dashboard .ngm-panel-header,
 .ngm-proj-preview-img {
   width: 240px;
   height: 132px;
+  background-color: #F8F9FA;
   background-size: cover;
   background-repeat: no-repeat;
   border-top-right-radius: 8px;

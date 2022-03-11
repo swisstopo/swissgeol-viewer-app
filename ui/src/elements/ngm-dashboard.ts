@@ -71,6 +71,7 @@ export class NgmDashboard extends LitElementI18n {
   @state() selectedViewIndx: number | undefined;
   @state() refreshProjects = true;
   @state() projectEditing = false;
+  @state() saveOrCancelWarning = false;
   @query('.ngm-toast-placeholder') toastPlaceholder;
   @query('#overview-toast') overviewToast;
   private viewer: Viewer | null = null;
@@ -325,6 +326,7 @@ export class NgmDashboard extends LitElementI18n {
     const topicId = this.selectedTopicOrProject!.id;
     const topic = this.topics!.find(p => p.id === topicId);
     const project = this.topicToProject(topic!);
+    project.image = '';
 
     this.apiClient.duplicateProject(project).then(r => r.json())
       .then(id => {
@@ -433,6 +435,9 @@ export class NgmDashboard extends LitElementI18n {
 
     return html`
       <div>
+        <div class="ui warning message" ?hidden=${!this.saveOrCancelWarning}>
+          ${i18next.t('project_lost_changes_warning')}
+        </div>
         <div class="ngm-proj-title">
           <div class="ngm-input project-title ${classMap({'ngm-input-warning': !project.title})}">
             <input type="text" placeholder="required" .value=${<string> project.title}
@@ -529,7 +534,13 @@ export class NgmDashboard extends LitElementI18n {
         `)}
       </div>
       <div class="ngm-divider"></div>
-      <div class="ngm-label-btn" @click=${this.deselectTopicOrProject}>
+      <div class="ngm-label-btn" @click=${() => {
+        if (this.projectEditing) {
+          this.saveOrCancelWarning = true;
+        } else {
+          this.deselectTopicOrProject();
+        }
+      }}>
         <div class="ngm-back-icon"></div>
         ${i18next.t('dashboard_back_to_topics')}
       </div>
@@ -538,6 +549,7 @@ export class NgmDashboard extends LitElementI18n {
                 @click=${async () => {
                   await this.apiClient.updateProject(project);
                   this.projectEditing = false;
+                  this.saveOrCancelWarning = false;
                   this.refreshProjects = true;
                 }}>
           ${i18next.t('save_project')}
@@ -548,6 +560,7 @@ export class NgmDashboard extends LitElementI18n {
                     this.selectedTopicOrProject = body;
                   });
                   this.projectEditing = false;
+                  this.saveOrCancelWarning = false;
                   this.refreshProjects = true;
                 }}>
           ${i18next.t('cancel')}
@@ -618,7 +631,13 @@ export class NgmDashboard extends LitElementI18n {
             ${i18next.t('dashboard_my_projects')} (${this.projects.length})
           </div>
         </div>
-        <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
+        <div class="ngm-close-icon" @click=${() => {
+          if (this.projectEditing) {
+            this.saveOrCancelWarning = true;
+          } else {
+            this.dispatchEvent(new CustomEvent('close'));
+          }
+        }}></div>
       </div>
       <div class="ngm-panel-content">
         <div class="ngm-toast-placeholder"></div>

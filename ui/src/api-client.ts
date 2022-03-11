@@ -72,7 +72,7 @@ export class ApiClient {
   }
 
 
-function addAuthorization(headers: any, token: string) {
+function addAuthorization(headers: any, token: string|null) {
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
