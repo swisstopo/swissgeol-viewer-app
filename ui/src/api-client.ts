@@ -1,26 +1,39 @@
-import {getAccessToken} from './auth';
+import Auth from './auth';
+import AuthStore from './store/auth';
 
 import type {Project} from './elements/ngm-dashboard';
 
+
 export class ApiClient {
-    token: string | null;
+    token = Auth.getAccessToken();
 
     constructor() {
-      this.token = getAccessToken();
+      AuthStore.user.subscribe(() => {
+        this.token = Auth.getAccessToken();
+      });
     }
 
-    addAuthorization(headers: any) {
-      if (this.token) {
-        headers['Authorization'] = `Bearer ${this.token}`;
-      }
+    updateProject(project: Project): Promise<Response> {
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+
+      addAuthorization(headers, this.token);
+
+      return fetch(`/api/projects/${project.id}`, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(project),
+      });
     }
+
 
     getProject(id: string): Promise<Response> {
       const headers = {
         'Accept': 'application/json',
       };
 
-      this.addAuthorization(headers);
+      addAuthorization(headers, this.token);
 
       return fetch(`/api/projects/${id}`, {
         method: 'GET',
@@ -34,7 +47,7 @@ export class ApiClient {
         'Accept': 'application/json',
       };
 
-      this.addAuthorization(headers);
+      addAuthorization(headers, this.token);
 
       return fetch('/api/projects', {
         method: 'GET',
@@ -48,7 +61,7 @@ export class ApiClient {
         'Content-Type': 'application/json'
       };
 
-      this.addAuthorization(headers);
+      addAuthorization(headers, this.token);
 
       return fetch('/api/projects/duplicate', {
         method: 'POST',
@@ -57,3 +70,10 @@ export class ApiClient {
       });
     }
   }
+
+
+function addAuthorization(headers: any, token: string) {
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+}

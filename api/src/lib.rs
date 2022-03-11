@@ -24,10 +24,13 @@ pub async fn app(pool: PgPool) -> Router {
         .route("/api/health_check", get(handlers::health_check))
         .route(
             "/api/projects",
-            get(handlers::get_projects_by_email).post(handlers::insert_project),
+            get(handlers::list_projects).post(handlers::create_project),
         )
         .route("/api/projects/duplicate", post(handlers::duplicate_project))
-        .route("/api/projects/:id", get(handlers::get_project))
+        .route(
+            "/api/projects/:id",
+            get(handlers::get_project).put(handlers::update_project),
+        )
         .route("/api/token_test", get(handlers::token_test))
         .layer(
             ServiceBuilder::new()

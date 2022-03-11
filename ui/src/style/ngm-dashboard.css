@@ -25,7 +25,7 @@ ngm-dashboard .ngm-panel-header,
   display: flex;
 }
 
-.ngm-dashboard-tabs > div:hover {
+.ngm-dashboard-tabs > div:hover, .edit-project:hover {
   color: var(--ngm-interaction-hover);
   cursor: pointer;
 }
@@ -64,12 +64,21 @@ ngm-dashboard .ngm-panel-header,
   border-top-left-radius: 8px;
 }
 
-.ngm-proj-preview-title {
+.ngm-proj-preview-title,
+.project-color-picker {
   background-color: var(--ngm-interaction-active);
   width: 240px;
   height: 32px;
   color: white;
   font: normal normal bold 14px/28px Inter;
+}
+
+.project-color-picker {
+  height: 87px;
+  display: flex;
+  align-items: center;
+  padding-top: 5px;
+  padding-left: 11px;
 }
 
 .ngm-proj-preview-subtitle {
@@ -181,6 +190,72 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   cursor: pointer;
 }
 
-.ngm-view-icon:hover, .ngm-view-icon:focus {
+.ngm-view-icon:hover, .ngm-view-icon:focus, .ngm-edit-icon:hover, .edit-project:hover > .ngm-edit-icon {
   background-color: var(--ngm-interaction-hover);
+}
+
+.project-menu {
+  display: flex;
+}
+
+.edit-project {
+  display: flex;
+  color: var(--ngm-interaction);
+  /* width: max-content; */
+  /* margin-left: 36px; */
+}
+
+.edit-project.active {
+  color: var(--ngm-interaction-active);
+  cursor: unset;
+}
+
+.edit-project > .ngm-edit-icon  {
+  margin: 0 10px;
+}
+
+.edit-project.active > .ngm-edit-icon  {
+  background-color: var(--ngm-interaction-active);
+}
+
+.project-image-and-color {
+  margin-right: 12px;
+}
+
+.ngm-input.project-title {
+  max-width: 364px;
+}
+
+.ngm-input, .ngm-input input, .ngm-input textarea {
+  width: 100%;
+}
+
+.project-views-edit {
+  margin-left: 32px;
+}
+
+.project-view-edit {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.project-edit-buttons {
+  display: flex;
+  align-content: flex-start;
+  margin-top: 36px;
+}
+
+.project-edit-buttons .ngm-action-btn.ui.button {
+  width: 156px;
+  height: 36px;
+  text-align: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.project-edit-buttons .ngm-cancel-btn.ui.button {
+  background-color: rgba(0, 0, 0, 0);
+  color: #0C7285;
+  box-shadow: none;
 }

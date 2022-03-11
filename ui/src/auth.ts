@@ -28,6 +28,8 @@ export function getAccessToken() {
   return Auth.getAccessToken();
 }
 
+let authTimeout = 0;
+
 let _AWSCredentials: CognitoIdentityCredentialProvider | null = null;
 export default class Auth {
 
@@ -46,6 +48,7 @@ export default class Auth {
         this.setAccessToken(params.get('id_token') || '');
       }
     } else if (this.getUser()) {
+      // this strange line sets up observable and autologout
       this.setUser(this.getUser());
     }
 
@@ -92,12 +95,24 @@ export default class Auth {
     return localStorage.getItem(cognitoState);
   }
 
-  static getUser(): AuthUser {
+  static getUser(): AuthUser|null {
     const value = localStorage.getItem(cognitoUser) as string;
     return JSON.parse(value);
   }
 
-  static setUser(user: AuthUser): void {
+  static setUser(user: AuthUser|null): void {
+    if (authTimeout) {
+      window.clearTimeout(authTimeout);
+      authTimeout = 0;
+    }
+    if (user) {
+      const remaining = 1000 * user.exp - Date.now();
+      console.log('Will log out in', Math.floor(remaining / 1000 / 60), 'min');
+      authTimeout = window.setTimeout(() => {
+        console.log('Token expired - logout');
+        Auth.logout();
+      }, remaining);
+    }
     auth.setUser(user);
     const value = JSON.stringify(user);
     localStorage.setItem(cognitoUser, value);

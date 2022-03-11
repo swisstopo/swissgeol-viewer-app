@@ -58,9 +58,9 @@ pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, St
 }
 
 #[axum_macros::debug_handler]
-pub async fn insert_project(
-    Extension(pool): Extension<PgPool>,
+pub async fn create_project(
     Json(mut project): Json<Project>,
+    Extension(pool): Extension<PgPool>,
     claims: Claims,
 ) -> Result<Json<Uuid>> {
     project.id = Uuid::new_v4();
@@ -74,6 +74,69 @@ pub async fn insert_project(
     .await?;
 
     Ok(Json(result))
+}
+
+#[axum_macros::debug_handler]
+pub async fn get_project(
+    Path(id): Path<Uuid>,
+    Extension(pool): Extension<PgPool>,
+) -> Result<Json<Project>> {
+    let result = sqlx::query_scalar!(
+        r#"
+        SELECT project as "project: sqlx::types::Json<Project>"
+        FROM projects WHERE id = $1
+        "#,
+        id
+    )
+    .fetch_one(&pool)
+    .await?;
+
+    Ok(Json(result.0))
+}
+
+#[axum_macros::debug_handler]
+pub async fn update_project(
+    Path(id): Path<Uuid>,
+    Json(project): Json<Project>,
+    Extension(pool): Extension<PgPool>,
+    _claims: Claims,
+) -> Result<StatusCode> {
+    // TODO: Validate rights
+    sqlx::query_scalar!(
+        "UPDATE projects SET project = project || CAST( $2 as JSONB) WHERE id = $1 RETURNING id",
+        id,
+        sqlx::types::Json(project) as _
+    )
+    .fetch_one(&pool)
+    .await?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+#[axum_macros::debug_handler]
+pub async fn list_projects(
+    Extension(pool): Extension<PgPool>,
+    claims: Claims,
+) -> Result<Json<Vec<Project>>> {
+    let result = sqlx::query_scalar!(
+        r#"
+        SELECT project AS "project: sqlx::types::Json<Project>"
+        FROM projects
+        WHERE project->>'owner' = $1 OR
+        project->'viewers' ? $1 OR
+        project->'members' ? $1
+        "#,
+        claims.email
+    )
+    .fetch_all(&pool)
+    .await?;
+
+    Ok(Json(
+        result
+            .iter()
+            .map(|v: &sqlx::types::Json<Project>| v.to_owned().0)
+            .collect(),
+    ))
 }
 
 #[axum_macros::debug_handler]
@@ -124,50 +187,6 @@ pub async fn duplicate_project(
     .await?;
 
     Ok(Json(result))
-}
-
-#[axum_macros::debug_handler]
-pub async fn get_projects_by_email(
-    Extension(pool): Extension<PgPool>,
-    claims: Claims,
-) -> Result<Json<Vec<Project>>> {
-    let result = sqlx::query_scalar!(
-        r#"
-        SELECT project AS "project: sqlx::types::Json<Project>"
-        FROM projects
-        WHERE project->>'owner' = $1 OR
-        project->'viewers' ? $1 OR
-        project->'members' ? $1
-        "#,
-        claims.email
-    )
-    .fetch_all(&pool)
-    .await?;
-
-    Ok(Json(
-        result
-            .iter()
-            .map(|v: &sqlx::types::Json<Project>| v.to_owned().0)
-            .collect(),
-    ))
-}
-
-#[axum_macros::debug_handler]
-pub async fn get_project(
-    Extension(pool): Extension<PgPool>,
-    Path(id): Path<Uuid>,
-) -> Result<Json<Project>> {
-    let result = sqlx::query_scalar!(
-        r#"
-        SELECT project as "project: sqlx::types::Json<Project>"
-        FROM projects WHERE id = $1
-        "#,
-        id
-    )
-    .fetch_one(&pool)
-    .await?;
-
-    Ok(Json(result.0))
 }
 
 #[axum_macros::debug_handler]

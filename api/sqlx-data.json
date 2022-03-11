@@ -21,6 +21,27 @@
       ]
     }
   },
+  "c246b6a26229dc61a3585ff27345639ed820e9dd0461fa763e1e9f55dc515b24": {
+    "query": "UPDATE projects SET project = project || CAST( $2 as JSONB) WHERE id = $1 RETURNING id",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Uuid"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Jsonb"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
   "d1ca70f156e663001444e6252fdcc2f97b3fed1666d177f09c03353f30caf76c": {
     "query": "\n        SELECT project AS \"project: sqlx::types::Json<Project>\"\n        FROM projects\n        WHERE project->>'owner' = $1 OR\n        project->'viewers' ? $1 OR\n        project->'members' ? $1\n        ",
     "describe": {
