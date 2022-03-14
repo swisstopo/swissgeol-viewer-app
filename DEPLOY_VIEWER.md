@@ -28,6 +28,18 @@ https://git.swisstopo.admin.ch/camptocamp/terraform-swisstopo-ngm
 - export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
 - aws s3 ls s3://$INT_BUCKET
 
+
+## RDS instances
+
+### Dev/int
+
+see gopass
+
+### Prod
+
+see gopass
+
+
 ## Deployments
 
 ### Master (CI)
