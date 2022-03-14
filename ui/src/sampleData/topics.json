@@ -207,7 +207,7 @@
       {
         "id": "3",
         "title": {
-          "de": "Untergrund-Infrastruktur infrastructure",
+          "de": "Untergrund-Infrastruktur",
           "fr": "Infrastructure du sous-sol",
           "it": "Infrastruttura sotterranea",
           "en": "Subsurface infrastructure"
@@ -238,32 +238,83 @@
       {
         "id": "1",
         "title": {
-          "de": "Grösstes Speicherwasserkraftwerk in Bieudron VS mit 2271 GWh pro Jahr  ",
-          "fr": "La plus grande centrale à accumulation d'eau à Bieudron VS avec 2271 GWh par an ",
-          "it": "Il più grande impianto con serbatoio di Bieudron VS con 2271 GWh all'anno   ",
-          "en": "Largest hydropower storage plant in Bieudron with 2271 GWh per year"
+          "de": "Kraftwerkkomplex Cleuson-Dixence mit unterirdischem Speicherwasserkraftwerk in Bieudron (VS)",
+          "fr": "L'ensemble de l'aménagement de Cleuson-Dixence avec l'usine hydroélectrique à accumulation souterraine à Bieudron (VS)",
+          "it": "Il complesso Cleuson-Dixence con la centrale idroelettrica ad accumulazione sotterranea di Bieudron (VS)",
+          "en": "The Cleuson-Dixence development with underground hydroelectric power plant in Bieudron (VS)"
         },
-        "permalink": "?lon=7.22560&lat=46.21887&elevation=3490&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.45&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C1.00&lang=en"
+        "permalink": "?lon=7.13860&lat=46.21970&elevation=7268&heading=124&pitch=-23&map=ch.swisstopo.pixelkarte-grau&map_transparency=0.56&layers=water_tunnel%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue&layers_transparency=0.00%2C0.00&lang=en"
       },
       {
         "id": "2",
         "title": {
-          "de": "Geologie des Rhonetals",
-          "fr": "Géologie de la vallée du Rhône",
-          "it": "Geologia nella Valle del Rodano",
-          "en": "Geology of the Rhone Valley"
+          "de": "Stollen beim Grimsel (BE) von unten",
+          "fr": "Galeries du Grimsel (BE) vues d'en bas",
+          "it": "Gallerie Grimsel (BE) viste dal basso",
+          "en": "Tunnels at the Grimsel (BE) from below"
         },
-        "permalink": "?lon=7.19082&lat=46.18561&elevation=3347&heading=98&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.40&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.49&lang=en"
+        "permalink": "?lon=8.32215&lat=46.53671&elevation=-7098&heading=344&pitch=61&map=ch.swisstopo.swissimage&map_transparency=0.00&layers=water_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00&lang=en"
       },
       {
         "id": "3",
         "title": {
-          "de": "Naturgefahren: Können Erdbeben eine Bedrohung sein? ",
-          "fr": "Les dangers naturels :  Les tremblements de terre peuvent-ils être une menace?",
-          "it": "I rischi naturali:  I terremoti possono essere una minaccia? ",
-          "en": "Natural hazards: Can earthquakes be a threat?"
+          "de": "Reuss und Limmat treffen auf die Aare in Turgi (AG)",
+          "fr": "La Reuss et la Limmat rejoignent l'Aar à Turgi (AG)",
+          "it": "La Reuss e la Limmat incontrano l'Aare a Turgi (AG)",
+          "en": "Reuss and Limmat meet the Aare in Turgi (AG)"
         },
-        "permalink": "?lon=7.21497&lat=46.23202&elevation=3713&heading=156&pitch=-22&map=ch.swisstopo.swissimage&map_transparency=0.69&layers=ch.swisstopo.swisstlm3d.3d%2Cwater_tunnel%2Cch.swisstopo.swissnames3d.3d%2Cearthquakes%2Chistorical_earthquakes%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.34&lang=en"
+        "permalink": "?lon=8.16037&lat=47.42715&elevation=7065&heading=31&pitch=-42&map=empty_map&map_transparency=0.00&layers=water_tunnel%2Cboreholes%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.33&lang=en&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4273725.003467042%2C%22y%22%3A623012.9065260108%2C%22z%22%3A4677638.631077907%7D%2C%7B%22x%22%3A4275949.630435885%2C%22y%22%3A617405.8993783433%2C%22z%22%3A4676357.857397468%7D%2C%7B%22x%22%3A4269092.545138242%2C%22y%22%3A620129.3239353738%2C%22z%22%3A4682218.555868269%7D%2C%7B%22x%22%3A4271317.179821282%2C%22y%22%3A614522.2444183214%2C%22z%22%3A4680937.791495348%7D%5D%2C%22lowerLimit%22%3A-4999.740328461114%2C%22height%22%3A6516.170948680485%2C%22showBox%22%3Atrue%2C%22negate%22%3Afalse%7D"
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "title": {
+      "de": "GeoMol - 3D Modell Mittelland",
+      "fr": "GeoMol - Modèle 3D du Plateau",
+      "it": "GeoMol - Modelo di Altipiano",
+      "en": "GeoMol - 3D Model of Plateau"
+    },
+    "description": {
+      "de": "Das 3D-Modell des Schweizer Mittellandes stellt einen Überblick über den geologischen Untergrund des Molassebeckens dar und lokalisiert grob die darin vorhandenen Störungszonen.",
+      "fr": "Le modèle 3D du Plateau suisse présente une vue d'ensemble du sous-sol géologique du bassin molassique et localise grossièrement les zones de failles qui s'y trouvent.",
+      "it": "Il modello 3D dell'Altopiano svizzero fornisce una panoramica del sottosuolo geologico del Bacino della Molassa e localizza approssimativamente le zone di faglia al suo interno.",
+      "en": "The 3D model of the Swiss Plateau presents an overview of the geological subsurface of the Molasse Basin and roughly localises the fault zones present in it."
+    },
+    "created": "2022-01-10",
+    "modified": "2022-01-10",
+    "image": "./images/GeoMol.jpg",
+    "color": "#B9271A",
+    "views": [
+      {
+        "id": "1",
+        "title": {
+          "de": "Die Triangelzone der subalpinen Molasse: Komplexe tektonische Faltenzüge und Schuppen trennen die mittelländische von der subalpinen Molasse und eine dreieckige Form kann erkannt werden.",
+          "fr": "La zone triangulaire de la molasse subalpine : Des plis et des écailles tectoniques complexes séparent la molasse médio-alpine de la molasse subalpine et une forme triangulaire peut être reconnue.",
+          "it": "La zona triangolare delle Molasse subalpine: Complesse pieghe tettoniche e squame separano il midland dalla molassa subalpina e si può riconoscere una forma triangolare.",
+          "en": "The triangle zone of the subalpine Molasse: Complex tectonic folds and scales separate the midland from the subalpine molasse and a triangular shape can be recognised."
+        },
+        "permalink": "?lon=7.72732&lat=46.82423&elevation=17019&heading=58&pitch=-21&map_transparency=0.00&layers_visibility=false%2Cfalse%2Cfalse%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers=boreholes%2Ccross_section%2Cearthquakes%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.30%2C0.30&map=ch.swisstopo.pixelkarte-grau&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4316778.026407327%2C%22y%22%3A645617.2668820885%2C%22z%22%3A4635131.397501639%7D%2C%7B%22x%22%3A4324832.828975781%2C%22y%22%3A623539.4646845348%2C%22z%22%3A4630673.297525614%7D%2C%7B%22x%22%3A4287295.9508693665%2C%22y%22%3A628929.5794581583%2C%22z%22%3A4664497.588135991%7D%2C%7B%22x%22%3A4295351.378138457%2C%22y%22%3A606850.9301128673%2C%22z%22%3A4660039.205805879%7D%5D%2C%22lowerLimit%22%3A-4903.1633750773835%2C%22height%22%3A10000%2C%22showBox%22%3Atrue%2C%22negate%22%3Afalse%7D"
+      },
+      {
+        "id": "2",
+        "title": {
+          "de": "Der Permokarbontrog in der Nordschweiz: Durch die Gebirgsbildung im Perm- und Karbon entstandener Trog gefüllt mit Sedimenten.",
+          "fr": "Le bassin permo-carbonifère dans le nord de la Suisse : Auge formée par la formation des montagnes au permien et au carbonifère et remplie de sédiments.",
+          "it": "Il bacino del Permo-Carbonifero nella Svizzera settentrionale: Trogolo formato dalla costruzione di montagne nei periodi Permiano e Carbonifero, riempito di sedimenti.",
+          "en": "The Permo-Carboniferous trough in northern Switzerland: Trough formed by mountain building in the Permian and Carboniferous periods filled with sediments."
+        },
+        "permalink": "?lon=7.92816&lat=47.69606&elevation=6986&heading=137&pitch=-20&map_transparency=0.00&layers_visibility=false%2Cfalse%2Cfalse%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers=boreholes%2Ccross_section%2Cearthquakes%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.30%2C0.30&map=ch.swisstopo.pixelkarte-grau&slice=%7B%22type%22%3A%22view-line%22%2C%22negate%22%3Afalse%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4266681.559321244%2C%22y%22%3A614986.8673025015%2C%22z%22%3A4685590.097081851%7D%2C%7B%22x%22%3A4273347.514920282%2C%22y%22%3A615233.6050665869%2C%22z%22%3A4679512.966356592%7D%5D%7D"
+      },
+      {
+        "id": "3",
+        "title": {
+          "de": "Störungsnetzwerk: Entdecke das Zusammenspiel der verschiedenen Störflächen in 3D",
+          "fr": "Réseau de failles : Découvre l'interaction des différentes surfaces de faille en 3D",
+          "it": "Rete di faglie: Scoprire l'interazione delle diverse superfici di fagli in 3D",
+          "en": "Fault network: Discover the interplay of the different fault surfaces in 3D"
+        },
+        "permalink": "?lon=9.46240&lat=47.61549&elevation=-15472&heading=198&pitch=35&map_transparency=0.00&layers_visibility=true%2Cfalse%2Ctrue%2Ctrue%2Cfalse%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers=top_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.swissnames3d.3d&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00&map=ch.swisstopo.pixelkarte-grau&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4252212.365534149%2C%22y%22%3A717088.9549949412%2C%22z%22%3A4683722.255834558%7D%2C%7B%22x%22%3A4261131.087325113%2C%22y%22%3A707000.5668149126%2C%22z%22%3A4677190.889808675%7D%2C%7B%22x%22%3A4245403.972434767%2C%22y%22%3A705936.4153656526%2C%22z%22%3A4691533.449264726%7D%2C%7B%22x%22%3A4254327.355955236%2C%22y%22%3A695826.7693869043%2C%22z%22%3A4685000.925156808%7D%5D%2C%22lowerLimit%22%3A-3497.658349238797%2C%22height%22%3A3848.408248411896%2C%22showBox%22%3Atrue%2C%22negate%22%3Atrue%7D"
       }
     ]
   }
