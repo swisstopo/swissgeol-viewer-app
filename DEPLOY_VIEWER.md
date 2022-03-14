@@ -13,20 +13,20 @@
 https://git.swisstopo.admin.ch/camptocamp/terraform-swisstopo-ngm
 
 ### Used buckets
-export DEV_BUCKET="ngmpub-dev-bgdi-ch" # where the dev UI files are deployed
-export INT_BUCKET="ngmpub-int-bgdi-ch" # where the int UI files are deployed
-export REVIEW_BUCKET="ngmpub-review-bgdi-ch" # where the PRs UI files are deployed
-export PROD_BUCKET="ngmpub-prod-viewer-bgdi-ch" # where the prod-viewr UI files are deployed
-export PROTECTED_BUCKET="ngm-protected-prod" # for tilesets restricted by cognito
-export DOWNLOAD_BUCKET="ngmpub-download-bgdi-ch" # for publishing dataset sources
-export DATA_EXCHANGE="ngm-data-exchange" # internal, for exchanging data (not accessible)
-export RELEASES_BUCKET="ngmpub-review-bgdi-ch" # FIXME: create a dedicated bucket
+- export DEV_BUCKET="ngmpub-dev-bgdi-ch" # where the dev UI files are deployed
+- export INT_BUCKET="ngmpub-int-bgdi-ch" # where the int UI files are deployed
+- export REVIEW_BUCKET="ngmpub-review-bgdi-ch" # where the PRs UI files are deployed
+- export PROD_BUCKET="ngmpub-prod-viewer-bgdi-ch" # where the prod-viewr UI files are deployed
+- export PROTECTED_BUCKET="ngm-protected-prod" # for tilesets restricted by cognito
+- export DOWNLOAD_BUCKET="ngmpub-download-bgdi-ch" # for publishing dataset sources
+- export DATA_EXCHANGE="ngm-data-exchange" # internal, for exchanging data (not accessible)
+- export RELEASES_BUCKET="ngmpub-review-bgdi-ch" # FIXME: create a dedicated bucket
 
 ### Listing content of a bucket:
-export AWS_REGION=eu-west-1
-export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
-export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
-aws s3 ls s3://$INT_BUCKET
+- export AWS_REGION=eu-west-1
+- export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
+- export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
+- aws s3 ls s3://$INT_BUCKET
 
 ## Deployments
 
