@@ -27,39 +27,16 @@ class NgmAuth extends LitElementI18n {
   constructor() {
     super();
     this.user = null;
-    this.updateLogoutTimeout_(this.user);
     this.responseType = 'token';
     this.redirectUri = `${location.origin}${location.pathname}`;
     this.scope = 'openid+profile';
     auth.user.subscribe(user => {
       this.user = user;
-      this.updateLogoutTimeout_(this.user);
       if (this.popup) {
         this.popup.close();
         this.popup = null;
       }
     });
-  }
-
-  /**
-   * Set or clear auto logout timer.
-   * @param claims
-   */
-  updateLogoutTimeout_(claims) {
-    if (this.expireTimer_) {
-      clearTimeout(this.expireTimer_);
-      this.expireTimer_ = null;
-    }
-    if (claims) {
-      const expiresIn = 1000 * claims.exp - Date.now();
-      if (expiresIn > 0) {
-        console.log('setting logout timeout in', expiresIn, 'milliseconds');
-        this.expireTimer_ = setTimeout(() => {
-          console.log('The token has expired, triggering logout');
-          this.logout();
-        }, expiresIn);
-      }
-    }
   }
 
   async login() {

@@ -14,12 +14,11 @@ import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
 import {showBannerSuccess, showSnackbarError, showBannerWarning} from '../notifications';
 import type {Config} from '../layers/ngm-layers-item';
-import {DEFAULT_LAYER_OPACITY, RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE} from '../constants';
+import {COLORS_WITH_BLACK_TICK, DEFAULT_LAYER_OPACITY, PROJECT_COLORS, RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE} from '../constants';
 import $ from '../jquery';
 import {fromGeoJSON} from '../toolbox/helpers';
 import type {NgmGeometry} from '../toolbox/interfaces';
-import {ApiClient} from '../apiClient';
-import Auth, {getAccessToken} from '../auth';
+import {ApiClient} from '../api-client';
 import AuthStore from '../store/auth';
 
 
@@ -71,6 +70,8 @@ export class NgmDashboard extends LitElementI18n {
   @state() topics: Topic[] | undefined;
   @state() selectedViewIndx: number | undefined;
   @state() refreshProjects = true;
+  @state() projectEditing = false;
+  @state() saveOrCancelWarning = false;
   @query('.ngm-toast-placeholder') toastPlaceholder;
   @query('#overview-toast') overviewToast;
   private viewer: Viewer | null = null;
@@ -80,6 +81,7 @@ export class NgmDashboard extends LitElementI18n {
   private recentlyViewedIds: Array<string> = [];
   private projects: Project[] = [];
   private apiClient: ApiClient = new ApiClient();
+  private userEmail: string | undefined;
 
   constructor() {
     super();
@@ -106,8 +108,9 @@ export class NgmDashboard extends LitElementI18n {
           }
           this.hidden = false;
         });
-        AuthStore.user.subscribe(() => {
-          this.apiClient.token = Auth.getAccessToken();
+        AuthStore.user.subscribe(user => {
+          // FIXME: extract from claims
+          this.userEmail = user?.username.split('_')[1];
           this.refreshProjects = true;
         });
       }));
@@ -127,8 +130,22 @@ export class NgmDashboard extends LitElementI18n {
     });
   }
 
+  update(changedProperties) {
+    if (changedProperties.has('refreshProjects') && this.refreshProjects) {
+      if (this.apiClient.token) {
+        this.apiClient.getProjects().then(response => response.json()).then(body => {
+          this.projects = body;
+        });
+      }
+      this.refreshProjects = false;
+    }
+    super.update(changedProperties);
+  }
+
   updated(changedProperties) {
-    if ((changedProperties.has('selectedTopic') || changedProperties.has('hidden')) && this.selectedTopicOrProject) {
+    if (((changedProperties.has('selectedTopicOrProject') || changedProperties.has('hidden')
+          ) && this.selectedTopicOrProject
+        ) || this.projectEditing) {
       this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown());
     }
     super.updated(changedProperties);
@@ -309,6 +326,7 @@ export class NgmDashboard extends LitElementI18n {
     const topicId = this.selectedTopicOrProject!.id;
     const topic = this.topics!.find(p => p.id === topicId);
     const project = this.topicToProject(topic!);
+    project.image = '';
 
     this.apiClient.duplicateProject(project).then(r => r.json())
       .then(id => {
@@ -327,7 +345,8 @@ export class NgmDashboard extends LitElementI18n {
              @click=${() => this.copyLink(viewId)}>
           ${i18next.t('dashboard_share_topic')}
         </div>
-        <div class="item"
+        <div class="item ${this.apiClient.token ? '' : 'disabled'}"
+             ?hidden=${this.activeTab !== 'topics'}
              @click=${() => this.duplicateToProject()}>
           ${i18next.t('duplicate_to_project')}
         </div>
@@ -352,13 +371,21 @@ export class NgmDashboard extends LitElementI18n {
 
   projectTabTemplate() {
     if (!this.selectedTopicOrProject) return '';
+
     return html`
       <div>
         <div class="ngm-proj-title">
           ${translated(this.selectedTopicOrProject.title)}
-          <div class="ui dropdown right pointing ngm-action-menu">
-            <div class="ngm-view-icon ngm-action-menu-icon"></div>
+          <div class="project-menu">
+            <div class="edit-project"
+                ?hidden=${this.activeTab === 'topics' || ![(<Project> this.selectedTopicOrProject).owner, ...(<Project> this.selectedTopicOrProject).members].includes(this.userEmail!)}
+                @click=${() => this.projectEditing = true}>
+              ${i18next.t('edit_project')}<div class="ngm-edit-icon"></div>
+            </div>
+            <div class="ui dropdown right pointing ngm-action-menu">
+              <div class="ngm-view-icon ngm-action-menu-icon"></div>
             ${this.contextMenu()}
+            </div>
           </div>
         </div>
         <div class="ngm-proj-data">
@@ -403,8 +430,148 @@ export class NgmDashboard extends LitElementI18n {
     `;
   }
 
+  projectEditingTemplate() {
+    const project: Project = <Project> this.selectedTopicOrProject;
+
+    return html`
+      <div>
+        <div class="ui warning message" ?hidden=${!this.saveOrCancelWarning}>
+          ${i18next.t('project_lost_changes_warning')}
+        </div>
+        <div class="ngm-proj-title">
+          <div class="ngm-input project-title ${classMap({'ngm-input-warning': !project.title})}">
+            <input type="text" placeholder="required" .value=${<string> project.title}
+                   @input=${evt => {
+                     project.title = evt.target.value;
+                     this.requestUpdate();
+                  }}/>
+            <span class="ngm-floating-label">${i18next.t('project_title')}</span>
+          </div>
+          <div class="project-menu">
+            <div class="edit-project active">
+              ${i18next.t('edit_project')}<div class="ngm-edit-icon active"></div>
+            </div>
+          </div>
+        </div>
+        <div class="ngm-proj-data">
+          ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(project.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
+        </div>
+        <div class="ngm-proj-information">
+          <div class="project-image-and-color">
+            <div class="ngm-proj-preview-img"
+                 style=${styleMap({backgroundImage: `url('${project.image}')`})}></div>
+            <div class="project-color-picker" style=${styleMap({backgroundColor: project.color})}>
+              <div class="ngm-geom-colorpicker">
+                ${PROJECT_COLORS.map(color => html`
+                  <div
+                    style="background-color: ${color};"
+                    @click=${() => {
+                      project.color = color;
+                      this.requestUpdate();
+                    }}
+                    class="ngm-geom-color ${classMap({
+                      active: project.color === color,
+                      'black-tick': COLORS_WITH_BLACK_TICK.includes(color)
+                    })}">
+                  </div>`
+                )}
+              </div>
+            </div>
+          </div>
+          <div class="ngm-input ngm-textarea project-description">
+            <textarea type="text" placeholder="required"
+                      .value=${<string> project.description || ''}
+                      @input=${evt => project.description = evt.target.value}></textarea>
+            <span class="ngm-floating-label">${i18next.t('project_description')}</span>
+          </div>
+        </div>
+      </div>
+      <div class="ngm-divider"></div>
+      <div class="ngm-proj-views-title">
+        <div class="ngm-screenshot-icon"></div>
+        <div>${i18next.t('dashboard_views')}</div>
+      </div>
+      <div class="project-views-edit">
+        ${project.views.map((view, index) => html`
+          <div class="project-view-edit">
+            <div class="ngm-input ${classMap({'ngm-input-warning': !view.title})}">
+              <input type="text" placeholder="required" .value=${<string> view.title}
+                    @input=${evt => {
+                      view.title = evt.target.value;
+                      this.requestUpdate();
+                    }}/>
+              <span class="ngm-floating-label">${i18next.t('project_view')}</span>
+            </div>
+            <div class="ui dropdown right pointing ngm-action-menu">
+                <div class="ngm-view-icon ngm-action-menu-icon"></div>
+                <div class="menu">
+                  <div class="item"
+                      ?hidden=${index === 0}
+                      @click=${() => {
+                        array_move(project.views, index, index - 1);
+                        this.requestUpdate();
+                        }}>
+                    ${i18next.t('move_up')}
+                  </div>
+                  <div class="item"
+                      ?hidden=${index === project.views.length - 1}
+                      @click=${() => {
+                        array_move(project.views, index, index + 1);
+                        this.requestUpdate();
+                        }}>
+                    ${i18next.t('move_down')}
+                  </div>
+                  <div class="item"
+                      @click=${() => {
+                        project.views.splice(index, 1);
+                        this.requestUpdate();
+                      }}>
+                    ${i18next.t('delete')}
+                  </div>
+                </div>
+            </div>
+          </div>
+        `)}
+      </div>
+      <div class="ngm-divider"></div>
+      <div class="ngm-label-btn" @click=${() => {
+        if (this.projectEditing) {
+          this.saveOrCancelWarning = true;
+        } else {
+          this.deselectTopicOrProject();
+        }
+      }}>
+        <div class="ngm-back-icon"></div>
+        ${i18next.t('dashboard_back_to_topics')}
+      </div>
+      <div class="project-edit-buttons">
+        <button class="ui button ngm-action-btn ${classMap({'ngm-disabled': !project.title})}"
+                @click=${async () => {
+                  await this.apiClient.updateProject(project);
+                  this.projectEditing = false;
+                  this.saveOrCancelWarning = false;
+                  this.refreshProjects = true;
+                }}>
+          ${i18next.t('save_project')}
+        </button>
+        <button class="ui button ngm-action-btn ngm-cancel-btn"
+                @click=${() => {
+                  this.apiClient.getProject(project.id).then(response => response.json()).then(body => {
+                    this.selectedTopicOrProject = body;
+                  });
+                  this.projectEditing = false;
+                  this.saveOrCancelWarning = false;
+                  this.refreshProjects = true;
+                }}>
+          ${i18next.t('cancel')}
+        </button>
+      </div>
+    `;
+  }
+
   recentlyViewedTemplate() {
-    if (this.selectedTopicOrProject || this.activeTab === 'projects') return '';
+    if (this.selectedTopicOrProject || this.activeTab === 'projects' ||
+    (this.activeTab === 'overview' && !this.apiClient.token)) return '';
 
     const topicsOrProjects = this.activeTab === 'topics' ? this.topics : this.projects;
 
@@ -438,18 +605,6 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   render() {
-    if (!this.topics) return '';
-    // TODO: Syncronize logged in user token with dashboard and client.
-    if (this.refreshProjects) {
-      this.apiClient.token = getAccessToken();
-      if (this.apiClient.token) {
-        this.apiClient.getProjects().then(response => response.json()).then(body => {
-          this.projects = body;
-        });
-      }
-      this.refreshProjects = false;
-    }
-
     return html`
       <div class="ngm-panel-header">
         <div class="ngm-dashboard-tabs">
@@ -476,28 +631,36 @@ export class NgmDashboard extends LitElementI18n {
             ${i18next.t('dashboard_my_projects')} (${this.projects.length})
           </div>
         </div>
-        <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
+        <div class="ngm-close-icon" @click=${() => {
+          if (this.projectEditing) {
+            this.saveOrCancelWarning = true;
+          } else {
+            this.dispatchEvent(new CustomEvent('close'));
+          }
+        }}></div>
       </div>
-      <div class="ngm-toast-placeholder"></div>
-      ${this.recentlyViewedTemplate()}
-      <div ?hidden=${this.activeTab !== 'topics' || this.selectedTopicOrProject}>
-        <div class="ngm-proj-title">${i18next.t('dashboard_recent_swisstopo')}</div>
-        <div class="ngm-projects-list">
-          ${this.topics.map(data => this.previewTemplate(data))}
+      <div class="ngm-panel-content">
+        <div class="ngm-toast-placeholder"></div>
+        ${this.recentlyViewedTemplate()}
+        <div ?hidden=${this.activeTab !== 'topics' || this.selectedTopicOrProject}>
+          <div class="ngm-proj-title">${i18next.t('dashboard_recent_swisstopo')}</div>
+          <div class="ngm-projects-list">
+            ${this.topics?.map(data => this.previewTemplate(data))}
+          </div>
         </div>
-      </div>
-      <div>
-        <div class="ngm-toast-placeholder" id="overview-toast" ?hidden=${this.apiClient.token}></div>
-        ${this.overviewTemplate()}
-      </div>
-      <div ?hidden=${this.activeTab !== 'projects' || this.selectedTopicOrProject}>
-        <div class="ngm-proj-title">${i18next.t('dashboard_my_projects')}</div>
-        <div class="ngm-projects-list">
-          ${this.projects.map(data => this.previewTemplate(data))}
+        <div>
+          <div class="ngm-toast-placeholder" id="overview-toast" ?hidden=${this.apiClient.token}></div>
+          ${this.overviewTemplate()}
         </div>
-      </div>
-      <div ?hidden=${!this.selectedTopicOrProject}>
-        ${this.projectTabTemplate()}
+        <div ?hidden=${this.activeTab !== 'projects' || this.selectedTopicOrProject}>
+          <div class="ngm-proj-title">${i18next.t('dashboard_my_projects')}</div>
+          <div class="ngm-projects-list">
+            ${this.projects.map(data => this.previewTemplate(data))}
+          </div>
+        </div>
+        <div ?hidden=${!this.selectedTopicOrProject}>
+          ${this.projectEditing ? this.projectEditingTemplate() : this.projectTabTemplate()}
+        </div>
       </div>
     `;
   }
@@ -510,4 +673,14 @@ export class NgmDashboard extends LitElementI18n {
 
 function translated(property: TextualAttribute): string {
   return typeof property === 'string' ? property : property[i18next.language];
+}
+
+function array_move(arr, old_index, new_index) {
+  if (new_index >= arr.length) {
+      let k = new_index - arr.length + 1;
+      while (k--) {
+          arr.push(undefined);
+      }
+  }
+  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 }

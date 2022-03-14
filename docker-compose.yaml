@@ -68,7 +68,7 @@ services:
       - "8001:8080"
     environment:
       ID_LENGTH: 5
-      DATABASE_URL: "sqlite::memory:"
+      DATABASE_URL: "sqlite:///storage/local.db"
       HOST_WHITELIST: "localhost"
 
   db:
