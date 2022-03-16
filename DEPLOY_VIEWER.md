@@ -94,3 +94,9 @@ See https://docs.aws.amazon.com/cli/latest/reference/cloudfront/create-invalidat
 ```
 aws cloudfront create-invalidation --distribution-id $THE_DISTRIB_ID --paths /somepath
 ```
+
+## Display last deployed logs
+
+./scripts/get_api_logs.sh dev
+./scripts/get_api_logs.sh int
+./scripts/get_api_logs.sh prod
