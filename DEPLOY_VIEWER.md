@@ -20,7 +20,7 @@ https://git.swisstopo.admin.ch/camptocamp/terraform-swisstopo-ngm
 - export PROTECTED_BUCKET="ngm-protected-prod" # for tilesets restricted by cognito
 - export DOWNLOAD_BUCKET="ngmpub-download-bgdi-ch" # for publishing dataset sources
 - export DATA_EXCHANGE="ngm-data-exchange" # internal, for exchanging data (not accessible)
-- export RELEASES_BUCKET="ngmpub-review-bgdi-ch" # FIXME: create a dedicated bucket
+- export RELEASES_BUCKET="ngmpub-releases-bgdi-ch" # where the UI releases are published
 
 ### Listing content of a bucket:
 - export AWS_REGION=eu-west-1

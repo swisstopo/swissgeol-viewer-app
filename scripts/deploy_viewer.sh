@@ -1,9 +1,8 @@
 #!/bin/bash -e
 
-RELEASES_BUCKET="ngmpub-review-bgdi-ch"
 INT_BUCKET="ngmpub-int-bgdi-ch"
 DEV_BUCKET="ngmpub-dev-bgdi-ch"
-RELEASES_BUCKET="ngmpub-review-bgdi-ch"
+RELEASES_BUCKET="ngmpub-releases-bgdi-ch"
 PROD_BUCKET="ngmpub-prod-viewer-bgdi-ch"
 IMAGE_NAME="camptocamp/swissgeol_api"
 
@@ -25,8 +24,8 @@ export AWS_REGION=eu-west-1
 
 function deploy_ui {
   TARGET_BUCKET="$1"
-  export AWS_ACCESS_KEY_ID=$(gopass cat ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
-  export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
+  export AWS_ACCESS_KEY_ID=$(gopass cat ngm/s3/$RELEASES_BUCKET/AWS_ACCESS_KEY_ID)
+  export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/s3/$RELEASES_BUCKET/AWS_SECRET_ACCESS_KEY)
   if [ "$TARGET_BUCKET" != "$PROD_BUCKET" -a  "$TARGET_BUCKET" != "$INT_BUCKET" -a "$TARGET_BUCKET" != "$DEV_BUCKET" ]
   then
     echo wrong target bucket: $TARGET_BUCKET
