@@ -1,4 +1,5 @@
 #!/bin/bash -e
+cd ui
 
 RELEASES_BUCKET="ngmpub-releases-bgdi-ch"
 

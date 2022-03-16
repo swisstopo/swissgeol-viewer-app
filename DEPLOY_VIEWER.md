@@ -64,9 +64,14 @@ This is handled in .github/workflows/ci.yml
 git checkout XXX # the commit you want to release
 export VERSION="" # the version (like 2022.02.0)
 git tag $VERSION -m $VERSION
-cd ui; scripts/release_ui.sh; cd -
-cd api; scripts/release_api.sh; cd -
+scripts/release_ui.sh
+scripts/release_api.sh
 ```
+
+For parallel ui and api releases:
+
+```bash
+tmux new-session 'scripts/release_ui.sh; bash' \; split-window -h 'scripts/release_api.sh; bash'
 ```
 
 #### Deployment of a new version
@@ -97,6 +102,8 @@ aws cloudfront create-invalidation --distribution-id $THE_DISTRIB_ID --paths /so
 
 ## Display last deployed logs
 
+```bash
 ./scripts/get_api_logs.sh dev
 ./scripts/get_api_logs.sh int
 ./scripts/get_api_logs.sh prod
+```
