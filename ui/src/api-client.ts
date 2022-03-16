@@ -1,13 +1,16 @@
 import Auth from './auth';
 import AuthStore from './store/auth';
-
+import {API_BY_PAGE_HOST} from './constants';
 import type {Project} from './elements/ngm-dashboard';
 
 
 export class ApiClient {
     token = Auth.getAccessToken();
+    private apiUrl: string;
 
     constructor() {
+      this.apiUrl = API_BY_PAGE_HOST[window.location.host];
+
       AuthStore.user.subscribe(() => {
         this.token = Auth.getAccessToken();
       });
@@ -20,7 +23,7 @@ export class ApiClient {
 
       addAuthorization(headers, this.token);
 
-      return fetch(`/api/projects/${project.id}`, {
+      return fetch(`${this.apiUrl}/projects/${project.id}`, {
         method: 'PUT',
         headers: headers,
         body: JSON.stringify(project),
@@ -35,7 +38,7 @@ export class ApiClient {
 
       addAuthorization(headers, this.token);
 
-      return fetch(`/api/projects/${id}`, {
+      return fetch(`${this.apiUrl}/projects/${id}`, {
         method: 'GET',
         headers: headers,
       });
@@ -49,7 +52,7 @@ export class ApiClient {
 
       addAuthorization(headers, this.token);
 
-      return fetch('/api/projects', {
+      return fetch(`${this.apiUrl}/projects`, {
         method: 'GET',
         headers: headers,
       });
@@ -63,7 +66,7 @@ export class ApiClient {
 
       addAuthorization(headers, this.token);
 
-      return fetch('/api/projects/duplicate', {
+      return fetch(`${this.apiUrl}/projects/duplicate`, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(project),

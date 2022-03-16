@@ -114,5 +114,14 @@ export const SHORTLINK_URL_BY_PAGE_HOST = {
   'viewer.swissgeol.ch': 'https://link.swissgeol.ch',
 };
 
+export const API_BY_PAGE_HOST = {
+  'localhost:8000': '/api',
+  'review.swissgeol.ch': 'https://api.dev.swissgeol.ch/api',
+  'dev.swissgeol.ch': 'https://api.dev.swissgeol.ch/api',
+  'int.swissgeol.ch': 'https://api.int.swissgeol.ch/api',
+  'swissgeol.ch': 'https://api.swissgeol.ch/api',
+  'viewer.swissgeol.ch': 'https://api.swissgeol.ch/api',
+};
+
 export const RECENTLY_VIEWED_TOPICS_COUNT = 4;
 export const RECENTLY_VIEWED_TOPICS_COUNT_MOBILE = 1;

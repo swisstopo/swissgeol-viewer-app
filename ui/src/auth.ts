@@ -63,18 +63,6 @@ export default class Auth {
           'cognito-idp.eu-west-1.amazonaws.com/eu-west-1_1NcmOhPt4': accessToken
         }
       });
-
-      fetch('/api/token_test', {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      })
-      .then(response => response.json())
-      .then(json => {
-        console.log(json);
-      }).catch(err => {
-        console.error(err);
-      });
     }
   }
 
