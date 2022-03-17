@@ -54,12 +54,24 @@ export interface Topic {
   geometries?: Array<GeoJSON.Feature>,
 }
 
-export interface Project extends Topic {
+export interface CreateProject {
+  title: string,
+  description?: string,
+  image?: string,
+  color: string,
+  views: View[],
+  assets: Asset[],
+  geometries?: Array<GeoJSON.Feature>,
   owner: string,
   members: string[],
   viewers: string[],
 }
 
+export interface Project extends CreateProject {
+  id: string,
+  created: string,
+  modified: string,
+}
 
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
@@ -131,7 +143,8 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   update(changedProperties) {
-    if (changedProperties.has('refreshProjects') && this.refreshProjects) {
+    if ((changedProperties.has('refreshProjects') && this.refreshProjects) ||
+        (changedProperties.has('hidden') && this.hidden === false)) {
       if (this.apiClient.token) {
         this.apiClient.getProjects().then(response => response.json()).then(body => {
           this.projects = body;
@@ -297,38 +310,29 @@ export class NgmDashboard extends LitElementI18n {
     }
   }
 
-  topicToProject(topic: Topic): Project {
-    const now = new Date().toISOString();
-    const project: Project = {
-      id: '5d700000-0000-0000-0000-000000000000',
-      color: topic.color,
-      description: translated(topic.description),
-      title: translated(topic.title),
-      image: topic.image,
-      created: now, // make linter happy
-      modified: now, // make linter happy
-      geometries: topic.geometries, // not a copy
-      assets: topic.assets, // not a copy
-      views: topic.views.map(view => ({
-        id: view.id,
+  toCreateProject(project: Topic | Project): CreateProject {
+    const createProject: CreateProject = {
+      color: '#B0BEC5',
+      description: project.description ? translated(project.description) : undefined,
+      title: translated(project.title),
+      geometries: project.geometries, // not a copy
+      assets: project.assets, // not a copy
+      views: project.views.map(view => ({
+        id: crypto.randomUUID(),
         title: translated(view.title),
         permalink: view.permalink
-      })
-      ),
+      })),
+      owner: this.userEmail!,
       members: [],
-      owner: 'to repace',
       viewers: [],
     };
-    return project;
+    return createProject;
   }
 
   async duplicateToProject() {
-    const topicId = this.selectedTopicOrProject!.id;
-    const topic = this.topics!.find(p => p.id === topicId);
-    const project = this.topicToProject(topic!);
-    project.image = '';
+    const createProject = this.toCreateProject(this.selectedTopicOrProject!);
 
-    this.apiClient.duplicateProject(project).then(r => r.json())
+    this.apiClient.duplicateProject(createProject).then(r => r.json())
       .then(id => {
         this.apiClient.getProject(id).then(r => r.json()).then(project => {
           this.selectedTopicOrProject = project;
@@ -365,12 +369,17 @@ export class NgmDashboard extends LitElementI18n {
         <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: proj.color})}>
           <span>${translated(proj.title)}</span>
         </div>
-        <div class="ngm-proj-preview-subtitle"><span>${translated(proj.description)}</span></div>
+        <div class="ngm-proj-preview-subtitle">
+          <span>${proj.description ? translated(proj.description) : ''}</span>
+        </div>
       </div>`;
   }
 
   projectTabTemplate() {
     if (!this.selectedTopicOrProject) return '';
+
+    const owner = (<Project> this.selectedTopicOrProject).owner ? (<Project> this.selectedTopicOrProject).owner : i18next.t('swisstopo');
+    const date = this.selectedTopicOrProject?.modified ? this.selectedTopicOrProject?.modified : this.selectedTopicOrProject?.created;
 
     return html`
       <div>
@@ -388,9 +397,9 @@ export class NgmDashboard extends LitElementI18n {
             </div>
           </div>
         </div>
-        <div class="ngm-proj-data">
-          ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(this.selectedTopicOrProject.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
-        </div>
+        <div class="ngm-proj-data">${
+          `${this.selectedTopicOrProject.modified ? i18next.t('modified_on') : i18next.t('created_on')} ${toLocaleDateString(date)} ${i18next.t('by')} ${owner}`
+        }</div>
         <div class="ngm-proj-information">
           <div>
             <div class="ngm-proj-preview-img"
@@ -399,7 +408,9 @@ export class NgmDashboard extends LitElementI18n {
           </div>
           <div class="ngm-proj-description">
             <div class="ngm-proj-description-title">${i18next.t('dashboard_description')}</div>
-            <div class="ngm-proj-description-content">${translated(this.selectedTopicOrProject.description)}</div>
+            <div class="ngm-proj-description-content">${
+              this.selectedTopicOrProject.description ? translated(this.selectedTopicOrProject.description) : ''
+            }</div>
           </div>
         </div>
       </div>
@@ -460,7 +471,7 @@ export class NgmDashboard extends LitElementI18n {
           <div class="project-image-and-color">
             <div class="ngm-proj-preview-img"
                  style=${styleMap({backgroundImage: `url('${project.image}')`})}></div>
-            <div class="project-color-picker" style=${styleMap({backgroundColor: project.color})}>
+            <div class="project-color-picker" style=${styleMap({backgroundColor: 'white'})}>
               <div class="ngm-geom-colorpicker">
                 ${PROJECT_COLORS.map(color => html`
                   <div
@@ -575,7 +586,8 @@ export class NgmDashboard extends LitElementI18n {
 
     const topicsOrProjects = this.activeTab === 'topics' ? this.topics : this.projects;
 
-    const recentlyViewed = this.recentlyViewedIds.map(id => topicsOrProjects?.find(item => item.id === id)).filter(item => item !== undefined);
+    const recentlyViewed = this.recentlyViewedIds.map(id => (<any[]> topicsOrProjects)?.find(
+      item => item.id === id)).filter(item => item !== undefined);
 
     return recentlyViewed.length > 0 ? html`
       <div>
@@ -642,17 +654,17 @@ export class NgmDashboard extends LitElementI18n {
       <div class="ngm-panel-content">
         <div class="ngm-toast-placeholder"></div>
         ${this.recentlyViewedTemplate()}
-        <div ?hidden=${this.activeTab !== 'topics' || this.selectedTopicOrProject}>
+        <div ?hidden=${this.activeTab !== 'topics' || !!this.selectedTopicOrProject}>
           <div class="ngm-proj-title">${i18next.t('dashboard_recent_swisstopo')}</div>
           <div class="ngm-projects-list">
             ${this.topics?.map(data => this.previewTemplate(data))}
           </div>
         </div>
         <div>
-          <div class="ngm-toast-placeholder" id="overview-toast" ?hidden=${this.apiClient.token}></div>
+          <div class="ngm-toast-placeholder" id="overview-toast" ?hidden=${!!this.apiClient.token}></div>
           ${this.overviewTemplate()}
         </div>
-        <div ?hidden=${this.activeTab !== 'projects' || this.selectedTopicOrProject}>
+        <div ?hidden=${this.activeTab !== 'projects' || !!this.selectedTopicOrProject}>
           <div class="ngm-proj-title">${i18next.t('dashboard_my_projects')}</div>
           <div class="ngm-projects-list">
             ${this.projects.map(data => this.previewTemplate(data))}

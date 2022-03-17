@@ -26,13 +26,11 @@
 }
 
 .ngm-bg-chooser-map {
-  position: absolute;
-  z-index: 3;
-  right: 16px;
-  bottom: 40px;
   background: #F1F3F5;
   box-shadow: 4px 4px 2px #00000029;
   border-radius: 28px;
+  height: 56px;
+  margin: auto 12px;
 }
 
 .ngm-bg-chooser-map .ngm-maps-container {
@@ -70,20 +68,19 @@
   margin-left: 12px;
 }
 
-.ngm-bg-chooser-map .ngm-map-preview img {
+.ngm-maps-container .ngm-map-preview img {
   height: 40px;
   border-radius: 20px;
 }
 
 .ngm-bg-chooser-map .ngm-selected-map-container .ngm-map-preview {
-  margin: 0;
-  height: 52px;
-  width: 52px;
+  height: 48px;
+  width: 48px;
+  margin: 4px;
   background-color: #F1F3F5;
 }
 
 .ngm-bg-chooser-map .ngm-selected-map-container .ngm-map-preview img {
-  height: 48px;
   border-radius: 24px;
   border: none;
   opacity: 1;

@@ -8,7 +8,7 @@ export default class DashboardStore {
   private static viewIndexSubject = new Subject<number | undefined>();
   private static topicParamSubject = new BehaviorSubject<TopicParam | undefined>(undefined);
 
-  static get selectedTopic(): BehaviorSubject<Topic | undefined> {
+  static get selectedTopicOrProject(): BehaviorSubject<Topic | Project | undefined> {
     return this.selectedTopicOrProjectSubject;
   }
 

@@ -1,7 +1,7 @@
 import Auth from './auth';
 import AuthStore from './store/auth';
 import {API_BY_PAGE_HOST} from './constants';
-import type {Project} from './elements/ngm-dashboard';
+import type {CreateProject, Project} from './elements/ngm-dashboard';
 
 
 export class ApiClient {
@@ -58,7 +58,7 @@ export class ApiClient {
       });
     }
 
-    duplicateProject(project: Project): Promise<Response> {
+    duplicateProject(project: CreateProject): Promise<Response> {
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

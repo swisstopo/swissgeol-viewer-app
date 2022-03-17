@@ -27,7 +27,7 @@ ngm-map-configuration .base-map-labels label{
 ngm-map-configuration img {
   width: 80px;
   height: 80px !important;
-  border-radius: 40px;
+  border-radius: 40px !important;
   overflow: hidden;
 }
 

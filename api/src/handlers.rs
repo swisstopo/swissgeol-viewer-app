@@ -4,42 +4,57 @@ use axum::{
     extract::{Extension, Json},
     http::StatusCode,
 };
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
 use crate::auth::Claims;
-use crate::Result;
+use crate::{Error, Result};
 
-// Derive Serialize to return as Json
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
-pub struct Project {
-    #[serde(default = "Uuid::new_v4")]
-    pub id: Uuid,
+pub struct CreateProject {
     pub owner: String,
     pub viewers: Vec<String>,
     pub members: Vec<String>,
     pub title: String,
-    pub description: String,
-    pub created: String,
-    pub modified: String,
-    pub image: String,
+    pub description: Option<String>,
+    pub image: Option<String>,
     pub color: String,
-    pub views: Vec<ProjectView>,
+    #[serde(default)]
+    pub views: Vec<View>,
     #[serde(default)]
     pub assets: Vec<Asset>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
-pub struct Asset {
-    pub href: String,
+pub struct Project {
+    pub id: Uuid,
+    pub title: String,
+    pub description: Option<String>,
+    pub created: DateTime<Utc>,
+    pub modified: Option<DateTime<Utc>>,
+    pub image: Option<String>,
+    pub color: String,
+    #[serde(default)]
+    pub views: Vec<View>,
+    #[serde(default)]
+    pub assets: Vec<Asset>,
+    pub owner: String,
+    pub viewers: Vec<String>,
+    pub members: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
-pub struct ProjectView {
+pub struct View {
     pub id: String,
     pub title: String,
     pub permalink: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct Asset {
+    pub href: String,
 }
 
 // Health check endpoint
@@ -59,16 +74,38 @@ pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, St
 
 #[axum_macros::debug_handler]
 pub async fn create_project(
-    Json(mut project): Json<Project>,
+    Json(project): Json<CreateProject>,
     Extension(pool): Extension<PgPool>,
     claims: Claims,
 ) -> Result<Json<Uuid>> {
-    project.id = Uuid::new_v4();
-    project.owner = claims.email;
+    // Sanity check
+    if project.owner != claims.email {
+        return Err(Error::Api(
+            StatusCode::BAD_REQUEST,
+            "Project owner does not match token claims.",
+        ));
+    }
+
+    // Create project
+    let project = Project {
+        id: Uuid::new_v4(),
+        title: project.title,
+        description: project.description,
+        created: Utc::now(),
+        modified: None,
+        image: project.image,
+        color: project.color,
+        views: project.views,
+        assets: project.assets,
+        owner: claims.email,
+        viewers: project.viewers,
+        members: project.members,
+    };
+
     let result = sqlx::query_scalar!(
         "INSERT INTO projects (id, project) VALUES ($1, $2) RETURNING id",
-        project.id.to_owned(),
-        sqlx::types::Json(project) as _
+        &project.id,
+        sqlx::types::Json(&project) as _
     )
     .fetch_one(&pool)
     .await?;
@@ -82,10 +119,7 @@ pub async fn get_project(
     Extension(pool): Extension<PgPool>,
 ) -> Result<Json<Project>> {
     let result = sqlx::query_scalar!(
-        r#"
-        SELECT project as "project: sqlx::types::Json<Project>"
-        FROM projects WHERE id = $1
-        "#,
+        r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
         id
     )
     .fetch_one(&pool)
@@ -97,11 +131,12 @@ pub async fn get_project(
 #[axum_macros::debug_handler]
 pub async fn update_project(
     Path(id): Path<Uuid>,
-    Json(project): Json<Project>,
+    Json(mut project): Json<Project>,
     Extension(pool): Extension<PgPool>,
     _claims: Claims,
 ) -> Result<StatusCode> {
     // TODO: Validate rights
+    project.modified = Some(Utc::now());
     sqlx::query_scalar!(
         "UPDATE projects SET project = project || CAST( $2 as JSONB) WHERE id = $1 RETURNING id",
         id,
@@ -143,15 +178,32 @@ pub async fn list_projects(
 pub async fn duplicate_project(
     Extension(pool): Extension<PgPool>,
     Extension(_client): Extension<Client>,
-    Json(mut project): Json<Project>,
+    Json(project): Json<CreateProject>,
     claims: Claims,
 ) -> Result<Json<Uuid>> {
-    project.id = Uuid::new_v4();
-    project.owner = claims.email;
-    project.viewers = Vec::new();
-    project.members = Vec::new();
+    // Sanity check
+    if project.owner != claims.email {
+        return Err(Error::Api(
+            StatusCode::BAD_REQUEST,
+            "Project owner does not match token claims.",
+        ));
+    }
 
-    let assets: Vec<Asset> = Vec::new();
+    // Create project
+    let duplicate = Project {
+        id: Uuid::new_v4(),
+        title: project.title,
+        description: project.description,
+        created: Utc::now(),
+        modified: None,
+        image: project.image,
+        color: project.color,
+        views: project.views,
+        assets: Vec::new(),
+        owner: claims.email,
+        viewers: Vec::new(),
+        members: Vec::new(),
+    };
 
     // // TODO: make static
     // let bucket = std::env::var("S3_BUCKET").unwrap();
@@ -176,21 +228,15 @@ pub async fn duplicate_project(
     //     }
     // }
 
-    project.assets = assets;
+    // duplicate.assets = assets;
 
     let result = sqlx::query_scalar!(
         "INSERT INTO projects (id, project) VALUES ($1, $2) RETURNING id",
-        project.id,
-        sqlx::types::Json(&project) as _
+        &duplicate.id,
+        sqlx::types::Json(&duplicate) as _
     )
     .fetch_one(&pool)
     .await?;
 
     Ok(Json(result))
-}
-
-#[axum_macros::debug_handler]
-pub async fn token_test(claims: Claims) -> Result<Json<Claims>> {
-    tracing::info!("{:#?}", claims);
-    Ok(Json(claims))
 }

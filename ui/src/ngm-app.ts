@@ -16,6 +16,8 @@ import './toolbox/ngm-geometry-info';
 import './elements/ngm-layer-legend';
 import './cesium-toolbar';
 import './elements/ngm-project-popup';
+import './elements/view-menu';
+import './elements/project-selector';
 
 import '@geoblocks/cesium-view-cube';
 
@@ -88,6 +90,7 @@ export class NgmApp extends LitElementI18n {
   @state() showProjectPopup = false;
   @state() mobileView = false;
   @state() showAxisOnMap = false;
+  @state() showProjectSelector = false;
   @query('ngm-cam-configuration') camConfigElement;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
@@ -399,10 +402,21 @@ export class NgmApp extends LitElementI18n {
               <ngm-layer-legend class="ngm-floating-window" .config=${config}
                                 @close=${this.onCloseLayerLegend}></ngm-layer-legend>
             ` : '')}
-            <ngm-map-chooser .hidden=${this.mobileView} class="ngm-bg-chooser-map"
-                             .initiallyOpened=${false}></ngm-map-chooser>
-            <cesium-view-cube ?hidden=${this.mobileView || this.showAxisOnMap}
-                              .scene="${this.viewer?.scene}"></cesium-view-cube>
+            <project-selector class="ngm-floating-window"
+                              .hidden=${!this.showProjectSelector}
+                              .showProjectSelector=${this.showProjectSelector}
+                              @close=${() => this.showProjectSelector = false}>
+            </project-selector>
+            <div class="on-map-menu">
+              <cesium-view-cube ?hidden=${this.mobileView || this.showAxisOnMap}
+                                .scene="${this.viewer?.scene}"></cesium-view-cube>
+              
+              <ngm-map-chooser .hidden=${this.mobileView} class="ngm-bg-chooser-map"
+                              .initiallyOpened=${false}></ngm-map-chooser>
+              <view-menu class="view-menu"
+                         @toggleProjectSelector=${() => this.showProjectSelector = !this.showProjectSelector}>
+              </view-menu>
+            </div>
             <a class="contact-mailto-link" target="_blank"
                href="mailto:swissgeol@swisstopo.ch">${i18next.t('contact_mailto_text')}</a>
             <a class="disclaimer-link" target="_blank"
