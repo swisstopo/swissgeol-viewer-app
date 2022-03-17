@@ -57,7 +57,7 @@ then
   deploy_api prod
   deploy_ui $PROD_BUCKET
   curl https://viewer.swissgeol.ch/versions.json
-  watch --interval=5 curl -s https://viewer.swissgeol.ch/api/health_check
+  watch --interval=5 curl -s https://api.viewer.swissgeol.ch/api/health_check
   exit 0
 fi
 
@@ -66,7 +66,7 @@ then
   deploy_api int
   deploy_ui $INT_BUCKET
   curl https://int.swissgeol.ch/versions.json
-  watch --interval=5 curl -s https://int.swissgeol.ch/api/health_check
+  watch --interval=5 curl -s https://api.int.swissgeol.ch/api/health_check
   exit 0
 fi
 
@@ -76,7 +76,7 @@ then
   export AWS_ACCESS_KEY_ID=$(gopass cat ngm/fargate/api/AWS_ACCESS_KEY_ID)
   export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/fargate/api/AWS_SECRET_ACCESS_KEY)
   aws ecs update-service --cluster api_dev --service api_dev --force-new-deployment
-  watch --interval=5 curl -s https://dev.swissgeol.ch/api/health_check
+  watch --interval=5 curl -s https://api.dev.swissgeol.ch/api/health_check
   exit 0
 fi
 
