@@ -1,11 +1,16 @@
 #!/bin/bash -e
 
-RELEASES_BUCKET="ngmpub-review-bgdi-ch"
 INT_BUCKET="ngmpub-int-bgdi-ch"
-RELEASES_BUCKET="ngmpub-review-bgdi-ch"
+DEV_BUCKET="ngmpub-dev-bgdi-ch"
+RELEASES_BUCKET="ngmpub-releases-bgdi-ch"
 PROD_BUCKET="ngmpub-prod-viewer-bgdi-ch"
 IMAGE_NAME="camptocamp/swissgeol_api"
 
+
+if [[ "$1" == "dev" ]]
+then
+  export VERSION="latest"
+fi
 
 if [[ -z "${VERSION}" ]]
 then
@@ -15,13 +20,13 @@ fi
 
 
 export AWS_REGION=eu-west-1
-export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
-export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
 
 
 function deploy_ui {
   TARGET_BUCKET="$1"
-  if [ "$TARGET_BUCKET" -ne "$PROD_BUCKET" -a  "$TARGET_BUCKET" -ne "$INT_BUCKET" ]
+  export AWS_ACCESS_KEY_ID=$(gopass cat ngm/s3/$RELEASES_BUCKET/AWS_ACCESS_KEY_ID)
+  export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/s3/$RELEASES_BUCKET/AWS_SECRET_ACCESS_KEY)
+  if [ "$TARGET_BUCKET" != "$PROD_BUCKET" -a  "$TARGET_BUCKET" != "$INT_BUCKET" -a "$TARGET_BUCKET" != "$DEV_BUCKET" ]
   then
     echo wrong target bucket: $TARGET_BUCKET
     exit 1
@@ -38,16 +43,18 @@ function deploy_ui {
 
 function deploy_api {
   tag="$1"
+  export AWS_ACCESS_KEY_ID=$(gopass cat ngm/fargate/api/AWS_ACCESS_KEY_ID)
+  export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/fargate/api/AWS_SECRET_ACCESS_KEY)
   docker pull $IMAGE_NAME:$VERSION
   docker tag $IMAGE_NAME:$VERSION $IMAGE_NAME:$tag
   docker push $IMAGE_NAME:$tag
-  aws ecs update-service --cluster viewer_$tag --service viewer_$tag --force-new-deployment
+  aws ecs update-service --cluster api_$tag --service api_$tag --force-new-deployment
 }
 
 
 if [[ "$1" == "prod" ]]
 then
-  deploy_api $1
+  deploy_api prod
   deploy_ui $PROD_BUCKET
   curl https://viewer.swissgeol.ch/versions.json
   watch --interval=5 curl -s https://viewer.swissgeol.ch/api/health_check
@@ -56,12 +63,22 @@ fi
 
 if [[ "$1" == "int" ]]
 then
-  deploy_api $1
+  deploy_api int
   deploy_ui $INT_BUCKET
   curl https://int.swissgeol.ch/versions.json
   watch --interval=5 curl -s https://int.swissgeol.ch/api/health_check
   exit 0
 fi
 
-echo you should pass prod or int parameter
+if [[ "$1" == "dev" ]]
+then
+  echo "Special api-only deploy"
+  export AWS_ACCESS_KEY_ID=$(gopass cat ngm/fargate/api/AWS_ACCESS_KEY_ID)
+  export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/fargate/api/AWS_SECRET_ACCESS_KEY)
+  aws ecs update-service --cluster api_dev --service api_dev --force-new-deployment
+  watch --interval=5 curl -s https://dev.swissgeol.ch/api/health_check
+  exit 0
+fi
+
+echo you should pass prod, int, or dev parameter
 exit 1

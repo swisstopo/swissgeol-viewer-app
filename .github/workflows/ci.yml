@@ -50,6 +50,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Log into Docker hub
         env:
+          AWS_ACCESS_KEY_ID: ${{secrets.FARGATE_API_AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.FARGATE_API_AWS_SECRET_ACCESS_KEY}}
           DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
           DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
         run: |
@@ -64,7 +66,7 @@ jobs:
           if [[ ${{github.ref}} == "refs/heads/master" ]]
           then
             docker push camptocamp/swissgeol_api:latest
-            echo TODO: deploy image to dev with aws ecs XXX
+            aws ecs update-service --cluster api_dev --service api_dev --force-new-deployment
           fi
 
   build_and_deploy_ui:
