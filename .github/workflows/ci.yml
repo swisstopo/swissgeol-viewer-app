@@ -50,6 +50,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Log into Docker hub
         env:
+          AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
           AWS_ACCESS_KEY_ID: ${{secrets.FARGATE_API_AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.FARGATE_API_AWS_SECRET_ACCESS_KEY}}
           DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
