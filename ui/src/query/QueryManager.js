@@ -31,7 +31,7 @@ export default class QueryManager {
 
   async querySwisstopo(pickedPosition, layers) {
     const lang = i18next.language;
-    const distance = Cartesian3.distance(this.scene.camera.position, pickedPosition);
+    const distance = Cartesian3.distance(this.scene.camera.positionWC, pickedPosition);
     // layer list is reversed to match the display order on map
     const identifyResult = await this.swisstopoIdentify.identify(pickedPosition, distance, layers.slice().reverse(), lang);
     if (identifyResult) {
