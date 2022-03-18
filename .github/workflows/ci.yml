@@ -67,7 +67,7 @@ jobs:
           if [[ ${{github.ref}} == "refs/heads/master" ]]
           then
             docker push camptocamp/swissgeol_api:latest
-            aws ecs update-service --cluster api_dev --service api_dev --force-new-deployment
+            aws --debug ecs update-service --cluster api_dev --service api_dev --force-new-deployment
           fi
 
   build_and_deploy_ui:
