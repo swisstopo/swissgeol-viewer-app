@@ -1,7 +1,8 @@
 import i18next from 'i18next';
 import {html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
-import {ApiClient} from '../api-client';
+import {apiClient} from '../api-client';
+import draggable from './draggable';
 import {LitElementI18n} from '../i18n';
 import DashboardStore from '../store/dashboard';
 import $ from '../jquery';
@@ -13,31 +14,37 @@ export class ProjectSelector extends LitElementI18n {
     @property({type: Boolean}) showProjectSelector = false;
     @state() projects: Project[] | undefined;
     @query('.item.active.selected') selection: any;
-    private apiClient: ApiClient = new ApiClient();
-    private selecedProject: Topic | Project | undefined;
+    private selectedProject: Topic | Project | undefined;
 
 
     constructor() {
         super();
         DashboardStore.selectedTopicOrProject.subscribe(topic => {
-            this.selecedProject = topic;
+            this.selectedProject = topic;
         });
-        this.apiClient.getProjects()
+
+        apiClient.projectsChange.subscribe(() => this.refreshProjects());
+        this.refreshProjects();
+    }
+
+    refreshProjects() {
+        apiClient.getProjects()
             .then(response => response.json())
             .then(body => this.projects = body);
     }
 
-    onFirstUpdate() {
-        this.apiClient.getProjects()
-            .then(response => response.json())
-            .then(body => this.projects = body);
+    connectedCallback() {
+        draggable(this, {
+            allowFrom: '.drag-handle'
+        });
+        super.connectedCallback();
     }
 
     updated(changedProperties) {
-        console.log('project', JSON.stringify(this.selecedProject));
+        console.log('project', JSON.stringify(this.selectedProject));
         this.querySelectorAll('.ui.dropdown').forEach(elem => {
-            this.selecedProject ?
-            $(elem).dropdown('set selected', this.selecedProject.id) :
+            this.selectedProject ?
+            $(elem).dropdown('set selected', this.selectedProject.id) :
             $(elem).dropdown();
         });
         super.updated(changedProperties);
@@ -55,7 +62,7 @@ export class ProjectSelector extends LitElementI18n {
 
         project.views.push(view);
 
-        await this.apiClient.updateProject(project!);
+        await apiClient.updateProject(project!);
 
         this.dispatchEvent(new CustomEvent('close'));
     }
@@ -68,12 +75,10 @@ export class ProjectSelector extends LitElementI18n {
         return html`
             <div class="ngm-floating-window-header drag-handle">
                 ${i18next.t('save_view_in_project')}
-                <div class="ngm-close-icon" @click=${
-                    () => this.dispatchEvent(new CustomEvent('close'))
-                }></div>
+                <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
             </div>
-            <div class="ngm-cam-container">
-                <div class="ui selection dropdown">
+            <div>
+                <div class="ui selection dropdown ngm-input">
                     <input type="hidden" name="project">
                     <i class="dropdown icon"></i>
                     <div class="default text">${i18next.t('select_project')}</div>

@@ -1,21 +1,9 @@
 project-selector {
   width: 420px;
-  height: 239px;
-  color: #495057;
-  text-align: left;
-  letter-spacing: 0;
-  padding-left: 24px !important;
-}
-
-project-selector .ngm-floating-window-header {
-  border: none;
-  height: 32px;
-  padding-top: 14px;
 }
 
 project-selector .ui.dropdown {
   height: 56px;
-  width: 372px;
   margin-top: 22px;
   margin-bottom: 42px;
   padding-top: 21px !important;

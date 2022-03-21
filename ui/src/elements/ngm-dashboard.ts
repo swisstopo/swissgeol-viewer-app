@@ -18,7 +18,7 @@ import {COLORS_WITH_BLACK_TICK, DEFAULT_LAYER_OPACITY, PROJECT_COLORS, RECENTLY_
 import $ from '../jquery';
 import {fromGeoJSON} from '../toolbox/helpers';
 import type {NgmGeometry} from '../toolbox/interfaces';
-import {ApiClient} from '../api-client';
+import {apiClient} from '../api-client';
 import AuthStore from '../store/auth';
 
 
@@ -77,6 +77,7 @@ export interface Project extends CreateProject {
 export class NgmDashboard extends LitElementI18n {
   @property({type: Boolean}) hidden = true;
   @property({type: Boolean}) mobileView = false;
+  @state() projects: Project[] = [];
   @state() activeTab: 'topics' | 'overview' | 'projects' = 'topics';
   @state() selectedTopicOrProject: Topic | Project | undefined;
   @state() topics: Topic[] | undefined;
@@ -91,8 +92,6 @@ export class NgmDashboard extends LitElementI18n {
   private assets: Config[] | undefined;
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
-  private projects: Project[] = [];
-  private apiClient: ApiClient = new ApiClient();
   private userEmail: string | undefined;
 
   constructor() {
@@ -145,8 +144,8 @@ export class NgmDashboard extends LitElementI18n {
   update(changedProperties) {
     if ((changedProperties.has('refreshProjects') && this.refreshProjects) ||
         (changedProperties.has('hidden') && this.hidden === false)) {
-      if (this.apiClient.token) {
-        this.apiClient.getProjects().then(response => response.json()).then(body => {
+      if (apiClient.token) {
+        apiClient.getProjects().then(response => response.json()).then(body => {
           this.projects = body;
         });
       }
@@ -332,9 +331,9 @@ export class NgmDashboard extends LitElementI18n {
   async duplicateToProject() {
     const createProject = this.toCreateProject(this.selectedTopicOrProject!);
 
-    this.apiClient.duplicateProject(createProject).then(r => r.json())
+    apiClient.duplicateProject(createProject).then(r => r.json())
       .then(id => {
-        this.apiClient.getProject(id).then(r => r.json()).then(project => {
+        apiClient.getProject(id).then(r => r.json()).then(project => {
           this.selectedTopicOrProject = project;
           this.activeTab = 'projects';
           this.refreshProjects = true;
@@ -349,7 +348,7 @@ export class NgmDashboard extends LitElementI18n {
              @click=${() => this.copyLink(viewId)}>
           ${i18next.t('dashboard_share_topic')}
         </div>
-        <div class="item ${this.apiClient.token ? '' : 'disabled'}"
+        <div class="item ${apiClient.token ? '' : 'disabled'}"
              ?hidden=${this.activeTab !== 'topics'}
              @click=${() => this.duplicateToProject()}>
           ${i18next.t('duplicate_to_project')}
@@ -558,7 +557,7 @@ export class NgmDashboard extends LitElementI18n {
       <div class="project-edit-buttons">
         <button class="ui button ngm-action-btn ${classMap({'ngm-disabled': !project.title})}"
                 @click=${async () => {
-                  await this.apiClient.updateProject(project);
+                  await apiClient.updateProject(project);
                   this.projectEditing = false;
                   this.saveOrCancelWarning = false;
                   this.refreshProjects = true;
@@ -567,7 +566,7 @@ export class NgmDashboard extends LitElementI18n {
         </button>
         <button class="ui button ngm-action-btn ngm-cancel-btn"
                 @click=${() => {
-                  this.apiClient.getProject(project.id).then(response => response.json()).then(body => {
+                  apiClient.getProject(project.id).then(response => response.json()).then(body => {
                     this.selectedTopicOrProject = body;
                   });
                   this.projectEditing = false;
@@ -582,7 +581,7 @@ export class NgmDashboard extends LitElementI18n {
 
   recentlyViewedTemplate() {
     if (this.selectedTopicOrProject || this.activeTab === 'projects' ||
-    (this.activeTab === 'overview' && !this.apiClient.token)) return '';
+    (this.activeTab === 'overview' && !apiClient.token)) return '';
 
     const topicsOrProjects = this.activeTab === 'topics' ? this.topics : this.projects;
 
@@ -601,7 +600,7 @@ export class NgmDashboard extends LitElementI18n {
 
   overviewTemplate() {
     if (this.activeTab === 'overview' && !this.selectedTopicOrProject) {
-      if (this.apiClient.token) {
+      if (apiClient.token) {
         return html`
           <div class="ngm-proj-title">${i18next.t('dashboard_my_projects')}</div>
           <div class="ngm-projects-list">
@@ -635,7 +634,7 @@ export class NgmDashboard extends LitElementI18n {
             ${i18next.t('dashboard_overview')}
           </div>
           <div class=${classMap({active: this.activeTab === 'projects'})}
-                ?hidden=${!this.apiClient.token}
+                ?hidden=${!apiClient.token}
                @click=${() => {
                   this.activeTab = 'projects';
                   this.deselectTopicOrProject();
@@ -661,7 +660,7 @@ export class NgmDashboard extends LitElementI18n {
           </div>
         </div>
         <div>
-          <div class="ngm-toast-placeholder" id="overview-toast" ?hidden=${!!this.apiClient.token}></div>
+          <div class="ngm-toast-placeholder" id="overview-toast" ?hidden=${!!apiClient.token}></div>
           ${this.overviewTemplate()}
         </div>
         <div ?hidden=${this.activeTab !== 'projects' || !!this.selectedTopicOrProject}>

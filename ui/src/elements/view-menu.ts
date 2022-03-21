@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import {html} from 'lit';
 import {customElement} from 'lit/decorators.js';
-import {ApiClient} from '../api-client';
+import {apiClient} from '../api-client';
 import {LitElementI18n} from '../i18n';
 import AuthStore from '../store/auth';
 import DashboardStore from '../store/dashboard';
@@ -13,8 +13,7 @@ import type {Project, Topic, View} from './ngm-dashboard';
 export class ViewMenu extends LitElementI18n {
     private userEmail: string | undefined;
     private viewIndex: number | undefined;
-    private selecedProject: Topic | Project | undefined;
-    private apiClient = new ApiClient();
+    private selectedProject: Topic | Project | undefined;
 
     constructor() {
         super();
@@ -23,7 +22,7 @@ export class ViewMenu extends LitElementI18n {
             this.userEmail = user?.username.split('_')[1];
           });
         DashboardStore.selectedTopicOrProject.subscribe(topic => {
-            this.selecedProject = topic;
+            this.selectedProject = topic;
         });
         DashboardStore.viewIndex.subscribe(async viewIndex => {
             this.viewIndex = viewIndex;
@@ -39,7 +38,7 @@ export class ViewMenu extends LitElementI18n {
 
     async saveViewToProject() {
         if (this.viewIndex && this.userEmail) {
-            const project = <Project> this.selecedProject;
+            const project = <Project> this.selectedProject;
             if (project.owner === this.userEmail) {
                 const view: View = {
                     id: crypto.randomUUID(),
@@ -47,10 +46,10 @@ export class ViewMenu extends LitElementI18n {
                     permalink: window.location.href,
                 };
                 project.views.splice(this.viewIndex, 0, view);
-                await this.apiClient.updateProject(project);
+                await apiClient.updateProject(project);
             }
         } else {
-            console.log('toggeProjectSelector');
+            console.log('toggleProjectSelector');
             this.dispatchEvent(new CustomEvent('toggleProjectSelector'));
         }
     }
