@@ -1,4 +1,4 @@
-import {LitElementI18n, toLocaleDateString} from '../i18n';
+import {LitElementI18n, toLocaleDateString, translated} from '../i18n';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import i18next from 'i18next';
@@ -681,10 +681,6 @@ export class NgmDashboard extends LitElementI18n {
   }
 }
 
-
-function translated(property: TextualAttribute): string {
-  return typeof property === 'string' ? property : property[i18next.language];
-}
 
 function array_move(arr, old_index, new_index) {
   if (new_index >= arr.length) {
