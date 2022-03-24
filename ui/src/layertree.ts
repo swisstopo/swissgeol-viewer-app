@@ -801,7 +801,7 @@ const man_made_objects: LayerTreeNode = {
     },
     {
       type: LayerType.tiles3d,
-      url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20190924/tileset.json',
+      url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20201020/tileset.json',
       label: t('lyr_swiss_buildings_label'),
       layer: 'ch.swisstopo.swisstlm3d.3d',
       pickable: false,
