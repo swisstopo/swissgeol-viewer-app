@@ -1,0 +1,75 @@
+view-menu {
+    width: 56px;
+    height: 56px;
+    background-color: #15AABF;
+    box-shadow: 4px 4px 2px #00000029;
+    border-radius: 28px;
+    margin: auto 8px;
+}
+
+view-menu .ui.dropdown.active {
+    background-color: var(--ngm-interaction-active);
+    border-radius: 28px;
+}
+
+view-menu .ngm-screenshot-icon {
+    background-color: white;
+    margin: 19px;
+}
+
+view-menu .ui.dropdown .menu {
+    border: none;
+    background: none;
+    box-shadow: unset !important;
+    width: 232px;
+    right: 0;
+    left: auto;
+}
+
+view-menu .ui.dropdown .menu > .item {
+    border: none;
+    display: flex;
+    align-content: space-between;
+    padding: 8px 0 !important;
+}
+
+view-menu .ui.dropdown .menu > .item:hover {
+    color: unset;
+    background-color: unset;
+}
+
+view-menu .ui.dropdown .item label {
+    cursor: pointer;
+    display: block;
+    color: white;
+    background-color: #495057;
+    height: 40px;
+    width: 178px;
+    margin-right: 8px;
+    line-height: 40px;
+    padding: 0 12px;
+    border-radius: 12px;
+    box-shadow: 4px 4px 2px #00000029; 
+}
+
+view-menu .ui.dropdown .item > div {
+    background-color: #f1f3f5;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    box-shadow: 4px 4px 2px #00000029;
+}
+
+view-menu .ui.dropdown .item .icon {
+    margin: 9px;
+    background-color: var(--ngm-interaction);
+}
+
+view-menu .ui.dropdown .item:hover > div {
+    background-color: var(--ngm-interaction-hover);
+}
+
+view-menu .ui.dropdown .item:hover .icon {
+    margin: 9px;
+    background-color: white;
+}

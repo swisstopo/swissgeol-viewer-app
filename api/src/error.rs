@@ -28,6 +28,10 @@ pub enum Error {
     /// Return `500 Internal Server Error` on a `anyhow::Error`.
     #[error("an internal server error occurred")]
     Anyhow(#[from] anyhow::Error),
+
+    /// Return a custom api error.
+    #[error("an api error occurred")]
+    Api(StatusCode, &'static str),
 }
 
 impl Error {
@@ -37,17 +41,14 @@ impl Error {
             Self::Forbidden | Self::Jwt(_) => StatusCode::FORBIDDEN,
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::Sqlx(_) | Self::Anyhow(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::Api(code, _) => *code,
         }
     }
 }
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
-        let body = json!({
-          "status": self.status_code().as_u16(),
-          "message": self.to_string(),
-        });
-        match self {
+        let message = match self {
             Self::Unauthorized => {
                 return (
                     self.status_code(),
@@ -55,31 +56,42 @@ impl IntoResponse for Error {
                     // for the `401 Unauthorized` response code:
                     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
                     Headers(vec![(WWW_AUTHENTICATE, "Token")]),
-                    Json(body),
+                    Json(json!({
+                      "status": self.status_code().as_u16(),
+                      "message": self.to_string(),
+                    })),
                 )
                     .into_response();
             }
 
             Self::Jwt(m) => {
                 tracing::error!("Jsonwebtoken error: {:?}", m);
-                let body = json!({
-                  "status": self.status_code().as_u16(),
-                  "message": m,
-                });
-                return (self.status_code(), Json(body)).into_response();
+                m.to_owned()
             }
 
             Self::Sqlx(ref e) => {
                 tracing::error!("SQLx error: {:?}", e);
+                self.to_string()
             }
 
             Self::Anyhow(ref e) => {
                 tracing::error!("Generic error: {:?}", e);
+                self.to_string()
+            }
+
+            Self::Api(_, message) => {
+                tracing::error!("Api error: {}", message);
+                message.to_owned()
             }
 
             // Other errors get mapped normally.
-            _ => (),
-        }
+            _ => self.to_string(),
+        };
+
+        let body = json!({
+          "status": self.status_code().as_u16(),
+          "message": message,
+        });
 
         (self.status_code(), Json(body)).into_response()
     }

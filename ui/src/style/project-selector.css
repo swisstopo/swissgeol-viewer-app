@@ -1,0 +1,47 @@
+project-selector {
+  width: 420px;
+}
+
+project-selector .ui.dropdown {
+  height: 56px;
+  margin-top: 22px;
+  margin-bottom: 42px;
+  padding-top: 21px !important;
+  border: none !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-bottom: 2px solid #52A8BC !important;
+}
+
+project-selector .ui.selection.active.dropdown .menu {
+  border-top: 2px solid #52A8BC !important;
+}
+
+project-selector .ui.dropdown > .dropdown.icon {
+  padding-top: 21px !important;
+  color: #52A8BC !important;
+  opacity: 1 !important;
+}
+
+project-selector .menu {
+  border: none !important;
+  margin: 0 !important;
+  min-width: 100% !important;
+  width: 100% !important;
+  box-shadow: 2px 6px 10px #54545066;
+}
+
+project-selector .ui.active.selection {
+  background-color: #C5F6FA;
+}
+
+project-selector .item.active.selected {
+  background-color: #F8F9FA;
+  font-weight: normal !important;
+}
+
+project-selector .ngm-action-btn.ui.button {
+  width: 104px;
+  display: inline-block;
+  text-align: center;
+}

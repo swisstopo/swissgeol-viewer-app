@@ -102,3 +102,12 @@ export function toLocaleDateString(dateString) {
     year: 'numeric', month: 'long', day: 'numeric'
   });
 }
+
+
+/**
+ * @param {any} property
+ * @return string
+ */
+export function translated(property) {
+  return typeof property === 'string' ? property : property[i18next.language];
+}

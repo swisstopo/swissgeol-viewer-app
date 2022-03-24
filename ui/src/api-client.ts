@@ -1,10 +1,12 @@
 import Auth from './auth';
 import AuthStore from './store/auth';
 import {API_BY_PAGE_HOST} from './constants';
-import type {Project} from './elements/ngm-dashboard';
+import type {CreateProject, Project} from './elements/ngm-dashboard';
+import {Subject} from 'rxjs';
 
 
-export class ApiClient {
+class ApiClient {
+    projectsChange = new Subject<void>();
     token = Auth.getAccessToken();
     private apiUrl: string;
 
@@ -27,6 +29,10 @@ export class ApiClient {
         method: 'PUT',
         headers: headers,
         body: JSON.stringify(project),
+      })
+      .then(response => {
+        this.projectsChange.next();
+        return response;
       });
     }
 
@@ -58,7 +64,7 @@ export class ApiClient {
       });
     }
 
-    duplicateProject(project: Project): Promise<Response> {
+    duplicateProject(project: CreateProject): Promise<Response> {
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -70,6 +76,10 @@ export class ApiClient {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(project),
+      })
+      .then(response => {
+        this.projectsChange.next();
+        return response;
       });
     }
   }
@@ -80,3 +90,5 @@ function addAuthorization(headers: any, token: string|null) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 }
+
+export const apiClient = new ApiClient();
