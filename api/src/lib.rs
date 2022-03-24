@@ -19,6 +19,17 @@ pub use error::Error;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
+const CORS_ORIGINS: &[&str] = &[
+    "http://localhost:8000",
+    "https://api.dev.swissgeol.ch",
+    "https://api.int.swissgeol.ch",
+    "https://api.swissgeol.ch",
+    "https://review.swissgeol.ch",
+    "https://dev.swissgeol.ch",
+    "https://int.swissgeol.ch",
+    "https://viewer.swissgeol.ch",
+];
+
 pub async fn app(pool: PgPool) -> Router {
     let aws_config = s3::S3::parse();
     let aws_client = aws_config.create_client().await;
@@ -41,16 +52,11 @@ pub async fn app(pool: PgPool) -> Router {
                     CorsLayer::new()
                         .allow_credentials(true)
                         .allow_methods(vec![Method::GET, Method::POST, Method::PUT, Method::DELETE])
-                        .allow_origin(Origin::list(vec![
-                            "http://localhost:8000".parse().expect("parse origin"),
-                            "https://api.dev.swissgeol.ch"
-                                .parse()
-                                .expect("parse origin"),
-                            "https://api.int.swissgeol.ch"
-                                .parse()
-                                .expect("parse origin"),
-                            "https://api.swissgeol.ch".parse().expect("parse origin"),
-                        ]))
+                        .allow_origin(Origin::list(
+                            CORS_ORIGINS
+                                .iter()
+                                .map(|s| s.parse().expect("parse origin")),
+                        ))
                         .allow_headers(Any),
                 )
                 .layer(Extension(pool))
