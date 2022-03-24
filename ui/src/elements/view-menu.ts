@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import {html} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import {customElement, state} from 'lit/decorators.js';
 import {apiClient} from '../api-client';
 import {LitElementI18n} from '../i18n';
 import AuthStore from '../store/auth';
@@ -11,8 +11,8 @@ import type {Project, Topic, View} from './ngm-dashboard';
 
 @customElement('view-menu')
 export class ViewMenu extends LitElementI18n {
-    private userEmail: string | undefined;
-    private viewIndex: number | undefined;
+    @state() userEmail: string | undefined;
+    @state() viewIndex: number | undefined;
     private selectedProject: Topic | Project | undefined;
 
     constructor() {
@@ -24,7 +24,7 @@ export class ViewMenu extends LitElementI18n {
         DashboardStore.selectedTopicOrProject.subscribe(topic => {
             this.selectedProject = topic;
         });
-        DashboardStore.viewIndex.subscribe(async viewIndex => {
+        DashboardStore.viewIndex.subscribe(viewIndex => {
             this.viewIndex = viewIndex;
         });
     }
