@@ -58,6 +58,8 @@
 @import 'ngm-dashboard.css';
 @import 'ngm-action-list-item.css';
 @import 'topographic-profile.css';
+@import 'view-menu.css';
+@import 'project-selector.css';
 
 * {
   scrollbar-color: light;
@@ -157,10 +159,6 @@ ngm-app {
 cesium-view-cube {
   --cesium-view-cube-stroke-color: transparent;
   --cesium-view-cube-fill-color: transparent;
-  position: absolute;
-  z-index: 2;
-  bottom: 40px;
-  right: 100px;
 }
 
 #cesium {
@@ -462,6 +460,15 @@ ngm-full-screen-view.full-active {
 .contact-mailto-link:hover, .disclaimer-link:hover {
   color: var(--ngm-interaction-hover);
   text-shadow: none;
+}
+
+.on-map-menu {
+  position: absolute;
+  z-index: 3;
+  bottom: 44px;
+  right: 54px;
+  display: flex;
+  align-content: flex-end;
 }
 
 .ui.loader {

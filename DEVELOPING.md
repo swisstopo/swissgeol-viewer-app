@@ -19,8 +19,8 @@ i18next.t('text_key');
 
 The properties from all the 3dtiles can be collected for translation using the `extract-from-assets` command:
 ```bash
-export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/ngm-protected-prod/AWS_ACCESS_KEY_ID)
-export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/ngm-protected-prod/AWS_SECRET_ACCESS_KEY)
+export AWS_ACCESS_KEY_ID=$(gopass cat ngm/s3/ngm-protected-prod/AWS_ACCESS_KEY_ID)
+export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/s3/ngm-protected-prod/AWS_SECRET_ACCESS_KEY)
 
 npm run extract-from-assets
 ```

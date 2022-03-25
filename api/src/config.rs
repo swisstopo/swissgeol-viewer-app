@@ -5,8 +5,8 @@ pub struct Config {
     #[clap(flatten)]
     pub database: Database,
     /// The application port
-    #[clap(long, env = "APP_PORT")]
-    pub application_port: u16,
+    #[clap(env)]
+    pub app_port: u16,
     #[clap(flatten)]
     pub auth: Auth,
 }

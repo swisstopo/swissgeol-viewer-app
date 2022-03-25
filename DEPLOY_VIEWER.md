@@ -13,20 +13,32 @@
 https://git.swisstopo.admin.ch/camptocamp/terraform-swisstopo-ngm
 
 ### Used buckets
-export DEV_BUCKET="ngmpub-dev-bgdi-ch" # where the dev UI files are deployed
-export INT_BUCKET="ngmpub-int-bgdi-ch" # where the int UI files are deployed
-export REVIEW_BUCKET="ngmpub-review-bgdi-ch" # where the PRs UI files are deployed
-export PROD_BUCKET="ngmpub-prod-viewer-bgdi-ch" # where the prod-viewr UI files are deployed
-export PROTECTED_BUCKET="ngm-protected-prod" # for tilesets restricted by cognito
-export DOWNLOAD_BUCKET="ngmpub-download-bgdi-ch" # for publishing dataset sources
-export DATA_EXCHANGE="ngm-data-exchange" # internal, for exchanging data (not accessible)
-export RELEASES_BUCKET="ngmpub-review-bgdi-ch" # FIXME: create a dedicated bucket
+- export DEV_BUCKET="ngmpub-dev-bgdi-ch" # where the dev UI files are deployed
+- export INT_BUCKET="ngmpub-int-bgdi-ch" # where the int UI files are deployed
+- export REVIEW_BUCKET="ngmpub-review-bgdi-ch" # where the PRs UI files are deployed
+- export PROD_BUCKET="ngmpub-prod-viewer-bgdi-ch" # where the prod-viewr UI files are deployed
+- export PROTECTED_BUCKET="ngm-protected-prod" # for tilesets restricted by cognito
+- export DOWNLOAD_BUCKET="ngmpub-download-bgdi-ch" # for publishing dataset sources
+- export DATA_EXCHANGE="ngm-data-exchange" # internal, for exchanging data (not accessible)
+- export RELEASES_BUCKET="ngmpub-releases-bgdi-ch" # where the UI releases are published
 
 ### Listing content of a bucket:
-export AWS_REGION=eu-west-1
-export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
-export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
-aws s3 ls s3://$INT_BUCKET
+- export AWS_REGION=eu-west-1
+- export AWS_ACCESS_KEY_ID=$(gopass show ngm/s3/deploybucket/AWS_ACCESS_KEY_ID)
+- export AWS_SECRET_ACCESS_KEY=$(gopass show ngm/s3/deploybucket/AWS_SECRET_ACCESS_KEY)
+- aws s3 ls s3://$INT_BUCKET
+
+
+## RDS instances
+
+### Dev/int
+
+see gopass
+
+### Prod
+
+see gopass
+
 
 ## Deployments
 
@@ -47,22 +59,22 @@ This is handled in .github/workflows/ci.yml
 ### Int (manual)
 
 #### Creation of a new release
-- a version is chosen (the sprint number + some patch increment);
-- the UI is built and copied to S3 on releases/$VERSION;
-- the API is built, published to docker hub with the swissgeol_api:$VERSION tag.
 
 ```bash
+git checkout XXX # the commit you want to release
 export VERSION="" # the version (like 2022.02.0)
-git checkout $VERSION
-cd ui; scripts/release_ui.sh; cd -
-cd api; scripts/release_api.sh; cd -
+git tag $VERSION -m $VERSION
+scripts/release_ui.sh
+scripts/release_api.sh
+```
+
+For parallel ui and api releases:
+
+```bash
+tmux new-session 'scripts/release_ui.sh; bash' \; split-window -h 'scripts/release_api.sh; bash'
 ```
 
 #### Deployment of a new version
-
-- the UI is copied from S3 releases/$VERSION to int;
-- the swissgeol_api:int tag is set and pushed to docker hub;
-- fargate is redeployed on int.
 
 ```bash
 export VERSION="" # the version (like 2022.02.0)
@@ -86,4 +98,12 @@ See https://docs.aws.amazon.com/cli/latest/reference/cloudfront/create-invalidat
 
 ```
 aws cloudfront create-invalidation --distribution-id $THE_DISTRIB_ID --paths /somepath
+```
+
+## Display last deployed logs
+
+```bash
+./scripts/get_api_logs.sh dev
+./scripts/get_api_logs.sh int
+./scripts/get_api_logs.sh prod
 ```

@@ -1,4 +1,5 @@
 #!/bin/bash -e
+cd api
 
 IMAGE_NAME="camptocamp/swissgeol_api"
 

@@ -80,7 +80,9 @@ export class SideBar extends LitElementI18n {
       }
     });
     MainStore.syncLayers.subscribe(async () => {
-      this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
+      if (this.activeLayers) {
+        this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
+      }
       await this.syncActiveLayers();
       this.catalogElement.requestUpdate();
       MainStore.nextLayersRemove();

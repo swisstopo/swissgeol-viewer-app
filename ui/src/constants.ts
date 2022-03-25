@@ -66,6 +66,11 @@ export const GEOMETRY_COLORS = [
   {color: 'black', value: Color.BLACK},
 ];
 
+export const PROJECT_COLORS = [
+  '#E57373', '#C276D9', '#64B5F6', '#4DD0E1', '#81C784', '#D4E157',
+  '#FFEE58', '#FFCA28', '#FFA726', '#A1887F', '#BDBDBD', '#B0BEC5',
+];
+
 export const COLORS_WITH_BLACK_TICK = ['white', 'yellow', 'orange'];
 
 export const POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
@@ -107,6 +112,15 @@ export const SHORTLINK_URL_BY_PAGE_HOST = {
   'int.swissgeol.ch': 'https://link.int.swissgeol.ch',
   'swissgeol.ch': 'https://link.swissgeol.ch',
   'viewer.swissgeol.ch': 'https://link.swissgeol.ch',
+};
+
+export const API_BY_PAGE_HOST = {
+  'localhost:8000': '/api',
+  'review.swissgeol.ch': 'https://api.dev.swissgeol.ch/api',
+  'dev.swissgeol.ch': 'https://api.dev.swissgeol.ch/api',
+  'int.swissgeol.ch': 'https://api.int.swissgeol.ch/api',
+  'swissgeol.ch': 'https://api.swissgeol.ch/api',
+  'viewer.swissgeol.ch': 'https://api.swissgeol.ch/api',
 };
 
 export const RECENTLY_VIEWED_TOPICS_COUNT = 4;

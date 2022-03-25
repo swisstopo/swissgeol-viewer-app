@@ -60,11 +60,15 @@ jobs:
       - name: Build api
         run: make build_api
       - name: Push to docker hub and deploy to dev
+        env:
+          AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
+          AWS_ACCESS_KEY_ID: ${{secrets.FARGATE_API_AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.FARGATE_API_AWS_SECRET_ACCESS_KEY}}
         run: |
           if [[ ${{github.ref}} == "refs/heads/master" ]]
           then
             docker push camptocamp/swissgeol_api:latest
-            echo TODO: deploy image to dev with aws ecs XXX
+            aws ecs update-service --cluster api_dev --service api_dev --force-new-deployment
           fi
 
   build_and_deploy_ui:
