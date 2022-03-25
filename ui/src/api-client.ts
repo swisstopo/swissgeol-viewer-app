@@ -15,6 +15,7 @@ class ApiClient {
 
       AuthStore.user.subscribe(() => {
         this.token = Auth.getAccessToken();
+        this.projectsChange.next();
       });
     }
 
