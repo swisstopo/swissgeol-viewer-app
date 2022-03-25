@@ -33,6 +33,7 @@ then
     exit 1
 fi
 
+# if you change something here change also there
 $S3_CMD sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' --exclude 'Workers/*' dist/ $DESTINATION
 $S3_CMD sync --cache-control max-age=600 dist/Workers/ $DESTINATION/Workers
 $S3_CMD cp --cache-control no-cache dist/index.html $DESTINATION/index.html
