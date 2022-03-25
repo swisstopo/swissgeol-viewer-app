@@ -27,7 +27,7 @@ function upload {
   export AWS_REGION=eu-west-1
   export AWS_ACCESS_KEY_ID=$(gopass cat ngm/s3/$RELEASES_BUCKET/AWS_ACCESS_KEY_ID)
   export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/s3/$RELEASES_BUCKET/AWS_SECRET_ACCESS_KEY)
-  export DESTIONATION="s3://$RELEASES_BUCKET/releases/$VERSION"
+  export DESTINATION="s3://$RELEASES_BUCKET/releases/$VERSION"
   # if you change something here change also there
   export CACHE_CONTROL="no-cache"
   aws s3 sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' --exclude 'Workers/*' dist/ $DESTINATION
