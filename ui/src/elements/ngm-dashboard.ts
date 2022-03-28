@@ -82,7 +82,6 @@ export class NgmDashboard extends LitElementI18n {
   @state() selectedTopicOrProject: Topic | Project | undefined;
   @state() topics: Topic[] | undefined;
   @state() selectedViewIndx: number | undefined;
-  @state() refreshProjects = true;
   @state() projectEditing = false;
   @state() saveOrCancelWarning = false;
   @query('.ngm-toast-placeholder') toastPlaceholder;
@@ -99,32 +98,25 @@ export class NgmDashboard extends LitElementI18n {
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
     fetch('./src/sampleData/topics.json').then(topicsResponse =>
       topicsResponse.json().then(topics => {
-        this.topics = topics;
-        // sort by newest first
-        this.topics?.sort((a, b) => new Date(a.modified).getTime() - new Date(b.modified).getTime());
-        const recentlyViewed = localStorage.getItem('dashbord_recently_viewed');
-        if (recentlyViewed) {
-          this.recentlyViewedIds = JSON.parse(recentlyViewed);
-        }
-        DashboardStore.topicParam.subscribe(async param => {
-          if (!param) return;
-          const {viewId, topicId} = param;
-          removeTopic();
-          const topic = this.topics?.find(p => p.id === topicId);
-          await this.selectTopicOrProject(topic!);
-          if (viewId) {
-            const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === viewId);
-            if (viewIndex !== -1)
-              DashboardStore.setViewIndex(viewIndex);
-          }
-          this.hidden = false;
-        });
-        AuthStore.user.subscribe(user => {
-          // FIXME: extract from claims
-          this.userEmail = user?.username.split('_')[1];
-          this.refreshProjects = true;
-        });
+        this.topics = topics.sort((a, b) => new Date(a.modified).getTime() - new Date(b.modified).getTime());
       }));
+    const recentlyViewed = localStorage.getItem('dashbord_recently_viewed');
+    if (recentlyViewed) {
+      this.recentlyViewedIds = JSON.parse(recentlyViewed);
+    }
+    DashboardStore.topicParam.subscribe(async param => {
+      if (!param) return;
+      const {viewId, topicId} = param;
+      removeTopic();
+      const topic = this.topics?.find(p => p.id === topicId);
+      await this.selectTopicOrProject(topic!);
+      if (viewId) {
+        const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === viewId);
+        if (viewIndex !== -1)
+          DashboardStore.setViewIndex(viewIndex);
+      }
+      this.hidden = false;
+    });
     DashboardStore.viewIndex.subscribe(async viewIndex => {
       await this.selectView(viewIndex);
     });
@@ -139,19 +131,18 @@ export class NgmDashboard extends LitElementI18n {
         }));
       }
     });
-  }
-
-  update(changedProperties) {
-    if ((changedProperties.has('refreshProjects') && this.refreshProjects) ||
-        (changedProperties.has('hidden') && this.hidden === false)) {
-      if (apiClient.token) {
-        apiClient.getProjects().then(response => response.json()).then(body => {
-          this.projects = body;
-        });
-      }
-      this.refreshProjects = false;
-    }
-    super.update(changedProperties);
+    AuthStore.user.subscribe(user => {
+      // FIXME: extract from claims
+      this.userEmail = user?.username.split('_')[1];
+    });
+    apiClient.projectsChange.subscribe(() => {
+      apiClient.getProjects()
+        .then(response => response.json())
+        .then(body => this.projects = body);
+      const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
+      if (project) {this.selectedTopicOrProject = project;}
+    });
+    this.refreshProjects();
   }
 
   updated(changedProperties) {
@@ -161,6 +152,18 @@ export class NgmDashboard extends LitElementI18n {
       this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown());
     }
     super.updated(changedProperties);
+  }
+
+  refreshProjects() {
+    if (apiClient.token) {
+      apiClient.getProjects()
+          .then(response => response.json())
+          .then(body => this.projects = body);
+      const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
+      if (project) {
+        this.selectedTopicOrProject = project;
+      }
+    }
   }
 
   getGeometries(features: Array<GeoJSON.Feature>) {
@@ -333,10 +336,10 @@ export class NgmDashboard extends LitElementI18n {
 
     apiClient.duplicateProject(createProject).then(r => r.json())
       .then(id => {
-        apiClient.getProject(id).then(r => r.json()).then(project => {
-          this.selectedTopicOrProject = project;
+        apiClient.getProject(id).then(r => r.json()).then(async project => {
+          await this.selectTopicOrProject(project);
+          // this.selectedTopicOrProject = project;
           this.activeTab = 'projects';
-          this.refreshProjects = true;
         });
       });
   }
@@ -560,18 +563,14 @@ export class NgmDashboard extends LitElementI18n {
                   await apiClient.updateProject(project);
                   this.projectEditing = false;
                   this.saveOrCancelWarning = false;
-                  this.refreshProjects = true;
                 }}>
           ${i18next.t('save_project')}
         </button>
         <button class="ui button ngm-action-btn ngm-cancel-btn"
                 @click=${() => {
-                  apiClient.getProject(project.id).then(response => response.json()).then(body => {
-                    this.selectedTopicOrProject = body;
-                  });
+                  this.refreshProjects();
                   this.projectEditing = false;
                   this.saveOrCancelWarning = false;
-                  this.refreshProjects = true;
                 }}>
           ${i18next.t('cancel')}
         </button>
@@ -684,10 +683,10 @@ export class NgmDashboard extends LitElementI18n {
 
 function array_move(arr, old_index, new_index) {
   if (new_index >= arr.length) {
-      let k = new_index - arr.length + 1;
-      while (k--) {
-          arr.push(undefined);
-      }
+    let k = new_index - arr.length + 1;
+    while (k--) {
+      arr.push(undefined);
+    }
   }
   arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 }

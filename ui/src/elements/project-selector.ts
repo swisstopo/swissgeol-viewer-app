@@ -5,6 +5,7 @@ import {apiClient} from '../api-client';
 import draggable from './draggable';
 import {LitElementI18n} from '../i18n';
 import DashboardStore from '../store/dashboard';
+import AuthStore from '../store/auth';
 import $ from '../jquery';
 
 import type {Project, Topic, View} from './ngm-dashboard';
@@ -13,14 +14,19 @@ import type {Project, Topic, View} from './ngm-dashboard';
 export class ProjectSelector extends LitElementI18n {
     @property({type: Boolean}) showProjectSelector = false;
     @state() projects: Project[] | undefined;
+    @state() userEmail: string | undefined;
     @query('.item.active.selected') selection: any;
     private selectedProject: Topic | Project | undefined;
-
 
     constructor() {
         super();
         DashboardStore.selectedTopicOrProject.subscribe(topic => {
             this.selectedProject = topic;
+        });
+
+        AuthStore.user.subscribe(user => {
+            // FIXME: extract from claims
+            this.userEmail = user?.username.split('_')[1];
         });
 
         apiClient.projectsChange.subscribe(() => this.refreshProjects());
@@ -41,7 +47,6 @@ export class ProjectSelector extends LitElementI18n {
     }
 
     updated(changedProperties) {
-        console.log('project', JSON.stringify(this.selectedProject));
         this.querySelectorAll('.ui.dropdown').forEach(elem => {
             this.selectedProject ?
             $(elem).dropdown('set selected', this.selectedProject.id) :
@@ -65,6 +70,9 @@ export class ProjectSelector extends LitElementI18n {
         await apiClient.updateProject(project!);
 
         this.dispatchEvent(new CustomEvent('close'));
+
+        DashboardStore.setSelectedTopicOrProject(project);
+        DashboardStore.setViewIndex(project?.views.length - 1);
     }
 
     render() {
@@ -83,7 +91,7 @@ export class ProjectSelector extends LitElementI18n {
                     <i class="dropdown icon"></i>
                     <div class="default text">${i18next.t('select_project')}</div>
                     <div class="menu">
-                        ${this.projects?.map(project => html`
+                        ${this.projects?.filter(p => [p.owner, ...p.members].includes(this.userEmail!)).map(project => html`
                             <div class="item" 
                                  data-value="${project.id}"
                             >${project.title}</div>

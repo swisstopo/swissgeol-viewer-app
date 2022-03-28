@@ -13,7 +13,7 @@ import type {Project, Topic, View} from './ngm-dashboard';
 export class ViewMenu extends LitElementI18n {
     @state() userEmail: string | undefined;
     @state() viewIndex: number | undefined;
-    private selectedProject: Topic | Project | undefined;
+    @state() selectedProject: Topic | Project | undefined;
 
     constructor() {
         super();
@@ -37,19 +37,19 @@ export class ViewMenu extends LitElementI18n {
     }
 
     async saveViewToProject() {
-        if (this.viewIndex && this.userEmail) {
-            const project = <Project> this.selectedProject;
-            if (project.owner === this.userEmail) {
+        const project = <Project> this.selectedProject;
+        if (this.viewIndex && this.userEmail && project.owner) {
+            if ([project.owner, ...project.members].includes(this.userEmail)) {
                 const view: View = {
                     id: crypto.randomUUID(),
-                    title: `${i18next.t('view')} ${this.viewIndex + 1}`,
+                    title: `${i18next.t('view')} ${this.viewIndex + 2}`,
                     permalink: window.location.href,
                 };
-                project.views.splice(this.viewIndex, 0, view);
+                project.views.splice(this.viewIndex + 1, 0, view);
                 await apiClient.updateProject(project);
+                DashboardStore.setViewIndex(this.viewIndex + 1);
             }
         } else {
-            console.log('toggleProjectSelector');
             this.dispatchEvent(new CustomEvent('toggleProjectSelector'));
         }
     }
