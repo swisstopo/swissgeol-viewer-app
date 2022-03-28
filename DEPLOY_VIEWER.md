@@ -68,6 +68,7 @@ This is handled in .github/workflows/ci.yml
 git checkout XXX # the commit you want to release
 export VERSION="" # the version (like 2022.02.0)
 git tag $VERSION -m $VERSION
+git push origin $VERSION
 scripts/release_ui.sh
 scripts/release_api.sh
 ```
