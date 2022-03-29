@@ -318,7 +318,7 @@
       }
     ]
   },
-    {
+  {
     "id": "10",
     "title": {
       "de": "Geowege",
@@ -327,8 +327,7 @@
       "en": "Geo trails"
     },
     "description": {
-      "de": "Erlebnis Geologie: Geowege (Bundesamt für Landestopografie swisstopo, Erlebnis Geologie)
-      Geotourismus erschliesst erdgeschichtliche und landschaftliche Besonderheiten. Fachleute und Laien können auf geologischen Wanderwegen (Geowege) erdwissenschaftliche Entwicklungen vor Ort erleben und begreifen. Die Plattform Geowissenschaften der Akademie der Naturwissenschaften Schweiz (SCNAT) und «Erlebnis Geologie» haben die geologischen Wanderwege in der Schweiz zusammengestellt.",
+      "de": "Geotourismus erschliesst erdgeschichtliche und landschaftliche Besonderheiten. Fachleute und Laien können auf geologischen Wanderwegen (Geowege) erdwissenschaftliche Entwicklungen vor Ort erleben und begreifen. Die Plattform Geowissenschaften der Akademie der Naturwissenschaften Schweiz (SCNAT) und «Erlebnis Geologie» haben die geologischen Wanderwege in der Schweiz zusammengestellt.",
       "fr": "Le géotourisme met en valeur des particularités géologiques et paysagères. Les sentiers géologiques (Géo-sentiers) permettent à tout un chacun d'appréhender les processus géologiques et géomorphologiques sur le terrain. La Plate-forme Géosciences de l'Académie suisse des sciences naturelles (SCNAT) et « Géologie Vivante » ont compilé une liste des sentiers géologiques de Suisse.",
       "it": "Le géotourisme met en valeur des particularités géologiques et paysagères. Les sentiers géologiques (Géo-sentiers) permettent à tout un chacun d'appréhender les processus géologiques et géomorphologiques sur le terrain. La Plate-forme Géosciences de l'Académie suisse des sciences naturelles (SCNAT) et « Géologie Vivante » ont compilé une liste des sentiers géologiques de Suisse.",
       "en": "Geotourism valorizes special geological and landscape features. Geological hiking trails (Geo-trails), maps and guides are produced to make geology accessible to a broad audience. The Swiss Academy of Sciences (SCNAT) and “Erlebnis Geologie” have compiled a list of these trails."
@@ -348,46 +347,24 @@
         },
         "permalink": "?layers=ch.swisstopo.geologie-geowege%2Cboreholes%2Ccross_section%2Cearthquakes%2Cch.swisstopo.swisstlm3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Cfalse%2Cfalse%2Cfalse%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.90&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.00&lon=7.05196&lat=46.17435&elevation=1602&heading=29&pitch=10"
       }
-    ],
-    "geometries": [{
-      "type": "Feature",
-      "id": "1",
-      "properties": {
-        "name": "View Nappe de Morcles",
-        "color": "#B9271A"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            6.832122802734375,
-            46.684305180613265
-          ],
-          [
-            6.785430908203125,
-            46.74550709985597
-          ],
-          [
-            6.882934570312499,
-            46.74362499884437
-          ]
-        ]
-      }
-    }, {
+    ], {
       "type": "Feature",
       "id": "3",
       "properties": {
         "name": "View Dents de Morcles",
-        "website": "https://swissgeol.ch/",
+        "website": "https://erlebnis-geologie.ch/geoweg/via-geoalpina-dents-blanches-les-diablerets/",
+		"image" : "https://erlebnis-geologie.ch/wp-content/uploads/2014/07/11-Via-GeoAlpina-Nape-de-Morcles.jpg"
         "pointSymbol": "/images/triangle-icon-white.png"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          7.071,
-          46.197
+          7.070535477895266,
+          46.19731466440673,
+          2.0000000047771778
         ]
       }
-    }]
+    }
+   ]
   }
 ]
