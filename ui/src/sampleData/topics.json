@@ -353,8 +353,6 @@
                 "type": "Feature",
                 "id": "1",
                 "properties": {
-                    "name": "View Dents de Morcles",
-                    "color": "#B9271A",
                     "website": "https://erlebnis-geologie.ch/geoweg/via-geoalpina-dents-blanches-les-diablerets/",
                     "pointSymbol": "/images/triangle-icon-white.png"
                 },
