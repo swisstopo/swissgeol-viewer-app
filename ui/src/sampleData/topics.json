@@ -317,5 +317,55 @@
         "permalink": "?lon=9.46240&lat=47.61549&elevation=-15472&heading=198&pitch=35&map_transparency=0.00&layers_visibility=true%2Cfalse%2Ctrue%2Ctrue%2Cfalse%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers=top_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.swissnames3d.3d&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00&map=ch.swisstopo.pixelkarte-grau&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4252212.365534149%2C%22y%22%3A717088.9549949412%2C%22z%22%3A4683722.255834558%7D%2C%7B%22x%22%3A4261131.087325113%2C%22y%22%3A707000.5668149126%2C%22z%22%3A4677190.889808675%7D%2C%7B%22x%22%3A4245403.972434767%2C%22y%22%3A705936.4153656526%2C%22z%22%3A4691533.449264726%7D%2C%7B%22x%22%3A4254327.355955236%2C%22y%22%3A695826.7693869043%2C%22z%22%3A4685000.925156808%7D%5D%2C%22lowerLimit%22%3A-3497.658349238797%2C%22height%22%3A3848.408248411896%2C%22showBox%22%3Atrue%2C%22negate%22%3Atrue%7D"
       }
     ]
+  },
+    {
+    "id": "5",
+    "title": {
+      "de": "Geowege",
+      "fr": "Geosentiers",
+      "it": "Geosentieri",
+      "en": "Geo trails"
+    },
+    "description": {
+      "de": "Geotourismus erschliesst erdgeschichtliche und landschaftliche Besonderheiten. Fachleute und Laien können auf geologischen Wanderwegen (Geowege) erdwissenschaftliche Entwicklungen vor Ort erleben und begreifen. Die Plattform Geowissenschaften der Akademie der Naturwissenschaften Schweiz (SCNAT) und «Erlebnis Geologie» haben die geologischen Wanderwege in der Schweiz zusammengestellt.",
+      "fr": "Le géotourisme met en valeur des particularités géologiques et paysagères. Les sentiers géologiques (Géo-sentiers) permettent à tout un chacun d'appréhender les processus géologiques et géomorphologiques sur le terrain. La Plate-forme Géosciences de l'Académie suisse des sciences naturelles (SCNAT) et « Géologie Vivante » ont compilé une liste des sentiers géologiques de Suisse.",
+      "it": "Le géotourisme met en valeur des particularités géologiques et paysagères. Les sentiers géologiques (Géo-sentiers) permettent à tout un chacun d'appréhender les processus géologiques et géomorphologiques sur le terrain. La Plate-forme Géosciences de l'Académie suisse des sciences naturelles (SCNAT) et « Géologie Vivante » ont compilé une liste des sentiers géologiques de Suisse.",
+      "en": "Geotourism valorizes special geological and landscape features. Geological hiking trails (Geo-trails), maps and guides are produced to make geology accessible to a broad audience. The Swiss Academy of Sciences (SCNAT) and “Erlebnis Geologie” have compiled a list of these trails."
+    },
+    "created": "2022-03-29",
+    "modified": "2022-03-29",
+    "image": "./images/spashing_water.png",
+    "color": "#B9271A",
+    "views": [
+      {
+        "id": "1",
+        "title": {
+          "de": "Via Geoalpina Nappe de Morcles",
+          "fr": "Via Geoalpina Nappe de Morcles",
+          "it": "Via Geoalpina Nappe de Morcles",
+          "en": "Via Geoalpina Nappe de Morcles"
+        },
+        "permalink": "?layers=ch.swisstopo.geologie-geowege%2Cboreholes%2Ccross_section%2Cearthquakes%2Cch.swisstopo.swisstlm3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Cfalse%2Cfalse%2Cfalse%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.90&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.00&lon=7.05196&lat=46.17435&elevation=1602&heading=29&pitch=10"
+      }
+    ],
+    "geometries": [{
+      "type": "Feature",
+      "id": "3",
+      "properties": {
+        "name": "View Dents de Morcles",
+        "website": "https://erlebnis-geologie.ch/geoweg/via-geoalpina-dents-blanches-les-diablerets/",
+        "image" : "https://erlebnis-geologie.ch/wp-content/uploads/2014/07/11-Via-GeoAlpina-Nape-de-Morcles.jpg"
+        "pointSymbol": "/images/triangle-icon-white.png"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.070535477895266,
+          46.19731466440673,
+          2.0000000047771778
+        ]
+      }
+    }
+   ]
   }
 ]
