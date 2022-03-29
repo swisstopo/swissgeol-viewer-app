@@ -345,13 +345,13 @@
                     "it": "Via Geoalpina Nappe de Morcles",
                     "en": "Via Geoalpina Nappe de Morcles"
                 },
-                "permalink": "?layers=ch.swisstopo.geologie-geowege%2Cboreholes%2Ccross_section%2Cearthquakes%2Cch.swisstopo.swisstlm3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Cfalse%2Cfalse%2Cfalse%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.90&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.00&lon=7.05196&lat=46.17435&elevation=1602&heading=29&pitch=10"
+                "permalink": "?layers=ch.swisstopo.geologie-geowege%2Cboreholes%2Ccross_section%2Cearthquakes%2Cch.swisstopo.swisstlm3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Cfalse%2Cfalse%2Cfalse%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.50&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.00&lon=7.05196&lat=46.17435&elevation=1602&heading=29&pitch=10"
             }
         ],
         "geometries": [
             {
                 "type": "Feature",
-                "id": "3",
+                "id": "1",
                 "properties": {
                     "name": "View Dents de Morcles",
                     "website": "https://erlebnis-geologie.ch/geoweg/via-geoalpina-dents-blanches-les-diablerets/",
