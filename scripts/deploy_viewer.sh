@@ -48,7 +48,7 @@ function deploy_api {
   docker pull $IMAGE_NAME:$VERSION
   docker tag $IMAGE_NAME:$VERSION $IMAGE_NAME:$tag
   docker push $IMAGE_NAME:$tag
-  aws ecs update-service --cluster api_$tag --service api_$tag --force-new-deployment
+  aws ecs update-service --region $AWS_REGION --cluster api_$tag --service api_$tag --force-new-deployment
 }
 
 
@@ -75,7 +75,7 @@ then
   echo "Special api-only deploy"
   export AWS_ACCESS_KEY_ID=$(gopass cat ngm/fargate/api/AWS_ACCESS_KEY_ID)
   export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/fargate/api/AWS_SECRET_ACCESS_KEY)
-  aws ecs update-service --cluster api_dev --service api_dev --force-new-deployment
+  aws ecs update-service --region $AWS_REGION --cluster api_dev --service api_dev --force-new-deployment
   watch --interval=5 curl -s https://api.dev.swissgeol.ch/api/health_check
   exit 0
 fi
