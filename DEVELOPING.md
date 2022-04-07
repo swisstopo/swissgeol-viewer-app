@@ -1,5 +1,10 @@
 # Development of the Swisstopo viewer
 
+## Architecture
+
+Diagram: https://docs.google.com/drawings/d/1DnW5C1tzltZOaQHZYL5aoncyJNL6f12akIKk024qPqE
+
+
 ## i18n: add new string to translate
 
 The [i18next](https://www.i18next.com/) library is used to localize the application.
