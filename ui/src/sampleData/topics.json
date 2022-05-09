@@ -291,7 +291,7 @@
           "it": "Vista sul bacino del lago di Zurigo",
           "en": "View of the Lake Zurich basin"
         },
-        "permalink": "?layers=top_bedrock%2Cch.swisstopo.swissnames3d.3d&layers_visibility=true%2Ctrue&layers_transparency=0.00%2C0.00&lang=en&lon=8.91138&lat=47.21871&elevation=2899&heading=255&pitch=-17&map_transparency=0.14&map=ch.swisstopo.swissimage&slice=%7B"type"%3A"view-line"%2C"negate"%3Afalse%2C"slicePoints"%3A%5B%7B"x"%3A4291994.433080966%2C"y"%3A669531.4512251402%2C"z"%3A4655320.798520955%7D%2C%7B"x"%3A4286697.436418575%2C"y"%3A665861.9460844366%2C"z"%3A4660590.779040263%7D%5D%7D"
+        "permalink": "?layers=top_bedrock%2Cch.swisstopo.swissnames3d.3d&layers_visibility=true%2Ctrue&layers_transparency=0.00%2C0.00&lang=en&lon=8.91138&lat=47.21871&elevation=2899&heading=255&pitch=-17&map_transparency=0.14&map=ch.swisstopo.swissimage&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4291994.433080966,\"y\":669531.4512251402,\"z\":4655320.798520955},{\"x\":4286697.436418575,\"y\":665861.9460844366,\"z\":4660590.779040263}]}"
       },
       {
         "id": "2",
@@ -301,7 +301,7 @@
           "it": "Terminale di Lucerna: gallerie nel e sopra il sottosuolo",
           "en": "Lucerne rail terminus: Tunnels in and above the underground"
         },
-        "permalink": "?layers=top_bedrock%2Cch.swisstopo.swissnames3d.3d%2Crail_tunnel&layers_visibility=true%2Ctrue%2Ctrue&layers_transparency=0.54%2C0.00%2C0.00&lang=en&lon=8.34593&lat=47.05626&elevation=1047&heading=251&pitch=-11&map_transparency=0.85&map=ch.swisstopo.pixelkarte-grau&slice=%7B"type"%3A"view-line"%2C"negate"%3Afalse%2C"slicePoints"%3A%5B%7B"x"%3A4308929.766196007%2C"y"%3A629958.0707430039%2C"z"%3A4645134.377539834%7D%2C%7B"x"%3A4306646.88356721%2C"y"%3A628522.412880511%2C"z"%3A4647437.838308171%7D%5D%7D"
+        "permalink": "?layers=top_bedrock%2Cch.swisstopo.swissnames3d.3d%2Crail_tunnel&layers_visibility=true%2Ctrue%2Ctrue&layers_transparency=0.54%2C0.00%2C0.00&lang=en&lon=8.34593&lat=47.05626&elevation=1047&heading=251&pitch=-11&map_transparency=0.85&map=ch.swisstopo.pixelkarte-grau&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4308929.766196007,\"y\":629958.0707430039,\"z\":4645134.377539834},{\"x\":4306646.88356721,\"y\":628522.412880511,\"z\":4647437.838308171}]}"
       },
       {
         "id": "3",
@@ -311,7 +311,7 @@
           "it": "I meandri dell'Aare e i suoi sedimenti",
           "en": "Meandering Aare and its sediments"
         },
-        "permalink": "?layers=top_bedrock%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00&lang=en&lon=7.33190&lat=47.04863&elevation=7329&heading=9&pitch=-26&map_transparency=0.00&map=lakes_rivers_map&slice=%7B"type"%3A"view-line"%2C"negate"%3Afalse%2C"slicePoints"%3A%5B%7B"x"%3A4309251.404080741%2C"y"%3A552190.0316972167%2C"z"%3A4654630.612861769%7D%2C%7B"x"%3A4312853.301822249%2C"y"%3A557660.0815497867%2C"z"%3A4650696.60419153%7D%5D%7D"
+        "permalink": "?layers=top_bedrock%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00&lang=en&lon=7.33190&lat=47.04863&elevation=7329&heading=9&pitch=-26&map_transparency=0.00&map=lakes_rivers_map&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4309251.404080741,\"y\":552190.0316972167,\"z\":4654630.612861769},{\"x\":4312853.301822249,\"y\":557660.0815497867,\"z\":4650696.60419153}]}"
       }
     ]
   },
@@ -319,8 +319,8 @@
     "id": "7",
     "title": {
       "de": "Geowege",
-      "fr": "Geosentiers"
-      "it": "Geosentieri"
+      "fr": "Geosentiers",
+      "it": "Geosentieri",
 	  "en": "Geo trails"
     },
     "description": {
@@ -391,7 +391,7 @@
                 "website": "https://www.parcobreggia.ch/it/",
 				"description" : "Strolling through 190 Million years: Reddish radiolariths, conglomerates, limestones and flysch deposits make the hearts of geology enthusiasts beat faster. It's also a great spot for some canyoning.",
 				"image": "./images/Breggia.jpg", 
-				"name": "Gole di Breggia"
+				"name": "Gole di Breggia",
 				"color": "#32cd32"
             },
             "geometry": {
@@ -409,7 +409,7 @@
                 "website": "https://unesco-sardona.ch/en/be-amazed",
 				"description" : "84km of geotrails in the UNESCO World Heritage Tectonic Area Sardona: Along the line visible from afar, the Glarus Thrust, 250-300 million years old rocks were pushed onto much younger, 35-50 million year old rock.",
 				"image": "./images/Sardona.jpg", 
-				"name": "Glarner Deckenüberschiebung"
+				"name": "Glarner Deckenüberschiebung",
 				"color": "#32cd32"
             },
             "geometry": {
@@ -426,8 +426,8 @@
     "id": "8",
     "title": {
       "de": "Geothermiebohrung St. Gallen",
-      "fr": "Forage géothérmique St. Gall"
-      "it": "Perforazione geotermica St. Gallo"
+      "fr": "Forage géothérmique St. Gall",
+      "it": "Perforazione geotermica St. Gallo",
 	  "en": "Geothermal drilling St. Gallen"
     },
     "description": {
