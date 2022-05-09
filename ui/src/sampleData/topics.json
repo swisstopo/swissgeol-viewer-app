@@ -117,7 +117,7 @@
     },
     "created": "2022-01-10",
     "modified": "2022-01-10",
-    "image": "./images/watertower_rivers.png",
+    "image": "./images/watertower_rivers.jpg",
     "color": "#B9271A",
     "views": [
       {
@@ -206,10 +206,10 @@
     {
     "id": "5",
     "title": {
-      "de": "GeoQuat - Lockergestein im Fokus",
-      "fr": "GeoQuat - roche meuble en scène",
-      "it": "GeoQuat - focus sulla roccia sciolta",
-      "en": "GeoQuat - Loose rocks in focus"
+      "de": "GeoQuat - Lockergestein",
+      "fr": "GeoQuat - roche meuble",
+      "it": "GeoQuat - roccia sciolta",
+      "en": "GeoQuat - Loose Rocks"
     },
     "description": {
       "de": "Lockergesteinsschichten sind die Protagonisten der Untergrundnutzung: Sie bergen die Hälfte des in der Schweiz genutzten Trinkwassers, beeinflussen die Wirkung möglicher Erdbeben und liefern wichtige Rohstoffe wie Sand und Kies an die Bauindustrie. Kenntnis über die Eigenschaften der Gesteinsschichten im untiefen Untergrund sind wichtig. Das Projekt GeoQuat entwickelte und testete eine entsprechende Dateninfrastruktur zur Erfassung und Haltung quartärer Lockergesteinsdaten anhand vier unterschiedlichen Pilotregionen.",
@@ -318,10 +318,10 @@
   {
     "id": "7",
     "title": {
-      "de": "Geowege",
-      "fr": "Geosentiers",
-      "it": "Geosentieri",
-	  "en": "Geo trails"
+      "de": "Geowege - Abenteuer Geologie ",
+      "fr": "Geosentiers - Aventure Géologie",
+      "it": "Geosentieri - Avventura Geologia",
+	  "en": "Geo trails - Aventure Geology"
     },
     "description": {
       "de": "Geotourismus erschliesst erdgeschichtliche und landschaftliche Besonderheiten. Fachleute und Laien können auf geologischen Wanderwegen (Geowege) erdwissenschaftliche Entwicklungen vor Ort erleben und begreifen. Die Plattform Geowissenschaften der Akademie der Naturwissenschaften Schweiz (SCNAT) und «Erlebnis Geologie» haben die geologischen Wanderwege in der Schweiz zusammengestellt.",
@@ -371,7 +371,12 @@
             "id": "1",
             "properties": {
                 "website": "https://erlebnis-geologie.ch/geoweg/via-geoalpina-dents-blanches-les-diablerets/",
-				"description" : "This multi-day hiking tour passes the Dent de Morcles with his famous sedimentation, folding and erosion history. The prominent fold consists in Mesozoic sediments.",
+				"description" : {
+                   "de": "",
+                   "fr": "",
+                   "it": "",
+	               "en": "This multi-day hiking tour passes the Dent de Morcles with his famous sedimentation, folding and erosion history. The prominent fold consists in Mesozoic sediments."
+				},
 				"image": "./images/Etappe_Champex_d_Alesse.png",
 				"name": "Dent de Morcles",
 				"color": "#FFFFFF"
