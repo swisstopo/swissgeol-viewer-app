@@ -53,11 +53,11 @@
   "dtd_own_kml_tag": "Propre kml",
   "dtd_remove": "Enlever",
   "dtd_show": "Afficher",
-  "dtd_topic_kml_tag": "objet du thème",
+  "dtd_topic_kml_tag": "Objet du thème",
   "dtd_user_content_label": "Ajouter propre contenu",
   "dtd_zoom_to": "Zoom sur",
-  "duplicate_to_project": "",
-  "edit_project": "",
+  "duplicate_to_project": "Dupliquer comme projet",
+  "edit_project": "Editer projet",
   "header_search_placeholder": "Recherche...",
   "header_show_minimap": "Afficher carte miniature",
   "link": "Lien",
@@ -299,6 +299,6 @@
   "tracking_agree_btn_label": "D'accord",
   "tracking_deny_btn_label": "Continuer sans acquisition de données",
   "tracking_text": "Nous utilisons les outils d’analyse Google Analytics, Hotjar et Sentry afin d’adapter au mieux notre site web à vos besoins. Votre comportement sur le site est enregistré de manière anonyme. Aucune donnée personnelle n’est transmise ou stockée. Si vous n’acceptez pas cet état de fait, vous pouvez empêcher la collecte de données par des outils d’analyse et continuer à utiliser ce site web sans restriction. Vous trouverez plus d’informations à ce sujet sur notre page <a target='_blank' href='legal/legal_fr.html'>Informations juridiques.</a>",
-  "view": "",
+  "view": "Vue",
   "welcome_get_shortlink_error": "Une erreur s'est produite et le lien court ne peut être créé, veuillez réessayer plus tard."
 }
