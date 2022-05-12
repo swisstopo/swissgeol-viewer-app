@@ -215,7 +215,7 @@
   "tbx_create_section_label": "Create section",
   "tbx_cross_sections_depth_label": "Cross sections height (masl)",
   "tbx_cross_sections_format_label": "Output format",
-  "tbx_data_download_hint": "No downloadable layers displayed visibly",
+  "tbx_data_download_hint": "No data to download. Please switch on some more layers in the data catalogue to download them.",
   "tbx_data-download": "Data download",
   "tbx_description_label": "Description",
   "tbx_download_all_btn": "Download KML",

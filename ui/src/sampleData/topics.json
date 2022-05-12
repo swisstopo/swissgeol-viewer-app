@@ -48,122 +48,7 @@
         },
         "permalink": "?layers=boreholes,ch.swisstopo.geologie-tiefengeothermie_projekte,temperature_model,top_upper_malm,base_cenozoic,top_lower_malm,top_dogger,top_lias,top_keuper,top_muschelkalk,base_mesozoic,base_permocarboniferous,base_permocarboniferous_supposed,faults_geomol,ch.swisstopo.swisstlm3d.3d&layers_visibility=true,true,true,true,true,true,true,true,true,true,true,true,true,true,true&layers_transparency=0,0.5,1,0,0,0,0,0,0,0,0,0,0,0.5,0&map_transparency=0&map=ch.swisstopo.swissimage&lon=6.59900&lat=46.81160&elevation=3429&heading=144&pitch=-33&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4345748.030793835,\"y\":507468.31110827957,\"z\":4625300.076949739},{\"x\":4347816.352357404,\"y\":505325.9842407562,\"z\":4623601.9831696395}]}"
       }
-    ],
-    "assets": [
-      {
-        "href": "https://download.swissgeol.ch/assets/KML-Line_3D.kml"
-      },
-      {
-        "href": "https://download.swissgeol.ch/assets/KML-Point_3D.kml"
-      },
-      {
-        "href": "https://download.swissgeol.ch/assets/Komplex_Volume.kml"
-      }
-    ],
-    "geometries": [{
-      "type": "Feature",
-      "id": "1",
-      "properties": {
-        "name": "feature one",
-        "color": "#B9271A"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            6.832122802734375,
-            46.684305180613265
-          ],
-          [
-            6.785430908203125,
-            46.74550709985597
-          ],
-          [
-            6.882934570312499,
-            46.74362499884437
-          ]
-        ]
-      }
-    }, {
-      "type": "Feature",
-      "id": "2",
-      "properties": {
-        "name": "feature two",
-        "type": "rectangle"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              6.866455078125,
-              46.765265193338
-            ],
-            [
-              6.994171142578125,
-              46.765265193338
-            ],
-            [
-              6.994171142578125,
-              46.807579571992385
-            ],
-            [
-              6.866455078125,
-              46.807579571992385
-            ],
-            [
-              6.866455078125,
-              46.765265193338
-            ]
-          ]
-        ]
-      }
-    }, {
-      "type": "Feature",
-      "id": "3",
-      "properties": {
-        "website": "https://swissgeol.ch/",
-        "pointSymbol": "/images/triangle-icon-white.png"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          6.779937744140625,
-          46.69089949154197
-        ]
-      }
-    }, {
-      "type": "Feature",
-      "id": "4",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              6.690673828125,
-              46.74738913515841
-            ],
-            [
-              6.75933837890625,
-              46.74080172412175
-            ],
-            [
-              6.792297363281249,
-              46.76808718675661
-            ],
-            [
-              6.766204833984375,
-              46.770909032336775
-            ],
-            [
-              6.690673828125,
-              46.74738913515841
-            ]
-          ]
-        ]
-      }
-    }]
+    ]
   },
   {
     "id": "2",
@@ -225,10 +110,10 @@
       "en": "Water Tower Switzerland"
     },
     "description": {
-      "de": "Mit Wasserkraft wurden 2020 rund 57 % des inländischen Stroms erzeugt. Wie Adern durchziehen unzählige Wasserstollen und Leitungsschächte die Alpen und leiten die wertvolle Ressource mit dem Ziel, Energie zu produzieren.",
-      "fr": "La force hydraulique est à l’origine de 57 % de la production d’électricité en Suisse.Telles des veines, d'innombrables galeries d'eau et puits de conduite sillonnent les Alpes et acheminent la précieuse ressource dans le but de produire de l'énergie.",
-      "it": "L’energia idroelettrica rappresenta circa il 57 % della produzione svizzera di elettricità. Come vene, innumerevoli gallerie d'acqua e pozzi di conduzione attraversano le Alpi, incanalando la preziosa risorsa con lo scopo di produrre energia.",
-      "en": "Hydropower is responsible for generating around 57 % of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy."
+      "de": "Mit Wasserkraft wurden 2020 rund 57% des inländischen Stroms erzeugt. Wie Adern durchziehen unzählige Wasserstollen und Leitungsschächte die Alpen und leiten die wertvolle Ressource mit dem Ziel, Energie zu produzieren.",
+      "fr": "La force hydraulique est à l’origine de 57% de la production d’électricité en Suisse. Telles des veines, d'innombrables galeries d'eau et puits de conduite sillonnent les Alpes et acheminent la précieuse ressource dans le but de produire de l'énergie.",
+      "it": "L’energia idroelettrica rappresenta circa il 57% della produzione svizzera di elettricità. Come vene, innumerevoli gallerie d'acqua e pozzi di conduzione attraversano le Alpi, incanalando la preziosa risorsa con lo scopo di produrre energia.",
+      "en": "Hydropower is responsible for generating around 57% of Switzerland’s electricity. Like veins, countless water tunnels and conduit shafts criss-cross the Alps, channelling the precious resource with the aim of producing energy."
     },
     "created": "2022-01-10",
     "modified": "2022-01-10",
@@ -283,38 +168,313 @@
     },
     "created": "2022-01-10",
     "modified": "2022-01-10",
-    "image": "./images/GeoMol.jpg",
+    "image": "./images/GeoMol2.jpg",
     "color": "#B9271A",
     "views": [
       {
         "id": "1",
         "title": {
-          "de": "Die Triangelzone der subalpinen Molasse: Komplexe tektonische Faltenzüge und Schuppen trennen die mittelländische von der subalpinen Molasse und eine dreieckige Form kann erkannt werden.",
-          "fr": "La zone triangulaire de la molasse subalpine : Des plis et des écailles tectoniques complexes séparent la molasse médio-alpine de la molasse subalpine et une forme triangulaire peut être reconnue.",
-          "it": "La zona triangolare delle Molasse subalpine: Complesse pieghe tettoniche e squame separano il midland dalla molassa subalpina e si può riconoscere una forma triangolare.",
-          "en": "The triangle zone of the subalpine Molasse: Complex tectonic folds and scales separate the midland from the subalpine molasse and a triangular shape can be recognised."
+          "de": "Die Triangelzone der subalpinen Molasse: Komplexe, tektonische Faltenzüge und Schuppen trennen die mittelländische von der subalpinen Molasse und eine dreieckige Form kann erkannt werden.",
+          "fr": "La zone triangulaire de la molasse subalpine : Des plis et des écailles tectoniques complexes séparent la Molasse du Plateau de la Molasse subalpine et une forme triangulaire peut être reconnue.",
+          "it": "La zona triangolare delle Molasse subalpine: Complesse pieghe tettoniche e scaglie separano la Molassa dell'Altopiano dalla Molassa subalpina e si può riconoscere una forma triangolare.",
+          "en": "The triangle zone of the subalpine Molasse: Complex tectonic folds and scales separate the Plateau Molasse from the Subalpine Molasse and a triangular shape can be recognised."
         },
         "permalink": "?lon=7.72732&lat=46.82423&elevation=17019&heading=58&pitch=-21&map_transparency=0.00&layers_visibility=false%2Cfalse%2Cfalse%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers=boreholes%2Ccross_section%2Cearthquakes%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.30%2C0.30&map=ch.swisstopo.pixelkarte-grau&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4316778.026407327%2C%22y%22%3A645617.2668820885%2C%22z%22%3A4635131.397501639%7D%2C%7B%22x%22%3A4324832.828975781%2C%22y%22%3A623539.4646845348%2C%22z%22%3A4630673.297525614%7D%2C%7B%22x%22%3A4287295.9508693665%2C%22y%22%3A628929.5794581583%2C%22z%22%3A4664497.588135991%7D%2C%7B%22x%22%3A4295351.378138457%2C%22y%22%3A606850.9301128673%2C%22z%22%3A4660039.205805879%7D%5D%2C%22lowerLimit%22%3A-4903.1633750773835%2C%22height%22%3A10000%2C%22showBox%22%3Atrue%2C%22negate%22%3Afalse%7D"
       },
       {
         "id": "2",
         "title": {
-          "de": "Der Permokarbontrog in der Nordschweiz: Durch die Gebirgsbildung im Perm- und Karbon entstandener Trog gefüllt mit Sedimenten.",
-          "fr": "Le bassin permo-carbonifère dans le nord de la Suisse : Auge formée par la formation des montagnes au permien et au carbonifère et remplie de sédiments.",
+          "de": "Der Permokarbontrog in der Nordschweiz: Durch die Gebirgsbildung im Perm und Karbon entstandener Trog gefüllt mit Sedimenten.",
+          "fr": "Le fossé permo-carbonifère dans le nord de la Suisse : Bassin formé par la formation des montagnes au Permien et au Carbonifère et remplie de sédiments.",
           "it": "Il bacino del Permo-Carbonifero nella Svizzera settentrionale: Trogolo formato dalla costruzione di montagne nei periodi Permiano e Carbonifero, riempito di sedimenti.",
-          "en": "The Permo-Carboniferous trough in northern Switzerland: Trough formed by mountain building in the Permian and Carboniferous periods filled with sediments."
+          "en": "The Permo-Carboniferous trough in Northern Switzerland: Trough formed by mountain building in the Permian and Carboniferous periods filled with sediments."
         },
         "permalink": "?lon=7.92816&lat=47.69606&elevation=6986&heading=137&pitch=-20&map_transparency=0.00&layers_visibility=false%2Cfalse%2Cfalse%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers=boreholes%2Ccross_section%2Cearthquakes%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.30%2C0.30&map=ch.swisstopo.pixelkarte-grau&slice=%7B%22type%22%3A%22view-line%22%2C%22negate%22%3Afalse%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4266681.559321244%2C%22y%22%3A614986.8673025015%2C%22z%22%3A4685590.097081851%7D%2C%7B%22x%22%3A4273347.514920282%2C%22y%22%3A615233.6050665869%2C%22z%22%3A4679512.966356592%7D%5D%7D"
       },
       {
         "id": "3",
         "title": {
-          "de": "Störungsnetzwerk: Entdecke das Zusammenspiel der verschiedenen Störflächen in 3D",
+          "de": "Störungsnetzwerk: Entdecke das Zusammenspiel der verschiedenen Störungsflächen in 3D",
           "fr": "Réseau de failles : Découvre l'interaction des différentes surfaces de faille en 3D",
           "it": "Rete di faglie: Scoprire l'interazione delle diverse superfici di fagli in 3D",
           "en": "Fault network: Discover the interplay of the different fault surfaces in 3D"
         },
         "permalink": "?lon=9.46240&lat=47.61549&elevation=-15472&heading=198&pitch=35&map_transparency=0.00&layers_visibility=true%2Cfalse%2Ctrue%2Ctrue%2Cfalse%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers=top_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.swissnames3d.3d&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00&map=ch.swisstopo.pixelkarte-grau&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4252212.365534149%2C%22y%22%3A717088.9549949412%2C%22z%22%3A4683722.255834558%7D%2C%7B%22x%22%3A4261131.087325113%2C%22y%22%3A707000.5668149126%2C%22z%22%3A4677190.889808675%7D%2C%7B%22x%22%3A4245403.972434767%2C%22y%22%3A705936.4153656526%2C%22z%22%3A4691533.449264726%7D%2C%7B%22x%22%3A4254327.355955236%2C%22y%22%3A695826.7693869043%2C%22z%22%3A4685000.925156808%7D%5D%2C%22lowerLimit%22%3A-3497.658349238797%2C%22height%22%3A3848.408248411896%2C%22showBox%22%3Atrue%2C%22negate%22%3Atrue%7D"
+      }
+    ]
+  },
+    {
+    "id": "5",
+    "title": {
+      "de": "GeoQuat - Lockergestein",
+      "fr": "GeoQuat - roche meuble",
+      "it": "GeoQuat - roccia sciolta",
+      "en": "GeoQuat - Loose Rocks"
+    },
+    "description": {
+      "de": "Lockergesteinsschichten sind die Protagonisten der Untergrundnutzung: Sie bergen die Hälfte des in der Schweiz genutzten Trinkwassers, beeinflussen die Wirkung möglicher Erdbeben und liefern wichtige Rohstoffe wie Sand und Kies an die Bauindustrie. Kenntnis über die Eigenschaften der Gesteinsschichten im untiefen Untergrund sind wichtig. Das Projekt GeoQuat entwickelte und testete eine entsprechende Dateninfrastruktur zur Erfassung und Haltung quartärer Lockergesteinsdaten anhand vier unterschiedlichen Pilotregionen.",
+      "fr": "Les couches de roches meubles sont les protagonistes de l'exploitation du sous-sol : elles recèlent la moitié de l'eau potable utilisée en Suisse, influencent l'effet d'éventuels tremblements de terre et fournissent des matières premières importantes comme le sable et le gravier dans l'industrie du bâtiment. La connaissance des propriétés des couches rocheuses du sous-sol peu profond est importante. Le projet GeoQuat a développé et testé une infrastructure de données correspondante pour la saisie et la gestion des données sur les roches meubles quaternaires à l'aide de quatre régions pilotes différentes.",
+      "it": "Gli strati di roccia sciolta sono i protagonisti dell'utilizzo del sottosuolo: trattengono la metà dell'acqua potabile utilizzata in Svizzera, influenzano l'effetto di eventuali terremoti e forniscono importanti materie prime come sabbia e ghiaia nell'industria delle costruzioni. La conoscenza delle proprietà degli strati di roccia nel sottosuolo poco profondo è importante. Il progetto GeoQuat ha sviluppato e testato un'infrastruttura di dati corrispondente per l'acquisizione e la gestione dei dati delle rocce quaternarie non consolidate sulla base di quattro diverse regioni pilota.",
+      "en": "Loose rock layers are the protagonists of subsurface use: they hold half of the drinking water used in Switzerland, influence the effect of possible earthquakes and provide important raw materials such as sand and gravel in the construction industry. Knowledge about the properties of the rock layers in the shallow subsurface is important. The GeoQuat project developed and tested a corresponding data infrastructure for the acquisition and management of quaternary unconsolidated rock data based on four different pilot regions."
+    },
+    "created": "2022-04-27",
+    "modified": "2022-04-27",
+    "image": "./images/GeoQuat2.jpg",
+    "color": "#B9271A",
+    "views": [
+      {
+        "id": "1",
+        "title": {
+          "de": "Hydraulische Leitfähigkeit im Aaretal",
+          "fr": "Conductivité hydraulique de la Vallée d'Aar",
+          "it": "Conducibilità idraulica alle Valle dell'Aare",
+          "en": "Hydraulic conductivity in the Aare Valley"
+        },
+        "permalink": "?layers=boreholes%2Ccross_section%2Cearthquakes%2Cvoxel_aaretal_logk%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_visibility=false%2Cfalse%2Cfalse%2Ctrue%2Cfalse%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.57%2C0.72&lang=en&lon=7.57623&lat=46.46495&elevation=32227&heading=7&pitch=-41&map_transparency=0.00&map=ch.swisstopo.swissimage"
+      },
+      {
+        "id": "2",
+        "title": {
+          "de": "Klassifizierung der quartären Lockergesteine in Birrfeld",
+          "fr": "Classification des roches non consolidées quaternaires à Birrfeld",
+          "it": "Classificazione delle rocce non consolidate cuaternario a Birrfeld",
+          "en": "Classification of unconsolidated quaternary rocks at Birrfeld"
+        },
+        "permalink": "?layers=boreholes%2Ccross_section%2Cearthquakes%2Cvoxel_birrfeld_litho%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_visibility=false%2Cfalse%2Cfalse%2Ctrue%2Cfalse%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.57%2C0.72&lang=en&lon=8.13298&lat=47.30604&elevation=10456&heading=19&pitch=-36&map_transparency=0.00&map=ch.swisstopo.pixelkarte-grau"
+      },
+      {
+        "id": "3",
+        "title": {
+          "de": "Hydraulische Leitfähigkeit in Genf",
+          "fr": "Conductivité hydrolique à Genève",
+          "it": "Conducibilità idraulica da Geneva",
+          "en": "Hydraulic conductivity at Geneva"
+        },
+        "permalink": "?layers=boreholes%2Ccross_section%2Cvoxel_geneva_logk%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_visibility=false%2Cfalse%2Ctrue%2Cfalse%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C0.57%2C0.72&lang=en&lon=6.10142&lat=46.17456&elevation=3073&heading=55&pitch=-46&map_transparency=0.00&map=ch.swisstopo.pixelkarte-grau"
+      },
+	  {
+        "id": "4",
+        "title": {
+          "de": "Klassifizierung der quartären Lockergesteine in Visp",
+          "fr": "Classification des roches non consolidées quaternaires à Viège",
+          "it": "Classificazione delle rocce non consolidate cuaternario a Visp",
+          "en": "Classification of unconsolidated quaternary rocks at Visp"
+        },
+        "permalink": "?layers=boreholes%2Ccross_section%2Cvoxel_visp_litho%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_visibility=false%2Cfalse%2Ctrue%2Cfalse%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C0.57%2C0.72&lang=en&lon=8.08831&lat=46.25642&elevation=11861&heading=293&pitch=-38&map_transparency=0.00&map=ch.swisstopo.swissimage"
+      }
+    ]
+  },
+      {
+    "id": "6",
+    "title": {
+      "de": "TopFels - die Felsoberfläche",
+      "fr": "TopFels - le toit du rocher",
+      "it": "TopFels - il tetto del substrato roccioso",
+      "en": "TopFels - the rock surface"
+    },
+    "description": {
+      "de": "Das Modell TopFels umfasst ein flächendeckendes Felsoberflächenmodell vom Mittelland und den grossen Alpentälern (Rhein, Rhône, Aare, Reuss, Linth und Ticino). Der Datensatz wurde mittels Interpolation von Bohrdaten und der Kompilation bereits bestehender 3D-Modelle erstellt und hat keinen Anspruch auf Korrektheit. Beim Thuner- und Zürichsee u.a. können besonders tiefe Felsoberflächen beobachtet werden, da sich hunderte Meter mächtige Gletscher während den Eiszeiten tief ins Gebirge eingefressen haben.",
+      "fr": "Le modèle TopFels comprend un modèle d'élévation du toit du rocher du assin molassique et des grandes vallées alpines (Rhin, Rhône, Aar, Reuss, Linth et Ticino). Le jeu de données a été créé en interpolant des données de forage et en compilant des modèles 3D existants et ne prétend pas être correct. On peut observer des surfaces rocheuses particulièrement profondes au lac de Thoune et au lac de Zurich, entre autres, car des glaciers de plusieurs centaines de mètres d'épaisseur ont forcé leur chemin dans les montagnes pendant les périodes glaciaires.",
+      "it": "Il modello TopFels comprende un modello di altitudine del tetto del substrato roccioso del Bacino della Molassa nelli grandi vallate alpine (Reno, Rodano, Aar, Reuss, Linth e Ticino). Il set di dati è stato creato interpolando i dati di trivellazione e compilando modelli 3D esistenti e non pretende di essere corretto. Al Lago di Thun e al Lago di Zurigo, tra gli altri, si possono osservare superfici rocciose particolarmente profonde, poiché i ghiacciai spessi centinaia di metri si sono fatti strada in profondità nelle montagne durante le ere glaciali.",
+      "en": "The bedrock elevation model TopFels comprises an presentation of the rock surface in the Molasse basin and the large Alpine valleys (Rhine, Rhône, Aare, Reuss, Linth and Ticino). The data set was created by interpolating borehole data and compiling existing 3D models and does not claim to be correct. At Lake Thun and Lake Zurich, among others, particularly deep rock surfaces can be observed, as glaciers hundreds of metres thick have eaten their way deep into the mountains during the ice ages."
+    },
+    "created": "2022-04-27",
+    "modified": "2022-04-27",
+    "image": "./images/TopFels.png",
+    "color": "#B9271A",
+    "views": [
+      {
+        "id": "1",
+        "title": {
+          "de": "Sicht auf das Zürcher Seebecken",
+          "fr": "Vue sur le bassin du lac de Zurich",
+          "it": "Vista sul bacino del lago di Zurigo",
+          "en": "View of the Lake Zurich basin"
+        },
+        "permalink": "?layers=top_bedrock%2Cch.swisstopo.swissnames3d.3d&layers_visibility=true%2Ctrue&layers_transparency=0.00%2C0.00&lang=en&lon=8.91138&lat=47.21871&elevation=2899&heading=255&pitch=-17&map_transparency=0.14&map=ch.swisstopo.swissimage&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4291994.433080966,\"y\":669531.4512251402,\"z\":4655320.798520955},{\"x\":4286697.436418575,\"y\":665861.9460844366,\"z\":4660590.779040263}]}"
+      },
+      {
+        "id": "2",
+        "title": {
+          "de": "Kopfbahnhof Luzern: Tunnels im und über dem Untergrund",
+          "fr": "Gare tête de lignes de Lucerne : tunnels dans et au-dessus du sous-sol",
+          "it": "Terminale di Lucerna: gallerie nel e sopra il sottosuolo",
+          "en": "Lucerne rail terminus: Tunnels in and above the underground"
+        },
+        "permalink": "?layers=top_bedrock%2Cch.swisstopo.swissnames3d.3d%2Crail_tunnel&layers_visibility=true%2Ctrue%2Ctrue&layers_transparency=0.54%2C0.00%2C0.00&lang=en&lon=8.34593&lat=47.05626&elevation=1047&heading=251&pitch=-11&map_transparency=0.85&map=ch.swisstopo.pixelkarte-grau&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4308929.766196007,\"y\":629958.0707430039,\"z\":4645134.377539834},{\"x\":4306646.88356721,\"y\":628522.412880511,\"z\":4647437.838308171}]}"
+      },
+      {
+        "id": "3",
+        "title": {
+          "de": "Mäandrierende Aare und ihre Ablagerungen",
+          "fr": "L'Aar avec méandres et ses dépôts",
+          "it": "I meandri dell'Aare e i suoi sedimenti",
+          "en": "Meandering Aare and its sediments"
+        },
+        "permalink": "?layers=top_bedrock%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00&lang=en&lon=7.33190&lat=47.04863&elevation=7329&heading=9&pitch=-26&map_transparency=0.00&map=lakes_rivers_map&slice={\"type\":\"view-line\",\"slicePoints\":[{\"x\":4309251.404080741,\"y\":552190.0316972167,\"z\":4654630.612861769},{\"x\":4312853.301822249,\"y\":557660.0815497867,\"z\":4650696.60419153}]}"
+      }
+    ]
+  },
+  {
+    "id": "7",
+    "title": {
+      "de": "Geowege - Abenteuer Geologie ",
+      "fr": "Geosentiers - Aventure Géologie",
+      "it": "Geosentieri - Avventura Geologia",
+	  "en": "Geo trails - Aventure Geology"
+    },
+    "description": {
+      "de": "Geotourismus erschliesst erdgeschichtliche und landschaftliche Besonderheiten. Fachleute und Laien können auf geologischen Wanderwegen (Geowege) erdwissenschaftliche Entwicklungen vor Ort erleben und begreifen. Die Plattform Geowissenschaften der Akademie der Naturwissenschaften Schweiz (SCNAT) und «Erlebnis Geologie» haben die geologischen Wanderwege in der Schweiz zusammengestellt.",
+      "fr": "Le géotourisme valorise les caractéristiques géologiques et des paysagères particulières. Des sentiers de randonnée géologique (Geo-trails), des cartes et des guides sont produits pour rendre la géologie accessible à un large public. L'Académie suisse des sciences naturelles (SCNAT) et «Géologie vivante» ont compilé une carte de ces sentiers.",
+      "it": "Il geoturismo valorizza le caratteristiche geologiche e i paesaggi particolari. Vengono prodotti geo-percorsi, mappe e guide per rendere la geologia accessibile ad un vasto pubblico. L'Accademia svizzera di scienze naturali (SCNAT) e «Avventura Geologica» hanno compilato una mappa di questi sentieri.",
+      "en": "Geotourism valorizes special geological and landscape features. Geological hiking trails (Geo-trails), maps and guides are produced to make geology accessible to a broad audience. The Swiss Academy of Sciences (SCNAT) and «Adventure Geology» have compiled a list of these trails."
+    },
+    "created": "2022-03-29",
+    "modified": "2022-03-29",
+    "image": "./images/geowege.jpg",
+    "color": "#B9271A",
+    "views": [
+        {
+        "id": "1",
+        "title": {
+          "de": "Via Geoalpina Nappe de Morcles",
+          "fr": "Via Geoalpina Nappe de Morcles",
+          "it": "Via Geoalpina Nappe de Morcles",
+          "en": "Via Geoalpina Nappe de Morcles"
+        },
+        "permalink": "?layers=ch.swisstopo.geologie-geowege%2Cboreholes%2Ccross_section%2Cearthquakes%2Cch.swisstopo.swisstlm3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Cfalse%2Cfalse%2Cfalse%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.70&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.00&lon=7.05196&lat=46.17435&elevation=1602&heading=29&pitch=10"
+      },
+	  {
+        "id": "2",
+        "title": {
+          "de": "Geoweg der Breggia-Schlucht",
+          "fr": "Géo-sentiers des Gorges de la Breggia",
+          "it": "Geosentiero delle Gole di Breggia",
+          "en": "Geotrail of the Breggia Gorges"
+        },
+        "permalink": "?layers=boreholes%2Ccross_section%2Cearthquakes%2Cch.swisstopo.geologie-geowege%2Cch.swisstopo.geologie-geocover&layers_visibility=false%2Cfalse%2Cfalse%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.72&lang=de&lon=9.02127&lat=45.86654&elevation=950&heading=204&pitch=-31&map=ch.swisstopo.swissimage&map_transparency=0.00"
+      },
+	  {
+        "id": "3",
+        "title": {
+          "de": "Via Geoalpina Tektonikarena Sardona",
+          "fr": "Via Geoalpina Zone tectonique de Sardona",
+          "it": "Via Geoalpina Zona tectonica di Sardona",
+          "en": "Via Geoalpina Tectonic zone of Sardona"
+        },
+        "permalink": "?layers=ch.swisstopo.geologie-geowege%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.swissnames3d.3d&layers_visibility=true%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.75%2C0.00&lang=de&lon=9.16396&lat=46.98056&elevation=10351&heading=155&pitch=-43&map=ch.swisstopo.swissimage&map_transparency=0.00"
+      }
+    ],
+    "geometries": [
+        {
+            "type": "Feature",
+            "id": "1",
+            "properties": {
+                "website": "https://erlebnis-geologie.ch/geoweg/via-geoalpina-dents-blanches-les-diablerets/",
+				"description" : {
+                   "de": "",
+                   "fr": "",
+                   "it": "",
+	               "en": "This multi-day hiking tour passes the Dent de Morcles with his famous sedimentation, folding and erosion history. The prominent fold consists in Mesozoic sediments."
+				},
+				"image": "./images/Etappe_Champex_d_Alesse.png",
+				"name": "Dent de Morcles",
+				"color": "#FFFFFF"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    7.0714112303867065,
+                    46.20093433127949
+                ]
+            }
+        },
+		{
+            "type": "Feature",
+            "id": "2",
+            "properties": {
+                "website": "https://www.parcobreggia.ch/it/",
+				"description" : "Strolling through 190 Million years: Reddish radiolariths, conglomerates, limestones and flysch deposits make the hearts of geology enthusiasts beat faster. It's also a great spot for some canyoning.",
+				"image": "./images/Breggia.jpg", 
+				"name": "Gole di Breggia",
+				"color": "#32cd32"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    9.012189838364547,
+                    45.85511916092047
+                ]
+            }
+        },
+		{
+            "type": "Feature",
+            "id": "3",
+            "properties": {
+                "website": "https://unesco-sardona.ch/en/be-amazed",
+				"description" : "84km of geotrails in the UNESCO World Heritage Tectonic Area Sardona: Along the line visible from afar, the Glarus Thrust, 250-300 million years old rocks were pushed onto much younger, 35-50 million year old rock.",
+				"image": "./images/Sardona.jpg", 
+				"name": "Glarner Deckenüberschiebung",
+				"color": "#32cd32"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    9.24780481230422,
+                    46.91712309525256
+                ]
+            }
+		}
+	]
+  },
+  {
+    "id": "8",
+    "title": {
+      "de": "Geothermiebohrung St. Gallen",
+      "fr": "Forage géothérmique St. Gall",
+      "it": "Perforazione geotermica St. Gallo",
+	  "en": "Geothermal drilling St. Gallen"
+    },
+    "description": {
+      "de": "Als eines der grössten Geothermieprojekte der Schweiz startete die Stadt St. Gallen 2010 ein Pilotprojekt basierend auf einem hydrothermalen System. Dabei wird ein Wasserkreislauf zwischen tiefliegenden heissen Aquiferen, also Wasser führenden Gesteinsschichten, und der Oberfläche gebildet um Wärme zu gewinnen oder Strom zu produzieren. Das Projekt verursachte leider spürbare Erdbeben aufgrund Erdgasvorkommen und wurde 2014 u.a. wegen der zu schwachen Wasserförderrate abgebrochen.",
+      "fr": "La ville de Saint-Gall a lancé en 2010 un projet pilote basé sur un système hydrothermique, l'un des plus grands projets géothermiques de Suisse. Il s'agit d'une circulation d'eau entre des aquifères chauds profonds, c'est-à-dire des couches de roches contenant de l'eau, et la surface afin d'obtenir de la chaleur ou de produire de l'électricité. Le projet a malheureusement provoqué des tremblements de terre sensibles en raison de la présence de gaz naturel et a été interrompu en 2014, notamment en raison d'un taux d'extraction d'eau trop faible.",
+      "it": "Come uno dei più grandi progetti geotermici in Svizzera, la città di San Gallo ha lanciato un progetto pilota basato su un sistema idrotermale nel 2010. Un circuito d'acqua si forma tra gli acquiferi caldi profondi, cioè gli strati di roccia contenenti acqua, e la superficie per generare calore o elettricità. Purtroppo il progetto ha causato notevoli terremoti a causa dei depositi di gas naturale ed è stato abbandonato nel 2014 perché il tasso di produzione dell'acqua era troppo basso, tra le altre ragioni.",
+      "en": "As one of the largest geothermal projects in Switzerland, the city of St. Gallen launched a pilot project based on a hydrothermal system in 2010. A water circuit is formed between deep-lying hot aquifers, i.e. water-bearing rock layers, and the surface to generate heat or electricity. Unfortunately, the project caused noticeable earthquakes due to natural gas deposits and was abandoned in 2014 because the water production rate was too low, among other reasons."
+    },
+    "created": "2022-03-29",
+    "modified": "2022-03-29",
+    "image": "./images/geothermie.jpg",
+    "color": "#B9271A",
+    "views": [
+        {
+        "id": "1",
+        "title": {
+          "de": "Tauchgang auf 4450 Meter unter Meer",
+          "fr": "Plongée à 4450 mètres sous la mer",
+          "it": "Immergiti a 4450 metri sotto il mare",
+          "en": "Dive to 4450 metres under sea"
+        },
+        "permalink": "?layers=ch.swisstopo.geologie-geocover%2Cboreholes%2Ccross_section%2Cch.swisstopo.swissnames3d.3d&layers_visibility=true%2Ctrue%2Cfalse%2Ctrue&layers_transparency=0.58%2C0.00%2C0.00%2C0.00&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.60&lon=9.31114&lat=47.35848&elevation=4203&heading=12&pitch=-34"
+      },
+	  {
+        "id": "2",
+        "title": {
+          "de": "Von der Molasse bis ins Lias",
+          "fr": "De la Molasse au Lias",
+          "it": "Dalle Molasse al Lias",
+          "en": "From the Molasse to the Lias"
+        },
+        "permalink": "?layers=ch.swisstopo.geologie-geocover%2Cboreholes%2Ccross_section%2Cfaults_geomol%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed&layers_visibility=true%2Ctrue%2Cfalse%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.30%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.00&lon=9.36712&lat=47.32853&elevation=-562&heading=342&pitch=-13&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4265083.854620385%2C%22y%22%3A708155.0318179852%2C%22z%22%3A4673438.88998605%7D%2C%7B%22x%22%3A4268268.503702731%2C%22y%22%3A693368.3952218338%2C%22z%22%3A4672753.187014397%7D%2C%7B%22x%22%3A4257966.554843241%2C%22y%22%3A706310.6995757198%2C%22z%22%3A4680155.6206864705%7D%2C%7B%22x%22%3A4261151.294259519%2C%22y%22%3A691523.70782253%2C%22z%22%3A4679469.8935231%7D%5D%2C%22lowerLimit%22%3A-7965.6029409166%2C%22height%22%3A9378.308342959073%2C%22showBox%22%3Atrue%2C%22negate%22%3Afalse%7D"
+      },
+	  {
+        "id": "3",
+        "title": {
+          "de": "Erdbeben mit Magnitude 3.5 während Bohrarbeiten",
+          "fr": "Tremblement de terre de magnitude 3,5 pendant les travaux",
+          "it": "Terremoto di magnitudo 3.5 durante i lavori di perforazione",
+          "en": "Earthquake with magnitude 3.5 during drilling work"
+        },
+        "permalink": "?layers=ch.swisstopo.geologie-geocover%2Cboreholes%2Ccross_section%2Cfaults_geomol%2Chistorical_earthquakes&layers_visibility=true%2Ctrue%2Cfalse%2Ctrue%2Ctrue&layers_transparency=0.30%2C0.00%2C0.00%2C0.00%2C0.00&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.00&lon=9.27526&lat=47.32927&elevation=-6161&heading=23&pitch=19&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4265083.854620385%2C%22y%22%3A708155.0318179852%2C%22z%22%3A4673438.88998605%7D%2C%7B%22x%22%3A4268268.503702731%2C%22y%22%3A693368.3952218338%2C%22z%22%3A4672753.187014397%7D%2C%7B%22x%22%3A4257966.554843241%2C%22y%22%3A706310.6995757198%2C%22z%22%3A4680155.6206864705%7D%2C%7B%22x%22%3A4261151.294259519%2C%22y%22%3A691523.70782253%2C%22z%22%3A4679469.8935231%7D%5D%2C%22lowerLimit%22%3A-7965.6029409166%2C%22height%22%3A9378.308342959073%2C%22showBox%22%3Atrue%2C%22negate%22%3Afalse%7D"
       }
     ]
   }
