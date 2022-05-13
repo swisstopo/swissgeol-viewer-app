@@ -379,7 +379,8 @@
 				},
 				"image": "./images/Etappe_Champex_d_Alesse.png",
 				"name": "Dent de Morcles",
-				"color": "#FFFFFF"
+				"color": "#FFFFFF",
+		    		"scale": "1.5"
             },
             "geometry": {
                 "type": "Point",
@@ -397,7 +398,8 @@
 				"description" : "Strolling through 190 Million years: Reddish radiolariths, conglomerates, limestones and flysch deposits make the hearts of geology enthusiasts beat faster. It's also a great spot for some canyoning.",
 				"image": "./images/Breggia.jpg", 
 				"name": "Gole di Breggia",
-				"color": "#32cd32"
+				"color": "#32cd32",
+		    		"scale": "1.5"
             },
             "geometry": {
                 "type": "Point",
@@ -415,7 +417,8 @@
 				"description" : "84km of geotrails in the UNESCO World Heritage Tectonic Area Sardona: Along the line visible from afar, the Glarus Thrust, 250-300 million years old rocks were pushed onto much younger, 35-50 million year old rock.",
 				"image": "./images/Sardona.jpg", 
 				"name": "Glarner Deckenüberschiebung",
-				"color": "#32cd32"
+				"color": "#32cd32",
+		    		"scale": [1.5]
             },
             "geometry": {
                 "type": "Point",
