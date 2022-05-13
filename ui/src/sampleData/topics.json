@@ -133,7 +133,7 @@
       {
         "id": "2",
         "title": {
-          "de": "Stollen beim Grimsel (BE) von unten",
+          "de": "Stollennetz beim Grimsel (BE) von unten",
           "fr": "Galeries du Grimsel (BE) vues d'en bas",
           "it": "Gallerie Grimsel (BE) viste dal basso",
           "en": "Tunnels at the Grimsel (BE) from below"
@@ -150,7 +150,25 @@
         },
         "permalink": "?lon=8.16037&lat=47.42715&elevation=7065&heading=31&pitch=-42&map=empty_map&map_transparency=0.00&layers=water_tunnel%2Cboreholes%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.33&lang=en&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4273725.003467042%2C%22y%22%3A623012.9065260108%2C%22z%22%3A4677638.631077907%7D%2C%7B%22x%22%3A4275949.630435885%2C%22y%22%3A617405.8993783433%2C%22z%22%3A4676357.857397468%7D%2C%7B%22x%22%3A4269092.545138242%2C%22y%22%3A620129.3239353738%2C%22z%22%3A4682218.555868269%7D%2C%7B%22x%22%3A4271317.179821282%2C%22y%22%3A614522.2444183214%2C%22z%22%3A4680937.791495348%7D%5D%2C%22lowerLimit%22%3A-4999.740328461114%2C%22height%22%3A6516.170948680485%2C%22showBox%22%3Atrue%2C%22negate%22%3Afalse%7D"
       }
-    ]
+   ],
+    "geometries": [
+        {
+            "type": "Feature",
+            "id": "1",
+            "properties": {
+                "website": "https://http://grande-dixence.ch//",
+				},
+				"name": "Grande Dixence",
+				"color": "#FFFFFF",
+	},
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    7.253195960,
+                    46.182663097
+                ]
+            }
+	]
   },
   {
     "id": "4",
@@ -250,7 +268,7 @@
           "it": "Conducibilità idraulica da Geneva",
           "en": "Hydraulic conductivity at Geneva"
         },
-        "permalink": "?layers=boreholes%2Ccross_section%2Cvoxel_geneva_logk%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_visibility=false%2Cfalse%2Ctrue%2Cfalse%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C0.57%2C0.72&lang=en&lon=6.10142&lat=46.17456&elevation=3073&heading=55&pitch=-46&map_transparency=0.00&map=ch.swisstopo.pixelkarte-grau"
+        "permalink": "?layers=boreholes%2Ccross_section%2Cvoxel_geneva_logk%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_visibility=false%2Cfalse%2Ctrue%2Cfalse%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C0.57%2C0.72&lang=en&lon=6.10142&lat=46.17456&elevation=3073&heading=55&pitch=-46&map_transparency=0.42&map=ch.swisstopo.pixelkarte-grau"
       },
 	  {
         "id": "4",
@@ -380,7 +398,6 @@
 				"image": "./images/Etappe_Champex_d_Alesse.png",
 				"name": "Dent de Morcles",
 				"color": "#FFFFFF",
-		    		"scale": "1.5"
             },
             "geometry": {
                 "type": "Point",
@@ -399,7 +416,6 @@
 				"image": "./images/Breggia.jpg", 
 				"name": "Gole di Breggia",
 				"color": "#32cd32",
-		    		"scale": "1.5"
             },
             "geometry": {
                 "type": "Point",
@@ -418,7 +434,6 @@
 				"image": "./images/Sardona.jpg", 
 				"name": "Glarner Deckenüberschiebung",
 				"color": "#32cd32",
-		    		"scale": [1.5]
             },
             "geometry": {
                 "type": "Point",
