@@ -12,11 +12,11 @@ acceptance: build_local_api ui/node_modules/.timestamp
 
 .PHONY: build_local_api
 build_local_api:
-	docker build -f api/DockerfileDev -t $(DOCKER_BASE)_local_api:latest --build-arg "GIT_HASH=$(GIT_HASH)" api
+	docker build -f api/DockerfileDev -t $(DOCKER_BASE)_local_api:latest --build-arg "GIT_HASH=$(GIT_HASH)" api --pull
 
 .PHONY: build_api
 build_api:
-	docker build --target builder -t $(DOCKER_BASE)_api_builder:latest --build-arg "GIT_HASH=$(GIT_HASH)" api
+	docker build --target builder -t $(DOCKER_BASE)_api_builder:latest --build-arg "GIT_HASH=$(GIT_HASH)" api --pull
 	docker build -t $(DOCKER_BASE)_api:latest --build-arg "GIT_HASH=$(GIT_HASH)" api
 
 ui/node_modules/.timestamp: ui/package-lock.json
