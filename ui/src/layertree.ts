@@ -181,8 +181,9 @@ const geo_base: LayerTreeNode = {
           pickable: true,
           visible: false,
           displayed: true,
-          downloadDataType: 'csv',
-          downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
+          // Temporarily disable the boreholes download, see https://jira.camptocamp.com/browse/GSNGM-936
+          // downloadDataType: 'csv',
+          // downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
           propsOrder: ['bh_pub_XCOORD', 'bh_pub_YCOORD', 'bh_pub_ZCOORDB', 'bh_pub_ORIGNAME', 'bh_pub_NAMEPUB',
             'bh_pub_SHORTNAME', 'bh_pub_BOHREDAT', 'bh_pub_BOHRTYP', 'bh_pub_GRUND', 'bh_pub_RESTRICTIO',
             'bh_pub_TIEFEMD', 'bh_pub_DEPTHFROM', 'bh_pub_DEPTHTO', 'bh_pub_LAYERDESC', 'bh_pub_ORIGGEOL',
