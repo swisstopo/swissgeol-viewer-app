@@ -4,11 +4,11 @@
   lockFileMaintenance: { enabled: true },
   dependencyDashboardApproval: true,
   packageRules: [
-    // {
-    //   matchPackagePrefixes: ["camptocamp/postgres", "bootstrap", "d3", "elasticsearch", "Jinja2", "ujson", "protobuf"],
-    //   matchUpdateTypes: ['major'],
-    //   enabled: false
-    // },
+    {
+      matchPackagePrefixes: ["camptocamp/postgres"],
+      matchUpdateTypes: ['major'],
+      enabled: false
+    },
     // {
     //   matchPackagePrefixes: ["junit2html"],
     //   matchUpdateTypes: ['minor'],
