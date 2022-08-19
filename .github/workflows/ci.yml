@@ -93,7 +93,7 @@ jobs:
 
       - name: Cypress run
         # v3: https://github.com/cypress-io/github-action/releases
-        uses: cypress-io/github-action@2f2f346ca14c89ebbc0c92d50d1cd29f4c6d3339
+        uses: cypress-io/github-action@30008f1458a5a2c97054bfe118fe33d75976c482
         with:
           command: npm run test:e2e
           working-directory: ui
