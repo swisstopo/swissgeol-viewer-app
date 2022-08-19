@@ -30,7 +30,7 @@
     "@fontsource/inter": "4.5.7",
     "@geoblocks/cesium-view-cube": "0.1.0",
     "@geoblocks/ga-search": "0.0.20",
-    "@sentry/browser": "6.19.4",
+    "@sentry/browser": "7.11.1",
     "cesium": "1.92.0",
     "d3-array": "3.1.4",
     "d3-axis": "3.0.0",
