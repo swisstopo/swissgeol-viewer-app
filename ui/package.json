@@ -103,7 +103,7 @@
     "rollup-plugin-strip-pragma": "1.0.0",
     "rollup-plugin-terser": "7.0.2",
     "sortablejs": "1.15.0",
-    "source-map-loader": "3.0.1",
+    "source-map-loader": "4.0.0",
     "start-server-and-test": "1.14.0",
     "stream-to-promise": "3.0.0",
     "ts-loader": "9.2.8",
