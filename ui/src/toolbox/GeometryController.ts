@@ -6,14 +6,13 @@ import {showBannerError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
 import type {CesiumDraw} from '../draw/CesiumDraw';
 import type {Event, exportKmlResultKml, Viewer} from 'cesium';
-import {Entity, EntityCollection, exportKml, PropertyBag} from 'cesium';
+import {Entity, EntityCollection, exportKml, PropertyBag, GpxDataSource} from 'cesium';
 import type {AreasCounter, GeometryTypes, NgmGeometry} from './interfaces';
 import {extendKmlWithProperties, getValueOrUndefined} from '../cesiumutils';
 import NavToolsStore from '../store/navTools';
 import {flyToGeom, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
 import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
 import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
-import GpxDataSource from '../GpxDataSource';
 import {parseJson} from '../utils';
 import {
   AVAILABLE_GEOMETRY_TYPES,
