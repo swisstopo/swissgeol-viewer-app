@@ -1,5 +1,4 @@
-import Math from 'cesium/Source/Core/Math';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import {Math, Cartesian3} from 'cesium';
 
 import {getURLSearchParams, parseJson, setURLSearchParams} from './utils';
 import {

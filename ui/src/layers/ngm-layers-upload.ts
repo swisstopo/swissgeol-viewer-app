@@ -2,13 +2,12 @@ import {html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
-import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
-import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import {KmlDataSource, CustomDataSource} from 'cesium';
 import {showBannerError, showSnackbarInfo} from '../notifications';
 import {DEFAULT_LAYER_OPACITY} from '../constants';
 import type {Config} from './ngm-layers-item';
 import $ from '../jquery.js';
-import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type {Viewer} from 'cesium';
 import {classMap} from 'lit-html/directives/class-map.js';
 
 @customElement('ngm-layers-upload')

@@ -1,7 +1,7 @@
 import {html} from 'lit';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
-import CesiumMath from 'cesium/Source/Core/Math';
+import {Math as CesiumMath} from 'cesium';
 import {formatCartographicAs2DLv95} from '../projection';
 import './ngm-feature-height';
 import {customElement, property, state} from 'lit/decorators.js';

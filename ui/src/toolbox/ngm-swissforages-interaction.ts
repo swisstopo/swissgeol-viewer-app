@@ -2,16 +2,14 @@ import {LitElementI18n} from '../i18n';
 import {html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import i18next from 'i18next';
-import Cartographic from 'cesium/Source/Core/Cartographic';
+import {Cartographic, JulianDate} from 'cesium';
 import {updateBoreholeHeights} from './helpers';
 import {SWISSFORAGES_EDITOR_URL, SWISSFORAGES_VIEWER_URL} from '../constants';
 import {lv95ToDegrees} from '../projection';
-import JulianDate from 'cesium/Source/Core/JulianDate';
 import $ from '../jquery';
 import MainStore from '../store/main';
-import type {Viewer} from 'cesium';
+import type {Viewer, CustomDataSource} from 'cesium';
 import type {SwissforagesService} from './SwissforagesService';
-import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import type {NgmGeometry} from './interfaces';
 import {showSnackbarInfo} from '../notifications';
 

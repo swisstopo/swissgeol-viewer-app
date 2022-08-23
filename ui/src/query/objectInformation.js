@@ -1,4 +1,4 @@
-import JulianDate from 'cesium/Source/Core/JulianDate';
+import {JulianDate} from 'cesium';
 
 export function extractPrimitiveAttributes(primitive) {
   const data = [];

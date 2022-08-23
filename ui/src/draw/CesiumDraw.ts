@@ -1,19 +1,20 @@
-import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
-import Color from 'cesium/Source/Core/Color';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import JulianDate from 'cesium/Source/Core/JulianDate';
-import Intersections2D from 'cesium/Source/Core/Intersections2D';
-
+import {
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+  CallbackProperty,
+  Color,
+  HeightReference,
+  Cartesian2,
+  Cartesian3,
+  Cartographic,
+  JulianDate,
+  Intersections2D,
+  CustomDataSource,
+  PolygonHierarchy,
+} from 'cesium';
 import {getDimensionLabel, rectanglify} from './helpers';
 import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
-import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import type {ConstantPositionProperty, ConstantProperty, Entity, Viewer} from 'cesium';
-import {PolygonHierarchy} from 'cesium';
 import type {GeometryTypes} from '../toolbox/interfaces';
 
 export interface DrawOptions {

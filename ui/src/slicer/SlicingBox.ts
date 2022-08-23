@@ -1,6 +1,14 @@
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import {
+  Cartesian2,
+  Cartesian3,
+  Cartographic,
+  Matrix4,
+  Plane,
+  JulianDate,
+  CallbackProperty,
+  CornerType,
+} from 'cesium';
 import {executeForAllPrimitives} from '../utils';
-import JulianDate from 'cesium/Source/Core/JulianDate';
 import SlicerArrows from './SlicerArrows';
 import type {BBox} from './helper';
 import {
@@ -10,8 +18,6 @@ import {
   getBboxFromViewRatio,
   moveSlicingBoxCorners
 } from './helper';
-import {Plane} from 'cesium';
-import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
 import {
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
   SLICE_BOX_ARROWS_INSIDE,
@@ -19,7 +25,6 @@ import {
   SLICING_BOX_MIN_SIZE,
   SLICING_GEOMETRY_COLOR
 } from '../constants';
-import Cartographic from 'cesium/Source/Core/Cartographic';
 import {
   pickCenterOnEllipsoid,
   planeFromTwoPoints,
@@ -27,13 +32,7 @@ import {
   updateHeightForCartesianPositions
 } from '../cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import CornerType from 'cesium/Source/Core/CornerType';
-import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import type Entity from 'cesium/Source/DataSources/Entity';
-import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
-import type DataSource from 'cesium/Source/DataSources/DataSource';
-import type Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
+import type {Entity, Viewer, DataSource, Cesium3DTileset} from 'cesium';
 
 export interface SlicingBoxOptions {
   type: 'box' | 'view-box' | undefined,

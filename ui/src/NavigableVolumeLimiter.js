@@ -1,7 +1,4 @@
-import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
-import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import {BoundingSphere, Ellipsoid, Cartographic, Cartesian3} from 'cesium';
 
 /**
  * Constrain the camera so that it stays close to the bounding sphere of the map extent.

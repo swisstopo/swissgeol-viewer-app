@@ -1,12 +1,15 @@
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import {
+  Cartographic,
+  Cartesian3,
+  CustomDataSource,
+  HeadingPitchRange,
+  Math as CMath,
+  BoundingSphere,
+  Rectangle,
+
+} from 'cesium';
 import {EARTHQUAKE_SPHERE_SIZE_COEF, getColorFromTime, parseEarthquakeData} from './helpers';
-import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
-import CMath from 'cesium/Source/Core/Math';
 import {LayerType} from '../constants';
-import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
-import Rectangle from 'cesium/Source/Core/Rectangle';
-import {Cartographic} from 'cesium';
 
 export default class EarthquakeVisualizer {
   /**

@@ -1,4 +1,3 @@
-import Color from 'cesium/Source/Core/Color';
 import {
   DRILL_PICK_LENGTH,
   DRILL_PICK_LIMIT,
@@ -12,8 +11,7 @@ import {
   isPickable,
   sortPropertyNames
 } from './objectInformation';
-import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
-import HeadingPitchRange from 'cesium/Source/Core/HeadingPitchRange';
+import {BoundingSphere, HeadingPitchRange, Color} from 'cesium';
 import NavToolsStore from '../store/navTools';
 
 /**

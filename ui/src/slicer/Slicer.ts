@@ -1,6 +1,5 @@
-import type {Viewer} from 'cesium';
-import type Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
+import type {Cartesian3, Viewer} from 'cesium';
+import {CustomDataSource} from 'cesium';
 import {executeForAllPrimitives} from '../utils';
 import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';

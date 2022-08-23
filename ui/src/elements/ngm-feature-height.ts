@@ -1,8 +1,10 @@
 import {html} from 'lit';
 import {LitElementI18n} from '../i18n.js';
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import {
+  Cartographic,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+} from 'cesium';
 import {getValueOrUndefined} from '../cesiumutils';
 import {customElement, property, state} from 'lit/decorators.js';
 import type {Viewer} from 'cesium';

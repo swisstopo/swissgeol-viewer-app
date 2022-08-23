@@ -2,11 +2,13 @@ import {getOrthogonalViewPoints, planeFromTwoPoints} from '../cesiumutils';
 import {executeForAllPrimitives} from '../utils';
 import {createClippingPlanes, getClippingPlaneFromSegmentWithTricks, createCPCModelMatrixFromSphere} from './helper';
 import SlicingToolBase from './SlicingToolBase';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import Plane from 'cesium/Source/Core/Plane';
-import type Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
-import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
+import {
+  Matrix4,
+  Cartesian3,
+  Plane,
+  ClippingPlaneCollection,
+} from 'cesium';
+import type {Cesium3DTileset} from 'cesium';
 
 export interface SlicingLineOptions {
   /**

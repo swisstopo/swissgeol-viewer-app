@@ -1,20 +1,22 @@
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import {
+  Cartographic,
+  Matrix4,
+  Cartesian3,
+  Rectangle,
+  ClippingPlane,
+  ClippingPlaneCollection,
+  HeadingPitchRoll,
+  Plane,
+  Transforms,
+} from 'cesium';
 import {
   getDirectionFromPoints,
   pickCenter,
   projectPointOntoVector,
 } from '../cesiumutils';
-import Rectangle from 'cesium/Source/Core/Rectangle';
 import {SLICING_BOX_HEIGHT, SLICING_BOX_LOWER_LIMIT, SLICING_BOX_MIN_SIZE} from '../constants';
-import ClippingPlane from 'cesium/Source/Scene/ClippingPlane';
-import ClippingPlaneCollection from 'cesium/Source/Scene/ClippingPlaneCollection';
-import {HeadingPitchRoll, Plane, Transforms} from 'cesium';
 import {getPercent, interpolateBetweenNumbers} from '../utils';
-import type Quaternion from 'cesium/Source/Core/Quaternion';
-import type Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
-import ApproximateTerrainHeights from 'cesium/Source/Core/ApproximateTerrainHeights';
+import type {Quaternion, Cesium3DTileset} from 'cesium';
 import {rectanglify} from '../draw/helpers';
 
 
@@ -302,15 +304,17 @@ export function calculateBoxHeight(height, lowerLimit, area, altitude?) {
  * Create a clipping plane in world coordinate and set an inverse transform
  * so that it is viewed in the local coordinates system defined by the tileset
  * bounding sphere center. The system is not based on an ENU frame when this
- * center is below the ground (to match Cesium behaviour, see comments in addClippingPlanes).
+ * center is below the ground (to match Cesium behavior, see comments in addClippingPlanes).
  * @param primitive
  */
 export function createCPCModelMatrixFromSphere(primitive: Cesium3DTileset): Matrix4 {
+  // value is from ApproximateTerrainHeights._defaultMinTerrainHeight
+  const defaultMinTerrainHeight = -100000.0;
   // Figure out whether we need to orient using an ENU frame or not
   const clippingCenter = primitive.boundingSphere.center;
   const clippingCarto = Cartographic.fromCartesian(clippingCenter);
   let globalMatrix = Matrix4.IDENTITY;
-  if (clippingCarto && (clippingCarto.height > ApproximateTerrainHeights._defaultMinTerrainHeight)) {
+  if (clippingCarto && (clippingCarto.height > defaultMinTerrainHeight)) {
     globalMatrix = Transforms.eastNorthUpToFixedFrame(clippingCenter);
   }
 

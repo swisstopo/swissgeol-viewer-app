@@ -1,13 +1,9 @@
 import ObjectSelector from './ObjectSelector';
 import SwisstopoIdentify from './SwisstopoIdentify';
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
+import {Entity, Cartesian3, Cartographic, HeightReference, ScreenSpaceEventType} from 'cesium';
 import i18next from 'i18next';
 import {OBJECT_HIGHLIGHT_COLOR} from '../constants';
 import {lv95ToDegrees} from '../projection';
-import Entity from 'cesium/Source/DataSources/Entity';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
 import DrawStore from '../store/draw';
 import QueryStore from '../store/query';
 import ToolboxStore from '../store/toolbox';

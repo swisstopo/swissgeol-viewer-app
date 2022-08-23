@@ -6,7 +6,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-map-chooser';
 import {getMapOpacityParam, syncMapOpacityParam} from '../permalink';
 import MainStore from '../store/main';
-import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type {Viewer} from 'cesium';
 import type MapChooser from '../MapChooser.js';
 import {debounce} from '../utils';
 
