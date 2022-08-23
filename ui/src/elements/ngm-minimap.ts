@@ -1,8 +1,6 @@
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import Rectangle from 'cesium/Source/Core/Rectangle';
-import CesiumMath from 'cesium/Source/Core/Math';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import {Rectangle, Math as CesiumMath, Cartesian3} from 'cesium';
 import {styleMap} from 'lit/directives/style-map.js';
 import {MINIMAP_EXTENT} from '../constants';
 import draggable from './draggable';

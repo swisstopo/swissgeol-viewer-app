@@ -1,19 +1,18 @@
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
+import {
+  Cartesian2,
+  Cartesian3,
+  Color,
+  CallbackProperty,
+  Entity,
+  BoundingSphere,
+  ScreenSpaceEventType,
+  JulianDate,
+  ScreenSpaceEventHandler,
+
+} from 'cesium';
 import {DEFAULT_CONFIG_FOR_SLICING_ARROW, SLICING_GEOMETRY_COLOR} from '../constants';
-import CallbackProperty from 'cesium/Source/DataSources/CallbackProperty';
-import Entity from 'cesium/Source/DataSources/Entity';
-import Color from 'cesium/Source/Core/Color';
-import BoundingSphere from 'cesium/Source/Core/BoundingSphere';
-import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
-import JulianDate from 'cesium/Source/Core/JulianDate';
-import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
 import {getDirectionFromPoints, updateHeightForCartesianPositions} from '../cesiumutils';
-import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
-import type DataSource from 'cesium/Source/DataSources/DataSource';
-import type ColorBlendMode from 'cesium/Source/Scene/ColorBlendMode';
-import type Quaternion from 'cesium/Source/Core/Quaternion';
-import type ShadowMode from 'cesium/Source/Scene/ShadowMode';
+import type {Viewer, DataSource, ColorBlendMode, Quaternion, ShadowMode} from 'cesium';
 import type {BBox} from './helper';
 import {debounce} from '../utils';
 

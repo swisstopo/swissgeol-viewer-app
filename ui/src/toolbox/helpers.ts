@@ -1,7 +1,15 @@
 import {CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_VOLUME_HEIGHT_LIMITS} from '../constants';
-import Cartographic from 'cesium/Source/Core/Cartographic';
 import type {Entity, exportKmlResultKml, Globe, Scene} from 'cesium';
-import {BoundingSphere, exportKml, HeadingPitchRange, JulianDate, Cartesian2, Cartesian3, Color, EntityCollection} from 'cesium';
+import {
+  BoundingSphere,
+  exportKml,
+  HeadingPitchRange,
+  JulianDate,
+  Cartesian2,
+  Cartesian3,
+  Cartographic,
+  Color,
+  EntityCollection} from 'cesium';
 import {extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import {calculateBoxHeight} from '../slicer/helper';
 import {saveAs} from 'file-saver';

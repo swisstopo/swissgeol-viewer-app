@@ -1,12 +1,8 @@
 import {syncLayersParam} from '../permalink';
 import {calculateBox, calculateRectangle, getBoxFromRectangle} from './helpers';
 import {LayerType} from '../constants';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import Rectangle from 'cesium/Source/Core/Rectangle';
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import Color from 'cesium/Source/Core/Color';
-import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
-import type {ImageryLayer} from 'cesium';
+import {Cartesian3, Rectangle, Cartographic, Color} from 'cesium';
+import type {Viewer, ImageryLayer} from 'cesium';
 import type {Config} from './ngm-layers-item.js';
 
 

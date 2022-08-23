@@ -1,4 +1,4 @@
-import Color from 'cesium/Source/Core/Color';
+import {Color} from 'cesium';
 
 export const EARTHQUAKE_SPHERE_SIZE_COEF = 200;
 

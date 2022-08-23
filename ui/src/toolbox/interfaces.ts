@@ -1,5 +1,4 @@
-import type Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import type Color from 'cesium/Source/Core/Color';
+import type {Cartesian3, Color} from 'cesium';
 
 export interface SwissforagesModalOptions {
   name: string | undefined;

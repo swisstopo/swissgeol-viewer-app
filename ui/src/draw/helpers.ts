@@ -1,10 +1,13 @@
-import Cartesian2 from 'cesium/Source/Core/Cartesian2';
-import LabelStyle from 'cesium/Source/Scene/LabelStyle';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
-import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
-import HorizontalOrigin from 'cesium/Source/Scene/HorizontalOrigin';
+import {
+  Cartesian2,
+  Cartesian3,
+  LabelStyle,
+  HeightReference,
+  VerticalOrigin,
+  HorizontalOrigin,
+
+} from 'cesium';
 import i18next from 'i18next';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
 import type {GeometryTypes} from '../toolbox/interfaces';
 
 export function getDimensionLabelText(type: GeometryTypes, distances: number[]) {

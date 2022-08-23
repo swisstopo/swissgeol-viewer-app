@@ -1,21 +1,23 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
-import IonResource from 'cesium/Source/Core/IonResource';
-import GeoJsonDataSource from 'cesium/Source/DataSources/GeoJsonDataSource';
-import Cesium3DTileset from 'cesium/Source/Scene/Cesium3DTileset';
-import Cesium3DTileStyle from 'cesium/Source/Scene/Cesium3DTileStyle';
+import {
+  IonResource,
+  GeoJsonDataSource,
+  Cesium3DTileset,
+  Cesium3DTileStyle,
+  Cartographic,
+  LabelStyle,
+  Rectangle,
+  Cartesian3,
+  Ellipsoid,
+  Matrix3,
+  Matrix4,
+  Cesium3DTileColorBlendMode,
+} from 'cesium';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
 import {LayerType} from '../constants';
-import Cartographic from 'cesium/Source/Core/Cartographic';
 import {isLabelOutlineEnabled} from '../permalink';
-import LabelStyle from 'cesium/Source/Scene/LabelStyle';
-import Rectangle from 'cesium/Source/Core/Rectangle';
-import Cartesian3 from 'cesium/Source/Core/Cartesian3';
-import Ellipsoid from 'cesium/Source/Core/Ellipsoid';
-import Matrix3 from 'cesium/Source/Core/Matrix3';
-import Matrix4 from 'cesium/Source/Core/Matrix4';
-import Cesium3DTileColorBlendMode from 'cesium/Source/Scene/Cesium3DTileColorBlendMode';
 import AmazonS3Resource from '../AmazonS3Resource.js';
-import type Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import type {Viewer} from 'cesium';
 import type {Config} from './ngm-layers-item.js';
 
 export function createEarthquakeFromConfig(viewer: Viewer, config: Config) {

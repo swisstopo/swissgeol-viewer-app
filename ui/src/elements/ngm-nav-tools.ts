@@ -16,7 +16,9 @@ import {
   KeyboardEventModifier,
   Matrix4,
   PolylineCollection,
-  Transforms
+  Transforms,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType
 } from 'cesium';
 import type {Interactable} from '@interactjs/types';
 import {classMap} from 'lit/directives/class-map.js';
@@ -26,8 +28,6 @@ import {
   positionFromPxDistance,
   updateHeightForCartesianPositions
 } from '../cesiumutils';
-import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 import {showSnackbarError} from '../notifications';
 import i18next from 'i18next';
 import {debounce} from '../utils';

@@ -5,14 +5,11 @@ import DrawStore from '../store/draw';
 import {showBannerError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
 import type {CesiumDraw} from '../draw/CesiumDraw';
-import type {Event, exportKmlResultKml, Viewer} from 'cesium';
-import {Entity, EntityCollection, exportKml, PropertyBag, GpxDataSource} from 'cesium';
+import type {Event, exportKmlResultKml, Viewer, CustomDataSource} from 'cesium';
 import type {AreasCounter, GeometryTypes, NgmGeometry} from './interfaces';
 import {extendKmlWithProperties, getValueOrUndefined} from '../cesiumutils';
 import NavToolsStore from '../store/navTools';
 import {flyToGeom, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
-import KmlDataSource from 'cesium/Source/DataSources/KmlDataSource';
-import type CustomDataSource from 'cesium/Source/DataSources/CustomDataSource';
 import {parseJson} from '../utils';
 import {
   AVAILABLE_GEOMETRY_TYPES,
@@ -22,16 +19,24 @@ import {
   HIGHLIGHTED_GEOMETRY_COLOR,
   POINT_SYMBOLS
 } from '../constants';
-import Cartographic from 'cesium/Source/Core/Cartographic';
-import Color from 'cesium/Source/Core/Color';
-import VerticalOrigin from 'cesium/Source/Scene/VerticalOrigin';
-import HeightReference from 'cesium/Source/Scene/HeightReference';
-import CornerType from 'cesium/Source/Core/CornerType';
-import JulianDate from 'cesium/Source/Core/JulianDate';
+import {
+  Entity,
+  EntityCollection,
+  exportKml,
+  PropertyBag,
+  GpxDataSource,
+  KmlDataSource,
+  Cartographic,
+  Color,
+  VerticalOrigin,
+  HeightReference,
+  CornerType,
+  JulianDate,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+} from 'cesium';
 import {saveAs} from 'file-saver';
 import LocalStorageController from '../LocalStorageController';
-import ScreenSpaceEventHandler from 'cesium/Source/Core/ScreenSpaceEventHandler';
-import ScreenSpaceEventType from 'cesium/Source/Core/ScreenSpaceEventType';
 
 export class GeometryController {
   private draw: CesiumDraw | undefined;
