@@ -98,7 +98,7 @@ export class NgmDashboard extends LitElementI18n {
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
     fetch('./src/sampleData/topics.json').then(topicsResponse =>
       topicsResponse.json().then(topics => {
-        this.topics = topics.sort((a, b) => new Date(a.modified).getTime() - new Date(b.modified).getTime());
+        this.topics = topics.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
       }));
     const recentlyViewed = localStorage.getItem('dashbord_recently_viewed');
     if (recentlyViewed) {
