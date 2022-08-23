@@ -13,6 +13,7 @@ import {
 import {extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import {calculateBoxHeight} from '../slicer/helper';
 import {saveAs} from 'file-saver';
+import {translated} from '../i18n';
 import type {GeometryTypes, NgmGeometry} from './interfaces';
 
 const julianDate = new JulianDate();
@@ -207,6 +208,7 @@ export function fromGeoJSON(feature: GeoJSON.Feature): NgmGeometry {
     type: type,
     positions: CoordinatesParser[type](coordinates),
     name: feature.properties?.name,
+    description: feature.properties?.description ? translated(feature.properties.description) : undefined,
     image: feature.properties?.image,
     website: feature.properties?.website,
     pointSymbol: feature.properties?.pointSymbol,
