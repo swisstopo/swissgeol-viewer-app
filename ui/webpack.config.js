@@ -90,6 +90,8 @@ export default {
       },
     ],
   },
+  // ignore source-map-loader warnings
+  ignoreWarnings: [/Failed to parse source map/],
   watchOptions: {
     poll: true
   },
