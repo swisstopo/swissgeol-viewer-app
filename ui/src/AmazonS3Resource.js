@@ -1,7 +1,7 @@
 import Auth from './auth';
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
 import {S3Client, GetObjectCommand} from '@aws-sdk/client-s3';
-import {Resource, when} from 'cesium';
+import {Resource, defer} from 'cesium';
 
 
 function keyFromUrl(val) {
@@ -50,17 +50,17 @@ export default class AmazonS3Resource extends Resource {
   _makeRequest(options) {
     const credentialsPromise = Auth.getCredentialsPromise();
     if (credentialsPromise) {
-      const defer = when.defer();
+      const deferred = defer();
       credentialsPromise.then(credentials => {
         this.getSignedUrl(credentials).then(url => {
           this.url = url;
           const request = super._makeRequest(options);
           if (request) {
-            request.then(value => defer.resolve(value));
+            request.then(value => deferred.resolve(value));
           }
         });
       });
-      return defer.promise;
+      return deferred.promise;
     }
   }
 }
