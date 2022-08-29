@@ -1,11 +1,15 @@
-use axum::{extract::Extension, http::Method, routing::get, routing::post, Router};
+use axum::{
+    extract::Extension,
+    http::{HeaderValue, Method},
+    routing::get,
+    routing::post,
+    Router,
+};
 use clap::StructOpt;
+use hyper::header::{ACCEPT, AUTHORIZATION};
 use sqlx::PgPool;
 use tower::ServiceBuilder;
-use tower_http::{
-    cors::{Any, CorsLayer, Origin},
-    trace::TraceLayer,
-};
+use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
 mod auth;
 mod config;
@@ -51,13 +55,14 @@ pub async fn app(pool: PgPool) -> Router {
                 .layer(
                     CorsLayer::new()
                         .allow_credentials(true)
-                        .allow_methods(vec![Method::GET, Method::POST, Method::PUT, Method::DELETE])
-                        .allow_origin(Origin::list(
+                        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+                        .allow_origin(
                             CORS_ORIGINS
                                 .iter()
-                                .map(|s| s.parse().expect("parse origin")),
-                        ))
-                        .allow_headers(Any),
+                                .map(|s| s.parse().expect("parse origin"))
+                                .collect::<Vec<HeaderValue>>(),
+                        )
+                        .allow_headers([AUTHORIZATION, ACCEPT]),
                 )
                 .layer(Extension(pool))
                 .layer(Extension(aws_client)),
