@@ -10,5 +10,5 @@ then
 fi
 
 
-docker build -t $IMAGE_NAME:$VERSION .
+docker build --pull -t $IMAGE_NAME:$VERSION .
 docker push $IMAGE_NAME:$VERSION
