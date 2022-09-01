@@ -1,5 +1,5 @@
 use axum::http::{header::WWW_AUTHENTICATE, StatusCode};
-use axum::response::{Headers, IntoResponse, Response};
+use axum::response::{IntoResponse, Response};
 use axum::Json;
 use serde_json::json;
 
@@ -55,7 +55,7 @@ impl IntoResponse for Error {
                     // Include the `WWW-Authenticate` challenge required in the specification
                     // for the `401 Unauthorized` response code:
                     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
-                    Headers(vec![(WWW_AUTHENTICATE, "Token")]),
+                    [(WWW_AUTHENTICATE, "Token")],
                     Json(json!({
                       "status": self.status_code().as_u16(),
                       "message": self.to_string(),

@@ -13,12 +13,12 @@ clap = { version = "3.1.2", features = ["derive", "env"]}
 dotenv = "0.15.0"
 
 # Web
-axum = { version = "0.4.8", features = ["headers"] }
-axum-macros = "0.1.2"
+axum = { version = "0.5.15", features = ["headers"] }
+axum-macros = "0.2.3"
 hyper = { version = "0.14.17", features = ["full"] }
 tokio = { version = "1.17.0", features = ["full"] }
 tower = "0.4.12"
-tower-http = { version = "0.2.3", features = ["cors", "trace"] }
+tower-http = { version = "0.3.4", features = ["cors", "trace"] }
 
 # Database
 sqlx = { version = "0.5.11", features = ["runtime-tokio-rustls", "postgres", "offline", "uuid", "time"] }
