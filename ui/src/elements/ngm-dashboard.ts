@@ -14,13 +14,13 @@ import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
 import {showBannerSuccess, showSnackbarError, showBannerWarning} from '../notifications';
 import type {Config} from '../layers/ngm-layers-item';
-import {COLORS_WITH_BLACK_TICK, DEFAULT_LAYER_OPACITY, PROJECT_COLORS, RECENTLY_VIEWED_TOPICS_COUNT, RECENTLY_VIEWED_TOPICS_COUNT_MOBILE} from '../constants';
+import {COLORS_WITH_BLACK_TICK, DEFAULT_LAYER_OPACITY, PROJECT_COLORS} from '../constants';
 import $ from '../jquery';
 import {fromGeoJSON} from '../toolbox/helpers';
 import type {NgmGeometry} from '../toolbox/interfaces';
 import {apiClient} from '../api-client';
 import AuthStore from '../store/auth';
-
+import './hide-overflow';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -76,7 +76,6 @@ export interface Project extends CreateProject {
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
   @property({type: Boolean}) hidden = true;
-  @property({type: Boolean}) mobileView = false;
   @state() projects: Project[] = [];
   @state() activeTab: 'topics' | 'overview' | 'projects' = 'topics';
   @state() selectedTopicOrProject: Topic | Project | undefined;
@@ -100,7 +99,7 @@ export class NgmDashboard extends LitElementI18n {
       topicsResponse.json().then(topics => {
         this.topics = topics.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
       }));
-    const recentlyViewed = localStorage.getItem('dashbord_recently_viewed');
+    const recentlyViewed = localStorage.getItem('dashboard_recently_viewed');
     if (recentlyViewed) {
       this.recentlyViewedIds = JSON.parse(recentlyViewed);
     }
@@ -289,10 +288,7 @@ export class NgmDashboard extends LitElementI18n {
     // remove duplicates
     this.recentlyViewedIds = [...new Set(this.recentlyViewedIds)];
 
-    if (this.recentlyViewedIds.length > 2 * RECENTLY_VIEWED_TOPICS_COUNT) {
-      this.recentlyViewedIds.length = 2 * RECENTLY_VIEWED_TOPICS_COUNT;
-    }
-    localStorage.setItem('dashbord_recently_viewed', JSON.stringify(this.recentlyViewedIds));
+    localStorage.setItem('dashboard_recently_viewed', JSON.stringify(this.recentlyViewedIds));
   }
 
   getLink(viewId?: string): string | undefined {
@@ -590,10 +586,9 @@ export class NgmDashboard extends LitElementI18n {
     return recentlyViewed.length > 0 ? html`
       <div>
         <div class="ngm-proj-title">${i18next.t('dashboard_recently_viewed')}</div>
-        <div class="ngm-projects-list">
-          ${recentlyViewed.slice(0, this.mobileView ? RECENTLY_VIEWED_TOPICS_COUNT_MOBILE : RECENTLY_VIEWED_TOPICS_COUNT)
-            .map(data => this.previewTemplate(data))}
-        </div>
+        <hide-overflow class="ngm-projects-list">
+          ${recentlyViewed.map(data => this.previewTemplate(data))}
+        </hide-overflow>
       </div>` : html``;
   }
 
@@ -602,10 +597,9 @@ export class NgmDashboard extends LitElementI18n {
       if (apiClient.token) {
         return html`
           <div class="ngm-proj-title">${i18next.t('dashboard_my_projects')}</div>
-          <div class="ngm-projects-list">
-            ${this.projects.slice(0, this.mobileView ? RECENTLY_VIEWED_TOPICS_COUNT_MOBILE : RECENTLY_VIEWED_TOPICS_COUNT - 1)
-              .map(data => this.previewTemplate(data))}
-          </div>
+          <hide-overflow class="ngm-projects-list">
+            ${this.projects.map(data => this.previewTemplate(data))}
+          </hide-overflow>
         `;
       } else {
         showBannerWarning(this.overviewToast, i18next.t('dashboard_overview_not_logged_in'));

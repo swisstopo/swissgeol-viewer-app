@@ -122,6 +122,3 @@ export const API_BY_PAGE_HOST = {
   'swissgeol.ch': 'https://api.swissgeol.ch/api',
   'viewer.swissgeol.ch': 'https://api.swissgeol.ch/api',
 };
-
-export const RECENTLY_VIEWED_TOPICS_COUNT = 4;
-export const RECENTLY_VIEWED_TOPICS_COUNT_MOBILE = 1;

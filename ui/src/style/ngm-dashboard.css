@@ -43,8 +43,13 @@ ngm-dashboard .ngm-panel-header,
   flex-wrap: wrap;
 }
 
+hide-overflow.ngm-projects-list {
+  flex-wrap: nowrap;
+}
+
 .ngm-proj-preview {
   display: flex;
+  box-sizing: border-box;
   flex-direction: column;
   background-color: white;
   box-shadow: 2px 2px 2px #00000029;

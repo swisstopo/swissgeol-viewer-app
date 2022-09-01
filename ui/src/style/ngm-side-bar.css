@@ -260,11 +260,6 @@ ngm-auth:hover {
     margin-bottom: 12px;
   }
 
-  .ngm-side-bar-panel.ngm-large-panel .ngm-projects-list {
-    flex-direction: column;
-    align-items: center;
-  }
-
   .ngm-side-bar-panel.ngm-side-bar-panel,
   .ngm-side-bar-panel.ngm-large-panel {
     width: 100%;
