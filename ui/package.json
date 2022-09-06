@@ -18,9 +18,7 @@
     "test": "npm run ut && npm run check",
     "cypress:open": "cypress open",
     "cypress:run": "./scripts/cypress_run",
-    "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
-    "storybook": "start-storybook -p 6006 --modern",
-    "build-storybook": "build-storybook && cp -R locales storybook-static && cp -R node_modules/cesium/Build/Cesium/Assets node_modules/cesium/Build/Cesium/Widgets node_modules/cesium/Build/Cesium/Workers storybook-static"
+    "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.157.0",
@@ -62,13 +60,6 @@
     "@rollup/plugin-json": "4.1.0",
     "@rollup/plugin-node-resolve": "13.3.0",
     "@sentry/cli": "2.5.2",
-    "@storybook/addon-actions": "6.5.10",
-    "@storybook/addon-docs": "6.5.10",
-    "@storybook/addon-essentials": "6.5.10",
-    "@storybook/addon-links": "6.5.10",
-    "@storybook/builder-webpack5": "6.5.10",
-    "@storybook/manager-webpack5": "6.5.10",
-    "@storybook/web-components": "6.5.10",
     "@types/chai": "4.3.3",
     "@types/geojson": "7946.0.10",
     "@types/mocha": "9.1.1",

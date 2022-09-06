@@ -100,9 +100,6 @@ jobs:
       - name: Build
         run: export RELEASE_NAME="${scripts/get_github_name.sh}"; echo $RELEASE_NAME; cd ui; npm run build
 
-      - name: Build storybook
-        run: cd ui; npm run build-storybook
-
       - name: Deploy to S3
         env:
           AWS_REGION: "eu-west-1"

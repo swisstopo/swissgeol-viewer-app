@@ -15,7 +15,6 @@ function build {
   npm run lint
   npm run test
   npm run build
-  npm run build-storybook
   npm run test:e2e
 
   #rm -f dist.tar.bz2 || true
@@ -33,7 +32,6 @@ function upload {
   aws s3 sync --cache-control $CACHE_CONTROL --delete --exclude 'index.html' --exclude 'Workers/*' dist/ $DESTINATION
   aws s3 sync --cache-control max-age=600 dist/Workers/ $DESTINATION/Workers
   aws s3 cp --cache-control no-cache dist/index.html $DESTINATION/index.html
-  aws s3 cp --recursive --cache-control no-cache storybook-static $DESTINATION/storybook-static
 }
 
 
