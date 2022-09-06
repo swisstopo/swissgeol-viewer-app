@@ -12,7 +12,7 @@ REPO_API_URL="$GITHUB_API_URL/repos/$GITHUB_REPOSITORY"
 PR_ID="`echo $GITHUB_REF | cut -d/ -f 3`"
 
 BRANCH="$GITHUB_HEAD_REF"
-DEMO_NOTE="Links: [demo](https://review.swissgeol.ch/$BRANCH/index.html) + [storybook](https://review.swissgeol.ch/$BRANCH/storybook-static/index.html)"
+DEMO_NOTE="Links: [demo](https://review.swissgeol.ch/$BRANCH/index.html)"
 
 if [[ $BRANCH == *GSNGM-* ]]
 then
