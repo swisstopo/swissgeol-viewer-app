@@ -1,7 +1,7 @@
 # local dev and dev/int/prod images are separate because they
 # are built using a different and incompatible mode (default vs release)
 
-FROM rust:1.60 AS builder
+FROM rust:1.63 AS builder
 RUN apt-get update && apt-get install -y musl-tools musl-dev
 
 RUN rustup target add x86_64-unknown-linux-musl
@@ -40,7 +40,7 @@ RUN cargo build --target x86_64-unknown-linux-musl --release --offline
 
 
 ## The final image is quite small and almost minimal
-FROM alpine:3.15
+FROM alpine:3.16
 
 RUN apk add util-linux
 
