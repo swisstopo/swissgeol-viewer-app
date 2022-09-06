@@ -38,7 +38,7 @@ jobs:
           DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
         run: |
           docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-      - run: docker pull rust:1.58
+      - run: docker pull rust:1.63
       - name: Run local api tests
         run: make acceptance
 
@@ -55,8 +55,8 @@ jobs:
         run: |
           docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
       # Make sure we are building and deploying image with latest security fixes
-      - run: docker pull rust:1.58
-      - run: docker pull alpine:3.15
+      - run: docker pull rust:1.63
+      - run: docker pull alpine:3.16
       - name: Build api
         run: make build_api
       - name: Push to docker hub and deploy to dev

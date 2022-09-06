@@ -46,6 +46,12 @@ export default {
       './fomantic-ui-css': resolve(__dirname, 'node_modules/fomantic-ui-css'),
       './images': resolve(__dirname, 'src/images'),
       './@fontsource/inter': resolve(__dirname, 'node_modules@fontsource/inter'),
+    },
+    fallback: {
+      'zlib': false,
+      'https': false,
+      'http': false,
+      'url': false,
     }
   },
   output: {
