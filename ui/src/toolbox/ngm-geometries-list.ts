@@ -120,9 +120,9 @@ export default class NgmGeometriesList extends LitElementI18n {
   }
 
   render() {
-    const geometries = this.selectedFilter ? this.geometries.filter(geom => geom.type === this.selectedFilter) : this.geometries.filter(this.geometryFilter);
+    const geometries = this.selectedFilter ? this.geometries.filter(this.geometryFilter).filter(geom => geom.type === this.selectedFilter) : this.geometries.filter(this.geometryFilter);
 
-    if (!geometries.length) {
+    if (!geometries.length && !this.selectedFilter) {
       return html``;
     }
     return html`
