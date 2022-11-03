@@ -3,7 +3,7 @@ import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
-import {terser} from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import copy from 'rollup-plugin-copy';
 import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
@@ -12,7 +12,7 @@ import cssimport from 'postcss-import';
 import postcssurl from 'postcss-url';
 import autoprefixer from 'autoprefixer';
 
-const cesiumSource = __dirname + '/node_modules/cesium/Source';
+const cesiumSource = 'node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
 const extensions = ['.ts', '.js'];
 
