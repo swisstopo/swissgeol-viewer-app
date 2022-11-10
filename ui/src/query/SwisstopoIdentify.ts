@@ -2,8 +2,8 @@ import {Cartographic} from 'cesium';
 import type {Cartesian3} from 'cesium';
 import {radiansToLv95} from '../projection';
 
-const getIdentifyUrl = ({geom2056, lang, layers, tolerance}) =>
-  `https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=${geom2056}&geometryFormat=geojson&geometryType=esriGeometryPoint&mapExtent=0,0,100,100&imageDisplay=100,100,100&lang=${lang}&layers=all:${layers.join()}&limit=1&returnGeometry=true&sr=2056&tolerance=${tolerance}`;
+const getIdentifyUrl = (geom2056: number[], lang: string, layer: string, tolerance: number): string =>
+  `https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=${geom2056}&geometryFormat=geojson&geometryType=esriGeometryPoint&mapExtent=0,0,100,100&imageDisplay=100,100,100&lang=${lang}&layers=all:${layer}&limit=1&returnGeometry=true&sr=2056&tolerance=${tolerance}`;
 const getPopupUrl = ({layerBodId, featureId, lang}) =>
   `https://api3.geo.admin.ch/rest/services/api/MapServer/${layerBodId}/${featureId}/htmlPopup?lang=${lang}`;
 
@@ -36,11 +36,14 @@ export default class SwisstopoIdentify {
     const carto = Cartographic.fromCartesian(position);
     const geom2056 = radiansToLv95([carto.longitude, carto.latitude]);
     const tolerance = getTolerance(distance);
-    const url = getIdentifyUrl({geom2056, lang, layers, tolerance});
-    return fetch(url)
-      .then(response => response.json())
-      .then(data => data.results)
-      .then(data => data && data[0]);
+    const results = await Promise.all(layers.map(async layer => {
+      const response = await fetch(getIdentifyUrl(geom2056, lang, layer, tolerance));
+      const data = await response.json();
+      if (data.results?.length > 0) {
+        return data.results[0];
+      }
+    }));
+    return results.find(result => result !== undefined);
   }
 
   /**
