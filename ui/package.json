@@ -78,7 +78,7 @@
     "eslint-plugin-cypress": "2.12.1",
     "file-loader": "6.2.0",
     "file-saver": "2.0.5",
-    "i18next-parser": "6.6.0",
+    "i18next-parser": "7.0.3",
     "jsdom": "20.0.2",
     "jsdom-global": "3.0.2",
     "marked": "4.2.2",
