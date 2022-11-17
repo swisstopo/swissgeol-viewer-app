@@ -40,7 +40,7 @@ RUN cargo build --target x86_64-unknown-linux-musl --release --offline
 
 
 ## The final image is quite small and almost minimal
-FROM alpine:3.16
+FROM alpine:3.17
 
 RUN apk add util-linux
 
