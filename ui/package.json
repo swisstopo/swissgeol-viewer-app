@@ -21,10 +21,10 @@
     "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "3.211.0",
-    "@aws-sdk/client-s3": "3.211.0",
-    "@aws-sdk/credential-provider-cognito-identity": "3.211.0",
-    "@aws-sdk/s3-request-presigner": "3.211.0",
+    "@aws-sdk/client-cognito-identity": "3.212.0",
+    "@aws-sdk/client-s3": "3.212.0",
+    "@aws-sdk/credential-provider-cognito-identity": "3.212.0",
+    "@aws-sdk/s3-request-presigner": "3.212.0",
     "@fontsource/inter": "4.5.14",
     "@geoblocks/cesium-view-cube": "0.1.0",
     "@geoblocks/ga-search": "0.0.20",
@@ -82,7 +82,7 @@
     "jsdom": "20.0.2",
     "jsdom-global": "3.0.2",
     "marked": "4.2.2",
-    "mini-css-extract-plugin": "2.6.1",
+    "mini-css-extract-plugin": "2.7.0",
     "mocha": "9.2.2",
     "node-fetch": "3.3.0",
     "postcss": "8.4.19",
