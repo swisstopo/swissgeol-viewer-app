@@ -41,6 +41,7 @@ export class NgmMapConfiguration extends LitElementI18n {
     if (opacity === 1 && this.mapChooser!.selectedMap.id !== 'empty_map') {
       this.viewer!.scene.globe.translucency.enabled = !!this.mapChooser!.selectedMap.hasAlphaChannel;
       this.viewer!.scene.globe.translucency.backFaceAlpha = 1;
+      this.viewer!.scene.globe.translucency.frontFaceAlpha = opacity;
     } else {
       this.viewer!.scene.globe.translucency.backFaceAlpha = 0;
       this.viewer!.scene.globe.translucency.frontFaceAlpha = opacity;
