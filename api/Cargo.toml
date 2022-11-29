@@ -9,7 +9,7 @@ publish = false
 [dependencies]
 
 # Config
-clap = { version = "3.2.23", features = ["derive", "env"]}
+clap = { version = "4.0.29", features = ["derive", "env"]}
 dotenv = "0.15.0"
 
 # Web
