@@ -1,8 +1,10 @@
 use axum::Router;
-use clap::StructOpt;
 use hyper::{Body, Request, StatusCode};
+use structopt::StructOpt;
 use tower::ServiceExt;
-use uuid::Uuid; // for `app.oneshot()`
+use uuid::Uuid;
+
+// for `app.oneshot()`
 
 async fn spawn_app() -> Router {
     dotenv::dotenv().ok();

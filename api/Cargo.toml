@@ -11,6 +11,7 @@ publish = false
 # Config
 clap = { version = "4.0.29", features = ["derive", "env"]}
 dotenv = "0.15.0"
+structopt = "0.3"
 
 # Web
 axum = { version = "0.5.17", features = ["headers"] }
