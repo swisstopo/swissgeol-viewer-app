@@ -1,9 +1,11 @@
 use anyhow::Context;
 use axum::{
     async_trait,
-    extract::{FromRequest, RequestParts, TypedHeader},
+    extract::{TypedHeader},
     headers::{authorization::Bearer, Authorization},
+    http::{request::Parts},
 };
+use axum::extract::FromRequestParts;
 use jsonwebtoken::jwk::{AlgorithmParameters, JwkSet};
 use jsonwebtoken::{DecodingKey, Validation};
 use once_cell::sync::OnceCell;
@@ -68,16 +70,16 @@ pub struct Claims {
 }
 
 #[async_trait]
-impl<B> FromRequest<B> for Claims
+impl<S> FromRequestParts<S> for Claims
 where
-    B: Send,
+    S: Send + Sync,
 {
     type Rejection = Error;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
         // Extract the token from the authorization header
         let TypedHeader(Authorization(bearer)) =
-            TypedHeader::<Authorization<Bearer>>::from_request(req)
+            TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state)
                 .await
                 .map_err(|_| Error::Unauthorized)?;
         let token = bearer.token();

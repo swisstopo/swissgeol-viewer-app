@@ -1,16 +1,16 @@
 use aws_sdk_s3::Client;
-use axum::extract::Path;
 use axum::{
     extract::{Extension, Json},
     http::StatusCode,
 };
+use axum::extract::Path;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
-use crate::auth::Claims;
 use crate::{Error, Result};
+use crate::auth::Claims;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct CreateProject {
@@ -74,9 +74,9 @@ pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, St
 
 #[axum_macros::debug_handler]
 pub async fn create_project(
-    Json(project): Json<CreateProject>,
     Extension(pool): Extension<PgPool>,
     claims: Claims,
+    Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
     // Sanity check
     if project.owner != claims.email {
@@ -131,9 +131,9 @@ pub async fn get_project(
 #[axum_macros::debug_handler]
 pub async fn update_project(
     Path(id): Path<Uuid>,
-    Json(mut project): Json<Project>,
     Extension(pool): Extension<PgPool>,
     _claims: Claims,
+    Json(mut project): Json<Project>,
 ) -> Result<StatusCode> {
     // TODO: Validate rights
     project.modified = Some(Utc::now());
@@ -178,8 +178,8 @@ pub async fn list_projects(
 pub async fn duplicate_project(
     Extension(pool): Extension<PgPool>,
     Extension(_client): Extension<Client>,
-    Json(project): Json<CreateProject>,
     claims: Claims,
+    Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
     // Sanity check
     if project.owner != claims.email {
