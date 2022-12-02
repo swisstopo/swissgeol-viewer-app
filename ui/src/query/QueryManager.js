@@ -208,7 +208,7 @@ export default class QueryManager {
 }
 
 function getProperty(feature, pattern) {
-  const key = feature.getPropertyNames().find(value => pattern.test(value));
+  const key = feature.getPropertyIds().find(value => pattern.test(value));
   if (key) {
     return feature.getProperty(key);
   }

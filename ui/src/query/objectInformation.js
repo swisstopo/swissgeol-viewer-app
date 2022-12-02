@@ -2,7 +2,7 @@ import {JulianDate} from 'cesium';
 
 export function extractPrimitiveAttributes(primitive) {
   const data = [];
-  let propertyNames = primitive.getPropertyNames();
+  let propertyNames = primitive.getPropertyIds();
   const length = propertyNames.length;
   const properties = primitive.tileset.properties;
   const propsOrder = properties && properties.propsOrder ? properties.propsOrder : [];
