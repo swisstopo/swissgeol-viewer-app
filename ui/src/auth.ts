@@ -38,6 +38,11 @@ export default class Auth {
       // https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
       const response = window.location.hash.substring(1);
       const params = new URLSearchParams(response);
+
+      if (params.has('error')) {
+        throw new Error(`Auth error: ${params.get('error_description')}`);
+      }
+
       if (params.has('access_token') && params.has('id_token') &&
         params.get('token_type') === 'Bearer' && params.get('state') === this.state()) {
         localStorage.setItem('rawCognitoResponse', response);
