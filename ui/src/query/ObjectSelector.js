@@ -61,7 +61,7 @@ export default class ObjectSelector {
       if (!isPickable(object)) {
         return;
       }
-      if (object.getPropertyNames) {
+      if (object.getPropertyIds) {
         attributes.properties = extractPrimitiveAttributes(object);
         attributes.zoom = () => {
           NavToolsStore.hideTargetPoint();
