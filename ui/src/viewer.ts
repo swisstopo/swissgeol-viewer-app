@@ -1,10 +1,8 @@
 import {MANTEL_COLOR, SWITZERLAND_RECTANGLE} from './constants';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
-import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
+import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
 
