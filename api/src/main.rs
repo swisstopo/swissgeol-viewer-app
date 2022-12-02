@@ -1,5 +1,5 @@
-use std::net::SocketAddr;
 use clap::Parser;
+use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

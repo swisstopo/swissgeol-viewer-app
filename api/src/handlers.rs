@@ -1,16 +1,16 @@
 use aws_sdk_s3::Client;
+use axum::extract::Path;
 use axum::{
     extract::{Extension, Json},
     http::StatusCode,
 };
-use axum::extract::Path;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
-use crate::{Error, Result};
 use crate::auth::Claims;
+use crate::{Error, Result};
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct CreateProject {

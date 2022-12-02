@@ -1,11 +1,11 @@
 use anyhow::Context;
+use axum::extract::FromRequestParts;
 use axum::{
     async_trait,
-    extract::{TypedHeader},
+    extract::TypedHeader,
     headers::{authorization::Bearer, Authorization},
-    http::{request::Parts},
+    http::request::Parts,
 };
-use axum::extract::FromRequestParts;
 use jsonwebtoken::jwk::{AlgorithmParameters, JwkSet};
 use jsonwebtoken::{DecodingKey, Validation};
 use once_cell::sync::OnceCell;

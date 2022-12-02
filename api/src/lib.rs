@@ -1,9 +1,9 @@
 use axum::{
     extract::Extension,
     http::{HeaderValue, Method},
-    Router,
     routing::get,
     routing::post,
+    Router,
 };
 use clap::Parser;
 use hyper::header::{ACCEPT, AUTHORIZATION};
