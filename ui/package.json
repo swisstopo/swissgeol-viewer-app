@@ -21,16 +21,16 @@
     "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "3.222.0",
-    "@aws-sdk/client-s3": "3.222.0",
-    "@aws-sdk/credential-provider-cognito-identity": "3.222.0",
-    "@aws-sdk/s3-request-presigner": "3.222.0",
+    "@aws-sdk/client-cognito-identity": "3.223.0",
+    "@aws-sdk/client-s3": "3.223.0",
+    "@aws-sdk/credential-provider-cognito-identity": "3.223.0",
+    "@aws-sdk/s3-request-presigner": "3.223.0",
     "@fontsource/inter": "4.5.14",
     "@geoblocks/cesium-view-cube": "0.1.0",
     "@geoblocks/ga-search": "0.0.20",
     "@sentry/browser": "7.23.0",
     "cesium": "1.100.0",
-    "d3-array": "3.2.0",
+    "d3-array": "3.2.1",
     "d3-axis": "3.0.0",
     "d3-scale": "4.0.2",
     "d3-selection": "3.0.0",
@@ -38,7 +38,7 @@
     "earcut": "2.2.4",
     "event-target-shim": "6.0.2",
     "fomantic-ui-css": "2.9.0",
-    "i18next": "22.0.6",
+    "i18next": "22.0.7",
     "i18next-http-backend": "2.0.2",
     "interactjs": "1.10.17",
     "jquery": "3.6.1",
@@ -47,7 +47,7 @@
     "loc-i18next": "0.1.4",
     "papaparse": "5.3.2",
     "proj4": "2.8.0",
-    "rxjs": "7.5.7"
+    "rxjs": "7.6.0"
   },
   "devDependencies": {
     "@babel/core": "7.20.5",
@@ -74,7 +74,7 @@
     "core-js": "3.26.1",
     "css-loader": "6.7.2",
     "cypress": "11.2.0",
-    "eslint": "8.28.0",
+    "eslint": "8.29.0",
     "eslint-plugin-cypress": "2.12.1",
     "file-loader": "6.2.0",
     "file-saver": "2.0.5",
