@@ -4,32 +4,22 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import auth from '../store/auth';
 import {classMap} from 'lit/directives/class-map.js';
+import {customElement, property} from 'lit/decorators.js';
+import type {AuthUser} from '../auth';
 
 
 /**
  * Authentication component
  */
-class NgmAuth extends LitElementI18n {
-
-  static get properties() {
-    return {
-      user: {type: Object},
-
-      // OAuth2 parameters
-      endpoint: {type: String},
-      responseType: {type: String},
-      clientId: {type: String},
-      redirectUri: {type: String},
-      scope: {type: String}
-    };
-  }
+@customElement('ngm-auth')
+export class NgmAuth extends LitElementI18n {
+  @property({type: String}) endpoint: string | undefined;
+  @property({type: String}) clientId: string | undefined;
+  private user: AuthUser | null = null;
+  private popup: Window | null = null;
 
   constructor() {
     super();
-    this.user = null;
-    this.responseType = 'token';
-    this.redirectUri = `${location.origin}${location.pathname}`;
-    this.scope = 'openid+profile';
     auth.user.subscribe(user => {
       this.user = user;
       if (this.popup) {
@@ -42,10 +32,10 @@ class NgmAuth extends LitElementI18n {
   async login() {
     // open the authentication popup
     const url = `${this.endpoint}?`
-      + `response_type=${this.responseType}`
+      + 'response_type=token'
       + `&client_id=${this.clientId}`
-      + `&redirect_uri=${this.redirectUri}`
-      + `&scope=${this.scope}`
+      + `&redirect_uri=${location.origin}${location.pathname}`
+      + '&scope=openid+profile'
       + `&state=${Auth.state()}`;
 
     // open the authentication popup
@@ -61,7 +51,7 @@ class NgmAuth extends LitElementI18n {
 
   render() {
     return html`
-      <div class="ngm-user ${classMap({'ngm-active-section': this.user})}"
+      <div class="ngm-user ${classMap({'ngm-active-section': !!this.user})}"
            @click=${!this.user ? this.login : this.logout}>
         <div class="ngm-user-icon"></div>
         ${!this.user ? i18next.t('lsb_login') : i18next.t('lsb_logout')}
@@ -73,5 +63,3 @@ class NgmAuth extends LitElementI18n {
     return this;
   }
 }
-
-customElements.define('ngm-auth', NgmAuth);
