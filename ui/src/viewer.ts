@@ -1,6 +1,6 @@
 import {MANTEL_COLOR, SWITZERLAND_RECTANGLE} from './constants';
 
-import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
+import NavigableVolumeLimiter from './NavigableVolumeLimiter';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
 import MapChooser from './MapChooser';
