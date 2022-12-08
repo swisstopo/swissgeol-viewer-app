@@ -1,5 +1,5 @@
 import JSZip from 'jszip/dist/jszip.js';
-import {coordinatesToBbox, areBboxIntersectings, filterCsvString} from './utils';
+import {coordinatesToBbox, areBboxIntersecting, filterCsvString} from './utils';
 
 
 type DataPiece = {
@@ -98,7 +98,7 @@ async function* createIndexedDataGenerator(indices: {[s: string]: IndexEntry[];}
   const index = await getIndex(indices, spec, fetcher);
   const path = spec.url.substring(0, spec.url.lastIndexOf('/'));
   for await (const {filename, extent} of index) {
-    if (areBboxIntersectings(extent, bbox)) {
+    if (areBboxIntersecting(extent, bbox)) {
       const content = await fetcher(path + '/' + filename).then(r => r.arrayBuffer());
       yield {
         layer: spec.layer,

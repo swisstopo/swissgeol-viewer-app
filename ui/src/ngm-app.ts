@@ -49,7 +49,7 @@ import {customElement, query, state} from 'lit/decorators.js';
 import {showSnackbarInfo} from './notifications';
 import type MapChooser from './MapChooser';
 import type {NgmSlowLoading} from './elements/ngm-slow-loading';
-import type {Viewer} from 'cesium';
+import type {Globe, Viewer} from 'cesium';
 import type {Config} from './layers/ngm-layers-item';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
@@ -59,7 +59,7 @@ const SKIP_STEP2_TIMEOUT = 5000;
 
 const isLocalhost = document.location.hostname === 'localhost';
 
-const onStep1Finished = (globe, searchParams: URLSearchParams) => {
+const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
   let sse = 2;
   if (isLocalhost) {
     sse = 20;

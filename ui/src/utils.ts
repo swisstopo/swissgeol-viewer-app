@@ -3,41 +3,23 @@ import {SWITZERLAND_RECTANGLE} from './constants';
 import type {Viewer} from 'cesium';
 import {BoundingSphere, Ellipsoid, HeadingPitchRange} from 'cesium';
 
-/**
- * @return {URLSearchParams}
- */
-export function getURLSearchParams() {
+export function getURLSearchParams(): URLSearchParams {
   return new URLSearchParams(location.search);
 }
 
-/**
- * @param {URLSearchParams} params
- */
-export function setURLSearchParams(params) {
+export function setURLSearchParams(params: URLSearchParams) {
   window.history.replaceState({}, '', `${location.pathname}?${params}`);
 }
 
-/**
- * @param {string} id
- */
-export function clickOnElement(id) {
+export function clickOnElement(id: string) {
   document.getElementById(id)?.click();
 }
 
-/**
- * @param {string} string
- * @return {string}
- */
-export function escapeRegExp(string) {
+export function escapeRegExp(string: string) {
   return string ? string.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&') : string;
 }
 
-
-/**
- * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
- * @param {function} functionToExecute - executes for each primitive on scene. Gets primitive as the first argument
- */
-export function executeForAllPrimitives(viewer, functionToExecute) {
+export function executeForAllPrimitives(viewer: Viewer, functionToExecute: (primitive: any) => void) {
   const primitives = viewer.scene.primitives;
   for (let i = 0, ii = primitives.length; i < ii; i++) {
     const primitive = primitives.get(i);
@@ -48,12 +30,7 @@ export function executeForAllPrimitives(viewer, functionToExecute) {
   }
 }
 
-/**
- * @param {number[]} b1
- * @param {number[]} b2
- * @return {boolean}
- */
-export function areBboxIntersectings(b1, b2) {
+export function areBboxIntersecting(b1: number[], b2: number[]): boolean {
   /**
    * Instead of relying on bboxes, we could check for the inclusion and
    * intersection of 2 convex polygons. But it may not be worth doing it in JS.
@@ -67,7 +44,7 @@ export function areBboxIntersectings(b1, b2) {
   );
 }
 
-export function coordinatesToBbox(coordinates) {
+export function coordinatesToBbox(coordinates: number[][]): number[] {
   const e = [Infinity, Infinity, -Infinity, -Infinity];
   for (const c of coordinates) {
     if (c[0] < e[0]) {
@@ -86,34 +63,22 @@ export function coordinatesToBbox(coordinates) {
   return e;
 }
 
-/**
- * @param {number[]} extent [xmin, ymin, xmax, ymax]
- * @param {number} x
- * @param {number} y
- * @return {boolean} whether [x, y] is inside the extent
- */
-export function containsXY(extent, x, y) {
+export function containsXY(extent: number[], x: number, y: number): boolean {
   return extent[0] <= x && x <= extent[2] && extent[1] <= y && y <= extent[3];
 }
 
-/**
- *
- * @param {string} str
- * @param {number[]} bbox4326
- * @return {string}
- */
-export function filterCsvString(str, bbox4326) {
+export function filterCsvString(str: string, bbox4326: number[]): string {
   const csv = CSVParser.parse(str, {
     header: true,
     skipEmptyLines: 'greedy'
   });
 
   // find the x and y keys
-  const x = csv.meta.fields.find(key => /\w*x4326/.test(key));
-  const y = csv.meta.fields.find(key => /\w*y4326/.test(key));
+  const x = csv.meta.fields.find((key: string) => /\w*x4326/.test(key));
+  const y = csv.meta.fields.find((key: string) => /\w*y4326/.test(key));
 
   // filter lines
-  const lines = csv.data.filter(line => {
+  const lines = csv.data.filter((line: string) => {
     const x4326 = +line[x].trim();
     const y4326 = +line[y].trim();
     return containsXY(bbox4326, x4326, y4326);
@@ -128,12 +93,7 @@ export function filterCsvString(str, bbox4326) {
   });
 }
 
-/**
- * Returns object parsed from string or undefined
- * @param {string} string
- * @returns {object|undefined}
- */
-export function parseJson(string) {
+export function parseJson(string: string): Record<string, any> | undefined {
   try {
     return JSON.parse(string);
   } catch (e) {
@@ -141,12 +101,12 @@ export function parseJson(string) {
   }
 }
 
-export function interpolateBetweenNumbers(min, max, percent) {
+export function interpolateBetweenNumbers(min: number, max: number, percent: number): number {
   const diff = max - min;
   return min + ((percent / 100) * diff);
 }
 
-export function getPercent(min, max, value) {
+export function getPercent(min: number, max: number, value: number): number {
   const diff = max - min;
   return value / diff * 100;
 }
