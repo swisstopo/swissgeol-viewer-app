@@ -1,4 +1,4 @@
-import type {Camera, Scene} from 'cesium';
+import type {Camera, Scene, Viewer} from 'cesium';
 import {
   BoundingSphere,
   Cartesian2,
@@ -501,10 +501,8 @@ export function positionFromPxDistance(scene: Scene, firstPoint: Cartesian3, dis
 
 /**
  * Checks is geometry of part of geometry inside viewport
- * @param viewer
- * @param positions - positions of geometry
  */
-export function isGeometryInViewport(viewer, positions) {
+export function isGeometryInViewport(viewer: Viewer, positions: Cartesian3[]): boolean {
   const camera = viewer.camera;
   const frustum = camera.frustum;
   const cullingVolume = frustum.computeCullingVolume(

@@ -16,10 +16,10 @@ import {
   VIEW_PARAM,
   ZOOM_TO_PARAM
 } from './constants';
-import type {Cartographic} from 'cesium';
+import type {Cartographic, Camera} from 'cesium';
 import type {TopicParam} from './store/dashboard';
 
-export function getCameraView() {
+export function getCameraView(): {destination?: Cartesian3, orientation?: any} {
   let destination;
   let orientation;
 
@@ -44,7 +44,7 @@ export function getCameraView() {
 }
 
 
-export function syncCamera(camera) {
+export function syncCamera(camera: Camera) {
   const params = getURLSearchParams();
   const position = camera.positionCartographic;
   params.set('lon', Math.toDegrees(position.longitude).toFixed(5));
@@ -210,7 +210,7 @@ export function getCesiumToolbarParam(): boolean {
   return getURLSearchParams().has('cesiumToolbar');
 }
 
-export function syncStoredView(stored, skipParams: string[] = [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch']) {
+export function syncStoredView(stored: string, skipParams: string[] = [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch']) {
   const params = getURLSearchParams();
   const storedParams = new URLSearchParams(stored);
   for (const param of params.entries()) {
@@ -222,7 +222,7 @@ export function syncStoredView(stored, skipParams: string[] = [TARGET_PARAM, 'lo
   setURLSearchParams(params);
 }
 
-export function setPermalink(permalink) {
+export function setPermalink(permalink: string) {
   const params = new URLSearchParams(permalink);
   setURLSearchParams(params);
 }
@@ -233,12 +233,11 @@ export function getTopic(): TopicParam | undefined {
   return topicId ? {topicId: topicId, viewId: params.get(VIEW_PARAM)} : undefined;
 }
 
-export function setTopic(topicId, viewId) {
+export function setTopic(topicId: string, viewId: string) {
   const params = getURLSearchParams();
   params.set(TOPIC_PARAM, topicId);
   viewId && params.set(VIEW_PARAM, viewId);
   setURLSearchParams(params);
-
 }
 
 export function removeTopic() {
@@ -246,5 +245,4 @@ export function removeTopic() {
   params.delete(TOPIC_PARAM);
   params.delete(VIEW_PARAM);
   setURLSearchParams(params);
-
 }

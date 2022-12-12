@@ -1,10 +1,8 @@
 import {MANTEL_COLOR, SWITZERLAND_RECTANGLE} from './constants';
 
-import NavigableVolumeLimiter from './NavigableVolumeLimiter.js';
-import LimitCameraHeightToDepth from './LimitCameraHeightToDepth.js';
+import NavigableVolumeLimiter from './NavigableVolumeLimiter';
+import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
 
@@ -76,7 +74,7 @@ export interface BaseLayerConfig {
   hasAlphaChannel?: boolean;
 }
 
-export function setupViewer(container: Element, rethrowRenderErrors) {
+export function setupViewer(container: Element, rethrowRenderErrors: boolean) {
 
   // The first layer of Cesium is special; using a 1x1 transparent image to workaround it.
   // See https://github.com/AnalyticalGraphicsInc/cesium/issues/1323 for details.

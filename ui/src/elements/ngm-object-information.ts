@@ -1,19 +1,17 @@
 import {html} from 'lit';
-import draggable from './draggable.ts';
+import draggable from './draggable';
 import i18next from 'i18next';
-import {LitElementI18n} from '../i18n.js';
+import {LitElementI18n} from '../i18n';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import QueryStore from '../store/query';
 import {dragArea} from './helperElements';
+import {customElement, property} from 'lit/decorators.js';
 
-class NgmObjectInformation extends LitElementI18n {
 
-  static get properties() {
-    return {
-      info: {type: Object},
-      opened: {type: Boolean}
-    };
-  }
+@customElement('ngm-object-information')
+export class NgmObjectInformation extends LitElementI18n {
+  @property({type: Object}) info: any;
+  @property({type: Boolean}) opened: boolean;
 
   constructor() {
     super();
@@ -107,5 +105,3 @@ class NgmObjectInformation extends LitElementI18n {
     return this;
   }
 }
-
-customElements.define('ngm-object-information', NgmObjectInformation);

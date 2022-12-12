@@ -3,7 +3,7 @@
 import assert from 'assert';
 import {assert as chaiAssert} from 'chai';
 import {createDataGenerator, createZipFromData} from '../download';
-import {areBboxIntersectings, containsXY, filterCsvString} from '../utils';
+import {areBboxIntersecting, containsXY, filterCsvString} from '../utils';
 
 // see https://stackoverflow.com/questions/58668361/how-can-i-convert-an-async-iterator-to-an-array
 async function toArray<T>(asyncIterator: AsyncIterable<T>): Promise<T[]> {
@@ -29,15 +29,15 @@ describe('Download', () => {
     const unitBox = [-1, -1, 1, 1];
     it('true if completly inside', () => {
       const tested = [-0.5, -0.5, 0.5, 0.5];
-      assert.ok(areBboxIntersectings(unitBox, tested));
+      assert.ok(areBboxIntersecting(unitBox, tested));
     });
     it('false if completly outside', () => {
       const tested = [10, 10, 21, 21];
-      assert.ok(!areBboxIntersectings(unitBox, tested));
+      assert.ok(!areBboxIntersecting(unitBox, tested));
     });
     it('true if overlapping', () => {
       const tested = [0, 0, 2, 2];
-      assert.ok(areBboxIntersectings(unitBox, tested));
+      assert.ok(areBboxIntersecting(unitBox, tested));
     });
   });
 
