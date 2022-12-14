@@ -117,6 +117,7 @@ export function setupViewer(container: Element, rethrowRenderErrors: boolean) {
   };
   const viewer = new Viewer(container, {
     contextOptions: {
+      requestWebGl2: true,
       webgl
     },
     showRenderLoopErrors: rethrowRenderErrors,
