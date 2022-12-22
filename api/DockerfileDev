@@ -1,7 +1,7 @@
 # local dev and dev/int/prod images are separate because they
 # are built using a different and incompatible mode (default vs release)
 
-FROM rust:1.65
+FROM rust:1.66
 
 RUN rustup target add x86_64-unknown-linux-musl
 RUN apt update && apt install -y musl-tools musl-dev postgresql-client-13

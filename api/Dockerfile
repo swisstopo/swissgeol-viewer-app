@@ -1,7 +1,7 @@
 # local dev and dev/int/prod images are separate because they
 # are built using a different and incompatible mode (default vs release)
 
-FROM rust:1.65 AS builder
+FROM rust:1.66 AS builder
 RUN apt-get update && apt-get install -y musl-tools musl-dev
 
 RUN rustup target add x86_64-unknown-linux-musl

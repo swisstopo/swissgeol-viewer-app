@@ -5,22 +5,14 @@
   dependencyDashboardApproval: true,
   packageRules: [
     {
+      ignorePaths: ["api/**"]
+    },
+    {
       matchPackagePrefixes: ["camptocamp/postgres"],
       matchUpdateTypes: ['major'],
       enabled: false
     },
-    // {
-    //   matchPackagePrefixes: ["junit2html"],
-    //   matchUpdateTypes: ['minor'],
-    //   // newer junit2html needs jinja2v3 which breaks local acceptance
-    //   enabled: false
-    // },
-    // {
-    //   matchPackagePrefixes: ["@web/test-runner"],
-    //   matchUpdateTypes: ['patch'],
-    //   // newer @web/test-runner doesn't work
-    //   enabled: false
-    // },
+
     {
       matchDepTypes: ['devDependencies'],
       automerge: true,
@@ -36,9 +28,5 @@
       groupName: 'all patch and minor versions',
       automerge: true,
     },
-    // version restrictions {
-    // version restrictions   matchPackageNames: ["markupsafe"],
-    // version restrictions   allowedVersions: "<2.1.0"
-    // version restrictions }
   ],
 }
