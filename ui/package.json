@@ -73,7 +73,7 @@
     "copy-webpack-plugin": "11.0.0",
     "core-js": "3.26.1",
     "css-loader": "6.7.3",
-    "cypress": "11.2.0",
+    "cypress": "12.2.0",
     "eslint": "8.30.0",
     "eslint-plugin-cypress": "2.12.1",
     "file-loader": "6.2.0",
