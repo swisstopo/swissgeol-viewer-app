@@ -3,10 +3,8 @@
   // baseBranches: ['master'],
   lockFileMaintenance: { enabled: true },
   dependencyDashboardApproval: true,
+  ignorePaths: ["api/**"],
   packageRules: [
-    {
-      ignorePaths: ["api/**"]
-    },
     {
       matchPackagePrefixes: ["camptocamp/postgres"],
       matchUpdateTypes: ['major'],
