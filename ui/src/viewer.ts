@@ -115,11 +115,12 @@ export function setupViewer(container: Element, rethrowRenderErrors: boolean) {
     powerPreference: 'high-performance',
     preserveDrawingBuffer: searchParams.has('preserveDrawingBuffer')
   };
+  const contextOptions = {
+    requestWebGl2: true,
+    webgl
+  };
   const viewer = new Viewer(container, {
-    contextOptions: {
-      requestWebGl2: true,
-      webgl
-    },
+    contextOptions: contextOptions,
     showRenderLoopErrors: rethrowRenderErrors,
     animation: false,
     baseLayerPicker: false,
