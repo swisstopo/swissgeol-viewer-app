@@ -154,3 +154,12 @@ export function debounce(f, ms, skipFirst = false) {
     }, ms);
   };
 }
+
+
+export function setBit(num: number, pos: number): number {
+  return num | (1 << pos);
+}
+
+export function getBit(num: number, pos: number): number {
+  return (num & (1 << pos));
+}

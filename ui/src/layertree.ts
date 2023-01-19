@@ -30,11 +30,21 @@ export interface LayerTreeNode {
   aws_s3_key?: string;
   previewColor?: string;
   children?: LayerTreeNode[];
+  voxelDataName?: string;
+  voxelColors?: VoxelColors;
+  voxelFilter?: any;
+}
+
+export interface VoxelColors {
+  range: number[];
+  noData: number;
+  colors: (string|null)[];
 }
 
 export enum LayerType {
   swisstopoWMTS = 'swisstopoWMTS',
   tiles3d = '3dtiles',
+  voxels3dtiles = 'voxels3dtiles',
   ionGeoJSON = 'ionGeoJSON',
   earthquakes = 'earthquakes',
 }
@@ -42,11 +52,6 @@ export enum LayerType {
 export const DEFAULT_LAYER_OPACITY = 1;
 
 const t = (a: string) => a;
-
-// Styles
-const LAS_POINT_CLOUD_STYLE = {
-  pointSize: 5
-};
 
 const SWISSTOPO_LABEL_STYLE = {
   labelStyle: 0, //LabelStyle.FILL,
@@ -110,6 +115,258 @@ const TEMPERATURE_HORIZON_BGL_ORDER = ['name', 'temp_c', 'depth_bgl'];
 const EARTHQUAKES_PROP_ORDER = ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'];
 
 
+const temperaturVoxelColors = {
+  range: [0, 320],
+  noData: -99999,
+  colors: [
+    'rgb(10, 0, 121)',
+    'rgb(40, 0, 150)',
+    'rgb(20, 5, 175)',
+    'rgb(0, 10, 200)',
+    'rgb(0, 25, 212)',
+    'rgb(0, 40, 224)',
+    'rgb(26, 102, 240)',
+    'rgb(13, 129, 248)',
+    'rgb(25, 175, 255)',
+    'rgb(50, 190, 255)',
+    'rgb(68, 202, 255)',
+    'rgb(97, 225, 240)',
+    'rgb(106, 235, 225)',
+    'rgb(124, 235, 200)',
+    'rgb(138, 236, 174)',
+    'rgb(172, 245, 168)',
+    'rgb(205, 255, 162)',
+    'rgb(223, 245, 141)',
+    'rgb(240, 236, 121)',
+    'rgb(247, 215, 104)',
+    'rgb(255, 189, 87)',
+    'rgb(255, 160, 69)',
+    'rgb(244, 117, 75)',
+    'rgb(238, 80, 78)',
+    'rgb(255, 90, 90)',
+    'rgb(255, 124, 124)',
+    'rgb(255, 158, 158)',
+    'rgb(245, 179, 174)',
+    'rgb(255, 196, 196)',
+    'rgb(255, 215, 215)',
+    'rgb(255, 235, 235)',
+    'rgb(255, 255, 255)',
+  ]
+};
+
+const logkVoxelColors = {
+  range: [-9, -1],
+  noData: -9999.0,
+  colors: [
+    'rgb(0, 102, 255)',
+    'rgb(255, 204, 0)',
+    'rgb(204, 0, 0)',
+  ],
+};
+
+const birrIndexVoxelColors = {
+  range: [1, 67],
+  noData: -9999,
+  colors: [
+    'rgb(128, 212, 255)',
+    'rgb(173, 200, 90)',
+    'rgb(0, 255, 234)',
+    'rgb(0, 199, 17)',
+    'rgb(38, 183, 255)',
+    'rgb(51, 51, 51)',
+    'rgb(123, 147, 49)',
+    'rgb(64, 191, 255)',
+    'rgb(164, 194, 73)',
+    'rgb(24, 255, 43)',
+    'rgb(8, 255, 29)',
+    'rgb(0, 144, 217)',
+    'rgb(255, 255, 255)',
+    'rgb(140, 217, 255)',
+    'rgb(0, 102, 153)',
+    'rgb(173, 173, 173)',
+    'rgb(143, 143, 143)',
+    'rgb(255, 255, 255)',
+    'rgb(0, 215, 18)',
+    'rgb(152, 182, 61)',
+    'rgb(255, 255, 255)',
+    'rgb(225, 81, 194)',
+    'rgb(102, 204, 255)',
+    'rgb(170, 0, 255)',
+    'rgb(0, 153, 230)',
+    'rgb(56, 255, 73)',
+    'rgb(199, 218, 143)',
+    'rgb(13, 175, 255)',
+    'rgb(190, 212, 126)',
+    'rgb(181, 206, 108)',
+    'rgb(208, 224, 161)',
+    'rgb(0, 127, 191)',
+    'rgb(0, 247, 21)',
+    'rgb(115, 208, 255)',
+    'rgb(108, 129, 43)',
+    'rgb(40, 255, 58)',
+    'rgb(137, 165, 55)',
+    'rgb(112, 112, 112)',
+    'rgb(255, 255, 255)',
+    'rgb(105, 255, 117)',
+    'rgb(0, 170, 255)',
+    'rgb(89, 255, 102)',
+    'rgb(255, 255, 255)',
+    'rgb(72, 255, 88)',
+    'rgb(0, 183, 15)',
+    'rgb(137, 255, 147)',
+    'rgb(26, 178, 255)',
+    'rgb(255, 255, 0)',
+    'rgb(0, 93, 140)',
+    'rgb(255, 255, 255)',
+    'rgb(77, 195, 255)',
+    'rgb(0, 134, 11)',
+    'rgb(121, 255, 132)',
+    'rgb(0, 166, 14)',
+    'rgb(0, 150, 13)',
+    'rgb(0, 231, 19)',
+    'rgb(0, 110, 166)',
+    null,
+    null,
+    'rgb(255, 255, 255)',
+    'rgb(255, 255, 255)',
+    'rgb(255, 255, 255)',
+    'rgb(255, 255, 255)',
+    'rgb(0, 127, 191)',
+    'rgb(255, 255, 255)',
+    'rgb(255, 255, 255)',
+    'rgb(255, 255, 255)',
+  ],
+};
+
+const aaretalIndexVoxelColors = {
+  range: [1, 24],
+  noData: -9999,
+  colors: [
+    'rgb(255, 0, 149)',
+    'rgb(255, 128, 0)',
+    'rgb(92, 255, 105)',
+    'rgb(122, 211, 255)',
+    'rgb(128, 128, 128)',
+    'rgb(0, 255, 234)',
+    'rgb(92, 201, 255)',
+    'rgb(31, 255, 49)',
+    'rgb(179, 204, 102)',
+    'rgb(61, 190, 255)',
+    'rgb(31, 180, 255)',
+    'rgb(0, 170, 255)',
+    'rgb(128, 153, 51)',
+    'rgb(0, 150, 224)',
+    'rgb(0, 224, 19)',
+    'rgb(0, 129, 194)',
+    'rgb(64, 77, 25)',
+    'rgb(0, 163, 14)',
+    'rgb(0, 109, 163)',
+    'rgb(0, 88, 133)',
+    'rgb(255, 255, 0)',
+    'rgb(0, 68, 102)',
+    'rgb(0, 102, 9)',
+    'rgb(255, 0, 0)',
+  ],
+};
+
+const aaretalVoxelFilter = {
+  lithologyDataName: 'Index',
+  lithology: [
+    {index: 1, label: 'Künstliche Auffüllung'},
+    {index: 5, label: 'Hangschutt'},
+    {index: 6, label: 'Bachschutt'},
+    {index: 7, label: 'Spät- bis postglaziale Schotter'},
+    {index: 21, label: 'Oppligen-Sand'},
+  ]
+};
+
+const genevaIndexVoxelColors = {
+  range: [3000, 12000],
+  noData: -9999,
+  colors: [
+    'rgb(254, 2, 194)',
+    'rgb(254, 2, 194)',
+    'rgb(55, 169, 0)',
+    'rgb(115, 223, 254)',
+    'rgb(167, 111, 0)',
+    'rgb(0, 94, 230)',
+    'rgb(253, 169, 0)',
+    'rgb(254, 190, 232)',
+    'rgb(150, 120, 255)',
+    'rgb(255, 255, 0)',
+    'rgb(168, 168, 0)',
+    'rgb(255, 235, 191)',
+  ]
+};
+
+const vispIndexVoxelColors = {
+  range: [1, 60],
+  noData: -9999.0,
+  colors: [
+    'rgb(100, 255, 22)', // 1
+    'rgb(73, 219, 0)', // 2
+    'rgb(53, 160, 0)', // 3
+    'rgb(34, 102, 0)', // 4
+    'rgb(0, 0, 0)', // 5
+    'rgb(199, 207, 175)', // 6
+    'rgb(216, 255, 197)', // 7
+    'rgb(23, 246, 39)', // 8
+    'rgb(119, 210, 255)', // 9
+    null, // 10
+    null, // 11
+    null, // 12
+    null, // 13
+    'rgb(217, 191, 191)', // 14
+    null, // 15
+    'rgb(179, 128, 128)', // 16
+    null, // 17
+    null, // 18
+    null, // 19
+    null, // 20
+    null, // 21
+    null, // 22
+    null, // 23
+    null, // 24
+    null, // 25
+    null, // 26
+    null, // 27
+    null, // 28
+    null, // 29
+    'rgb(64, 38, 38)', // 30
+    'rgb(128, 77, 77)', // 31
+    null, // 32
+    null, // 33
+    null, // 34
+    null, // 35
+    null, // 36
+    null, // 37
+    null, // 38
+    null, // 39
+    'rgb(0, 255, 234)', // 40
+    'rgb(0, 255, 234)', // 41
+    'rgb(0, 255, 234)', // 42
+    'rgb(0, 255, 234)', // 43
+    'rgb(0, 255, 234)', // 44
+    'rgb(0, 255, 234)', // 45
+    'rgb(0, 255, 234)', // 46
+    'rgb(0, 255, 234)', // 47
+    'rgb(0, 159, 238)', // 48
+    null, // 49
+    'rgb(255, 0, 150)', // 50
+    'rgb(255, 0, 150)', // 51
+    'rgb(255, 0, 150)', // 52
+    'rgb(255, 0, 150)', // 53
+    'rgb(255, 0, 150)', // 54
+    'rgb(255, 0, 150)', // 55
+    null, // 56
+    null, // 57
+    null, // 58
+    null, // 59
+    'rgb(255, 128, 0)', // 60
+  ]
+};
+
+
 // Layers
 const geo_map_series: LayerTreeNode = {
   label: t('lyr_geological_map_series_label'),
@@ -165,6 +422,7 @@ const geo_map_series: LayerTreeNode = {
     },
   ]
 };
+
 
 const geo_base: LayerTreeNode = {
   label: t('lyr_geological_bases_label'),
@@ -272,13 +530,15 @@ const geo_energy: LayerTreeNode = {
       label: t('lyr_geothermal_energy_label'),
       children: [
         {
-          type: LayerType.tiles3d,
-          style: LAS_POINT_CLOUD_STYLE,
-          assetId: 139225,
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-Temperaturmodell-GeoMol15/tileset.json',
+          voxelDataName: 'Temp_C',
+          voxelColors: temperaturVoxelColors,
           label: t('lyr_temperature_model_label'),
           layer: 'temperature_model',
           opacityDisabled: true,
           pickable: false,
+          zoomToBbox: false,
           geocatId: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
         },
         {
@@ -443,9 +703,11 @@ const subsurface: LayerTreeNode = {
       label: t('lyr_unconsolidated_rocks_label'),
       children: [
         {
-          type: LayerType.tiles3d,
-          style: LAS_POINT_CLOUD_STYLE,
-          assetId: 474235,
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-Aaretal-Combined/tileset.json',
+          voxelDataName: 'Index',
+          voxelColors: aaretalIndexVoxelColors,
+          voxelFilter: aaretalVoxelFilter,
           label: t('lyr_voxel_aaretal_litho_label'),
           layer: 'voxel_aaretal_litho',
           opacityDisabled: true,
@@ -455,9 +717,11 @@ const subsurface: LayerTreeNode = {
           geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
         },
         {
-          type: LayerType.tiles3d,
-          style: LAS_POINT_CLOUD_STYLE,
-          assetId: 474238,
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-Aaretal-Combined/tileset.json',
+          voxelDataName: 'logk',
+          voxelColors: logkVoxelColors,
+          voxelFilter: aaretalVoxelFilter,
           label: t('lyr_voxel_aaretal_logk_label'),
           layer: 'voxel_aaretal_logk',
           opacityDisabled: true,
@@ -467,9 +731,10 @@ const subsurface: LayerTreeNode = {
           geocatId: '9471ee1b-5811-489d-b050-612c011f9d57',
         },
         {
-          type: LayerType.tiles3d,
-          style: LAS_POINT_CLOUD_STYLE,
-          assetId: 474233,
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-BIRR-Combined/tileset.json',
+          voxelDataName: 'Index',
+          voxelColors: birrIndexVoxelColors,
           label: t('lyr_voxel_birrfeld_litho_label'),
           layer: 'voxel_birrfeld_litho',
           opacityDisabled: true,
@@ -479,9 +744,10 @@ const subsurface: LayerTreeNode = {
           geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
         },
         {
-          type: LayerType.tiles3d,
-          style: LAS_POINT_CLOUD_STYLE,
-          assetId: 474239,
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-BIRR-Combined/tileset.json',
+          voxelDataName: 'logk',
+          voxelColors: logkVoxelColors,
           label: t('lyr_voxel_birrfeld_logk_label'),
           layer: 'voxel_birrfeld_logk',
           opacityDisabled: true,
@@ -491,9 +757,10 @@ const subsurface: LayerTreeNode = {
           geocatId: '96f923d6-a747-481b-a0d8-2cfec321170e',
         },
         {
-          type: LayerType.tiles3d,
-          style: LAS_POINT_CLOUD_STYLE,
-          assetId: 474234,
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-GENF-Combined/tileset.json',
+          voxelDataName: 'Index',
+          voxelColors: genevaIndexVoxelColors,
           label: t('lyr_voxel_geneva_litho_label'),
           layer: 'voxel_geneva_litho',
           opacityDisabled: true,
@@ -503,9 +770,10 @@ const subsurface: LayerTreeNode = {
           geocatId: '697f4c99-ed1b-4901-bc87-3710fcce1352',
         },
         {
-          type: LayerType.tiles3d,
-          style: LAS_POINT_CLOUD_STYLE,
-          assetId: 474237,
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-GENF-Combined/tileset.json',
+          voxelDataName: 'logk',
+          voxelColors: logkVoxelColors,
           label: t('lyr_voxel_geneva_logk_label'),
           layer: 'voxel_geneva_logk',
           opacityDisabled: true,
@@ -515,9 +783,10 @@ const subsurface: LayerTreeNode = {
           geocatId: '4a4a530f-6a2a-423d-834e-2831d70fde20',
         },
         {
-          type: LayerType.tiles3d,
-          style: LAS_POINT_CLOUD_STYLE,
-          assetId: 474231,
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-VISP-Combined/tileset.json',
+          voxelDataName: 'Index',
+          voxelColors: vispIndexVoxelColors,
           label: t('lyr_voxel_visp_litho_label'),
           layer: 'voxel_visp_litho',
           opacityDisabled: true,
@@ -527,9 +796,10 @@ const subsurface: LayerTreeNode = {
           geocatId: 'b621de46-2553-4fb2-88b4-f770e0243299',
         },
         {
-          type: LayerType.tiles3d,
-          style: LAS_POINT_CLOUD_STYLE,
-          assetId: 474240,
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-VISP-Combined/tileset.json',
+          voxelDataName: 'logk',
+          voxelColors: logkVoxelColors,
           label: t('lyr_voxel_visp_logk_label'),
           layer: 'voxel_visp_logk',
           opacityDisabled: true,
@@ -826,7 +1096,6 @@ const background: LayerTreeNode = {
     man_made_objects,
   ]
 };
-
 
 const defaultLayerTree: LayerTreeNode[] = [
   geo_map_series,

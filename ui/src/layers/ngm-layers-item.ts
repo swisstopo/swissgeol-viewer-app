@@ -122,6 +122,15 @@ export class LayerTreeItem extends LitElementI18n {
     }));
   }
 
+  showVoxelFilter(config: Config) {
+    this.dispatchEvent(new CustomEvent('showVoxelFilter', {
+      bubbles: true,
+      detail: {
+        config
+      }
+    }));
+  }
+
   get buttons() {
     return html`
       <div class="menu">
@@ -134,6 +143,11 @@ export class LayerTreeItem extends LitElementI18n {
           <div class="item"
                @click=${() => window.open(this.config?.downloadUrl)}>
             ${i18next.t('dtd_download_hint')}
+          </div>` : ''}
+        ${this.config?.type === LayerType.voxels3dtiles ? html`
+          <div class="item"
+               @click=${() => this.showVoxelFilter(this.config)}>
+            ${i18next.t('dtd_voxel_filter')}
           </div>` : ''}
       </div>
     `;

@@ -55,6 +55,7 @@
   "dtd_show": "Mostrare",
   "dtd_topic_kml_tag": "Oggetto di tema",
   "dtd_user_content_label": "Aggiungere propio contenuto",
+  "dtd_voxel_filter": "",
   "dtd_zoom_to": "Zoom su",
   "duplicate_to_project": "Duplicare nei progetti",
   "edit_project": "Editare progetto",
@@ -300,5 +301,14 @@
   "tracking_deny_btn_label": "Continuare senza acquisizione di dati",
   "tracking_text": "Per poter adattare la nostra offerta web in modo ottimale alle vostre esigenze, utilizziamo gli strumenti di analisi Google Analytics, Hotjar e Sentry. Ciò significa, che il vostro comportamento sul sito web viene registrato in forma anonima. Di conseguenza, non vengono trasmessi o memorizzati dati personali. Se non siete dʼaccordo, potete interrompere la raccolta dei dati da parte degli strumenti di analisi e continuare ad utilizzare questo sito web senza restrizioni. Troverete maggiori informazioni sulla nostra pagina <a target='_blank' href='legal/legal_it.html'>Basi legali.</a>",
   "view": "Vista",
+  "vox_filter_and": "",
+  "vox_filter_apply": "",
+  "vox_filter_filtering_on": "",
+  "vox_filter_hydraulic_conductivity": "",
+  "vox_filter_lithology": "",
+  "vox_filter_max": "",
+  "vox_filter_min": "",
+  "vox_filter_or": "",
+  "vox_filter_xor": "",
   "welcome_get_shortlink_error": "Si è prodotto un errore e il link breve non può essere creato, per favore riprovi più tardi."
 }

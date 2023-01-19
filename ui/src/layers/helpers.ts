@@ -12,6 +12,8 @@ import {
   Matrix3,
   Matrix4,
   Cesium3DTileColorBlendMode,
+  Cesium3DTilesVoxelProvider,
+  VoxelPrimitive,
 } from 'cesium';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
 import {LayerType} from '../constants';
@@ -19,6 +21,7 @@ import {isLabelOutlineEnabled} from '../permalink';
 import AmazonS3Resource from '../AmazonS3Resource.js';
 import type {Viewer} from 'cesium';
 import type {Config} from './ngm-layers-item.js';
+import {getVoxelShader} from './voxels-helper';
 
 export function createEarthquakeFromConfig(viewer: Viewer, config: Config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer, config);
@@ -41,6 +44,37 @@ export function createIonGeoJSONFromConfig(viewer: Viewer, config) {
     });
 }
 
+
+export function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Config, _): VoxelPrimitive {
+  const provider = new Cesium3DTilesVoxelProvider({
+    url: config.url!,
+  });
+
+  const primitive = new VoxelPrimitive({
+    /** @ts-ignore */
+    provider: provider,
+  });
+
+  primitive.nearestSampling = true;
+  primitive.stepSize = 0.37;
+  primitive.depthTest = true;
+  primitive.show = !!config.visible;
+
+  viewer.scene.primitives.add(primitive);
+
+  config.setVisibility = visible => {
+    primitive.show = !!visible;
+  };
+
+  primitive.readyPromise.then(() => {
+    if (!primitive.provider.names.includes(config.voxelDataName)) {
+      throw new Error(`Voxel data name ${config.voxelDataName} not found in the tileset`);
+    }
+    primitive.customShader = getVoxelShader(config);
+  });
+
+  return primitive;
+}
 export function create3DTilesetFromConfig(viewer: Viewer, config: Config, tileLoadCallback) {
   let resource: string | Promise<IonResource> | AmazonS3Resource;
   if (config.aws_s3_bucket && config.aws_s3_key) {
@@ -141,6 +175,7 @@ export function createCesiumObject(viewer: Viewer, config: Config, tileLoadCallb
   const factories = {
     [LayerType.ionGeoJSON]: createIonGeoJSONFromConfig,
     [LayerType.tiles3d]: create3DTilesetFromConfig,
+    [LayerType.voxels3dtiles]: create3DVoxelsTilesetFromConfig,
     [LayerType.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
     [LayerType.earthquakes]: createEarthquakeFromConfig,
   };

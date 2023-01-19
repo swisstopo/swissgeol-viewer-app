@@ -71,11 +71,17 @@ export default class QueryManager {
 
   async pickObject(position) {
     const pickedPosition = this.scene.pickPosition(position);
-    let attributes = this.objectSelector.pickAttributes(position, pickedPosition);
+    const object = this.objectSelector.getObjectAtPosition(position);
+    let attributes = this.objectSelector.pickAttributes(position, pickedPosition, object);
     const attributesEmpty = !attributes || !Object.getOwnPropertyNames(attributes).length;
 
     // we only search the remote Swisstopo service when there was no result for the local search.
     if (attributesEmpty && pickedPosition) {
+      if (object) {
+        // the clicked object was not pickable, stop here
+        return;
+      }
+
       // find all queryable swisstopo layers
       const layers = this.searchableLayers.filter(config => config.queryType === 'geoadmin').map(config => config.layer);
       if (layers.length > 0) {
