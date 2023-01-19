@@ -114,6 +114,11 @@ const TEMPERATURE_HORIZON_ORDER = ['name', 'temp_c'];
 const TEMPERATURE_HORIZON_BGL_ORDER = ['name', 'temp_c', 'depth_bgl'];
 const EARTHQUAKES_PROP_ORDER = ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'];
 
+const voxelFilter = {
+  conductivityRange: [-9, -1],
+  lithologyDataName: 'Index',
+  conductivityDataName: 'logk',
+};
 
 const temperaturVoxelColors = {
   range: [0, 320],
@@ -238,6 +243,13 @@ const birrIndexVoxelColors = {
   ],
 };
 
+const birrIndexVoxelFilter = {
+  ...voxelFilter,
+  lithology: [
+    {index: 1, label: 'To be defined'},
+  ],
+};
+
 const aaretalIndexVoxelColors = {
   range: [1, 24],
   noData: -9999,
@@ -270,7 +282,7 @@ const aaretalIndexVoxelColors = {
 };
 
 const aaretalVoxelFilter = {
-  lithologyDataName: 'Index',
+  ...voxelFilter,
   lithology: [
     {index: 1, label: 'Künstliche Auffüllung'},
     {index: 5, label: 'Hangschutt'},
@@ -297,6 +309,14 @@ const genevaIndexVoxelColors = {
     'rgb(168, 168, 0)',
     'rgb(255, 235, 191)',
   ]
+};
+
+
+const genevaIndexVoxelFilter = {
+  ...voxelFilter,
+  lithology: [
+    {index: 1, label: 'To be defined'},
+  ],
 };
 
 const vispIndexVoxelColors = {
@@ -364,6 +384,13 @@ const vispIndexVoxelColors = {
     null, // 59
     'rgb(255, 128, 0)', // 60
   ]
+};
+
+const vispIndexVoxelFilter = {
+  ...voxelFilter,
+  lithology: [
+    {index: 1, label: 'To be defined'},
+  ],
 };
 
 
@@ -534,6 +561,7 @@ const geo_energy: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-Temperaturmodell-GeoMol15/tileset.json',
           voxelDataName: 'Temp_C',
           voxelColors: temperaturVoxelColors,
+          voxelFilter: voxelFilter,
           label: t('lyr_temperature_model_label'),
           layer: 'temperature_model',
           opacityDisabled: true,
@@ -735,6 +763,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-BIRR-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: birrIndexVoxelColors,
+          voxelFilter: birrIndexVoxelFilter,
           label: t('lyr_voxel_birrfeld_litho_label'),
           layer: 'voxel_birrfeld_litho',
           opacityDisabled: true,
@@ -748,6 +777,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-BIRR-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
+          voxelFilter: birrIndexVoxelFilter,
           label: t('lyr_voxel_birrfeld_logk_label'),
           layer: 'voxel_birrfeld_logk',
           opacityDisabled: true,
@@ -761,6 +791,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-GENF-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: genevaIndexVoxelColors,
+          voxelFilter: genevaIndexVoxelFilter,
           label: t('lyr_voxel_geneva_litho_label'),
           layer: 'voxel_geneva_litho',
           opacityDisabled: true,
@@ -774,6 +805,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-GENF-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
+          voxelFilter: genevaIndexVoxelFilter,
           label: t('lyr_voxel_geneva_logk_label'),
           layer: 'voxel_geneva_logk',
           opacityDisabled: true,
@@ -787,6 +819,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-VISP-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: vispIndexVoxelColors,
+          voxelFilter: vispIndexVoxelFilter,
           label: t('lyr_voxel_visp_litho_label'),
           layer: 'voxel_visp_litho',
           opacityDisabled: true,
@@ -800,6 +833,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-VISP-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
+          voxelFilter: vispIndexVoxelFilter,
           label: t('lyr_voxel_visp_logk_label'),
           layer: 'voxel_visp_logk',
           opacityDisabled: true,

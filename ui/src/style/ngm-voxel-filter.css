@@ -15,3 +15,8 @@ ngm-voxel-filter .lithology-checkbox {
   display: flex;
   flex-direction: column;
 }
+
+
+ngm-voxel-filter .filter-label {
+  font-weight: bold;
+}

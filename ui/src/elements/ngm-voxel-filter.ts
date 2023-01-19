@@ -15,19 +15,19 @@ export class NgmVoxelFilter extends LitElementI18n {
   @property({type: Object}) config!: Config;
   @property({type: Object}) viewer!: Viewer;
   @queryAll('.lithology-checkbox input[type="checkbox"]') lithologyCheckbox!: NodeListOf<HTMLInputElement>;
-  private min = NaN;
-  private max = NaN;
+  private minConductivity = NaN;
+  private maxConductivity = NaN;
 
-  private minValue = NaN;
-  private maxValue = NaN;
+  private minConductivityValue = NaN;
+  private maxConductivityValue = NaN;
 
   shouldUpdate(): boolean {
     return this.config !== undefined;
   }
 
   willUpdate() {
-    this.minValue = this.min = this.config.voxelColors!.range[0];
-    this.maxValue = this.max = this.config.voxelColors!.range[1];
+    this.minConductivityValue = this.minConductivity = this.config.voxelFilter!.conductivityRange[0];
+    this.maxConductivityValue = this.maxConductivity = this.config.voxelFilter!.conductivityRange[1];
     this.hidden = false;
   }
 
@@ -38,39 +38,51 @@ export class NgmVoxelFilter extends LitElementI18n {
         <div class="ngm-close-icon" @click=${() => this.close()}></div>
       </div>
       <div class="content-container">
-        <div>
-          <div>${i18next.t('vox_filter_hydraulic_conductivity')}</div>
-          ${i18next.t('vox_filter_min')}
-          <input class="ui" type="number" .value="${this.min}" min="${this.minValue}" @input="${evt => this.min = evt.target.value}"/>
-          ${i18next.t('vox_filter_max')}
-          <input class="ui" type="number" .value="${this.max}" max="${this.maxValue}" @input="${evt => this.max = evt.target.value}"/>
+        <div class="ui form">
+          <div class="filter-label">${i18next.t('vox_filter_hydraulic_conductivity')}</div>
+          <div class="two fields">
+            <div class="field">
+              <label>${i18next.t('vox_filter_min')}</label>
+              <input type="number" .value="${this.minConductivity}" min="${this.minConductivityValue}" @input="${evt => this.minConductivity = evt.target.value}"/>
+            </div>
+            <div class="field">
+              <label>${i18next.t('vox_filter_max')}</label>
+              <input type="number" .value="${this.maxConductivity}" max="${this.maxConductivityValue}" @input="${evt => this.maxConductivity = evt.target.value}"/>
+            </div>
+          </div>
         </div>
         ${this.config.voxelFilter?.lithology ? html`
-        <div>
-          <div class="">
-            <div class="ui radio checkbox">
-              <input type="radio" name="operator" value="0" checked>
-              <label>${i18next.t('vox_filter_and')}</label>
+        <div class="ui form">
+          <div class="inline fields">
+            <div class="field">
+              <div class="ui radio checkbox">
+                <input type="radio" id="operator_and" name="operator" value="0" checked>
+                <label for="operator_and">${i18next.t('vox_filter_and')}</label>
+              </div>
             </div>
-            <div class="ui radio checkbox">
-              <input type="radio" name="operator" value="1">
-              <label>${i18next.t('vox_filter_or')}</label>
+            <div class="field">
+              <div class="ui radio checkbox">
+                <input type="radio" id="operator_or" name="operator" value="1">
+                <label for="operator_or">${i18next.t('vox_filter_or')}</label>
+              </div>
             </div>
-            <div class="ui radio checkbox">
-              <input type="radio" name="operator" value="2">
-              <label>${i18next.t('vox_filter_xor')}</label>
+            <div class="field">
+              <div class="ui radio checkbox">
+                <input type="radio" id="operator_xor" name="operator" value="2">
+                <label for="operator_xor">${i18next.t('vox_filter_xor')}</label>
+              </div>
             </div>
           </div>
         </div>
         <div class="lithology-checkbox">
-          <div>${i18next.t('vox_filter_lithology')}</div>
+          <div class="filter-label">${i18next.t('vox_filter_lithology')}</div>
           ${repeat(this.config.voxelFilter.lithology, (lithology: any) =>
             html`<label><input type="checkbox" value="${lithology.index}" checked> ${lithology.label}</label>`
           )}
         </div>
         ` : nothing}
         <div>
-          <button class="ui button ngm-action-btn" @click="${() => this.applyFilter()}">
+          <button class="ui button" @click="${() => this.applyFilter()}">
             ${i18next.t('vox_filter_apply')}
           </button>
         </div>
@@ -87,8 +99,8 @@ export class NgmVoxelFilter extends LitElementI18n {
 
   applyFilter() {
     const shader = getVoxelShader(this.config);
-    shader.setUniform('u_filter_min', this.min);
-    shader.setUniform('u_filter_max', this.max);
+    shader.setUniform('u_filter_conductivity_min', this.minConductivity);
+    shader.setUniform('u_filter_conductivity_max', this.maxConductivity);
 
     let lithologyExclude = 0;
     this.lithologyCheckbox.forEach((checkbox, index) => {
@@ -107,8 +119,8 @@ export class NgmVoxelFilter extends LitElementI18n {
 
   resetFilter() {
     const shader = getVoxelShader(this.config);
-    shader.setUniform('u_filter_min', this.minValue);
-    shader.setUniform('u_filter_max', this.maxValue);
+    shader.setUniform('u_filter_conductivity_min', this.minConductivityValue);
+    shader.setUniform('u_filter_conductivity_max', this.maxConductivityValue);
     shader.setUniform('u_filter_lithology_exclude', 0);
     shader.setUniform('u_filter_operator', 0);
     this.viewer.scene.requestRender();

@@ -14,7 +14,8 @@ function createCustomShader(config): CustomShader {
   const min = colors.range[0];
   const max = colors.range[1];
   const noData = colors.noData;
-  const lithology = config.voxelFilter?.lithology;
+  const lithology = config.voxelFilter.lithology;
+  const conductivityRange = config.voxelFilter.conductivityRange;
 
   let fragmentShaderText = '';
   if (lithology) {
@@ -31,13 +32,15 @@ function createCustomShader(config): CustomShader {
         ${lithology.map((lithology, index) => `lithology_mapping[${index}] = ${lithology.index.toFixed(1)};`).join(' ')}
 
         float value = fsInput.metadata.${config.voxelDataName};
+
         float lithology = fsInput.metadata.${config.voxelFilter.lithologyDataName};
+        float conductivity = fsInput.metadata.${config.voxelFilter.conductivityDataName};
 
         if (value == u_noData) {
           return;
         }
 
-        bool valueInRange = value >= u_filter_min && value <= u_filter_max;
+        bool conductivityInRange = conductivity >= u_filter_conductivity_min && conductivity <= u_filter_conductivity_max;
 
         bool lithologySelected = true;
         for (int i = 0; i < lithology_mapping_length; i++) {
@@ -49,11 +52,11 @@ function createCustomShader(config): CustomShader {
 
         bool display = false;
         if (u_filter_operator == 0) { // and
-          display = valueInRange && lithologySelected;
+          display = conductivityInRange && lithologySelected;
         } else if (u_filter_operator == 1) { // or
-          display = valueInRange || lithologySelected;
+          display = conductivityInRange || lithologySelected;
         } else if (u_filter_operator == 2) { // xor
-          display = valueInRange != lithologySelected;
+          display = conductivityInRange != lithologySelected;
         }
 
         if (display) {
@@ -63,12 +66,13 @@ function createCustomShader(config): CustomShader {
         }
       }`;
   } else {
+    // FIXME: only used by the temperature layer
     fragmentShaderText = `
       void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material)
       {
         float value = fsInput.metadata.${config.voxelDataName};
 
-        if (value != u_noData && value >= u_filter_min && value <= u_filter_max) {
+        if (value != u_noData) {
           float lerp = (value - u_min) / (u_max - u_min);
           material.diffuse = texture2D(u_colorRamp, vec2(lerp, 0.5)).rgb;
           material.alpha = 1.0;
@@ -95,13 +99,13 @@ function createCustomShader(config): CustomShader {
         type: UniformType.FLOAT,
         value: max,
       },
-      u_filter_min: {
+      u_filter_conductivity_min: {
         type: UniformType.FLOAT,
-        value: min,
+        value: conductivityRange[0],
       },
-      u_filter_max: {
+      u_filter_conductivity_max: {
         type: UniformType.FLOAT,
-        value: max,
+        value: conductivityRange[1],
       },
       u_filter_lithology_exclude: {
         type: UniformType.INT,
