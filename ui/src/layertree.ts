@@ -114,6 +114,11 @@ const TEMPERATURE_HORIZON_ORDER = ['name', 'temp_c'];
 const TEMPERATURE_HORIZON_BGL_ORDER = ['name', 'temp_c', 'depth_bgl'];
 const EARTHQUAKES_PROP_ORDER = ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'];
 
+const voxelFilter = {
+  conductivityRange: [-9, -1],
+  lithologyDataName: 'Index',
+  conductivityDataName: 'logk',
+};
 
 const temperaturVoxelColors = {
   range: [0, 320],
@@ -238,6 +243,77 @@ const birrIndexVoxelColors = {
   ],
 };
 
+const birrIndexVoxelFilter = {
+  ...voxelFilter,
+  lithology: [
+    {index: 22, label: 'künstliche Aufschüttung'},
+    {index: 46, label: 'Überschwemmungssedimente'},
+    {index: 53, label: 'Verlandungssedimente'},
+    {index: 3, label: 'Bachschutt'},
+    {index: 16, label: 'Hanglehm'},
+    {index: 40, label: 'Schwemmlehm'},
+    {index: 17, label: 'Hangschutt'},
+    {index: 38, label: 'Rutschungsschutt'},
+    {index: 24, label: 'Löss'},
+    {index: 42, label: 'Stetten-Lehm'},
+    {index: 31, label: 'Pulveren-Moräne'},
+    {index: 44, label: 'Tanklager-Formation'},
+    {index: 26, label: 'Mellingen-Lehm'},
+    {index: 27, label: 'Mellingen-Moräne'},
+    {index: 14, label: 'Gruemet-Schotter'},
+    {index: 1, label: 'Aaretal-Schotter'},
+    {index: 34, label: 'Reusstal-Schotter'},
+    {index: 23, label: 'Limmattal-Schotter'},
+    {index: 51, label: 'Dättwil-Schotter'},
+    {index: 8, label: 'Bünztalschotter'},
+    {index: 29, label: 'Oberhard-Moräne'},
+    {index: 30, label: 'Othmarsingen-Moräne'},
+    {index: 13, label: 'Flüefeld-Schotter'},
+    {index: 5, label: 'Birr-Schotter'},
+    {index: 36, label: 'Rüsshalde-Formation'},
+    {index: 2, label: 'Ämmert-Moräne'},
+    {index: 47, label: 'Aemmert-Schotter'},
+    {index: 28, label: 'Mülligen-Schotter'},
+    {index: 21, label: 'Hinterbänkler-Formation'},
+    {index: 10, label: 'Dättwil-Lehm'},
+    {index: 41, label: 'Seebli-Formation'},
+    {index: 11, label: 'Fahracher-Formation'},
+    {index: 18, label: 'Hard-Schotter'},
+    {index: 25, label: 'Lupfig-Schotter'},
+    {index: 48, label: 'Reusstal-Sand'},
+    {index: 33, label: 'Reusstal-Lehm'},
+    {index: 56, label: 'Vogelsang-Formation'},
+    {index: 12, label: 'Fislisbach-Schotter'},
+    {index: 9, label: 'Burghalden-Moräne'},
+    {index: 19, label: 'Hausen-Lehm'},
+    {index: 39, label: 'Schlattboden-Schotter'},
+    {index: 32, label: 'Remigen-Schotter'},
+    {index: 20, label: 'Hausen-Moräne'},
+    {index: 4, label: 'Birr-Lehm'},
+    {index: 45, label: 'Tannholz-Formation'},
+    {index: 54, label: 'Birch-Formation'},
+    {index: 37, label: 'Rütenen-Moräne'},
+    {index: 43, label: 'Strick-Schotter'},
+    {index: 57, label: 'Oetlisberg-Schotter'},
+    {index: 15, label: 'Habsburg-Schotter'},
+    {index: 6, label: 'Brand-Formation'},
+    {index: 55, label: 'Moos-Lehm'},
+    {index: 7, label: 'Brand-Moräne'},
+    {index: 35, label: 'Rüfenach-Moräne'},
+    {index: 49, label: 'Rüfenach-Schotter'},
+    {index: 50, label: 'Ruckfeld-Schotter'},
+    {index: 52, label: 'Buenztal-Lehm'},
+    {index: 60, label: 'Birmenstorf-Glazigene Sed.'},
+    {index: 61, label: 'Eiszeitliche Seesedimente'},
+    {index: 62, label: 'Mellingen-Schotter'},
+    {index: 63, label: 'Remigen-Moräne'},
+    {index: 64, label: 'Remigen-Sediment'},
+    {index: 65, label: 'Riniken-Moräne'},
+    {index: 66, label: 'Riniken-Seesedimente'},
+    {index: 67, label: 'Bruggerberg-Schotter'},
+  ],
+};
+
 const aaretalIndexVoxelColors = {
   range: [1, 24],
   noData: -9999,
@@ -270,14 +346,33 @@ const aaretalIndexVoxelColors = {
 };
 
 const aaretalVoxelFilter = {
-  lithologyDataName: 'Index',
+  ...voxelFilter,
   lithology: [
-    {index: 1, label: 'Künstliche Auffüllung'},
-    {index: 5, label: 'Hangschutt'},
-    {index: 6, label: 'Bachschutt'},
+    {index: 1, label: 'Künstliche Auffüllung etc. (anthropogener Horizont, undifferenziert)'},
+    {index: 2, label: 'Deckschicht'},
+    {index: 3, label: 'Verlandungssedimente, Sumpf, Ried'},
+    {index: 4, label: 'Subrezente bis rezente Alluvionen (Fluss- und Bachschotter, Überschwemmungssediment, undifferenziert)'},
+    {index: 5, label: 'Hangschutt / Hanglehm (undifferenziert)'},
+    {index: 6, label: 'Bachschutt / Bachschuttkegel (undifferenziert)'},
     {index: 7, label: 'Spät- bis postglaziale Schotter'},
+    {index: 8, label: 'Spät- bis postglaziale Stausedimente und Seeablagerungen (undifferenziert)'},
+    {index: 9, label: 'Spätglaziale Moräne (undifferenziert)'},
+    {index: 10, label: 'Rückzugsschotter der Letzten Vergletscherung ("Felderschotter" und Äquivalente)'},
+    {index: 11, label: 'Stauschotter (undifferenziert)'},
+    {index: 12, label: 'Rinnenschotter'},
+    {index: 13, label: 'Moräne der Letzten Vergletscherung'},
+    {index: 14, label: 'Vorstossschotter der Letzten Vergletscherung (vorwiegend Münsingen- u. Karlsruhe-Schotter)'},
+    {index: 15, label: 'Interglaziale Seetone (Eemzeitliche Seetone)'},
+    {index: 16, label: 'Rückzugsschotter der Vorletzten Vergletscherung, Kies-Sand-Komplex von Kleinhöchstetten'},
+    {index: 17, label: 'Moräne der Vorletzten Vergletscherung ("Altmoräne")'},
+    {index: 18, label: 'Vorletzteiszeitliche glaziolakustrische Ablagerungen und Schlammmoräne'},
+    {index: 19, label: 'Alte Deltaschotter im Belpmoos'},
+    {index: 20, label: 'Uttigen-Bümberg-Steghalde-Schotter'},
     {index: 21, label: 'Oppligen-Sand'},
-  ]
+    {index: 22, label: 'Raintal-Deltaschotter, Hani-Deltaschotter'},
+    {index: 23, label: 'Alte Seetone'},
+    {index: 24, label: 'Fels (undifferenziert)'},
+  ],
 };
 
 const genevaIndexVoxelColors = {
@@ -297,6 +392,25 @@ const genevaIndexVoxelColors = {
     'rgb(168, 168, 0)',
     'rgb(255, 235, 191)',
   ]
+};
+
+
+const genevaIndexVoxelFilter = {
+  ...voxelFilter,
+  lithology: [
+    {index: 1, label: 'Terrain de couverture, sols actuels'},
+    {index: 2, label: 'Remblais'},
+    {index: 3, label: 'Eboulis, Formations de pente, Colluvions, Limons de ruissellement'},
+    {index: 4, label: 'Alluvions de terrasses'},
+    {index: 5, label: 'Dépôts ou vases lacustres, tourbe, craie lacustre'},
+    {index: 6, label: 'Formations supraglaciaires de retrait würmiens'},
+    {index: 7, label: 'Moraine würmienne à cailloux et blocs alpins'},
+    {index: 8, label: 'Dépôts intramorainiques ou intraformationnels würmiens'},
+    {index: 9, label: 'Cailloutis morainiques profonds ou « Alluvion Ancienne »'},
+    {index: 10, label: 'Interglaciaire Riss-Würm'},
+    {index: 11, label: 'Formations de retrait rissiens'},
+    {index: 12, label: 'Moraines à cailloux et blocs alpins rissiens'},
+  ],
 };
 
 const vispIndexVoxelColors = {
@@ -364,6 +478,13 @@ const vispIndexVoxelColors = {
     null, // 59
     'rgb(255, 128, 0)', // 60
   ]
+};
+
+const vispIndexVoxelFilter = {
+  ...voxelFilter,
+  lithology: [
+    {index: 1, label: 'To be defined'},
+  ],
 };
 
 
@@ -534,6 +655,7 @@ const geo_energy: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-Temperaturmodell-GeoMol15/tileset.json',
           voxelDataName: 'Temp_C',
           voxelColors: temperaturVoxelColors,
+          voxelFilter: voxelFilter,
           label: t('lyr_temperature_model_label'),
           layer: 'temperature_model',
           opacityDisabled: true,
@@ -735,6 +857,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-BIRR-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: birrIndexVoxelColors,
+          voxelFilter: birrIndexVoxelFilter,
           label: t('lyr_voxel_birrfeld_litho_label'),
           layer: 'voxel_birrfeld_litho',
           opacityDisabled: true,
@@ -748,6 +871,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-BIRR-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
+          voxelFilter: birrIndexVoxelFilter,
           label: t('lyr_voxel_birrfeld_logk_label'),
           layer: 'voxel_birrfeld_logk',
           opacityDisabled: true,
@@ -761,6 +885,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-GENF-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: genevaIndexVoxelColors,
+          voxelFilter: genevaIndexVoxelFilter,
           label: t('lyr_voxel_geneva_litho_label'),
           layer: 'voxel_geneva_litho',
           opacityDisabled: true,
@@ -774,6 +899,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-GENF-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
+          voxelFilter: genevaIndexVoxelFilter,
           label: t('lyr_voxel_geneva_logk_label'),
           layer: 'voxel_geneva_logk',
           opacityDisabled: true,
@@ -787,6 +913,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-VISP-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: vispIndexVoxelColors,
+          voxelFilter: vispIndexVoxelFilter,
           label: t('lyr_voxel_visp_litho_label'),
           layer: 'voxel_visp_litho',
           opacityDisabled: true,
@@ -800,6 +927,7 @@ const subsurface: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-VISP-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
+          voxelFilter: vispIndexVoxelFilter,
           label: t('lyr_voxel_visp_logk_label'),
           layer: 'voxel_visp_logk',
           opacityDisabled: true,

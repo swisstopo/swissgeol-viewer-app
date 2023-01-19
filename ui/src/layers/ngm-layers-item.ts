@@ -144,7 +144,7 @@ export class LayerTreeItem extends LitElementI18n {
                @click=${() => window.open(this.config?.downloadUrl)}>
             ${i18next.t('dtd_download_hint')}
           </div>` : ''}
-        ${this.config?.type === LayerType.voxels3dtiles ? html`
+        ${this.config?.type === LayerType.voxels3dtiles && this.config?.voxelFilter?.lithology ? html`
           <div class="item"
                @click=${() => this.showVoxelFilter(this.config)}>
             ${i18next.t('dtd_voxel_filter')}
