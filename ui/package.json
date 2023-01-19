@@ -79,7 +79,7 @@
     "file-loader": "6.2.0",
     "file-saver": "2.0.5",
     "i18next-parser": "7.5.0",
-    "jsdom": "20.0.3",
+    "jsdom": "21.0.0",
     "jsdom-global": "3.0.2",
     "marked": "4.2.12",
     "mini-css-extract-plugin": "2.7.2",
