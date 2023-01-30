@@ -14,6 +14,8 @@ ngm-voxel-filter input[type="number"] {
 ngm-voxel-filter .lithology-checkbox {
   display: flex;
   flex-direction: column;
+  max-height: 200px;
+  overflow: auto;
 }
 
 
