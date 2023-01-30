@@ -40,21 +40,25 @@ export default class ObjectSelector {
     this.savedColor = null;
   }
 
+  getObjectAtPosition(position) {
+    const slicerDataSource = this.viewer.dataSources.getByName('slicer')[0];
+    const objects = this.scene.drillPick(position, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
+    let object = objects[0];
+    // selects second object if first is entity related to slicing box and next is not related to slicing box
+    if (object && object.id && slicerDataSource.entities.contains(object.id)) {
+      object = undefined;
+      if (objects[1] && (!objects[1].id || !slicerDataSource.entities.contains(objects[1].id))) {
+        object = objects[1];
+      }
+    }
+    return object;
+  }
 
   pickAttributes(clickPosition, pickedPosition, object) {
     this.unhighlight();
     let attributes = {};
     if (!object) {
-      const slicerDataSource = this.viewer.dataSources.getByName('slicer')[0];
-      const objects = this.scene.drillPick(clickPosition, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
-      object = objects[0];
-      // selects second object if first is entity related to slicing box and next is not related to slicing box
-      if (object && object.id && slicerDataSource.entities.contains(object.id)) {
-        object = undefined;
-        if (objects[1] && (!objects[1].id || !slicerDataSource.entities.contains(objects[1].id))) {
-          object = objects[1];
-        }
-      }
+      object = this.getObjectAtPosition(clickPosition);
     }
 
     if (object) {

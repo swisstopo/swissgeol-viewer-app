@@ -38,6 +38,11 @@ export default {
   mode: devMode ? 'development' : 'production',
   resolve: {
     extensions: ['.ts', '.js'],
+    fallback: {
+      http: false,
+      https: false,
+      zlib: false,
+    },
     alias: {
       cesium: resolve(__dirname, 'node_modules/cesium'),
       // we need the aliases below for CSS :( don't know why

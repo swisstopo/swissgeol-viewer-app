@@ -55,6 +55,7 @@
   "dtd_show": "Show",
   "dtd_topic_kml_tag": "Topic object",
   "dtd_user_content_label": "Add user content",
+  "dtd_voxel_filter": "Open Filter",
   "dtd_zoom_to": "Zoom to",
   "duplicate_to_project": "Duplicate to my projects",
   "edit_project": "Edit project",
@@ -300,5 +301,14 @@
   "tracking_deny_btn_label": "Continue without data acquisition",
   "tracking_text": "To enable us to optimally tailor our website to your needs, we use the analysis tools Google Analytics, Hotjar and Sentry. Your behaviour on the website is recorded in anonymised form. No personal data is transmitted or stored. If you do not wish to consent to this, you can stop data collection by analysis tools and still use this website without restrictions. You can find more information about this on our <a target='_blank' href='legal/legal_en.html'>Legal framework page.</a>",
   "view": "View",
+  "vox_filter_and": "AND",
+  "vox_filter_apply": "Apply filter",
+  "vox_filter_filtering_on": "Filtering on layer",
+  "vox_filter_hydraulic_conductivity": "Hydraulic Conductivity",
+  "vox_filter_lithology": "Lithology",
+  "vox_filter_max": "Max",
+  "vox_filter_min": "Min",
+  "vox_filter_or": "OR",
+  "vox_filter_xor": "XOR",
   "welcome_get_shortlink_error": "An error occurred and the shortcut cannot be created, please try again later."
 }

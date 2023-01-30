@@ -123,7 +123,7 @@ export default class Slicer {
       executeForAllPrimitives(this.viewer, (primitive) => {
         if (!primitive.clippingPlanes) return;
         primitive.clippingPlanes.enabled = false;
-        primitive.clippingPlanes = undefined;
+        primitive.clippingPlanes.removeAll();
       });
     }
     this.viewer.scene.requestRender();

@@ -28,7 +28,7 @@
 @import 'fomantic-ui-css/components/header.css';
 @import 'fomantic-ui-css/components/card.css';
 
-@import 'widgets.css';
+@import 'cesium/Source/Widgets/widgets.css';
 
 @import 'search.css';
 @import 'ngm-height-slider.css';
@@ -60,6 +60,7 @@
 @import 'topographic-profile.css';
 @import 'view-menu.css';
 @import 'project-selector.css';
+@import 'ngm-voxel-filter.css';
 
 * {
   scrollbar-color: light;

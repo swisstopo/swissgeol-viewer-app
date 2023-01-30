@@ -14,6 +14,7 @@ import './elements/ngm-height-slider';
 import './toolbox/ngm-topo-profile-modal';
 import './toolbox/ngm-geometry-info';
 import './elements/ngm-layer-legend';
+import './elements/ngm-voxel-filter';
 import './cesium-toolbar';
 import './elements/ngm-project-popup';
 import './elements/view-menu';
@@ -92,6 +93,7 @@ export class NgmApp extends LitElementI18n {
   @state() showAxisOnMap = false;
   @state() showProjectSelector = false;
   @query('ngm-cam-configuration') camConfigElement;
+  @query('ngm-voxel-filter') voxelFilterElement;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
   private showCesiumToolbar = getCesiumToolbarParam();
@@ -129,6 +131,10 @@ export class NgmApp extends LitElementI18n {
       this.legendConfigs.push(config);
       this.requestUpdate();
     }
+  }
+
+  onShowVoxelFilter(event: CustomEvent) {
+    this.voxelFilterElement.config = event.detail.config;
   }
 
   onCloseLayerLegend(event) {
@@ -373,7 +379,8 @@ export class NgmApp extends LitElementI18n {
           .queryManager=${this.queryManager}
           .mobileView=${this.mobileView}
           @layeradded=${this.onLayerAdded}
-          @showLayerLegend=${this.onShowLayerLegend}>
+          @showLayerLegend=${this.onShowLayerLegend}
+          @showVoxelFilter=${this.onShowVoxelFilter}>
         </ngm-side-bar>
         <div class='map'>
           <div id='cesium'>
@@ -407,10 +414,11 @@ export class NgmApp extends LitElementI18n {
                               .showProjectSelector=${this.showProjectSelector}
                               @close=${() => this.showProjectSelector = false}>
             </project-selector>
+            <ngm-voxel-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-filter>
             <div class="on-map-menu">
               <cesium-view-cube ?hidden=${this.mobileView || this.showAxisOnMap}
                                 .scene="${this.viewer?.scene}"></cesium-view-cube>
-              
+
               <ngm-map-chooser .hidden=${this.mobileView} class="ngm-bg-chooser-map"
                               .initiallyOpened=${false}></ngm-map-chooser>
               <view-menu class="view-menu"

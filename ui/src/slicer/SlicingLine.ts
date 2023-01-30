@@ -1,12 +1,13 @@
 import {getOrthogonalViewPoints, planeFromTwoPoints} from '../cesiumutils';
 import {executeForAllPrimitives} from '../utils';
-import {createClippingPlanes, getClippingPlaneFromSegmentWithTricks, createCPCModelMatrixFromSphere} from './helper';
+import {createClippingPlanes, createCPCModelMatrixFromSphere, getClippingPlaneFromSegmentWithTricks} from './helper';
 import SlicingToolBase from './SlicingToolBase';
 import {
   Matrix4,
   Cartesian3,
   Plane,
   ClippingPlaneCollection,
+  VoxelPrimitive,
 } from 'cesium';
 import type {Cesium3DTileset} from 'cesium';
 
@@ -56,6 +57,12 @@ export default class SlicingLine extends SlicingToolBase {
     // https://github.com/CesiumGS/cesium/blob/4c6a296f63c63627b1cbe0a1f81d77a08799dd27/Source/Scene/Cesium3DTileset.js#L862-L873
     // There is a proposition to use planes in world coordinates: https://github.com/CesiumGS/cesium/issues/8554
 
+    if (primitive instanceof VoxelPrimitive && this.options) {
+      // works vice-verse to the globe \o/
+      const plane = planeFromTwoPoints(this.options.slicePoints[0], this.options.slicePoints[1], !this.options.negate);
+      primitive.clippingPlanes = createClippingPlanes([plane]);
+      return;
+    }
     if (!primitive.root || !primitive.boundingSphere || !this.options) return;
     if (Matrix4.equals(primitive.root.transform, Matrix4.IDENTITY)) {
       this.addClippingPlanesFromSphere(primitive);
