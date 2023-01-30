@@ -43,11 +43,11 @@ export class NgmVoxelFilter extends LitElementI18n {
           <div class="two fields">
             <div class="field">
               <label>${i18next.t('vox_filter_min')}</label>
-              <input type="number" .value="${this.minConductivity}" min="${this.minConductivityValue}" @input="${evt => this.minConductivity = evt.target.value}"/>
+              <input type="number" step="0.01" .value="${this.minConductivity}" min="${this.minConductivityValue}" @input="${evt => this.minConductivity = evt.target.value}"/>
             </div>
             <div class="field">
               <label>${i18next.t('vox_filter_max')}</label>
-              <input type="number" .value="${this.maxConductivity}" max="${this.maxConductivityValue}" @input="${evt => this.maxConductivity = evt.target.value}"/>
+              <input type="number" step="0.01" .value="${this.maxConductivity}" max="${this.maxConductivityValue}" @input="${evt => this.maxConductivity = evt.target.value}"/>
             </div>
           </div>
         </div>
