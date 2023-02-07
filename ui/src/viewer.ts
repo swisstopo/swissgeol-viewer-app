@@ -30,7 +30,7 @@ let noLimit = true;
 
 const FOG_FRAGMENT_SHADER_SOURCE = `
   float getDistance(sampler2D depthTexture, vec2 texCoords) {
-      float depth = czm_unpackDepth(texture2D(depthTexture, texCoords));
+      float depth = czm_unpackDepth(texture(depthTexture, texCoords));
       if (depth == 0.0) {
           return czm_infinity;
       }
@@ -52,13 +52,13 @@ const FOG_FRAGMENT_SHADER_SOURCE = `
   uniform sampler2D depthTexture;
   uniform vec4 fogByDistance;
   uniform vec4 fogColor;
-  varying vec2 v_textureCoordinates;
+  in vec2 v_textureCoordinates;
   void main(void) {
       float distance = getDistance(depthTexture, v_textureCoordinates);
-      vec4 sceneColor = texture2D(colorTexture, v_textureCoordinates);
+      vec4 sceneColor = texture(colorTexture, v_textureCoordinates);
       float blendAmount = interpolateByDistance(fogByDistance, distance);
-      vec4 undergroundColor = vec4(fogColor.rgb, fogColor.a * blendAmount);
-      gl_FragColor = alphaBlend(undergroundColor, sceneColor);
+      vec4 finalFogColor = vec4(fogColor.rgb, fogColor.a * blendAmount);
+      out_FragColor = alphaBlend(finalFogColor, sceneColor);
   }`;
 
 interface EmptyLayer {
@@ -116,7 +116,6 @@ export function setupViewer(container: Element, rethrowRenderErrors: boolean) {
     preserveDrawingBuffer: searchParams.has('preserveDrawingBuffer')
   };
   const contextOptions = {
-    requestWebGl2: true,
     webgl
   };
   const viewer = new Viewer(container, {

@@ -61,7 +61,7 @@ function createCustomShader(config): CustomShader {
 
         if (display) {
           float lerp = (value - u_min) / (u_max - u_min);
-          material.diffuse = texture2D(u_colorRamp, vec2(lerp, 0.5)).rgb;
+          material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb;
           material.alpha = 1.0;
         }
       }`;
@@ -74,7 +74,7 @@ function createCustomShader(config): CustomShader {
 
         if (value != u_noData) {
           float lerp = (value - u_min) / (u_max - u_min);
-          material.diffuse = texture2D(u_colorRamp, vec2(lerp, 0.5)).rgb;
+          material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb;
           material.alpha = 1.0;
         }
       }`;
