@@ -2,7 +2,7 @@ ngm-voxel-filter {
   width: 520px;
 }
 
-ngm-voxel-filter .content-container > div {
+ngm-voxel-filter .content-container > * {
   border-bottom: 2px solid #DFE2E6;
   padding: 10px;
 }
