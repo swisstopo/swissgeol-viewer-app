@@ -128,7 +128,7 @@ export class NgmVoxelFilter extends LitElementI18n {
     });
     shader.setUniform('u_filter_lithology_exclude', lithologyExclude);
     const operator = this.querySelector<HTMLInputElement>('input[name="operator"]:checked')!;
-    shader.setUniform('u_filter_operator', operator.value);
+    shader.setUniform('u_filter_operator', parseInt(operator.value, 10));
 
     console.log({
       u_filter_conductivity_min: this.minConductivity,
