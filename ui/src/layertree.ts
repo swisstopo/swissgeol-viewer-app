@@ -161,7 +161,7 @@ const temperaturVoxelColors = {
 
 const logkVoxelColors = {
   range: [-9, -1],
-  noData: -9999.0,
+  noData: -99999,
   colors: [
     'rgb(0, 102, 255)',
     'rgb(255, 204, 0)',
@@ -171,7 +171,7 @@ const logkVoxelColors = {
 
 const birrIndexVoxelColors = {
   range: [1, 67],
-  noData: -9999,
+  noData: -99999,
   colors: [
     'rgb(128, 212, 255)',
     'rgb(173, 200, 90)',
@@ -316,7 +316,7 @@ const birrIndexVoxelFilter = {
 
 const aaretalIndexVoxelColors = {
   range: [1, 24],
-  noData: -9999,
+  noData: -99999,
   colors: [
     'rgb(255, 0, 149)',
     'rgb(255, 128, 0)',
@@ -377,7 +377,7 @@ const aaretalVoxelFilter = {
 
 const genevaIndexVoxelColors = {
   range: [3000, 12000],
-  noData: -9999,
+  noData: -99999,
   colors: [
     'rgb(254, 2, 194)',
     'rgb(254, 2, 194)',
@@ -398,24 +398,24 @@ const genevaIndexVoxelColors = {
 const genevaIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: 1, label: 'Terrain de couverture, sols actuels'},
-    {index: 2, label: 'Remblais'},
-    {index: 3, label: 'Eboulis, Formations de pente, Colluvions, Limons de ruissellement'},
-    {index: 4, label: 'Alluvions de terrasses'},
-    {index: 5, label: 'Dépôts ou vases lacustres, tourbe, craie lacustre'},
-    {index: 6, label: 'Formations supraglaciaires de retrait würmiens'},
-    {index: 7, label: 'Moraine würmienne à cailloux et blocs alpins'},
-    {index: 8, label: 'Dépôts intramorainiques ou intraformationnels würmiens'},
-    {index: 9, label: 'Cailloutis morainiques profonds ou « Alluvion Ancienne »'},
-    {index: 10, label: 'Interglaciaire Riss-Würm'},
-    {index: 11, label: 'Formations de retrait rissiens'},
-    {index: 12, label: 'Moraines à cailloux et blocs alpins rissiens'},
+    {index: 1000, label: 'Terrain de couverture, sols actuels'},
+    {index: 2000, label: 'Remblais'},
+    {index: 3000, label: 'Eboulis, Formations de pente, Colluvions, Limons de ruissellement'},
+    {index: 4000, label: 'Alluvions de terrasses'},
+    {index: 5000, label: 'Dépôts ou vases lacustres, tourbe, craie lacustre'},
+    {index: 6000, label: 'Formations supraglaciaires de retrait würmiens'},
+    {index: 7000, label: 'Moraine würmienne à cailloux et blocs alpins'},
+    {index: 8000, label: 'Dépôts intramorainiques ou intraformationnels würmiens'},
+    {index: 9000, label: 'Cailloutis morainiques profonds ou « Alluvion Ancienne »'},
+    {index: 10000, label: 'Interglaciaire Riss-Würm'},
+    {index: 11000, label: 'Formations de retrait rissiens'},
+    {index: 12000, label: 'Moraines à cailloux et blocs alpins rissiens'},
   ],
 };
 
 const vispIndexVoxelColors = {
   range: [1, 60],
-  noData: -9999.0,
+  noData: -99999,
   colors: [
     'rgb(100, 255, 22)', // 1
     'rgb(73, 219, 0)', // 2
@@ -483,7 +483,35 @@ const vispIndexVoxelColors = {
 const vispIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: 1, label: 'To be defined'},
+    {index: 50, label: 'Künstliche Ablagerung'},
+    {index: 51, label: 'Künstliche Ablagerung Bahhof Brig'},
+    {index: 52, label: 'Künstliche Ablagerung Damm'},
+    {index: 53, label: 'Künstliche Ablagerung Golar'},
+    {index: 55, label: 'Künstliche Ablagerung Riedertal'},
+    {index: 54, label: 'Künstliche Ablagerung Lonzadeponie'},
+    {index: 14, label: 'Gehängeschutt'},
+    {index: 16, label: 'Bergsturzmaterial'},
+    {index: 31, label: 'Felssackung'},
+    {index: 30, label: 'Sackungsmasse Riedberg'},
+    {index: 40, label: 'Bachschuttablagerung'},
+    {index: 41, label: 'Bachschuttablagerung Baltschiederbach'},
+    {index: 44, label: 'Bachschuttablagerung Gamsa'},
+    {index: 42, label: 'Bachschuttablagerung Bietschbach'},
+    {index: 43, label: 'Bachschuttablagerung Chelchbach'},
+    {index: 45, label: 'Bachschuttablagerung Jolibach'},
+    {index: 46, label: 'Bachschuttablagerung Lonza'},
+    {index: 47, label: 'Bachschuttablagerung Saltina'},
+    {index: 60, label: 'Deckschicht'},
+    {index: 7, label: 'Obere Limnische Ablagerungen oli'},
+    {index: 5, label: 'Limnische Ablagerungen Vispa'},
+    {index: 8, label: 'Untere Limnische Ablagerungen uli'},
+    {index: 1, label: 'Limnische Ablagerungen'},
+    {index: 2, label: 'Limnische Ablagerungen 2'},
+    {index: 3, label: 'Limnische Ablagerungen 4'},
+    {index: 4, label: 'Limnische Ablagerungen 5'},
+    {index: 9, label: 'Rhoneschotter und Rhonesande'},
+    {index: 48, label: 'Bachschuttablagerung Vispa'},
+    {index: 6, label: 'Moränenmaterial'},
   ],
 };
 
