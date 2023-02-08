@@ -36,6 +36,7 @@ export interface LayerTreeNode {
 }
 
 export interface VoxelColors {
+  label?: string;
   range: number[];
   noData: number;
   colors: (string|null)[];
@@ -121,6 +122,7 @@ const voxelFilter = {
 };
 
 const temperaturVoxelColors = {
+  label: t('Temperature'),
   range: [0, 320],
   noData: -99999,
   colors: [
@@ -683,7 +685,6 @@ const geo_energy: LayerTreeNode = {
           url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-Temperaturmodell-GeoMol15/tileset.json',
           voxelDataName: 'Temp_C',
           voxelColors: temperaturVoxelColors,
-          voxelFilter: voxelFilter,
           label: t('lyr_temperature_model_label'),
           layer: 'temperature_model',
           opacityDisabled: true,

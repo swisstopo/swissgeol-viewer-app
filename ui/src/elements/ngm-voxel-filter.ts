@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import {html, nothing} from 'lit';
+import {html} from 'lit';
 import {customElement, property, query, queryAll} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
 import draggable from './draggable';
@@ -48,15 +48,14 @@ export class NgmVoxelFilter extends LitElementI18n {
           <div class="two fields">
             <div class="field">
               <label>${i18next.t('vox_filter_min')}</label>
-              <input class="min-conductivity" type="number" step="0.01" value="${this.minConductivity}" min="${this.minConductivityValue}" max="${this.maxConductivity}" @input="${evt => this.minConductivityChanged(evt)}"/>
+              <input required class="min-conductivity" type="number" step="0.01" value="${this.minConductivity}" min="${this.minConductivityValue}" max="${this.maxConductivity}" @input="${evt => this.minConductivityChanged(evt)}"/>
             </div>
             <div class="field">
               <label>${i18next.t('vox_filter_max')}</label>
-              <input class="max-conductivity" type="number" step="0.01" value="${this.maxConductivity}" min="${this.minConductivity}" max="${this.maxConductivityValue}" @input="${evt => this.maxConductivityChanged(evt)}"/>
+              <input required class="max-conductivity" type="number" step="0.01" value="${this.maxConductivity}" min="${this.minConductivity}" max="${this.maxConductivityValue}" @input="${evt => this.maxConductivityChanged(evt)}"/>
             </div>
           </div>
         </form>
-        ${this.config.voxelFilter?.lithology ? html`
         <form class="ui form">
           <div class="inline fields">
             <div class="field">
@@ -85,7 +84,6 @@ export class NgmVoxelFilter extends LitElementI18n {
             html`<label><input type="checkbox" value="${lithology.index}" checked> ${lithology.label}</label>`
           )}
         </form>
-        ` : nothing}
         <div>
           <button class="ui button" @click="${() => this.applyFilter()}">
             ${i18next.t('vox_filter_apply')}
@@ -96,7 +94,7 @@ export class NgmVoxelFilter extends LitElementI18n {
     `;
   }
 
-  minConductivityChanged(evt: any) {
+  minConductivityChanged(evt) {
     this.minConductivity = parseFloat(evt.target.value);
     this.maxConductivityInput.min = this.minConductivity.toString();
   }
