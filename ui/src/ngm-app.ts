@@ -15,6 +15,7 @@ import './toolbox/ngm-topo-profile-modal';
 import './toolbox/ngm-geometry-info';
 import './elements/ngm-layer-legend';
 import './elements/ngm-voxel-filter';
+import './elements/ngm-voxel-simple-filter';
 import './cesium-toolbar';
 import './elements/ngm-project-popup';
 import './elements/view-menu';
@@ -94,6 +95,7 @@ export class NgmApp extends LitElementI18n {
   @state() showProjectSelector = false;
   @query('ngm-cam-configuration') camConfigElement;
   @query('ngm-voxel-filter') voxelFilterElement;
+  @query('ngm-voxel-simple-filter') voxelSimpleFilterElement;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
   private showCesiumToolbar = getCesiumToolbarParam();
@@ -134,7 +136,12 @@ export class NgmApp extends LitElementI18n {
   }
 
   onShowVoxelFilter(event: CustomEvent) {
-    this.voxelFilterElement.config = event.detail.config;
+    const config = event.detail.config;
+    if (config.voxelFilter) {
+      this.voxelFilterElement.config = config;
+    } else {
+      this.voxelSimpleFilterElement.config = config;
+    }
   }
 
   onCloseLayerLegend(event) {
@@ -415,6 +422,7 @@ export class NgmApp extends LitElementI18n {
                               @close=${() => this.showProjectSelector = false}>
             </project-selector>
             <ngm-voxel-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-filter>
+            <ngm-voxel-simple-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-simple-filter>
             <div class="on-map-menu">
               <cesium-view-cube ?hidden=${this.mobileView || this.showAxisOnMap}
                                 .scene="${this.viewer?.scene}"></cesium-view-cube>

@@ -61,6 +61,7 @@
 @import 'view-menu.css';
 @import 'project-selector.css';
 @import 'ngm-voxel-filter.css';
+@import 'ngm-voxel-simple-filter.css';
 
 * {
   scrollbar-color: light;
