@@ -83,6 +83,7 @@ const config = {
         {src: 'locales', dest: 'dist/'},
         {src: 'robots.txt', dest: 'dist/'},
         {src: 'robots_prod.txt', dest: 'dist/'},
+        {src: 'security.txt', dest: 'dist/.well-known/'},
         {src: cesiumSource + '/' + cesiumWorkers, dest: 'dist/'},
         {src: cesiumSource + '/Assets', dest: 'dist/'},
         {src: cesiumSource + '/Widgets', dest: 'dist/'},
