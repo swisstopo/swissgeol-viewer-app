@@ -1,0 +1,13 @@
+# In the event that you have discovered a technical vulnerability in an IT system of the federal government,
+# we encourage you to report it to the National Cyber Security Centre NCSC using the Coordinated Vulnerability Disclosure program.
+# We will triage your request to the appropriate entity.
+# If you are interested in participating in the NCSC bug bounty programs you can apply here: https://www.bugbounty.ch/ncsc
+
+Contact: https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-it-spezialisten/themen/schwachstelle-melden.html
+Contact: mailto:incidents@ncsc.ch
+Expires: 2023-12-31T23:59:59.000Z
+Encryption: https://www.ncsc.admin.ch/dam/ncsc/de/Key/pgp_ncsc_incidents.asc.download.asc/NCSC_Incidents.asc
+Encryption: https://www.ncsc.admin.ch/dam/ncsc/de/Key/smime_ncsc_incidents_2021.crt.download.crt/smime_ncsc_incidents_2021.crt
+Preferred-Languages: en, de, fr, it
+Canonical: https://www.ncsc.admin.ch/.well-known/security.txt
+Policy: https://www.ncsc.admin.ch/ncsc/en/home/infos-fuer/infos-it-spezialisten/themen/schwachstelle-melden/scope-and-rules.html
