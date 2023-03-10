@@ -299,7 +299,7 @@
   "topographic_profile_header": "Profil de hauteur",
   "tracking_agree_btn_label": "D'accord",
   "tracking_deny_btn_label": "Continuer sans acquisition de données",
-  "tracking_text": "Nous utilisons les outils d’analyse Google Analytics, et Sentry afin d’adapter au mieux notre site web à vos besoins. Votre comportement sur le site est enregistré de manière anonyme. Aucune donnée personnelle n’est transmise ou stockée. Si vous n’acceptez pas cet état de fait, vous pouvez empêcher la collecte de données par des outils d’analyse et continuer à utiliser ce site web sans restriction. Vous trouverez plus d’informations à ce sujet sur notre page <a target='_blank' href='legal/legal_fr.html'>Informations juridiques.</a>",
+  "tracking_text": "Nous utilisons les outils d’analyse Google Analytics et Sentry afin d’adapter au mieux notre site web à vos besoins. Votre comportement sur le site est enregistré de manière anonyme. Aucune donnée personnelle n’est transmise ou stockée. Si vous n’acceptez pas cet état de fait, vous pouvez empêcher la collecte de données par des outils d’analyse et continuer à utiliser ce site web sans restriction. Vous trouverez plus d’informations à ce sujet sur notre page <a target='_blank' href='legal/legal_fr.html'>Informations juridiques.</a>",
   "view": "Vue",
   "vox_filter_and": "",
   "vox_filter_apply": "",
