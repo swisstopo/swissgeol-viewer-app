@@ -1,25 +1,25 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
+import type {Viewer} from 'cesium';
 import {
-  IonResource,
-  GeoJsonDataSource,
+  Cartesian3,
+  Cartographic,
+  Cesium3DTileColorBlendMode,
   Cesium3DTileset,
   Cesium3DTileStyle,
-  Cartographic,
-  LabelStyle,
-  Rectangle,
-  Cartesian3,
+  Cesium3DTilesVoxelProvider,
   Ellipsoid,
+  GeoJsonDataSource,
+  IonResource,
+  LabelStyle,
   Matrix3,
   Matrix4,
-  Cesium3DTileColorBlendMode,
-  Cesium3DTilesVoxelProvider,
+  Rectangle,
   VoxelPrimitive,
 } from 'cesium';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
 import {LayerType} from '../constants';
 import {isLabelOutlineEnabled} from '../permalink';
 import AmazonS3Resource from '../AmazonS3Resource.js';
-import type {Viewer} from 'cesium';
 import type {Config} from './ngm-layers-item.js';
 import {getVoxelShader} from './voxels-helper';
 
@@ -71,6 +71,7 @@ export function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Config, 
       throw new Error(`Voxel data name ${config.voxelDataName} not found in the tileset`);
     }
     primitive.customShader = getVoxelShader(config);
+    primitive.jitter = false;
   });
 
   return primitive;
