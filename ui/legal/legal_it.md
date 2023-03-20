@@ -45,12 +45,11 @@ Su certe pagine usiamo i cookie per rendere più allettante la nostra pagina web
 Potete evitare il salvataggio dei cookie sul vostro navigatore limitando o disattivando il salvataggio e la lettura dei cookie. Vogliate tuttavia notare che in tal caso, non sarà eventualmente possibile utilizzare integralmente tutte le funzioni di questo sito web.
 
 ### Servizi di analisi
-Se avete dato il vostro consenso, questo sito web utilizza Google Analytics, Hotjar e Sentry, dei servizi di analisi web forniti da Google Ireland Limited («Google»), Hotjar.com e Sentry.io. Questo consente di attribuire dati, sessioni e interazioni provenienti da diversi apparecchi a un ID utente pseudonimo e quindi di analizzare le attività di un utente su più dispositivi.
+Se avete dato il vostro consenso, questo sito web utilizza Google Analytics e Sentry, dei servizi di analisi web forniti da Google Ireland Limited («Google») e Sentry.io. Questo consente di attribuire dati, sessioni e interazioni provenienti da diversi apparecchi a un ID utente pseudonimo e quindi di analizzare le attività di un utente su più dispositivi.
 
 I servizi di analisi utilizzano i cosiddetti «cookie», file di testo che permettono di analizzare l’utilizzo del sito web da parte vostra. Le informazioni generate dai cookie sul vostro utilizzo del sito web vengono generalmente trasmesse e salvate su un server dei gestori indicati. Vogliate notare che su questo sito web i servizi di analisi sono stati ampliati con una funzione di anonimizzazione IP per garantire il rilevamento anonimo degli indirizzi IP (il cosiddetto IP-Masking). L’indirizzo IP comunicato dal vostro navigatore nell’ambito del servizio di analisi non viene associato a nessun altro dato in possesso del gestore. Ulteriori informazioni sulle condizioni d’uso e sulla protezione dei dati sono disponibili su
 <https://marketingplatform.google.com/about/analytics/terms/it/.> e 
 <https://policies.google.com/?hl=it>
-[Hotjar - Privacy Policy](https://www.hotjar.com/legal/policies/privacy/)
 <https://sentry.io/privacy/>
 
 ### Finalità del trattamento
