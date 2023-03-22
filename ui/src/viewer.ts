@@ -133,7 +133,6 @@ export function setupViewer(container: Element, rethrowRenderErrors: boolean) {
 
     const webgl: WebGLOptions = {
         powerPreference: 'high-performance',
-        preserveDrawingBuffer: searchParams.has('preserveDrawingBuffer')
     };
     const contextOptions = {
         webgl
