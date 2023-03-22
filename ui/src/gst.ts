@@ -1,13 +1,13 @@
 import type {OutputFormat} from './toolbox/ngm-gst-interaction';
 
 const boreholeBaseUrl = 'https://viewer.geomol.ch/webgui/createBoreholeWithOverviewMap.php';
-const boreholeParams = 'csRootElement=0&csRootScale=-1&intersectionGeometry=multipoint%20z%20(({coordinates}))&legendTemplateFile=&maxBoreDepth={depth}&outputType={outputType}&projectZ=true&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=02-BH_swisstopo_Map_2019a.svg&title={title}&user=NGM&crs=EPSG:2056&verticalExageration=-1';
+const boreholeParams = 'csRootElement=0&csRootScale=-1&intersectionGeometry=multipoint%20z%20(({coordinates}))&legendTemplateFile=&maxBoreDepth={depth}&outputType={outputType}&projectZ=true&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=11510&templateFile=02-BH_swisstopo_Map_2019a.svg&title={title}&user=NGM&crs=EPSG:2056&verticalExageration=-1';
 
 const verticalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createCrossSectionWithOverviewMap.php';
-const verticalCrossSectionParams = 'csRootElement=0&csRootScale=-1&depthRangeMax=3.40282e%2B38&depthRangeMin=-3.40282e%2B38&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType={outputType}&overviewMap=&pointProjectionDistance=0&propertySelection=&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=03-CS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056&verticalExageration=-1';
+const verticalCrossSectionParams = 'csRootElement=0&csRootScale=-1&depthRangeMax=3.40282e%2B38&depthRangeMin=-3.40282e%2B38&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType={outputType}&overviewMap=&pointProjectionDistance=0&propertySelection=&secret=SAS2019@ngm&srs=18&subtreeRootElement=11510&templateFile=03-CS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056&verticalExageration=-1';
 
 const horizontalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createHorizontalSectionWithOverviewMap.php';
-const horizontalSectionParams = 'boxWidth={width}&colorMapId=&csRootElement=0&csRootScale=-1&depth={depth}&direction={direction}&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType={outputType}&overviewMap=&propertySelection=&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=4660&templateFile=04-HS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056&verticalExageration=-1';
+const horizontalSectionParams = 'boxWidth={width}&colorMapId=&csRootElement=0&csRootScale=-1&depth={depth}&direction={direction}&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType={outputType}&overviewMap=&propertySelection=&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=11510&templateFile=04-HS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056&verticalExageration=-1';
 
 
 export function borehole(
