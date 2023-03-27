@@ -372,7 +372,7 @@ const aaretalVoxelFilter = {
 };
 
 const genevaIndexVoxelColors = {
-  range: [3000, 12000],
+  range: [1000, 12000],
   noData: -99999,
   colors: [
     'rgb(254, 2, 194)',
