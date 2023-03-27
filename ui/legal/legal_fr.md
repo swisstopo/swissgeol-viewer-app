@@ -46,11 +46,10 @@ Nous utilisons des cookies sur différentes pages afin de rendre la visite de no
 Vous pouvez empêcher l’enregistrement de cookies sur votre navigateur en limitant ou en désactivant l’enregistrement et la lecture de cookies. Veuillez noter que vous ne pouvez pas utiliser certaines fonctions de notre site Internet si vous empêchez l’enregistrement et l’utilisation des cookies.
 
 ### Services d’analyse
-Dès que vous aurez donné votre consentement, Google Analytics, Hotjar et Sentry, des outils gratuits proposés par les sociétés Google Ireland Limited (abrégé ci-après Google), Hotjar.com et Sentry.io et permettant d’analyser le trafic web, seront installés sur ce site. Ceux-ci permettent d’associer les données, les sessions et les interactions issues de différents appareils à des pseudonymes d’identifiants d’utilisateurs (User-ID) ; ainsi, il est possible d’analyser toutes vos activités sur différents appareils.
+Dès que vous aurez donné votre consentement, Google Analytics et Sentry, des outils gratuits proposés par les sociétés Google Ireland Limited (abrégé ci-après Google) et Sentry.io et permettant d’analyser le trafic web, seront installés sur ce site. Ceux-ci permettent d’associer les données, les sessions et les interactions issues de différents appareils à des pseudonymes d’identifiants d’utilisateurs (User-ID) ; ainsi, il est possible d’analyser toutes vos activités sur différents appareils.
 
 Les services d’analyse recourent à des cookies qui permettent d’analyser votre comportement d’internaute. Les informations recueillies par ces témoins de connexion sont en général transmises à un serveur du fournisseur mentionné, où elles sont stockées.  Nous tenons à souligner que sur ce site, les services d’analyse sont dotés d’une extension pour l’anonymisation ; cela signifie que l’adresse IP des visiteurs du site est modifiée avant la transmission des données de suivi, afin de garantir que les moteurs de recherche ne puissent pas attribuer ces données à une adresse IP exacte (adresse IP masquée). De même, l’adresse IP transmise par votre navigateur Internet dans le cadre des services d’analyse n’est pas fusionnée aux autres données de ces fournisseurs. Vous trouverez de plus amples informations concernant les conditions d’utilisation et la protection des données sous
 <https://www.google.com/analytics/terms/fr.html> et <https://policies.google.com/?hl=fr>.
-[Hotjar - Privacy Policy](https://www.hotjar.com/legal/policies/privacy/)
 <https://sentry.io/privacy/>
 
 ### Finalité

@@ -47,11 +47,10 @@ Auf verschiedenen Seiten verwenden wir Cookies, um den Besuch unserer Website at
 Sie können die Speicherung von Cookies in Ihrem Browser verhindern, indem Sie die Speicherung und das Lesen von Cookies einschränken oder ausschalten.. Bitte beachten Sie, dass Sie gewisse Funktionen unserer Website ohne Cookies nicht nutzen können.
 
 ### Analysedienste
-Soweit Sie Ihre Einwilligung erklärt haben, wird auf dieser Website Google Analytics, Hotjar und Sentry eingesetzt, ein Webanalysedienste der Google Ireland Limited („Google“), Hotjar.com und Sentry.io. Hierdurch ist es möglich, Daten, Sitzungen und Interaktionen über mehrere Geräte hinweg einer pseudonymen User-ID zuzuordnen und so die Aktivitäten eines Nutzers geräteübergreifend zu analysieren.
+Soweit Sie Ihre Einwilligung erklärt haben, wird auf dieser Website Google Analytics und Sentry eingesetzt, ein Webanalysedienste der Google Ireland Limited („Google“) und Sentry.io. Hierdurch ist es möglich, Daten, Sitzungen und Interaktionen über mehrere Geräte hinweg einer pseudonymen User-ID zuzuordnen und so die Aktivitäten eines Nutzers geräteübergreifend zu analysieren.
 
 Die Analysedienste verwenden „Cookies“, die eine Analyse der Benutzung der Website durch Sie ermöglichen. Die durch das Cookie erzeugten Informationen über Ihre Benutzung dieser Website werden in der Regel an einen Server der genannten Anbieter übertragen und dort gespeichert. Wir weisen Sie darauf hin, dass auf dieser Webseite die Analysedienste um eine IP-Anonymisierung erweitert wurde, um eine anonymisierte Erfassung von IP-Adressen (sog. IP-Masking) zu gewährleisten. Die durch die der Analysedienste von Ihrem Browser übermittelte IP-Adresse wird nicht mit anderen Daten der Anbieter zusammengeführt. Nähere Informationen zu Nutzungsbedingungen und Datenschutz finden Sie unter
 <https://www.google.com/analytics/terms/de.html> bzw.<https://policies.google.com/?hl=de>.
-[Hotjar - Privacy Policy](https://www.hotjar.com/legal/policies/privacy/)
 <https://sentry.io/privacy/>
 
 ### Zwecke der Verarbeitung
