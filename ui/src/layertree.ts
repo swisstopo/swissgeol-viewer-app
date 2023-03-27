@@ -372,11 +372,9 @@ const aaretalVoxelFilter = {
 };
 
 const genevaIndexVoxelColors = {
-  range: [1000, 12000],
+  range: [3000, 12000],
   noData: -99999,
   colors: [
-    'rgb(254, 2, 194)',
-    'rgb(254, 2, 194)',
     'rgb(55, 169, 0)',
     'rgb(115, 223, 254)',
     'rgb(167, 111, 0)',
@@ -394,8 +392,6 @@ const genevaIndexVoxelColors = {
 const genevaIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: 1000, label: 'Terrain de couverture, sols actuels'},
-    {index: 2000, label: 'Remblais'},
     {index: 3000, label: 'Eboulis, Formations de pente, Colluvions, Limons de ruissellement'},
     {index: 4000, label: 'Alluvions de terrasses'},
     {index: 5000, label: 'Dépôts ou vases lacustres, tourbe, craie lacustre'},
