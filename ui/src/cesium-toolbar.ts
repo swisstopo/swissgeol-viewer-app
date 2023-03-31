@@ -1,12 +1,14 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
 import MainStore from './store/main';
-import type {Viewer} from 'cesium';
-import {Cartesian4, Color} from 'cesium';
+import type {Event, Viewer} from 'cesium';
+import {Cartesian4, Color, FrameRateMonitor} from 'cesium';
 
 @customElement('cesium-toolbar')
 export class CesiumToolbar extends LitElement {
   private viewer: Viewer | undefined | null;
+  private frameRateMonitor: FrameRateMonitor | undefined;
+  private scaleListenerRemove: Event.RemoveCallback | undefined;
   @state() show = true;
   @state() ambientOcclusionOnly = false;
   @state() intensity = 3.0;
@@ -21,13 +23,20 @@ export class CesiumToolbar extends LitElement {
   @state() fogColor = '#000';
   @state() undergroundColor = '#000';
   @state() backgroundColor = '#000';
+  @state() autoScale = false;
+  @state() currentScale = 1;
+  @state() scaleDownFps = 20;
+  @state() scaleUpFps = 40;
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe(viewer => {
+        this.viewer = viewer;
+        if (viewer) this.frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
+    });
   }
 
-  protected updated(_changedProperties) {
+  protected updated(changedProperties) {
     if (this.viewer) {
       const ambientOcclusion =
         this.viewer!.scene.postProcessStages.ambientOcclusion;
@@ -53,7 +62,23 @@ export class CesiumToolbar extends LitElement {
 
       this.viewer!.scene.requestRender();
     }
-    super.updated(_changedProperties);
+    if (changedProperties.has('autoScale') && this.viewer) {
+        if (this.autoScale) {
+            this.currentScale = this.viewer!.resolutionScale;
+            this.scaleListenerRemove = this.viewer.scene.postRender.addEventListener(() => {
+                if (this.frameRateMonitor!.lastFramesPerSecond < this.scaleDownFps && this.viewer!.resolutionScale > 0.45) {
+                    this.viewer!.resolutionScale = Number((this.viewer!.resolutionScale - 0.05).toFixed(2));
+                    this.currentScale = this.viewer!.resolutionScale;
+                } else if (this.frameRateMonitor!.lastFramesPerSecond > this.scaleUpFps && this.viewer!.resolutionScale < 1) {
+                    this.viewer!.resolutionScale = Number((this.viewer!.resolutionScale + 0.05).toFixed(2));
+                    this.currentScale = this.viewer!.resolutionScale;
+                }
+            });
+        } else if (this.scaleListenerRemove) {
+            this.scaleListenerRemove();
+        }
+    }
+    super.updated(changedProperties);
   }
 
   static styles = css`
@@ -150,6 +175,36 @@ export class CesiumToolbar extends LitElement {
       <div>
         Background Color
         <input type="color" .value=${this.backgroundColor} @input=${evt => this.backgroundColor = evt.target.value}>
+      </div>
+      <div class="divider"></div>
+      <div>
+        Show FPS
+        <input type="checkbox" ?checked=${this.viewer!.scene.debugShowFramesPerSecond}
+               @change=${event => this.viewer!.scene.debugShowFramesPerSecond = event.target.checked}>
+      </div>
+      <div>
+        Auto resolution scale
+        <input type="checkbox" ?checked=${this.autoScale}
+               @change=${event => this.autoScale = event.target.checked}>
+          <span>Current scale: ${this.currentScale}</span>
+      </div>
+      <div .hidden="${!this.autoScale}">
+          Scale down if FPS less then 
+          <input type="number" min="0" max="500" step="1" .value=${this.scaleDownFps}
+                                              @input=${evt => this.scaleDownFps = Number(evt.target.value)}>
+      </div>
+      <div .hidden="${!this.autoScale}">
+          Scale up if FPS more then 
+          <input type="number" min="0" max="500" step="1" .value=${this.scaleUpFps}
+                                            @input=${evt => this.scaleUpFps = Number(evt.target.value)}>
+      </div>
+      <div .hidden="${this.autoScale}">
+        Resolution scale
+        <input type="range" min="0.05" max="1" step="0.05" .value=${this.viewer!.resolutionScale}
+               @input=${evt => {
+                   this.viewer!.resolutionScale = Number(evt.target.value);
+                   this.currentScale = this.viewer!.resolutionScale;
+               }}>
       </div>`;
   }
 }
