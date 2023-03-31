@@ -506,3 +506,7 @@ ngm-full-screen-view.full-active {
 .ui.dimmer.ngm-main-load-dimmer {
   background: hsla(0, 0%, 100%, .85);
 }
+
+.cesium-performanceDisplay-defaultContainer {
+  right: 130px;
+}
