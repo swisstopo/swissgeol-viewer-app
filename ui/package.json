@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.303.0",
-    "@aws-sdk/client-s3": "3.303.0",
+    "@aws-sdk/client-s3": "3.304.0",
     "@aws-sdk/credential-provider-cognito-identity": "3.303.0",
-    "@aws-sdk/s3-request-presigner": "3.303.0",
+    "@aws-sdk/s3-request-presigner": "3.304.0",
     "@fontsource/inter": "4.5.15",
     "@geoblocks/cesium-view-cube": "0.1.0",
     "@geoblocks/ga-search": "0.0.20",
@@ -38,7 +38,7 @@
     "earcut": "2.2.4",
     "event-target-shim": "6.0.2",
     "fomantic-ui-css": "2.9.2",
-    "i18next": "22.4.13",
+    "i18next": "22.4.14",
     "i18next-http-backend": "2.2.0",
     "interactjs": "1.10.17",
     "jquery": "3.6.4",
@@ -50,11 +50,11 @@
     "rxjs": "7.8.0"
   },
   "devDependencies": {
-    "@babel/core": "7.21.3",
+    "@babel/core": "7.21.4",
     "@babel/plugin-proposal-decorators": "7.21.0",
     "@babel/plugin-proposal-object-rest-spread": "7.20.7",
-    "@babel/preset-env": "7.20.2",
-    "@babel/preset-typescript": "7.21.0",
+    "@babel/preset-env": "7.21.4",
+    "@babel/preset-typescript": "7.21.4",
     "@rollup/plugin-babel": "6.0.3",
     "@rollup/plugin-commonjs": "24.0.1",
     "@rollup/plugin-json": "6.0.0",
@@ -102,6 +102,6 @@
     "typescript": "4.9.5",
     "webpack": "5.77.0",
     "webpack-cli": "5.0.1",
-    "webpack-dev-server": "4.13.1"
+    "webpack-dev-server": "4.13.2"
   }
 }
