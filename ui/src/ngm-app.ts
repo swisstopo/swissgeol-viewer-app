@@ -6,7 +6,7 @@ import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
 import './elements/ngm-auth';
 import './elements/ngm-tracking-consent';
-import './elements/ngm-camera-information';
+import './elements/ngm-cursor-information';
 import './elements/ngm-nav-tools';
 import './elements/ngm-minimap';
 import './elements/ngm-cam-configuration';
@@ -368,7 +368,7 @@ export class NgmApp extends LitElementI18n {
           @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
         <div title="${i18next.t('header_show_minimap')}" class="ngm-map-icon ${classMap({'active': this.showMinimap})}" .hidden="${this.showMobileSearch}"
              @click=${() => this.showMinimap = !this.showMinimap}></div>
-        <ngm-camera-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-camera-information>
+        <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
       </header>
       <main>
         <div class="ui dimmer ngm-main-load-dimmer ${classMap({active: this.loading})}">

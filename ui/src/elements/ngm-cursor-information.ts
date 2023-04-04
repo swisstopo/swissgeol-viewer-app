@@ -1,18 +1,17 @@
 import {html} from 'lit';
+import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
-import {
-  Cartographic,
-  ScreenSpaceEventHandler,
-  ScreenSpaceEventType,
-} from 'cesium';
-import {getValueOrUndefined} from '../cesiumutils';
-import {customElement, property, state} from 'lit/decorators.js';
 import type {Viewer} from 'cesium';
+import {Cartographic, ScreenSpaceEventHandler, ScreenSpaceEventType} from 'cesium';
+import {customElement, property, state} from 'lit/decorators.js';
+import {getValueOrUndefined} from '../cesiumutils';
+import {formatCartographicAs2DLv95} from '../projection';
 
-
-@customElement('ngm-feature-height')
-export class NgmFeatureHeight extends LitElementI18n {
+@customElement('ngm-cursor-information')
+export class NgmCursorInformation extends LitElementI18n {
   @property({type: Object}) viewer: Viewer | undefined;
+  @state() coordinates: string[] = [];
+  @state() showTerrainHeight = false;
   @state() height: number | undefined;
   private eventHandler: ScreenSpaceEventHandler | undefined;
   private cameraMoving = false;
@@ -55,17 +54,13 @@ export class NgmFeatureHeight extends LitElementI18n {
       const feature = this.viewer.scene.pick(movement.endPosition);
       const cartesian = this.viewer.scene.pickPosition(movement.endPosition);
       if (cartesian) {
+        this.coordinates = formatCartographicAs2DLv95(Cartographic.fromCartesian(cartesian));
         const position = Cartographic.fromCartesian(cartesian);
         const altitude = this.viewer.scene.globe.getHeight(position);
         if (altitude !== undefined) {
           const lineOrPolygon = getValueOrUndefined(feature?.id?.polyline?.show) || getValueOrUndefined(feature?.id?.polygon?.show);
-          if (feature && !lineOrPolygon) {
-            this.height = position.height - altitude;
-            this.dispatchEvent(new CustomEvent('updatelabel', {detail: {terrainHeight: false}}));
-          } else {
-            this.height = position.height;
-            this.dispatchEvent(new CustomEvent('updatelabel', {detail: {terrainHeight: true}}));
-          }
+          this.height = position.height;
+          this.showTerrainHeight = !(feature && !lineOrPolygon);
           return;
         }
       }
@@ -73,11 +68,27 @@ export class NgmFeatureHeight extends LitElementI18n {
     this.height = undefined;
   }
 
+
   render() {
-    if (this.height !== undefined) {
-      return html`${this.integerFormat.format(this.height)} m`;
-    } else {
-      return html``;
-    }
+    if (!this.coordinates || this.height === undefined) return '';
+    return html`
+        <div class="ngm-nci-position">
+          <label>${i18next.t('camera_position_coordinates_label')}</label>
+          <label class="ngm-nci-value">${this.coordinates[0]}</label>
+          <label class="ngm-nci-value">${this.coordinates[1]}</label>
+        </div>
+        <div class="ngm-nci-height">
+          <div>
+            ${this.showTerrainHeight ? i18next.t('nav_terrain_height_label') : i18next.t('nav_object_height_label')}
+          </div>
+          <div .hidden=${this.height === undefined} class="ngm-nci-value">
+            ${this.height !== undefined && this.integerFormat.format(this.height)} m
+          </div>
+        </div>
+      `;
+  }
+
+  createRenderRoot() {
+    return this;
   }
 }

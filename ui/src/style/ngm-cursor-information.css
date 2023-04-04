@@ -1,18 +1,15 @@
-ngm-camera-information {
+ngm-cursor-information {
   flex-wrap: wrap;
-  align-items: center;
   align-self: center;
   color: #212529;
   text-align: left;
   font: normal normal normal 14px/20px Inter;
   letter-spacing: 0;
+  min-width: 255px;
 }
 
-ngm-camera-information .ngm-nci-value {
+ngm-cursor-information .ngm-nci-value {
   font-weight: 600;
-}
-
-.ngm-nci-height {
   min-width: 75px;
 }
 
@@ -21,27 +18,23 @@ ngm-camera-information .ngm-nci-value {
   margin-right: 8px;
 }
 
-.ngm-nci-direction {
+.ngm-nci-height {
   display: flex;
+  flex-direction: column;
   white-space: nowrap;
-}
-
-.ngm-nci-direction-labels {
-  margin-right: 8px;
   width: 160px;
 }
 
-.ngm-nci-direction > div:nth-child(2) {
-  text-align: end;
-}
-
-ngm-camera-information > img {
+ngm-cursor-information > img {
   width: 24px;
 }
 
 @media (max-width: 1193px) {
-  .ngm-nci-direction,
+  .ngm-nci-height,
   .ngm-nci-position {
     display: none;
+  }
+  ngm-cursor-information {
+    min-width: 0;
   }
 }
