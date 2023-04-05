@@ -76,8 +76,8 @@ export function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Config, 
 
   return primitive;
 }
-export function create3DTilesetFromConfig(viewer: Viewer, config: Config, tileLoadCallback) {
-  let resource: string | Promise<IonResource> | AmazonS3Resource;
+export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, tileLoadCallback) {
+  let resource: string | IonResource | AmazonS3Resource;
   if (config.aws_s3_bucket && config.aws_s3_key) {
     resource = new AmazonS3Resource({
       bucket: config.aws_s3_bucket,
@@ -86,11 +86,10 @@ export function create3DTilesetFromConfig(viewer: Viewer, config: Config, tileLo
   } else if (config.url) {
     resource = config.url;
   } else {
-    resource = IonResource.fromAssetId(config.assetId!);
+    resource = await IonResource.fromAssetId(config.assetId!);
   }
 
-  const tileset = new Cesium3DTileset({
-    url: resource,
+  const tileset = await Cesium3DTileset.fromUrl(resource, {
     show: !!config.visible,
     backFaceCulling: false,
     maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
