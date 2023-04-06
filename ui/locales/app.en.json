@@ -295,6 +295,7 @@
   "tbx_volume_height_label": "Height",
   "tbx_volume_lower_limit_label": "Lower limit",
   "tbx_website_label": "Website URL",
+  "Temperature": "",
   "topographic_profile_downloads": "Download",
   "topographic_profile_header": "Height Profile",
   "tracking_agree_btn_label": "Agreed",
@@ -309,6 +310,8 @@
   "vox_filter_max": "Max",
   "vox_filter_min": "Min",
   "vox_filter_or": "OR",
+  "vox_filter_select_all": "Select all",
+  "vox_filter_unselect_all": "Unselect all",
   "vox_filter_xor": "XOR",
   "welcome_get_shortlink_error": "An error occurred and the shortcut cannot be created, please try again later."
 }
