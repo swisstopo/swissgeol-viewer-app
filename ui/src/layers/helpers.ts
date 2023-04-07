@@ -22,6 +22,7 @@ import {isLabelOutlineEnabled} from '../permalink';
 import AmazonS3Resource from '../AmazonS3Resource.js';
 import type {Config} from './ngm-layers-item.js';
 import {getVoxelShader} from './voxels-helper';
+import MainStore from '../store/main';
 
 export function createEarthquakeFromConfig(viewer: Viewer, config: Config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer, config);
@@ -63,6 +64,10 @@ export function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Config, 
   viewer.scene.primitives.add(primitive);
 
   config.setVisibility = visible => {
+    if (config.type === LayerType.voxels3dtiles) {
+      if (visible) MainStore.addVisibleVoxelLayer(config.layer);
+      else MainStore.removeVisibleVoxelLayer(config.layer);
+    }
     primitive.show = !!visible;
   };
 
