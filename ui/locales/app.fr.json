@@ -295,6 +295,7 @@
   "tbx_volume_height_label": "Hauteur",
   "tbx_volume_lower_limit_label": "Limite inférieure",
   "tbx_website_label": "URL site web",
+  "Temperature": "",
   "topographic_profile_downloads": "Télécharger",
   "topographic_profile_header": "Profil de hauteur",
   "tracking_agree_btn_label": "D'accord",
@@ -309,6 +310,8 @@
   "vox_filter_max": "",
   "vox_filter_min": "",
   "vox_filter_or": "",
+  "vox_filter_select_all": "",
+  "vox_filter_unselect_all": "",
   "vox_filter_xor": "",
   "welcome_get_shortlink_error": "Une erreur s'est produite et le lien court ne peut être créé, veuillez réessayer plus tard."
 }

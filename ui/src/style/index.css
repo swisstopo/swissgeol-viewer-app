@@ -399,6 +399,10 @@ ngm-full-screen-view.full-active {
   font-size: 20px;
 }
 
+ngm-voxel-filter .ngm-action-btn.ui.button {
+  width: auto;
+}
+
 .visible-mobile {
   display: none;
 }
@@ -509,4 +513,10 @@ ngm-full-screen-view.full-active {
 
 .cesium-performanceDisplay-defaultContainer {
   right: 130px;
+}
+
+.lithology-filter-buttons {
+  display: flex;
+  column-gap: 10px;
+  margin-top: 14px;
 }

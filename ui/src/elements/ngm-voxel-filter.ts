@@ -12,7 +12,7 @@ import {setBit} from '../utils';
 
 @customElement('ngm-voxel-filter')
 export class NgmVoxelFilter extends LitElementI18n {
-  @property({type: Object}) config!: Config;
+  @property({type: Object}) config: Config | undefined;
   @property({type: Object}) viewer!: Viewer;
 
   @queryAll('.lithology-checkbox input[type="checkbox"]') lithologyCheckbox!: NodeListOf<HTMLInputElement>;
@@ -30,6 +30,7 @@ export class NgmVoxelFilter extends LitElementI18n {
   }
 
   willUpdate() {
+    if (!this.config) return;
     this.minConductivityValue = this.minConductivity = this.config.voxelFilter!.conductivityRange[0];
     this.maxConductivityValue = this.maxConductivity = this.config.voxelFilter!.conductivityRange[1];
 
@@ -39,7 +40,7 @@ export class NgmVoxelFilter extends LitElementI18n {
   render() {
     return html`
       <div class="ngm-floating-window-header drag-handle">
-        ${i18next.t('vox_filter_filtering_on')} ${i18next.t(this.config.label)}
+        ${i18next.t('vox_filter_filtering_on')} ${i18next.t(this.config!.label)}
         <div class="ngm-close-icon" @click=${() => this.close()}></div>
       </div>
       <div class="content-container">
@@ -80,12 +81,24 @@ export class NgmVoxelFilter extends LitElementI18n {
         </form>
         <form class="lithology-checkbox">
           <div class="filter-label">${i18next.t('vox_filter_lithology')}</div>
-          ${repeat(this.config.voxelFilter.lithology, (lithology: any) =>
+          ${repeat(this.config!.voxelFilter.lithology, (lithology: any) =>
             html`<label><input type="checkbox" value="${lithology.index}" checked> ${lithology.label}</label>`
           )}
+          <div class="lithology-filter-buttons">
+            <button class="ui button" type="button" @click="${() => {
+              this.lithologyCheckbox.forEach((checkbox) => checkbox.checked = true);
+            }}">
+              ${i18next.t('vox_filter_select_all')}
+            </button>
+            <button class="ui button" type="button" @click="${() => {
+              this.lithologyCheckbox.forEach((checkbox) => checkbox.checked = false);
+            }}">
+              ${i18next.t('vox_filter_unselect_all')}
+            </button>
+          </div>
         </form>
         <div>
-          <button class="ui button" @click="${() => this.applyFilter()}">
+          <button class="ui button ngm-action-btn" @click="${() => this.applyFilter()}">
             ${i18next.t('vox_filter_apply')}
           </button>
         </div>
@@ -113,7 +126,7 @@ export class NgmVoxelFilter extends LitElementI18n {
     this.config = undefined;
   }
 
-  applyFilter() {
+   applyFilter() {
     const shader = getVoxelShader(this.config);
     shader.setUniform('u_filter_conductivity_min', this.minConductivity);
     shader.setUniform('u_filter_conductivity_max', this.maxConductivity);
