@@ -25,7 +25,7 @@ function createCustomShader(config): CustomShader {
       float lithology = fsInput.metadata.${config.voxelFilter.lithologyDataName};
       float conductivity = fsInput.metadata.${config.voxelFilter.conductivityDataName};
 
-      if (value == u_noData) {
+      if (lithology == u_noData && conductivity == u_noData) {
         return;
       }
 
@@ -52,7 +52,7 @@ function createCustomShader(config): CustomShader {
         float lerp = (value - u_min) / (u_max - u_min);
         material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb;
         material.alpha = 1.0;
-        
+
         vec3 voxelNormal = czm_normal * fsInput.voxel.surfaceNormal;
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
@@ -118,7 +118,7 @@ function createSimpleCustomShader(config): CustomShader {
         float lerp = (value - u_min) / (u_max - u_min);
         material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb;
         material.alpha = 1.0;
-        
+
         vec3 voxelNormal = czm_normal * fsInput.voxel.surfaceNormal;
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
