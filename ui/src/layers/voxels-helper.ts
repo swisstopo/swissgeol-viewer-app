@@ -49,20 +49,23 @@ function createCustomShader(config): CustomShader {
       }
 
       if (display) {
-        float lerp = (value - u_min) / (u_max - u_min);
-        material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb;
-        material.alpha = 1.0;
-
         vec3 voxelNormal = czm_normal * fsInput.voxel.surfaceNormal;
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
+        float lerp = (value - u_min) / (u_max - u_min);
         material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb * lighting;
+        material.alpha = 1.0;
       }
     }
   `;
 
   const colors = config.voxelColors;
+  if (colors.colors.length !== lithology.length) {
+    console.warn('Color length does not match lithology length');
+  }
+
   const colorRamp = createColorRamp(colors.colors);
+  const lithologyIndexes = lithology.map(l => l.index);
 
   return new CustomShader({
     fragmentShaderText: fragmentShaderText,
@@ -77,11 +80,11 @@ function createCustomShader(config): CustomShader {
       },
       u_min: {
         type: UniformType.FLOAT,
-        value: colors.range[0],
+        value: Math.min(...lithologyIndexes),
       },
       u_max: {
         type: UniformType.FLOAT,
-        value: colors.range[1],
+        value: Math.max(...lithologyIndexes),
       },
       u_filter_conductivity_min: {
         type: UniformType.FLOAT,
@@ -115,14 +118,12 @@ function createSimpleCustomShader(config): CustomShader {
       bool valueInRange = value >= u_filter_min && value <= u_filter_max;
 
       if (valueInRange && value != u_noData) {
-        float lerp = (value - u_min) / (u_max - u_min);
-        material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb;
-        material.alpha = 1.0;
-
         vec3 voxelNormal = czm_normal * fsInput.voxel.surfaceNormal;
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
+        float lerp = (value - u_min) / (u_max - u_min);
         material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb * lighting;
+        material.alpha = 1.0;
       }
     }
   `;
@@ -169,22 +170,18 @@ function createSimpleCustomShader(config): CustomShader {
 
 function createColorRamp(colors: string[]): ColorRamp {
   const ramp = document.createElement('canvas');
-  ramp.width = 128;
+  const length = colors.length;
+  ramp.width = length;
   ramp.height = 1;
   const ctx = ramp.getContext('2d')!;
-  const grd = ctx.createLinearGradient(0, 0, ramp.width, 0);
-
-  const length = colors.length;
-  const step = 1 / (length - 1);
   for (let i = 0; i < length; i++) {
     const color = colors[i];
-    grd.addColorStop(i * step, color !== null ? colors[i] : 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = color !== null ? color : 'rgba(0, 0, 0, 0)';
+    ctx.fillRect(i, 0, 1, 1);
   }
 
-  ctx.fillStyle = grd;
-  ctx.fillRect(0, 0, ramp.width, ramp.height);
-
   const imageData = ctx.getImageData(0, 0, ramp.width, ramp.height);
+  console.log(ramp.toDataURL());
   return {
     image: new Uint8Array(imageData.data.buffer),
     width: ramp.width,

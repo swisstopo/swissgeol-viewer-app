@@ -37,7 +37,7 @@ export interface LayerTreeNode {
 
 export interface VoxelColors {
   label?: string;
-  range: number[];
+  range?: number[];
   noData: number;
   colors: (string|null)[];
 }
@@ -121,10 +121,13 @@ const voxelFilter = {
   conductivityDataName: 'logk',
 };
 
+const voxelNoData = -99999;
+const voxelUndefinedData = -9999;
+
 const temperaturVoxelColors = {
   label: t('Temperature'),
   range: [0, 320],
-  noData: -99999,
+  noData: voxelNoData,
   colors: [
     'rgb(10, 0, 121)',
     'rgb(40, 0, 150)',
@@ -162,8 +165,7 @@ const temperaturVoxelColors = {
 };
 
 const logkVoxelColors = {
-  range: [-9, -1],
-  noData: -99999,
+  noData: voxelNoData,
   colors: [
     'rgb(0, 102, 255)',
     'rgb(255, 204, 0)',
@@ -172,9 +174,9 @@ const logkVoxelColors = {
 };
 
 const birrIndexVoxelColors = {
-  range: [1, 67],
-  noData: -99999,
+  noData: voxelNoData,
   colors: [
+    'rgb(204, 204, 204)',
     'rgb(128, 212, 255)',
     'rgb(173, 200, 90)',
     'rgb(0, 255, 234)',
@@ -248,6 +250,7 @@ const birrIndexVoxelColors = {
 const birrIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
+    {index: voxelUndefinedData, label: 'Undefined Lithology'},
     {index: 1, label: 'Aaretal-Schotter'},
     {index: 2, label: 'Ämmert-Moräne'},
     {index: 3, label: 'Bachschutt'},
@@ -317,9 +320,9 @@ const birrIndexVoxelFilter = {
 };
 
 const aaretalIndexVoxelColors = {
-  range: [3, 23],
-  noData: -99999,
+  noData: voxelNoData,
   colors: [
+    'rgb(204, 204, 204)',
     'rgb(92, 255, 105)',
     'rgb(122, 211, 255)',
     'rgb(128, 128, 128)',
@@ -347,6 +350,7 @@ const aaretalIndexVoxelColors = {
 const aaretalVoxelFilter = {
   ...voxelFilter,
   lithology: [
+    {index: voxelUndefinedData, label: 'Undefined Lithology'},
     {index: 3, label: 'Verlandungssedimente, Sumpf, Ried'},
     {index: 4, label: 'Subrezente bis rezente Alluvionen (Fluss- und Bachschotter, Überschwemmungssediment, undifferenziert)'},
     {index: 5, label: 'Hangschutt / Hanglehm (undifferenziert)'},
@@ -372,9 +376,9 @@ const aaretalVoxelFilter = {
 };
 
 const genevaIndexVoxelColors = {
-  range: [3000, 12000],
-  noData: -99999,
+  noData: voxelNoData,
   colors: [
+    'rgb(204, 204, 204)',
     'rgb(55, 169, 0)',
     'rgb(115, 223, 254)',
     'rgb(167, 111, 0)',
@@ -392,6 +396,7 @@ const genevaIndexVoxelColors = {
 const genevaIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
+    {index: voxelUndefinedData, label: 'Undefined Lithology'},
     {index: 3000, label: 'Eboulis, Formations de pente, Colluvions, Limons de ruissellement'},
     {index: 4000, label: 'Alluvions de terrasses'},
     {index: 5000, label: 'Dépôts ou vases lacustres, tourbe, craie lacustre'},
@@ -406,9 +411,9 @@ const genevaIndexVoxelFilter = {
 };
 
 const vispIndexVoxelColors = {
-  range: [1, 60],
-  noData: -99999,
+  noData: voxelNoData,
   colors: [
+    'rgb(204, 204, 204)',
     'rgb(100, 255, 22)', // 1
     'rgb(73, 219, 0)', // 2
     'rgb(53, 160, 0)', // 3
@@ -475,6 +480,7 @@ const vispIndexVoxelColors = {
 const vispIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
+    {index: voxelUndefinedData, label: 'Undefined Lithology'},
     {index: 1, label: 'Limnische Ablagerungen'},
     {index: 2, label: 'Limnische Ablagerungen 2'},
     {index: 3, label: 'Limnische Ablagerungen 4'},
