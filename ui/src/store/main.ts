@@ -8,6 +8,7 @@ export default class MainStore {
   private static syncLayersSubject = new Subject<void>();
   private static layersRemovedSubject = new Subject<void>();
   private static syncMapSubject = new Subject<void>();
+  private static voxelLayerCountSubject = new BehaviorSubject<string[]>([]);
 
   static get viewer(): BehaviorSubject<Viewer | null> {
     return this.viewerSubject;
@@ -51,6 +52,23 @@ export default class MainStore {
 
   static nextMapSync() {
     this.syncMapSubject.next();
+  }
+
+  static get visibleVoxelLayers() {
+    return this.voxelLayerCountSubject.getValue();
+  }
+
+  static addVisibleVoxelLayer(layer) {
+    const voxelLayers = this.visibleVoxelLayers;
+    if (!voxelLayers.includes(layer)) {
+      voxelLayers.push(layer);
+      this.voxelLayerCountSubject.next(voxelLayers);
+    }
+  }
+
+  static removeVisibleVoxelLayer(layer) {
+    const voxelLayers = this.visibleVoxelLayers.filter(l => l !== layer);
+    this.voxelLayerCountSubject.next(voxelLayers);
   }
 
 }

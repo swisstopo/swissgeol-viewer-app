@@ -31,6 +31,7 @@ import {
     Transforms,
     Viewer
 } from 'cesium';
+import MainStore from './store/main';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -333,12 +334,22 @@ export function addMantelEllipsoid(viewer: Viewer) {
     let usedUndergroundValue = !viewer.scene.cameraUnderground;
     viewer.scene.postRender.addEventListener((scene) => {
         if (!entity.ellipsoid) return;
+        const voxelVisible = MainStore.visibleVoxelLayers.length > 0;
+        if (voxelVisible && entity.isShowing) {
+            entity.show = false;
+            viewer.scene.requestRender();
+        } else if (!voxelVisible && !entity.isShowing) {
+            entity.show = true;
+            viewer.scene.requestRender();
+        }
         if (scene.cameraUnderground && !usedUndergroundValue) {
             (<any>entity.ellipsoid.radii) = mantelRadii;
             usedUndergroundValue = true;
+            if (!Color.equals(scene.backgroundColor, Color.TRANSPARENT)) scene.backgroundColor = Color.TRANSPARENT;
         } else if (!scene.cameraUnderground && usedUndergroundValue) {
             (<any>entity.ellipsoid.radii) = mantelRadiiAboveTerrain;
             usedUndergroundValue = false;
+            if (voxelVisible && !Color.equals(scene.backgroundColor, MANTEL_COLOR)) scene.backgroundColor = MANTEL_COLOR;
         }
     });
 }
