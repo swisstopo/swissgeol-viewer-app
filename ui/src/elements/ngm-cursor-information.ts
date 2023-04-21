@@ -2,7 +2,7 @@ import {html} from 'lit';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import type {Viewer} from 'cesium';
-import {Cartographic, ScreenSpaceEventHandler, ScreenSpaceEventType} from 'cesium';
+import {Cartographic, ScreenSpaceEventHandler, ScreenSpaceEventType, VoxelPrimitive} from 'cesium';
 import {customElement, property, state} from 'lit/decorators.js';
 import {getValueOrUndefined} from '../cesiumutils';
 import {formatCartographicAs2DLv95} from '../projection';
@@ -53,7 +53,7 @@ export class NgmCursorInformation extends LitElementI18n {
     if (!this.cameraMoving && this.viewer) {
       const feature = this.viewer.scene.pick(movement.endPosition);
       const cartesian = this.viewer.scene.pickPosition(movement.endPosition);
-      if (cartesian) {
+      if (cartesian && !(feature?.primitive instanceof VoxelPrimitive)) {
         this.coordinates = formatCartographicAs2DLv95(Cartographic.fromCartesian(cartesian));
         const position = Cartographic.fromCartesian(cartesian);
         const altitude = this.viewer.scene.globe.getHeight(position);
