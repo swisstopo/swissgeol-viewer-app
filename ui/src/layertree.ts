@@ -37,7 +37,7 @@ export interface LayerTreeNode {
 
 export interface VoxelColors {
   label?: string;
-  range?: number[];
+  range: number[];
   noData: number;
   colors: (string|null)[];
 }
@@ -115,20 +115,22 @@ const TEMPERATURE_HORIZON_ORDER = ['name', 'temp_c'];
 const TEMPERATURE_HORIZON_BGL_ORDER = ['name', 'temp_c', 'depth_bgl'];
 const EARTHQUAKES_PROP_ORDER = ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'];
 
+const voxelNoData = -99999;
+const voxelUndefinedData = -9999;
+
+
 const voxelFilter = {
   conductivityRange: [-9, -1],
   lithologyDataName: 'Index',
   conductivityDataName: 'logk',
 };
 
-const voxelNoData = -99999;
-const voxelUndefinedData = -9999;
-
 const temperaturVoxelColors = {
   label: t('Temperature'),
   range: [0, 320],
   noData: voxelNoData,
   colors: [
+    'rgb(204, 204, 204)',
     'rgb(10, 0, 121)',
     'rgb(40, 0, 150)',
     'rgb(20, 5, 175)',
@@ -165,6 +167,7 @@ const temperaturVoxelColors = {
 };
 
 const logkVoxelColors = {
+  range: [-9, -1],
   noData: voxelNoData,
   colors: [
     'rgb(0, 102, 255)',
@@ -174,6 +177,7 @@ const logkVoxelColors = {
 };
 
 const birrIndexVoxelColors = {
+  range: [voxelUndefinedData, 67],
   noData: voxelNoData,
   colors: [
     'rgb(204, 204, 204)',
@@ -320,6 +324,7 @@ const birrIndexVoxelFilter = {
 };
 
 const aaretalIndexVoxelColors = {
+  range: [voxelUndefinedData, 23],
   noData: voxelNoData,
   colors: [
     'rgb(204, 204, 204)',
@@ -376,6 +381,7 @@ const aaretalVoxelFilter = {
 };
 
 const genevaIndexVoxelColors = {
+  range: [voxelUndefinedData, 12000],
   noData: voxelNoData,
   colors: [
     'rgb(204, 204, 204)',
@@ -411,6 +417,7 @@ const genevaIndexVoxelFilter = {
 };
 
 const vispIndexVoxelColors = {
+  range: [voxelUndefinedData, 60],
   noData: voxelNoData,
   colors: [
     'rgb(204, 204, 204)',
