@@ -129,6 +129,7 @@ const temperaturVoxelColors = {
   label: t('Temperature'),
   range: [0, 320],
   noData: voxelNoData,
+  undefinedData: voxelUndefinedData,
   colors: [
     'rgb(204, 204, 204)',
     'rgb(10, 0, 121)',
@@ -169,6 +170,7 @@ const temperaturVoxelColors = {
 const logkVoxelColors = {
   range: [-9, -1],
   noData: voxelNoData,
+  undefinedData: voxelUndefinedData,
   colors: [
     'rgb(0, 102, 255)',
     'rgb(255, 204, 0)',
@@ -179,6 +181,7 @@ const logkVoxelColors = {
 const birrIndexVoxelColors = {
   range: [voxelUndefinedData, 67],
   noData: voxelNoData,
+  undefinedData: voxelUndefinedData,
   colors: [
     'rgb(204, 204, 204)',
     'rgb(128, 212, 255)',
@@ -383,6 +386,7 @@ const aaretalVoxelFilter = {
 const genevaIndexVoxelColors = {
   range: [voxelUndefinedData, 12000],
   noData: voxelNoData,
+  undefinedData: voxelUndefinedData,
   colors: [
     'rgb(204, 204, 204)',
     'rgb(55, 169, 0)',
@@ -419,6 +423,7 @@ const genevaIndexVoxelFilter = {
 const vispIndexVoxelColors = {
   range: [voxelUndefinedData, 60],
   noData: voxelNoData,
+  undefinedData: voxelUndefinedData,
   colors: [
     'rgb(204, 204, 204)',
     'rgb(100, 255, 22)', // 1

@@ -28,6 +28,9 @@ function createCustomShader(config): CustomShader {
       if (lithology == u_noData && conductivity == u_noData) {
         return;
       }
+      if (lithology == u_undefined_data && conductivity == u_undefined_data) {
+        return;
+      }
 
       bool conductivityInRange = conductivity >= u_filter_conductivity_min && conductivity <= u_filter_conductivity_max;
       bool lithologySelected = true;
@@ -100,6 +103,10 @@ function createCustomShader(config): CustomShader {
       u_noData: {
         type: UniformType.FLOAT,
         value: colors.noData,
+      },
+      u_undefined_data: {
+        type: UniformType.FLOAT,
+        value: colors.undefinedData,
       },
     },
   });
