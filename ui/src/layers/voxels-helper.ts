@@ -28,6 +28,9 @@ function createCustomShader(config): CustomShader {
       if (lithology == u_noData && conductivity == u_noData) {
         return;
       }
+      if (lithology == u_undefined_data && conductivity == u_undefined_data) {
+        return;
+      }
 
       bool conductivityInRange = conductivity >= u_filter_conductivity_min && conductivity <= u_filter_conductivity_max;
       bool lithologySelected = true;
@@ -60,12 +63,7 @@ function createCustomShader(config): CustomShader {
   `;
 
   const colors = config.voxelColors;
-  if (colors.colors.length !== lithology.length) {
-    console.warn('Color length does not match lithology length');
-  }
-
   const colorRamp = createColorRamp(colors.colors);
-  const lithologyIndexes = lithology.map(l => l.index);
 
   return new CustomShader({
     fragmentShaderText: fragmentShaderText,
@@ -80,11 +78,11 @@ function createCustomShader(config): CustomShader {
       },
       u_min: {
         type: UniformType.FLOAT,
-        value: Math.min(...lithologyIndexes),
+        value: colors.range[0],
       },
       u_max: {
         type: UniformType.FLOAT,
-        value: Math.max(...lithologyIndexes),
+        value: colors.range[1],
       },
       u_filter_conductivity_min: {
         type: UniformType.FLOAT,
@@ -105,6 +103,10 @@ function createCustomShader(config): CustomShader {
       u_noData: {
         type: UniformType.FLOAT,
         value: colors.noData,
+      },
+      u_undefined_data: {
+        type: UniformType.FLOAT,
+        value: colors.undefinedData,
       },
     },
   });
@@ -170,18 +172,22 @@ function createSimpleCustomShader(config): CustomShader {
 
 function createColorRamp(colors: string[]): ColorRamp {
   const ramp = document.createElement('canvas');
-  const length = colors.length;
-  ramp.width = length;
+  ramp.width = 128;
   ramp.height = 1;
   const ctx = ramp.getContext('2d')!;
+  const grd = ctx.createLinearGradient(0, 0, ramp.width, 0);
+
+  const length = colors.length;
+  const step = 1 / (length - 1);
   for (let i = 0; i < length; i++) {
     const color = colors[i];
-    ctx.fillStyle = color !== null ? color : 'rgba(0, 0, 0, 0)';
-    ctx.fillRect(i, 0, 1, 1);
+    grd.addColorStop(i * step, color !== null ? colors[i] : 'rgba(0, 0, 0, 0)');
   }
 
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, ramp.width, ramp.height);
+
   const imageData = ctx.getImageData(0, 0, ramp.width, ramp.height);
-  console.log(ramp.toDataURL());
   return {
     image: new Uint8Array(imageData.data.buffer),
     width: ramp.width,
