@@ -304,7 +304,7 @@
   "view": "View",
   "vox_filter_and": "AND",
   "vox_filter_apply": "Apply filter",
-  "vox_filter_filtering_on": "Filtering on layer",
+  "vox_filter_filtering_on": "Filtering on: ",
   "vox_filter_hydraulic_conductivity": "Hydraulic Conductivity",
   "vox_filter_lithology": "Modelling Unit",
   "vox_filter_max": "Max",
