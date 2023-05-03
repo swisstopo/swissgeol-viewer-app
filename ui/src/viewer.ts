@@ -5,7 +5,6 @@ import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
-import {FrameRateMonitor} from 'cesium';
 
 import type {ImageryLayer, WebGLOptions} from 'cesium';
 import {
@@ -30,7 +29,8 @@ import {
     SingleTileImageryProvider,
     SunLight,
     Transforms,
-    Viewer
+    Viewer,
+    FrameRateMonitor
 } from 'cesium';
 import MainStore from './store/main';
 
