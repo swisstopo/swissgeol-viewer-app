@@ -62,22 +62,6 @@ export class CesiumToolbar extends LitElement {
 
       this.viewer!.scene.requestRender();
     }
-    if (changedProperties.has('autoScale') && this.viewer) {
-        if (this.autoScale) {
-            this.currentScale = this.viewer!.resolutionScale;
-            this.scaleListenerRemove = this.viewer.scene.postRender.addEventListener(() => {
-                if (this.frameRateMonitor!.lastFramesPerSecond < this.scaleDownFps && this.viewer!.resolutionScale > 0.45) {
-                    this.viewer!.resolutionScale = Number((this.viewer!.resolutionScale - 0.05).toFixed(2));
-                    this.currentScale = this.viewer!.resolutionScale;
-                } else if (this.frameRateMonitor!.lastFramesPerSecond > this.scaleUpFps && this.viewer!.resolutionScale < 1) {
-                    this.viewer!.resolutionScale = Number((this.viewer!.resolutionScale + 0.05).toFixed(2));
-                    this.currentScale = this.viewer!.resolutionScale;
-                }
-            });
-        } else if (this.scaleListenerRemove) {
-            this.scaleListenerRemove();
-        }
-    }
     super.updated(changedProperties);
   }
 
@@ -175,36 +159,6 @@ export class CesiumToolbar extends LitElement {
       <div>
         Background Color
         <input type="color" .value=${this.backgroundColor} @input=${evt => this.backgroundColor = evt.target.value}>
-      </div>
-      <div class="divider"></div>
-      <div>
-        Show FPS
-        <input type="checkbox" ?checked=${this.viewer!.scene.debugShowFramesPerSecond}
-               @change=${event => this.viewer!.scene.debugShowFramesPerSecond = event.target.checked}>
-      </div>
-      <div>
-        Auto resolution scale
-        <input type="checkbox" ?checked=${this.autoScale}
-               @change=${event => this.autoScale = event.target.checked}>
-          <span>Current scale: ${this.currentScale}</span>
-      </div>
-      <div .hidden="${!this.autoScale}">
-          Scale down if FPS less then 
-          <input type="number" min="0" max="500" step="1" .value=${this.scaleDownFps}
-                                              @input=${evt => this.scaleDownFps = Number(evt.target.value)}>
-      </div>
-      <div .hidden="${!this.autoScale}">
-          Scale up if FPS more then 
-          <input type="number" min="0" max="500" step="1" .value=${this.scaleUpFps}
-                                            @input=${evt => this.scaleUpFps = Number(evt.target.value)}>
-      </div>
-      <div .hidden="${this.autoScale}">
-        Resolution scale
-        <input type="range" min="0.05" max="1" step="0.05" .value=${this.viewer!.resolutionScale}
-               @input=${evt => {
-                   this.viewer!.resolutionScale = Number(evt.target.value);
-                   this.currentScale = this.viewer!.resolutionScale;
-               }}>
       </div>`;
   }
 }

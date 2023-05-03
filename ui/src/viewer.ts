@@ -5,6 +5,7 @@ import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery.js';
+import {FrameRateMonitor} from 'cesium';
 
 import type {ImageryLayer, WebGLOptions} from 'cesium';
 import {
@@ -161,6 +162,7 @@ export function setupViewer(container: Element, rethrowRenderErrors: boolean) {
         requestRenderMode: requestRenderMode,
         // maximumRenderTimeChange: 10,
     });
+    setResolutionScale(viewer);
     const scene = viewer.scene;
     scene.rethrowRenderErrors = rethrowRenderErrors;
     // remove the default behaviour of calling 'zoomTo' on the double clicked entity
@@ -299,6 +301,19 @@ function enableCenterOfRotate(viewer: Viewer) {
     // free view if ctrl released
     document.addEventListener('keyup', (evt) => {
         if (evt.key === 'Control') scene.camera.lookAtTransform(Matrix4.IDENTITY);
+    });
+}
+
+function setResolutionScale(viewer: Viewer) {
+    const frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
+    const scaleDownFps = 20;
+    const scaleUpFps = 30;
+    viewer.scene.postRender.addEventListener(() => {
+        if (frameRateMonitor.lastFramesPerSecond < scaleDownFps && viewer.resolutionScale > 0.45) {
+            viewer.resolutionScale = Number((viewer.resolutionScale - 0.05).toFixed(2));
+        } else if (frameRateMonitor.lastFramesPerSecond > scaleUpFps && viewer.resolutionScale < 1) {
+            viewer.resolutionScale = Number((viewer.resolutionScale + 0.05).toFixed(2));
+        }
     });
 }
 
