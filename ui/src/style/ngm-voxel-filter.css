@@ -11,6 +11,10 @@ ngm-voxel-filter input[type="number"] {
   width: 80px;
 }
 
+ngm-voxel-filter .ui.form input[type="checkbox"] {
+  vertical-align: baseline;
+}
+
 ngm-voxel-filter .lithology-checkbox {
   display: flex;
   flex-direction: column;

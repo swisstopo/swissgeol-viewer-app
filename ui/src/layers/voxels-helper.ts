@@ -33,6 +33,12 @@ function createCustomShader(config): CustomShader {
       }
 
       bool conductivityInRange = conductivity >= u_filter_conductivity_min && conductivity <= u_filter_conductivity_max;
+
+      // display undefined conductivity even if it is not in the range if the option is enabled
+      if (u_filter_include_undefined_conductivity && conductivity == u_undefined_data) {
+        conductivityInRange = true;
+      }
+
       bool lithologySelected = true;
 
       for (int i = 0; i < lithology_mapping_length; i++) {
@@ -55,8 +61,12 @@ function createCustomShader(config): CustomShader {
         vec3 voxelNormal = czm_normal * fsInput.voxel.surfaceNormal;
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
-        float lerp = (value - u_min) / (u_max - u_min);
-        material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb * lighting;
+        if (value == u_undefined_data) {
+          material.diffuse = vec3(0.797, 0.797, 0.797) * lighting;
+        } else {
+          float lerp = (value - u_min) / (u_max - u_min);
+          material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb * lighting;
+        }
         material.alpha = 1.0;
       }
     }
@@ -107,6 +117,10 @@ function createCustomShader(config): CustomShader {
       u_undefined_data: {
         type: UniformType.FLOAT,
         value: colors.undefinedData,
+      },
+      u_filter_include_undefined_conductivity: {
+        type: UniformType.BOOL,
+        value: true,
       },
     },
   });

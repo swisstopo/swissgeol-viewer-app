@@ -306,6 +306,7 @@
   "vox_filter_apply": "Appliquer le filtre",
   "vox_filter_filtering_on": "Filtre sur",
   "vox_filter_hydraulic_conductivity": "Conductivité hydraulique",
+  "vox_filter_include_undefined": "",
   "vox_filter_lithology": "Unité de modélisation",
   "vox_filter_max": "Max",
   "vox_filter_min": "Min",
