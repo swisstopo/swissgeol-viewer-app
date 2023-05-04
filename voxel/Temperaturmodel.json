@@ -1,0 +1,34 @@
+{
+  "input": {
+    "path": "./3dg_TempC_MVE_v20200303_new_header.csv",
+    "crs": "EPSG:2056"
+  },
+  "output": {
+    "path": "./output/20230113/Voxel-Temperaturmodell-GeoMol15/"
+  },
+  "csv": {
+    "properties": {
+      "Temp_C": {
+        "noData": -99999.0,
+        "type": "FLOAT32"
+      }
+    }
+  },
+  "tileset": {
+    "voxelContentBinary": true,
+    "voxelContentCombineBuffers": true
+  },
+  "pipeline": {
+    "voxelTiler": {
+      "tileDimensions": 32,
+      "properties": ["Temp_C"],
+      "grid": {
+        "xSpacing": 1000,
+        "ySpacing": 1000,
+        "zSpacing": 100,
+        "rotation": 30
+      }
+    }
+  },
+  "force": true
+}
