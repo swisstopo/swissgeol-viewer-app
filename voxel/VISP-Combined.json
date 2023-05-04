@@ -1,0 +1,37 @@
+{
+  "input": {
+    "path": "./Voxel-VISP-Combined_20220311.csv",
+    "crs": "EPSG:2056"
+  },
+  "output": {
+    "path": "./output/20230113/Voxel-VISP-Combined/"
+  },
+  "csv": {
+    "properties": {
+      "logk": {
+        "noData": -99999.0,
+        "type": "FLOAT32"
+      },
+      "Index": {
+        "noData": -99999.0,
+        "type": "FLOAT32"
+      }
+    }
+  },
+  "tileset": {
+    "voxelContentBinary": true,
+    "voxelContentCombineBuffers": true
+  },
+  "pipeline": {
+    "voxelTiler": {
+      "tileDimensions": 32,
+      "properties": ["logk", "Index"],
+      "grid": {
+        "xSpacing": 25,
+        "ySpacing": 25,
+        "zSpacing": 2
+      }
+    }
+  },
+  "force": true
+}
