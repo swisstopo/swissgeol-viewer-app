@@ -39,7 +39,8 @@ export interface VoxelColors {
   label?: string;
   range: number[];
   noData: number;
-  colors: (string|null)[];
+  undefinedData: number;
+  colors: string[];
 }
 
 export enum LayerType {
@@ -125,7 +126,7 @@ const voxelFilter = {
   conductivityDataName: 'logk',
 };
 
-const temperaturVoxelColors = {
+const temperaturVoxelColors: VoxelColors = {
   label: t('Temperature'),
   range: [10, 300],
   noData: voxelNoData,
@@ -166,7 +167,7 @@ const temperaturVoxelColors = {
   ]
 };
 
-const logkVoxelColors = {
+const logkVoxelColors: VoxelColors = {
   range: [-9, -1],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
@@ -177,7 +178,7 @@ const logkVoxelColors = {
   ],
 };
 
-const birrIndexVoxelColors = {
+const birrIndexVoxelColors: VoxelColors = {
   range: [voxelUndefinedData, 67],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
@@ -240,8 +241,6 @@ const birrIndexVoxelColors = {
     'rgb(0, 150, 13)',
     'rgb(0, 231, 19)',
     'rgb(0, 110, 166)',
-    null,
-    null,
     'rgb(255, 255, 255)',
     'rgb(255, 255, 255)',
     'rgb(255, 255, 255)',
@@ -325,9 +324,10 @@ const birrIndexVoxelFilter = {
   ],
 };
 
-const aaretalIndexVoxelColors = {
+const aaretalIndexVoxelColors: VoxelColors = {
   range: [voxelUndefinedData, 23],
   noData: voxelNoData,
+  undefinedData: voxelUndefinedData,
   colors: [
     'rgb(204, 204, 204)',
     'rgb(92, 255, 105)',
@@ -382,7 +382,7 @@ const aaretalVoxelFilter = {
   ],
 };
 
-const genevaIndexVoxelColors = {
+const genevaIndexVoxelColors: VoxelColors = {
   range: [voxelUndefinedData, 12000],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
@@ -419,7 +419,7 @@ const genevaIndexVoxelFilter = {
   ],
 };
 
-const vispIndexVoxelColors = {
+const vispIndexVoxelColors: VoxelColors = {
   range: [voxelUndefinedData, 60],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
@@ -429,41 +429,14 @@ const vispIndexVoxelColors = {
     'rgb(73, 219, 0)', // 2
     'rgb(53, 160, 0)', // 3
     'rgb(34, 102, 0)', // 4
-    null, // 5
     'rgb(199, 207, 175)', // 6
     'rgb(216, 255, 197)', // 7
     'rgb(23, 246, 39)', // 8
     'rgb(119, 210, 255)', // 9
-    null, // 10
-    null, // 11
-    null, // 12
-    null, // 13
     'rgb(217, 191, 191)', // 14
-    null, // 15
     'rgb(179, 128, 128)', // 16
-    null, // 17
-    null, // 18
-    null, // 19
-    null, // 20
-    null, // 21
-    null, // 22
-    null, // 23
-    null, // 24
-    null, // 25
-    null, // 26
-    null, // 27
-    null, // 28
-    null, // 29
     'rgb(64, 38, 38)', // 30
     'rgb(128, 77, 77)', // 31
-    null, // 32
-    null, // 33
-    null, // 34
-    null, // 35
-    null, // 36
-    null, // 37
-    null, // 38
-    null, // 39
     'rgb(0, 255, 234)', // 40
     'rgb(0, 255, 234)', // 41
     'rgb(0, 255, 234)', // 42
@@ -473,17 +446,7 @@ const vispIndexVoxelColors = {
     'rgb(0, 255, 234)', // 46
     'rgb(0, 255, 234)', // 47
     'rgb(0, 159, 238)', // 48
-    null, // 49
-    null, // 50
-    null, // 51
-    null, // 52
-    null, // 53
     'rgb(255, 0, 150)', // 54
-    null, // 55
-    null, // 56
-    null, // 57
-    null, // 58
-    null, // 59
     'rgb(255, 128, 0)', // 60
   ]
 };
