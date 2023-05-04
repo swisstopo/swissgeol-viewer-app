@@ -1,10 +1,10 @@
 {
   "input": {
-    "path": "./3dg_TempC_MVE_v20200303_new_header.csv",
+    "path": "./3dg_TempC_MVE_with_approx_ecef_heights.csv",
     "crs": "EPSG:2056"
   },
   "output": {
-    "path": "./output/20230113/Voxel-Temperaturmodell-GeoMol15/"
+    "path": "./output/20230510/Voxel-Temperaturmodell-GeoMol15/"
   },
   "csv": {
     "properties": {

@@ -127,11 +127,10 @@ const voxelFilter = {
 
 const temperaturVoxelColors = {
   label: t('Temperature'),
-  range: [0, 320],
+  range: [10, 300],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
   colors: [
-    'rgb(204, 204, 204)',
     'rgb(10, 0, 121)',
     'rgb(40, 0, 150)',
     'rgb(20, 5, 175)',
@@ -684,7 +683,7 @@ const geo_energy: LayerTreeNode = {
       children: [
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20230113/Voxel-Temperaturmodell-GeoMol15/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230510/Voxel-Temperaturmodell-GeoMol15/tileset.json',
           voxelDataName: 'Temp_C',
           voxelColors: temperaturVoxelColors,
           label: t('lyr_temperature_model_label'),
