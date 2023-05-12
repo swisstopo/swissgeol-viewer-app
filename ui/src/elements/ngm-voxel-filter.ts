@@ -18,6 +18,7 @@ export class NgmVoxelFilter extends LitElementI18n {
   @queryAll('.lithology-checkbox input[type="checkbox"]') lithologyCheckbox!: NodeListOf<HTMLInputElement>;
   @query('.min-conductivity') minConductivityInput!: HTMLInputElement;
   @query('.max-conductivity') maxConductivityInput!: HTMLInputElement;
+  @query('.vox_filter_include_undefined') includeUndefinedConductivity!: HTMLInputElement;
 
   private minConductivity = NaN;
   private maxConductivity = NaN;
@@ -55,6 +56,11 @@ export class NgmVoxelFilter extends LitElementI18n {
               <label>${i18next.t('vox_filter_max')}</label>
               <input required class="max-conductivity" type="number" step="0.01" value="${this.maxConductivity}" min="${this.minConductivity}" max="${this.maxConductivityValue}" @input="${evt => this.maxConductivityChanged(evt)}"/>
             </div>
+          </div>
+          <div>
+            <label>
+              <input class="vox_filter_include_undefined" type="checkbox" value="fixme" checked> ${i18next.t('vox_filter_include_undefined')}
+            </label>
           </div>
         </form>
         <form class="ui form">
@@ -140,12 +146,15 @@ export class NgmVoxelFilter extends LitElementI18n {
     shader.setUniform('u_filter_lithology_exclude', lithologyExclude);
     const operator = this.querySelector<HTMLInputElement>('input[name="operator"]:checked')!;
     shader.setUniform('u_filter_operator', parseInt(operator.value, 10));
+    shader.setUniform('u_filter_include_undefined_conductivity', this.includeUndefinedConductivity.checked);
+
 
     console.log({
       u_filter_conductivity_min: this.minConductivity,
       u_filter_conductivity_max: this.maxConductivity,
       u_filter_operator: operator.value,
       u_filter_lithology_exclude: lithologyExclude,
+      u_filter_include_undefined_conductivity: this.includeUndefinedConductivity.checked,
     });
 
     this.viewer.scene.requestRender();
@@ -162,6 +171,7 @@ export class NgmVoxelFilter extends LitElementI18n {
 
   resetForm() {
     this.querySelectorAll<HTMLFormElement>('.content-container form').forEach(form => form.reset());
+    this.includeUndefinedConductivity.checked = true;
   }
 
   firstUpdated() {
