@@ -56,13 +56,10 @@ export class NgmCursorInformation extends LitElementI18n {
       if (cartesian && !(feature?.primitive instanceof VoxelPrimitive)) {
         this.coordinates = formatCartographicAs2DLv95(Cartographic.fromCartesian(cartesian));
         const position = Cartographic.fromCartesian(cartesian);
-        const altitude = this.viewer.scene.globe.getHeight(position);
-        if (altitude !== undefined) {
-          const lineOrPolygon = getValueOrUndefined(feature?.id?.polyline?.show) || getValueOrUndefined(feature?.id?.polygon?.show);
-          this.height = position.height;
-          this.showTerrainHeight = !(feature && !lineOrPolygon);
-          return;
-        }
+        const lineOrPolygon = getValueOrUndefined(feature?.id?.polyline?.show) || getValueOrUndefined(feature?.id?.polygon?.show);
+        this.height = position.height;
+        this.showTerrainHeight = !(feature && !lineOrPolygon);
+        return;
       }
     }
     this.height = undefined;

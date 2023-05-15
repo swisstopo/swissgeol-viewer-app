@@ -14,7 +14,7 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType
 } from 'cesium';
-import {formatCartographicAs2DLv95} from '../projection';
+import {formatCartographicAs2DLv95, radToDeg} from '../projection';
 import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit/directives/class-map.js';
 import './ngm-cam-coordinates';
@@ -139,7 +139,6 @@ export class NgmCamConfiguration extends LitElementI18n {
     this.pitch = CesiumMath.toDegrees(camera.pitch);
     const heading = CesiumMath.toDegrees(camera.heading);
     this.heading = heading > 180 ? heading - 360 : heading;
-    const radToDeg = rad => (Math.round(100000 * rad * 180 / Math.PI) / 100000).toFixed(5);
     this.coordinates = {
       lv95: formatCartographicAs2DLv95(pc),
       wgs84: [pc.longitude, pc.latitude].map(radToDeg)

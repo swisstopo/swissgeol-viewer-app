@@ -1,7 +1,6 @@
 import proj4 from 'proj4';
-import {Cartographic, Math as CMath} from 'cesium';
-
 import type {Cartesian3} from 'cesium';
+import {Cartographic, Math as CMath} from 'cesium';
 
 proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs');
 
@@ -43,3 +42,5 @@ export function formatCartographicAs2DLv95(carto: Cartographic): Array<string> {
     carto.latitude * 180 / Math.PI,
   ]).map(Math.round).map(swissIntegerFormat.format);
 }
+
+export const radToDeg = rad => (Math.round(100000 * rad * 180 / Math.PI) / 100000).toFixed(5);

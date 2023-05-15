@@ -62,6 +62,7 @@
 @import 'project-selector.css';
 @import 'ngm-voxel-filter.css';
 @import 'ngm-voxel-simple-filter.css';
+@import 'ngm-coordinate-popup.css';
 
 * {
   scrollbar-color: light;
@@ -519,4 +520,26 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   display: flex;
   column-gap: 10px;
   margin-top: 14px;
+}
+
+.popup-arrow {
+  top: -11px;
+  left: 50%;
+  margin-left: -11px;
+  position: absolute;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 11px;
+  border-top-width: 0;
+}
+
+.popup-arrow:after {
+  top: 1px;
+  margin-left: -10px;
+  content: " ";
+  border-width: 10px;
+  border-top-width: 0;
+  position: absolute;
+  border-style: solid;
+  border-color: transparent transparent #F1F3F5 transparent;
 }

@@ -20,6 +20,7 @@ import './cesium-toolbar';
 import './elements/ngm-project-popup';
 import './elements/view-menu';
 import './elements/project-selector';
+import './elements/ngm-coordinate-popup';
 
 import '@geoblocks/cesium-view-cube';
 
@@ -389,7 +390,7 @@ export class NgmApp extends LitElementI18n {
           @showLayerLegend=${this.onShowLayerLegend}
           @showVoxelFilter=${this.onShowVoxelFilter}>
         </ngm-side-bar>
-        <div class='map'>
+        <div class='map' oncontextmenu="return false;">
           <div id='cesium'>
             <ngm-slow-loading style='display: none;'></ngm-slow-loading>
             <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
@@ -423,6 +424,7 @@ export class NgmApp extends LitElementI18n {
             </project-selector>
             <ngm-voxel-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-filter>
             <ngm-voxel-simple-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-simple-filter>
+            <ngm-coordinate-popup class="ngm-floating-window"></ngm-coordinate-popup>
             <div class="on-map-menu">
               <cesium-view-cube ?hidden=${this.mobileView || this.showAxisOnMap}
                                 .scene="${this.viewer?.scene}"></cesium-view-cube>
