@@ -424,30 +424,29 @@ const vispIndexVoxelColors: VoxelColors = {
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
   colors: [
-    'rgb(204, 204, 204)',
+    'rgb(204, 204, 204)', // undefined
+    'rgb(255, 0, 150)', // 54
+    'rgb(217, 191, 191)', // 14
+    'rgb(179, 128, 128)', // 16
+    'rgb(128, 77, 77)', // 31
+    'rgb(64, 38, 38)', // 30
+    'rgb(0, 255, 234)', // 40
+    'rgb(0, 255, 234)', // 41
+    'rgb(0, 255, 234)', // 44
+    'rgb(0, 255, 234)', // 42
+    'rgb(0, 255, 234)', // 43
+    'rgb(0, 255, 234)', // 45
+    'rgb(0, 255, 234)', // 46
+    'rgb(0, 255, 234)', // 47
+    'rgb(0, 159, 238)', // 48
+    'rgb(119, 210, 255)', // 9
+    'rgb(216, 255, 197)', // 7
+    'rgb(23, 246, 39)', // 8
     'rgb(100, 255, 22)', // 1
     'rgb(73, 219, 0)', // 2
     'rgb(53, 160, 0)', // 3
     'rgb(34, 102, 0)', // 4
     'rgb(199, 207, 175)', // 6
-    'rgb(216, 255, 197)', // 7
-    'rgb(23, 246, 39)', // 8
-    'rgb(119, 210, 255)', // 9
-    'rgb(217, 191, 191)', // 14
-    'rgb(179, 128, 128)', // 16
-    'rgb(64, 38, 38)', // 30
-    'rgb(128, 77, 77)', // 31
-    'rgb(0, 255, 234)', // 40
-    'rgb(0, 255, 234)', // 41
-    'rgb(0, 255, 234)', // 42
-    'rgb(0, 255, 234)', // 43
-    'rgb(0, 255, 234)', // 44
-    'rgb(0, 255, 234)', // 45
-    'rgb(0, 255, 234)', // 46
-    'rgb(0, 255, 234)', // 47
-    'rgb(0, 159, 238)', // 48
-    'rgb(255, 0, 150)', // 54
-    'rgb(255, 128, 0)', // 60
   ]
 };
 
@@ -455,29 +454,28 @@ const vispIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
     {index: voxelUndefinedData, label: 'Undefined Lithology'},
+    {index: 54, label: 'Künstliche Ablagerung Lonzadeponie'},
+    {index: 14, label: 'Gehängeschutt'},
+    {index: 16, label: 'Bergsturzmaterial'},
+    {index: 31, label: 'Felssackung'},
+    {index: 30, label: 'Sackungsmasse Riedberg'},
+    {index: 40, label: 'Bachschuttablagerung'},
+    {index: 41, label: 'Bachschuttablagerung Baltschiederbach'},
+    {index: 44, label: 'Bachschuttablagerung Gamsa'},
+    {index: 42, label: 'Bachschuttablagerung Bietschbach'},
+    {index: 43, label: 'Bachschuttablagerung Chelchbach'},
+    {index: 45, label: 'Bachschuttablagerung Jolibach'},
+    {index: 46, label: 'Bachschuttablagerung Lonza'},
+    {index: 47, label: 'Bachschuttablagerung Saltina'},
+    {index: 48, label: 'Bachschuttablagerung Vispa'},
+    {index: 9, label: 'Rhoneschotter und Rhonesande'},
+    {index: 7, label: 'Obere Limnische Ablagerungen oli'},
+    {index: 8, label: 'Untere Limnische Ablagerungen uli'},
     {index: 1, label: 'Limnische Ablagerungen'},
     {index: 2, label: 'Limnische Ablagerungen 2'},
     {index: 3, label: 'Limnische Ablagerungen 4'},
     {index: 4, label: 'Limnische Ablagerungen 5'},
     {index: 6, label: 'Moränenmaterial'},
-    {index: 7, label: 'Obere Limnische Ablagerungen oli'},
-    {index: 8, label: 'Untere Limnische Ablagerungen uli'},
-    {index: 9, label: 'Rhoneschotter und Rhonesande'},
-    {index: 14, label: 'Gehängeschutt'},
-    {index: 16, label: 'Bergsturzmaterial'},
-    {index: 30, label: 'Sackungsmasse Riedberg'},
-    {index: 31, label: 'Felssackung'},
-    {index: 40, label: 'Bachschuttablagerung'},
-    {index: 41, label: 'Bachschuttablagerung Baltschiederbach'},
-    {index: 42, label: 'Bachschuttablagerung Bietschbach'},
-    {index: 43, label: 'Bachschuttablagerung Chelchbach'},
-    {index: 44, label: 'Bachschuttablagerung Gamsa'},
-    {index: 45, label: 'Bachschuttablagerung Jolibach'},
-    {index: 46, label: 'Bachschuttablagerung Lonza'},
-    {index: 47, label: 'Bachschuttablagerung Saltina'},
-    {index: 48, label: 'Bachschuttablagerung Vispa'},
-    {index: 54, label: 'Künstliche Ablagerung Lonzadeponie'},
-    {index: 60, label: 'Deckschicht'},
   ],
 };
 
