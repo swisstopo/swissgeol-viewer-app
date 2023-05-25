@@ -4,7 +4,7 @@
     "crs": "EPSG:2056"
   },
   "output": {
-    "path": "./output/20230510/Voxel-Temperaturmodell-GeoMol15/"
+    "path": "./output/20230525/Voxel-Temperaturmodell-GeoMol15/"
   },
   "csv": {
     "properties": {
