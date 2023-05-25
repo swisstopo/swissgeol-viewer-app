@@ -22,6 +22,11 @@ ngm-voxel-filter .lithology-checkbox {
   overflow: auto;
 }
 
+ngm-voxel-filter .lithology-checkbox label {
+  display: inline-flex;
+  gap: 5px;
+}
+
 ngm-voxel-filter .filter-label {
   font-weight: bold;
 }

@@ -39,7 +39,8 @@ export interface VoxelColors {
   label?: string;
   range: number[];
   noData: number;
-  colors: (string|null)[];
+  undefinedData: number;
+  colors: string[];
 }
 
 export enum LayerType {
@@ -125,7 +126,7 @@ const voxelFilter = {
   conductivityDataName: 'logk',
 };
 
-const temperaturVoxelColors = {
+const temperaturVoxelColors: VoxelColors = {
   label: t('Temperature'),
   range: [10, 300],
   noData: voxelNoData,
@@ -166,7 +167,7 @@ const temperaturVoxelColors = {
   ]
 };
 
-const logkVoxelColors = {
+const logkVoxelColors: VoxelColors = {
   range: [-9, -1],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
@@ -177,79 +178,77 @@ const logkVoxelColors = {
   ],
 };
 
-const birrIndexVoxelColors = {
+const birrIndexVoxelColors: VoxelColors = {
   range: [voxelUndefinedData, 67],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
   colors: [
-    'rgb(204, 204, 204)',
-    'rgb(128, 212, 255)',
-    'rgb(173, 200, 90)',
-    'rgb(0, 255, 234)',
-    'rgb(0, 199, 17)',
-    'rgb(38, 183, 255)',
-    'rgb(51, 51, 51)',
-    'rgb(123, 147, 49)',
-    'rgb(64, 191, 255)',
-    'rgb(164, 194, 73)',
-    'rgb(24, 255, 43)',
-    'rgb(8, 255, 29)',
-    'rgb(0, 144, 217)',
-    'rgb(255, 255, 255)',
-    'rgb(140, 217, 255)',
-    'rgb(0, 102, 153)',
-    'rgb(173, 173, 173)',
-    'rgb(143, 143, 143)',
-    'rgb(255, 255, 255)',
-    'rgb(0, 215, 18)',
-    'rgb(152, 182, 61)',
-    'rgb(255, 255, 255)',
-    'rgb(225, 81, 194)',
-    'rgb(102, 204, 255)',
-    'rgb(170, 0, 255)',
-    'rgb(0, 153, 230)',
-    'rgb(56, 255, 73)',
-    'rgb(199, 218, 143)',
-    'rgb(13, 175, 255)',
-    'rgb(190, 212, 126)',
-    'rgb(181, 206, 108)',
-    'rgb(208, 224, 161)',
-    'rgb(0, 127, 191)',
-    'rgb(0, 247, 21)',
-    'rgb(115, 208, 255)',
-    'rgb(108, 129, 43)',
-    'rgb(40, 255, 58)',
-    'rgb(137, 165, 55)',
-    'rgb(112, 112, 112)',
-    'rgb(255, 255, 255)',
-    'rgb(105, 255, 117)',
-    'rgb(0, 170, 255)',
-    'rgb(89, 255, 102)',
-    'rgb(255, 255, 255)',
-    'rgb(72, 255, 88)',
-    'rgb(0, 183, 15)',
-    'rgb(137, 255, 147)',
-    'rgb(26, 178, 255)',
-    'rgb(255, 255, 0)',
-    'rgb(0, 93, 140)',
-    'rgb(255, 255, 255)',
-    'rgb(77, 195, 255)',
-    'rgb(0, 134, 11)',
-    'rgb(121, 255, 132)',
-    'rgb(0, 166, 14)',
-    'rgb(0, 150, 13)',
-    'rgb(0, 231, 19)',
-    'rgb(0, 110, 166)',
-    null,
-    null,
-    'rgb(255, 255, 255)',
-    'rgb(255, 255, 255)',
-    'rgb(255, 255, 255)',
-    'rgb(255, 255, 255)',
-    'rgb(0, 127, 191)',
-    'rgb(255, 255, 255)',
-    'rgb(255, 255, 255)',
-    'rgb(255, 255, 255)',
+    'rgb(204, 204, 204)', // undefined
+    'rgb(225, 81, 194)', // 22
+    'rgb(137, 255, 147)', // 46
+    'rgb(121, 255, 132)', // 53
+    'rgb(0, 255, 234)', // 3
+    'rgb(173, 173, 173)', // 16
+    'rgb(105, 255, 117)', // 40
+    'rgb(143, 143, 143)', // 17
+    'rgb(112, 112, 112)', // 38
+    'rgb(170, 0, 255)', // 24
+    'rgb(89, 255, 102)', // 42
+    'rgb(255, 255, 255)', // 61
+    'rgb(208, 224, 161)', // 31
+    'rgb(72, 255, 88)', // 44
+    'rgb(56, 255, 73)', // 26
+    'rgb(199, 218, 143)', // 27
+    'rgb(255, 255, 255)', // 62
+    'rgb(255, 255, 255)', // 60
+    'rgb(140, 217, 255)', // 14
+    'rgb(128, 212, 255)', // 1
+    'rgb(115, 208, 255)', // 34
+    'rgb(102, 204, 255)', // 23
+    'rgb(77, 195, 255)', // 51
+    'rgb(64, 191, 255)', // 8
+    'rgb(190, 212, 126)', // 29
+    'rgb(181, 206, 108)', // 30
+    'rgb(255, 255, 255)', // 13
+    'rgb(38, 183, 255)', // 5
+    'rgb(40, 255, 58)', // 36
+    'rgb(173, 200, 90)', // 2
+    'rgb(26, 178, 255)', // 47
+    'rgb(13, 175, 255)', // 28
+    'rgb(255, 255, 255)', // 21
+    'rgb(24, 255, 43)', // 10
+    'rgb(0, 170, 255)', // 41
+    'rgb(8, 255, 29)', // 11
+    'rgb(255, 255, 255)', // 18
+    'rgb(0, 153, 230)', // 25
+    'rgb(255, 255, 0)', // 48
+    'rgb(0, 247, 21)', // 33
+    'rgb(0, 231, 19)', // 56
+    'rgb(0, 144, 217)', // 12
+    'rgb(164, 194, 73)', // 9
+    'rgb(108, 129, 43)', // 35
+    'rgb(0, 93, 140)', // 49
+    'rgb(255, 255, 255)', // 50
+    'rgb(0, 215, 18)', // 19
+    'rgb(255, 255, 255)', // 39
+    'rgb(255, 255, 255)', // 63
+    'rgb(0, 127, 191)', // 32
+    'rgb(0, 127, 191)', // 64
+    'rgb(152, 182, 61)', // 20
+    'rgb(0, 199, 17)', // 4
+    'rgb(0, 183, 15)', // 45
+    'rgb(0, 134, 11)', // 52
+    'rgb(0, 166, 14)', // 54
+    'rgb(137, 165, 55)', // 37
+    'rgb(255, 255, 255)', // 43
+    'rgb(0, 110, 166)', // 57
+    'rgb(0, 102, 153)', // 15
+    'rgb(51, 51, 51)', // 6
+    'rgb(0, 150, 13)', // 55
+    'rgb(123, 147, 49)', // 7
+    'rgb(255, 255, 255)', // 65
+    'rgb(255, 255, 255)', // 66
+    'rgb(255, 255, 255)', // 67
   ],
 };
 
@@ -257,77 +256,78 @@ const birrIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
     {index: voxelUndefinedData, label: 'Undefined Lithology'},
-    {index: 1, label: 'Aaretal-Schotter'},
-    {index: 2, label: 'Ämmert-Moräne'},
-    {index: 3, label: 'Bachschutt'},
-    {index: 4, label: 'Birr-Lehm'},
-    {index: 5, label: 'Birr-Schotter'},
-    {index: 6, label: 'Brand-Formation'},
-    {index: 7, label: 'Brand-Moräne'},
-    {index: 8, label: 'Bünztalschotter'},
-    {index: 9, label: 'Burghalden-Moräne'},
-    {index: 10, label: 'Dättwil-Lehm'},
-    {index: 11, label: 'Fahracher-Formation'},
-    {index: 12, label: 'Fislisbach-Schotter'},
-    {index: 13, label: 'Flüefeld-Schotter'},
-    {index: 14, label: 'Gruemet-Schotter'},
-    {index: 15, label: 'Habsburg-Schotter'},
-    {index: 16, label: 'Hanglehm'},
-    {index: 17, label: 'Hangschutt'},
-    {index: 18, label: 'Hard-Schotter'},
-    {index: 19, label: 'Hausen-Lehm'},
-    {index: 20, label: 'Hausen-Moräne'},
-    {index: 21, label: 'Hinterbänkler-Formation'},
     {index: 22, label: 'künstliche Aufschüttung'},
-    {index: 23, label: 'Limmattal-Schotter'},
+    {index: 46, label: 'Überschwemmungssedimente'},
+    {index: 53, label: 'Verlandungssedimente'},
+    {index: 3, label: 'Bachschutt'},
+    {index: 16, label: 'Hanglehm'},
+    {index: 40, label: 'Schwemmlehm'},
+    {index: 17, label: 'Hangschutt'},
+    {index: 38, label: 'Rutschungsschutt'},
     {index: 24, label: 'Löss'},
-    {index: 25, label: 'Lupfig-Schotter'},
+    {index: 42, label: 'Stetten-Lehm'},
+    {index: 61, label: 'Eiszeitliche Seesedimente'},
+    {index: 31, label: 'Pulveren-Moräne'},
+    {index: 44, label: 'Tanklager-Formation'},
     {index: 26, label: 'Mellingen-Lehm'},
     {index: 27, label: 'Mellingen-Moräne'},
-    {index: 28, label: 'Mülligen-Schotter'},
+    {index: 62, label: 'Mellingen-Schotter'},
+    {index: 60, label: 'Birmenstorf-Glazigene Sed.'},
+    {index: 14, label: 'Gruemet-Schotter'},
+    {index: 1, label: 'Aaretal-Schotter'},
+    {index: 34, label: 'Reusstal-Schotter'},
+    {index: 23, label: 'Limmattal-Schotter'},
+    {index: 51, label: 'Dättwil-Schotter'},
+    {index: 8, label: 'Bünztalschotter'},
     {index: 29, label: 'Oberhard-Moräne'},
     {index: 30, label: 'Othmarsingen-Moräne'},
-    {index: 31, label: 'Pulveren-Moräne'},
-    {index: 32, label: 'Remigen-Schotter'},
-    {index: 33, label: 'Reusstal-Lehm'},
-    {index: 34, label: 'Reusstal-Schotter'},
-    {index: 35, label: 'Rüfenach-Moräne'},
+    {index: 13, label: 'Flüefeld-Schotter'},
+    {index: 5, label: 'Birr-Schotter'},
     {index: 36, label: 'Rüsshalde-Formation'},
-    {index: 37, label: 'Rütenen-Moräne'},
-    {index: 38, label: 'Rutschungsschutt'},
-    {index: 39, label: 'Schlattboden-Schotter'},
-    {index: 40, label: 'Schwemmlehm'},
-    {index: 41, label: 'Seebli-Formation'},
-    {index: 42, label: 'Stetten-Lehm'},
-    {index: 43, label: 'Strick-Schotter'},
-    {index: 44, label: 'Tanklager-Formation'},
-    {index: 45, label: 'Tannholz-Formation'},
-    {index: 46, label: 'Überschwemmungssedimente'},
+    {index: 2, label: 'Ämmert-Moräne'},
     {index: 47, label: 'Aemmert-Schotter'},
+    {index: 28, label: 'Mülligen-Schotter'},
+    {index: 21, label: 'Hinterbänkler-Formation'},
+    {index: 10, label: 'Dättwil-Lehm'},
+    {index: 41, label: 'Seebli-Formation'},
+    {index: 11, label: 'Fahracher-Formation'},
+    {index: 18, label: 'Hard-Schotter'},
+    {index: 25, label: 'Lupfig-Schotter'},
     {index: 48, label: 'Reusstal-Sand'},
+    {index: 33, label: 'Reusstal-Lehm'},
+    {index: 56, label: 'Vogelsang-Formation'},
+    {index: 12, label: 'Fislisbach-Schotter'},
+    {index: 9, label: 'Burghalden-Moräne'},
+    {index: 35, label: 'Rüfenach-Moräne'},
     {index: 49, label: 'Rüfenach-Schotter'},
     {index: 50, label: 'Ruckfeld-Schotter'},
-    {index: 51, label: 'Dättwil-Schotter'},
-    {index: 52, label: 'Buenztal-Lehm'},
-    {index: 53, label: 'Verlandungssedimente'},
-    {index: 54, label: 'Birch-Formation'},
-    {index: 55, label: 'Moos-Lehm'},
-    {index: 56, label: 'Vogelsang-Formation'},
-    {index: 57, label: 'Oetlisberg-Schotter'},
-    {index: 60, label: 'Birmenstorf-Glazigene Sed.'},
-    {index: 61, label: 'Eiszeitliche Seesedimente'},
-    {index: 62, label: 'Mellingen-Schotter'},
+    {index: 19, label: 'Hausen-Lehm'},
+    {index: 39, label: 'Schlattboden-Schotter'},
     {index: 63, label: 'Remigen-Moräne'},
+    {index: 32, label: 'Remigen-Schotter'},
     {index: 64, label: 'Remigen-Sediment'},
+    {index: 20, label: 'Hausen-Moräne'},
+    {index: 4, label: 'Birr-Lehm'},
+    {index: 45, label: 'Tannholz-Formation'},
+    {index: 52, label: 'Buenztal-Lehm'},
+    {index: 54, label: 'Birch-Formation'},
+    {index: 37, label: 'Rütenen-Moräne'},
+    {index: 43, label: 'Strick-Schotter'},
+    {index: 57, label: 'Oetlisberg-Schotter'},
+    {index: 15, label: 'Habsburg-Schotter'},
+    {index: 6, label: 'Brand-Formation'},
+    {index: 55, label: 'Moos-Lehm'},
+    {index: 7, label: 'Brand-Moräne'},
     {index: 65, label: 'Riniken-Moräne'},
     {index: 66, label: 'Riniken-Seesedimente'},
     {index: 67, label: 'Bruggerberg-Schotter'},
   ],
 };
 
-const aaretalIndexVoxelColors = {
+const aaretalIndexVoxelColors: VoxelColors = {
   range: [voxelUndefinedData, 23],
   noData: voxelNoData,
+  undefinedData: voxelUndefinedData,
   colors: [
     'rgb(204, 204, 204)',
     'rgb(92, 255, 105)',
@@ -382,7 +382,7 @@ const aaretalVoxelFilter = {
   ],
 };
 
-const genevaIndexVoxelColors = {
+const genevaIndexVoxelColors: VoxelColors = {
   range: [voxelUndefinedData, 12000],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
@@ -419,72 +419,34 @@ const genevaIndexVoxelFilter = {
   ],
 };
 
-const vispIndexVoxelColors = {
+const vispIndexVoxelColors: VoxelColors = {
   range: [voxelUndefinedData, 60],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
   colors: [
-    'rgb(204, 204, 204)',
-    'rgb(100, 255, 22)', // 1
-    'rgb(73, 219, 0)', // 2
-    'rgb(53, 160, 0)', // 3
-    'rgb(34, 102, 0)', // 4
-    null, // 5
-    'rgb(199, 207, 175)', // 6
-    'rgb(216, 255, 197)', // 7
-    'rgb(23, 246, 39)', // 8
-    'rgb(119, 210, 255)', // 9
-    null, // 10
-    null, // 11
-    null, // 12
-    null, // 13
+    'rgb(204, 204, 204)', // undefined
+    'rgb(255, 0, 150)', // 54
     'rgb(217, 191, 191)', // 14
-    null, // 15
     'rgb(179, 128, 128)', // 16
-    null, // 17
-    null, // 18
-    null, // 19
-    null, // 20
-    null, // 21
-    null, // 22
-    null, // 23
-    null, // 24
-    null, // 25
-    null, // 26
-    null, // 27
-    null, // 28
-    null, // 29
-    'rgb(64, 38, 38)', // 30
     'rgb(128, 77, 77)', // 31
-    null, // 32
-    null, // 33
-    null, // 34
-    null, // 35
-    null, // 36
-    null, // 37
-    null, // 38
-    null, // 39
+    'rgb(64, 38, 38)', // 30
     'rgb(0, 255, 234)', // 40
     'rgb(0, 255, 234)', // 41
+    'rgb(0, 255, 234)', // 44
     'rgb(0, 255, 234)', // 42
     'rgb(0, 255, 234)', // 43
-    'rgb(0, 255, 234)', // 44
     'rgb(0, 255, 234)', // 45
     'rgb(0, 255, 234)', // 46
     'rgb(0, 255, 234)', // 47
     'rgb(0, 159, 238)', // 48
-    null, // 49
-    null, // 50
-    null, // 51
-    null, // 52
-    null, // 53
-    'rgb(255, 0, 150)', // 54
-    null, // 55
-    null, // 56
-    null, // 57
-    null, // 58
-    null, // 59
-    'rgb(255, 128, 0)', // 60
+    'rgb(119, 210, 255)', // 9
+    'rgb(216, 255, 197)', // 7
+    'rgb(23, 246, 39)', // 8
+    'rgb(100, 255, 22)', // 1
+    'rgb(73, 219, 0)', // 2
+    'rgb(53, 160, 0)', // 3
+    'rgb(34, 102, 0)', // 4
+    'rgb(199, 207, 175)', // 6
   ]
 };
 
@@ -492,29 +454,28 @@ const vispIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
     {index: voxelUndefinedData, label: 'Undefined Lithology'},
+    {index: 54, label: 'Künstliche Ablagerung Lonzadeponie'},
+    {index: 14, label: 'Gehängeschutt'},
+    {index: 16, label: 'Bergsturzmaterial'},
+    {index: 31, label: 'Felssackung'},
+    {index: 30, label: 'Sackungsmasse Riedberg'},
+    {index: 40, label: 'Bachschuttablagerung'},
+    {index: 41, label: 'Bachschuttablagerung Baltschiederbach'},
+    {index: 44, label: 'Bachschuttablagerung Gamsa'},
+    {index: 42, label: 'Bachschuttablagerung Bietschbach'},
+    {index: 43, label: 'Bachschuttablagerung Chelchbach'},
+    {index: 45, label: 'Bachschuttablagerung Jolibach'},
+    {index: 46, label: 'Bachschuttablagerung Lonza'},
+    {index: 47, label: 'Bachschuttablagerung Saltina'},
+    {index: 48, label: 'Bachschuttablagerung Vispa'},
+    {index: 9, label: 'Rhoneschotter und Rhonesande'},
+    {index: 7, label: 'Obere Limnische Ablagerungen oli'},
+    {index: 8, label: 'Untere Limnische Ablagerungen uli'},
     {index: 1, label: 'Limnische Ablagerungen'},
     {index: 2, label: 'Limnische Ablagerungen 2'},
     {index: 3, label: 'Limnische Ablagerungen 4'},
     {index: 4, label: 'Limnische Ablagerungen 5'},
     {index: 6, label: 'Moränenmaterial'},
-    {index: 7, label: 'Obere Limnische Ablagerungen oli'},
-    {index: 8, label: 'Untere Limnische Ablagerungen uli'},
-    {index: 9, label: 'Rhoneschotter und Rhonesande'},
-    {index: 14, label: 'Gehängeschutt'},
-    {index: 16, label: 'Bergsturzmaterial'},
-    {index: 30, label: 'Sackungsmasse Riedberg'},
-    {index: 31, label: 'Felssackung'},
-    {index: 40, label: 'Bachschuttablagerung'},
-    {index: 41, label: 'Bachschuttablagerung Baltschiederbach'},
-    {index: 42, label: 'Bachschuttablagerung Bietschbach'},
-    {index: 43, label: 'Bachschuttablagerung Chelchbach'},
-    {index: 44, label: 'Bachschuttablagerung Gamsa'},
-    {index: 45, label: 'Bachschuttablagerung Jolibach'},
-    {index: 46, label: 'Bachschuttablagerung Lonza'},
-    {index: 47, label: 'Bachschuttablagerung Saltina'},
-    {index: 48, label: 'Bachschuttablagerung Vispa'},
-    {index: 54, label: 'Künstliche Ablagerung Lonzadeponie'},
-    {index: 60, label: 'Deckschicht'},
   ],
 };
 
