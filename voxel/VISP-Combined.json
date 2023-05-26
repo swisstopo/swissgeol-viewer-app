@@ -1,10 +1,10 @@
 {
   "input": {
-    "path": "./Voxel-VISP-Combined_20220311.csv",
+    "path": "./Voxel-VISP-Combined_20220311_with_ecef_heights.csv",
     "crs": "EPSG:2056"
   },
   "output": {
-    "path": "./output/20230113/Voxel-VISP-Combined/"
+    "path": "./output/20230526/Voxel-VISP-Combined/"
   },
   "csv": {
     "properties": {
