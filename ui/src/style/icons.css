@@ -105,6 +105,22 @@
   -webkit-mask: url('./images/i_cam.svg') no-repeat center;
 }
 
+.ngm-rectangle-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_rectangle_draw.svg') no-repeat center;
+  -webkit-mask: url('./images/i_rectangle_draw.svg') no-repeat center;
+}
+
+.ngm-nadir-camera-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_cam.svg') no-repeat center;
+  -webkit-mask: url('./images/i_cam.svg') no-repeat center;
+  transform: rotate(90deg);
+  stroke-width: 1;
+}
+
 .ngm-cam-h-icon {
   width: 24px;
   height: 24px;

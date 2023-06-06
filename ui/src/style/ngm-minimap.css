@@ -11,9 +11,23 @@ ngm-minimap {
   border-radius: 25px;
   width: 40px;
   height: 40px;
+}
+
+.ngm-nadir {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FFFFFF;
+  border-radius: 25px;
+  width: 40px;
+  height: 40px;
+}
+
+.ngm-minimap-buttons {
+  display: flex;
+  justify-content: space-between;
   position: relative;
   bottom: 20px;
-  margin-left: auto;
 }
 
 .ngm-minimap-container {
@@ -26,12 +40,14 @@ ngm-minimap {
   padding-bottom: 30px;
 }
 
-.ngm-minimap-container .ngm-cam-icon {
+.ngm-minimap-container .ngm-cam-icon,
+.ngm-minimap-container .ngm-rectangle-icon {
   cursor: grab;
   background-color: var(--ngm-interaction-active);
 }
 
-.ngm-minimap-container .ngm-cam-icon:active {
+.ngm-minimap-container .ngm-cam-icon:active,
+.ngm-minimap-container .ngm-rectangle-icon:active {
   cursor: grabbing;
 }
 
