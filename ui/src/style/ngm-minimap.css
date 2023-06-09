@@ -28,7 +28,14 @@ ngm-minimap {
   justify-content: space-between;
   position: relative;
   bottom: 20px;
+  pointer-events: none;
 }
+
+.ngm-minimap-buttons .ngm-nadir,
+.ngm-minimap-buttons .ngm-compass {
+  pointer-events: all;
+}
+
 
 .ngm-minimap-container {
   cursor: pointer;
@@ -41,13 +48,13 @@ ngm-minimap {
 }
 
 .ngm-minimap-container .ngm-cam-icon,
-.ngm-minimap-container .ngm-rectangle-icon {
+.ngm-minimap-container .ngm-cam-behind-icon {
   cursor: grab;
   background-color: var(--ngm-interaction-active);
 }
 
 .ngm-minimap-container .ngm-cam-icon:active,
-.ngm-minimap-container .ngm-rectangle-icon:active {
+.ngm-minimap-container .ngm-cam-behind-icon:active {
   cursor: grabbing;
 }
 

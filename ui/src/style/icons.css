@@ -105,11 +105,11 @@
   -webkit-mask: url('./images/i_cam.svg') no-repeat center;
 }
 
-.ngm-rectangle-icon {
+.ngm-cam-behind-icon {
   width: 24px;
   height: 24px;
-  mask: url('./images/i_rectangle_draw.svg') no-repeat center;
-  -webkit-mask: url('./images/i_rectangle_draw.svg') no-repeat center;
+  mask: url('./images/i_cam_behind.svg') no-repeat center;
+  -webkit-mask: url('./images/i_cam_behind.svg') no-repeat center;
 }
 
 .ngm-nadir-camera-icon {
