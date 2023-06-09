@@ -11,6 +11,7 @@ import NavToolsStore from '../store/navTools';
 import type {Interactable} from '@interactjs/types';
 import type {Event, Viewer} from 'cesium';
 import {dragArea} from './helperElements';
+import {classMap} from 'lit/directives/class-map.js';
 
 // calculate difference between minimap extent and container
 const width = CesiumMath.toRadians(MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
@@ -28,12 +29,13 @@ export class NgmMinimap extends LitElementI18n {
   @state() left = 0;
   @state() bottom = 0;
   @state() heading = 0;
+  @state() nadirViewActive = false;
   private unlistenPostRender: Event.RemoveCallback | null = null;
 
   constructor() {
     super();
     this.addEventListener('mousemove', (evt: MouseEvent) => {
-      if (this.moveMarker && evt.target && (evt.target as Element).classList.contains('ngm-cam-icon')) {
+      if (this.moveMarker && evt.target && (evt.target as Element).classList.contains('ngm-cam')) {
         this.moveCamera(evt.x, evt.y, 'mousemove');
       }
     });
@@ -76,6 +78,10 @@ export class NgmMinimap extends LitElementI18n {
       width: `${markerWidth}px`,
       height: `${markerWidth}px`,
     };
+  }
+
+  handleNadirToggle() {
+    this.nadirViewActive = !this.nadirViewActive;
   }
 
   updateFromCamera() {
@@ -139,10 +145,10 @@ export class NgmMinimap extends LitElementI18n {
       </div>
       <div class="ngm-minimap-container">
         <img src="./images/overview.svg" class="ngm-map-overview">
-        <div class="ngm-cam-icon" style=${styleMap(this.markerStyle)}
+        <div class="ngm-cam ${classMap({'ngm-cam-icon': !this.nadirViewActive, 'ngm-cam-behind-icon': this.nadirViewActive})}" style=${styleMap(this.markerStyle)}
              @mousedown="${(evt) => this.onIconPress(evt)}">
         </div>
-        <ngm-nadir-view .viewer=${this.viewer}></ngm-nadir-view>
+        <ngm-nadir-view .viewer=${this.viewer} @nadirToggled=${this.handleNadirToggle}></ngm-nadir-view>
       </div>
       ${dragArea}
     `;
