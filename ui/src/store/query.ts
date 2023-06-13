@@ -1,15 +1,16 @@
 import {Subject} from 'rxjs';
+import type {QueryResult} from '../query/types';
 
 export default class QueryStore {
-  private static objectInfoSubject = new Subject<any>();
+  private static objectInfoSubject = new Subject<QueryResult | undefined>();
 
-  static setObjectInfo(attributes: any): void {
+  static setObjectInfo(attributes: QueryResult | undefined): void {
     if (attributes && !Object.getOwnPropertyNames(attributes).length)
-      attributes = null;
+      attributes = undefined;
     this.objectInfoSubject.next(attributes);
   }
 
-  static get objectInfo(): Subject<any> {
+  static get objectInfo(): Subject<QueryResult | undefined> {
     return this.objectInfoSubject;
   }
 }

@@ -1,23 +1,31 @@
 import ObjectSelector from './ObjectSelector';
 import SwisstopoIdentify from './SwisstopoIdentify';
-import {Entity, Cartesian3, Cartographic, HeightReference, ScreenSpaceEventType} from 'cesium';
+import type {Scene, Viewer} from 'cesium';
+import {Cartesian3, Cartographic, Color, Entity, HeightReference, ScreenSpaceEventType} from 'cesium';
 import i18next from 'i18next';
-import {OBJECT_HIGHLIGHT_COLOR} from '../constants';
+import {OBJECT_HIGHLIGHT_COLOR, SWISSTOPO_IT_HIGHLIGHT_COLOR} from '../constants';
 import {lv95ToDegrees} from '../projection';
 import DrawStore from '../store/draw';
 import QueryStore from '../store/query';
 import ToolboxStore from '../store/toolbox';
 import NavToolsStore from '../store/navTools';
+import type {PopupItem, QueryResult} from './types';
 
 
 export default class QueryManager {
+  objectSelector: ObjectSelector;
+  swisstopoIdentify = new SwisstopoIdentify();
+  viewer: Viewer;
+  scene: Scene;
+  enabled = true;
+  highlightedEntity: Entity | undefined;
+  highlightedGroup: Entity[] = [];
+  searchableLayers: any[] = []; // todo type
+
   constructor(viewer) {
     this.objectSelector = new ObjectSelector(viewer);
-    this.swisstopoIdentify = new SwisstopoIdentify();
     this.viewer = viewer;
     this.scene = viewer.scene;
-    this.enabled = true;
-    this.highlightEntity = null;
     viewer.screenSpaceEventHandler.setInputAction(click => this.onclick(click), ScreenSpaceEventType.LEFT_CLICK);
   }
 
@@ -25,43 +33,48 @@ export default class QueryManager {
     this.searchableLayers = layers;
   }
 
-  async querySwisstopo(pickedPosition, layers) {
+  async querySwisstopo(pickedPosition, layers): Promise<QueryResult | undefined> {
     const lang = i18next.language;
     const distance = Cartesian3.distance(this.scene.camera.positionWC, pickedPosition);
     // layer list is reversed to match the display order on map
-    const identifyResult = await this.swisstopoIdentify.identify(pickedPosition, distance, layers.slice().reverse(), lang);
-    if (identifyResult) {
-      let popupContent = await this.swisstopoIdentify.getPopupForFeature(identifyResult.layerBodId, identifyResult.featureId, lang);
-      if (popupContent) {
-        popupContent = popupContent.replace(/cell-left/g, 'key')
-          .replace(/<td>/g, '<td class="value">')
-          .replace(/<table>/g, '<table class="ui compact small very basic table">');
-      }
+    const identifyResults = await this.swisstopoIdentify.identify(pickedPosition, distance, layers.slice().reverse(), lang);
+    if (!identifyResults.length) return undefined;
+    const results: PopupItem[] = await Promise.all(identifyResults.map(async (r) => {
+        const popupContent = await this.swisstopoIdentify.getPopupForFeature(r.layerBodId, r.featureId, lang);
+        return {
+          content: popupContent && popupContent.replace(/cell-left/g, 'key')
+              .replace(/<td>/g, '<td class="value">')
+              .replace(/<table>/g, '<table class="ui compact small very basic table">'),
+          mouseEnter: () => {
+            this.highlightSelectedArea(r.geometry);
+          },
+          mouseLeave: () => {
+            this.unhighlightEntity();
+          },
+           zoom: () => {
+             if (!this.highlightedEntity) return;
+             NavToolsStore.hideTargetPoint();
+             this.viewer.zoomTo(this.highlightedEntity);
+           }
+        };
+    }));
 
-      const onshow = () => {
-        this.highlightSelectedArea(identifyResult.geometry);
-      };
-      const onhide = () => {
-        this.unhighlight();
-      };
-
-      const zoom = () => {
-        if (!this.highlightEntity) return;
-        NavToolsStore.hideTargetPoint();
-        this.viewer.zoomTo(this.highlightEntity);
-      };
-
-      return {
-        popupContent,
-        onshow,
-        onhide,
-        zoom
-      };
-    }
+    const onshow = () => {
+      const geometries = identifyResults.map(r => r.geometry);
+      this.highlightGroup(geometries);
+    };
+    const onhide = () => {
+      this.unhighlightGroup();
+    };
+    return {
+      popupItems: results,
+      onshow,
+      onhide
+    };
   }
 
   async onclick(click) {
-    this.unhighlight();
+    this.unhighlightGroup();
     if (!this.enabled || DrawStore.drawStateValue) {
       this.hideObjectInformation();
       return;
@@ -90,7 +103,7 @@ export default class QueryManager {
       }
     }
 
-    if (attributes && attributes.geomId) {
+    if (attributes?.geomId) {
       ToolboxStore.setOpenedGeometryOptions({id: attributes.geomId});
       return;
     }
@@ -100,20 +113,20 @@ export default class QueryManager {
     this.scene.requestRender();
   }
 
-  highlightSelectedArea(geometry) {
-    this.unhighlight();
+  highlightSelectedArea(geometry, group = false) {
+    if (!group) this.unhighlightEntity();
     if (!geometry) return;
     const coordinates = geometry.coordinates;
     switch (geometry.type) {
       case 'MultiPolygon':
       case 'Polygon':
-        this.highlightPolygon(coordinates);
+        this.highlightPolygon(coordinates, group);
         break;
       case 'MultiLineString':
-        this.highlightLine(coordinates);
+        this.highlightLine(coordinates, group);
         break;
       case 'MultiPoint':
-        this.highlightPoint(coordinates);
+        this.highlightPoint(coordinates, group);
         break;
       default:
         console.error(`Geometry "${geometry.type}" not handled`);
@@ -121,7 +134,12 @@ export default class QueryManager {
     this.scene.requestRender();
   }
 
-  highlightPolygon(coordinates) {
+  highlightGroup(geometries: {type: string, coordinates: number[]}[]) {
+    this.unhighlightGroup();
+    geometries.forEach(g => this.highlightSelectedArea(g, true));
+  }
+
+  highlightPolygon(coordinates, group = false) {
     coordinates = coordinates[0];
     if (!coordinates.length) return;
     let entity;
@@ -133,7 +151,7 @@ export default class QueryManager {
       return new Entity({
         polygon: {
           hierarchy: convertedCoords,
-          material: OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7)
+          material: group ? OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7) : SWISSTOPO_IT_HIGHLIGHT_COLOR
         }
       });
     };
@@ -148,42 +166,60 @@ export default class QueryManager {
       });
     }
     this.viewer.entities.add(entity);
-    this.highlightEntity = entity;
+    if (group) this.highlightedGroup.push(entity);
+    else this.highlightedEntity = entity;
+    this.viewer.render();
   }
 
-  highlightLine(coordinates) {
+  highlightLine(coordinates, group = false) {
     const convertedCoords = coordinates[0].map(c => {
       const degCoords = lv95ToDegrees(c);
       return Cartesian3.fromDegrees(degCoords[0], degCoords[1]);
 
     });
-    this.highlightEntity = this.viewer.entities.add({
+    const entity = this.viewer.entities.add({
       polyline: {
         positions: convertedCoords,
-        material: OBJECT_HIGHLIGHT_COLOR,
+        material: group ? OBJECT_HIGHLIGHT_COLOR : SWISSTOPO_IT_HIGHLIGHT_COLOR,
         clampToGround: true,
         width: 4
       }
     });
+    if (group) this.highlightedGroup.push(entity);
+    else this.highlightedEntity = entity;
+    this.viewer.render();
   }
 
-  highlightPoint(coordinates) {
+  highlightPoint(coordinates, group = false) {
     const degCoords = lv95ToDegrees(coordinates[0]);
     const convertedCoords = Cartesian3.fromDegrees(degCoords[0], degCoords[1]);
-    this.highlightEntity = this.viewer.entities.add({
+    const entity = this.viewer.entities.add({
       position: convertedCoords,
       point: {
-        color: OBJECT_HIGHLIGHT_COLOR,
-        pixelSize: 6,
-        heightReference: HeightReference.CLAMP_TO_GROUND
+        color: group ? OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7) : SWISSTOPO_IT_HIGHLIGHT_COLOR,
+        pixelSize: 10,
+        heightReference: HeightReference.CLAMP_TO_GROUND,
+        outlineWidth: group ? 1 : 2,
+        outlineColor: Color.BLACK,
       }
     });
+    if (group) this.highlightedGroup.push(entity);
+    else this.highlightedEntity = entity;
+    this.viewer.render();
   }
 
-  unhighlight() {
-    if (this.highlightEntity) {
-      this.viewer.entities.remove(this.highlightEntity);
-      this.highlightEntity = null;
+  unhighlightGroup() {
+    if (this.highlightedGroup?.length) {
+      this.highlightedGroup.forEach(e => this.viewer.entities.remove(e));
+      this.highlightedGroup = [];
+      this.scene.requestRender();
+    }
+  }
+
+  unhighlightEntity() {
+    if (this.highlightedEntity) {
+      this.viewer.entities.remove(this.highlightedEntity);
+      this.highlightedEntity = undefined;
       this.scene.requestRender();
     }
   }
@@ -199,7 +235,7 @@ export default class QueryManager {
     const attributes = this.objectSelector.pickAttributes(null, position, feature);
 
     this.showObjectInformation(attributes);
-    attributes.zoom();
+    if (attributes?.zoom) attributes.zoom();
 
     this.scene.requestRender();
   }
@@ -209,7 +245,7 @@ export default class QueryManager {
   }
 
   hideObjectInformation() {
-    QueryStore.setObjectInfo(null);
+    QueryStore.setObjectInfo(undefined);
   }
 }
 

@@ -48,6 +48,7 @@ export const AVAILABLE_GEOMETRY_TYPES = ['polygon', 'line', 'point', 'rectangle'
 export const GEOMETRY_DATASOURCE_NAME = 'toolboxGeometry';
 
 export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Color());
+export const SWISSTOPO_IT_HIGHLIGHT_COLOR = Color.fromCssColorString('#ff8000', new Color());
 export const OBJECT_ZOOMTO_RADIUS = 500;
 
 export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
