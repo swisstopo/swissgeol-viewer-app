@@ -3,8 +3,8 @@ import '@geoblocks/ga-search';
 import {getLayersConfig} from './swisstopoImagery.js';
 import {escapeRegExp} from './utils';
 
-import {Rectangle, Cartographic, Math} from 'cesium';
-import {extractEntitiesAttributes} from './query/objectInformation.js';
+import {Cartographic, Math, Rectangle} from 'cesium';
+import {extractEntitiesAttributes} from './query/objectInformation.ts';
 import NavToolsStore from './store/navTools';
 
 /**

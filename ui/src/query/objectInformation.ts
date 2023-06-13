@@ -1,8 +1,8 @@
 import {JulianDate} from 'cesium';
 
-export function extractPrimitiveAttributes(primitive) {
-  const data = [];
-  let propertyNames = primitive.getPropertyIds();
+export function extractPrimitiveAttributes(primitive): [string, number][] {
+  const data: [string, number][] = [];
+  let propertyNames: string[] = primitive.getPropertyIds();
   const length = propertyNames.length;
   const properties = primitive.tileset.properties;
   const propsOrder = properties && properties.propsOrder ? properties.propsOrder : [];
@@ -32,12 +32,7 @@ export function extractEntitiesAttributes(entity) {
   return {id: entity.id, ...entity.properties.getValue(JulianDate.fromDate(new Date()))};
 }
 
-/**
- * @param {Array<string>} propertyNames
- * @param {Array<string>} propertiesOrder
- * @return {Array<string>}
- */
-export function sortPropertyNames(propertyNames, propertiesOrder = []) {
+export function sortPropertyNames(propertyNames: string[], propertiesOrder: string[] = []): string[] {
   const lowerPriorityProps = propertyNames
     .filter(prop => !propertiesOrder.includes(prop))
     .sort((left, right) => {

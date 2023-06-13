@@ -6,11 +6,12 @@ import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import QueryStore from '../store/query';
 import {dragArea} from './helperElements';
 import {customElement, property} from 'lit/decorators.js';
+import type {QueryResult} from '../query/types';
 
 
 @customElement('ngm-object-information')
 export class NgmObjectInformation extends LitElementI18n {
-  @property({type: Object}) info: any;
+  @property({type: Object}) info: QueryResult | undefined;
   @property({type: Boolean}) opened: boolean;
 
   constructor() {
@@ -24,7 +25,7 @@ export class NgmObjectInformation extends LitElementI18n {
         this.opened = !!info;
       } else if (this.opened) {
         this.opened = false;
-        this.info = null;
+        this.info = undefined;
       }
     });
 
@@ -44,13 +45,22 @@ export class NgmObjectInformation extends LitElementI18n {
 
   render() {
     this.hidden = !this.opened;
-    if (this.info && (this.info.popupContent || this.info.properties)) {
-      const content = this.info.popupContent ?
-        unsafeHTML(this.info.popupContent) :
+    if (this.info && (this.info.popupItems?.length || this.info.properties?.length)) {
+      const content = this.info.popupItems?.length ?
+        this.info.popupItems.map(it => html`
+          <div class="query-list-item" @mouseenter=${() => it.mouseEnter()} @mouseleave=${() => it.mouseLeave()}>
+            <div class="item-zoom-btn-container" ?hidden="${!it.zoom}">
+              <button @click="${it.zoom}" class="ui button ngm-zoom-obj-btn ngm-action-btn">
+                ${i18next.t('obj_info_zoom_to_object_btn_label')}
+                <div class="ngm-zoom-plus-icon"></div>
+              </button>
+            </div>
+            ${unsafeHTML(it.content)}
+          </div>`) :
         html`
           <table class="ui compact small very basic table">
             <tbody>
-            ${this.info.properties.map(row => {
+            ${this.info.properties!.map(row => {
               const key = row[0];
               const value = row[1];
               if ((typeof value === 'string') && (value.startsWith('http'))) {

@@ -11,8 +11,10 @@ import {
   isPickable,
   sortPropertyNames
 } from './objectInformation';
-import {BoundingSphere, HeadingPitchRange, Color} from 'cesium';
+import type {Scene, Viewer} from 'cesium';
+import {BoundingSphere, Color, ColorMaterialProperty, HeadingPitchRange} from 'cesium';
 import NavToolsStore from '../store/navTools';
+import type {QueryResult} from './types';
 
 /**
  * Wether the passed value follows the lit TemplateResult interface.
@@ -24,20 +26,14 @@ function isTemplateResult(value) {
 }
 
 export default class ObjectSelector {
-  /**
-   *
-   * @param {import('cesium/Source/Widgets/Viewer/Viewer.js').default} viewer
-   */
+  private viewer: Viewer;
+  private scene: Scene;
+  selectedObj: any | null = null; // todo improve types
+  savedColor: Color | null = null;
+
   constructor(viewer) {
     this.viewer = viewer;
-
-    /**
-     * @type {import('cesium/Source/Scene/Scene.js').default}
-     */
     this.scene = viewer.scene;
-
-    this.selectedObj = null;
-    this.savedColor = null;
   }
 
   getObjectAtPosition(position) {
@@ -56,7 +52,7 @@ export default class ObjectSelector {
 
   pickAttributes(clickPosition, pickedPosition, object) {
     this.unhighlight();
-    let attributes = {};
+    let attributes: QueryResult = {};
     if (!object) {
       object = this.getObjectAtPosition(clickPosition);
     }
@@ -120,13 +116,13 @@ export default class ObjectSelector {
 
   toggleEarthquakeHighlight(obj) {
     if (this.selectedObj && this.selectedObj.ellipsoid) {
-      this.selectedObj.ellipsoid.material = this.savedColor;
+      this.selectedObj.ellipsoid.material = new ColorMaterialProperty(this.savedColor!);
       this.selectedObj = null;
     }
     if (obj) {
       this.selectedObj = obj;
       this.savedColor = Color.clone(obj.ellipsoid.material.color.getValue());
-      this.selectedObj.ellipsoid.material = OBJECT_HIGHLIGHT_COLOR.withAlpha(this.savedColor.alpha);
+      this.selectedObj!.ellipsoid!.material = new ColorMaterialProperty(OBJECT_HIGHLIGHT_COLOR.withAlpha(this.savedColor!.alpha));
     }
   }
 

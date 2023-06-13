@@ -17,6 +17,20 @@ ngm-object-information .htmlpopup-header {
   margin-bottom: 8px;
 }
 
+ngm-object-information .item-zoom-btn-container {
+  font-weight: bold;
+  border-top: 2px solid #DFE2E6;
+  padding-top: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+ngm-object-information .query-list-item:first-child .item-zoom-btn-container {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
 ngm-object-information .ui.small.table {
   font-size: unset;
 }
@@ -68,4 +82,8 @@ ngm-object-information .content-container {
 ngm-object-information div.content-container td,
 ngm-object-information div.content-container span {
   user-select: text;
+}
+
+ngm-object-information .query-list-item:hover .htmlpopup-content > .ui.basic.table {
+  background-color: #F9DCA8;
 }
