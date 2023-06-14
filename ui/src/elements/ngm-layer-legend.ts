@@ -63,5 +63,5 @@ const GEOCAT_LANG_CODE = {
 
 function geocatLink(id: string) {
   const lang = GEOCAT_LANG_CODE[i18next.language];
-  return `https://www.geocat.ch/geonetwork/srv/${lang}/md.viewer#/full_view/${id}/tab/complete`;
+  return `https://www.geocat.ch/geonetwork/srv/${lang}/catalog.search#/metadata/${id}`;
 }
