@@ -21,10 +21,10 @@
     "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "3.352.0",
-    "@aws-sdk/client-s3": "3.352.0",
-    "@aws-sdk/credential-provider-cognito-identity": "3.352.0",
-    "@aws-sdk/s3-request-presigner": "3.352.0",
+    "@aws-sdk/client-cognito-identity": "3.353.0",
+    "@aws-sdk/client-s3": "3.353.0",
+    "@aws-sdk/credential-provider-cognito-identity": "3.353.0",
+    "@aws-sdk/s3-request-presigner": "3.353.0",
     "@fontsource/inter": "5.0.3",
     "@geoblocks/cesium-view-cube": "0.1.0",
     "@geoblocks/ga-search": "0.0.20",
@@ -63,7 +63,7 @@
     "@rollup/plugin-json": "6.0.0",
     "@rollup/plugin-node-resolve": "15.1.0",
     "@rollup/plugin-terser": "0.4.3",
-    "@sentry/cli": "2.19.0",
+    "@sentry/cli": "2.19.1",
     "@types/chai": "4.3.5",
     "@types/geojson": "7946.0.10",
     "@types/mocha": "10.0.1",
