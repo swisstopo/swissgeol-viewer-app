@@ -1,4 +1,4 @@
-const GA_MEASUREMENT_ID = 'UA-139508900-9';
+const GA_MEASUREMENT_ID = 'G-E15CQLC985';
 
 export function initAnalytics(active) {
 
