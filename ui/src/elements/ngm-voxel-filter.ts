@@ -59,7 +59,7 @@ export class NgmVoxelFilter extends LitElementI18n {
           </div>
           <div>
             <label>
-              <input class="vox_filter_include_undefined" type="checkbox" value="fixme" checked> ${i18next.t('vox_filter_include_undefined')}
+              <input class="vox_filter_include_undefined" type="checkbox" value="fixme" checked> ${i18next.t('vox_filter_undefined_conductivity')}
             </label>
           </div>
         </form>
@@ -92,7 +92,7 @@ export class NgmVoxelFilter extends LitElementI18n {
             <label>
               <input type="checkbox" value="${lithology.index}" checked>
               <div ?hidden=${hideCheckboxColor} style="background-color: ${this.config!.voxelColors?.colors[index]}; width: 20px;"></div>
-              ${lithology.label}
+              ${i18next.t(lithology.label)}
             </label>`
           )}
           <div class="lithology-filter-buttons">
