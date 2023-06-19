@@ -1,3 +1,4 @@
+
 export interface LayerTreeNode {
   type?: LayerType;
   layer?: string;
@@ -255,7 +256,7 @@ const birrIndexVoxelColors: VoxelColors = {
 const birrIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: voxelUndefinedData, label: 'Undefined Lithology'},
+    {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
     {index: 22, label: 'künstliche Aufschüttung'},
     {index: 46, label: 'Überschwemmungssedimente'},
     {index: 53, label: 'Verlandungssedimente'},
@@ -357,7 +358,7 @@ const aaretalIndexVoxelColors: VoxelColors = {
 const aaretalVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: voxelUndefinedData, label: 'Undefined Lithology'},
+    {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
     {index: 3, label: 'Verlandungssedimente, Sumpf, Ried'},
     {index: 4, label: 'Subrezente bis rezente Alluvionen (Fluss- und Bachschotter, Überschwemmungssediment, undifferenziert)'},
     {index: 5, label: 'Hangschutt / Hanglehm (undifferenziert)'},
@@ -405,7 +406,7 @@ const genevaIndexVoxelColors: VoxelColors = {
 const genevaIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: voxelUndefinedData, label: 'Undefined Lithology'},
+    {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
     {index: 3000, label: 'Eboulis, Formations de pente, Colluvions, Limons de ruissellement'},
     {index: 4000, label: 'Alluvions de terrasses'},
     {index: 5000, label: 'Dépôts ou vases lacustres, tourbe, craie lacustre'},
@@ -453,7 +454,7 @@ const vispIndexVoxelColors: VoxelColors = {
 const vispIndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: voxelUndefinedData, label: 'Undefined Lithology'},
+    {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
     {index: 54, label: 'Künstliche Ablagerung Lonzadeponie'},
     {index: 14, label: 'Gehängeschutt'},
     {index: 16, label: 'Bergsturzmaterial'},
