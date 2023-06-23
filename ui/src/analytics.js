@@ -1,19 +1,29 @@
 const GA_MEASUREMENT_ID = 'G-E15CQLC985';
 
 export function initAnalytics(active) {
-
-  window[`ga-disable-${GA_MEASUREMENT_ID}`] = !active;
-
   if (active) {
-    /* eslint-disable */
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    document.head.insertBefore(script, document.head.firstChild);
 
-    ga('create', GA_MEASUREMENT_ID, 'auto');
-    ga('set', 'anonymizeIp', true);
+    // @ts-ignore
+    window.dataLayer = window.dataLayer || [];
 
-    ga('send', 'pageview');
+    sendAnalytics('js', new Date());
+    sendAnalytics('config', GA_MEASUREMENT_ID, {
+      anonymize_ip: true,
+    });
+    sendAnalytics('event', 'page_view');
+  }
+}
+
+export function sendAnalytics(_command, ..._args) {
+  // @ts-ignore
+  if (window.dataLayer) {
+    // @ts-ignore
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer.push(arguments);
   }
 }
