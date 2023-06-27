@@ -2,8 +2,9 @@ import '@geoblocks/ga-search';
 
 import {getLayersConfig} from './swisstopoImagery.js';
 import {escapeRegExp} from './utils';
+import {lv95ToDegrees, round} from './projection';
 
-import {Cartographic, Math, Rectangle} from 'cesium';
+import {Cartographic, Math as CesiumMath, Rectangle} from 'cesium';
 import {extractEntitiesAttributes} from './query/objectInformation.ts';
 import NavToolsStore from './store/navTools';
 
@@ -53,7 +54,7 @@ export function setupSearch(viewer, element, layerTree) {
       } else {
         NavToolsStore.hideTargetPoint();
         // recenter to location
-        if (rectangle.width < Math.EPSILON3 || rectangle.height < Math.EPSILON3) {
+        if (rectangle.width < CesiumMath.EPSILON3 || rectangle.height < CesiumMath.EPSILON3) {
           // rectangle is too small
           const center = Rectangle.center(rectangle);
           center.height = 5000;
@@ -75,10 +76,30 @@ export function setupSearch(viewer, element, layerTree) {
     event.target.autocomplete.input.blur();
   });
 
-  // search primitives
   element.additionalSource = {
     search: input => {
       const matches = [];
+
+      // search for coordinates
+      const coordinateMatch = input.match(/([\d.']+)[\s,/]+([\d.']+)/);
+      if (coordinateMatch) {
+        const left = parseFloat(coordinateMatch[1].replace(/'/g, ''));
+        const right = parseFloat(coordinateMatch[2].replace(/'/g, ''));
+
+        if (isFinite(left) && isFinite(right)) {
+          const coordinates = [left, right].sort().reverse();
+          const bbox = [...lv95ToDegrees(coordinates), ...lv95ToDegrees(coordinates)];
+          matches.push({
+            label: `Recenter to ${round(coordinates).join(' ')}`,
+            bbox: bbox,
+            properties: {
+              origin: 'coordinates',
+            },
+          });
+        }
+      }
+
+      // search for primitives
       const regexp = new RegExp(escapeRegExp(input), 'i');
       const dataSources = viewer.dataSources;
       for (let i = 0, ii = dataSources.length; i < ii; i++) {
