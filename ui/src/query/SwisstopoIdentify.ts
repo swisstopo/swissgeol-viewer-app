@@ -10,11 +10,11 @@ const getPopupUrl = ({layerBodId, featureId, lang}) =>
 
 const getTolerance = (distance: number) => {
   if (distance > 100000) {
-    return 600;
+    return 300;
   } if (distance < 2500) {
     return 20;
   } else {
-    return 200;
+    return 100;
   }
 };
 
