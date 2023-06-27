@@ -62,6 +62,22 @@ export class CesiumToolbar extends LitElement {
 
       this.viewer!.scene.requestRender();
     }
+    if (changedProperties.has('autoScale') && this.viewer) {
+      if (this.autoScale) {
+          this.currentScale = this.viewer!.resolutionScale;
+          this.scaleListenerRemove = this.viewer.scene.postRender.addEventListener(() => {
+              if (this.frameRateMonitor!.lastFramesPerSecond < this.scaleDownFps && this.viewer!.resolutionScale > 0.45) {
+                  this.viewer!.resolutionScale = Number((this.viewer!.resolutionScale - 0.05).toFixed(2));
+                  this.currentScale = this.viewer!.resolutionScale;
+              } else if (this.frameRateMonitor!.lastFramesPerSecond > this.scaleUpFps && this.viewer!.resolutionScale < 1) {
+                  this.viewer!.resolutionScale = Number((this.viewer!.resolutionScale + 0.05).toFixed(2));
+                  this.currentScale = this.viewer!.resolutionScale;
+              }
+          });
+      } else if (this.scaleListenerRemove) {
+          this.scaleListenerRemove();
+      }
+  }
     super.updated(changedProperties);
   }
 
