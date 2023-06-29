@@ -146,7 +146,7 @@
   "lyr_voxel_visp_litho_label": "Visp: Modelling Unit",
   "lyr_voxel_visp_logk_label": "Visp: Hydraulic conductivity",
   "lyr_water_tunnel_label": "Underground water tunnel",
-  "map_elevation_label": "Elevation (m.s.l.)",
+  "map_elevation_label": "Elevation (m AMSL)",
   "map_position_label": "Position",
   "minimap_orientation": "Orientation",
   "modified_on": "Modified on",
