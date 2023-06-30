@@ -1,0 +1,21 @@
+.ngm-point-edit-dropdown .dropdown.active,
+.ngm-point-edit-dropdown .dropdown {
+  background-color: transparent;
+  font: normal normal bold 15px/24px Inter;
+  padding: 0;
+}
+
+.ngm-point-edit-dropdown .ngm-coords {
+  font: normal normal bold 15px/24px Inter;
+  letter-spacing: 0.16px;
+  color: #222529;
+}
+
+.ngm-point-edit-dropdown .ui.dropdown .menu {
+  border-radius: 0;
+  box-shadow: 0 3px 4px #00000029;
+}
+
+.ngm-point-edit-dropdown .ui.dropdown .menu .item:hover {
+  background-color: var(--ngm-hover);
+}

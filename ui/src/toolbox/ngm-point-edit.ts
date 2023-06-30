@@ -1,5 +1,6 @@
+import type {PropertyValues} from 'lit';
 import {html} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {Cartesian3, JulianDate, Math as CesiumMath} from 'cesium';
@@ -7,7 +8,11 @@ import {getValueOrUndefined} from '../cesiumutils';
 import {updateBoreholeHeights} from './helpers';
 import MainStore from '../store/main';
 import type {Entity, Viewer} from 'cesium';
-import {cartesianToDegrees, cartesianToLv95} from '../projection';
+import {cartesianToDegrees, cartesianToLv95, lv95ToDegrees} from '../projection';
+import 'fomantic-ui-css/components/transition.js';
+import 'fomantic-ui-css/components/dropdown.js';
+import $ from '../jquery.js';
+import {styleMap} from 'lit/directives/style-map.js';
 
 @customElement('ngm-point-edit')
 export class NgmPointEdit extends LitElementI18n {
@@ -15,8 +20,7 @@ export class NgmPointEdit extends LitElementI18n {
   xValue = 0;
   yValue = 0;
   heightValue = 0;
-  coordsStep = 0.001;
-  coordsType: 'lv95' | 'wsg84' = 'wsg84';
+  @state() coordsType: 'lv95' | 'wgs84' = 'lv95';
   minHeight = -30000;
   maxHeight = 30000;
   minDepth = -30000;
@@ -24,21 +28,29 @@ export class NgmPointEdit extends LitElementI18n {
   private julianDate: JulianDate = new JulianDate();
   private viewer: Viewer | null = null;
 
+  @query('.dropdown')
+  dropdown;
+
   constructor() {
     super();
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+  }
+
+  updated(changedProperties: PropertyValues) {
+    $(this.dropdown).dropdown();
+    super.updated(changedProperties);
   }
 
   updateInputValues() {
     if (this.entity && this.entity.position) {
       const position = this.entity.position.getValue(this.julianDate);
       if (this.coordsType === 'lv95') {
-        const coords = cartesianToLv95(position);
-        this.xValue = Math.round(coords[0]);
-        this.yValue = Math.round(coords[1]);
+        const coords = cartesianToLv95(position!);
+        this.xValue = Number(coords[0].toFixed(1));
+        this.yValue = Number(coords[1].toFixed(1));
         this.heightValue = Math.round(coords[2]);
       } else {
-        const coords = cartesianToDegrees(position);
+        const coords = cartesianToDegrees(position!);
         this.xValue = Number(coords[0].toFixed(3));
         this.yValue = Number(coords[1].toFixed(3));
         this.heightValue = Math.round(coords[2]);
@@ -55,7 +67,13 @@ export class NgmPointEdit extends LitElementI18n {
     const lon = this.xValue;
     const lat = this.yValue;
     const height = this.heightValue;
-    const cartesianPosition = Cartesian3.fromDegrees(lon, lat, height);
+    let cartesianPosition: Cartesian3;
+    if (this.coordsType === 'lv95') {
+      const degreesPosition = lv95ToDegrees([lon, lat]);
+      cartesianPosition = Cartesian3.fromDegrees(degreesPosition[0], degreesPosition[1], height);
+    } else {
+      cartesianPosition = Cartesian3.fromDegrees(lon, lat, height);
+    }
     this.entity.position = <any>cartesianPosition;
     this.updateInputValues();
     updateBoreholeHeights(this.entity, this.julianDate);
@@ -73,18 +91,31 @@ export class NgmPointEdit extends LitElementI18n {
       this.updateInputValues();
     }
     return html`
+      <div class="ngm-point-edit-dropdown">
+        ${i18next.t('camera_position_coordinates_system_label')}
+        <div class="ui item">
+          <div class="ui fluid dropdown label">
+            <div class="ngm-coords text">LV95</div>
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              <div class="item" @click=${() => this.coordsType = 'lv95'}>LV95</div>
+              <div class="item" @click=${() => this.coordsType = 'wgs84'}>WGS84</div>
+            </div>
+          </div>
+        </div>  
+      </div>
       <div class="ngm-geom-edit-double-input">
         <div class="ngm-input">
-          <input class="ngm-coord-x-input" step=${this.coordsStep} type="number" .value=${this.xValue}
+          <input class="ngm-coord-x-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.xValue}
                  @change="${this.onPositionChange}"
                  placeholder="required"/>
-          <span class="ngm-floating-label">${i18next.t('tbx_lon_label')}</span>
+          <span class="ngm-floating-label">${this.coordsType === 'lv95' ? 'E' : i18next.t('tbx_lon_label')}</span>
         </div>
         <div class="ngm-input">
-          <input class="ngm-coord-y-input" step=${this.coordsStep} type="number" .value=${this.yValue}
+          <input class="ngm-coord-y-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.yValue}
                  @change="${this.onPositionChange}"
                  placeholder="required"/>
-          <span class="ngm-floating-label">${i18next.t('tbx_lat_label')}</span>
+          <span class="ngm-floating-label">${this.coordsType === 'lv95' ? 'N' : i18next.t('tbx_lat_label')}</span>
         </div>
       </div>
       <div class="ngm-geom-edit-double-input">
