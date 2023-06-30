@@ -106,13 +106,13 @@ export class NgmPointEdit extends LitElementI18n {
       </div>
       <div class="ngm-geom-edit-double-input">
         <div class="ngm-input">
-          <input class="ngm-coord-x-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.xValue}
+          <input class="ngm-coord-x-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.xValue.toString()}
                  @change="${this.onPositionChange}"
                  placeholder="required"/>
           <span class="ngm-floating-label">${this.coordsType === 'lv95' ? 'E' : i18next.t('tbx_lon_label')}</span>
         </div>
         <div class="ngm-input">
-          <input class="ngm-coord-y-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.yValue}
+          <input class="ngm-coord-y-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.yValue.toString()}
                  @change="${this.onPositionChange}"
                  placeholder="required"/>
           <span class="ngm-floating-label">${this.coordsType === 'lv95' ? 'N' : i18next.t('tbx_lat_label')}</span>
@@ -120,7 +120,7 @@ export class NgmPointEdit extends LitElementI18n {
       </div>
       <div class="ngm-geom-edit-double-input">
         <div class="ngm-input">
-          <input class="ngm-height-input" type="number" .value=${this.heightValue} @change="${this.onPositionChange}"
+          <input class="ngm-height-input" type="number" .value=${this.heightValue.toString()} @change="${this.onPositionChange}"
                  placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
