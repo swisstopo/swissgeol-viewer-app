@@ -25,12 +25,12 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 const CORS_ORIGINS: &[&str] = &[
     "http://localhost:8000",
-    "https://api.dev.swissgeol.ch",
-    "https://api.int.swissgeol.ch",
+    "https://api.dev-viewer.swissgeol.ch",
+    "https://api.int-viewer.swissgeol.ch",
     "https://api.swissgeol.ch",
-    "https://review.swissgeol.ch",
-    "https://dev.swissgeol.ch",
-    "https://int.swissgeol.ch",
+    "https://review-viewer.swissgeol.ch",
+    "https://dev-viewer.swissgeol.ch",
+    "https://int-viewer.swissgeol.ch",
     "https://viewer.swissgeol.ch",
 ];
 

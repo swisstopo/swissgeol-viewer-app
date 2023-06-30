@@ -108,18 +108,18 @@ export const SWISSFORAGES_API_URL = `${SWISSFORAGES_VIEWER_URL}api/v1`;
 
 export const SHORTLINK_URL_BY_PAGE_HOST = {
   'localhost:8000': '/abbr',
-  'review.swissgeol.ch': 'https://link.dev.swissgeol.ch',
-  'dev.swissgeol.ch': 'https://link.dev.swissgeol.ch',
-  'int.swissgeol.ch': 'https://link.int.swissgeol.ch',
+  'review-viewer.swissgeol.ch': 'https://link.dev-viewer.swissgeol.ch',
+  'dev-viewer.swissgeol.ch': 'https://link.dev-viewer.swissgeol.ch',
+  'int-viewer.swissgeol.ch': 'https://link.int-viewer.swissgeol.ch',
   'swissgeol.ch': 'https://link.swissgeol.ch',
   'viewer.swissgeol.ch': 'https://link.swissgeol.ch',
 };
 
 export const API_BY_PAGE_HOST = {
   'localhost:8000': '/api',
-  'review.swissgeol.ch': 'https://api.dev.swissgeol.ch/api',
-  'dev.swissgeol.ch': 'https://api.dev.swissgeol.ch/api',
-  'int.swissgeol.ch': 'https://api.int.swissgeol.ch/api',
+  'review-viewer.swissgeol.ch': 'https://api.dev-viewer.swissgeol.ch/api',
+  'dev-viewer.swissgeol.ch': 'https://api.dev-viewer.swissgeol.ch/api',
+  'int-viewer.swissgeol.ch': 'https://api.int-viewer.swissgeol.ch/api',
   'swissgeol.ch': 'https://api.swissgeol.ch/api',
   'viewer.swissgeol.ch': 'https://api.swissgeol.ch/api',
 };

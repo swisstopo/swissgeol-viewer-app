@@ -2,8 +2,8 @@
 
 ## Instances
 
-- dev https://dev.swissgeol.ch/
-- int https://int.swissgeol.ch/
+- dev https://dev-viewer.swissgeol.ch/
+- int https://int-viewer.swissgeol.ch/
 - prod https://viewer.swissgeol.ch/
 
 ## S3 buckets
