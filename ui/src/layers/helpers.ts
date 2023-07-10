@@ -46,10 +46,8 @@ export function createIonGeoJSONFromConfig(viewer: Viewer, config) {
 }
 
 
-export function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Config, _): VoxelPrimitive {
-  const provider = new Cesium3DTilesVoxelProvider({
-    url: config.url!,
-  });
+export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Config, _): Promise<VoxelPrimitive> {
+  const provider = await Cesium3DTilesVoxelProvider.fromUrl(config.url!);
 
   const primitive = new VoxelPrimitive({
     /** @ts-ignore */
@@ -71,13 +69,11 @@ export function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Config, 
     primitive.show = !!visible;
   };
 
-  primitive.readyPromise.then(() => {
-    if (!primitive.provider.names.includes(config.voxelDataName)) {
-      throw new Error(`Voxel data name ${config.voxelDataName} not found in the tileset`);
-    }
-    primitive.customShader = getVoxelShader(config);
-    primitive.jitter = false;
-  });
+  if (!primitive.provider.names.includes(config.voxelDataName)) {
+    throw new Error(`Voxel data name ${config.voxelDataName} not found in the tileset`);
+  }
+  primitive.customShader = getVoxelShader(config);
+  primitive.jitter = false;
 
   return primitive;
 }
@@ -133,19 +129,17 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, 
     const removeTileLoadListener = tileset.tileLoad.addEventListener(tile => tileLoadCallback(tile, removeTileLoadListener));
   }
 
-  tileset.readyPromise.then(() => {
-    if (config.propsOrder) {
-      tileset.properties.propsOrder = config.propsOrder;
-    }
-    if (config.heightOffset) {
-      const cartographic = Cartographic.fromCartesian(tileset.boundingSphere.center);
-      const surface = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
-      const offset = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, config.heightOffset);
-      const translation = Cartesian3.subtract(offset, surface, new Cartesian3());
-      tileset.modelMatrix = Matrix4.fromTranslation(translation);
-      viewer.scene.requestRender();
-    }
-  });
+  if (config.propsOrder) {
+    tileset.properties.propsOrder = config.propsOrder;
+  }
+  if (config.heightOffset) {
+    const cartographic = Cartographic.fromCartesian(tileset.boundingSphere.center);
+    const surface = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+    const offset = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, config.heightOffset);
+    const translation = Cartesian3.subtract(offset, surface, new Cartesian3());
+    tileset.modelMatrix = Matrix4.fromTranslation(translation);
+    viewer.scene.requestRender();
+  }
   // for correct highlighting
   tileset.colorBlendMode = Cesium3DTileColorBlendMode.REPLACE;
   return tileset;

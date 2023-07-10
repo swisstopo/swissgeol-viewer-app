@@ -229,7 +229,7 @@ export class NgmApp extends LitElementI18n {
     setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
     const cesiumContainer = this.querySelector('#cesium')!;
-    const viewer = setupViewer(cesiumContainer, isLocalhost);
+    const viewer = await setupViewer(cesiumContainer, isLocalhost);
     this.viewer = viewer;
     window['viewer'] = viewer; // for debugging
 

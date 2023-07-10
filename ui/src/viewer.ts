@@ -26,7 +26,6 @@ import {
     RequestScheduler,
     ScreenSpaceEventHandler,
     ScreenSpaceEventType,
-    SingleTileImageryProvider,
     SunLight,
     Transforms,
     Viewer,
@@ -96,14 +95,7 @@ export interface BaseLayerConfig {
     hasAlphaChannel?: boolean;
 }
 
-export function setupViewer(container: Element, rethrowRenderErrors: boolean) {
-
-    // The first layer of Cesium is special; using a 1x1 transparent image to workaround it.
-    // See https://github.com/AnalyticalGraphicsInc/cesium/issues/1323 for details.
-    const firstImageryProvider = new SingleTileImageryProvider({
-        url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=',
-        rectangle: Rectangle.fromDegrees(0, 0, 1, 1) // the Rectangle dimensions are arbitrary
-    });
+export async function setupViewer(container: Element, rethrowRenderErrors: boolean) {
 
     const searchParams = new URLSearchParams(location.search);
 
@@ -129,9 +121,7 @@ export function setupViewer(container: Element, rethrowRenderErrors: boolean) {
     }
 
     const requestRenderMode = !searchParams.has('norequestrendermode');
-    const terrainProvider = searchParams.has('noterrain') ? undefined : new CesiumTerrainProvider({
-        url: terrainUrl
-    });
+    const terrainProvider = searchParams.has('noterrain') ? undefined : await CesiumTerrainProvider.fromUrl(terrainUrl);
 
     const webgl: WebGLOptions = {
         powerPreference: 'high-performance',
@@ -156,7 +146,7 @@ export function setupViewer(container: Element, rethrowRenderErrors: boolean) {
         navigationInstructionsInitiallyVisible: false,
         scene3DOnly: true,
         skyBox: false,
-        imageryProvider: firstImageryProvider,
+        baseLayer: false,
         useBrowserRecommendedResolution: true,
         terrainProvider: terrainProvider,
         requestRenderMode: requestRenderMode,
