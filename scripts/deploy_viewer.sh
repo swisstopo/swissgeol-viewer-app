@@ -66,7 +66,7 @@ then
   deploy_api int
   deploy_ui $INT_BUCKET
   curl https://int-viewer.swissgeol.ch/versions.json
-  watch --interval=5 curl -s https://api.int-viewer.swissgeol.ch/api/health_check
+  watch --interval=5 curl -s https://api.dev-viewer.swissgeol.ch/api/health_check
   exit 0
 fi
 

@@ -110,7 +110,7 @@ export const SHORTLINK_URL_BY_PAGE_HOST = {
   'localhost:8000': '/abbr',
   'review-viewer.swissgeol.ch': 'https://link.dev-viewer.swissgeol.ch',
   'dev-viewer.swissgeol.ch': 'https://link.dev-viewer.swissgeol.ch',
-  'int-viewer.swissgeol.ch': 'https://link.int-viewer.swissgeol.ch',
+  'int-viewer.swissgeol.ch': 'https://link.dev-viewer.swissgeol.ch',
   'swissgeol.ch': 'https://link.swissgeol.ch',
   'viewer.swissgeol.ch': 'https://link.swissgeol.ch',
 };
@@ -119,7 +119,7 @@ export const API_BY_PAGE_HOST = {
   'localhost:8000': '/api',
   'review-viewer.swissgeol.ch': 'https://api.dev-viewer.swissgeol.ch/api',
   'dev-viewer.swissgeol.ch': 'https://api.dev-viewer.swissgeol.ch/api',
-  'int-viewer.swissgeol.ch': 'https://api.int-viewer.swissgeol.ch/api',
+  'int-viewer.swissgeol.ch': 'https://api.dev-viewer.swissgeol.ch/api',
   'swissgeol.ch': 'https://api.swissgeol.ch/api',
   'viewer.swissgeol.ch': 'https://api.swissgeol.ch/api',
 };

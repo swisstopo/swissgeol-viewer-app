@@ -4,12 +4,10 @@ This is the URL shortener.
 
 ## Instances
 
-- dev https://link.dev-viewer.swissgeol.ch/
-- int https://link.int-viewer.swissgeol.ch/
+- dev / int https://link.dev-viewer.swissgeol.ch/
 - prod https://link.swissgeol.ch/
 
 The data is stored in a sqlite db located in a shared NFS drive.
-
 
 ## Update & Deploy
 
@@ -28,12 +26,9 @@ The data is stored in a sqlite db located in a shared NFS drive.
     ```
 
     ```bash
-    # development
+    # development / integration
     aws ecs update-service --cluster urlshortener_dev --service urlshortener_dev --force-new-deployment
     watch --interval=5 curl -s https://link.dev-viewer.swissgeol.ch/health_check
-    # integration
-    aws ecs update-service --cluster urlshortener_int --service urlshortener_int --force-new-deployment
-    watch --interval=5 curl -s https://link.int-viewer.swissgeol.ch/health_check
     # production
     aws ecs update-service --cluster urlshortener_prod --service urlshortener_prod --force-new-deployment
     watch --interval=5 curl -s https://link.swissgeol.ch/health_check
