@@ -72,7 +72,7 @@ services:
       HOST_WHITELIST: "localhost"
 
   db:
-    image: camptocamp/postgres:11
+    image: camptocamp/postgres:14-postgis-3
     environment:
       POSTGRES_USER: *db_user
       POSTGRES_PASSWORD: *db_pass
