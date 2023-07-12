@@ -39,6 +39,7 @@ import {customElement, property, query, state} from 'lit/decorators.js';
 import type {Cartesian2, Viewer} from 'cesium';
 import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
+import {getLayerLabel} from '../swisstopoImagery.js';
 
 import type {Config} from '../layers/ngm-layers-item.js';
 
@@ -285,8 +286,7 @@ export class SideBar extends LitElementI18n {
     const callback = attributeParams ?
       this.getTileLoadCallback(attributeParams.attributeKey, attributeParams.attributeValue) :
       undefined;
-    const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
-
+      const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
 
@@ -304,10 +304,10 @@ export class SideBar extends LitElementI18n {
 
     const activeLayers: any[] = [];
     await Promise.all(urlLayers.map(async (urlLayer) => {
-      let layer = flatLayers.find(fl => fl.layer === urlLayer.name);
+      let layer = flatLayers.find(fl => fl.layer === urlLayer.layer);
       if (!layer) {
         // Layers from the search are not present in the flat layers.
-        layer = this.createSearchLayer(urlLayer.name, urlLayer.name);
+        layer = await this.getLayerFromUrl(urlLayer);
       } else {
         await (layer.promise || this.addLayer(layer));
         layer.add && layer.add();
@@ -515,27 +515,40 @@ export class SideBar extends LitElementI18n {
       layer.displayed = true;
       this.viewer!.scene.requestRender();
     } else { // for new layers
-      this.activeLayers.push(this.createSearchLayer(searchLayer.title, searchLayer.layer));
+      this.activeLayers.push(this.createSearchLayer(searchLayer));
     }
     this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);
     this.requestUpdate();
   }
 
-  createSearchLayer(title, layername) {
-    const config = {
-      type: LayerType.swisstopoWMTS,
-      label: title,
-      layer: layername,
-      visible: true,
-      displayed: true,
-      opacity: DEFAULT_LAYER_OPACITY,
-      queryType: 'geoadmin',
-      load: () => {
-      }
-    };
+  createSearchLayer(searchLayer) {
+    let config;
+    if (searchLayer.type) {
+      config = searchLayer;
+      config.visible = true;
+      config.origin = 'layer';
+    } else {
+      config = {
+        type: LayerType.swisstopoWMTS,
+        label: searchLayer.title,
+        layer: searchLayer.layer,
+        visible: true,
+        displayed: true,
+        opacity: DEFAULT_LAYER_OPACITY,
+        queryType: 'geoadmin',
+        load: () => {
+        }
+      };
+    }
     config.load = () => this.addLayer(config);
     return config;
+  }
+
+  async getLayerFromUrl(urlLayer) {
+    const searchLayer = await getLayerLabel(urlLayer.layer);
+    urlLayer.title = searchLayer;
+    return this.createSearchLayer(urlLayer);
   }
 
   zoomToPermalinkObject() {

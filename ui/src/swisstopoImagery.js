@@ -2,6 +2,8 @@ import {SWITZERLAND_RECTANGLE} from './constants';
 
 import {UrlTemplateImageryProvider, ImageryLayer, Credit, WebMapServiceImageryProvider} from 'cesium';
 import i18next from 'i18next';
+import {getURLSearchParams} from './utils';
+
 
 const wmtsLayerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}';
 
@@ -90,6 +92,16 @@ export function getLayersConfig() {
       .then(response => response.json());
   }
   return layersConfigPromise;
+}
+
+let layerLabelPromise;
+export function getLayerLabel(searchLayer) {
+  const params = getURLSearchParams();
+  const lang = params.get('lang');
+  layerLabelPromise = fetch(`https://map.geo.admin.ch/configs/${lang}/layersConfig.json`)
+      .then(response => response.json())
+      .then(data => data = data[searchLayer].label);
+  return layerLabelPromise;
 }
 
 /**

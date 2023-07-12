@@ -6,6 +6,10 @@ import {escapeRegExp} from './utils';
 import {Cartographic, Math, Rectangle} from 'cesium';
 import {extractEntitiesAttributes} from './query/objectInformation.ts';
 import NavToolsStore from './store/navTools';
+import defaultLayerTree from './layertree';
+import i18next from 'i18next';
+import auth from './store/auth';
+
 
 /**
  * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
@@ -26,18 +30,22 @@ export function setupSearch(viewer, element, layerTree) {
     };
   });
 
+  // element.historyEnabled = false;
+
   // add icon before the label in the result list
   element.renderResult = (result, label) => {
     let imgName;
     if (result.properties) {
       // from geoadmin
       imgName = result.properties.origin === 'layer' ? 'i_layer' : 'i_place';
+    } else {
+      imgName = 'i_extrusion';
     }
     // else {
     //   // from cesium entities
     //   iconName = 'cube'; // todo
     // }
-    return `<img src='./images/${imgName}.svg' alt=""/> ${label} `;
+    return `<img src='./images/${imgName}.svg' style="fill:red;" alt=""/> <b>${label}</b> `;
   };
 
   // location search result
@@ -70,7 +78,7 @@ export function setupSearch(viewer, element, layerTree) {
     } else {
       NavToolsStore.hideTargetPoint();
       layerTree.addLayerFromSearch(result);
-      viewer.zoomTo(result.entity);
+      if (result.entity) viewer.zoomTo(result.entity);
     }
     event.target.autocomplete.input.blur();
   });
@@ -94,6 +102,22 @@ export function setupSearch(viewer, element, layerTree) {
           }
         });
       }
+
+      // search catalog layers
+      const user = auth.user.getValue();
+      const addCatalogLayer = (layerTree) => {
+        for (const layer of layerTree) {
+          if (layer.children) {
+            addCatalogLayer(layer.children);
+          } else {
+            if (regexp.test(layer.label)) {
+              layer.label = `${i18next.t(layer.label)}`;
+              if (!layer.restricted || user?.['cognito:groups'].includes(layer.restricted)) matches.push(layer);
+            }
+          }
+      }};
+      addCatalogLayer(defaultLayerTree);
+
       return Promise.resolve(matches);
     },
     getResultValue: result => result.label

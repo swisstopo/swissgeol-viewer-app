@@ -70,7 +70,7 @@ export function getLayerParams() {
 
   return layers.map((layer, key) => {
     return {
-      name: layer,
+      layer: layer,
       opacity: Number(1 - layersTransparency[key]),
       visible: layersVisibility[key] === 'true',
     };
