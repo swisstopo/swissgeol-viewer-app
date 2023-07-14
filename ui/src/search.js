@@ -30,8 +30,6 @@ export function setupSearch(viewer, element, layerTree) {
     };
   });
 
-  // element.historyEnabled = false;
-
   // add icon before the label in the result list
   element.renderResult = (result, label) => {
     let imgName;
