@@ -43,7 +43,7 @@ export function setupSearch(viewer, element, layerTree) {
     //   // from cesium entities
     //   iconName = 'cube'; // todo
     // }
-    return `<img src='./images/${imgName}.svg' style="fill:red;" alt=""/> <b>${label}</b> `;
+    return `<img src='./images/${imgName}.svg' alt=""/> <b>${label}</b> `;
   };
 
   // location search result
