@@ -38,6 +38,7 @@
 @import 'layers.css';
 @import 'ngm-map-configuration.css';
 @import 'ngm-cursor-information.css';
+@import 'ngm-point-edit.css';
 @import 'ngm-position-edit.css';
 @import 'ngm-map-chooser.css';
 @import 'ngm-tracking-consent.css';
