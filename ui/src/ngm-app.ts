@@ -357,7 +357,7 @@ export class NgmApp extends LitElementI18n {
           <img class="visible-mobile" src="src/images/logo-CH-small.svg">
           <div class="logo-text visible-mobile">swissgeol</div>
         </a>
-        <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,layer"
+        <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,additionalSource,layer, feature"
                    locationOrigins="zipcode,gg25,gazetteer">
           <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
           <div class="ngm-search-icon-container ngm-search-icon"></div>
