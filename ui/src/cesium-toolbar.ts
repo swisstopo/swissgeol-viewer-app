@@ -27,6 +27,7 @@ export class CesiumToolbar extends LitElement {
   @state() currentScale = 1;
   @state() scaleDownFps = 20;
   @state() scaleUpFps = 40;
+  @state() showFramesPerSecond = false;
 
   constructor() {
     super();
@@ -59,6 +60,8 @@ export class CesiumToolbar extends LitElement {
 
       this.viewer.scene.globe.undergroundColor = Color.fromCssColorString(this.undergroundColor);
       this.viewer.scene.backgroundColor = Color.fromCssColorString(this.backgroundColor);
+
+      this.showFramesPerSecond = this.viewer.scene.debugShowFramesPerSecond;
 
       this.viewer!.scene.requestRender();
     }
@@ -179,7 +182,7 @@ export class CesiumToolbar extends LitElement {
       <div class="divider"></div>
       <div>
         Show FPS
-        <input type="checkbox" ?checked=${this.viewer!.scene.debugShowFramesPerSecond}
+        <input type="checkbox" ?checked=${this.showFramesPerSecond}
                @change=${event => this.viewer!.scene.debugShowFramesPerSecond = event.target.checked}>
       </div>
       <div>
@@ -200,7 +203,7 @@ export class CesiumToolbar extends LitElement {
       </div>
       <div .hidden="${this.autoScale}">
         Resolution scale
-        <input type="range" min="0.05" max="1" step="0.05" .value=${this.viewer!.resolutionScale}
+        <input type="range" min="0.05" max="1" step="0.05" .value=${this.currentScale}
                @input=${evt => {
                    this.viewer!.resolutionScale = Number(evt.target.value);
                    this.currentScale = this.viewer!.resolutionScale;
