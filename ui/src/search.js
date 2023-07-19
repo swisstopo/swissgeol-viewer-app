@@ -34,50 +34,45 @@ export function setupSearch(viewer, element, layerTree) {
   // add icon before the label in the result list
   element.renderResult = (result, label) => {
     let imgName;
-    if (result.properties) {
-      // from geoadmin
-      imgName = result.properties.origin === 'layer' ? 'i_layer' : 'i_place';
+    const type = resultType(result);
+    if (type === 'location') {
+      imgName = 'i_place';
+    } else if (type === 'geoadmin_layer') {
+      imgName = 'i_layer';
     } else {
       imgName = 'i_extrusion';
     }
-    // else {
-    //   // from cesium entities
-    //   iconName = 'cube'; // todo
-    // }
     return `<img src='./images/${imgName}.svg' alt=""/> <b>${label}</b> `;
   };
 
   // location search result
   element.addEventListener('submit', event => {
     const result = event.detail.result;
-    if (result.properties) {
-      // from geoadmin
-      const origin = result.properties.origin;
+    const type = resultType(result);
+    if (type === 'location') {
+      NavToolsStore.hideTargetPoint();
       const rectangle = Rectangle.fromDegrees(...result.bbox);
-      if (origin === 'layer') {
-        // add layer
-        layerTree.addLayerFromSearch(result.properties);
+      if (rectangle.width < CesiumMath.EPSILON3 || rectangle.height < CesiumMath.EPSILON3) {
+        // rectangle is too small
+        const center = Rectangle.center(rectangle);
+        center.height = 5000;
+        viewer.camera.flyTo({
+          destination: Cartographic.toCartesian(center)
+        });
       } else {
-        NavToolsStore.hideTargetPoint();
-        // recenter to location
-        if (rectangle.width < CesiumMath.EPSILON3 || rectangle.height < CesiumMath.EPSILON3) {
-          // rectangle is too small
-          const center = Rectangle.center(rectangle);
-          center.height = 5000;
-          viewer.camera.flyTo({
-            destination: Cartographic.toCartesian(center)
-          });
-        } else {
-          // rectangle
-          viewer.camera.flyTo({
-            destination: rectangle
-          });
-        }
+        // rectangle
+        viewer.camera.flyTo({
+          destination: rectangle
+        });
       }
-    } else {
+    } else if (type === 'geoadmin_layer') {
+      layerTree.addLayerFromSearch(result.properties);
+    } else if (type === 'ngm_layer') {
       NavToolsStore.hideTargetPoint();
       layerTree.addLayerFromSearch(result);
-      if (result.entity) viewer.zoomTo(result.entity);
+      if (result.entity) {
+        viewer.zoomTo(result.entity);
+      }
     }
     event.target.autocomplete.input.blur();
   });
@@ -98,9 +93,7 @@ export function setupSearch(viewer, element, layerTree) {
           matches.push({
             label: `Recenter to ${round(coordinates).join(' ')}`,
             bbox: bbox,
-            properties: {
-              origin: 'coordinates',
-            },
+            origin: 'coordinates',
           });
         }
       }
@@ -160,4 +153,16 @@ export function setupSearch(viewer, element, layerTree) {
     }
   });
 
+}
+
+function resultType(result) {
+  // geoadmin
+  if (result.properties) {
+    return result.properties.origin === 'layer' ? 'geoadmin_layer' : 'location';
+  }
+  // coordinates search
+  if (result.result?.origin === 'coordinates' || result.origin === 'coordinates') {
+    return 'location';
+  }
+  return 'ngm_layer';
 }
