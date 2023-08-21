@@ -10,6 +10,7 @@ import defaultLayerTree from '../layertree';
 import {
   getAssetIds,
   getAttribute,
+  getIonToken,
   getLayerParams,
   getSliceParam,
   getZoomToPosition,
@@ -289,6 +290,7 @@ export class SideBar extends LitElementI18n {
       const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
+    const ionToken = getIonToken();
 
     if (!urlLayers.length && !assetIds.length) {
       this.activeLayers = flatLayers.filter(l => l.displayed);
@@ -324,6 +326,7 @@ export class SideBar extends LitElementI18n {
       const layer = {
         type: LayerType.tiles3d,
         assetId: assetId,
+        ionToken: ionToken,
         label: assetId,
         layer: assetId,
         visible: true,

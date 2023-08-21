@@ -34,6 +34,7 @@ import {
   getCesiumToolbarParam,
   getTopic,
   getZoomToPosition,
+  rewriteParams,
   syncCamera,
   syncStoredView
 } from './permalink';
@@ -228,6 +229,7 @@ export class NgmApp extends LitElementI18n {
   async firstUpdated() {
     setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
+    rewriteParams();
     const cesiumContainer = this.querySelector('#cesium')!;
     const viewer = await setupViewer(cesiumContainer, isLocalhost);
     this.viewer = viewer;

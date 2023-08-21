@@ -32,7 +32,8 @@ See [DEPLOY_ABBREVIATOR.md](./DEPLOY_ABBREVIATOR.md).
 A few URL parameters will modify the behavior of the viewer:
 
 - `noLimit` disable the navigation limits (sphere and lava). Use noLimit=false to enforce limits on local dev.
-- `assetIds` display some additional Cesium ION 3dtilesets (coma separated list of CesiumIon ids)
+- `ionAssetIds` display some additional Cesium ION 3dtilesets (coma separated list of CesiumIon ids)
+- `ionToken` optional token to access Cesium ION 3dtilesets
 - `initialScreenSpaceError` define the visual quality (default: 10000)
 - `maximumScreenSpaceError` define the visual quality (default: 2.0 except for localhost which is 20.0)
 - `ownterrain=false` disables the terrain (mind that their is only data in the swissrectangle)

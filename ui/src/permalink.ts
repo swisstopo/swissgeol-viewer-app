@@ -5,6 +5,7 @@ import {
   ASSET_IDS_URL_PARAM,
   ATTRIBUTE_KEY_PARAM,
   ATTRIBUTE_VALUE_PARAM,
+  ION_TOKEN_URL_PARAM,
   LAYERS_TRANSPARENCY_URL_PARAM,
   LAYERS_URL_PARAM,
   LAYERS_VISIBILITY_URL_PARAM,
@@ -18,6 +19,18 @@ import {
 } from './constants';
 import type {Cartographic, Camera} from 'cesium';
 import type {TopicParam} from './store/dashboard';
+
+
+export function rewriteParams() {
+  const params = getURLSearchParams();
+  // assetIds was renamed to ionAssetIds
+  if (params.has('assetIds')) {
+    params.set(ASSET_IDS_URL_PARAM, params.get('assetIds')!);
+    params.delete('assetIds');
+  }
+  setURLSearchParams(params);
+}
+
 
 export function getCameraView(): {destination?: Cartesian3, orientation?: any} {
   let destination;
@@ -80,6 +93,11 @@ export function getLayerParams() {
 export function getAssetIds() {
   const params = getURLSearchParams();
   return safeSplit(params.get(ASSET_IDS_URL_PARAM));
+}
+
+export function getIonToken() {
+  const params = getURLSearchParams();
+  return params.get(ION_TOKEN_URL_PARAM);
 }
 
 export function syncLayersParam(activeLayers) {

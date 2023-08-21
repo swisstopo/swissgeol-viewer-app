@@ -4,6 +4,7 @@ export interface LayerTreeNode {
   layer?: string;
   label: string;
   assetId?: number;
+  ionToken?: string;
   propsOrder?: string[];
   url?: string;
   detailsUrl?: string;
