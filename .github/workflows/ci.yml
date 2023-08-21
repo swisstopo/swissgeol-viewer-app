@@ -12,7 +12,7 @@ on:
 jobs:
 
   add_review_links:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v3
@@ -22,7 +22,7 @@ jobs:
         run: scripts/github_add_link_for_reviews.sh
 
   build_and_test_local_api:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     steps:
       # - run: docker system prune --all --force --volumes
@@ -43,7 +43,7 @@ jobs:
         run: make acceptance
 
   build_and_deploy_api:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     steps:
       # - run: docker system prune --all --force --volumes
@@ -72,7 +72,7 @@ jobs:
           fi
 
   build_and_deploy_ui:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 24
     steps:
       - uses: actions/checkout@v3
