@@ -87,7 +87,9 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, 
   } else if (config.url) {
     resource = config.url;
   } else {
-    resource = await IonResource.fromAssetId(config.assetId!);
+    resource = await IonResource.fromAssetId(config.assetId!, {
+      accessToken: config.ionToken,
+    });
   }
 
   const tileset = await Cesium3DTileset.fromUrl(resource, {
