@@ -361,9 +361,10 @@ export class NgmDashboard extends LitElementI18n {
 
   previewTemplate(proj?: Topic | Project) {
     if (!proj) return '';
+    const backgroundImage = proj.image?.length ? `url('${proj.image}')` : 'none';
     return html`
       <div class="ngm-proj-preview" @click=${() => this.selectTopicOrProject(proj)}>
-        <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage: `url('${proj.image}')`})}></div>
+        <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage})}></div>
         <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: proj.color})}>
           <span>${translated(proj.title)}</span>
         </div>
@@ -378,6 +379,7 @@ export class NgmDashboard extends LitElementI18n {
 
     const owner = (<Project> this.selectedTopicOrProject).owner ? (<Project> this.selectedTopicOrProject).owner : i18next.t('swisstopo');
     const date = this.selectedTopicOrProject?.modified ? this.selectedTopicOrProject?.modified : this.selectedTopicOrProject?.created;
+    const backgroundImage = this.selectedTopicOrProject.image?.length ? `url('${this.selectedTopicOrProject.image}')` : 'none';
 
     return html`
       <div>
@@ -401,7 +403,7 @@ export class NgmDashboard extends LitElementI18n {
         <div class="ngm-proj-information">
           <div>
             <div class="ngm-proj-preview-img"
-                 style=${styleMap({backgroundImage: `url('${this.selectedTopicOrProject.image}')`})}></div>
+                 style=${styleMap({backgroundImage})}></div>
             <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: this.selectedTopicOrProject.color})}></div>
           </div>
           <div class="ngm-proj-description">
@@ -441,6 +443,7 @@ export class NgmDashboard extends LitElementI18n {
 
   projectEditingTemplate() {
     const project: Project = <Project> this.selectedTopicOrProject;
+    const backgroundImage = project.image?.length ? `url('${project.image}')` : '';
 
     return html`
       <div>
@@ -468,7 +471,7 @@ export class NgmDashboard extends LitElementI18n {
         <div class="ngm-proj-information">
           <div class="project-image-and-color">
             <div class="ngm-proj-preview-img"
-                 style=${styleMap({backgroundImage: `url('${project.image}')`})}></div>
+                 style=${styleMap({backgroundImage})}></div>
             <div class="project-color-picker" style=${styleMap({backgroundColor: 'white'})}>
               <div class="ngm-geom-colorpicker">
                 ${PROJECT_COLORS.map(color => html`

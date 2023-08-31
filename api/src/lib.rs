@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use clap::Parser;
-use hyper::header::{ACCEPT, AUTHORIZATION};
+use hyper::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE};
 use sqlx::PgPool;
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
@@ -62,7 +62,7 @@ pub async fn app(pool: PgPool) -> Router {
                                 .map(|s| s.parse().expect("parse origin"))
                                 .collect::<Vec<HeaderValue>>(),
                         )
-                        .allow_headers([AUTHORIZATION, ACCEPT]),
+                        .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]),
                 )
                 .layer(Extension(pool))
                 .layer(Extension(aws_client)),
