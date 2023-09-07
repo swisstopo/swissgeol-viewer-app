@@ -1,20 +1,20 @@
+import type {ConstantPositionProperty, ConstantProperty, Entity, Viewer} from 'cesium';
 import {
-  ScreenSpaceEventHandler,
-  ScreenSpaceEventType,
   CallbackProperty,
-  Color,
-  HeightReference,
   Cartesian2,
   Cartesian3,
   Cartographic,
-  JulianDate,
-  Intersections2D,
+  Color,
   CustomDataSource,
+  HeightReference,
+  Intersections2D,
+  JulianDate,
   PolygonHierarchy,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
 } from 'cesium';
 import {getDimensionLabel, rectanglify} from './helpers';
 import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
-import type {ConstantPositionProperty, ConstantProperty, Entity, Viewer} from 'cesium';
 import type {GeometryTypes} from '../toolbox/interfaces';
 
 export interface DrawOptions {
@@ -44,6 +44,7 @@ export class CesiumDraw extends EventTarget {
   moveEntity = false;
   entityForEdit: Entity | undefined;
   ERROR_TYPES = {needMorePoints: 'need_more_points'};
+  measure = false;
 
   constructor(viewer: Viewer, type: GeometryTypes, options: DrawOptions) {
     super();
@@ -83,7 +84,7 @@ export class CesiumDraw extends EventTarget {
         if (this.entityForEdit) {
           this.activateEditing();
         } else {
-          this.eventHandler_.setInputAction(this.onLeftClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
+          this.eventHandler_.setInputAction(this.onLeftClick.bind(this), ScreenSpaceEventType.LEFT_CLICK);
           this.eventHandler_.setInputAction(this.onDoubleClick_.bind(this), ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
         }
         this.eventHandler_.setInputAction(this.onMouseMove_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
@@ -229,7 +230,7 @@ export class CesiumDraw extends EventTarget {
         outlineWidth: 1,
         outlineColor: Color.BLACK,
         pixelSize: options.edit ? 9 : 5,
-        heightReference: HeightReference.CLAMP_TO_GROUND,
+        heightReference: this.measure ? HeightReference.NONE : HeightReference.CLAMP_TO_GROUND,
       },
       properties: {}
     };
@@ -247,7 +248,7 @@ export class CesiumDraw extends EventTarget {
     return this.drawingDataSource.entities.add({
       polyline: {
         positions: positions,
-        clampToGround: true,
+        clampToGround: !this.measure,
         width: this.strokeWidth_,
         material: this.strokeColor_
       }
@@ -263,7 +264,7 @@ export class CesiumDraw extends EventTarget {
           outlineWidth: 2,
           outlineColor: this.strokeColor_,
           pixelSize: this.strokeWidth_,
-          heightReference: HeightReference.CLAMP_TO_GROUND
+          heightReference: this.measure ? HeightReference.NONE : HeightReference.CLAMP_TO_GROUND
         }
       });
 
@@ -272,7 +273,7 @@ export class CesiumDraw extends EventTarget {
         position: positions[positions.length - 1],
         polyline: {
           positions: positions,
-          clampToGround: true,
+          clampToGround: !this.measure,
           width: this.strokeWidth_,
           material: this.strokeColor_
         },
@@ -331,7 +332,7 @@ export class CesiumDraw extends EventTarget {
     (<ConstantProperty> this.sketchPoint_.label!.text).setValue('0km');
   }
 
-  onLeftClick_(event) {
+  onLeftClick(event) {
     this.renderSceneIfTranslucent();
     const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.position));
     if (position) {
