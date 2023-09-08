@@ -9,5 +9,8 @@
       "^/abbr": ""
     },
     "logLevel": "debug"
+  },
+  "/Cesium": {
+    "target": "http://localhost:8001"
   }
 }
