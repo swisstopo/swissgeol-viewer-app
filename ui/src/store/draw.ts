@@ -4,6 +4,7 @@ import type {CesiumDraw} from '../draw/CesiumDraw';
 export default class DrawStore {
   private static drawSubject = new BehaviorSubject<CesiumDraw | undefined>(undefined);
   private static drawStateSubject = new BehaviorSubject<boolean>(false);
+  static measureState = new BehaviorSubject<boolean>(false);
 
   static setDrawState(value: boolean): void {
     this.drawStateSubject.next(value);

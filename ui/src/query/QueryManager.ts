@@ -75,7 +75,7 @@ export default class QueryManager {
 
   async onclick(click) {
     this.unhighlightGroup();
-    if (!this.enabled || DrawStore.drawStateValue) {
+    if (!this.enabled || DrawStore.drawStateValue || DrawStore.measureState.value) {
       this.hideObjectInformation();
       return;
     }

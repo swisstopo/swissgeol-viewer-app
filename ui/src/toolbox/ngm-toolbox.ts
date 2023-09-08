@@ -8,11 +8,12 @@ import './ngm-geometries-list';
 import './ngm-draw-section';
 import './data-download';
 import './ngm-profile-tool';
+import './ngm-measure';
 import i18next from 'i18next';
-import {JulianDate, CustomDataSource} from 'cesium';
+import type {Viewer} from 'cesium';
+import {CustomDataSource, JulianDate} from 'cesium';
 import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME} from '../constants';
 import MainStore from '../store/main';
-import type {Viewer} from 'cesium';
 import LocalStorageController from '../LocalStorageController';
 import ToolboxStore from '../store/toolbox';
 import {getValueOrUndefined} from '../cesiumutils';
@@ -27,7 +28,7 @@ import {showSnackbarInfo} from '../notifications';
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
   @property({type: Boolean}) toolsHidden = true;
-  @state() activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | 'profile' | undefined;
+  @state() activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | 'profile' | 'measure' | undefined;
   @state() sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder') toastPlaceholder;
   @query('ngm-slicer') slicerElement;
@@ -199,6 +200,10 @@ export class NgmToolbox extends LitElementI18n {
           <div class="ngm-slicing-icon"></div>
           <div>${i18next.t('tbx_slicing')}</div>
         </div>
+        <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'measure'}>
+          <div class="ngm-line-draw-icon"></div>
+          <div>${i18next.t('tbx_measure')}</div>
+        </div>
         <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'gst'}>
           <div class="ngm-gst-icon"></div>
           <div>${i18next.t('tbx_gst')}</div>
@@ -221,7 +226,9 @@ export class NgmToolbox extends LitElementI18n {
       <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
       <data-download .hidden="${this.activeTool !== 'data-download'}"
                      .geometriesDataSource=${this.geometriesDataSource}></data-download>
-      <ngm-profile-tool ?hidden="${this.activeTool !== 'profile'}"></ngm-profile-tool>`;
+      <ngm-profile-tool ?hidden="${this.activeTool !== 'profile'}"></ngm-profile-tool>
+      ${this.activeTool === 'measure' ? html`<ngm-measure></ngm-measure>` : ''}
+      `;
   }
 
   createRenderRoot() {

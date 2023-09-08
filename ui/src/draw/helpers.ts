@@ -1,12 +1,4 @@
-import {
-  Cartesian2,
-  Cartesian3,
-  LabelStyle,
-  HeightReference,
-  VerticalOrigin,
-  HorizontalOrigin,
-
-} from 'cesium';
+import {Cartesian2, Cartesian3, HeightReference, HorizontalOrigin, LabelStyle, VerticalOrigin,} from 'cesium';
 import i18next from 'i18next';
 import type {GeometryTypes} from '../toolbox/interfaces';
 
@@ -16,7 +8,7 @@ export function getDimensionLabelText(type: GeometryTypes, distances: number[]) 
     text = `${Number(distances[0]).toFixed(3)}km x ${Number(distances[1]).toFixed(3)}km`;
   } else {
     const length = distances.reduce((a, b) => a + b, 0);
-    text = `${i18next.t('obj_info_length_label')}: ${length}km`;
+    text = `${i18next.t('obj_info_length_label')}: ${length.toFixed(3)}km`;
   }
   return text.includes('undefined') ? '' : text;
 }
