@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Add review links
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 15
     steps:
       # - run: docker system prune --all --force --volumes
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 15
     steps:
       # - run: docker system prune --all --force --volumes
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Log into Docker hub
         env:
           DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 24
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
