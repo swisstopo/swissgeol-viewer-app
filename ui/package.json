@@ -21,7 +21,7 @@
     "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "3.398.0",
+    "@aws-sdk/client-cognito-identity": "3.405.0",
     "@aws-sdk/client-s3": "3.400.0",
     "@aws-sdk/credential-provider-cognito-identity": "3.398.0",
     "@aws-sdk/s3-request-presigner": "3.400.0",
