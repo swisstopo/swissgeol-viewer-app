@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.398.0",
-    "@aws-sdk/client-s3": "3.400.0",
+    "@aws-sdk/client-s3": "3.405.0",
     "@aws-sdk/credential-provider-cognito-identity": "3.398.0",
     "@aws-sdk/s3-request-presigner": "3.400.0",
     "@fontsource/inter": "5.0.8",
