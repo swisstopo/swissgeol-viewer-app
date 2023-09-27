@@ -1,4 +1,3 @@
-use aws_config::ecs::EcsCredentialsProvider;
 use aws_sdk_s3::{Client, Config, Credentials, Endpoint, Region};
 use hyper::Uri;
 
