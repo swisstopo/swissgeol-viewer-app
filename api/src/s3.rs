@@ -47,6 +47,6 @@ impl S3 {
             .region(Region::new(self.s3_aws_region.to_owned()))
             .load()
             .await;
-        return Client::new(&aws_config);
+        Client::new(&aws_config)
     }
 }
