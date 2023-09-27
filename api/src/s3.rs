@@ -1,3 +1,4 @@
+use aws_config::ecs::EcsCredentialsProvider;
 use aws_sdk_s3::{Client, Config, Credentials, Endpoint, Region};
 use hyper::Uri;
 
@@ -5,10 +6,10 @@ use hyper::Uri;
 #[derive(clap::Parser)]
 pub struct S3 {
     /// The S3 AWS access key id
-    #[clap(env, hide_env_values = true)]
+    #[clap(env, hide_env_values = true, default_value = "")]
     pub aws_access_key_id: String,
     /// The S3 AWS secret access key
-    #[clap(env, hide_env_values = true)]
+    #[clap(env, hide_env_values = true, default_value = "")]
     pub aws_secret_access_key: String,
     /// The S3 bucket name
     #[clap(env)]
@@ -47,6 +48,6 @@ impl S3 {
             .region(Region::new(self.s3_aws_region.to_owned()))
             .load()
             .await;
-        aws_sdk_s3::Client::new(&aws_config)
+        return Client::new(&aws_config)
     }
 }
