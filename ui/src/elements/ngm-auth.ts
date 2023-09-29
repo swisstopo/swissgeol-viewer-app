@@ -1,11 +1,11 @@
 import {html} from 'lit';
+import type {AuthUser} from '../auth';
 import Auth from '../auth';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import auth from '../store/auth';
 import {classMap} from 'lit/directives/class-map.js';
-import {customElement, property} from 'lit/decorators.js';
-import type {AuthUser} from '../auth';
+import {customElement, property, state} from 'lit/decorators.js';
 
 
 /**
@@ -15,7 +15,7 @@ import type {AuthUser} from '../auth';
 export class NgmAuth extends LitElementI18n {
   @property({type: String}) endpoint: string | undefined;
   @property({type: String}) clientId: string | undefined;
-  private user: AuthUser | null = null;
+  @state() user: AuthUser | null = null;
   private popup: Window | null = null;
 
   constructor() {
