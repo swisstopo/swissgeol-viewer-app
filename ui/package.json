@@ -88,7 +88,7 @@
     "mini-css-extract-plugin": "2.7.6",
     "mocha": "10.2.0",
     "node-fetch": "3.3.2",
-    "postcss": "8.4.29",
+    "postcss": "8.4.31",
     "postcss-import": "15.1.0",
     "postcss-inline-svg": "6.0.0",
     "postcss-url": "10.1.3",
