@@ -2,8 +2,8 @@ const testGstOutput = () => {
   cy.intercept('https://viewer.geomol.ch/webgui/**', (req) => {
     req.reply(200, {imageUrl: `https://viewer.geomol.ch/webgui/tmp/test.${req.query.outputType}`});
   }).as('createSection');
-  cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').should('not.have.class', 'disabled');
-  cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').click();
+  cy.get('ngm-gst-interaction .ngm-action-list-item.ngm-geom-item').should('not.have.class', 'disabled');
+  cy.get('ngm-gst-interaction .ngm-action-list-item.ngm-geom-item').click();
   cy.get('ngm-gst-interaction').click(1, 1);
   cy.get('.ngm-gst-container .ngm-action-btn').click();
   cy.get('.ngm-gst-modal', {timeout: 15000}).should('be.visible');
@@ -55,7 +55,7 @@ describe('Toolbox', () => {
     (<any>cy).loadPage();
     cy.get('.ngm-tools').click();
     cy.get('.ngm-gst-icon').click();
-    cy.get('ngm-gst-interaction .ngm-draw-list-item:first-child').click();
+    cy.get('ngm-gst-interaction .ngm-action-list-item:first-child').click();
     cy.get('.cesium-widget > canvas').click(450, 280);
     cy.get('ngm-gst-interaction .ngm-action-list-item:not(.ngm-geom-filter)').should('have.class', 'disabled');
     cy.get('.ngm-back-icon').click();
@@ -74,7 +74,7 @@ describe('Toolbox', () => {
     (<any>cy).loadPage();
     cy.get('.ngm-tools').click();
     cy.get('.ngm-vector-icon').click();
-    cy.get('ngm-draw-tool .ngm-draw-list-item:nth-child(3)').click();
+    cy.get('ngm-draw-tool .ngm-action-list-item:nth-child(2)').click();
     cy.get('.cesium-widget > canvas').click(450, 280);
     cy.get('.cesium-widget > canvas').dblclick(450, 200);
     cy.get('.ngm-back-icon').click();

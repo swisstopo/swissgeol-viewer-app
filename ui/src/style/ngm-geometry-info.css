@@ -67,6 +67,12 @@ ngm-geometry-info .ngm-download-icon {
   margin-bottom: 5px;
 }
 
+ngm-measure .ngm-geom-info-content .ngm-geom-info-value,
+ngm-slicer .ngm-geom-info-content .ngm-geom-info-value,
+ngm-draw-section .ngm-geom-info-content .ngm-geom-info-value {
+  color: black;
+}
+
 .ngm-geom-img img {
   max-width: 204px;
 }

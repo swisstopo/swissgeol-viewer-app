@@ -1,21 +1,22 @@
 import type {ConstantPositionProperty, ConstantProperty, Entity, Viewer} from 'cesium';
 import {
-  CallbackProperty,
-  Cartesian2,
-  Cartesian3,
-  Cartographic,
-  Color,
-  CustomDataSource,
-  HeightReference,
-  Intersections2D,
-  JulianDate,
-  PolygonHierarchy,
-  ScreenSpaceEventHandler,
-  ScreenSpaceEventType,
+    CallbackProperty,
+    Cartesian2,
+    Cartesian3,
+    Cartographic,
+    Color,
+    CustomDataSource,
+    HeightReference,
+    Intersections2D,
+    JulianDate,
+    PolygonHierarchy,
+    ScreenSpaceEventHandler,
+    ScreenSpaceEventType,
 } from 'cesium';
 import {getDimensionLabel, rectanglify} from './helpers';
 import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import type {GeometryTypes} from '../toolbox/interfaces';
+import DrawStore from '../store/draw';
 
 export interface DrawOptions {
   fillColor: string | Color;
@@ -89,6 +90,7 @@ export class CesiumDraw extends EventTarget {
         }
         this.eventHandler_.setInputAction(this.onMouseMove_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
       }
+      if (this.type === 'line') DrawStore.lineInfo.next({lengthLabel: '0km', segments: 0});
     } else {
       if (this.eventHandler_) {
         this.eventHandler_.destroy();
@@ -190,6 +192,10 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.scene.requestRender();
 
     const measurements = getMeasurements(positions, this.type);
+    if (this.type === 'line') DrawStore.lineInfo.next({
+        lengthLabel: `${measurements.perimeter}km`,
+        segments: measurements.numberOfSegments!
+    });
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
         positions: positions,
@@ -326,10 +332,13 @@ export class CesiumDraw extends EventTarget {
         (<ConstantPositionProperty> this.sketchPoint_.position).setValue(lastPoint);
       }
       this.activeDistance_ = distance / 1000;
-      (<ConstantProperty> this.sketchPoint_.label!.text).setValue(`${this.activeDistance_.toFixed(3)}km`);
+      const value = `${this.activeDistance_.toFixed(3)}km`;
+      (<ConstantProperty> this.sketchPoint_.label!.text).setValue(value);
+      if (this.type === 'line') DrawStore.lineInfo.next({lengthLabel: value, segments: positions.length - 1});
       return;
     }
     (<ConstantProperty> this.sketchPoint_.label!.text).setValue('0km');
+      if (this.type === 'line') DrawStore.lineInfo.next({lengthLabel: '0km', segments: 0});
   }
 
   onLeftClick(event) {

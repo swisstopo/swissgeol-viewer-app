@@ -14,7 +14,7 @@ import type {Cartesian3, CustomDataSource} from 'cesium';
 import type {NgmGeometry} from './interfaces';
 import {flyToGeom, hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
-import {skip} from 'rxjs';
+import {skip, Subscription} from 'rxjs';
 import DrawStore from '../store/draw';
 import NavToolsStore from '../store/navTools';
 
@@ -26,8 +26,10 @@ export class NgmSlicer extends LitElementI18n {
   @state() showBox = true;
   @state() negateSlice = false;
   @state() editingEnabled = false;
+  @state() lineInfo = DrawStore.lineInfo.value;
   private sliceGeomId: string | undefined;
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
+  private lineInfoSubscription: Subscription | undefined;
 
 
   constructor() {
@@ -48,6 +50,17 @@ export class NgmSlicer extends LitElementI18n {
         this.toggleSlicer();
     });
     ToolboxStore.syncSlice.subscribe(() => this.syncSlice());
+  }
+
+  connectedCallback() {
+    this.lineInfoSubscription =
+        DrawStore.lineInfo.subscribe(value => this.lineInfo = value);
+    super.connectedCallback();
+  }
+
+  disconnectedCallback() {
+    this.lineInfoSubscription?.unsubscribe();
+    super.disconnectedCallback();
   }
 
   protected update(changedProperties) {
@@ -289,6 +302,19 @@ export class NgmSlicer extends LitElementI18n {
             <div>${i18next.t('tbx_slice_line')}</div>
           </div>
           ${this.sliceOptionsTemplate({type: 'view-line'})}
+          <div class="ngm-geom-info-content" .hidden="${this.slicingType !== 'view-line'}">
+                        <div>
+                            <div class="ngm-geom-info-label">
+                                ${i18next.t('obj_info_length_label')}
+                            </div>
+                            <div class="ngm-geom-info-value">${this.lineInfo.lengthLabel}</div>
+                        </div>
+                        <div>
+                            <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
+                            <div class="ngm-geom-info-value">${this.lineInfo.segments}</div>
+                        </div>
+                    </div>
+            </div>
         </div>
       </div>
       <div class="ngm-divider"></div>

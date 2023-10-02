@@ -5,6 +5,8 @@ export default class DrawStore {
   private static drawSubject = new BehaviorSubject<CesiumDraw | undefined>(undefined);
   private static drawStateSubject = new BehaviorSubject<boolean>(false);
   static measureState = new BehaviorSubject<boolean>(false);
+  static lineInfo =
+      new BehaviorSubject<{ lengthLabel: string, segments: number }>({lengthLabel: '0km', segments: 0});
 
   static setDrawState(value: boolean): void {
     this.drawStateSubject.next(value);

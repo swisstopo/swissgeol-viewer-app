@@ -132,7 +132,7 @@ export function getMeasurements(positions, type) {
   const result: NgmGeometry = {
     positions: positions,
     type: type,
-    numberOfSegments: positions.length
+    numberOfSegments: positions.length - 1
   };
   let perimeter = distances.reduce((a, b) => a + b, 0);
   if (type === 'rectangle') {

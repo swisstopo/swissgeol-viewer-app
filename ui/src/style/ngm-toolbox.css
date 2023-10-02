@@ -44,6 +44,8 @@ data-download {
 
 ngm-gst-interaction .ngm-action-list-item.active,
 ngm-slicer .ngm-action-list-item.active,
+ngm-measure .ngm-action-list-item.active,
+ngm-draw-section .ngm-action-list-item.active,
 data-download .ngm-action-list-item.active  {
   height: auto;
 }
@@ -126,6 +128,10 @@ ngm-slicer .ui.button.ngm-transform-btn:hover {
 
 ngm-slicer .ngm-draw-hint,
 ngm-slicer .ngm-divider,
+ngm-measure .ngm-draw-hint,
+ngm-draw-section .ngm-draw-hint,
+ngm-measure .ngm-divider,
+ngm-draw-section .ngm-divider,
 .data-download-hint {
   margin-top: 12px;
 }
