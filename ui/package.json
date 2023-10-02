@@ -29,7 +29,7 @@
     "@geoblocks/cesium-view-cube": "0.1.1",
     "@geoblocks/ga-search": "0.0.22",
     "@sentry/browser": "7.72.0",
-    "cesium": "1.108.0",
+    "cesium": "1.109.0",
     "d3-array": "3.2.4",
     "d3-axis": "3.0.0",
     "d3-scale": "4.0.2",
