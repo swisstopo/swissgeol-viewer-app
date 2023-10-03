@@ -46,7 +46,7 @@ function deploy_api {
   docker pull $IMAGE_NAME:$VERSION
   docker tag $IMAGE_NAME:$VERSION $IMAGE_NAME:$tag
   docker push $IMAGE_NAME:$tag
-  ./deploy-to-env "$1"
+  ./scripts/deploy-to-env.sh "$1"
 }
 
 
