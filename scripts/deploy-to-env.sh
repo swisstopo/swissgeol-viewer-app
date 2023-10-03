@@ -34,31 +34,23 @@ cd argocd/
 git checkout $target
 git pull
 cd apps
-for dir in ./*/; do
-    file="${dir}tag_value.yaml"
-    IMAGE_TAG=""
-    if [ "$target" = "dev" ]; then
-      if [[ "$dir" == *api* ]]; then
-        get_image_hash "swissgeol_api"
-        IMAGE_TAG=@$retval
-      elif [[ "$dir" == *urlshortener* ]]; then
-        get_image_hash "abbreviator"
-        IMAGE_TAG=@$retval
-      fi
-    elif [[ "$target" = "prod" || "$target" = "int" ]]; then
-      IMAGE_TAG=$VERSION
-    fi
-    if [[ -z $IMAGE_TAG ]]; then
-        echo "Something went wrong with directory ${dir}"
-        exit 1
-      fi
-    echo "Processing $file"
-    cat > $file << EOM
+file="./api/tag_value.yaml"
+IMAGE_TAG=""
+if [ "$target" = "dev" ]; then
+  get_image_hash "swissgeol_api"
+  IMAGE_TAG=$VERSION@$retval
+elif [[ "$target" = "prod" || "$target" = "int" ]]; then
+  IMAGE_TAG=$VERSION
+fi
+if [[ -z $IMAGE_TAG ]]; then
+    echo "Something went wrong. Version: $VERSION"
+    exit 1
+  fi
+echo "Processing $file"
+cat > $file << EOM
 image:
   tag: "$IMAGE_TAG"
 EOM
-
-done
 cd ../
 
 git add -A .
@@ -76,7 +68,7 @@ rm -rf argocd
 #  # Ask argocd to sync the app
 #  ARGOCD_SERVER="dev-argocd.swissgeol.ch"
 #  echo argocd login --sso $ARGOCD_SERVER
-#  argocd --grpc-web app sync api-${target} urlshortener-${target} --prune --force --server $ARGOCD_SERVER
+#  argocd --grpc-web app sync api-${target} --prune --force --server $ARGOCD_SERVER
 #fi
 
 echo "the end"
