@@ -61,14 +61,14 @@ THE_TAG="${target}_`date +'%Y-%m-%d'`_$VERSION"
 cd ../
 rm -rf argocd
 
-#if [[ -n $CI ]]
-#then
-#  echo "In CI: skipping argocd SYNC (auto-sync enabled)"
-#else
-#  # Ask argocd to sync the app
-#  ARGOCD_SERVER="dev-argocd.swissgeol.ch"
-#  echo argocd login --sso $ARGOCD_SERVER
-#  argocd --grpc-web app sync api-${target} --prune --force --server $ARGOCD_SERVER
-#fi
+if [[ -n $CI ]]
+then
+  echo "In CI: skipping argocd SYNC (auto-sync enabled)"
+else
+  # Ask argocd to sync the app
+  ARGOCD_SERVER="dev-argocd.swissgeol.ch"
+  echo argocd login --sso $ARGOCD_SERVER
+  argocd --grpc-web app sync api-${target} --prune --force --server $ARGOCD_SERVER
+fi
 
 echo "the end"

@@ -17,24 +17,10 @@ The data is stored in a sqlite db located in a shared NFS drive.
 
 2. Create a tag starting with `int` or `prod` to trigger the GitHub action to build and push a docker image to `camptocamp/abbreviator` on [dockerhub](https://hub.docker.com/repository/docker/camptocamp/abbreviator).
 
-3. Redeploy the instances on Fargate.
+3. Update version in argocd:
+   1. Go to [argocd repo](https://git.swisstopo.admin.ch/ngm/argocd)
+   2. Checkout branch according to environment (dev / int / prod)
+   3. Update image version in apps/urlshortener/values.yaml
+   4. Trigger sync in [argocd dashboard](https://dev-argocd.swissgeol.ch/applications)
 
-    The aws credentials are stored in the [ngm gopass password store](https://git.swisstopo.admin.ch/ngm/password-store-ngm).
-
-    ```bash
-    export AWS_REGION=eu-west-1
-    export AWS_ACCESS_KEY_ID=$(gopass cat ngm/fargate/urlshortener/AWS_ACCESS_KEY_ID)
-    export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/fargate/urlshortener/AWS_SECRET_ACCESS_KEY)
-    ```
-
-    ```bash
-    # development
-    aws ecs update-service --cluster urlshortener_dev --service urlshortener_dev --force-new-deployment
-    watch --interval=5 curl -s https://link.dev-viewer.swissgeol.ch/health_check
-    # integration
-    aws ecs update-service --cluster urlshortener_int --service urlshortener_int --force-new-deployment
-    watch --interval=5 curl -s https://link.int-viewer.swissgeol.ch/health_check
-    # production
-    aws ecs update-service --cluster urlshortener_prod --service urlshortener_prod --force-new-deployment
-    watch --interval=5 curl -s https://link.swissgeol.ch/health_check
-    ```
+       ```
