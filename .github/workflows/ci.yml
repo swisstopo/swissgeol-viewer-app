@@ -76,6 +76,7 @@ jobs:
             cat myspace/id_key | wc -c
             ssh-keygen -l -f myspace/id_key
             export GIT_SSH_COMMAND="ssh -i `pwd`/myspace/id_key -F none"
+            $GIT_SSH_COMMAND -v git@git.swisstopo.admin.ch
             git config --global user.email "swissgeol-ci-bot@camptocamp.com"
             git config --global user.name "Swissgeol repo CI bot"
             scripts/deploy-to-env.sh dev
