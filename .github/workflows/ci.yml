@@ -73,6 +73,8 @@ jobs:
             chmod go-rwx myspace
             echo -n $NGM_ARGOCD_DEPLOYKEY | base64 -d > myspace/id_key
             chmod go-rwx myspace/id_key
+            cat myspace/id_key | wc -c
+            ssh-keygen -l -f myspace/id_key
             export GIT_SSH_COMMAND="ssh -i `pwd`/myspace/id_key -F none"
             git config --global user.email "swissgeol-ci-bot@camptocamp.com"
             git config --global user.name "Swissgeol repo CI bot"
