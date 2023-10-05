@@ -43,10 +43,13 @@ function deploy_ui {
 
 function deploy_api {
   tag="$1"
+  export AWS_ACCESS_KEY_ID=$(gopass cat ngm/fargate/api/AWS_ACCESS_KEY_ID) # todo remove when k8s migration done
+  export AWS_SECRET_ACCESS_KEY=$(gopass cat ngm/fargate/api/AWS_SECRET_ACCESS_KEY) # todo remove when k8s migration done
   docker pull $IMAGE_NAME:$VERSION
   docker tag $IMAGE_NAME:$VERSION $IMAGE_NAME:$tag
   docker push $IMAGE_NAME:$tag
-  ./scripts/deploy-to-env.sh "$1"
+  aws ecs update-service --region $AWS_REGION --cluster api_$tag --service api_$tag --force-new-deployment # todo remove when k8s migration done
+# ./scripts/deploy-to-env.sh "$1"  uncomment when k8s migration done
 }
 
 

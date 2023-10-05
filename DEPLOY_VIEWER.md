@@ -87,8 +87,6 @@ git checkout $VERSION
 scripts/deploy_viewer.sh int
 ```
 
-Go to the [ArgoCD dashboard](#argocd) to check if everything went well.
-
 ### Prod-viewer (manual)
 
 The version should have been created and tested on int first.
@@ -98,7 +96,6 @@ export VERSION="" # the version (like 2022.02.0)
 git checkout $VERSION
 scripts/deploy_viewer.sh prod
 ```
-Go to the [ArgoCD dashboard](#argocd) to check if everything went well.
 
 ## Argo CD <a name="argocd"></a>
 
