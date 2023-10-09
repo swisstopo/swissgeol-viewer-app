@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+function defineTags(dictionary) {
+    dictionary.defineTag("template", {
+        onTagged: function (doclet, tag) {
+            doclet.tags = doclet.tags || [];
+            doclet.tags.push(tag);
+        }
+    });
+}
+exports.defineTags = defineTags;
+;
+//# sourceMappingURL=plugin.js.map

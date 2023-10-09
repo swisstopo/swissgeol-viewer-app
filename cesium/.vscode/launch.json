@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Server",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run-script", "start"],
+            "noDebug": true,
+            "serverReadyAction":{
+                "action": "startDebugging",
+                "name": "Launch in Chrome",
+                "pattern": "Cesium development server running locally."
+            }
+        },
+        {
+            "name": "Launch in Chrome",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}

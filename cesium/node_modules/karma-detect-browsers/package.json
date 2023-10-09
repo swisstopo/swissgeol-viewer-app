@@ -1,0 +1,97 @@
+{
+    "name": "karma-detect-browsers",
+    "description": "Karma runner plugin for detecting all browsers installed on the current system.",
+    "version": "2.3.3",
+    "homepage": "https://github.com/litixsoft/karma-detect-browsers",
+    "author": {
+        "name": "Litixsoft GmbH",
+        "email": "info@litixsoft.de"
+    },
+    "maintainers": [
+        {
+            "name": "Timo Liebetrau",
+            "email": "t.liebetrau@litixsoft.de"
+        },
+        {
+            "name": "Marco Kannenberg",
+            "email": "m.kannenberg@litixsoft.de"
+        },
+        {
+            "name": "Andreas Krummsdorf",
+            "email": "a.krummsdorf@litixsoft.de"
+        },
+        {
+            "name": "Sven Bernstein",
+            "email": "s.bernstein@litixsoft.de"
+        },
+        {
+            "name": "Thomas Scheibe",
+            "email": "th.scheibe@litixsoft.de"
+        }
+    ],
+    "contributors": [
+        "Terin Stock <terin@terinstock.com>",
+        "安坚实 <anjianshi@gmail.com>",
+        "John Vilk <jvilk@cs.umass.edu>",
+        "Marcos Caceres <marcos@marcosc.com>",
+        "Nick McCurdy <nick@nickmccurdy.com>",
+        "Esref Durna",
+        "Jonathan Felchlin <jonathan@xgecko.com>"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/litixsoft/karma-detect-browsers.git"
+    },
+    "bugs": {
+        "url": "https://github.com/litixsoft/karma-detect-browsers/issues"
+    },
+    "keywords": [
+        "karma-plugin",
+        "karma-launcher",
+        "browser",
+        "browsers",
+        "Safari",
+        "Safari Tech Preview",
+        "SafariTechPreview",
+        "IE",
+        "Edge",
+        "Chrome",
+        "Chrome Canary",
+        "Chrome Headless",
+        "Chromium",
+        "Firefox",
+        "Opera"
+    ],
+    "license": "MIT",
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/litixsoft/karma-detect-browsers/blob/master/LICENSE"
+        }
+    ],
+    "main": "index.js",
+    "scripts": {
+        "test": "grunt demo"
+    },
+    "devDependencies": {
+        "grunt": "^1.0.0",
+        "grunt-contrib-copy": "^1.0.0",
+        "grunt-contrib-jshint": "^1.1.0",
+        "grunt-karma": "^2.0.0",
+        "jasmine-core": "^3.1.0",
+        "karma": "^2.0.0",
+        "karma-chrome-launcher": "*",
+        "karma-edge-launcher": "*",
+        "karma-firefox-launcher": "*",
+        "karma-ie-launcher": "*",
+        "karma-jasmine": "^1.1.0",
+        "karma-opera-launcher": "*",
+        "karma-phantomjs-launcher": "*",
+        "karma-safari-launcher": "*",
+        "karma-safaritechpreview-launcher": "*",
+        "phantomjs-prebuilt": "2.1.16"
+    },
+    "dependencies": {
+        "which": "^1.2.4"
+    }
+}

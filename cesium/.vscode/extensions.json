@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "slevesque.shader",
+        "cesium.gltf-vscode",
+        "bierner.github-markdown-preview",
+        "DavidAnson.vscode-markdownlint"
+    ]
+}
