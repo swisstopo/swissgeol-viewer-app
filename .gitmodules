@@ -1,0 +1,4 @@
+[submodule "ui/cesium"]
+	path = ui/cesium
+	url = git@github.com:CesiumGS/cesium.git
+	branch = tileset-exaggerate
