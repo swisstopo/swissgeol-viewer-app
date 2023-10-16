@@ -73,7 +73,7 @@ export class NgmGstInteraction extends LitElementI18n {
   async initExtent() {
     if (this.extentInited || !this.viewer) return;
     this.extentInited = true;
-    const resource = await IonResource.fromAssetId(85445);
+    const resource = await IonResource.fromAssetId(2315015);
     this.gstExtent = await KmlDataSource.load(resource, {
       camera: this.viewer.scene.camera,
       canvas: this.viewer.scene.canvas,
