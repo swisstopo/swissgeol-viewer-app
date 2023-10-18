@@ -1156,6 +1156,17 @@ const subsurface: LayerTreeNode = {
             '3DBern-Download'],
           geocatId: '372c25ac-fb8a-44ee-8f81-6427939f6353',
         },
+                {
+          type: LayerType.tiles3d,
+          assetId: 597688,
+          label: t('lyr_3d_model_GMT_label'),
+          layer: '3d_model_GMT',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          zoomToBbox: true,
+          propsOrder: ,
+          geocatId: '',
+        },
       ]
     },
   ]
