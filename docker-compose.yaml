@@ -34,7 +34,7 @@ services:
       - db
 
   ui:
-    image: node:21
+    image: node:lts
     ports:
       - 8000:8000
     environment:
