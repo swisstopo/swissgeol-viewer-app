@@ -21,7 +21,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
   accessor service: SwissforagesService | undefined;
   @property({type: Object})
   accessor dataSource: CustomDataSource | undefined;
-  @property({type: Function})
+  @property({type: Object})
   accessor updateModalOptions: CallableFunction | undefined;
   private julianDate: JulianDate = new JulianDate();
   private viewer: Viewer | null = null;
@@ -138,7 +138,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
         <div class="ui tiny buttons">
           <button
             class="ui button"
-            @click=${this.showSwissforagesModal.bind(this, this.item)}>
+            @click=${() => this.showSwissforagesModal()}>
             ${this.item.swissforagesId ?
               i18next.t('tbx_swissforages_show_btn_label') :
               i18next.t('tbx_swissforages_create_btn_label')}

@@ -14,13 +14,13 @@ export default class NgmGeometriesList extends LitElementI18n {
   accessor selectedId = '';
   @property({type: String})
   accessor title = i18next.t('tbx_my_geometries');
-  @property({type: Function})
+  @property({type: Object})
   accessor geometryFilter: (geom: NgmGeometry) => boolean = (geom) => !geom.fromTopic;
-  @property({type: Function})
+  @property({type: Object})
   accessor optionsTemplate: ((geom: NgmGeometry, active: boolean) => TemplateResult) | undefined;
   @property({type: Array})
   accessor disabledTypes: string[] = [];
-  @property({type: Function})
+  @property({type: Object})
   accessor disabledCallback: ((geom: NgmGeometry) => boolean) | undefined;
   @state()
   accessor geometries: NgmGeometry[] = [];
