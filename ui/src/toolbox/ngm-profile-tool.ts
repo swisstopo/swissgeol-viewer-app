@@ -7,8 +7,10 @@ import i18next from 'i18next';
 
 @customElement('ngm-profile-tool')
 export class NgmProfileTool extends LitElementI18n {
-  @property({type: Boolean}) hidden = true;
-  @state() selectedGeomId = '';
+  @property({type: Boolean})
+  accessor hidden = true;
+  @state()
+  accessor selectedGeomId = '';
 
   constructor() {
     super();

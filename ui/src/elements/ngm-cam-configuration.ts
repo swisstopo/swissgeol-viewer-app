@@ -48,15 +48,24 @@ export function valueToHeight(value: number): number {
 
 @customElement('ngm-cam-configuration')
 export class NgmCamConfiguration extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null;
-  @state() scene: Scene | null = null;
-  @state() interaction: Interactable | null = null;
-  @state() unlistenPostRender: Event.RemoveCallback | null = null;
-  @state() heading = 0;
-  @state() elevation = 0;
-  @state() pitch = 0;
-  @state() coordinates: Record<string, (string | number)[]> | null = null;
-  @state() lockType: LockType = '';
+  @property({type: Object})
+  accessor viewer: Viewer | null = null;
+  @state()
+  accessor scene: Scene | null = null;
+  @state()
+  accessor interaction: Interactable | null = null;
+  @state()
+  accessor unlistenPostRender: Event.RemoveCallback | null = null;
+  @state()
+  accessor heading = 0;
+  @state()
+  accessor elevation = 0;
+  @state()
+  accessor pitch = 0;
+  @state()
+  accessor coordinates: Record<string, (string | number)[]> | null = null;
+  @state()
+  accessor lockType: LockType = '';
   // always use the 'de-CH' locale to always have the simple tick as thousands separator
   private integerFormat = new Intl.NumberFormat('de-CH', {
     maximumFractionDigits: 0

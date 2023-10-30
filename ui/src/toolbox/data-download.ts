@@ -15,8 +15,10 @@ import type {Config} from '../layers/ngm-layers-item';
 
 @customElement('data-download')
 export class DataDownload extends LitElementI18n {
-  @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
-  @state() selectedGeometryId = '';
+  @property({type: Object})
+  accessor geometriesDataSource: CustomDataSource | undefined;
+  @state()
+  accessor selectedGeometryId = '';
 
 
   /**

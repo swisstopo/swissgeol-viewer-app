@@ -11,8 +11,10 @@ import type {QueryResult} from '../query/types';
 
 @customElement('ngm-object-information')
 export class NgmObjectInformation extends LitElementI18n {
-  @property({type: Object}) info: QueryResult | undefined;
-  @property({type: Boolean}) opened: boolean;
+  @property({type: Object})
+  accessor info: QueryResult | undefined;
+  @property({type: Boolean})
+  accessor opened: boolean;
 
   constructor() {
     super();

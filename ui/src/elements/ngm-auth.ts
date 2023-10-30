@@ -13,9 +13,12 @@ import {customElement, property, state} from 'lit/decorators.js';
  */
 @customElement('ngm-auth')
 export class NgmAuth extends LitElementI18n {
-  @property({type: String}) endpoint: string | undefined;
-  @property({type: String}) clientId: string | undefined;
-  @state() user: AuthUser | null = null;
+  @property({type: String})
+  accessor endpoint: string | undefined;
+  @property({type: String})
+  accessor clientId: string | undefined;
+  @state()
+  accessor user: AuthUser | null = null;
   private popup: Window | null = null;
 
   constructor() {

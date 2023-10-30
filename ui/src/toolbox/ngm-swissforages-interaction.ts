@@ -15,10 +15,14 @@ import {showSnackbarInfo} from '../notifications';
 
 @customElement('ngm-swissforages-interaction')
 export class NgmSwissforagesInteraction extends LitElementI18n {
-  @property({type: Object}) item: NgmGeometry | undefined;
-  @property({type: Object}) service: SwissforagesService | undefined;
-  @property({type: Object}) dataSource: CustomDataSource | undefined;
-  @property({type: Function}) updateModalOptions: CallableFunction | undefined;
+  @property({type: Object})
+  accessor item: NgmGeometry | undefined;
+  @property({type: Object})
+  accessor service: SwissforagesService | undefined;
+  @property({type: Object})
+  accessor dataSource: CustomDataSource | undefined;
+  @property({type: Function})
+  accessor updateModalOptions: CallableFunction | undefined;
   private julianDate: JulianDate = new JulianDate();
   private viewer: Viewer | null = null;
 

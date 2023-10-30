@@ -35,9 +35,12 @@ export function valueToHeight(value: number): number {
 
 @customElement('ngm-height-slider')
 export class NgmHeightSlider extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null;
-  @state() value = 2;
-  @state() unlistenPostRender: any = null;
+  @property({type: Object})
+  accessor viewer: Viewer | null = null;
+  @state()
+  accessor value = 2;
+  @state()
+  accessor unlistenPostRender: any = null;
 
   updated() {
     if (this.viewer && !this.unlistenPostRender) {

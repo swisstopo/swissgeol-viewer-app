@@ -16,9 +16,12 @@ interface UserWorkgroup {
 
 @customElement('ngm-swissforages-modal')
 export class NgmSwissforagesModal extends LitElementI18n {
-  @property({type: Object}) service;
-  @property({type: Object}) options;
-  @property({type: Boolean}) loading;
+  @property({type: Object})
+  accessor service;
+  @property({type: Object})
+  accessor options;
+  @property({type: Boolean})
+  accessor loading;
   private userWorkgroups: UserWorkgroup[] = [];
   private username = '';
   private password = '';

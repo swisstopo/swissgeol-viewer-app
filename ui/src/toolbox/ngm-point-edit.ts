@@ -16,11 +16,13 @@ import {styleMap} from 'lit/directives/style-map.js';
 
 @customElement('ngm-point-edit')
 export class NgmPointEdit extends LitElementI18n {
-  @property({type: Object}) entity: Entity | undefined;
+  @property({type: Object})
+  accessor entity: Entity | undefined;
   xValue = 0;
   yValue = 0;
   heightValue = 0;
-  @state() coordsType: 'lv95' | 'wgs84' = 'lv95';
+  @state()
+  accessor coordsType: 'lv95' | 'wgs84' = 'lv95';
   minHeight = -30000;
   maxHeight = 30000;
   minDepth = -30000;
@@ -29,7 +31,7 @@ export class NgmPointEdit extends LitElementI18n {
   private viewer: Viewer | null = null;
 
   @query('.dropdown')
-  dropdown;
+  accessor dropdown;
 
   constructor() {
     super();
@@ -102,7 +104,7 @@ export class NgmPointEdit extends LitElementI18n {
               <div class="item" @click=${() => this.coordsType = 'wgs84'}>WGS84</div>
             </div>
           </div>
-        </div>  
+        </div>
       </div>
       <div class="ngm-geom-edit-double-input">
         <div class="ngm-input">

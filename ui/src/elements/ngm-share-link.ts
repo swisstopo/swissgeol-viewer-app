@@ -10,9 +10,12 @@ import {customElement, query, state} from 'lit/decorators.js';
 
 @customElement('ngm-share-link')
 export class NgmShareLink extends LitElementI18n {
-  @state() shortlink = '';
-  @state() displayLoader = false;
-  @query('.ngm-toast-placeholder') toastPlaceholder;
+  @state()
+  accessor shortlink = '';
+  @state()
+  accessor displayLoader = false;
+  @query('.ngm-toast-placeholder')
+  accessor toastPlaceholder;
 
   async getShortlink() {
     const serviceUrl = SHORTLINK_URL_BY_PAGE_HOST[window.location.host];

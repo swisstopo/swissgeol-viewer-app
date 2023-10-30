@@ -27,9 +27,10 @@ const presets = [
 
 plugins = [
   ['@babel/plugin-proposal-nullish-coalescing-operator'],
+  ['@babel/plugin-transform-class-static-block'],
   ['@babel/plugin-syntax-dynamic-import'],
   ['@babel/plugin-transform-typescript', {allowDeclareFields: true}],
-  ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, legacy: false}],
+  ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, version: "2023-05"}],
   ['@babel/plugin-proposal-class-properties'],
 ];
 

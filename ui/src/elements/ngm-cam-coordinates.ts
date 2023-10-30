@@ -11,13 +11,13 @@ import 'fomantic-ui-css/components/dropdown.js';
 export class NgmCamCoordinates extends LitElementI18n {
 
   @property({type: Object})
-  coordinates = {};
+  accessor coordinates = {};
 
   @state()
-  key = 'lv95';
+  accessor key = 'lv95';
 
   @query('.dropdown')
-  dropdown;
+  accessor dropdown;
 
   createRenderRoot() {
     return this;

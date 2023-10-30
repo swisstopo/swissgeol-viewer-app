@@ -75,16 +75,26 @@ export interface Project extends CreateProject {
 
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
-  @property({type: Boolean}) hidden = true;
-  @state() projects: Project[] = [];
-  @state() activeTab: 'topics' | 'overview' | 'projects' = 'topics';
-  @state() selectedTopicOrProject: Topic | Project | undefined;
-  @state() topics: Topic[] | undefined;
-  @state() selectedViewIndx: number | undefined;
-  @state() projectEditing = false;
-  @state() saveOrCancelWarning = false;
-  @query('.ngm-toast-placeholder') toastPlaceholder;
-  @query('#overview-toast') overviewToast;
+  @property({type: Boolean})
+  accessor hidden = true;
+  @state()
+  accessor projects: Project[] = [];
+  @state()
+  accessor activeTab: 'topics' | 'overview' | 'projects' = 'topics';
+  @state()
+  accessor selectedTopicOrProject: Topic | Project | undefined;
+  @state()
+  accessor topics: Topic[] | undefined;
+  @state()
+  accessor selectedViewIndx: number | undefined;
+  @state()
+  accessor projectEditing = false;
+  @state()
+  accessor saveOrCancelWarning = false;
+  @query('.ngm-toast-placeholder')
+  accessor toastPlaceholder;
+  @query('#overview-toast')
+  accessor overviewToast;
   private viewer: Viewer | null = null;
   private assetConfigs: any = {};
   private assets: Config[] | undefined;

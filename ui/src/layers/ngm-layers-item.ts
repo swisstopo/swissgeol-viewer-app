@@ -26,13 +26,20 @@ export interface Config extends LayerTreeNode {
 
 @customElement('ngm-layers-item')
 export class LayerTreeItem extends LitElementI18n {
-  @property({type: Object}) actions!: LayersAction;
-  @property({type: Object}) config!: Config;
-  @property({type: Boolean}) changeOrderActive = false;
-  @state() loading = 0;
-  @state() determinateLoading = false;
-  @state() loadProgressRemover_: any;
-  @state() movable = false;
+  @property({type: Object})
+  accessor actions!: LayersAction;
+  @property({type: Object})
+  accessor config!: Config;
+  @property({type: Boolean})
+  accessor changeOrderActive = false;
+  @state()
+  accessor loading = 0;
+  @state()
+  accessor determinateLoading = false;
+  @state()
+  accessor loadProgressRemover_: any;
+  @state()
+  accessor movable = false;
   private toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
   private debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
 

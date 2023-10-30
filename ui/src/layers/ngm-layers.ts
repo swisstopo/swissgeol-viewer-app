@@ -12,9 +12,12 @@ Sortable.mount(new MultiDrag());
 
 @customElement('ngm-layers')
 export default class LayerTree extends LitElementI18n {
-  @property({type: Array}) layers: Config[] = [];
-  @property({type: Object}) actions: any;
-  @property({type: Boolean}) changeOrderActive = false;
+  @property({type: Array})
+  accessor layers: Config[] = [];
+  @property({type: Object})
+  accessor actions: any;
+  @property({type: Boolean})
+  accessor changeOrderActive = false;
   private sortable: Sortable;
 
   connectedCallback() {

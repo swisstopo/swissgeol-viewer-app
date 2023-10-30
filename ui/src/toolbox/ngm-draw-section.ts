@@ -16,10 +16,14 @@ const fileUploadInputId = 'fileUpload';
 @customElement('ngm-draw-section')
 export class NgmDrawSection extends LitElementI18n {
   // show all draw types if undefined or passed types
-  @property({type: Array}) enabledTypes: GeometryTypes[] | undefined;
-  @property({type: Boolean}) showUpload = true;
-  @property({type: Boolean}) hidden = true;
-  @state() lineInfo = DrawStore.lineInfo.value;
+  @property({type: Array})
+  accessor enabledTypes: GeometryTypes[] | undefined;
+  @property({type: Boolean})
+  accessor showUpload = true;
+  @property({type: Boolean})
+  accessor hidden = true;
+  @state()
+  accessor lineInfo = DrawStore.lineInfo.value;
   private draw: CesiumDraw | undefined;
   private drawGeometries = [
     {label: () => i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},

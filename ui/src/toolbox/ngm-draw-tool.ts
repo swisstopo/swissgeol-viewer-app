@@ -10,8 +10,10 @@ import i18next from 'i18next';
 
 @customElement('ngm-draw-tool')
 export class NgmAreaOfInterestDrawer extends LitElementI18n {
-  @property({type: Boolean}) hidden = true;
-  @state() selectedAreaId: string | undefined;
+  @property({type: Boolean})
+  accessor hidden = true;
+  @state()
+  accessor selectedAreaId: string | undefined;
 
 
   constructor() {

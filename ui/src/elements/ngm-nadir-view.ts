@@ -12,15 +12,24 @@ import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-nadir-view')
 export class NgmNadirView extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null;
-  @state() unlistenPostRender: Event.RemoveCallback | null = null;
-  @state() northActive = false;
-  @state() nadirActive = false;
-  @state() pitch: number | undefined = undefined;
-  @state() height: number | undefined = undefined;
-  @state() heading: number | undefined = undefined;
-  @state() position: Cartesian3 | undefined = undefined;
-  @state() currentHeading = 0;
+  @property({type: Object})
+  accessor viewer: Viewer | null = null;
+  @state()
+  accessor unlistenPostRender: Event.RemoveCallback | null = null;
+  @state()
+  accessor northActive = false;
+  @state()
+  accessor nadirActive = false;
+  @state()
+  accessor pitch: number | undefined = undefined;
+  @state()
+  accessor height: number | undefined = undefined;
+  @state()
+  accessor heading: number | undefined = undefined;
+  @state()
+  accessor position: Cartesian3 | undefined = undefined;
+  @state()
+  accessor currentHeading = 0;
 
   updated() {
     if (this.viewer && !this.unlistenPostRender) {

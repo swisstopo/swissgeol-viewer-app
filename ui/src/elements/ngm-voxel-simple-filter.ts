@@ -10,11 +10,15 @@ import type {Viewer} from 'cesium';
 
 @customElement('ngm-voxel-simple-filter')
 export class NgmVoxelSimpleFilter extends LitElementI18n {
-  @property({type: Object}) config!: Config;
-  @property({type: Object}) viewer!: Viewer;
+  @property({type: Object})
+  accessor config!: Config;
+  @property({type: Object})
+  accessor viewer!: Viewer;
 
-  @query('.min-conductivity') minValueInput!: HTMLInputElement;
-  @query('.max-conductivity') maxValueInput!: HTMLInputElement;
+  @query('.min-conductivity')
+  accessor minValueInput!: HTMLInputElement;
+  @query('.max-conductivity')
+  accessor maxValueInput!: HTMLInputElement;
 
   private minValue = NaN;
   private maxValue = NaN;

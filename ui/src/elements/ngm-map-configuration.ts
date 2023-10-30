@@ -12,11 +12,16 @@ import {debounce} from '../utils';
 
 @customElement('ngm-map-configuration')
 export class NgmMapConfiguration extends LitElementI18n {
-  @state() viewer: Viewer | null | undefined;
-  @state() mapChooser: MapChooser | null | undefined;
-  @state() opacity: number = getMapOpacityParam();
-  @state() baseMapId = 'ch.swisstopo.pixelkarte-grau';
-  @query('ngm-map-chooser') mapChooserElement;
+  @state()
+  accessor viewer: Viewer | null | undefined;
+  @state()
+  accessor mapChooser: MapChooser | null | undefined;
+  @state()
+  accessor opacity: number = getMapOpacityParam();
+  @state()
+  accessor baseMapId = 'ch.swisstopo.pixelkarte-grau';
+  @query('ngm-map-chooser')
+  accessor mapChooserElement;
   private debouncedOpacityUpdate = debounce((evt: Event) => this.updateOpacity(Number((<HTMLInputElement>evt.target).value)), 250, true);
 
   constructor() {

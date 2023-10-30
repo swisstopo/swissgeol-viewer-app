@@ -43,12 +43,18 @@ const AXIS_LENGTH = 120;
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | null = null;
-  @property({type: Boolean}) showCamConfig = false;
-  @state() moveAmount = 200;
-  @state() interaction: Interactable | null = null;
-  @state() showTargetPoint = false;
-  @state() lockType: LockType = '';
+  @property({type: Object})
+  accessor viewer: Viewer | null = null;
+  @property({type: Boolean})
+  accessor showCamConfig = false;
+  @state()
+  accessor moveAmount = 200;
+  @state()
+  accessor interaction: Interactable | null = null;
+  @state()
+  accessor showTargetPoint = false;
+  @state()
+  accessor lockType: LockType = '';
   private zoomingIn = false;
   private zoomingOut = false;
   private unlistenFromPostRender: Event.RemoveCallback | null = null;

@@ -7,7 +7,8 @@ import type {Config} from '../layers/ngm-layers-item';
 
 @customElement('ngm-layer-legend')
 export class NgmLayerLegend extends LitElementI18n {
-  @state() config!: Config;
+  @state()
+  accessor config!: Config;
 
   protected firstUpdated(_changedProperties) {
     // hidden is required to have correct window placing

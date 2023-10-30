@@ -18,10 +18,14 @@ import {dragArea} from '../elements/helperElements';
 
 @customElement('ngm-geometry-info')
 export class NgmGeometryInfo extends LitElementI18n {
-  @state() geomEntity: Entity | undefined;
-  @state() editing = false;
-  @state() geometry: NgmGeometry | undefined;
-  @query('.ngm-geom-info-body') infoBodyElement;
+  @state()
+  accessor geomEntity: Entity | undefined;
+  @state()
+  accessor editing = false;
+  @state()
+  accessor geometry: NgmGeometry | undefined;
+  @query('.ngm-geom-info-body')
+  accessor infoBodyElement;
   private viewer: Viewer | null = null;
   private geometriesDataSource: CustomDataSource | undefined;
 

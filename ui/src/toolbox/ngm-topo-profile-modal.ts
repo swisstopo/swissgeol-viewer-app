@@ -32,15 +32,21 @@ export type ProfileData = {
 
 @customElement('ngm-topo-profile-modal')
 export class NgmTopoProfileModal extends LitElementI18n {
-  @state() hidden = true;
-  @state() tooltipData = {
+  @state()
+  accessor hidden = true;
+  @state()
+  accessor tooltipData = {
     position: {left: '0px', top: '0px'},
     values: {dist: '0 m', elev: '0 m'}
   };
-  @state() showTooltip = false;
-  @query('.ngm-profile-plot') profilePlot;
-  @query('.svg-link') svgLink;
-  @query('.ngm-profile-tooltip') profileTooltip;
+  @state()
+  accessor showTooltip = false;
+  @query('.ngm-profile-plot')
+  accessor profilePlot;
+  @query('.svg-link')
+  accessor svgLink;
+  @query('.ngm-profile-tooltip')
+  accessor profileTooltip;
   private viewer: Viewer | null | undefined;
   private bisect = bisector((d) => d.domainDist).left;
   private linestring: number[][] | undefined;

@@ -27,11 +27,16 @@ import {showSnackbarInfo} from '../notifications';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
-  @property({type: Boolean}) toolsHidden = true;
-  @state() activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | 'profile' | 'measure' | undefined;
-  @state() sectionImageUrl: string | undefined;
-  @query('.ngm-toast-placeholder') toastPlaceholder;
-  @query('ngm-slicer') slicerElement;
+  @property({type: Boolean})
+  accessor toolsHidden = true;
+  @state()
+  accessor activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | 'profile' | 'measure' | undefined;
+  @state()
+  accessor sectionImageUrl: string | undefined;
+  @query('.ngm-toast-placeholder')
+  accessor toastPlaceholder;
+  @query('ngm-slicer')
+  accessor slicerElement;
   geometriesDataSource: CustomDataSource = new CustomDataSource(GEOMETRY_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
