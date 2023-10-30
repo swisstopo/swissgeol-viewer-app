@@ -4,15 +4,15 @@ use hyper::Uri;
 /// Configuration for AWS S3 Client
 #[derive(clap::Parser)]
 pub struct S3 {
+    /// The S3 bucket name
+    #[clap(env)]
+    pub s3_bucket: String,
     /// The S3 AWS access key id
     #[clap(env, hide_env_values = true, default_value = "")]
     pub aws_access_key_id: String,
     /// The S3 AWS secret access key
     #[clap(env, hide_env_values = true, default_value = "")]
     pub aws_secret_access_key: String,
-    /// The S3 bucket name
-    #[clap(env)]
-    pub s3_bucket: String,
     /// The S3 AWS region
     #[clap(env, default_value = "eu-west-1")]
     pub s3_aws_region: String,
