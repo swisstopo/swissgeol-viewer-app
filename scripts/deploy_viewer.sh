@@ -55,7 +55,7 @@ then
   deploy_api prod
   deploy_ui $PROD_BUCKET
   curl https://viewer.swissgeol.ch/versions.json
-  watch --interval=5 curl -s https://api.viewer.swissgeol.ch/api/health_check
+  watch --interval=5 curl -s https://api.swissgeol.ch/api/health_check
   exit 0
 fi
 
