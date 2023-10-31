@@ -17,12 +17,18 @@ import './ngm-point-edit';
 
 @customElement('ngm-geometry-edit')
 export class NgmGeometryEdit extends LitElementI18n {
-  @property({type: Object}) entity: Entity | undefined;
-  @query('.ngm-lower-limit-input') lowerLimitInput;
-  @query('.ngm-height-input') heightInput;
-  @state() selectedColor = '';
-  @state() selectedSymbol = '';
-  @state() name = '';
+  @property({type: Object})
+  accessor entity: Entity | undefined;
+  @query('.ngm-lower-limit-input')
+  accessor lowerLimitInput;
+  @query('.ngm-height-input')
+  accessor heightInput;
+  @state()
+  accessor selectedColor = '';
+  @state()
+  accessor selectedSymbol = '';
+  @state()
+  accessor name = '';
   private editingEntity: Entity | undefined;
   private viewer: Viewer | null | undefined;
   private minVolumeHeight = 1;

@@ -11,9 +11,12 @@ import type {Project, Topic, View} from './ngm-dashboard';
 
 @customElement('view-menu')
 export class ViewMenu extends LitElementI18n {
-    @state() userEmail: string | undefined;
-    @state() viewIndex: number | undefined;
-    @state() selectedProject: Topic | Project | undefined;
+    @state()
+    accessor userEmail: string | undefined;
+    @state()
+    accessor viewIndex: number | undefined;
+    @state()
+    accessor selectedProject: Topic | Project | undefined;
 
     constructor() {
         super();

@@ -8,8 +8,10 @@ import type {LayerTreeNode} from '../layertree';
 
 @customElement('ngm-catalog')
 export class Catalog extends LitElementI18n {
-  @property({type: Array}) layers: LayerTreeNode[] = [];
-  @state() userGroups: string[] = [];
+  @property({type: Array})
+  accessor layers: LayerTreeNode[] = [];
+  @state()
+  accessor userGroups: string[] = [];
 
   constructor() {
     super();

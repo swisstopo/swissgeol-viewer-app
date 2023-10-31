@@ -12,10 +12,14 @@ import type {Project, Topic, View} from './ngm-dashboard';
 
 @customElement('project-selector')
 export class ProjectSelector extends LitElementI18n {
-    @property({type: Boolean}) showProjectSelector = false;
-    @state() projects: Project[] | undefined;
-    @state() userEmail: string | undefined;
-    @query('.item.active.selected') selection: any;
+    @property({type: Boolean})
+    accessor showProjectSelector = false;
+    @state()
+    accessor projects: Project[] | undefined;
+    @state()
+    accessor userEmail: string | undefined;
+    @query('.item.active.selected')
+    accessor selection: any;
     private selectedProject: Topic | Project | undefined;
 
     constructor() {
@@ -92,7 +96,7 @@ export class ProjectSelector extends LitElementI18n {
                     <div class="default text">${i18next.t('select_project')}</div>
                     <div class="menu">
                         ${this.projects?.filter(p => [p.owner, ...p.members].includes(this.userEmail!)).map(project => html`
-                            <div class="item" 
+                            <div class="item"
                                  data-value="${project.id}"
                             >${project.title}</div>
                             `)}

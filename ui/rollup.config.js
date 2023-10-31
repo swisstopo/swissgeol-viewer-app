@@ -53,7 +53,8 @@ const config = {
       // https://babeljs.io/docs/en/options#targets
       targets: 'last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions, Edge 18',
       plugins: [
-        ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, legacy: false}]
+        ['@babel/plugin-transform-class-static-block'],
+        ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, version: "2023-05"}]
       ],
       presets: [
         '@babel/preset-typescript',

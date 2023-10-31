@@ -22,10 +22,14 @@ export type OutputFormat = 'pdf' | 'png' | 'svg';
 
 @customElement('ngm-gst-interaction')
 export class NgmGstInteraction extends LitElementI18n {
-  @property({type: Boolean}) hidden = true;
-  @state() gstExtent: KmlDataSource | undefined;
-  @state() depth = {};
-  @state() selectedId: string | undefined;
+  @property({type: Boolean})
+  accessor hidden = true;
+  @state()
+  accessor gstExtent: KmlDataSource | undefined;
+  @state()
+  accessor depth = {};
+  @state()
+  accessor selectedId: string | undefined;
   private viewer: Viewer | null = null;
   private minDepth_ = -6000;
   private maxDepth_ = 1000;

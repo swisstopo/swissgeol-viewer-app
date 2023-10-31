@@ -20,13 +20,20 @@ import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
-  @property({type: Object}) geometriesDataSource: CustomDataSource | undefined;
-  @property({type: Boolean}) hidden = true;
-  @state() slicer: Slicer | null = null;
-  @state() showBox = true;
-  @state() negateSlice = false;
-  @state() editingEnabled = false;
-  @state() lineInfo = DrawStore.lineInfo.value;
+  @property({type: Object})
+  accessor geometriesDataSource: CustomDataSource | undefined;
+  @property({type: Boolean})
+  accessor hidden = true;
+  @state()
+  accessor slicer: Slicer | null = null;
+  @state()
+  accessor showBox = true;
+  @state()
+  accessor negateSlice = false;
+  @state()
+  accessor editingEnabled = false;
+  @state()
+  accessor lineInfo = DrawStore.lineInfo.value;
   private sliceGeomId: string | undefined;
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
   private lineInfoSubscription: Subscription | undefined;

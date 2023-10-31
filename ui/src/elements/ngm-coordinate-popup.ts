@@ -9,10 +9,14 @@ import i18next from 'i18next';
 
 @customElement('ngm-coordinate-popup')
 export class NgmCoordinatePopup extends LitElementI18n {
-    @state() opened = false;
-    @state() coordinatesLv95: string[] = [];
-    @state() coordinatesWgs84: string[] = [];
-    @state() elevation = '';
+    @state()
+    accessor opened = false;
+    @state()
+    accessor coordinatesLv95: string[] = [];
+    @state()
+    accessor coordinatesWgs84: string[] = [];
+    @state()
+    accessor elevation = '';
     private eventHandler: ScreenSpaceEventHandler | undefined;
     private integerFormat = new Intl.NumberFormat('de-CH', {
         maximumFractionDigits: 0

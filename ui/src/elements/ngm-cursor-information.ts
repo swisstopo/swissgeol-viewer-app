@@ -9,10 +9,14 @@ import {formatCartographicAs2DLv95} from '../projection';
 
 @customElement('ngm-cursor-information')
 export class NgmCursorInformation extends LitElementI18n {
-  @property({type: Object}) viewer: Viewer | undefined;
-  @state() coordinates: string[] = [];
-  @state() showTerrainHeight = false;
-  @state() height: number | undefined;
+  @property({type: Object})
+  accessor viewer: Viewer | undefined;
+  @state()
+  accessor coordinates: string[] = [];
+  @state()
+  accessor showTerrainHeight = false;
+  @state()
+  accessor height: number | undefined;
   private eventHandler: ScreenSpaceEventHandler | undefined;
   private cameraMoving = false;
   private unlistenMoveStart: any;

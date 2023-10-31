@@ -12,10 +12,14 @@ import {classMap} from 'lit-html/directives/class-map.js';
 
 @customElement('ngm-layers-upload')
 export default class LayersUpload extends LitElementI18n {
-  @property({type: Object}) viewer!: Viewer;
-  @property({type: Object}) toastPlaceholder!: HTMLElement;
-  @state() loading = false;
-  @query('.ngm-upload-kml') uploadKmlInput!: HTMLInputElement;
+  @property({type: Object})
+  accessor viewer!: Viewer;
+  @property({type: Object})
+  accessor toastPlaceholder!: HTMLElement;
+  @state()
+  accessor loading = false;
+  @query('.ngm-upload-kml')
+  accessor uploadKmlInput!: HTMLInputElement;
 
   async uploadKml(file: File) {
     if (!file) {

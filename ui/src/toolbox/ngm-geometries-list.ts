@@ -10,15 +10,24 @@ import $ from '../jquery.js';
 
 @customElement('ngm-geometries-list')
 export default class NgmGeometriesList extends LitElementI18n {
-  @property({type: String}) selectedId = '';
-  @property({type: String}) title = i18next.t('tbx_my_geometries');
-  @property({type: Function}) geometryFilter: (geom: NgmGeometry) => boolean = (geom) => !geom.fromTopic;
-  @property({type: Function}) optionsTemplate: ((geom: NgmGeometry, active: boolean) => TemplateResult) | undefined;
-  @property({type: Array}) disabledTypes: string[] = [];
-  @property({type: Function}) disabledCallback: ((geom: NgmGeometry) => boolean) | undefined;
-  @state() geometries: NgmGeometry[] = [];
-  @state() editingEnabled = false;
-  @state() selectedFilter: GeometryTypes | undefined;
+  @property({type: String})
+  accessor selectedId = '';
+  @property({type: String})
+  accessor title = i18next.t('tbx_my_geometries');
+  @property({type: Object})
+  accessor geometryFilter: (geom: NgmGeometry) => boolean = (geom) => !geom.fromTopic;
+  @property({type: Object})
+  accessor optionsTemplate: ((geom: NgmGeometry, active: boolean) => TemplateResult) | undefined;
+  @property({type: Array})
+  accessor disabledTypes: string[] = [];
+  @property({type: Object})
+  accessor disabledCallback: ((geom: NgmGeometry) => boolean) | undefined;
+  @state()
+  accessor geometries: NgmGeometry[] = [];
+  @state()
+  accessor editingEnabled = false;
+  @state()
+  accessor selectedFilter: GeometryTypes | undefined;
   private scrollDown = false;
 
   constructor() {

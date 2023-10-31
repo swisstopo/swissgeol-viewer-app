@@ -9,8 +9,10 @@ import {Subscription} from 'rxjs';
 
 @customElement('ngm-measure')
 export class NgmMeasure extends LitElementI18n {
-    @state() active = false;
-    @state() lineInfo = DrawStore.lineInfo.value;
+    @state()
+    accessor active = false;
+    @state()
+    accessor lineInfo = DrawStore.lineInfo.value;
     private lineInfoSubscription: Subscription | undefined;
 
     connectedCallback() {

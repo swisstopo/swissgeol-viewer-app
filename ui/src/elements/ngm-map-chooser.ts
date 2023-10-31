@@ -5,10 +5,14 @@ import type {BaseLayerConfig} from '../viewer';
 
 @customElement('ngm-map-chooser')
 export class NgmMapChooser extends LitElement {
-  @property({type: Array}) choices: BaseLayerConfig[] = [];
-  @property({type: Object}) active: BaseLayerConfig | undefined = undefined;
-  @property({type: Boolean}) initiallyOpened = true;
-  @state() open = true;
+  @property({type: Array})
+  accessor choices: BaseLayerConfig[] = [];
+  @property({type: Object})
+  accessor active: BaseLayerConfig | undefined = undefined;
+  @property({type: Boolean})
+  accessor initiallyOpened = true;
+  @state()
+  accessor open = true;
 
   protected firstUpdated() {
     this.open = this.initiallyOpened;

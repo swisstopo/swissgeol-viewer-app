@@ -8,8 +8,10 @@ import type {Project, Topic} from './ngm-dashboard';
 
 @customElement('ngm-project-popup')
 export class NgmProjectPopup extends LitElementI18n {
-  @state() selectedTopic: Topic | Project | undefined;
-  @state() viewIndex: number | undefined;
+  @state()
+  accessor selectedTopic: Topic | Project | undefined;
+  @state()
+  accessor viewIndex: number | undefined;
 
   constructor() {
     super();

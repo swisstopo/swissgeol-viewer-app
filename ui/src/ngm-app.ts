@@ -81,23 +81,40 @@ const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
  */
 @customElement('ngm-app')
 export class NgmApp extends LitElementI18n {
-  @state() mapChooser: MapChooser | undefined;
-  @state() slicer_: Slicer | undefined;
-  @state() showMinimap = false;
-  @state() showCamConfig = false;
-  @state() showMobileSearch = false;
-  @state() loading = true;
-  @state() determinateLoading = false;
-  @state() queueLength = 0;
-  @state() legendConfigs: Config[] = [];
-  @state() showTrackingConsent = false;
-  @state() showProjectPopup = false;
-  @state() mobileView = false;
-  @state() showAxisOnMap = false;
-  @state() showProjectSelector = false;
-  @query('ngm-cam-configuration') camConfigElement;
-  @query('ngm-voxel-filter') voxelFilterElement;
-  @query('ngm-voxel-simple-filter') voxelSimpleFilterElement;
+  @state()
+  accessor mapChooser: MapChooser | undefined;
+  @state()
+  accessor slicer_: Slicer | undefined;
+  @state()
+  accessor showMinimap = false;
+  @state()
+  accessor showCamConfig = false;
+  @state()
+  accessor showMobileSearch = false;
+  @state()
+  accessor loading = true;
+  @state()
+  accessor determinateLoading = false;
+  @state()
+  accessor queueLength = 0;
+  @state()
+  accessor legendConfigs: Config[] = [];
+  @state()
+  accessor showTrackingConsent = false;
+  @state()
+  accessor showProjectPopup = false;
+  @state()
+  accessor mobileView = false;
+  @state()
+  accessor showAxisOnMap = false;
+  @state()
+  accessor showProjectSelector = false;
+  @query('ngm-cam-configuration')
+  accessor camConfigElement;
+  @query('ngm-voxel-filter')
+  accessor voxelFilterElement;
+  @query('ngm-voxel-simple-filter')
+  accessor voxelSimpleFilterElement;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
   private showCesiumToolbar = getCesiumToolbarParam();

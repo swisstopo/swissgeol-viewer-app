@@ -46,19 +46,32 @@ import type {Config} from '../layers/ngm-layers-item.js';
 
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
-  @property({type: Object}) queryManager: QueryManager | null = null;
-  @property({type: Boolean}) mobileView = false;
-  @property({type: Boolean}) displayUndergroundHint = true;
-  @state() catalogLayers: any;
-  @state() activeLayers: any;
-  @state() activePanel: string | null = null;
-  @state() showHeader = false;
-  @state() globeQueueLength_ = 0;
-  @state() mobileShowAll = false;
-  @state() hideDataDisplayed = false;
-  @state() layerOrderChangeActive = false;
-  @query('.ngm-side-bar-panel > .ngm-toast-placeholder') toastPlaceholder;
-  @query('ngm-catalog') catalogElement;
+  @property({type: Object})
+  accessor queryManager: QueryManager | null = null;
+  @property({type: Boolean})
+  accessor mobileView = false;
+  @property({type: Boolean})
+  accessor displayUndergroundHint = true;
+  @state()
+  accessor catalogLayers: any;
+  @state()
+  accessor activeLayers: any;
+  @state()
+  accessor activePanel: string | null = null;
+  @state()
+  accessor showHeader = false;
+  @state()
+  accessor globeQueueLength_ = 0;
+  @state()
+  accessor mobileShowAll = false;
+  @state()
+  accessor hideDataDisplayed = false;
+  @state()
+  accessor layerOrderChangeActive = false;
+  @query('.ngm-side-bar-panel > .ngm-toast-placeholder')
+  accessor toastPlaceholder;
+  @query('ngm-catalog')
+  accessor catalogElement;
   private viewer: Viewer | null = null;
   private layerActions: any;
   private zoomedToPosition = false;

@@ -9,25 +9,44 @@ export class CesiumToolbar extends LitElement {
   private viewer: Viewer | undefined | null;
   private frameRateMonitor: FrameRateMonitor | undefined;
   private scaleListenerRemove: Event.RemoveCallback | undefined;
-  @state() show = true;
-  @state() ambientOcclusionOnly = false;
-  @state() intensity = 3.0;
-  @state() bias = 0.1;
-  @state() lengthCap = 0.03;
-  @state() stepSize = 1.0;
-  @state() blurStepSize = 0.86;
-  @state() fogX = 10000;
-  @state() fogY = 0;
-  @state() fogZ = 150000;
-  @state() fogIntensity = 0.3;
-  @state() fogColor = '#000';
-  @state() undergroundColor = '#000';
-  @state() backgroundColor = '#000';
-  @state() autoScale = false;
-  @state() currentScale = 1;
-  @state() scaleDownFps = 20;
-  @state() scaleUpFps = 40;
-  @state() showFramesPerSecond = false;
+  @state()
+  accessor show = true;
+  @state()
+  accessor ambientOcclusionOnly = false;
+  @state()
+  accessor intensity = 3.0;
+  @state()
+  accessor bias = 0.1;
+  @state()
+  accessor lengthCap = 0.03;
+  @state()
+  accessor stepSize = 1.0;
+  @state()
+  accessor blurStepSize = 0.86;
+  @state()
+  accessor fogX = 10000;
+  @state()
+  accessor fogY = 0;
+  @state()
+  accessor fogZ = 150000;
+  @state()
+  accessor fogIntensity = 0.3;
+  @state()
+  accessor fogColor = '#000';
+  @state()
+  accessor undergroundColor = '#000';
+  @state()
+  accessor backgroundColor = '#000';
+  @state()
+  accessor autoScale = false;
+  @state()
+  accessor currentScale = 1;
+  @state()
+  accessor scaleDownFps = 20;
+  @state()
+  accessor scaleUpFps = 40;
+  @state()
+  accessor showFramesPerSecond = false;
 
   constructor() {
     super();
@@ -192,12 +211,12 @@ export class CesiumToolbar extends LitElement {
           <span>Current scale: ${this.currentScale}</span>
       </div>
       <div .hidden="${!this.autoScale}">
-          Scale down if FPS less then 
+          Scale down if FPS less then
           <input type="number" min="0" max="500" step="1" .value=${this.scaleDownFps}
                                               @input=${evt => this.scaleDownFps = Number(evt.target.value)}>
       </div>
       <div .hidden="${!this.autoScale}">
-          Scale up if FPS more then 
+          Scale up if FPS more then
           <input type="number" min="0" max="500" step="1" .value=${this.scaleUpFps}
                                             @input=${evt => this.scaleUpFps = Number(evt.target.value)}>
       </div>
@@ -207,7 +226,7 @@ export class CesiumToolbar extends LitElement {
                @input=${evt => {
                    this.viewer!.resolutionScale = Number(evt.target.value);
                    this.currentScale = this.viewer!.resolutionScale;
-               }}>     
+               }}>
       </div>`;
   }
 }

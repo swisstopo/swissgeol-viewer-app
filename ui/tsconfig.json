@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ES2020",
     "module": "esnext",
-    "lib": ["es2017", "dom", "dom.iterable"],
+    "lib": ["es2022", "dom", "dom.iterable"],
     "declaration": true,
     "outDir": "./types",
     "rootDir": "./src",
@@ -16,7 +16,6 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
-    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": false
   },
