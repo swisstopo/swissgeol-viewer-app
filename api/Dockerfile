@@ -17,11 +17,11 @@ ENV AR_x86_64_unknown_linux_musl=${mac:+"llvm-ar"}
 ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS=${mac:+"-Clink-self-contained=yes -Clinker=rust-lld"}
 ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUNNER=${mac:+"qemu-x86_64 -L /usr/x86-64-linux-gnu"}
 # set back default values if not mac
-ENV RUSTFLAGS="${RUSTFLAGS:-default_rustflags}"
-ENV CC_x86_64_unknown_linux_musl="${CC_x86_64_unknown_linux_musl:-default_cc}"
-ENV AR_x86_64_unknown_linux_musl="${AR_x86_64_unknown_linux_musl:-default_ar}"
-ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="${CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS:-default_target_rustflags}"
-ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUNNER="${CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUNNER:-default_target_runner}"
+ENV RUSTFLAGS="${RUSTFLAGS:+default_rustflags}"
+ENV CC_x86_64_unknown_linux_musl="${default_cc:+default_cc}"
+ENV AR_x86_64_unknown_linux_musl="${default_ar:+default_ar}"
+ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="${default_target_rustflags:+default_target_rustflags}"
+ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUNNER="${default_target_runner:+default_target_runner}"
 # additional libs for mac
 ENV MAC_INSTALL=${mac:+"build-essential gcc-x86-64-linux-gnu clang llvm"}
 
