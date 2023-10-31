@@ -2,17 +2,7 @@
 # are built using a different and incompatible mode (default vs release)
 
 FROM rust:1.70 AS builder
-ARG mac
-
-ENV RUSTFLAGS=${mac:+"-C linker=x86_64-linux-gnu-gcc"}
-ENV CC_x86_64_unknown_linux_musl=${mac:+"clang"}
-ENV AR_x86_64_unknown_linux_musl=${mac:+"llvm-ar"}
-ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS=${mac:+"-Clink-self-contained=yes -Clinker=rust-lld"}
-ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUNNER=${mac:+"qemu-x86_64 -L /usr/x86-64-linux-gnu"}
-ENV MAC_INSTALL=${mac:+"build-essential gcc-x86-64-linux-gnu clang llvm"}
-
-RUN apt-get update && apt-get install -y musl-tools musl-dev $MAC_INSTALL
-
+RUN apt-get update && apt-get install -y musl-tools musl-dev
 
 RUN rustup target add x86_64-unknown-linux-musl
 RUN rustup component add clippy rustfmt
