@@ -70,7 +70,7 @@ export VERSION="" # the version (like 2022.02.0)
 git tag $VERSION -m $VERSION
 git push origin $VERSION
 scripts/release_ui.sh
-scripts/release_api.sh
+scripts/release_api.sh # (on macos: scripts/release_api.sh mac)
 ```
 
 For parallel ui and api releases:
