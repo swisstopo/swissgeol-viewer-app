@@ -2,7 +2,11 @@
 # are built using a different and incompatible mode (default vs release)
 
 FROM rust:1.70 AS builder
-RUN apt-get update && apt-get install -y musl-tools musl-dev
+ARG mac
+
+ENV MAC_INSTALL=${mac:+"build-essential gcc-x86-64-linux-gnu clang llvm"}
+RUN apt-get update && apt-get install -y musl-tools musl-dev $MAC_INSTALL
+
 
 RUN rustup target add x86_64-unknown-linux-musl
 RUN rustup component add clippy rustfmt
@@ -18,7 +22,17 @@ RUN mkdir src; echo "fn main() {}" > src/main.rs
 RUN cargo fetch --target x86_64-unknown-linux-musl
 
 ENV SQLX_OFFLINE=true
-RUN cargo build --offline --target x86_64-unknown-linux-musl --release
+RUN if [ "$mac" = "true" ]; then \
+        RUSTFLAGS="-C linker=x86_64-linux-gnu-gcc" \
+        CC_x86_64_unknown_linux_musl="clang" \
+        AR_x86_64_unknown_linux_musl="llvm-ar" \
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="-Clink-self-contained=yes -Clinker=rust-lld" \
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUNNER="qemu-x86_64 -L /usr/x86-64-linux-gnu" \
+        cargo build --offline --target x86_64-unknown-linux-musl --release; \
+    else \
+        cargo build --offline --target x86_64-unknown-linux-musl --release; \
+    fi
+
 
 # Then we copy every files, and detect linting / formating errors
 # This is only detection, fixing the errors should be done outside docker
