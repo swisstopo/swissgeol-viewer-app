@@ -228,8 +228,8 @@ export class CesiumDraw extends EventTarget {
     this.removeSketches();
   }
 
-  createSketchPoint_(position, options: { edit?: boolean, virtual?: boolean, positionIndex?: number } = {}) {
-    const entity: any = {
+  createSketchPoint_(position, options: { edit?: boolean, virtual?: boolean, positionIndex?: number, label?: boolean } = {}) {
+    const entity: Entity.ConstructorOptions = {
       position: position,
       point: {
         color: options.virtual ? Color.GREY : Color.WHITE,
@@ -241,8 +241,9 @@ export class CesiumDraw extends EventTarget {
       properties: {}
     };
     if (options.edit) {
-      entity.point.disableDepthTestDistance = Number.POSITIVE_INFINITY;
-    } else {
+      entity.point!.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+    }
+    if (options.label) {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
     const pointEntity = this.drawingDataSource.entities.add(entity);
@@ -343,11 +344,14 @@ export class CesiumDraw extends EventTarget {
 
   onLeftClick(event) {
     this.renderSceneIfTranslucent();
-    const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.position));
+    if (!event?.position) return;
+    console.log(event);
+    let position = this.viewer_.scene.pickPosition(event.position);
     if (position) {
+       position = Cartesian3.clone(position);
       if (!this.sketchPoint_) {
         this.dispatchEvent(new CustomEvent('drawstart'));
-        this.sketchPoint_ = this.createSketchPoint_(position);
+        this.sketchPoint_ = this.createSketchPoint_(position, {label: true});
         this.activePoint_ = position;
 
         this.createSketchLine_(this.dynamicSketLinePositions());
@@ -367,6 +371,9 @@ export class CesiumDraw extends EventTarget {
       );
       if ((this.type === 'rectangle' && this.activePoints_.length === 3) || forceFinish) {
         this.finishDrawing();
+      } else if (this.type === 'line') {
+        const prevPoint = Cartesian3.clone(this.activePoints_[this.activePoints_.length - 1]);
+        this.sketchPoints_.push(this.createSketchPoint_(prevPoint));
       }
     }
   }
@@ -420,12 +427,15 @@ export class CesiumDraw extends EventTarget {
 
   onMouseMove_(event) {
     this.renderSceneIfTranslucent();
-    const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
+    if (!event?.endPosition) return;
+    console.log(event);
+    let position = this.viewer_.scene.pickPosition(event.endPosition);
     if (!position) return;
+    position = Cartesian3.clone(position);
     if (this.entityForEdit && !!this.leftPressedPixel_) {
       if (this.moveEntity) {
         if (this.type === 'point') {
-          const cartographicPosition = Cartographic.fromCartesian(this.entityForEdit.position!.getValue(this.julianDate));
+          const cartographicPosition = Cartographic.fromCartesian(this.entityForEdit.position!.getValue(this.julianDate)!);
           this.activePoints_[0] = position;
           updateHeightForCartesianPositions(this.activePoints_, cartographicPosition.height, undefined, true);
         } else {
@@ -569,7 +579,7 @@ export class CesiumDraw extends EventTarget {
     // Add new line vertex
     // Create SPs, reuse the pressed virtual SP for first segment
     const pressedVirtualSP = this.sketchPoint_!;
-    const pressedPosition = Cartesian3.clone(pressedVirtualSP.position!.getValue(this.julianDate));
+    const pressedPosition = Cartesian3.clone(pressedVirtualSP.position!.getValue(this.julianDate)!);
     const pressedIdx = pressedVirtualSP.properties!.index;
     const realSP0 = this.sketchPoints_[pressedIdx * 2];
     const realSP2 = this.sketchPoints_[((pressedIdx + 1) * 2) % (this.sketchPoints_.length)];
