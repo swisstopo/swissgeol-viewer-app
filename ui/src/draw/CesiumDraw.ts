@@ -38,6 +38,8 @@ export class CesiumDraw extends EventTarget {
   private activeDistances_: number[] = [];
   private leftPressedPixel_: Cartesian2 | undefined;
   private sketchPoints_: Entity[] = [];
+  private isDoubleClick = false;
+  private singleClickTimer;
   type: GeometryTypes;
   julianDate = new JulianDate();
   drawingDataSource = new CustomDataSource('drawing');
@@ -345,10 +347,9 @@ export class CesiumDraw extends EventTarget {
   onLeftClick(event) {
     this.renderSceneIfTranslucent();
     if (!event?.position) return;
-    console.log(event);
-    let position = this.viewer_.scene.pickPosition(event.position);
-    if (position) {
-       position = Cartesian3.clone(position);
+    const pickedPosition = this.viewer_.scene.pickPosition(event.position);
+    if (pickedPosition) {
+      const position = Cartesian3.clone(pickedPosition);
       if (!this.sketchPoint_) {
         this.dispatchEvent(new CustomEvent('drawstart'));
         this.sketchPoint_ = this.createSketchPoint_(position, {label: true});
@@ -372,8 +373,13 @@ export class CesiumDraw extends EventTarget {
       if ((this.type === 'rectangle' && this.activePoints_.length === 3) || forceFinish) {
         this.finishDrawing();
       } else if (this.type === 'line') {
-        const prevPoint = Cartesian3.clone(this.activePoints_[this.activePoints_.length - 1]);
-        this.sketchPoints_.push(this.createSketchPoint_(prevPoint));
+        if (!this.isDoubleClick) {
+          this.singleClickTimer = setTimeout(() => {
+            this.isDoubleClick = false;
+            const prevPoint = Cartesian3.clone(this.activePoints_[this.activePoints_.length - 1]);
+            this.sketchPoints_.push(this.createSketchPoint_(prevPoint));
+          }, 250);
+        }
       }
     }
   }
@@ -428,10 +434,9 @@ export class CesiumDraw extends EventTarget {
   onMouseMove_(event) {
     this.renderSceneIfTranslucent();
     if (!event?.endPosition) return;
-    console.log(event);
-    let position = this.viewer_.scene.pickPosition(event.endPosition);
-    if (!position) return;
-    position = Cartesian3.clone(position);
+    const pickedPosition = this.viewer_.scene.pickPosition(event.endPosition);
+    if (!pickedPosition) return;
+    const position = Cartesian3.clone(pickedPosition);
     if (this.entityForEdit && !!this.leftPressedPixel_) {
       if (this.moveEntity) {
         if (this.type === 'point') {
@@ -522,6 +527,8 @@ export class CesiumDraw extends EventTarget {
   }
 
   onDoubleClick_() {
+    this.isDoubleClick = true;
+    clearTimeout(this.singleClickTimer);
     if (!this.activeDistances_.includes(this.activeDistance_)) {
       this.activeDistances_.push(this.activeDistance_);
     }
