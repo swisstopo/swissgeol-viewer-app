@@ -237,7 +237,7 @@ export class CesiumDraw extends EventTarget {
         color: options.virtual ? Color.GREY : Color.WHITE,
         outlineWidth: 1,
         outlineColor: Color.BLACK,
-        pixelSize: options.edit ? 9 : 5,
+        pixelSize: options.edit || this.measure ? 9 : 5,
         heightReference: this.measure ? HeightReference.NONE : HeightReference.CLAMP_TO_GROUND,
       },
       properties: {}

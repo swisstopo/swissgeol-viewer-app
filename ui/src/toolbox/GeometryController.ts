@@ -5,10 +5,10 @@ import DrawStore from '../store/draw';
 import {showBannerError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
 import type {CesiumDraw} from '../draw/CesiumDraw';
-import type {Cartesian2, Event, exportKmlResultKml, PerspectiveFrustum, Viewer} from 'cesium';
-import {Math as CMath} from 'cesium';
+import type {Cartesian2, Event, exportKmlResultKml, Viewer} from 'cesium';
+
 import {
-  CallbackProperty,
+
   Cartesian3,
   Cartographic,
   Color,
@@ -529,25 +529,14 @@ export class GeometryController {
       }
     });
     positions.forEach((pos, indx) => {
-      const desiredPixelSize = 300;
       const entity: Entity.ConstructorOptions = {
         position: pos,
-        // point: {
-        //   color: Color.WHITE,
-        //   outlineWidth: 1,
-        //   outlineColor: Color.BLACK,
-        //   pixelSize: 5,
-        //   heightReference: HeightReference.NONE,
-        // }
-        ellipsoid: {
-          radii: new CallbackProperty(() => {
-            const distance = Cartesian3.distance(this.viewer!.scene.camera.positionWC, pos);
-            const canvasHeight = this.viewer!.scene.canvas.height;
-            const metersPerPixel = distance * 2.0 * Math.tan(CMath.toRadians((<PerspectiveFrustum> this.viewer!.scene.camera.frustum).fovy * 0.5)) / canvasHeight;
-            const sizeInMeters = desiredPixelSize * metersPerPixel;
-            return new Cartesian3(sizeInMeters, sizeInMeters, sizeInMeters);
-          }, false),
-          material: Color.WHITE
+        point: {
+          color: Color.WHITE,
+          outlineWidth: 1,
+          outlineColor: Color.BLACK,
+          pixelSize: 9,
+          heightReference: HeightReference.NONE,
         }
       };
       if (indx === positions.length - 1) {
