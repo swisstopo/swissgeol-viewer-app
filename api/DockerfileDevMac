@@ -1,0 +1,19 @@
+## Use a base image that supports Rust and cross-compilation for aarch64
+FROM messense/rust-musl-cross:x86_64-musl as builder
+
+RUN rustup target add x86_64-unknown-linux-musl
+RUN apt update && apt install -y musl-tools musl-dev postgresql-client
+RUN curl -L https://github.com/watchexec/cargo-watch/releases/download/v8.1.2/cargo-watch-v8.1.2-x86_64-unknown-linux-gnu.tar.xz -o cargo-watch.tar.xz
+RUN tar xvf cargo-watch.tar.xz
+RUN cp cargo-watch-v8.1.2-x86_64-unknown-linux-gnu/cargo-watch /usr/bin
+
+WORKDIR /app
+#
+## First we handle fetching and building our dependencies
+## We need a stub entry point for that
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src; echo "fn main() {}" > src/main.rs
+RUN cargo build --target x86_64-unknown-linux-musl
+
+## Now we copy all files, building will be handled on run
+COPY ./ .

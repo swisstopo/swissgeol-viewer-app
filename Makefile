@@ -1,6 +1,7 @@
 export DOCKER_TAG ?= latest
 export DOCKER_BASE = camptocamp/swissgeol
 GIT_HASH := $(shell git rev-parse HEAD)
+UNAME_S := $(shell uname -s)
 
 .PHONY: run
 run: build_local_api ui/node_modules/.timestamp
@@ -12,7 +13,11 @@ acceptance: build_local_api ui/node_modules/.timestamp
 
 .PHONY: build_local_api
 build_local_api:
+ifeq ($(UNAME_S),Darwin)
+	docker build -f api/DockerfileDevMac -t $(DOCKER_BASE)_local_api:latest --build-arg "GIT_HASH=$(GIT_HASH)" api --pull --platform=linux/amd64
+else
 	docker build -f api/DockerfileDev -t $(DOCKER_BASE)_local_api:latest --build-arg "GIT_HASH=$(GIT_HASH)" api --pull
+endif
 
 .PHONY: build_api
 build_api:
