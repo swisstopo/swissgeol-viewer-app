@@ -38,6 +38,8 @@ export class CesiumDraw extends EventTarget {
   private activeDistances_: number[] = [];
   private leftPressedPixel_: Cartesian2 | undefined;
   private sketchPoints_: Entity[] = [];
+  private isDoubleClick = false;
+  private singleClickTimer;
   type: GeometryTypes;
   julianDate = new JulianDate();
   drawingDataSource = new CustomDataSource('drawing');
@@ -228,21 +230,22 @@ export class CesiumDraw extends EventTarget {
     this.removeSketches();
   }
 
-  createSketchPoint_(position, options: { edit?: boolean, virtual?: boolean, positionIndex?: number } = {}) {
-    const entity: any = {
+  createSketchPoint_(position, options: { edit?: boolean, virtual?: boolean, positionIndex?: number, label?: boolean } = {}) {
+    const entity: Entity.ConstructorOptions = {
       position: position,
       point: {
         color: options.virtual ? Color.GREY : Color.WHITE,
         outlineWidth: 1,
         outlineColor: Color.BLACK,
-        pixelSize: options.edit ? 9 : 5,
+        pixelSize: options.edit || this.measure ? 9 : 5,
         heightReference: this.measure ? HeightReference.NONE : HeightReference.CLAMP_TO_GROUND,
       },
       properties: {}
     };
     if (options.edit) {
-      entity.point.disableDepthTestDistance = Number.POSITIVE_INFINITY;
-    } else {
+      entity.point!.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+    }
+    if (options.label) {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
     const pointEntity = this.drawingDataSource.entities.add(entity);
@@ -343,11 +346,13 @@ export class CesiumDraw extends EventTarget {
 
   onLeftClick(event) {
     this.renderSceneIfTranslucent();
-    const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.position));
-    if (position) {
+    if (!event?.position) return;
+    const pickedPosition = this.viewer_.scene.pickPosition(event.position);
+    if (pickedPosition) {
+      const position = Cartesian3.clone(pickedPosition);
       if (!this.sketchPoint_) {
         this.dispatchEvent(new CustomEvent('drawstart'));
-        this.sketchPoint_ = this.createSketchPoint_(position);
+        this.sketchPoint_ = this.createSketchPoint_(position, {label: true});
         this.activePoint_ = position;
 
         this.createSketchLine_(this.dynamicSketLinePositions());
@@ -367,6 +372,14 @@ export class CesiumDraw extends EventTarget {
       );
       if ((this.type === 'rectangle' && this.activePoints_.length === 3) || forceFinish) {
         this.finishDrawing();
+      } else if (this.type === 'line') {
+        if (!this.isDoubleClick) {
+          this.singleClickTimer = setTimeout(() => {
+            this.isDoubleClick = false;
+            const prevPoint = Cartesian3.clone(this.activePoints_[this.activePoints_.length - 1]);
+            this.sketchPoints_.push(this.createSketchPoint_(prevPoint));
+          }, 250);
+        }
       }
     }
   }
@@ -420,12 +433,14 @@ export class CesiumDraw extends EventTarget {
 
   onMouseMove_(event) {
     this.renderSceneIfTranslucent();
-    const position = Cartesian3.clone(this.viewer_.scene.pickPosition(event.endPosition));
-    if (!position) return;
+    if (!event?.endPosition) return;
+    const pickedPosition = this.viewer_.scene.pickPosition(event.endPosition);
+    if (!pickedPosition) return;
+    const position = Cartesian3.clone(pickedPosition);
     if (this.entityForEdit && !!this.leftPressedPixel_) {
       if (this.moveEntity) {
         if (this.type === 'point') {
-          const cartographicPosition = Cartographic.fromCartesian(this.entityForEdit.position!.getValue(this.julianDate));
+          const cartographicPosition = Cartographic.fromCartesian(this.entityForEdit.position!.getValue(this.julianDate)!);
           this.activePoints_[0] = position;
           updateHeightForCartesianPositions(this.activePoints_, cartographicPosition.height, undefined, true);
         } else {
@@ -512,6 +527,8 @@ export class CesiumDraw extends EventTarget {
   }
 
   onDoubleClick_() {
+    this.isDoubleClick = true;
+    clearTimeout(this.singleClickTimer);
     if (!this.activeDistances_.includes(this.activeDistance_)) {
       this.activeDistances_.push(this.activeDistance_);
     }
@@ -569,7 +586,7 @@ export class CesiumDraw extends EventTarget {
     // Add new line vertex
     // Create SPs, reuse the pressed virtual SP for first segment
     const pressedVirtualSP = this.sketchPoint_!;
-    const pressedPosition = Cartesian3.clone(pressedVirtualSP.position!.getValue(this.julianDate));
+    const pressedPosition = Cartesian3.clone(pressedVirtualSP.position!.getValue(this.julianDate)!);
     const pressedIdx = pressedVirtualSP.properties!.index;
     const realSP0 = this.sketchPoints_[pressedIdx * 2];
     const realSP2 = this.sketchPoints_[((pressedIdx + 1) * 2) % (this.sketchPoints_.length)];

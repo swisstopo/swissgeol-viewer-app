@@ -6,7 +6,9 @@ import {showBannerError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
 import type {CesiumDraw} from '../draw/CesiumDraw';
 import type {Cartesian2, Event, exportKmlResultKml, Viewer} from 'cesium';
+
 import {
+
   Cartesian3,
   Cartographic,
   Color,
@@ -526,16 +528,21 @@ export class GeometryController {
         material: DEFAULT_AOI_COLOR.withAlpha(GEOMETRY_LINE_ALPHA),
       }
     });
-    this.measureDataSource.entities.add({
-      position: positions[positions.length - 1],
-      point: {
-        color: Color.WHITE,
-        outlineWidth: 1,
-        outlineColor: Color.BLACK,
-        pixelSize: 5,
-        heightReference: HeightReference.NONE,
-      },
-      label: getDimensionLabel('line', distances)
+    positions.forEach((pos, indx) => {
+      const entity: Entity.ConstructorOptions = {
+        position: pos,
+        point: {
+          color: Color.WHITE,
+          outlineWidth: 1,
+          outlineColor: Color.BLACK,
+          pixelSize: 9,
+          heightReference: HeightReference.NONE,
+        }
+      };
+      if (indx === positions.length - 1) {
+        entity.label = getDimensionLabel('line', distances);
+      }
+      this.measureDataSource.entities.add(entity);
     });
   }
 
