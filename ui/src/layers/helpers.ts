@@ -91,6 +91,7 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, 
     resource = await IonResource.fromAssetId(config.assetId!, {
       accessToken: config.ionToken,
     });
+    console.log('resource', resource);
   }
 
   const tileset = await Cesium3DTileset.fromUrl(resource, {
@@ -98,6 +99,7 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, 
     backFaceCulling: false,
     maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
   });
+  console.log('resource', resource);
 
   if (config.style) {
     if (config.layer === 'ch.swisstopo.swissnames3d.3d') { // for performance testing
