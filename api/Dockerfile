@@ -1,7 +1,7 @@
 # local dev and dev/int/prod images are separate because they
 # are built using a different and incompatible mode (default vs release)
 
-FROM rust:1.70 AS builder
+FROM rust:1.73 AS builder
 ARG mac
 
 ENV MAC_INSTALL=${mac:+"build-essential gcc-x86-64-linux-gnu clang llvm"}
