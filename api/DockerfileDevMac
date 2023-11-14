@@ -1,8 +1,12 @@
-## Use a base image that supports Rust and cross-compilation for aarch64
+## Use a base image that supports Rust and cross-compilation for aarch64 (less configuration then default image)
 FROM messense/rust-musl-cross:x86_64-musl as builder
 
 RUN rustup target add x86_64-unknown-linux-musl
-RUN apt update && apt install -y musl-tools musl-dev postgresql-client
+RUN apt update && apt install -y gnupg2 wget lsb-release
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+RUN apt update && apt install -y musl-tools musl-dev postgresql-client-13
 RUN curl -L https://github.com/watchexec/cargo-watch/releases/download/v8.1.2/cargo-watch-v8.1.2-x86_64-unknown-linux-gnu.tar.xz -o cargo-watch.tar.xz
 RUN tar xvf cargo-watch.tar.xz
 RUN cp cargo-watch-v8.1.2-x86_64-unknown-linux-gnu/cargo-watch /usr/bin
