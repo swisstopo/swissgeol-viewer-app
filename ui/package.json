@@ -18,8 +18,7 @@
     "test": "npm run ut && npm run check",
     "cypress:open": "cypress open",
     "cypress:run": "./scripts/cypress_run",
-    "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
-    "postinstall": "cd ./node_modules/cesium && npm install --ignore-scripts && npm run release && cd ./node_modules/@cesium/engine && npm i --ignore-scripts && npm run build"
+    "test:e2e": "start-server-and-test start http-get://localhost:8000 cypress:run"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.449.0",
@@ -30,8 +29,8 @@
     "@geoblocks/cesium-view-cube": "0.1.1",
     "@geoblocks/ga-search": "0.0.22",
     "@sentry/browser": "7.80.0",
-    "cesium": "https://api.github.com/repos/cesiumgs/cesium/tarball/tileset-exaggerate",
-    "@cesium/engine": "https://github.com/CesiumGS/cesium/tree/tileset-exaggerate/packages/engine",
+    "@cesium/engine": "file:../engine.tar.gz",
+    "cesium": "file:../cesium.tar.gz",
     "d3-array": "3.2.4",
     "d3-axis": "3.0.0",
     "d3-scale": "4.0.2",
