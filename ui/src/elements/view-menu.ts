@@ -7,7 +7,7 @@ import AuthStore from '../store/auth';
 import DashboardStore from '../store/dashboard';
 import $ from '../jquery';
 
-import type {Project, Topic, View} from './ngm-dashboard';
+import type {Project, Topic, View} from './dashboard/ngm-dashboard';
 
 @customElement('view-menu')
 export class ViewMenu extends LitElementI18n {

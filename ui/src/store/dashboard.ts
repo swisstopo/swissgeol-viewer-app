@@ -1,5 +1,5 @@
 import {BehaviorSubject, Subject} from 'rxjs';
-import type {Project, Topic} from '../elements/ngm-dashboard';
+import type {Project, Topic} from '../elements/dashboard/ngm-dashboard';
 
 export type TopicParam = { topicId: string, viewId?: string | null }
 

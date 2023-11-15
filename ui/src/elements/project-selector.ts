@@ -8,7 +8,7 @@ import DashboardStore from '../store/dashboard';
 import AuthStore from '../store/auth';
 import $ from '../jquery';
 
-import type {Project, Topic, View} from './ngm-dashboard';
+import type {Project, Topic, View} from './dashboard/ngm-dashboard';
 
 @customElement('project-selector')
 export class ProjectSelector extends LitElementI18n {

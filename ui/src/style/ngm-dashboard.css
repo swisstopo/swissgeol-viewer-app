@@ -60,6 +60,25 @@ hide-overflow.ngm-projects-list {
   margin: 8px;
 }
 
+.ngm-proj-preview.ngm-proj-create {
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background-color: transparent;
+  box-shadow: none;
+  border: 2px dashed #DFE2E6;
+  font: normal normal normal 12px/15px Inter;
+  letter-spacing: 0;
+  color: #0B7285;
+  cursor: pointer;
+}
+
+.ngm-proj-preview.ngm-proj-create .ngm-zoom-p-icon {
+  background-color: #357183;
+  width: 14px;
+  height: 14px;
+}
+
 .ngm-proj-preview-img {
   width: 240px;
   height: 132px;

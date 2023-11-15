@@ -1,7 +1,7 @@
 import Auth from './auth';
 import AuthStore from './store/auth';
 import {API_BY_PAGE_HOST} from './constants';
-import type {CreateProject, Project} from './elements/ngm-dashboard';
+import type {CreateProject, Project} from './elements/dashboard/ngm-dashboard';
 import {Subject} from 'rxjs';
 
 

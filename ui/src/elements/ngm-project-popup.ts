@@ -4,7 +4,7 @@ import {html} from 'lit';
 import {dragArea} from './helperElements';
 import draggable from './draggable';
 import DashboardStore from '../store/dashboard';
-import type {Project, Topic} from './ngm-dashboard';
+import type {Project, Topic} from './dashboard/ngm-dashboard';
 
 @customElement('ngm-project-popup')
 export class NgmProjectPopup extends LitElementI18n {
