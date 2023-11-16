@@ -264,3 +264,7 @@ export function removeTopic() {
   params.delete(VIEW_PARAM);
   setURLSearchParams(params);
 }
+
+export function getPermalink() {
+  return window.location.search;
+}

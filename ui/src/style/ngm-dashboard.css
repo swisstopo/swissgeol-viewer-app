@@ -73,6 +73,11 @@ hide-overflow.ngm-projects-list {
   cursor: pointer;
 }
 
+.ngm-proj-preview.ngm-proj-create > div {
+  max-width: 50%;
+  text-align: center;
+}
+
 .ngm-proj-preview.ngm-proj-create .ngm-zoom-p-icon {
   background-color: #357183;
   width: 14px;

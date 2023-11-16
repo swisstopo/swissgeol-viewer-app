@@ -9,6 +9,7 @@ import {CreateProject, Project, TabTypes, Topic} from './ngm-dashboard';
 import {apiClient} from '../../api-client';
 import {showBannerSuccess} from '../../notifications';
 import $ from '../../jquery';
+import {DEFAULT_PROJECT_COLOR} from '../../constants';
 
 @customElement('ngm-project-topic-overview')
 export class NgmProjectTopicOverview extends LitElementI18n {
@@ -145,7 +146,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
 
     toCreateProject(topicOrProject: Topic | Project): CreateProject {
         return {
-            color: '#B0BEC5',
+            color: DEFAULT_PROJECT_COLOR,
             description: topicOrProject.description ? translated(topicOrProject.description) : undefined,
             title: translated(topicOrProject.title),
             geometries: topicOrProject.geometries, // not a copy

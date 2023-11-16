@@ -68,6 +68,8 @@ export const GEOMETRY_COLORS = [
   {color: 'black', value: Color.BLACK},
 ];
 
+export const DEFAULT_PROJECT_COLOR = '#BDBDBD';
+
 export const PROJECT_COLORS = [
   '#E57373', '#C276D9', '#64B5F6', '#4DD0E1', '#81C784', '#D4E157',
   '#FFEE58', '#FFCA28', '#FFA726', '#A1887F', '#BDBDBD', '#B0BEC5',

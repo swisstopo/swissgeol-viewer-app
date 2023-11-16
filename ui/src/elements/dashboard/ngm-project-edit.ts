@@ -4,16 +4,18 @@ import i18next from 'i18next';
 import {classMap} from 'lit/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import {COLORS_WITH_BLACK_TICK, PROJECT_COLORS} from '../../constants';
-import {Project} from './ngm-dashboard';
+import {CreateProject, Project} from './ngm-dashboard';
 import {property, customElement} from 'lit/decorators.js';
 import $ from '../../jquery';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
     @property({type: Object})
-    accessor project: Project | undefined;
+    accessor project: Project | CreateProject | undefined;
     @property({type: Boolean})
     accessor saveOrCancelWarning = false;
+    @property({type: Boolean})
+    accessor createMode = true;
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {
         return this.project !== undefined;
@@ -43,11 +45,11 @@ export class NgmProjectEdit extends LitElementI18n {
                 </div>
                 <div class="project-menu">
                   <div class="edit-project active">
-                    ${i18next.t('edit_project')}<div class="ngm-edit-icon active"></div>
+                    ${this.createMode ? i18next.t('dashboard_project_create') : i18next.t('edit_project')}<div class="ngm-edit-icon active"></div>
                   </div>
                 </div>
               </div>
-              <div class="ngm-proj-data">
+              <div class="ngm-proj-data" ?hidden="${this.createMode}">
                 ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(project.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
               </div>
               <div class="ngm-proj-information">
