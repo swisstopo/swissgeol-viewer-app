@@ -27,3 +27,7 @@ input.ngm-angle-input, input.ngm-tilt-input {
   width: 60px;
 }
 
+.ngm-lower-limit-input-invalid {
+  border: 1px solid red;
+}
+
