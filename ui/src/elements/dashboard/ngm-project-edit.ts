@@ -6,6 +6,7 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {COLORS_WITH_BLACK_TICK, PROJECT_COLORS} from '../../constants';
 import {Project} from './ngm-dashboard';
 import {property, customElement} from 'lit/decorators.js';
+import $ from '../../jquery';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -16,6 +17,11 @@ export class NgmProjectEdit extends LitElementI18n {
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {
         return this.project !== undefined;
+    }
+
+    firstUpdated(_changedProperties: PropertyValues) {
+        this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown());
+        super.firstUpdated(_changedProperties);
     }
 
     render() {

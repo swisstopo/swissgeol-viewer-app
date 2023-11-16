@@ -1,14 +1,14 @@
 import {property, customElement} from 'lit/decorators.js';
 import {LitElementI18n, toLocaleDateString, translated} from '../../i18n';
-import {html} from 'lit';
+import {html, PropertyValues} from 'lit';
 import i18next from 'i18next';
 import {classMap} from 'lit/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import DashboardStore from '../../store/dashboard';
 import {CreateProject, Project, TabTypes, Topic} from './ngm-dashboard';
-import {PropertyValues} from 'lit/development';
 import {apiClient} from '../../api-client';
 import {showBannerSuccess} from '../../notifications';
+import $ from '../../jquery';
 
 @customElement('ngm-project-topic-overview')
 export class NgmProjectTopicOverview extends LitElementI18n {
@@ -25,6 +25,11 @@ export class NgmProjectTopicOverview extends LitElementI18n {
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {
         return this.topicOrProject !== undefined;
+    }
+
+    firstUpdated(_changedProperties: PropertyValues) {
+        this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown());
+        super.firstUpdated(_changedProperties);
     }
 
     render() {

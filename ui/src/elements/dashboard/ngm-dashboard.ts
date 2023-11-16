@@ -15,7 +15,6 @@ import {CustomDataSource, KmlDataSource} from 'cesium';
 import {showSnackbarError, showBannerWarning} from '../../notifications';
 import type {Config} from '../../layers/ngm-layers-item';
 import {DEFAULT_LAYER_OPACITY} from '../../constants';
-import $ from '../../jquery';
 import {fromGeoJSON} from '../../toolbox/helpers';
 import type {NgmGeometry} from '../../toolbox/interfaces';
 import {apiClient} from '../../api-client';
@@ -112,24 +111,25 @@ export class NgmDashboard extends LitElementI18n {
     fetch('./src/sampleData/topics.json').then(topicsResponse =>
       topicsResponse.json().then(topics => {
         this.topics = topics.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
+        DashboardStore.topicParam.subscribe(async param => {
+          if (!param) return;
+          const {viewId, topicId} = param;
+          removeTopic();
+          const topic = this.topics?.find(p => p.id === topicId);
+          if (!topic) return;
+          await this.selectTopicOrProject(topic);
+          if (viewId) {
+            const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === viewId);
+            if (viewIndex !== -1)
+              DashboardStore.setViewIndex(viewIndex);
+          }
+          this.hidden = false;
+        });
       }));
     const recentlyViewed = localStorage.getItem('dashboard_recently_viewed');
     if (recentlyViewed) {
       this.recentlyViewedIds = JSON.parse(recentlyViewed);
     }
-    DashboardStore.topicParam.subscribe(async param => {
-      if (!param) return;
-      const {viewId, topicId} = param;
-      removeTopic();
-      const topic = this.topics?.find(p => p.id === topicId);
-      await this.selectTopicOrProject(topic!);
-      if (viewId) {
-        const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === viewId);
-        if (viewIndex !== -1)
-          DashboardStore.setViewIndex(viewIndex);
-      }
-      this.hidden = false;
-    });
     DashboardStore.viewIndex.subscribe(async viewIndex => {
       await this.selectView(viewIndex);
     });
@@ -156,15 +156,6 @@ export class NgmDashboard extends LitElementI18n {
       if (project) {this.selectedTopicOrProject = project;}
     });
     this.refreshProjects();
-  }
-
-  updated(changedProperties) {
-    if (((changedProperties.has('selectedTopicOrProject') || changedProperties.has('hidden')
-          ) && this.selectedTopicOrProject
-        ) || this.projectEditing) {
-      this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown());
-    }
-    super.updated(changedProperties);
   }
 
   refreshProjects() {
