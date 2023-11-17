@@ -3,7 +3,7 @@ import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
 import '../layers/ngm-catalog';
-import './ngm-dashboard';
+import './dashboard/ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
 import defaultLayerTree from '../layertree';

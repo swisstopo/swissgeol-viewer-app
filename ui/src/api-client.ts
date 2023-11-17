@@ -1,7 +1,7 @@
 import Auth from './auth';
 import AuthStore from './store/auth';
 import {API_BY_PAGE_HOST} from './constants';
-import type {CreateProject, Project} from './elements/ngm-dashboard';
+import type {CreateProject, Project} from './elements/dashboard/ngm-dashboard';
 import {Subject} from 'rxjs';
 
 
@@ -83,7 +83,24 @@ class ApiClient {
         return response;
       });
     }
-  }
+
+    async createProject(project: CreateProject): Promise<Response> {
+        const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        };
+
+        addAuthorization(headers, this.token);
+
+        const response = await fetch(`${this.apiUrl}/projects`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(project),
+        });
+        this.projectsChange.next();
+        return response;
+    }
+}
 
 
 function addAuthorization(headers: any, token: string|null) {
