@@ -57,6 +57,7 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Co
   primitive.nearestSampling = true;
   primitive.stepSize = 0.37;
   primitive.depthTest = true;
+  primitive.constantStep = true;
   primitive.show = !!config.visible;
 
   viewer.scene.primitives.add(primitive);
