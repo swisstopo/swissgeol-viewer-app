@@ -59,12 +59,13 @@ export class NgmGeometryEdit extends LitElementI18n {
       this.draw = DrawStore.drawValue;
       this.unsubscribeFromChanges = this.entity.properties!.definitionChanged.addEventListener(properties => {
         const volumeShowed = getValueOrUndefined(properties.volumeShowed);
-        if (getValueOrUndefined(properties.volumeShowed) !== getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)) {
+        if (volumeShowed !== getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)) {
           this.editingEntity!.properties!.volumeShowed = volumeShowed;
-          if (volumeShowed)
+          if (volumeShowed) {
             updateEntityVolume(this.editingEntity!, this.viewer!.scene.globe);
-          else
+          } else {
             hideVolume(this.editingEntity!);
+          }
           this.viewer?.scene.requestRender();
           this.requestUpdate();
         }
@@ -121,7 +122,7 @@ export class NgmGeometryEdit extends LitElementI18n {
         (<ConstantProperty> this.entity.polygon.hierarchy).setValue(hierarchy);
         this.entity.polygon.material = this.editingEntity.polygon!.material;
       }
-      if (this.editingEntity.properties!.volumeShowed && this.entity.polylineVolume) {
+      if (getValueOrUndefined(this.editingEntity.properties!.volumeShowed) && this.entity.polylineVolume) {
         updateEntityVolume(this.entity, this.viewer!.scene.globe);
         this.entity.polylineVolume.outlineColor = this.editingEntity.polylineVolume!.outlineColor;
         this.entity.polylineVolume.material = this.editingEntity.polylineVolume!.material;
@@ -142,7 +143,6 @@ export class NgmGeometryEdit extends LitElementI18n {
     if (!this.editingEntity) return;
     this.viewer!.entities.removeById(this.editingEntity!.id);
     this.editingEntity = undefined;
-    hideVolume(this.entity!);
     this.entity!.show = true;
     this.viewer!.scene.requestRender();
   }
