@@ -98,7 +98,6 @@ export interface BaseLayerConfig {
 export async function setupViewer(container: Element, rethrowRenderErrors: boolean) {
 
     const searchParams = new URLSearchParams(location.search);
-    console.log(location);
 
     let zExaggeration = parseFloat(searchParams.get('zExaggeration') || '1');
     zExaggeration = (zExaggeration >= 1 && zExaggeration <= 100) ? zExaggeration : 1;
