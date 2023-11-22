@@ -23,12 +23,11 @@
       "tileDimensions": 32,
       "properties": ["Temp_C"],
       "grid": {
-        "xSpacing": 1000,
-        "ySpacing": 1000,
+        "xSpacing": 0.00023,
+        "ySpacing": 0.00016,
         "zSpacing": 100,
         "rotation": 30
       }
     }
-  },
-  "force": true
+  }
 }
