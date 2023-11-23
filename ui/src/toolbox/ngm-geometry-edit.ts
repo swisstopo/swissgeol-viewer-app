@@ -88,20 +88,13 @@ export class NgmGeometryEdit extends LitElementI18n {
     super.disconnectedCallback();
   }
 
-  onVolumeHeightLimitsChange() {
-    // lower limit input handled as text so users can start input typing the minus sign
-    let lowerLimit;
-    if (!Number(this.lowerLimitInput.value) || this.lowerLimitInput.value === '') {
-      lowerLimit = this.lowerLimitInput.value;
-    } else {
-      lowerLimit = CesiumMath.clamp(Number(this.lowerLimitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
-      this.lowerLimitInput.value = lowerLimit.toString();
-    }
-
+  onHeightLimitChange() {
     const height = CesiumMath.clamp(Number(this.heightInput.value), this.minVolumeHeight, this.maxVolumeHeight);
     this.heightInput.value = height.toString();
 
+    const lowerLimit = Number(this.lowerLimitInput.value);
     this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
+
     const positions = this.editingEntity!.polylineVolume!.positions!.getValue(this.julianDate);
     updateVolumePositions(this.editingEntity, positions, this.viewer!.scene.globe);
     this.viewer!.scene.requestRender();
@@ -109,17 +102,18 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   onLowerLimitChange() {
     // lower limit input handled as text so users can start input typing the minus sign
+    this.lowerLimitInput.parentElement.classList.remove('ngm-input-warning');
     let lowerLimit;
-    if (!Number(this.lowerLimitInput.value) || this.lowerLimitInput.value === '') {
+    if (isNaN(this.lowerLimitInput.value) || this.lowerLimitInput.value === '') {
       lowerLimit = this.lowerLimitInput.value;
     } else {
       lowerLimit = CesiumMath.clamp(Number(this.lowerLimitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
       this.lowerLimitInput.value = lowerLimit.toString();
     }
 
-    console.log('before', this.editingEntity!.properties!.volumeHeightLimits);
-    this.editingEntity!.properties!.volumeHeightLimits.lowerLimit = lowerLimit;
-    console.log('after', this.editingEntity!.properties!.volumeHeightLimits);
+    const height = Number(this.heightInput.value);
+    this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
+
     const positions = this.editingEntity!.polylineVolume!.positions!.getValue(this.julianDate);
     updateVolumePositions(this.editingEntity, positions, this.viewer!.scene.globe);
     this.viewer!.scene.requestRender();
@@ -127,8 +121,9 @@ export class NgmGeometryEdit extends LitElementI18n {
 
 
   lowerLimitInputValidation() {
+    if (!getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)) return true;
     const lowerLimit = this.editingEntity!.properties!.volumeHeightLimits.getValue().lowerLimit;
-    const validationTest = /^-?[1-9]\d*$/.test(lowerLimit);
+    const validationTest = /^-?(0|[1-9]\d+)$/.test(lowerLimit);
     return validationTest;
   }
 
@@ -257,9 +252,9 @@ export class NgmGeometryEdit extends LitElementI18n {
           <span class="ngm-floating-label">${i18next.t('tbx_volume_lower_limit_label')}</span>
         </div>
         <div class="ngm-input">
-          <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight} step="0.1"
-                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.height.toFixed(1)}
-                 @input=${this.onVolumeHeightLimitsChange}
+          <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight}
+                 .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.height.toFixed()}
+                 @input=${this.onHeightLimitChange}
                  class="ngm-height-input" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
