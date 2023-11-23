@@ -244,7 +244,8 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   margin: 0 10px;
 }
 
-.edit-project.active > .ngm-edit-icon  {
+.edit-project.active > .ngm-edit-icon,
+.ngm-edit-icon.active  {
   background-color: var(--ngm-interaction-active);
 }
 
@@ -298,4 +299,18 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
 
 .ngm-proj-edit-assets > div {
   width: 360px;
+}
+
+ngm-project-edit .ngm-action-list-item .ngm-action-list-item-header {
+  display: flex;
+  align-items: center;
+}
+
+ngm-project-edit .ngm-action-list-item .ngm-input {
+  margin-right: 5px;
+}
+
+ngm-project-edit .ngm-action-list-item .ngm-input input {
+  height: 36px;
+  padding: 0;
 }

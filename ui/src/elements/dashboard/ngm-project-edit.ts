@@ -5,11 +5,10 @@ import {classMap} from 'lit/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import {COLORS_WITH_BLACK_TICK, PROJECT_COLORS} from '../../constants';
 import {CreateProject, Project} from './ngm-dashboard';
-import {property, customElement, query} from 'lit/decorators.js';
+import {property, customElement, query, state} from 'lit/decorators.js';
 import $ from '../../jquery';
 import '../../toolbox/ngm-geometries-list';
 import '../../layers/ngm-layers-upload';
-import MainStore from '../../store/main';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -21,6 +20,14 @@ export class NgmProjectEdit extends LitElementI18n {
     accessor createMode = true;
     @query('.ngm-proj-toast-placeholder')
     accessor toastPlaceholder;
+    @state()
+    accessor uploadedKmls: {name: string, file: File}[] = [];
+    @state()
+    accessor kmlEditIndex: number | undefined;
+
+    onKmlUpload(file: File) {
+        this.uploadedKmls = [...this.uploadedKmls, {name: file.name, file}];
+    }
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {
         return this.project !== undefined;
@@ -153,8 +160,38 @@ export class NgmProjectEdit extends LitElementI18n {
                     </div>`
                 }
                 <div>
-                    <ngm-layers-upload .viewer="${MainStore.viewerValue}" .toastPlaceholder=${this.toastPlaceholder}
-                                       @layerclick=${() => {}}></ngm-layers-upload>
+                    <ngm-layers-upload 
+                            .toastPlaceholder=${this.toastPlaceholder} 
+                            .onKmlUpload=${(file: File) => this.onKmlUpload(file)}></ngm-layers-upload>
+                    ${this.uploadedKmls.map((kml, index) => {
+                        return html`
+                             <div class="ngm-action-list-item ngm-geom-item">
+                               <div class="ngm-action-list-item-header">
+                                 <div>
+                                   ${this.kmlEditIndex !== index ? kml.name : html`
+                                   <div class="ngm-input ${classMap({'ngm-input-warning': !kml.name})}">
+                                         <input type="text" placeholder="required" .value=${kml.name}
+                                                @input=${evt => {
+                                                kml.name = evt.target.value;
+                                                this.uploadedKmls[index] = kml;
+                                                this.uploadedKmls = [...this.uploadedKmls];
+                                            }}/>
+                                     </div>`}
+                                 </div>
+                                 <div class="ngm-icon ngm-edit-icon ${classMap({
+                                        active: this.kmlEditIndex === index
+                                      })}" 
+                                      @click=${() => {
+                                        this.kmlEditIndex = this.kmlEditIndex === index ? undefined : index;
+                                     }}>
+                                 </div>
+                                 <div class="ui dropdown right pointing ngm-action-menu">
+                                   <div class="ngm-action-menu-icon"></div>
+                                 </div>
+                               </div>
+                             </div>
+                            `;
+                    })}
                 </div>
             </div>
             <div class="ngm-divider"></div>

@@ -26,7 +26,7 @@ import {
   BoundingSphere,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-  Math as CMath
+  Math as CMath, KmlDataSource, CustomDataSource
 } from 'cesium';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
@@ -203,7 +203,7 @@ export class SideBar extends LitElementI18n {
       <ngm-dashboard class="ngm-side-bar-panel ngm-large-panel"
         ?hidden=${this.activePanel !== 'dashboard'}
         @close=${() => this.activePanel = ''}
-        @layerclick=${evt => this.onCatalogLayerClicked(evt)}
+        @layerclick=${evt => this.onCatalogLayerClicked(evt.detail.layer)}
       ></ngm-dashboard>
       <div .hidden=${this.activePanel !== 'data' || (this.mobileView && !this.hideDataDisplayed)}
            class="ngm-side-bar-panel ngm-layer-catalog">
@@ -216,7 +216,7 @@ export class SideBar extends LitElementI18n {
           ${i18next.t('dtd_configure_data_btn')}
         </div>
         <ngm-catalog class="ui accordion ngm-panel-content" .layers=${this.catalogLayers}
-                     @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
+                     @layerclick=${evt => this.onCatalogLayerClicked(evt.detail.layer)}>
         </ngm-catalog>
       </div>
       <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
@@ -269,8 +269,9 @@ export class SideBar extends LitElementI18n {
             @layerChanged=${evt => this.onLayerChanged(evt)}>
           </ngm-layers>
           <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
-          <ngm-layers-upload .viewer="${this.viewer}" .toastPlaceholder=${this.toastPlaceholder}
-            @layerclick=${evt => this.onCatalogLayerClicked(evt)}>
+          <ngm-layers-upload 
+              .toastPlaceholder=${this.toastPlaceholder} 
+              .onKmlUpload=${(file: File) => this.onKmlUpload(file)}>
           </ngm-layers-upload>
           <h5 class="ui header ngm-background-label">
             ${i18next.t('dtd_background_map_label')}
@@ -419,9 +420,8 @@ export class SideBar extends LitElementI18n {
     super.updated(changedProperties);
   }
 
-  async onCatalogLayerClicked(evt) {
+  async onCatalogLayerClicked(layer) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
-    const layer = evt.detail.layer;
     if (layer.displayed) {
       if (layer.visible) {
         layer.displayed = false;
@@ -632,6 +632,41 @@ export class SideBar extends LitElementI18n {
 
   toggleLayerOrderChange() {
     this.layerOrderChangeActive = !this.layerOrderChangeActive;
+  }
+
+  async onKmlUpload(file: File) {
+    console.log(file, this.viewer);
+    if (!this.viewer) return;
+    const kmlDataSource = await KmlDataSource.load(file, {
+      camera: this.viewer.scene.camera,
+      canvas: this.viewer.scene.canvas
+    });
+    const uploadedLayer = new CustomDataSource();
+    let name = kmlDataSource.name;
+    kmlDataSource.entities.values.forEach((ent, indx) => {
+      if (indx === 0 && !name) {
+        name = ent.name!;
+      }
+      uploadedLayer.entities.add(ent);
+    });
+    // name used as id for datasource
+    uploadedLayer.name = `${name}_${Date.now()}`;
+    await this.viewer.dataSources.add(uploadedLayer);
+    // done like this to have correct rerender of component
+    const promise = Promise.resolve(uploadedLayer);
+    const config: Config = {
+      load() {return promise;},
+      label: name,
+      promise: promise,
+      zoomToBbox: true,
+      opacity: DEFAULT_LAYER_OPACITY,
+      notSaveToPermalink: true,
+      ownKml: true
+    };
+
+    this.requestUpdate();
+    await this.onCatalogLayerClicked(config);
+    await this.viewer.zoomTo(uploadedLayer);
   }
 
   createRenderRoot() {
