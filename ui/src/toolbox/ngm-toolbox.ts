@@ -24,6 +24,7 @@ import {CesiumDraw} from '../draw/CesiumDraw';
 import DrawStore from '../store/draw';
 import {GeometryController} from './GeometryController';
 import {showSnackbarInfo} from '../notifications';
+import DashboardStore from '../store/dashboard';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
@@ -50,7 +51,12 @@ export class NgmToolbox extends LitElementI18n {
       this.viewer = viewer;
       this.viewer?.dataSources.add(this.geometriesDataSource);
       this.geometriesDataSource!.entities.collectionChanged.addEventListener((_collection) => {
-        LocalStorageController.setAoiInStorage(this.entitiesList);
+        if (!DashboardStore.editMode.value) {
+          LocalStorageController.setAoiInStorage(this.entitiesList);
+        } else if (DashboardStore.selectedTopicOrProject.value) {
+          const proj = DashboardStore.selectedTopicOrProject.value;
+          DashboardStore.selectedTopicOrProject.next({...proj, geometries: this.entitiesList});
+        }
         ToolboxStore.setGeometries(this.entitiesList);
         this.viewer!.scene.requestRender();
         this.requestUpdate();
@@ -93,6 +99,15 @@ export class NgmToolbox extends LitElementI18n {
           this.slicerElement.toggleSlicer();
         }
         this.activeTool = 'profile';
+      }
+    });
+    DashboardStore.editMode.subscribe(editMode => {
+      if (!this.geometryController) return;
+      if (editMode) {
+        const geometries = DashboardStore.selectedTopicOrProject.value?.geometries;
+        this.geometryController!.setGeometries(geometries || []);
+      } else {
+        this.geometryController!.setGeometries(LocalStorageController.getStoredAoi());
       }
     });
 

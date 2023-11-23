@@ -289,3 +289,13 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   color: #0C7285;
   box-shadow: none;
 }
+
+.ngm-proj-edit-assets {
+  display: flex;
+  width: 100%;
+  gap: 22px
+}
+
+.ngm-proj-edit-assets > div {
+  width: 360px;
+}

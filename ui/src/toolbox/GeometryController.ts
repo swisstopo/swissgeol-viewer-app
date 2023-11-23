@@ -68,7 +68,7 @@ export class GeometryController {
     MainStore.viewer.subscribe(viewer => {
       this.viewer = viewer;
       if (viewer) {
-        this.addStoredGeometries(LocalStorageController.getStoredAoi());
+        this.setGeometries(LocalStorageController.getStoredAoi());
         this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
         this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
         viewer.dataSources.add(this.measureDataSource);
@@ -557,15 +557,18 @@ export class GeometryController {
   }
 
 
-  addStoredGeometries(areas) {
-    areas.forEach(area => {
-      if (!area.positions) return;
-      const splittedName = area.name.split(' ');
-      const areaNumber = Number(splittedName[1]);
-      if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.geometriesCounter[area.type]) {
-        this.geometriesCounter[area.type] = areaNumber;
+  setGeometries(geometries: NgmGeometry[]) {
+    this.geometriesDataSource.entities.removeAll();
+    geometries.forEach(geom => {
+      if (!geom.positions) return;
+      if (geom.name) {
+        const splittedName = geom.name.split(' ');
+        const areaNumber = Number(splittedName[1]);
+        if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.geometriesCounter[geom.type]) {
+          this.geometriesCounter[geom.type] = areaNumber;
+        }
       }
-      this.addGeometry(area);
+      this.addGeometry(geom);
     });
   }
 }

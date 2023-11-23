@@ -7,6 +7,7 @@ export default class DashboardStore {
   private static selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
   private static viewIndexSubject = new Subject<number | undefined>();
   private static topicParamSubject = new BehaviorSubject<TopicParam | undefined>(undefined);
+  private static editModeSubject = new BehaviorSubject<boolean>(false);
 
   static get selectedTopicOrProject(): BehaviorSubject<Topic | Project | undefined> {
     return this.selectedTopicOrProjectSubject;
@@ -18,6 +19,7 @@ export default class DashboardStore {
   }
 
   static setViewIndex(value: number | undefined): void {
+    this.setEditMode(value !== undefined);
     this.viewIndexSubject.next(value);
   }
 
@@ -31,5 +33,13 @@ export default class DashboardStore {
 
   static get topicParam(): BehaviorSubject<TopicParam | undefined> {
     return this.topicParamSubject;
+  }
+
+  static setEditMode(value: boolean): void {
+    this.editModeSubject.next(value);
+  }
+
+  static get editMode(): BehaviorSubject<boolean> {
+    return this.editModeSubject;
   }
 }

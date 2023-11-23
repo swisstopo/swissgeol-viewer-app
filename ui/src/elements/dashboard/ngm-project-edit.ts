@@ -5,8 +5,11 @@ import {classMap} from 'lit/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import {COLORS_WITH_BLACK_TICK, PROJECT_COLORS} from '../../constants';
 import {CreateProject, Project} from './ngm-dashboard';
-import {property, customElement} from 'lit/decorators.js';
+import {property, customElement, query} from 'lit/decorators.js';
 import $ from '../../jquery';
+import '../../toolbox/ngm-geometries-list';
+import '../../layers/ngm-layers-upload';
+import MainStore from '../../store/main';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -16,6 +19,8 @@ export class NgmProjectEdit extends LitElementI18n {
     accessor saveOrCancelWarning = false;
     @property({type: Boolean})
     accessor createMode = true;
+    @query('.ngm-proj-toast-placeholder')
+    accessor toastPlaceholder;
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {
         return this.project !== undefined;
@@ -26,6 +31,15 @@ export class NgmProjectEdit extends LitElementI18n {
         super.firstUpdated(_changedProperties);
     }
 
+    connectedCallback() {
+
+        super.connectedCallback();
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+    }
+
     render() {
         const project: Project = <Project> this.project;
         const backgroundImage = project.image?.length ? `url('${project.image}')` : '';
@@ -34,6 +48,7 @@ export class NgmProjectEdit extends LitElementI18n {
               <div class="ui warning message" ?hidden=${!this.saveOrCancelWarning}>
                 ${i18next.t('project_lost_changes_warning')}
               </div>
+              <div class="ngm-proj-toast-placeholder"></div>
               <div class="ngm-proj-title">
                 <div class="ngm-input project-title ${classMap({'ngm-input-warning': !project.title})}">
                   <input type="text" placeholder="required" .value=${<string>project.title}
@@ -128,6 +143,19 @@ export class NgmProjectEdit extends LitElementI18n {
                       </div>
                   </div>
               `)}
+            </div>
+            <div class="ngm-divider"></div>
+            <div class="ngm-proj-edit-assets">
+                ${this.createMode ? '' : html`
+                    <div>
+                        <ngm-geometries-list
+                                title=${i18next.t('tbx_my_geometries')}></ngm-geometries-list>
+                    </div>`
+                }
+                <div>
+                    <ngm-layers-upload .viewer="${MainStore.viewerValue}" .toastPlaceholder=${this.toastPlaceholder}
+                                       @layerclick=${() => {}}></ngm-layers-upload>
+                </div>
             </div>
             <div class="ngm-divider"></div>
             <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onBack'))}>

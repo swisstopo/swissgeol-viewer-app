@@ -1,6 +1,6 @@
 import {LitElementI18n, translated} from '../../i18n';
 import {customElement, property, query, state} from 'lit/decorators.js';
-import {html} from 'lit';
+import {html, PropertyValues} from 'lit';
 import i18next from 'i18next';
 import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit-html/directives/class-map.js';
@@ -52,7 +52,7 @@ export interface Topic {
   color: string,
   views: View[],
   assets: Asset[],
-  geometries?: Array<GeoJSON.Feature>,
+  geometries?: NgmGeometry[],
 }
 
 export interface CreateProject {
@@ -62,7 +62,7 @@ export interface CreateProject {
   color: string,
   views: View[],
   assets: Asset[],
-  geometries?: Array<GeoJSON.Feature>,
+  geometries?: NgmGeometry[],
   owner: string,
   members: string[],
   viewers: string[],
@@ -114,7 +114,12 @@ export class NgmDashboard extends LitElementI18n {
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
     fetch('./src/sampleData/topics.json').then(topicsResponse =>
       topicsResponse.json().then(topics => {
-        this.topics = topics.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
+        this.topics = topics.map(topic => {
+          if (topic.geometries) {
+            topic.geometries = this.getGeometries(topic.geometries);
+          }
+          return topic;
+        }).sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
         DashboardStore.topicParam.subscribe(async param => {
           if (!param) return;
           const {viewId, topicId} = param;
@@ -255,9 +260,6 @@ export class NgmDashboard extends LitElementI18n {
 
   selectTopicOrProject(topic: Topic | Project) {
     this.selectedTopicOrProject = topic;
-    if (this.selectedTopicOrProject.geometries) {
-      this.geometries = this.getGeometries(this.selectedTopicOrProject.geometries);
-    }
     DashboardStore.setSelectedTopicOrProject(this.selectedTopicOrProject);
     this.addRecentlyViewedTopicOrProject(topic);
   }
@@ -325,6 +327,10 @@ export class NgmDashboard extends LitElementI18n {
       viewers: [],
     };
     this.projectCreateMode = true;
+  }
+
+  onProjectEdit() {
+    this.projectEditMode = true;
   }
 
   async onProjectSave(project: Project) {
@@ -417,6 +423,13 @@ export class NgmDashboard extends LitElementI18n {
     return html``;
   }
 
+  updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('projectEditMode')) {
+      DashboardStore.setEditMode(this.projectEditMode);
+    }
+    super.updated(changedProperties);
+  }
+
   render() {
     return html`
       <div class="ngm-panel-header">
@@ -493,7 +506,7 @@ export class NgmDashboard extends LitElementI18n {
                      .selectedViewIndx="${this.selectedViewIndx}"
                      .userEmail="${this.userEmail}"
                      @onDeselect="${this.deselectTopicOrProject}"
-                     @onEdit="${() => this.projectEditMode = true}"
+                     @onEdit="${this.onProjectEdit}"
                      @onProjectDuplicated="${(evt: {detail: {project: Project}}) => this.onProjectDuplicated(evt.detail.project)}"
                     ></ngm-project-topic-overview>`}
         </div>
