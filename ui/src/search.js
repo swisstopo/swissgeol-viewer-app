@@ -2,7 +2,7 @@ import '@geoblocks/ga-search';
 
 import {getLayersConfig} from './swisstopoImagery.js';
 import {escapeRegExp} from './utils';
-import {lv95ToDegrees, round} from './projection';
+import {lv95ToDegrees} from './projection';
 
 import {Cartographic, Math as CesiumMath, Rectangle} from 'cesium';
 import {extractEntitiesAttributes} from './query/objectInformation.ts';
