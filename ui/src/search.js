@@ -2,7 +2,7 @@ import '@geoblocks/ga-search';
 
 import {getLayersConfig} from './swisstopoImagery.js';
 import {escapeRegExp} from './utils';
-import {lv95ToDegrees, round} from './projection';
+import {lv95ToDegrees} from './projection';
 
 import {Cartographic, Math as CesiumMath, Rectangle} from 'cesium';
 import {extractEntitiesAttributes} from './query/objectInformation.ts';
@@ -10,6 +10,10 @@ import NavToolsStore from './store/navTools';
 import defaultLayerTree from './layertree';
 import i18next from 'i18next';
 import auth from './store/auth';
+
+const integerFormat = new Intl.NumberFormat('de-CH', {
+  maximumFractionDigits: 1
+});
 
 
 /**
@@ -91,7 +95,7 @@ export function setupSearch(viewer, element, layerTree) {
           const coordinates = [left, right].sort().reverse();
           const bbox = [...lv95ToDegrees(coordinates), ...lv95ToDegrees(coordinates)];
           matches.push({
-            label: `Recenter to ${round(coordinates).join(' ')}`,
+            label: `Recenter to ${coordinates.map((coord) => integerFormat.format(coord)).join(' ')}`,
             bbox: bbox,
             origin: 'coordinates',
           });

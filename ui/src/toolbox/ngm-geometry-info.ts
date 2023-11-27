@@ -98,7 +98,7 @@ export class NgmGeometryInfo extends LitElementI18n {
 
   getHeight(geom: NgmGeometry) {
     const height = geom.type === 'point' ? Cartographic.fromCartesian(geom.positions[0]).height : geom.volumeHeightLimits?.height;
-    return height ? height.toFixed() : '';
+    return height ? height.toFixed(1) : '';
   }
 
   showLostChangesWarn() {
@@ -144,7 +144,7 @@ export class NgmGeometryInfo extends LitElementI18n {
         <div ?hidden=${!geom.volumeShowed} class="ngm-geom-limits">
           <div ?hidden=${geom.type === 'point'}>
             <div class="ngm-geom-info-label">${i18next.t('tbx_volume_lower_limit_label')}</div>
-            <div class="ngm-geom-info-value">${geom.volumeHeightLimits?.lowerLimit.toFixed() || '-'} m</div>
+            <div class="ngm-geom-info-value">${geom.volumeHeightLimits?.lowerLimit.toFixed(1) || '-'} m</div>
           </div>
           <div>
             <div class="ngm-geom-info-label">${i18next.t('tbx_volume_height_label')}</div>
@@ -152,7 +152,7 @@ export class NgmGeometryInfo extends LitElementI18n {
           </div>
           <div ?hidden=${geom.type !== 'point'}>
             <div class="ngm-geom-info-label">${i18next.t('tbx_point_depth_label')}</div>
-            <div class="ngm-geom-info-value">${geom.depth?.toFixed() || '-'} m</div>
+            <div class="ngm-geom-info-value">${geom.depth?.toFixed(1) || '-'} m</div>
           </div>
         </div>
         <div ?hidden=${geom.type === 'point' || geom.type === 'line'}>

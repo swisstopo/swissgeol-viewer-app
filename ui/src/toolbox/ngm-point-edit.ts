@@ -50,12 +50,12 @@ export class NgmPointEdit extends LitElementI18n {
         const coords = cartesianToLv95(position!);
         this.xValue = Number(coords[0].toFixed(1));
         this.yValue = Number(coords[1].toFixed(1));
-        this.heightValue = Math.round(coords[2]);
+        this.heightValue = Number(coords[2].toFixed(1));
       } else {
         const coords = cartesianToDegrees(position!);
         this.xValue = Number(coords[0].toFixed(3));
         this.yValue = Number(coords[1].toFixed(3));
-        this.heightValue = Math.round(coords[2]);
+        this.heightValue = Number(coords[2].toFixed(1));
       }
     }
   }
@@ -108,13 +108,13 @@ export class NgmPointEdit extends LitElementI18n {
       </div>
       <div class="ngm-geom-edit-double-input">
         <div class="ngm-input">
-          <input class="ngm-coord-x-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.xValue.toString()}
+          <input class="ngm-coord-x-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.xValue.toFixed(1)}
                  @change="${this.onPositionChange}"
                  placeholder="required"/>
           <span class="ngm-floating-label">${this.coordsType === 'lv95' ? 'E' : i18next.t('tbx_lon_label')}</span>
         </div>
         <div class="ngm-input">
-          <input class="ngm-coord-y-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.yValue.toString()}
+          <input class="ngm-coord-y-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.yValue.toFixed(1)}
                  @change="${this.onPositionChange}"
                  placeholder="required"/>
           <span class="ngm-floating-label">${this.coordsType === 'lv95' ? 'N' : i18next.t('tbx_lat_label')}</span>
@@ -122,12 +122,12 @@ export class NgmPointEdit extends LitElementI18n {
       </div>
       <div class="ngm-geom-edit-double-input">
         <div class="ngm-input">
-          <input class="ngm-height-input" type="number" .value=${this.heightValue.toString()} @change="${this.onPositionChange}"
+          <input class="ngm-height-input" type="number" step="0.1" .value=${this.heightValue.toFixed(1)} @change="${this.onPositionChange}"
                  placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
         <div class="ngm-input" ?hidden=${!getValueOrUndefined(this.entity?.properties!.volumeShowed)}>
-          <input type="number" .value=${getValueOrUndefined(this.entity?.properties!.depth)}
+          <input type="number" step="0.1" .value=${parseFloat(getValueOrUndefined(this.entity?.properties!.depth)).toFixed(1)}
                  @change="${this.onDepthChange}" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_point_depth_label')}</span>
         </div>

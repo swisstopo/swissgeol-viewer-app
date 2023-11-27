@@ -8,7 +8,7 @@ import type {ProfileData} from './toolbox/ngm-topo-profile-modal';
 
 
 const integerFormat = new Intl.NumberFormat('de-CH', {
-  maximumFractionDigits: 0
+  maximumFractionDigits: 1
 });
 
 
