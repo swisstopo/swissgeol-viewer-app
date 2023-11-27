@@ -23,7 +23,7 @@ export class NgmCursorInformation extends LitElementI18n {
   private unlistenMoveEnd: any;
   // always use the 'de-CH' locale to always have the simple tick as thousands separator
   private integerFormat = new Intl.NumberFormat('de-CH', {
-    maximumFractionDigits: 0
+    maximumFractionDigits: 1
   });
 
   updated() {

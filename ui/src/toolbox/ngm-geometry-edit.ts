@@ -213,15 +213,15 @@ export class NgmGeometryEdit extends LitElementI18n {
       <div class="ngm-geom-edit-double-input"
            ?hidden=${!getValueOrUndefined(this.editingEntity!.properties!.volumeShowed) || type === 'point'}>
         <div class="ngm-input">
-          <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit}
-                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed()}
+          <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit} step="0.1"
+                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed(1)}
                  @input=${this.onVolumeHeightLimitsChange}
                  class="ngm-lower-limit-input" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_lower_limit_label')}</span>
         </div>
         <div class="ngm-input">
-          <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight}
-                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.height.toFixed()}
+          <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight} step="0.1"
+                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.height.toFixed(1)}
                  @input=${this.onVolumeHeightLimitsChange}
                  class="ngm-height-input" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>

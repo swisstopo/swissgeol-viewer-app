@@ -207,7 +207,7 @@ export class NgmGstInteraction extends LitElementI18n {
         <div class="ngm-input ${classMap({'ngm-input-warning': !this.hasValidDepth(geom.id)})}"
              ?hidden=${geom.type !== 'rectangle'}>
           <input type="number" placeholder="required"
-                 .value=${this.depth[geom.id]}
+                 .value=${parseFloat(this.depth[geom.id]).toFixed(1)}
                  @input=${evt => this.onDepthChange(evt, geom.id)}
                  min="${this.minDepth_}"
                  max="${this.maxDepth_}"

@@ -33,14 +33,14 @@ export function round(coordinates: Array<number>): Array<number> {
 }
 
 const swissIntegerFormat = new Intl.NumberFormat('de-CH', {
-  maximumFractionDigits: 0
+  maximumFractionDigits: 1
 });
 
 export function formatCartographicAs2DLv95(carto: Cartographic): Array<string> {
   return proj4('EPSG:4326', 'EPSG:2056', [
     carto.longitude * 180 / Math.PI,
     carto.latitude * 180 / Math.PI,
-  ]).map(Math.round).map(swissIntegerFormat.format);
+  ]).map((num: number) => num.toFixed(1)).map(swissIntegerFormat.format);
 }
 
 export const radToDeg = rad => (Math.round(100000 * rad * 180 / Math.PI) / 100000).toFixed(5);

@@ -19,7 +19,7 @@ export class NgmCoordinatePopup extends LitElementI18n {
     accessor elevation = '';
     private eventHandler: ScreenSpaceEventHandler | undefined;
     private integerFormat = new Intl.NumberFormat('de-CH', {
-        maximumFractionDigits: 0
+        maximumFractionDigits: 1
     });
 
     connectedCallback() {
