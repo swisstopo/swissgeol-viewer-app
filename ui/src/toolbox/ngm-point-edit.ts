@@ -92,9 +92,6 @@ export class NgmPointEdit extends LitElementI18n {
     if (this.entity) {
       this.updateInputValues();
     }
-    console.log(parseFloat(getValueOrUndefined(this.entity?.properties!.depth)).toFixed(1));
-    console.log((getValueOrUndefined(this.entity?.properties!.depth)));
-    console.log(getValueOrUndefined(this.entity?.properties!.volumeShowed));
     return html`
       <div class="ngm-point-edit-dropdown">
         ${i18next.t('camera_position_coordinates_system_label')}
