@@ -9,6 +9,8 @@ import {property, customElement, query, state} from 'lit/decorators.js';
 import $ from '../../jquery';
 import '../../toolbox/ngm-geometries-list';
 import '../../layers/ngm-layers-upload';
+import {apiClient} from '../../api-client';
+import {showSnackbarError} from '../../notifications';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -21,12 +23,21 @@ export class NgmProjectEdit extends LitElementI18n {
     @query('.ngm-proj-toast-placeholder')
     accessor toastPlaceholder;
     @state()
-    accessor uploadedKmls: {name: string, file: File}[] = [];
+    accessor uploadedKmls: {name: string, key: string}[] = [];
     @state()
     accessor kmlEditIndex: number | undefined;
 
-    onKmlUpload(file: File) {
-        this.uploadedKmls = [...this.uploadedKmls, {name: file.name, file}];
+    async onKmlUpload(file: File) {
+        try {
+            const response = await apiClient.uploadProjectAsset(file);
+            const key = (await response.json())?.key;
+            if (key) {
+                this.uploadedKmls = [...this.uploadedKmls, {name: file.name, key}];
+            }
+        } catch (e) {
+            console.error(e);
+            showSnackbarError(i18next.t('dtd_cant_upload_kml_error')); // todo add new message
+        }
     }
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {

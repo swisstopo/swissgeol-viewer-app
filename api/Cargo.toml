@@ -15,7 +15,7 @@ dotenv = "0.15.0"
 structopt = "0.3"
 
 # Web
-axum = { version = "0.6.20", features = ["headers"] }
+axum = { version = "0.6.20", features = ["headers", "multipart"] }
 axum-macros = "0.3.8"
 hyper = { version = "0.14.27", features = ["full"] }
 tokio = { version = "1.34.0", features = ["full"] }
@@ -48,3 +48,4 @@ reqwest = { version = "0.11.22", default-features = false, features = ["rustls-t
 url = "2.5.0"
 uuid = { version = "1.6.1", features = ["serde", "v4"] }
 jsonwebtoken = "8.3.0"
+rand = "0.8.5"

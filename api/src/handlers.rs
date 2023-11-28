@@ -1,7 +1,6 @@
 use aws_sdk_s3::Client;
-use axum::extract::Path;
 use axum::{
-    extract::{Extension, Json},
+    extract::{Extension, Json, Path, Multipart},
     http::StatusCode,
 };
 use chrono::{DateTime, Utc};
@@ -11,6 +10,7 @@ use uuid::Uuid;
 
 use crate::auth::Claims;
 use crate::{Error, Result};
+use rand::{distributions::Alphanumeric, Rng};
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct CreateProject {
@@ -55,6 +55,16 @@ pub struct View {
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct Asset {
     pub href: String,
+}
+
+#[derive(Serialize)]
+pub struct PresignedUrlResponse {
+    pub presigned_url: String,
+}
+
+#[derive(Serialize)]
+pub struct UploadResponse {
+    pub key: String,
 }
 
 // Health check endpoint
@@ -239,4 +249,34 @@ pub async fn duplicate_project(
     .await?;
 
     Ok(Json(result))
+}
+
+pub async fn upload_asset(
+    Extension(_pool): Extension<PgPool>,
+    Extension(client): Extension<Client>,
+    mut multipart: Multipart,
+) -> Result<Json<UploadResponse>> {
+    let bucket = std::env::var("S3_BUCKET").unwrap();
+    let rand_string: String = rand::thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(40)
+        .map(char::from)
+        .collect();
+    let generated_file_name: String = format!("{}_{}", Utc::now().timestamp(), rand_string);
+    let temp_key = format!("assets/temp/{}.kml", generated_file_name);
+    while let Some(field) = multipart.next_field().await.unwrap() {
+        if field.name() == Some("file") {
+            let bytes = field.bytes().await.unwrap();
+
+            client.put_object()
+                .bucket(&bucket)
+                .key(&temp_key)
+                .body(bytes.into())
+                .send()
+                .await
+                .unwrap();
+        }
+    }
+
+    return Ok(Json(UploadResponse {key: generated_file_name}));
 }

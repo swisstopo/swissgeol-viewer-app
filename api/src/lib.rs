@@ -49,6 +49,7 @@ pub async fn app(pool: PgPool) -> Router {
             "/api/projects/:id",
             get(handlers::get_project).put(handlers::update_project),
         )
+        .route("/api/projects/upload_asset", post(handlers::upload_asset))
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())

@@ -100,6 +100,22 @@ class ApiClient {
         this.projectsChange.next();
         return response;
     }
+
+    async uploadProjectAsset(file: File) {
+        const headers = {
+            // 'Content-Type': 'multipart/form-data',
+        };
+        const formData = new FormData();
+        formData.append('file', file);
+
+        addAuthorization(headers, this.token);
+
+        return fetch(`${this.apiUrl}/projects/upload_asset`, {
+            method: 'POST',
+            headers: headers,
+            body: formData
+        });
+    }
 }
 
 
