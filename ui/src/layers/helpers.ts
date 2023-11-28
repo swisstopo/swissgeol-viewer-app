@@ -1,5 +1,6 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
 import type {Viewer} from 'cesium';
+import * as Cesium from 'cesium';
 import {
   Cartesian3,
   Cartographic,
@@ -60,6 +61,7 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Co
   primitive.show = !!config.visible;
 
   viewer.scene.primitives.add(primitive);
+  viewer.extend(Cesium.viewerVoxelInspectorMixin);
 
   config.setVisibility = visible => {
     if (config.type === LayerType.voxels3dtiles) {
