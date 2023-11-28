@@ -96,15 +96,13 @@ export class NgmGeometryEdit extends LitElementI18n {
     const lowerLimit = Number(this.lowerLimitInput.value);
     this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
 
-    const positions = this.editingEntity!.polylineVolume!.positions!.getValue(this.julianDate);
-    updateVolumePositions(this.editingEntity, positions, this.viewer!.scene.globe);
-    this.viewer!.scene.requestRender();
+    this.updateVolumePositions();
   }
 
   onLowerLimitChange() {
-    // lower limit input handled as text so users can start input typing the minus sign
     let lowerLimit;
-    if (isNaN(this.lowerLimitInput.value) || this.lowerLimitInput.value === '') {
+    // the condition allows users to enter the negative sign without converting it to 0
+    if (this.lowerLimitInput.value === '') {
       lowerLimit = this.lowerLimitInput.value;
     } else {
       lowerLimit = CesiumMath.clamp(Number(this.lowerLimitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
@@ -114,6 +112,10 @@ export class NgmGeometryEdit extends LitElementI18n {
     const height = Number(this.heightInput.value);
     this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
 
+    this.updateVolumePositions();
+  }
+
+  updateVolumePositions() {
     const positions = this.editingEntity!.polylineVolume!.positions!.getValue(this.julianDate);
     updateVolumePositions(this.editingEntity, positions, this.viewer!.scene.globe);
     this.viewer!.scene.requestRender();
@@ -122,7 +124,7 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   lowerLimitInputValidation() {
     const lowerLimit = this.editingEntity!.properties!.volumeHeightLimits.getValue().lowerLimit;
-    const validationTest = /^-?(0|[1-9]\d+)$/.test(lowerLimit);
+    const validationTest = /^-?(0|[1-9]\d*)$/.test(lowerLimit);
     this.validLowerLimit = validationTest;
   }
 
@@ -241,7 +243,7 @@ export class NgmGeometryEdit extends LitElementI18n {
       <div class="ngm-geom-edit-double-input"
            ?hidden=${!getValueOrUndefined(this.editingEntity!.properties!.volumeShowed) || type === 'point'}>
         <div class="ngm-input ${classMap({'ngm-input-warning': !this.validLowerLimit})}">
-          <input type="text" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit}
+          <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit}
                  .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed()}
                  @input=${this.onLowerLimitChange}
                  @focusout=${this.lowerLimitInputValidation}
