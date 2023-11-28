@@ -59,6 +59,7 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Co
   primitive.stepSize = 0.37;
   primitive.depthTest = true;
   primitive.show = !!config.visible;
+  primitive.constantStep = true;
   primitive.jitter = true;
   primitive.screenSpaceError = 64;
 
