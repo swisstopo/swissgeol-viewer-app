@@ -161,6 +161,11 @@ export class NgmDashboard extends LitElementI18n {
     apiClient.projectsChange.subscribe(() => {
       this.refreshProjects();
     });
+    DashboardStore.geometriesUpdate.subscribe(geometries => {
+      if (this.selectedTopicOrProject) {
+        this.selectTopicOrProject({...this.selectedTopicOrProject, geometries});
+      }
+    });
     this.refreshProjects();
   }
 
@@ -170,7 +175,7 @@ export class NgmDashboard extends LitElementI18n {
       this.projects = await response.json();
       const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
       if (project) {
-        this.selectedTopicOrProject = project;
+        this.selectTopicOrProject(project);
       }
     }
   }
@@ -255,10 +260,12 @@ export class NgmDashboard extends LitElementI18n {
     await this.setDataFromPermalink();
   }
 
-  selectTopicOrProject(topic: Topic | Project) {
-    this.selectedTopicOrProject = topic;
+  selectTopicOrProject(topicOrProject: Topic | Project | undefined) {
+    this.selectedTopicOrProject = topicOrProject;
     DashboardStore.setSelectedTopicOrProject(this.selectedTopicOrProject);
-    this.addRecentlyViewedTopicOrProject(topic);
+    if (topicOrProject) {
+      this.addRecentlyViewedTopicOrProject(topicOrProject);
+    }
   }
 
   removeGeometries() {
@@ -269,10 +276,9 @@ export class NgmDashboard extends LitElementI18n {
 
   deselectTopicOrProject() {
     this.runIfNotEditCreate(() => {
-      this.selectedTopicOrProject = undefined;
+      this.selectTopicOrProject(undefined);
       this.assets = [];
       this.removeGeometries();
-      DashboardStore.setSelectedTopicOrProject(undefined);
     });
   }
 

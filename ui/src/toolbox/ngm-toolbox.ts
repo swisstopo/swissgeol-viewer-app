@@ -54,8 +54,7 @@ export class NgmToolbox extends LitElementI18n {
         if (!DashboardStore.editMode.value) {
           LocalStorageController.setAoiInStorage(this.entitiesList);
         } else if (DashboardStore.selectedTopicOrProject.value) {
-          const proj = DashboardStore.selectedTopicOrProject.value;
-          DashboardStore.selectedTopicOrProject.next({...proj, geometries: this.entitiesList});
+          DashboardStore.setGeometries(this.entitiesList);
         }
         ToolboxStore.setGeometries(this.entitiesList);
         this.viewer!.scene.requestRender();

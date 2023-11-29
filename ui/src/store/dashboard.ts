@@ -1,5 +1,6 @@
 import {BehaviorSubject, Subject} from 'rxjs';
 import type {Project, Topic} from '../elements/dashboard/ngm-dashboard';
+import {NgmGeometry} from '../toolbox/interfaces';
 
 export type TopicParam = { topicId: string, viewId?: string | null }
 
@@ -8,6 +9,7 @@ export default class DashboardStore {
   private static viewIndexSubject = new Subject<number | undefined>();
   private static topicParamSubject = new BehaviorSubject<TopicParam | undefined>(undefined);
   private static editModeSubject = new BehaviorSubject<boolean>(false);
+  private static geometriesSubject = new Subject<NgmGeometry[]>();
 
   static get selectedTopicOrProject(): BehaviorSubject<Topic | Project | undefined> {
     return this.selectedTopicOrProjectSubject;
@@ -41,5 +43,13 @@ export default class DashboardStore {
 
   static get editMode(): BehaviorSubject<boolean> {
     return this.editModeSubject;
+  }
+
+  static setGeometries(geometries: NgmGeometry[]) {
+    this.geometriesSubject.next(geometries);
+  }
+
+  static get geometriesUpdate() {
+    return this.geometriesSubject;
   }
 }

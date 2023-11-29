@@ -12,6 +12,7 @@ use crate::auth::Claims;
 use crate::{Error, Result};
 use rand::{distributions::Alphanumeric, Rng};
 use std::collections::HashSet;
+use serde_json::Number;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct CreateProject {
@@ -26,6 +27,8 @@ pub struct CreateProject {
     pub views: Vec<View>,
     #[serde(default)]
     pub assets: Vec<Asset>,
+    #[serde(default)]
+    pub geometries: Vec<Geometry>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -44,6 +47,8 @@ pub struct Project {
     pub owner: String,
     pub viewers: Vec<String>,
     pub members: Vec<String>,
+    #[serde(default)]
+    pub geometries: Vec<Geometry>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -57,6 +62,56 @@ pub struct View {
 pub struct Asset {
     pub name: String,
     pub key: String,
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct Geometry {
+    r#type: String,
+    positions: Vec<Cartesian3>,
+    id: Option<String>,
+    name: Option<String>,
+    show: Option<bool>,
+    area: Option<String>,
+    perimeter: Option<String>,
+    sidesLength: Option<Vec<Number>>,
+    numberOfSegments: Option<Number>,
+    description: Option<String>,
+    image: Option<String>,
+    website: Option<String>,
+    pointSymbol: Option<String>,
+    color: Option<CesiumColor>,
+    clampPoint: Option<bool>,
+    showSlicingBox: Option<bool>,
+    volumeShowed: Option<bool>,
+    volumeHeightLimits: Option<GeometryVolumeHeightLimits>,
+    swissforagesId: Option<String>,
+    depth: Option<Number>,
+    editable: Option<bool>,
+    copyable: Option<bool>,
+    fromTopic: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+struct Cartesian3 {
+    x: Number,
+    y: Number,
+    z: Number,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+struct CesiumColor {
+    red: Number,
+    green: Number,
+    blue: Number,
+    alpha: Number,
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+struct GeometryVolumeHeightLimits {
+    lowerLimit: Number,
+    height: Number
 }
 
 #[derive(Serialize)]
@@ -110,6 +165,7 @@ pub async fn create_project(
         owner: claims.email,
         viewers: project.viewers,
         members: project.members,
+        geometries: project.geometries,
     };
 
     let result = sqlx::query_scalar!(
@@ -243,6 +299,7 @@ pub async fn duplicate_project(
         owner: claims.email,
         viewers: Vec::new(),
         members: Vec::new(),
+        geometries: project.geometries,
     };
 
     // // TODO: make static
