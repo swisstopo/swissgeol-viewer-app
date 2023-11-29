@@ -245,6 +245,36 @@ pub async fn update_project(
 }
 
 #[axum_macros::debug_handler]
+pub async fn update_project_geometries(
+    Path(id): Path<Uuid>,
+    Extension(pool): Extension<PgPool>,
+    Extension(_client): Extension<Client>,
+    _claims: Claims,
+    Json(geometries): Json<Vec<Geometry>>,
+) -> Result<StatusCode> {
+    // TODO: Validate rights
+
+    let mut project: Project = sqlx::query_scalar!(
+        r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
+        id
+    )
+        .fetch_one(&pool)
+        .await?.0;
+
+    project.geometries = geometries;
+
+    sqlx::query_scalar!(
+        "UPDATE projects SET project = project || CAST( $2 as JSONB) WHERE id = $1 RETURNING id",
+        id,
+        sqlx::types::Json(project) as _
+    )
+        .fetch_one(&pool)
+        .await?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+#[axum_macros::debug_handler]
 pub async fn list_projects(
     Extension(pool): Extension<PgPool>,
     claims: Claims,
