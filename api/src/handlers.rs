@@ -11,6 +11,7 @@ use uuid::Uuid;
 use crate::auth::Claims;
 use crate::{Error, Result};
 use rand::{distributions::Alphanumeric, Rng};
+use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct CreateProject {
@@ -54,12 +55,8 @@ pub struct View {
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct Asset {
-    pub href: String,
-}
-
-#[derive(Serialize)]
-pub struct PresignedUrlResponse {
-    pub presigned_url: String,
+    pub name: String,
+    pub key: String,
 }
 
 #[derive(Serialize)]
@@ -85,6 +82,7 @@ pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, St
 #[axum_macros::debug_handler]
 pub async fn create_project(
     Extension(pool): Extension<PgPool>,
+    Extension(client): Extension<Client>,
     claims: Claims,
     Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
@@ -95,6 +93,8 @@ pub async fn create_project(
             "Project owner does not match token claims.",
         ));
     }
+
+    save_assets(client, &project.assets).await;
 
     // Create project
     let project = Project {
@@ -142,10 +142,40 @@ pub async fn get_project(
 pub async fn update_project(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
+    Extension(client): Extension<Client>,
     _claims: Claims,
     Json(mut project): Json<Project>,
 ) -> Result<StatusCode> {
     // TODO: Validate rights
+
+    let bucket = std::env::var("S3_BUCKET").unwrap();
+
+    let saved_project: Project = sqlx::query_scalar!(
+        r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
+        id
+    )
+        .fetch_one(&pool)
+        .await?.0;
+
+    let project_assets = &project.assets;
+    let saved_project_keys: HashSet<_> = saved_project.assets.into_iter().map(|a| a.key).collect();
+    let new_project_keys: HashSet<_> = project_assets.into_iter().map(|a| a.key.clone()).collect();
+
+    // Find keys that are in saved_project_keys but not in new_project_keys
+    let keys_to_delete: HashSet<_> = saved_project_keys.difference(&new_project_keys).collect();
+
+    for key in keys_to_delete {
+        let path = format!("assets/saved/{}.kml", key);
+
+        client.delete_object()
+            .bucket(&bucket)
+            .key(&path)
+            .send()
+            .await.unwrap();
+    }
+
+    save_assets(client, project_assets).await;
+
     project.modified = Some(Utc::now());
     sqlx::query_scalar!(
         "UPDATE projects SET project = project || CAST( $2 as JSONB) WHERE id = $1 RETURNING id",
@@ -279,4 +309,47 @@ pub async fn upload_asset(
     }
 
     return Ok(Json(UploadResponse {key: generated_file_name}));
+}
+
+async fn save_assets(
+    client: Client,
+    project_assets: &Vec<Asset>
+) {
+    let bucket = std::env::var("S3_BUCKET").unwrap();
+    for asset in project_assets {
+        let temp_key = format!("assets/temp/{}.kml", asset.key);
+        let permanent_key = format!("assets/saved/{}.kml", asset.key);
+
+        // Check if the file exists in the source directory
+        let source_exists = client.head_object()
+            .bucket(&bucket)
+            .key(&temp_key)
+            .send()
+            .await
+            .is_ok();
+
+        // Check if the file does not exist in the destination directory
+        let destination_exists = client.head_object()
+            .bucket(&bucket)
+            .key(&permanent_key)
+            .send()
+            .await
+            .is_ok();
+
+        if source_exists && !destination_exists {
+            client.copy_object()
+                .bucket(&bucket)
+                .copy_source(format!("{}/{}", &bucket, &temp_key))
+                .key(&permanent_key)
+                .send()
+                .await.unwrap();
+
+            client.delete_object()
+                .bucket(&bucket)
+                .key(&temp_key)
+                .send()
+                .await.unwrap();
+        }
+
+    }
 }
