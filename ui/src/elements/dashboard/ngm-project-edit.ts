@@ -108,11 +108,11 @@ export class NgmProjectEdit extends LitElementI18n {
               </div>
             </div>
             <div class="ngm-divider"></div>
-            <div class="ngm-proj-views-title">
+            <div class="ngm-proj-title-icon">
               <div class="ngm-screenshot-icon"></div>
               <div>${i18next.t('dashboard_views')}</div>
             </div>
-            <div class="project-views-edit">
+            <div class="project-edit-fields">
               ${project.views.map((view, index) => html`
                   <div class="project-view-edit">
                       <div class="ngm-input ${classMap({'ngm-input-warning': !view.title})}">
@@ -156,18 +156,28 @@ export class NgmProjectEdit extends LitElementI18n {
             </div>
             <div class="ngm-divider"></div>
             <div class="ngm-proj-edit-assets">
-                ${this.createMode ? '' : html`
-                    <div>
-                        <ngm-geometries-list
-                                title=${i18next.t('tbx_my_geometries')}></ngm-geometries-list>
-                    </div>`
-                }
                 <div>
-                    <ngm-layers-upload 
-                            .toastPlaceholder=${this.toastPlaceholder} 
-                            .onKmlUpload=${(file: File) => this.onKmlUpload(file)}></ngm-layers-upload>
-                    ${this.project?.assets.map((kml, index) => {
-                        return html`
+                    <div class="ngm-proj-title-icon">
+                        <div class="ngm-vector-icon"></div>
+                        <div>${i18next.t('dashboard_project_geometries')}</div>
+                    </div>
+                    <div class="project-edit-fields">
+                        ${this.project.geometries?.length ?
+                                html`<ngm-geometries-list></ngm-geometries-list>` :
+                                html`<div>${i18next.t('dashboard_no_geom_text')}</div>`}
+                    </div>
+                </div>
+                <div>
+                    <div class="ngm-proj-title-icon">
+                        <div class="ngm-file-upload-icon"></div>
+                        <div>${i18next.t('dashboard_project_kml')}</div>
+                    </div>
+                    <div class="project-edit-fields">
+                        <ngm-layers-upload
+                                .toastPlaceholder=${this.toastPlaceholder}
+                                .onKmlUpload=${(file: File) => this.onKmlUpload(file)}></ngm-layers-upload>
+                        ${this.project?.assets.map((kml, index) => {
+                            return html`
                              <div class="ngm-action-list-item ngm-geom-item">
                                <div class="ngm-action-list-item-header">
                                  <div>
@@ -175,29 +185,30 @@ export class NgmProjectEdit extends LitElementI18n {
                                    <div class="ngm-input ${classMap({'ngm-input-warning': !kml.name})}">
                                          <input type="text" placeholder="required" .value=${kml.name}
                                                 @input=${evt => {
-                                                kml.name = evt.target.value;
-                                                project!.assets[index] = kml;
-                                                this.project = {...project};
-                                            }}/>
+                                kml.name = evt.target.value;
+                                project!.assets[index] = kml;
+                                this.project = {...project};
+                            }}/>
                                      </div>`}
                                  </div>
                                  <div class="ngm-icon ngm-edit-icon ${classMap({
-                                        active: this.kmlEditIndex === index
-                                      })}" 
+                                active: this.kmlEditIndex === index
+                            })}" 
                                       @click=${() => {
-                                        this.kmlEditIndex = this.kmlEditIndex === index ? undefined : index;
-                                     }}>
+                                this.kmlEditIndex = this.kmlEditIndex === index ? undefined : index;
+                            }}>
                                  </div>
                                  <div class="ngm-icon ngm-delete-icon"
                                       @click=${() => {
-                                          project.assets.splice(index, 1);
-                                          this.project = {...project};
-                                      }}>
+                                project.assets.splice(index, 1);
+                                this.project = {...project};
+                            }}>
                                  </div>
                                </div>
                              </div>
                             `;
-                    })}
+                        })}
+                    </div>
                 </div>
             </div>
             <div class="ngm-divider"></div>

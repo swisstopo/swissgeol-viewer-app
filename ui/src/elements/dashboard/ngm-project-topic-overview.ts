@@ -73,7 +73,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         </div>
       </div>
       <div class="ngm-divider"></div>
-      <div class="ngm-proj-views-title">
+      <div class="ngm-proj-title-icon">
         <div class="ngm-screenshot-icon"></div>
         <div>${i18next.t('dashboard_views')}</div>
       </div>

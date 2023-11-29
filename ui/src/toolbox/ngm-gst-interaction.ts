@@ -234,6 +234,7 @@ export class NgmGstInteraction extends LitElementI18n {
       <ngm-draw-section ?hidden=${this.hidden} .enabledTypes=${['line', 'rectangle', 'point']}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
+          listTitle="${i18next.t('tbx_my_geometries')}"
         .selectedId=${this.selectedId}
         .disabledTypes=${['polygon']}
         .disabledCallback=${geom => this.geometryOutsideExtent(geom)}
@@ -242,7 +243,7 @@ export class NgmGstInteraction extends LitElementI18n {
         @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}>
       </ngm-geometries-list>
       <ngm-geometries-list
-        title=${i18next.t('tbx_geometries_from_topic')}
+          listTitle=${i18next.t('tbx_geometries_from_topic')}
         .disabledTypes=${['polygon']}
         .disabledCallback=${geom => this.geometryOutsideExtent(geom)}
         .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}

@@ -51,13 +51,14 @@ export class NgmProfileTool extends LitElementI18n {
       <ngm-draw-section ?hidden=${this.hidden} .enabledTypes=${['line']} .showUpload=${false}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
+          listTitle="${i18next.t('tbx_my_geometries')}"
         .selectedId=${this.selectedGeomId}
         .disabledTypes=${['polygon', 'rectangle', 'point']}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.onGeomClick(evt.detail.id)}
         @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}>
       </ngm-geometries-list>
       <ngm-geometries-list
-        title=${i18next.t('tbx_geometries_from_topic')}
+          listTitle=${i18next.t('tbx_geometries_from_topic')}
         .disabledTypes=${['polygon', 'rectangle', 'point']}
         .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
       ></ngm-geometries-list>`;

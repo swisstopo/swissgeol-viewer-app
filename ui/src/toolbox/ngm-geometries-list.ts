@@ -13,7 +13,7 @@ export default class NgmGeometriesList extends LitElementI18n {
   @property({type: String})
   accessor selectedId = '';
   @property({type: String})
-  accessor title = i18next.t('tbx_my_geometries');
+  accessor listTitle: string | undefined;
   @property({type: Object})
   accessor geometryFilter: (geom: NgmGeometry) => boolean = (geom) => !geom.fromTopic;
   @property({type: Object})
@@ -135,7 +135,7 @@ export default class NgmGeometriesList extends LitElementI18n {
       return html``;
     }
     return html`
-      <div class="ngm-geom-label">${this.title}</div>
+      <div .hidden="${!this.listTitle}" class="ngm-geom-label">${this.listTitle}</div>
       <div class="ngm-geom-list">
         <div class="ngm-action-list-item ngm-geom-filter">
           <div class="ngm-action-list-item-header">

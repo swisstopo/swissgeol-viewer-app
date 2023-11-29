@@ -1,11 +1,11 @@
 ngm-dashboard .ngm-panel-header,
 .ngm-proj-title,
-.ngm-proj-views-title,
+.ngm-proj-title-icon,
 .ngm-projects-list {
   margin-bottom: 12px;
 }
 
-.ngm-proj-views-title,
+.ngm-proj-title-icon,
 .ngm-proj-title {
   display: flex;
   color: #212529;
@@ -16,8 +16,13 @@ ngm-dashboard .ngm-panel-header,
   justify-content: space-between;
 }
 
-.ngm-proj-views-title > div:first-child {
+.ngm-proj-title-icon > div:first-child {
   margin-right: 15px;
+}
+
+.ngm-proj-title-icon .ngm-screenshot-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .ngm-dashboard-tabs {
@@ -270,8 +275,8 @@ ngm-dashboard .ngm-delete-icon:hover,
   width: 100%;
 }
 
-.project-views-edit {
-  margin-left: 32px;
+.project-edit-fields {
+  margin-left: 39px;
 }
 
 .project-view-edit {

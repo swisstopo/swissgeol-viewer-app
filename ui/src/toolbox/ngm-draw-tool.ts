@@ -28,6 +28,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       <ngm-draw-section ?hidden=${this.hidden}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
+         listTitle="${i18next.t('tbx_my_geometries')}"
         .selectedId=${this.selectedAreaId}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => {
           ToolboxStore.nextGeometryAction({id: evt.detail.id, action: 'zoom'});
@@ -35,7 +36,7 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         }}>
       </ngm-geometries-list>
       <ngm-geometries-list
-        title=${i18next.t('tbx_geometries_from_topic')}
+         listTitle=${i18next.t('tbx_geometries_from_topic')}
         .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
       ></ngm-geometries-list>`;
   }
