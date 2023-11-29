@@ -30,7 +30,7 @@ import {
 } from 'cesium';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
-import './ngm-share-link.ts';
+import './ngm-share-link';
 import '../layers/ngm-layers-upload';
 import MainStore from '../store/main';
 import {classMap} from 'lit/directives/class-map.js';

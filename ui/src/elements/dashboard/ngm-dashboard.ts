@@ -14,7 +14,7 @@ import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
 import {showSnackbarError, showBannerWarning} from '../../notifications';
 import type {Config} from '../../layers/ngm-layers-item';
-import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR} from '../../constants';
+import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
 import {fromGeoJSON} from '../../toolbox/helpers';
 import type {NgmGeometry} from '../../toolbox/interfaces';
 import {apiClient} from '../../api-client';
@@ -39,7 +39,8 @@ export interface View {
 }
 
 export interface Asset {
-  href: string,
+  name: string,
+  key: string,
 }
 
 export interface Topic {
@@ -158,20 +159,15 @@ export class NgmDashboard extends LitElementI18n {
       this.userEmail = user?.username.split('_')[1];
     });
     apiClient.projectsChange.subscribe(() => {
-      apiClient.getProjects()
-        .then(response => response.json())
-        .then(body => this.projects = body);
-      const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
-      if (project) {this.selectedTopicOrProject = project;}
+      this.refreshProjects();
     });
     this.refreshProjects();
   }
 
-  refreshProjects() {
+  async refreshProjects() {
     if (apiClient.token) {
-      apiClient.getProjects()
-          .then(response => response.json())
-          .then(body => this.projects = body);
+      const response = await apiClient.getProjects();
+      this.projects = await response.json();
       const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
       if (project) {
         this.selectedTopicOrProject = project;
@@ -194,17 +190,18 @@ export class NgmDashboard extends LitElementI18n {
     if (!this.viewer) return assetsData;
     for (const asset of assets) {
       try {
-        const dataSources = this.viewer.dataSources.getByName(asset.href);
+        const href = `${PROJECT_ASSET_URL}${asset.key}.kml`;
+        const dataSources = this.viewer.dataSources.getByName(href);
         let uploadedLayer: CustomDataSource;
         if (dataSources.length) {
           uploadedLayer = dataSources[0];
           uploadedLayer.show = true;
         } else {
-          const kmlDataSource = await KmlDataSource.load(asset.href, {
+          const kmlDataSource = await KmlDataSource.load(href, {
             camera: this.viewer.scene.camera,
             canvas: this.viewer.scene.canvas
           });
-          uploadedLayer = new CustomDataSource(asset.href);
+          uploadedLayer = new CustomDataSource(href);
           let name = kmlDataSource.name;
           kmlDataSource.entities.values.forEach((ent, indx) => {
             if (indx === 0 && !name) {
@@ -212,7 +209,7 @@ export class NgmDashboard extends LitElementI18n {
             }
             uploadedLayer.entities.add(ent);
           });
-          this.assetConfigs[asset.href] = {
+          this.assetConfigs[href] = {
             label: name,
             zoomToBbox: true,
             opacity: DEFAULT_LAYER_OPACITY,
@@ -223,7 +220,7 @@ export class NgmDashboard extends LitElementI18n {
         }
         const promise = Promise.resolve(uploadedLayer);
         assetsData.push({
-          ...this.assetConfigs[asset.href],
+          ...this.assetConfigs[href],
           displayed: false,
           load() {
             return promise;
@@ -333,17 +330,17 @@ export class NgmDashboard extends LitElementI18n {
     this.projectEditMode = true;
   }
 
-  async onProjectSave(project: Project) {
+  async onProjectSave(project: Project | CreateProject) {
     if (this.projectEditMode) {
-      await apiClient.updateProject(project);
+      await apiClient.updateProject(<Project>project);
       this.projectEditMode = false;
     } else if (this.projectCreateMode && this.projectToCreate) {
       try {
-        const response = await apiClient.createProject(this.projectToCreate);
+        const response = await apiClient.createProject(project);
         const id = await response.json();
         const projectResponse = await apiClient.getProject(id);
-        const project = await projectResponse.json();
-        this.selectTopicOrProject(project);
+        const createdProject = await projectResponse.json();
+        this.selectTopicOrProject(createdProject);
       } catch (e) {
         console.error(e);
         showSnackbarError(i18next.t('dashboard_project_create_error'));

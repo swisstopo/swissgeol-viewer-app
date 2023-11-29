@@ -23,16 +23,16 @@ export class NgmProjectEdit extends LitElementI18n {
     @query('.ngm-proj-toast-placeholder')
     accessor toastPlaceholder;
     @state()
-    accessor uploadedKmls: {name: string, key: string}[] = [];
-    @state()
     accessor kmlEditIndex: number | undefined;
 
     async onKmlUpload(file: File) {
+        if (!this.project) return;
         try {
             const response = await apiClient.uploadProjectAsset(file);
-            const key = (await response.json())?.key;
+            const key: string = (await response.json())?.key;
             if (key) {
-                this.uploadedKmls = [...this.uploadedKmls, {name: file.name, key}];
+                const assets = [...this.project!.assets, {name: file.name, key}];
+                this.project = {...this.project, assets};
             }
         } catch (e) {
             console.error(e);
@@ -49,17 +49,9 @@ export class NgmProjectEdit extends LitElementI18n {
         super.firstUpdated(_changedProperties);
     }
 
-    connectedCallback() {
-
-        super.connectedCallback();
-    }
-
-    disconnectedCallback() {
-        super.disconnectedCallback();
-    }
-
     render() {
-        const project: Project = <Project> this.project;
+        if (!this.project) return '';
+        const project = this.project;
         const backgroundImage = project.image?.length ? `url('${project.image}')` : '';
         return html`
             <div>
@@ -83,7 +75,7 @@ export class NgmProjectEdit extends LitElementI18n {
                 </div>
               </div>
               <div class="ngm-proj-data" ?hidden="${this.createMode}">
-                ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(project.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
+                ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString((<Project>project).modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
               </div>
               <div class="ngm-proj-information">
                 <div class="project-image-and-color">
@@ -174,7 +166,7 @@ export class NgmProjectEdit extends LitElementI18n {
                     <ngm-layers-upload 
                             .toastPlaceholder=${this.toastPlaceholder} 
                             .onKmlUpload=${(file: File) => this.onKmlUpload(file)}></ngm-layers-upload>
-                    ${this.uploadedKmls.map((kml, index) => {
+                    ${this.project?.assets.map((kml, index) => {
                         return html`
                              <div class="ngm-action-list-item ngm-geom-item">
                                <div class="ngm-action-list-item-header">
@@ -184,8 +176,8 @@ export class NgmProjectEdit extends LitElementI18n {
                                          <input type="text" placeholder="required" .value=${kml.name}
                                                 @input=${evt => {
                                                 kml.name = evt.target.value;
-                                                this.uploadedKmls[index] = kml;
-                                                this.uploadedKmls = [...this.uploadedKmls];
+                                                project!.assets[index] = kml;
+                                                this.project = {...project};
                                             }}/>
                                      </div>`}
                                  </div>
@@ -196,8 +188,11 @@ export class NgmProjectEdit extends LitElementI18n {
                                         this.kmlEditIndex = this.kmlEditIndex === index ? undefined : index;
                                      }}>
                                  </div>
-                                 <div class="ui dropdown right pointing ngm-action-menu">
-                                   <div class="ngm-action-menu-icon"></div>
+                                 <div class="ngm-icon ngm-delete-icon"
+                                      @click=${() => {
+                                          project.assets.splice(index, 1);
+                                          this.project = {...project};
+                                      }}>
                                  </div>
                                </div>
                              </div>

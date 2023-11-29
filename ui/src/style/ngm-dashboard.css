@@ -206,9 +206,17 @@ ngm-dashboard .ngm-label-btn {
   justify-content: start;
 }
 
+ngm-dashboard .ngm-delete-icon,
 ngm-dashboard .ngm-label-btn .ngm-back-icon {
   background-color: var(--ngm-interaction);
+}
+
+ngm-dashboard .ngm-label-btn .ngm-back-icon {
   margin-right: 8px;
+}
+
+ngm-dashboard .ngm-delete-icon {
+  margin-left: 5px;
 }
 
 ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
@@ -220,6 +228,7 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   cursor: pointer;
 }
 
+ngm-dashboard .ngm-delete-icon:hover,
 .ngm-view-icon:hover, .ngm-view-icon:focus, .ngm-edit-icon:hover, .edit-project:hover > .ngm-edit-icon {
   background-color: var(--ngm-interaction-hover);
 }
