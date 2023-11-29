@@ -108,13 +108,24 @@ ngm-geometry-edit > div:not(:last-child) {
 
 .ngm-geom-edit-double-input {
   display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
 
-.ngm-geom-edit-double-input .ngm-input:first-child {
+.ngm-geom-edit-coord-input {
+  display: flex;
+}
+
+.ngm-geom-edit-double-input .ngm-input:first-child,
+.ngm-geom-edit-coord-input .ngm-input:first-child {
   margin-right: 12px;
 }
 
 .ngm-geom-edit-double-input .ngm-input input {
+  width: 100%;
+}
+
+.ngm-geom-edit-coord-input .ngm-input input {
   width: 112px;
 }
 
