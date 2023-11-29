@@ -3,6 +3,7 @@ import AuthStore from './store/auth';
 import {API_BY_PAGE_HOST} from './constants';
 import type {CreateProject, Project} from './elements/dashboard/ngm-dashboard';
 import {Subject} from 'rxjs';
+import {NgmGeometry} from './toolbox/interfaces';
 
 
 class ApiClient {
@@ -37,6 +38,19 @@ class ApiClient {
       });
     }
 
+    updateProjectGeometries(id: string, geometries: NgmGeometry[]): Promise<Response> {
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        addAuthorization(headers, this.token);
+
+        return fetch(`${this.apiUrl}/projects/${id}/geometries`, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify(geometries),
+        });
+    }
 
     getProject(id: string): Promise<Response> {
       const headers = {

@@ -6,7 +6,7 @@ export type TopicParam = { topicId: string, viewId?: string | null }
 
 export default class DashboardStore {
   private static selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
-  private static viewIndexSubject = new Subject<number | undefined>();
+  private static viewIndexSubject = new BehaviorSubject<number | undefined>(undefined);
   private static topicParamSubject = new BehaviorSubject<TopicParam | undefined>(undefined);
   private static editModeSubject = new BehaviorSubject<boolean>(false);
   private static geometriesSubject = new Subject<NgmGeometry[]>();
@@ -25,7 +25,7 @@ export default class DashboardStore {
     this.viewIndexSubject.next(value);
   }
 
-  static get viewIndex(): Subject<number | undefined> {
+  static get viewIndex(): BehaviorSubject<number | undefined> {
     return this.viewIndexSubject;
   }
 

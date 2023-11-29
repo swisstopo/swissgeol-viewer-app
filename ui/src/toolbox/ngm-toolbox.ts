@@ -25,6 +25,7 @@ import DrawStore from '../store/draw';
 import {GeometryController} from './GeometryController';
 import {showSnackbarInfo} from '../notifications';
 import DashboardStore from '../store/dashboard';
+import {apiClient} from '../api-client';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
@@ -54,7 +55,16 @@ export class NgmToolbox extends LitElementI18n {
         if (!DashboardStore.editMode.value) {
           LocalStorageController.setAoiInStorage(this.entitiesList);
         } else if (DashboardStore.selectedTopicOrProject.value) {
-          DashboardStore.setGeometries(this.entitiesList);
+          const project = DashboardStore.selectedTopicOrProject.value;
+          const geometries = this.entitiesList;
+          DashboardStore.setGeometries(geometries);
+          if (DashboardStore.viewIndex.value !== undefined) {
+            try {
+              apiClient.updateProjectGeometries(project.id, geometries);
+            } catch (e) {
+              console.error(e);
+            }
+          }
         }
         ToolboxStore.setGeometries(this.entitiesList);
         this.viewer!.scene.requestRender();
