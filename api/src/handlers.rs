@@ -1,6 +1,6 @@
 use aws_sdk_s3::Client;
 use axum::{
-    extract::{Extension, Json, Path, Multipart},
+    extract::{Extension, Json, Multipart, Path},
     http::StatusCode,
 };
 use chrono::{DateTime, Utc};
@@ -11,8 +11,8 @@ use uuid::Uuid;
 use crate::auth::Claims;
 use crate::{Error, Result};
 use rand::{distributions::Alphanumeric, Rng};
-use std::collections::HashSet;
 use serde_json::Number;
+use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct CreateProject {
@@ -64,8 +64,8 @@ pub struct Asset {
     pub key: String,
 }
 
-#[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+#[allow(non_snake_case)]
 pub struct Geometry {
     r#type: String,
     positions: Vec<Cartesian3>,
@@ -107,11 +107,11 @@ struct CesiumColor {
     alpha: Number,
 }
 
-#[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 struct GeometryVolumeHeightLimits {
+    #[allow(non_snake_case)]
     lowerLimit: Number,
-    height: Number
+    height: Number,
 }
 
 #[derive(Serialize)]
@@ -210,8 +210,9 @@ pub async fn update_project(
         r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
         id
     )
-        .fetch_one(&pool)
-        .await?.0;
+    .fetch_one(&pool)
+    .await?
+    .0;
 
     let project_assets = &project.assets;
     let saved_project_keys: HashSet<_> = saved_project.assets.into_iter().map(|a| a.key).collect();
@@ -223,11 +224,13 @@ pub async fn update_project(
     for key in keys_to_delete {
         let path = format!("assets/saved/{}", key);
 
-        client.delete_object()
+        client
+            .delete_object()
             .bucket(&bucket)
             .key(&path)
             .send()
-            .await.unwrap();
+            .await
+            .unwrap();
     }
 
     save_assets(client, project_assets).await;
@@ -258,8 +261,9 @@ pub async fn update_project_geometries(
         r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
         id
     )
-        .fetch_one(&pool)
-        .await?.0;
+    .fetch_one(&pool)
+    .await?
+    .0;
 
     project.geometries = geometries;
 
@@ -268,8 +272,8 @@ pub async fn update_project_geometries(
         id,
         sqlx::types::Json(project) as _
     )
-        .fetch_one(&pool)
-        .await?;
+    .fetch_one(&pool)
+    .await?;
 
     Ok(StatusCode::NO_CONTENT)
 }
@@ -385,7 +389,8 @@ pub async fn upload_asset(
         if field.name() == Some("file") {
             let bytes = field.bytes().await.unwrap();
 
-            client.put_object()
+            client
+                .put_object()
                 .bucket(&bucket)
                 .key(&temp_name)
                 .body(bytes.into())
@@ -395,20 +400,20 @@ pub async fn upload_asset(
         }
     }
 
-    return Ok(Json(UploadResponse {key: generated_file_name}));
+    return Ok(Json(UploadResponse {
+        key: generated_file_name,
+    }));
 }
 
-async fn save_assets(
-    client: Client,
-    project_assets: &Vec<Asset>
-) {
+async fn save_assets(client: Client, project_assets: &Vec<Asset>) {
     let bucket = std::env::var("S3_BUCKET").unwrap();
     for asset in project_assets {
         let temp_key = format!("assets/temp/{}", asset.key);
         let permanent_key = format!("assets/saved/{}", asset.key);
 
         // Check if the file exists in the source directory
-        let source_exists = client.head_object()
+        let source_exists = client
+            .head_object()
             .bucket(&bucket)
             .key(&temp_key)
             .send()
@@ -416,7 +421,8 @@ async fn save_assets(
             .is_ok();
 
         // Check if the file does not exist in the destination directory
-        let destination_exists = client.head_object()
+        let destination_exists = client
+            .head_object()
             .bucket(&bucket)
             .key(&permanent_key)
             .send()
@@ -424,19 +430,22 @@ async fn save_assets(
             .is_ok();
 
         if source_exists && !destination_exists {
-            client.copy_object()
+            client
+                .copy_object()
                 .bucket(&bucket)
                 .copy_source(format!("{}/{}", &bucket, &temp_key))
                 .key(&permanent_key)
                 .send()
-                .await.unwrap();
+                .await
+                .unwrap();
 
-            client.delete_object()
+            client
+                .delete_object()
                 .bucket(&bucket)
                 .key(&temp_key)
                 .send()
-                .await.unwrap();
+                .await
+                .unwrap();
         }
-
     }
 }

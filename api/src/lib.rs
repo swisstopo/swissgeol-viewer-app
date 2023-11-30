@@ -51,7 +51,8 @@ pub async fn app(pool: PgPool) -> Router {
             get(handlers::get_project).put(handlers::update_project),
         )
         .route(
-            "/api/projects/:id/geometries", put(handlers::update_project_geometries),
+            "/api/projects/:id/geometries",
+            put(handlers::update_project_geometries),
         )
         .route("/api/projects/upload_asset", post(handlers::upload_asset))
         .layer(
