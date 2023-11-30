@@ -52,13 +52,14 @@ export class NgmToolbox extends LitElementI18n {
       this.viewer = viewer;
       this.viewer?.dataSources.add(this.geometriesDataSource);
       this.geometriesDataSource!.entities.collectionChanged.addEventListener((_collection) => {
-        if (!DashboardStore.editMode.value) {
+        const projectEditMode = DashboardStore.projectMode.value;
+        if (!projectEditMode || projectEditMode === 'private') {
           LocalStorageController.setAoiInStorage(this.entitiesList);
-        } else if (DashboardStore.selectedTopicOrProject.value) {
-          const project = DashboardStore.selectedTopicOrProject.value;
+        } else if (projectEditMode === 'viewEdit' || projectEditMode === 'edit') {
           const geometries = this.entitiesList;
           DashboardStore.setGeometries(geometries);
-          if (DashboardStore.viewIndex.value !== undefined) {
+          const project = DashboardStore.selectedTopicOrProject.value;
+          if (projectEditMode === 'viewEdit' && project) {
             try {
               apiClient.updateProjectGeometries(project.id, geometries);
             } catch (e) {
@@ -110,9 +111,9 @@ export class NgmToolbox extends LitElementI18n {
         this.activeTool = 'profile';
       }
     });
-    DashboardStore.editMode.subscribe(editMode => {
+    DashboardStore.projectMode.subscribe(editMode => {
       if (!this.geometryController) return;
-      if (editMode) {
+      if (editMode === 'edit' || editMode === 'viewEdit') {
         const geometries = DashboardStore.selectedTopicOrProject.value?.geometries;
         this.geometryController!.setGeometries(geometries || []);
       } else {

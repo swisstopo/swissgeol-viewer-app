@@ -164,9 +164,17 @@ export class NgmDashboard extends LitElementI18n {
     DashboardStore.geometriesUpdate.subscribe(geometries => {
       if (this.selectedTopicOrProject) {
         this.selectTopicOrProject({...this.selectedTopicOrProject, geometries});
+      } else if (this.projectToCreate) {
+        this.projectToCreate = {...this.projectToCreate, geometries};
       }
     });
     this.refreshProjects();
+
+    DashboardStore.onSaveOrCancelWarning.subscribe(show => {
+      if (this.projectEditMode || this.projectCreateMode) {
+        this.saveOrCancelWarning = show;
+      }
+    });
   }
 
   async refreshProjects() {
@@ -427,8 +435,8 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   updated(changedProperties: PropertyValues) {
-    if (changedProperties.has('projectEditMode')) {
-      DashboardStore.setEditMode(this.projectEditMode);
+    if (changedProperties.has('projectEditMode') || changedProperties.has('projectCreateMode')) {
+      DashboardStore.setProjectMode(this.projectEditMode || this.projectCreateMode ? 'edit' : undefined);
     }
     super.updated(changedProperties);
   }

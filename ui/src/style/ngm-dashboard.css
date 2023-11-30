@@ -311,7 +311,8 @@ ngm-dashboard .ngm-delete-icon:hover,
   gap: 22px
 }
 
-.ngm-proj-edit-assets > div {
+ngm-project-assets-section,
+ngm-project-geoms-section {
   width: 360px;
 }
 

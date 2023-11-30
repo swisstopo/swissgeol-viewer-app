@@ -22,23 +22,32 @@ export default class NgmGeometriesList extends LitElementI18n {
   accessor disabledTypes: string[] = [];
   @property({type: Object})
   accessor disabledCallback: ((geom: NgmGeometry) => boolean) | undefined;
-  @state()
+  // in view mode will be shown geometries passed be property and any actions with geometry will be disabled
+  @property({type: Boolean})
+  accessor viewMode = false;
+  @property({type: Array})
   accessor geometries: NgmGeometry[] = [];
+  // hides zoomTo, info, edit buttons from context menu
+  @property({type: Boolean})
+  accessor hideMapInteractionButtons = false;
+  // allows to edit geometry name directly in the list
+  @property({type: Boolean})
+  accessor directNameEdit = false;
   @state()
   accessor editingEnabled = false;
   @state()
   accessor selectedFilter: GeometryTypes | undefined;
+  @state()
+  accessor nameEditIndex: number | undefined;
   private scrollDown = false;
 
-  constructor() {
-    super();
-    ToolboxStore.geometries.subscribe(geoms => {
-      this.geometries = geoms;
-    });
-    ToolboxStore.openedGeometryOptions.subscribe(options => this.editingEnabled = !!(options?.editing));
-  }
-
   protected firstUpdated() {
+    if (!this.viewMode) {
+      ToolboxStore.geometries.subscribe(geoms => {
+        this.geometries = geoms;
+      });
+      ToolboxStore.openedGeometryOptions.subscribe(options => this.editingEnabled = !!(options?.editing));
+    }
     this.querySelectorAll('.ngm-action-menu').forEach(el => $(el).dropdown());
   }
 
@@ -73,9 +82,19 @@ export default class NgmGeometriesList extends LitElementI18n {
     this.selectedFilter = type;
   }
 
+  onEditNameClick(index: number) {
+    if (this.nameEditIndex !== undefined) {
+      const geometry = this.geometries[this.nameEditIndex];
+      ToolboxStore.nextGeometryAction({id: geometry.id!, newName: geometry.name!, action: 'changeName'});
+    }
+    this.nameEditIndex = this.nameEditIndex === index ? undefined : index;
+  }
+
   actionMenuTemplate(geom: NgmGeometry) {
+    if (this.viewMode) return '';
     return html`
       <div class="menu">
+        ${this.hideMapInteractionButtons ? '' : html`
         <div class="item"
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'zoom'})}>
           ${i18next.t('tbx_fly_to_btn_hint')}
@@ -87,7 +106,7 @@ export default class NgmGeometriesList extends LitElementI18n {
         <div class="item ${classMap({'disabled': !geom.editable})}"
              @click=${() => ToolboxStore.setOpenedGeometryOptions({id: geom.id!, editing: true})}>
           ${i18next.t('tbx_edit_btn')}
-        </div>
+        </div>`}
         <div class="item ${classMap({'disabled': !geom.copyable})}"
              @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'copy'})}>
           ${i18next.t('tbx_copy_btn')}
@@ -110,6 +129,7 @@ export default class NgmGeometriesList extends LitElementI18n {
   }
 
   filterMenuTemplate() {
+    if (this.viewMode) return '';
     return html`
       <div class="menu">
         <div class="item"
@@ -126,6 +146,27 @@ export default class NgmGeometriesList extends LitElementI18n {
         </div>
       </div>
     `;
+  }
+
+  geometryNameTemplate(geom: NgmGeometry, index: number, disabled: boolean) {
+    return html`
+      <div>
+        ${this.nameEditIndex !== index ? html`
+          <div
+              @click=${() => !disabled && this.dispatchEvent(new CustomEvent('geomclick', {detail: geom}))}>
+            ${geom.name}
+          </div>` : html`
+          <div class="ngm-input ${classMap({'ngm-input-warning': !geom.name})}">
+            <input type="text" placeholder="required" .value=${geom.name}
+                   @input=${evt => {
+                     geom.name = evt.target.value;
+                   }}/>
+          </div>`}
+      </div>
+      ${this.directNameEdit ? html`
+        <div class="ngm-icon ngm-edit-icon ${classMap({active: this.nameEditIndex === index})}"
+             @click=${() => this.onEditNameClick(index)}>
+        </div>` : ''}`;
   }
 
   render() {
@@ -158,29 +199,29 @@ export default class NgmGeometriesList extends LitElementI18n {
                  title=${i18next.t('tbx_filter_rectangle')}
                  @click=${() => this.selectFilter('rectangle')}>
             </div>
-            <div class="ui dropdown right pointing ngm-action-menu">
-              <div class="ngm-action-menu-icon"></div>
-              ${this.filterMenuTemplate()}
-            </div>
+            ${this.viewMode ? '' : html`
+              <div class="ui dropdown right pointing ngm-action-menu">
+                <div class="ngm-action-menu-icon"></div>
+                ${this.filterMenuTemplate()}
+              </div>`}
           </div>
         </div>
-        ${geometries.map((i) => {
-          const disabled = (this.disabledCallback && this.disabledCallback(i)) || this.disabledTypes.includes(i.type) || this.editingEnabled;
-          const active = !disabled && this.selectedId === i.id;
-          const hidden = !disabled && !active && !i.show;
+        ${geometries.map((geom, index) => {
+          const disabled = (this.disabledCallback && this.disabledCallback(geom)) || this.disabledTypes.includes(geom.type) || this.editingEnabled;
+          const active = !disabled && this.selectedId === geom.id;
+          const hidden = !disabled && !active && !geom.show;
           return html`
             <div class="ngm-action-list-item ngm-geom-item ${classMap({active, disabled, hidden})}">
-              <div class="ngm-action-list-item-header">
-                <div
-                  @click=${() => !disabled && this.dispatchEvent(new CustomEvent('geomclick', {detail: i}))}>
-                  ${i.name}
-                </div>
-                <div class="ui dropdown right pointing ngm-action-menu">
-                  <div class="ngm-action-menu-icon"></div>
-                  ${this.actionMenuTemplate(i)}
-                </div>
+              <div class="ngm-action-list-item-header ${classMap({view: this.viewMode})}">
+                ${this.geometryNameTemplate(geom, index, disabled)}
+                ${this.viewMode ? '' : html`
+                  <div class="ui dropdown right pointing ngm-action-menu">
+                    <div class="ngm-action-menu-icon"></div>
+                    ${this.actionMenuTemplate(geom)}
+                  </div>`
+                }
               </div>
-              ${this.optionsTemplate ? this.optionsTemplate(i, active) : ''}
+              ${this.optionsTemplate ? this.optionsTemplate(geom, active) : ''}
             </div>
           `;
         })}

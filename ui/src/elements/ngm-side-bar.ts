@@ -43,6 +43,7 @@ import NavToolsStore from '../store/navTools';
 import {getLayerLabel} from '../swisstopoImagery.js';
 
 import type {Config} from '../layers/ngm-layers-item.js';
+import DashboardStore from '../store/dashboard';
 
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
@@ -287,6 +288,10 @@ export class SideBar extends LitElementI18n {
   }
 
   togglePanel(panelName, showHeader = true) {
+    if (DashboardStore.projectMode.value === 'edit') {
+      DashboardStore.showSaveOrCancelWarning(true);
+      return;
+    }
     this.showHeader = showHeader;
     if (this.activePanel === panelName) {
       this.activePanel = null;

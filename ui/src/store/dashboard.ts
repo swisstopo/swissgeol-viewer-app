@@ -4,12 +4,20 @@ import {NgmGeometry} from '../toolbox/interfaces';
 
 export type TopicParam = { topicId: string, viewId?: string | null }
 
+/**
+ * 'edit' - edit from dashboard (create / edit project)
+ * 'viewEdit' - view selected and geometries can be edited in the toolbox
+ * 'private' - user has no rights to edit the project
+ */
+export type ProjectMode = 'edit' | 'viewEdit' | 'private' | undefined
+
 export default class DashboardStore {
   private static selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
-  private static viewIndexSubject = new BehaviorSubject<number | undefined>(undefined);
+  private static viewIndexSubject = new Subject<number | undefined>();
   private static topicParamSubject = new BehaviorSubject<TopicParam | undefined>(undefined);
-  private static editModeSubject = new BehaviorSubject<boolean>(false);
+  private static projectModeSubject = new BehaviorSubject<ProjectMode>(undefined);
   private static geometriesSubject = new Subject<NgmGeometry[]>();
+  private static showSaveOrCancelWarningSubject = new Subject<boolean>();
 
   static get selectedTopicOrProject(): BehaviorSubject<Topic | Project | undefined> {
     return this.selectedTopicOrProjectSubject;
@@ -21,11 +29,11 @@ export default class DashboardStore {
   }
 
   static setViewIndex(value: number | undefined): void {
-    this.setEditMode(value !== undefined);
+    this.setProjectMode(value !== undefined ? 'viewEdit' : undefined);
     this.viewIndexSubject.next(value);
   }
 
-  static get viewIndex(): BehaviorSubject<number | undefined> {
+  static get viewIndex(): Subject<number | undefined> {
     return this.viewIndexSubject;
   }
 
@@ -37,12 +45,12 @@ export default class DashboardStore {
     return this.topicParamSubject;
   }
 
-  static setEditMode(value: boolean): void {
-    this.editModeSubject.next(value);
+  static setProjectMode(value: ProjectMode): void {
+    this.projectModeSubject.next(value);
   }
 
-  static get editMode(): BehaviorSubject<boolean> {
-    return this.editModeSubject;
+  static get projectMode(): BehaviorSubject<ProjectMode> {
+    return this.projectModeSubject;
   }
 
   static setGeometries(geometries: NgmGeometry[]) {
@@ -51,5 +59,13 @@ export default class DashboardStore {
 
   static get geometriesUpdate() {
     return this.geometriesSubject;
+  }
+
+  static showSaveOrCancelWarning(show: boolean) {
+    this.showSaveOrCancelWarningSubject.next(show);
+  }
+
+  static get onSaveOrCancelWarning() {
+    return this.showSaveOrCancelWarningSubject;
   }
 }

@@ -11,7 +11,9 @@ export interface GeometryAction {
   id?: string,
   type?: GeometryTypes,
   file?: File,
-  action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll' | 'profile' | 'add' | 'upload' | 'measure' | 'clearMeasure'
+  newName?: string
+  action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll' | 'profile' |
+      'add' | 'upload' | 'measure' | 'clearMeasure' | 'changeName'
 }
 
 export default class ToolboxStore {

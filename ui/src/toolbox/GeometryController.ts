@@ -393,6 +393,16 @@ export class GeometryController {
         break;
       case 'upload':
         this.uploadFile(options.file);
+        break;
+      case 'changeName':
+        this.changeName(options.id!, options.newName!);
+    }
+  }
+
+  changeName(id: string, newName: string) {
+    const entity = this.geometriesDataSource.entities.getById(id);
+    if (entity) {
+      entity.name = newName;
     }
   }
 

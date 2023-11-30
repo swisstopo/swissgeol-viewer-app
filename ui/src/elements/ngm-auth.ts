@@ -6,6 +6,7 @@ import {LitElementI18n} from '../i18n.js';
 import auth from '../store/auth';
 import {classMap} from 'lit/directives/class-map.js';
 import {customElement, property, state} from 'lit/decorators.js';
+import DashboardStore from '../store/dashboard';
 
 
 /**
@@ -49,6 +50,10 @@ export class NgmAuth extends LitElementI18n {
   }
 
   logout() {
+    if (DashboardStore.projectMode.value === 'edit') {
+      DashboardStore.showSaveOrCancelWarning(true);
+      return;
+    }
     Auth.logout();
   }
 

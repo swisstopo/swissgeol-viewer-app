@@ -4,13 +4,15 @@ import i18next from 'i18next';
 import {classMap} from 'lit/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import {COLORS_WITH_BLACK_TICK, PROJECT_COLORS} from '../../constants';
-import {CreateProject, Project} from './ngm-dashboard';
-import {property, customElement, query, state} from 'lit/decorators.js';
+import {Asset, CreateProject, Project} from './ngm-dashboard';
+import {customElement, property, query} from 'lit/decorators.js';
 import $ from '../../jquery';
 import '../../toolbox/ngm-geometries-list';
 import '../../layers/ngm-layers-upload';
 import {apiClient} from '../../api-client';
 import {showSnackbarError} from '../../notifications';
+import './ngm-project-geoms-section';
+import './ngm-project-assets-section';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -22,8 +24,6 @@ export class NgmProjectEdit extends LitElementI18n {
     accessor createMode = true;
     @query('.ngm-proj-toast-placeholder')
     accessor toastPlaceholder;
-    @state()
-    accessor kmlEditIndex: number | undefined;
 
     async onKmlUpload(file: File) {
         if (!this.project) return;
@@ -156,60 +156,15 @@ export class NgmProjectEdit extends LitElementI18n {
             </div>
             <div class="ngm-divider"></div>
             <div class="ngm-proj-edit-assets">
-                <div>
-                    <div class="ngm-proj-title-icon">
-                        <div class="ngm-vector-icon"></div>
-                        <div>${i18next.t('dashboard_project_geometries')}</div>
-                    </div>
-                    <div class="project-edit-fields">
-                        ${this.project.geometries?.length ?
-                                html`<ngm-geometries-list></ngm-geometries-list>` :
-                                html`<div>${i18next.t('dashboard_no_geom_text')}</div>`}
-                    </div>
-                </div>
-                <div>
-                    <div class="ngm-proj-title-icon">
-                        <div class="ngm-file-upload-icon"></div>
-                        <div>${i18next.t('dashboard_project_kml')}</div>
-                    </div>
-                    <div class="project-edit-fields">
-                        <ngm-layers-upload
-                                .toastPlaceholder=${this.toastPlaceholder}
-                                .onKmlUpload=${(file: File) => this.onKmlUpload(file)}></ngm-layers-upload>
-                        ${this.project?.assets.map((kml, index) => {
-                            return html`
-                             <div class="ngm-action-list-item ngm-geom-item">
-                               <div class="ngm-action-list-item-header">
-                                 <div>
-                                   ${this.kmlEditIndex !== index ? kml.name : html`
-                                   <div class="ngm-input ${classMap({'ngm-input-warning': !kml.name})}">
-                                         <input type="text" placeholder="required" .value=${kml.name}
-                                                @input=${evt => {
-                                kml.name = evt.target.value;
-                                project!.assets[index] = kml;
-                                this.project = {...project};
-                            }}/>
-                                     </div>`}
-                                 </div>
-                                 <div class="ngm-icon ngm-edit-icon ${classMap({
-                                active: this.kmlEditIndex === index
-                            })}" 
-                                      @click=${() => {
-                                this.kmlEditIndex = this.kmlEditIndex === index ? undefined : index;
-                            }}>
-                                 </div>
-                                 <div class="ngm-icon ngm-delete-icon"
-                                      @click=${() => {
-                                project.assets.splice(index, 1);
-                                this.project = {...project};
-                            }}>
-                                 </div>
-                               </div>
-                             </div>
-                            `;
-                        })}
-                    </div>
-                </div>
+                <ngm-project-geoms-section .geometries="${project.geometries}"></ngm-project-geoms-section>
+                <ngm-project-assets-section
+                        .assets="${project.assets}"
+                        .toastPlaceholder="${this.toastPlaceholder}"
+                        .onKmlUpload="${(file: File) => this.onKmlUpload(file)}"
+                        @assetChanged="${(evt: { detail: { assets: Asset[] } }) => {
+                            project!.assets = evt.detail.assets;
+                            this.project = {...project};
+                        }}"></ngm-project-assets-section>
             </div>
             <div class="ngm-divider"></div>
             <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onBack'))}>

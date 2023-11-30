@@ -1,4 +1,4 @@
-import {property, customElement} from 'lit/decorators.js';
+import {customElement, property} from 'lit/decorators.js';
 import {LitElementI18n, toLocaleDateString, translated} from '../../i18n';
 import {html, PropertyValues} from 'lit';
 import i18next from 'i18next';
@@ -10,6 +10,8 @@ import {apiClient} from '../../api-client';
 import {showBannerSuccess} from '../../notifications';
 import $ from '../../jquery';
 import {DEFAULT_PROJECT_COLOR} from '../../constants';
+import './ngm-project-geoms-section';
+import './ngm-project-assets-section';
 
 @customElement('ngm-project-topic-overview')
 export class NgmProjectTopicOverview extends LitElementI18n {
@@ -90,6 +92,15 @@ export class NgmProjectTopicOverview extends LitElementI18n {
             </div>
           </div>
         `)}
+      </div>
+      <div class="ngm-divider"></div>
+      <div class="ngm-proj-edit-assets">
+          <ngm-project-geoms-section .viewMode=${true}
+                                     .geometries="${this.topicOrProject.geometries}"></ngm-project-geoms-section>
+          <ngm-project-assets-section
+                  .assets="${this.topicOrProject.assets}"
+                  .toastPlaceholder="${this.toastPlaceholder}"
+                  .viewMode=${true}></ngm-project-assets-section>
       </div>
       <div class="ngm-divider"></div>
       <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onDeselect'))}>
