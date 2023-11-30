@@ -106,7 +106,7 @@ export class NgmPointEdit extends LitElementI18n {
           </div>
         </div>
       </div>
-      <div class="ngm-geom-edit-double-input">
+      <div class="ngm-geom-edit-coord-input">
         <div class="ngm-input">
           <input class="ngm-coord-x-input" style="${styleMap({fontSize: this.coordsType === 'lv95' ? '14px' : '16px'})}" step=${this.coordsType === 'lv95' ? 0.1 : 0.001} type="number" .value=${this.xValue.toFixed(1)}
                  @change="${this.onPositionChange}"
