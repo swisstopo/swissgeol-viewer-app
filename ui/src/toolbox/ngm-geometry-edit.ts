@@ -29,6 +29,8 @@ export class NgmGeometryEdit extends LitElementI18n {
   accessor selectedSymbol = '';
   @state()
   accessor name = '';
+  @state()
+  accessor validLowerLimit = true;
   private editingEntity: Entity | undefined;
   private viewer: Viewer | null | undefined;
   private minVolumeHeight = 1;
@@ -87,15 +89,43 @@ export class NgmGeometryEdit extends LitElementI18n {
     super.disconnectedCallback();
   }
 
-  onVolumeHeightLimitsChange() {
-    const lowerLimit = CesiumMath.clamp(Number(this.lowerLimitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
+  onHeightLimitChange() {
     const height = CesiumMath.clamp(Number(this.heightInput.value), this.minVolumeHeight, this.maxVolumeHeight);
-    this.lowerLimitInput.value = lowerLimit.toString();
     this.heightInput.value = height.toString();
+
+    const lowerLimit = Number(this.lowerLimitInput.value);
     this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
+
+    this.updateVolumePositions();
+  }
+
+  onLowerLimitChange() {
+    let lowerLimit;
+    // the condition allows users to enter the negative sign without converting it to 0
+    if (this.lowerLimitInput.value === '') {
+      lowerLimit = this.lowerLimitInput.value;
+    } else {
+      lowerLimit = CesiumMath.clamp(Number(this.lowerLimitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
+      this.lowerLimitInput.value = lowerLimit.toString();
+    }
+
+    const height = Number(this.heightInput.value);
+    this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
+
+    this.updateVolumePositions();
+  }
+
+  updateVolumePositions() {
     const positions = this.editingEntity!.polylineVolume!.positions!.getValue(this.julianDate);
     updateVolumePositions(this.editingEntity, positions, this.viewer!.scene.globe);
     this.viewer!.scene.requestRender();
+  }
+
+
+  lowerLimitInputValidation() {
+    const lowerLimit = this.editingEntity!.properties!.volumeHeightLimits.getValue().lowerLimit;
+    const validationTest = /^-?(0|[1-9]\d*)$/.test(lowerLimit);
+    this.validLowerLimit = validationTest;
   }
 
   onPropChange(evt, propName) {
@@ -212,17 +242,18 @@ export class NgmGeometryEdit extends LitElementI18n {
       </div>
       <div class="ngm-geom-edit-double-input"
            ?hidden=${!getValueOrUndefined(this.editingEntity!.properties!.volumeShowed) || type === 'point'}>
-        <div class="ngm-input">
-          <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit} step="0.1"
-                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed(1)}
-                 @input=${this.onVolumeHeightLimitsChange}
+        <div class="ngm-input ${classMap({'ngm-input-warning': !this.validLowerLimit})}">
+          <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit}
+                 .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed()}
+                 @input=${this.onLowerLimitChange}
+                 @focusout=${this.lowerLimitInputValidation}
                  class="ngm-lower-limit-input" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_lower_limit_label')}</span>
         </div>
         <div class="ngm-input">
-          <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight} step="0.1"
-                 .value=${getValueOrUndefined(this.editingEntity!.properties!.volumeHeightLimits)?.height.toFixed(1)}
-                 @input=${this.onVolumeHeightLimitsChange}
+          <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight}
+                 .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.height.toFixed()}
+                 @input=${this.onHeightLimitChange}
                  class="ngm-height-input" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
@@ -259,7 +290,7 @@ export class NgmGeometryEdit extends LitElementI18n {
       </div>
       <div class="ngm-geom-edit-actions">
         <button @click="${this.save}"
-                class="ui button ngm-action-btn ${classMap({'ngm-disabled': !this.name})}">
+                class="ui button ngm-action-btn ${classMap({'ngm-disabled': !this.name || !this.validLowerLimit})}">
           ${i18next.t('tbx_save_editing_btn_label')}
         </button>
         <button @click="${() => this.endEditing()}" class="ui button ngm-action-btn ngm-cancel-btn">
