@@ -53,7 +53,7 @@ export const SWISSTOPO_IT_HIGHLIGHT_COLOR = Color.fromCssColorString('#ff8000', 
 export const OBJECT_ZOOMTO_RADIUS = 500;
 
 export const PROJECT_ASSET_URL = document.location.hostname === 'localhost' ?
-    'http://localhost:9001/assets/saved/' : 'https://download.swissgeol.ch/assets/saved/';
+    'http://localhost:9000/ngmpub-userdata-local/assets/saved/' : 'https://download.swissgeol.ch/assets/saved/';
 
 export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
   lowerLimit: -5000,

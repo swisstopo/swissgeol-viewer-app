@@ -203,7 +203,7 @@ export class NgmDashboard extends LitElementI18n {
     if (!this.viewer) return assetsData;
     for (const asset of assets) {
       try {
-        const href = `${PROJECT_ASSET_URL}${asset.key}.kml`;
+        const href = `${PROJECT_ASSET_URL}${asset.key}`;
         const dataSources = this.viewer.dataSources.getByName(href);
         let uploadedLayer: CustomDataSource;
         if (dataSources.length) {

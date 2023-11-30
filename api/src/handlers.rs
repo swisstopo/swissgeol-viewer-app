@@ -221,7 +221,7 @@ pub async fn update_project(
     let keys_to_delete: HashSet<_> = saved_project_keys.difference(&new_project_keys).collect();
 
     for key in keys_to_delete {
-        let path = format!("assets/saved/{}.kml", key);
+        let path = format!("assets/saved/{}", key);
 
         client.delete_object()
             .bucket(&bucket)
@@ -379,15 +379,15 @@ pub async fn upload_asset(
         .take(40)
         .map(char::from)
         .collect();
-    let generated_file_name: String = format!("{}_{}", Utc::now().timestamp(), rand_string);
-    let temp_key = format!("assets/temp/{}.kml", generated_file_name);
+    let generated_file_name: String = format!("{}_{}.kml", Utc::now().timestamp(), rand_string);
+    let temp_name = format!("assets/temp/{}", generated_file_name);
     while let Some(field) = multipart.next_field().await.unwrap() {
         if field.name() == Some("file") {
             let bytes = field.bytes().await.unwrap();
 
             client.put_object()
                 .bucket(&bucket)
-                .key(&temp_key)
+                .key(&temp_name)
                 .body(bytes.into())
                 .send()
                 .await
@@ -404,8 +404,8 @@ async fn save_assets(
 ) {
     let bucket = std::env::var("S3_BUCKET").unwrap();
     for asset in project_assets {
-        let temp_key = format!("assets/temp/{}.kml", asset.key);
-        let permanent_key = format!("assets/saved/{}.kml", asset.key);
+        let temp_key = format!("assets/temp/{}", asset.key);
+        let permanent_key = format!("assets/saved/{}", asset.key);
 
         // Check if the file exists in the source directory
         let source_exists = client.head_object()
