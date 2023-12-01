@@ -7,7 +7,7 @@ import {NgmGeometry} from './toolbox/interfaces';
 
 
 class ApiClient {
-    projectsChange = new Subject<void>();
+    projectsChange = new Subject<Project[]>();
     token = Auth.getAccessToken();
     private apiUrl: string;
 
@@ -16,8 +16,14 @@ class ApiClient {
 
       AuthStore.user.subscribe(() => {
         this.token = Auth.getAccessToken();
-        this.projectsChange.next();
+        this.refreshProjects();
       });
+    }
+
+    async refreshProjects() {
+        const response = await this.getProjects();
+        const projects = await response.json();
+        this.projectsChange.next(projects);
     }
 
     updateProject(project: Project): Promise<Response> {
@@ -33,7 +39,7 @@ class ApiClient {
         body: JSON.stringify(project),
       })
       .then(response => {
-        this.projectsChange.next();
+        this.refreshProjects();
         return response;
       });
     }
@@ -93,7 +99,7 @@ class ApiClient {
         body: JSON.stringify(project),
       })
       .then(response => {
-        this.projectsChange.next();
+        this.refreshProjects();
         return response;
       });
     }
@@ -111,7 +117,7 @@ class ApiClient {
             headers: headers,
             body: JSON.stringify(project),
         });
-        this.projectsChange.next();
+        this.refreshProjects();
         return response;
     }
 

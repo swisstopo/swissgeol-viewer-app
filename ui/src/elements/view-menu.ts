@@ -8,6 +8,7 @@ import DashboardStore from '../store/dashboard';
 import $ from '../jquery';
 
 import type {Project, Topic, View} from './dashboard/ngm-dashboard';
+import {getPermalink} from '../permalink';
 
 @customElement('view-menu')
 export class ViewMenu extends LitElementI18n {
@@ -46,7 +47,7 @@ export class ViewMenu extends LitElementI18n {
                 const view: View = {
                     id: crypto.randomUUID(),
                     title: `${i18next.t('view')} ${this.viewIndex + 2}`,
-                    permalink: window.location.href,
+                    permalink: getPermalink(),
                 };
                 project.views.splice(this.viewIndex + 1, 0, view);
                 await apiClient.updateProject(project);

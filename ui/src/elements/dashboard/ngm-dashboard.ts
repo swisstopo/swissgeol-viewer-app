@@ -156,8 +156,8 @@ export class NgmDashboard extends LitElementI18n {
       // FIXME: extract from claims
       this.userEmail = user?.username.split('_')[1];
     });
-    apiClient.projectsChange.subscribe(() => {
-      this.refreshProjects();
+    apiClient.projectsChange.subscribe((projects) => {
+      this.refreshProjects(projects);
     });
     DashboardStore.geometriesUpdate.subscribe(geometries => {
       if (this.selectedTopicOrProject) {
@@ -166,7 +166,7 @@ export class NgmDashboard extends LitElementI18n {
         this.projectToCreate = {...this.projectToCreate, geometries};
       }
     });
-    this.refreshProjects();
+    apiClient.refreshProjects();
 
     DashboardStore.onSaveOrCancelWarning.subscribe(show => {
       if (this.projectMode !== 'view') {
@@ -175,14 +175,11 @@ export class NgmDashboard extends LitElementI18n {
     });
   }
 
-  async refreshProjects() {
-    if (apiClient.token) {
-      const response = await apiClient.getProjects();
-      this.projects = await response.json();
-      const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
-      if (project) {
-        this.selectTopicOrProject(project);
-      }
+  refreshProjects(projects: Project[]) {
+    this.projects = projects;
+    const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
+    if (project) {
+      this.selectTopicOrProject(project);
     }
   }
 
@@ -364,7 +361,7 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   cancelEditCreate() {
-      this.refreshProjects();
+      apiClient.refreshProjects();
       this.projectMode = 'view';
       this.saveOrCancelWarning = false;
       this.projectToCreate = undefined;
