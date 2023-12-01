@@ -204,7 +204,7 @@ pub async fn update_project(
 ) -> Result<StatusCode> {
     // TODO: Validate rights
 
-    let bucket = std::env::var("S3_BUCKET").unwrap();
+    let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
 
     let saved_project: Project = sqlx::query_scalar!(
         r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
@@ -337,7 +337,7 @@ pub async fn duplicate_project(
     };
 
     // // TODO: make static
-    // let bucket = std::env::var("S3_BUCKET").unwrap();
+    // let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
 
     // for asset in &project.assets {
     //     let url = Url::parse(asset.href.as_str()).context("Failed to parse asset url")?;
@@ -377,7 +377,7 @@ pub async fn upload_asset(
     Extension(client): Extension<Client>,
     mut multipart: Multipart,
 ) -> Result<Json<UploadResponse>> {
-    let bucket = std::env::var("S3_BUCKET").unwrap();
+    let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
     let rand_string: String = rand::thread_rng()
         .sample_iter(&Alphanumeric)
         .take(40)
@@ -406,7 +406,7 @@ pub async fn upload_asset(
 }
 
 async fn save_assets(client: Client, project_assets: &Vec<Asset>) {
-    let bucket = std::env::var("S3_BUCKET").unwrap();
+    let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
     for asset in project_assets {
         let temp_key = format!("assets/temp/{}", asset.key);
         let permanent_key = format!("assets/saved/{}", asset.key);
