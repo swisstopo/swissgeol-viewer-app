@@ -161,7 +161,7 @@ export class NgmProjectEdit extends LitElementI18n {
                         .assets="${project.assets}"
                         .toastPlaceholder="${this.toastPlaceholder}"
                         .onKmlUpload="${(file: File) => this.onKmlUpload(file)}"
-                        @assetChanged="${(evt: { detail: { assets: Asset[] } }) => {
+                        @assetsChanged="${(evt: { detail: { assets: Asset[] } }) => {
                             project!.assets = evt.detail.assets;
                             this.project = {...project};
                         }}"></ngm-project-assets-section>
