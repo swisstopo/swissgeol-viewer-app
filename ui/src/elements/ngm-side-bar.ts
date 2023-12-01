@@ -640,7 +640,6 @@ export class SideBar extends LitElementI18n {
   }
 
   async onKmlUpload(file: File) {
-    console.log(file, this.viewer);
     if (!this.viewer) return;
     const kmlDataSource = await KmlDataSource.load(file, {
       camera: this.viewer.scene.camera,

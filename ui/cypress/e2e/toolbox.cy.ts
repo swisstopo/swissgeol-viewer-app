@@ -4,7 +4,7 @@ const testGstOutput = () => {
   }).as('createSection');
   cy.get('ngm-gst-interaction .ngm-action-list-item.ngm-geom-item').should('not.have.class', 'disabled');
   cy.get('ngm-gst-interaction .ngm-action-list-item.ngm-geom-item').click();
-  cy.get('ngm-gst-interaction').click(1, 1);
+  cy.get('ngm-gst-interaction .ngm-geom-item .ngm-action-list-item-header > div:first-child').click(5, 5);
   cy.get('.ngm-gst-container .ngm-action-btn').click();
   cy.get('.ngm-gst-modal', {timeout: 15000}).should('be.visible');
   cy.get('ngm-gst-modal').then(el => {
