@@ -74,6 +74,7 @@ export class NgmProjectAssetsSection extends LitElementI18n {
                             </div>
                         `;
                     })}
+                    <div .hidden=${this.assets?.length > 0}>${i18next.t('dashboard_no_assets_text')}</div>
                 </div>
             </div>`;
     }
