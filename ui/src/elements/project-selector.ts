@@ -9,6 +9,7 @@ import AuthStore from '../store/auth';
 import $ from '../jquery';
 
 import type {Project, Topic, View} from './dashboard/ngm-dashboard';
+import {getPermalink} from '../permalink';
 
 @customElement('project-selector')
 export class ProjectSelector extends LitElementI18n {
@@ -33,14 +34,8 @@ export class ProjectSelector extends LitElementI18n {
             this.userEmail = user?.username.split('_')[1];
         });
 
-        apiClient.projectsChange.subscribe(() => this.refreshProjects());
-        this.refreshProjects();
-    }
-
-    refreshProjects() {
-        apiClient.getProjects()
-            .then(response => response.json())
-            .then(body => this.projects = body);
+        apiClient.projectsChange.subscribe((projects) => this.projects = projects);
+        apiClient.refreshProjects();
     }
 
     connectedCallback() {
@@ -66,7 +61,7 @@ export class ProjectSelector extends LitElementI18n {
         const view: View = {
             id: crypto.randomUUID(),
             title: `${i18next.t('view')} ${project?.views.length + 1}`,
-            permalink: window.location.href,
+            permalink: getPermalink(),
         };
 
         project.views.push(view);

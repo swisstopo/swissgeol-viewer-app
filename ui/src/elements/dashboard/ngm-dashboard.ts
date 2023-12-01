@@ -1,6 +1,6 @@
 import {LitElementI18n, translated} from '../../i18n';
 import {customElement, property, query, state} from 'lit/decorators.js';
-import {html} from 'lit';
+import {html, PropertyValues} from 'lit';
 import i18next from 'i18next';
 import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit-html/directives/class-map.js';
@@ -14,7 +14,7 @@ import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
 import {showSnackbarError, showBannerWarning} from '../../notifications';
 import type {Config} from '../../layers/ngm-layers-item';
-import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR} from '../../constants';
+import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
 import {fromGeoJSON} from '../../toolbox/helpers';
 import type {NgmGeometry} from '../../toolbox/interfaces';
 import {apiClient} from '../../api-client';
@@ -39,7 +39,8 @@ export interface View {
 }
 
 export interface Asset {
-  href: string,
+  name: string,
+  key: string,
 }
 
 export interface Topic {
@@ -52,7 +53,7 @@ export interface Topic {
   color: string,
   views: View[],
   assets: Asset[],
-  geometries?: Array<GeoJSON.Feature>,
+  geometries?: NgmGeometry[],
 }
 
 export interface CreateProject {
@@ -62,7 +63,7 @@ export interface CreateProject {
   color: string,
   views: View[],
   assets: Asset[],
-  geometries?: Array<GeoJSON.Feature>,
+  geometries?: NgmGeometry[],
   owner: string,
   members: string[],
   viewers: string[],
@@ -93,9 +94,7 @@ export class NgmDashboard extends LitElementI18n {
   @state()
   accessor selectedViewIndx: number | undefined;
   @state()
-  accessor projectEditMode = false;
-  @state()
-  accessor projectCreateMode = false;
+  accessor projectMode: 'edit' | 'create' | 'view' = 'view';
   @state()
   accessor saveOrCancelWarning = false;
   @query('.ngm-toast-placeholder')
@@ -114,7 +113,12 @@ export class NgmDashboard extends LitElementI18n {
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
     fetch('./src/sampleData/topics.json').then(topicsResponse =>
       topicsResponse.json().then(topics => {
-        this.topics = topics.sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
+        this.topics = topics.map(topic => {
+          if (topic.geometries) {
+            topic.geometries = this.getGeometries(topic.geometries);
+          }
+          return topic;
+        }).sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
         DashboardStore.topicParam.subscribe(async param => {
           if (!param) return;
           const {viewId, topicId} = param;
@@ -152,25 +156,30 @@ export class NgmDashboard extends LitElementI18n {
       // FIXME: extract from claims
       this.userEmail = user?.username.split('_')[1];
     });
-    apiClient.projectsChange.subscribe(() => {
-      apiClient.getProjects()
-        .then(response => response.json())
-        .then(body => this.projects = body);
-      const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
-      if (project) {this.selectedTopicOrProject = project;}
+    apiClient.projectsChange.subscribe((projects) => {
+      this.refreshProjects(projects);
     });
-    this.refreshProjects();
+    DashboardStore.geometriesUpdate.subscribe(geometries => {
+      if (this.selectedTopicOrProject) {
+        this.selectTopicOrProject({...this.selectedTopicOrProject, geometries});
+      } else if (this.projectToCreate) {
+        this.projectToCreate = {...this.projectToCreate, geometries};
+      }
+    });
+    apiClient.refreshProjects();
+
+    DashboardStore.onSaveOrCancelWarning.subscribe(show => {
+      if (this.projectMode !== 'view') {
+        this.saveOrCancelWarning = show;
+      }
+    });
   }
 
-  refreshProjects() {
-    if (apiClient.token) {
-      apiClient.getProjects()
-          .then(response => response.json())
-          .then(body => this.projects = body);
-      const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
-      if (project) {
-        this.selectedTopicOrProject = project;
-      }
+  refreshProjects(projects: Project[]) {
+    this.projects = projects;
+    const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
+    if (project) {
+      this.selectTopicOrProject(project);
     }
   }
 
@@ -189,17 +198,18 @@ export class NgmDashboard extends LitElementI18n {
     if (!this.viewer) return assetsData;
     for (const asset of assets) {
       try {
-        const dataSources = this.viewer.dataSources.getByName(asset.href);
+        const href = `${PROJECT_ASSET_URL}${asset.key}`;
+        const dataSources = this.viewer.dataSources.getByName(href);
         let uploadedLayer: CustomDataSource;
         if (dataSources.length) {
           uploadedLayer = dataSources[0];
           uploadedLayer.show = true;
         } else {
-          const kmlDataSource = await KmlDataSource.load(asset.href, {
+          const kmlDataSource = await KmlDataSource.load(href, {
             camera: this.viewer.scene.camera,
             canvas: this.viewer.scene.canvas
           });
-          uploadedLayer = new CustomDataSource(asset.href);
+          uploadedLayer = new CustomDataSource(href);
           let name = kmlDataSource.name;
           kmlDataSource.entities.values.forEach((ent, indx) => {
             if (indx === 0 && !name) {
@@ -207,7 +217,7 @@ export class NgmDashboard extends LitElementI18n {
             }
             uploadedLayer.entities.add(ent);
           });
-          this.assetConfigs[asset.href] = {
+          this.assetConfigs[href] = {
             label: name,
             zoomToBbox: true,
             opacity: DEFAULT_LAYER_OPACITY,
@@ -218,7 +228,7 @@ export class NgmDashboard extends LitElementI18n {
         }
         const promise = Promise.resolve(uploadedLayer);
         assetsData.push({
-          ...this.assetConfigs[asset.href],
+          ...this.assetConfigs[href],
           displayed: false,
           load() {
             return promise;
@@ -253,13 +263,12 @@ export class NgmDashboard extends LitElementI18n {
     await this.setDataFromPermalink();
   }
 
-  selectTopicOrProject(topic: Topic | Project) {
-    this.selectedTopicOrProject = topic;
-    if (this.selectedTopicOrProject.geometries) {
-      this.geometries = this.getGeometries(this.selectedTopicOrProject.geometries);
-    }
+  selectTopicOrProject(topicOrProject: Topic | Project | undefined) {
+    this.selectedTopicOrProject = topicOrProject;
     DashboardStore.setSelectedTopicOrProject(this.selectedTopicOrProject);
-    this.addRecentlyViewedTopicOrProject(topic);
+    if (topicOrProject) {
+      this.addRecentlyViewedTopicOrProject(topicOrProject);
+    }
   }
 
   removeGeometries() {
@@ -270,10 +279,9 @@ export class NgmDashboard extends LitElementI18n {
 
   deselectTopicOrProject() {
     this.runIfNotEditCreate(() => {
-      this.selectedTopicOrProject = undefined;
+      this.selectTopicOrProject(undefined);
       this.assets = [];
       this.removeGeometries();
-      DashboardStore.setSelectedTopicOrProject(undefined);
     });
   }
 
@@ -324,40 +332,43 @@ export class NgmDashboard extends LitElementI18n {
       members: [],
       viewers: [],
     };
-    this.projectCreateMode = true;
+    this.projectMode = 'create';
   }
 
-  async onProjectSave(project: Project) {
-    if (this.projectEditMode) {
-      await apiClient.updateProject(project);
-      this.projectEditMode = false;
-    } else if (this.projectCreateMode && this.projectToCreate) {
+  onProjectEdit() {
+    this.projectMode = 'edit';
+  }
+
+  async onProjectSave(project: Project | CreateProject) {
+    if (this.projectMode === 'edit') {
+      await apiClient.updateProject(<Project>project);
+      this.projectMode = 'view';
+    } else if (this.projectMode === 'create' && this.projectToCreate) {
       try {
-        const response = await apiClient.createProject(this.projectToCreate);
+        const response = await apiClient.createProject(project);
         const id = await response.json();
         const projectResponse = await apiClient.getProject(id);
-        const project = await projectResponse.json();
-        this.selectTopicOrProject(project);
+        const createdProject = await projectResponse.json();
+        this.selectTopicOrProject(createdProject);
       } catch (e) {
         console.error(e);
         showSnackbarError(i18next.t('dashboard_project_create_error'));
       }
-      this.projectCreateMode = false;
+      this.projectMode = 'view';
       this.projectToCreate = undefined;
     }
     this.saveOrCancelWarning = false;
   }
 
   cancelEditCreate() {
-      this.refreshProjects();
-      this.projectEditMode = false;
-      this.projectCreateMode = false;
+      apiClient.refreshProjects();
+      this.projectMode = 'view';
       this.saveOrCancelWarning = false;
       this.projectToCreate = undefined;
   }
 
   runIfNotEditCreate(callback: () => void) {
-    if (this.projectEditMode || this.projectCreateMode) {
+    if (this.projectMode !== 'view') {
       this.saveOrCancelWarning = true;
     } else {
       callback();
@@ -415,6 +426,13 @@ export class NgmDashboard extends LitElementI18n {
       }
     }
     return html``;
+  }
+
+  updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('projectMode')) {
+      DashboardStore.setProjectMode(this.projectMode !== 'view' ? 'edit' : undefined);
+    }
+    super.updated(changedProperties);
   }
 
   render() {
@@ -478,11 +496,11 @@ export class NgmDashboard extends LitElementI18n {
           </div>
         </div>
         <div ?hidden=${!this.isProjectSelected}>
-          ${this.projectEditMode || this.projectCreateMode ?
+          ${this.projectMode !== 'view' ?
               html`<ngm-project-edit 
-                     .project="${this.projectCreateMode ? this.projectToCreate : this.selectedTopicOrProject}" 
+                     .project="${this.projectMode === 'create' ? this.projectToCreate : this.selectedTopicOrProject}" 
                      .saveOrCancelWarning="${this.saveOrCancelWarning}"
-                     .createMode="${this.projectCreateMode}"
+                     .createMode="${this.projectMode === 'create'}"
                      @onBack=${this.deselectTopicOrProject}
                      @onSave="${async (evt: {detail: {project: Project}}) => this.onProjectSave(evt.detail.project)}"
                      @onCancel="${this.cancelEditCreate}"></ngm-project-edit>` :
@@ -493,7 +511,7 @@ export class NgmDashboard extends LitElementI18n {
                      .selectedViewIndx="${this.selectedViewIndx}"
                      .userEmail="${this.userEmail}"
                      @onDeselect="${this.deselectTopicOrProject}"
-                     @onEdit="${() => this.projectEditMode = true}"
+                     @onEdit="${this.onProjectEdit}"
                      @onProjectDuplicated="${(evt: {detail: {project: Project}}) => this.onProjectDuplicated(evt.detail.project)}"
                     ></ngm-project-topic-overview>`}
         </div>

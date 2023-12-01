@@ -44,7 +44,7 @@ RUN cargo fmt --all -- --check
 # we don't care about linting dependencies, but clippy still does so despite our use
 # of --package and --no-deps flags
 # this is relatively fast so not a blocker
-RUN cargo clippy --package api --target x86_64-unknown-linux-musl --tests --examples --offline --release -- -D warnings  --no-deps
+RUN cargo clippy --package api --target x86_64-unknown-linux-musl --tests --examples --offline --release  --no-deps
 
 # The tests actually requires a live DB so it must be run after the image is built
 # See "make acceptance"

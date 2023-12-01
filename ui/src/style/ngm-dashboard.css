@@ -1,11 +1,11 @@
 ngm-dashboard .ngm-panel-header,
 .ngm-proj-title,
-.ngm-proj-views-title,
+.ngm-proj-title-icon,
 .ngm-projects-list {
   margin-bottom: 12px;
 }
 
-.ngm-proj-views-title,
+.ngm-proj-title-icon,
 .ngm-proj-title {
   display: flex;
   color: #212529;
@@ -16,8 +16,13 @@ ngm-dashboard .ngm-panel-header,
   justify-content: space-between;
 }
 
-.ngm-proj-views-title > div:first-child {
+.ngm-proj-title-icon > div:first-child {
   margin-right: 15px;
+}
+
+.ngm-proj-title-icon .ngm-screenshot-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .ngm-dashboard-tabs {
@@ -206,9 +211,17 @@ ngm-dashboard .ngm-label-btn {
   justify-content: start;
 }
 
+ngm-dashboard .ngm-delete-icon,
 ngm-dashboard .ngm-label-btn .ngm-back-icon {
   background-color: var(--ngm-interaction);
+}
+
+ngm-dashboard .ngm-label-btn .ngm-back-icon {
   margin-right: 8px;
+}
+
+ngm-dashboard .ngm-delete-icon {
+  margin-left: 5px;
 }
 
 ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
@@ -220,6 +233,7 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   cursor: pointer;
 }
 
+ngm-dashboard .ngm-delete-icon:hover,
 .ngm-view-icon:hover, .ngm-view-icon:focus, .ngm-edit-icon:hover, .edit-project:hover > .ngm-edit-icon {
   background-color: var(--ngm-interaction-hover);
 }
@@ -244,7 +258,8 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   margin: 0 10px;
 }
 
-.edit-project.active > .ngm-edit-icon  {
+.edit-project.active > .ngm-edit-icon,
+.ngm-edit-icon.active  {
   background-color: var(--ngm-interaction-active);
 }
 
@@ -260,8 +275,8 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   width: 100%;
 }
 
-.project-views-edit {
-  margin-left: 32px;
+.project-edit-fields {
+  margin-left: 39px;
 }
 
 .project-view-edit {
@@ -288,4 +303,29 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   background-color: rgba(0, 0, 0, 0);
   color: #0C7285;
   box-shadow: none;
+}
+
+.ngm-proj-edit-assets {
+  display: flex;
+  width: 100%;
+  gap: 22px
+}
+
+ngm-project-assets-section,
+ngm-project-geoms-section {
+  width: 360px;
+}
+
+ngm-project-edit .ngm-action-list-item .ngm-action-list-item-header {
+  display: flex;
+  align-items: center;
+}
+
+ngm-project-edit .ngm-action-list-item .ngm-input {
+  margin-right: 5px;
+}
+
+ngm-project-edit .ngm-action-list-item .ngm-input input {
+  height: 36px;
+  padding: 0;
 }

@@ -41,6 +41,14 @@ ngm-measure .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1
   color: var(--ngm-interaction-hover);
 }
 
+.ngm-action-list-item-header.view {
+  cursor: default;
+}
+
+.ngm-action-list-item-header.view > div:nth-child(1):hover {
+  color: var(--ngm-interaction);
+}
+
 .ngm-action-list-item-header .ngm-action-menu-icon:hover {
   background-color: var(--ngm-interaction-hover);
 }

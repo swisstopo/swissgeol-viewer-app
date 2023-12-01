@@ -24,6 +24,8 @@ import {CesiumDraw} from '../draw/CesiumDraw';
 import DrawStore from '../store/draw';
 import {GeometryController} from './GeometryController';
 import {showSnackbarInfo} from '../notifications';
+import DashboardStore from '../store/dashboard';
+import {apiClient} from '../api-client';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
@@ -50,7 +52,21 @@ export class NgmToolbox extends LitElementI18n {
       this.viewer = viewer;
       this.viewer?.dataSources.add(this.geometriesDataSource);
       this.geometriesDataSource!.entities.collectionChanged.addEventListener((_collection) => {
-        LocalStorageController.setAoiInStorage(this.entitiesList);
+        const projectEditMode = DashboardStore.projectMode.value;
+        if (!projectEditMode || projectEditMode === 'private') {
+          LocalStorageController.setAoiInStorage(this.entitiesList);
+        } else if (projectEditMode === 'viewEdit' || projectEditMode === 'edit') {
+          const geometries = this.entitiesList;
+          DashboardStore.setGeometries(geometries);
+          const project = DashboardStore.selectedTopicOrProject.value;
+          if (projectEditMode === 'viewEdit' && project) {
+            try {
+              apiClient.updateProjectGeometries(project.id, geometries);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
         ToolboxStore.setGeometries(this.entitiesList);
         this.viewer!.scene.requestRender();
         this.requestUpdate();
@@ -93,6 +109,15 @@ export class NgmToolbox extends LitElementI18n {
           this.slicerElement.toggleSlicer();
         }
         this.activeTool = 'profile';
+      }
+    });
+    DashboardStore.projectMode.subscribe(editMode => {
+      if (!this.geometryController) return;
+      if (editMode === 'edit' || editMode === 'viewEdit') {
+        const geometries = DashboardStore.selectedTopicOrProject.value?.geometries;
+        this.geometryController!.setGeometries(geometries || []);
+      } else {
+        this.geometryController!.setGeometries(LocalStorageController.getStoredAoi());
       }
     });
 

@@ -52,6 +52,10 @@ export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Co
 export const SWISSTOPO_IT_HIGHLIGHT_COLOR = Color.fromCssColorString('#ff8000', new Color());
 export const OBJECT_ZOOMTO_RADIUS = 500;
 
+const hostname = document.location.hostname;
+export const PROJECT_ASSET_URL = hostname === 'localhost' ?
+    'http://localhost:9000/ngmpub-project-files-local/assets/saved/' : `https://project-files.${hostname}/assets/saved/`;
+
 export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
   lowerLimit: -5000,
   height: 10000

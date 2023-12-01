@@ -326,13 +326,14 @@ export class NgmSlicer extends LitElementI18n {
       </div>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
+          listTitle="${i18next.t('tbx_my_geometries')}"
         .selectedId=${this.sliceGeomId}
         .disabledTypes=${['point', 'polygon']}
         .optionsTemplate=${(geom) => this.sliceOptionsTemplate({geom})}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => ToolboxStore.setSliceGeometry(evt.detail)}>
       </ngm-geometries-list>
       <ngm-geometries-list
-        title=${i18next.t('tbx_geometries_from_topic')}
+          listTitle=${i18next.t('tbx_geometries_from_topic')}
         .disabledTypes=${['point', 'polygon']}
         .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
       ></ngm-geometries-list>

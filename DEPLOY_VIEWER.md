@@ -22,6 +22,9 @@ export PROTECTED_BUCKET="ngm-protected-prod" # for tilesets restricted by cognit
 export DOWNLOAD_BUCKET="ngmpub-download-bgdi-ch" # for publishing dataset sources
 export DATA_EXCHANGE="ngm-data-exchange" # internal, for exchanging data (not accessible)
 export RELEASES_BUCKET="ngmpub-releases-bgdi-ch" # where the UI releases are published
+export PROD_PROJECT_FILES_BUCKET="ngmpub-prod-project-files-bgdi-ch" # prod bucket where the project files saved
+export INT_PROJECT_FILES_BUCKET="ngmpub-int-project-files-bgdi-ch" # int bucket where the project files saved
+export DEV_PROJECT_FILES_BUCKET="ngmpub-dev-project-files-bgdi-ch" # dev bucket where the project files saved
 ```
 
 ### Listing content of a bucket:

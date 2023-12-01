@@ -3,10 +3,11 @@ import AuthStore from './store/auth';
 import {API_BY_PAGE_HOST} from './constants';
 import type {CreateProject, Project} from './elements/dashboard/ngm-dashboard';
 import {Subject} from 'rxjs';
+import {NgmGeometry} from './toolbox/interfaces';
 
 
 class ApiClient {
-    projectsChange = new Subject<void>();
+    projectsChange = new Subject<Project[]>();
     token = Auth.getAccessToken();
     private apiUrl: string;
 
@@ -15,8 +16,14 @@ class ApiClient {
 
       AuthStore.user.subscribe(() => {
         this.token = Auth.getAccessToken();
-        this.projectsChange.next();
+        this.refreshProjects();
       });
+    }
+
+    async refreshProjects() {
+        const response = await this.getProjects();
+        const projects = await response.json();
+        this.projectsChange.next(projects);
     }
 
     updateProject(project: Project): Promise<Response> {
@@ -32,11 +39,24 @@ class ApiClient {
         body: JSON.stringify(project),
       })
       .then(response => {
-        this.projectsChange.next();
+        this.refreshProjects();
         return response;
       });
     }
 
+    updateProjectGeometries(id: string, geometries: NgmGeometry[]): Promise<Response> {
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        addAuthorization(headers, this.token);
+
+        return fetch(`${this.apiUrl}/projects/${id}/geometries`, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify(geometries),
+        });
+    }
 
     getProject(id: string): Promise<Response> {
       const headers = {
@@ -79,7 +99,7 @@ class ApiClient {
         body: JSON.stringify(project),
       })
       .then(response => {
-        this.projectsChange.next();
+        this.refreshProjects();
         return response;
       });
     }
@@ -97,8 +117,22 @@ class ApiClient {
             headers: headers,
             body: JSON.stringify(project),
         });
-        this.projectsChange.next();
+        this.refreshProjects();
         return response;
+    }
+
+    async uploadProjectAsset(file: File) {
+        const headers = {};
+        const formData = new FormData();
+        formData.append('file', file);
+
+        addAuthorization(headers, this.token);
+
+        return fetch(`${this.apiUrl}/projects/upload_asset`, {
+            method: 'POST',
+            headers: headers,
+            body: formData
+        });
     }
 }
 

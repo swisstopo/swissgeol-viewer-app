@@ -2,20 +2,16 @@ import {html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
-import {KmlDataSource, CustomDataSource} from 'cesium';
 import {showBannerError, showSnackbarInfo} from '../notifications';
-import {DEFAULT_LAYER_OPACITY} from '../constants';
-import type {Config} from './ngm-layers-item';
 import $ from '../jquery.js';
-import type {Viewer} from 'cesium';
 import {classMap} from 'lit-html/directives/class-map.js';
 
 @customElement('ngm-layers-upload')
 export default class LayersUpload extends LitElementI18n {
   @property({type: Object})
-  accessor viewer!: Viewer;
-  @property({type: Object})
   accessor toastPlaceholder!: HTMLElement;
+  @property({type: Function})
+  accessor onKmlUpload!: (file: File) => Promise<void> | void;
   @state()
   accessor loading = false;
   @query('.ngm-upload-kml')
@@ -29,40 +25,7 @@ export default class LayersUpload extends LitElementI18n {
     } else {
       try {
         this.loading = true;
-        const kmlDataSource = await KmlDataSource.load(file, {
-          camera: this.viewer.scene.camera,
-          canvas: this.viewer.scene.canvas
-        });
-        const uploadedLayer = new CustomDataSource();
-        let name = kmlDataSource.name;
-        kmlDataSource.entities.values.forEach((ent, indx) => {
-          if (indx === 0 && !name) {
-            name = ent.name!;
-          }
-          uploadedLayer.entities.add(ent);
-        });
-        // name used as id for datasource
-        uploadedLayer.name = `${name}_${Date.now()}`;
-        await this.viewer.dataSources.add(uploadedLayer);
-        // done like this to have correct rerender of component
-        const promise = Promise.resolve(uploadedLayer);
-        const config: Config = {
-          load() {return promise;},
-          label: name,
-          promise: promise,
-          zoomToBbox: true,
-          opacity: DEFAULT_LAYER_OPACITY,
-          notSaveToPermalink: true,
-          ownKml: true
-        };
-
-        this.requestUpdate();
-        this.dispatchEvent(new CustomEvent('layerclick', {
-          detail: {
-            layer: config
-          }
-        }));
-        await this.viewer.zoomTo(uploadedLayer);
+        await this.onKmlUpload(file);
         this.uploadKmlInput.value = '';
         this.loading = false;
       } catch (e) {

@@ -106,7 +106,8 @@ export class DataDownload extends LitElementI18n {
     return html`
       <ngm-draw-section .enabledTypes=${['rectangle']} .showUpload=${false}></ngm-draw-section>
       <div class="ngm-divider"></div>
-      <ngm-geometries-list
+      <ngm-geometries-list 
+          listTitle="${i18next.t('tbx_my_geometries')}"
         .selectedId=${this.selectedGeometryId}
         .disabledTypes=${['point', 'polygon', 'line']}
         .optionsTemplate=${(geom: NgmGeometry) => this.downloadOptionsTemplate(geom)}
@@ -114,7 +115,7 @@ export class DataDownload extends LitElementI18n {
         @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}
       ></ngm-geometries-list>
       <ngm-geometries-list
-        title=${i18next.t('tbx_geometries_from_topic')}
+          listTitle=${i18next.t('tbx_geometries_from_topic')}
         .disabledTypes=${['point', 'polygon', 'line']}
         .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
       ></ngm-geometries-list>

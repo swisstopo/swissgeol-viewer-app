@@ -19,15 +19,15 @@ export interface AreasCounter {
 export type GeometryTypes = 'point' | 'line' | 'rectangle' | 'polygon'
 
 export interface NgmGeometry {
+  type: GeometryTypes;
+  positions: Array<Cartesian3>;
   id?: string;
   name?: string;
   show?: boolean;
-  positions: Array<Cartesian3>;
   area?: string | number;
   perimeter?: string | number;
   sidesLength?: Array<string | number>;
   numberOfSegments?: number;
-  type: GeometryTypes;
   description?: string;
   image?: string;
   website?: string;

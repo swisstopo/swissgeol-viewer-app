@@ -3,6 +3,7 @@ use axum::{
     http::{HeaderValue, Method},
     routing::get,
     routing::post,
+    routing::put,
     Router,
 };
 use clap::Parser;
@@ -49,6 +50,11 @@ pub async fn app(pool: PgPool) -> Router {
             "/api/projects/:id",
             get(handlers::get_project).put(handlers::update_project),
         )
+        .route(
+            "/api/projects/:id/geometries",
+            put(handlers::update_project_geometries),
+        )
+        .route("/api/projects/upload_asset", post(handlers::upload_asset))
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
