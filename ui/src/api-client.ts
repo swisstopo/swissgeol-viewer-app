@@ -122,9 +122,7 @@ class ApiClient {
     }
 
     async uploadProjectAsset(file: File) {
-        const headers = {
-            // 'Content-Type': 'multipart/form-data',
-        };
+        const headers = {};
         const formData = new FormData();
         formData.append('file', file);
 
