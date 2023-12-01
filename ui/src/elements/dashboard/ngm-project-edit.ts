@@ -36,7 +36,7 @@ export class NgmProjectEdit extends LitElementI18n {
             }
         } catch (e) {
             console.error(e);
-            showSnackbarError(i18next.t('dtd_cant_upload_kml_error')); // todo add new message
+            showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
         }
     }
 
