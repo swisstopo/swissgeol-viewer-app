@@ -120,7 +120,7 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
             terrainUrl = 'https://download.swissgeol.ch/cli_terrain/ch-2m/';
             break;
         default:
-            terrainUrl = 'https://3d.geo.admin.ch/ch.swisstopo.terrain.3d/v1/layer.json';
+            terrainUrl = 'https://3d.geo.admin.ch/ch.swisstopo.terrain.3d/v1/';
     }
 
     const requestRenderMode = !searchParams.has('norequestrendermode');
