@@ -94,9 +94,7 @@ export class NgmDashboard extends LitElementI18n {
   @state()
   accessor selectedViewIndx: number | undefined;
   @state()
-  accessor projectEditMode = false;
-  @state()
-  accessor projectCreateMode = false;
+  accessor projectMode: 'edit' | 'create' | 'view' = 'view';
   @state()
   accessor saveOrCancelWarning = false;
   @query('.ngm-toast-placeholder')
@@ -171,7 +169,7 @@ export class NgmDashboard extends LitElementI18n {
     this.refreshProjects();
 
     DashboardStore.onSaveOrCancelWarning.subscribe(show => {
-      if (this.projectEditMode || this.projectCreateMode) {
+      if (this.projectMode !== 'view') {
         this.saveOrCancelWarning = show;
       }
     });
@@ -337,18 +335,18 @@ export class NgmDashboard extends LitElementI18n {
       members: [],
       viewers: [],
     };
-    this.projectCreateMode = true;
+    this.projectMode = 'create';
   }
 
   onProjectEdit() {
-    this.projectEditMode = true;
+    this.projectMode = 'edit';
   }
 
   async onProjectSave(project: Project | CreateProject) {
-    if (this.projectEditMode) {
+    if (this.projectMode === 'edit') {
       await apiClient.updateProject(<Project>project);
-      this.projectEditMode = false;
-    } else if (this.projectCreateMode && this.projectToCreate) {
+      this.projectMode = 'view';
+    } else if (this.projectMode === 'create' && this.projectToCreate) {
       try {
         const response = await apiClient.createProject(project);
         const id = await response.json();
@@ -359,7 +357,7 @@ export class NgmDashboard extends LitElementI18n {
         console.error(e);
         showSnackbarError(i18next.t('dashboard_project_create_error'));
       }
-      this.projectCreateMode = false;
+      this.projectMode = 'view';
       this.projectToCreate = undefined;
     }
     this.saveOrCancelWarning = false;
@@ -367,14 +365,13 @@ export class NgmDashboard extends LitElementI18n {
 
   cancelEditCreate() {
       this.refreshProjects();
-      this.projectEditMode = false;
-      this.projectCreateMode = false;
+      this.projectMode = 'view';
       this.saveOrCancelWarning = false;
       this.projectToCreate = undefined;
   }
 
   runIfNotEditCreate(callback: () => void) {
-    if (this.projectEditMode || this.projectCreateMode) {
+    if (this.projectMode !== 'view') {
       this.saveOrCancelWarning = true;
     } else {
       callback();
@@ -435,8 +432,8 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   updated(changedProperties: PropertyValues) {
-    if (changedProperties.has('projectEditMode') || changedProperties.has('projectCreateMode')) {
-      DashboardStore.setProjectMode(this.projectEditMode || this.projectCreateMode ? 'edit' : undefined);
+    if (changedProperties.has('projectMode')) {
+      DashboardStore.setProjectMode(this.projectMode !== 'view' ? 'edit' : undefined);
     }
     super.updated(changedProperties);
   }
@@ -502,11 +499,11 @@ export class NgmDashboard extends LitElementI18n {
           </div>
         </div>
         <div ?hidden=${!this.isProjectSelected}>
-          ${this.projectEditMode || this.projectCreateMode ?
+          ${this.projectMode !== 'view' ?
               html`<ngm-project-edit 
-                     .project="${this.projectCreateMode ? this.projectToCreate : this.selectedTopicOrProject}" 
+                     .project="${this.projectMode === 'create' ? this.projectToCreate : this.selectedTopicOrProject}" 
                      .saveOrCancelWarning="${this.saveOrCancelWarning}"
-                     .createMode="${this.projectCreateMode}"
+                     .createMode="${this.projectMode === 'create'}"
                      @onBack=${this.deselectTopicOrProject}
                      @onSave="${async (evt: {detail: {project: Project}}) => this.onProjectSave(evt.detail.project)}"
                      @onCancel="${this.cancelEditCreate}"></ngm-project-edit>` :
