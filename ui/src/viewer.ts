@@ -116,8 +116,11 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
         case 'cli_walensee_0.5m':
             terrainUrl = 'https://download.swissgeol.ch/cli_terrain/walensee-0.5m/';
             break;
-        default:
+        case 'cli_terrain_ch-2m':
             terrainUrl = 'https://download.swissgeol.ch/cli_terrain/ch-2m/';
+            break;
+        default:
+            terrainUrl = 'https://3d.geo.admin.ch/ch.swisstopo.terrain.3d/v1/';
     }
 
     const requestRenderMode = !searchParams.has('norequestrendermode');
