@@ -112,6 +112,7 @@ export class NgmGeometryEdit extends LitElementI18n {
     const height = Number(this.heightInput.value);
     this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
 
+    this.lowerLimitInputValidation();
     this.updateVolumePositions();
   }
 
@@ -124,7 +125,7 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   lowerLimitInputValidation() {
     const lowerLimit = this.editingEntity!.properties!.volumeHeightLimits.getValue().lowerLimit;
-    const validationTest = /^-?(0|[1-9]\d*)$/.test(lowerLimit);
+    const validationTest = /^-?(0|[1-9]\d*)(\.\d+)?$/.test(lowerLimit);
     this.validLowerLimit = validationTest;
   }
 
@@ -244,16 +245,17 @@ export class NgmGeometryEdit extends LitElementI18n {
            ?hidden=${!getValueOrUndefined(this.editingEntity!.properties!.volumeShowed) || type === 'point'}>
         <div class="ngm-input ${classMap({'ngm-input-warning': !this.validLowerLimit})}">
           <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit}
-                 .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed()}
-                 @input=${this.onLowerLimitChange}
-                 @focusout=${this.lowerLimitInputValidation}
+                 .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed(1)}
+                 step="0.1"
+                 @focusout=${this.onLowerLimitChange}
                  class="ngm-lower-limit-input" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_lower_limit_label')}</span>
         </div>
         <div class="ngm-input">
           <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight}
-                 .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.height.toFixed()}
-                 @input=${this.onHeightLimitChange}
+                 .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.height.toFixed(1)}
+                 step="0.1"
+                 @focusout=${this.onHeightLimitChange}
                  class="ngm-height-input" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
