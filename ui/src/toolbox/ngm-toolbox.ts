@@ -59,7 +59,7 @@ export class NgmToolbox extends LitElementI18n {
           const geometries = this.entitiesList;
           DashboardStore.setGeometries(geometries);
           const project = DashboardStore.selectedTopicOrProject.value;
-          if (projectEditMode === 'viewEdit' && project) {
+          if (projectEditMode === 'viewEdit' && project && !ToolboxStore.openedGeometryOptions.value?.editing) {
             try {
               apiClient.updateProjectGeometries(project.id, geometries);
             } catch (e) {

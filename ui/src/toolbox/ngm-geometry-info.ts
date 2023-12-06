@@ -10,7 +10,7 @@ import ToolboxStore from '../store/toolbox';
 import i18next from 'i18next';
 import type {NgmGeometry} from './interfaces';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {downloadGeometry, hideVolume, updateEntityVolume} from './helpers';
+import {downloadGeometry, hideVolume, pauseGeometryCollectionEvents, updateEntityVolume} from './helpers';
 import './ngm-geometry-edit';
 import {styleMap} from 'lit/directives/style-map.js';
 import {showSnackbarInfo} from '../notifications';
@@ -59,6 +59,7 @@ export class NgmGeometryInfo extends LitElementI18n {
     super.connectedCallback();
   }
 
+  @pauseGeometryCollectionEvents
   toggleGeomVolume(geom: NgmGeometry) {
     if (geom.volumeShowed) {
       hideVolume(this.geomEntity!);
@@ -80,6 +81,7 @@ export class NgmGeometryInfo extends LitElementI18n {
     }
   }
 
+  @pauseGeometryCollectionEvents
   onSliceClick() {
     if (this.editing) {
       this.showLostChangesWarn();

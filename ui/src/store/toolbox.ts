@@ -2,7 +2,7 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import type Slicer from '../slicer/Slicer';
 import type {GeometryTypes, NgmGeometry} from '../toolbox/interfaces';
 
-interface OpenedGeometryOptions {
+export interface OpenedGeometryOptions {
   id: string,
   editing?: boolean
 }
