@@ -199,10 +199,18 @@ pub async fn update_project(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
-    _claims: Claims,
+    claims: Claims,
     Json(mut project): Json<Project>,
 ) -> Result<StatusCode> {
-    // TODO: Validate rights
+
+    let email = claims.email;
+
+    if project.owner != email && !project.members.contains(&email) {
+        return Err(Error::Api(
+            StatusCode::BAD_REQUEST,
+            "Project owner does not match token claims.",
+        ));
+    }
 
     let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
 
@@ -252,10 +260,11 @@ pub async fn update_project_geometries(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
     Extension(_client): Extension<Client>,
-    _claims: Claims,
+    claims: Claims,
     Json(geometries): Json<Vec<Geometry>>,
 ) -> Result<StatusCode> {
-    // TODO: Validate rights
+
+    let email = claims.email;
 
     let mut project: Project = sqlx::query_scalar!(
         r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
@@ -264,6 +273,13 @@ pub async fn update_project_geometries(
     .fetch_one(&pool)
     .await?
     .0;
+
+    if project.owner != email && !project.members.contains(&email) {
+        return Err(Error::Api(
+            StatusCode::BAD_REQUEST,
+            "Project owner does not match token claims.",
+        ));
+    }
 
     project.geometries = geometries;
 
