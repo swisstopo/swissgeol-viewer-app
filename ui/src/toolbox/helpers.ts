@@ -215,3 +215,22 @@ export function fromGeoJSON(feature: GeoJSON.Feature): NgmGeometry {
     color: feature.properties?.color ? Color.fromCssColorString(feature.properties.color) : undefined
   };
 }
+
+/**
+ * Class method decorator. Class should have `geometriesDataSource` property.
+ * Suspend events until all geometries are updated to reduce the number of requests
+ * @param {Function} originalMethod
+ * @param _context
+ */
+export function pauseGeometryCollectionEvents(originalMethod: any, _context: any) {
+  return function(this: any, ...args: any[]) {
+    if (!this.geometriesDataSource) {
+      console.warn('No geometriesDataSource.');
+      return originalMethod.apply(this, args);
+    }
+    this.geometriesDataSource.entities.suspendEvents();
+    const result = originalMethod.apply(this, args);
+    this.geometriesDataSource.entities.resumeEvents();
+    return result;
+  };
+}

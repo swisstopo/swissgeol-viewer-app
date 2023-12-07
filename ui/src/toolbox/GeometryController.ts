@@ -1,5 +1,5 @@
 import MainStore from '../store/main';
-import type {GeometryAction} from '../store/toolbox';
+import type {GeometryAction, OpenedGeometryOptions} from '../store/toolbox';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import {showBannerError, showSnackbarInfo} from '../notifications';
@@ -29,7 +29,13 @@ import {
 import type {AreasCounter, GeometryTypes, NgmGeometry} from './interfaces';
 import {extendKmlWithProperties, getValueOrUndefined} from '../cesiumutils';
 import NavToolsStore from '../store/navTools';
-import {flyToGeom, getAreaProperties, getUploadedEntityType, updateEntityVolume} from './helpers';
+import {
+  flyToGeom,
+  getAreaProperties,
+  getUploadedEntityType,
+  pauseGeometryCollectionEvents,
+  updateEntityVolume
+} from './helpers';
 import {parseJson} from '../utils';
 import {
   AVAILABLE_GEOMETRY_TYPES,
@@ -92,13 +98,7 @@ export class GeometryController {
       }
     });
     ToolboxStore.geometryAction.subscribe(options => this.handleActions(options));
-    ToolboxStore.openedGeometryOptions.subscribe(options => {
-      if (!options || !options.id || options.editing) {
-        this.deselectGeometry();
-      } else if (options.id) {
-        this.pickGeometry(options.id);
-      }
-    });
+    ToolboxStore.openedGeometryOptions.subscribe(options => this.selectGeometry(options));
   }
 
   onClick_(click) {
@@ -156,6 +156,13 @@ export class GeometryController {
     }
   }
 
+  selectGeometry(options: OpenedGeometryOptions | null) {
+    if (!options || !options.id || options.editing) {
+      this.deselectGeometry();
+    } else if (options.id) {
+      this.pickGeometry(options.id);
+    }
+  }
 
   deselectGeometry() {
     if (this.selectedArea) {
@@ -164,6 +171,7 @@ export class GeometryController {
     }
   }
 
+  @pauseGeometryCollectionEvents
   private pickGeometry(id) {
     if (this.selectedArea && this.selectedArea.id === id) {
       return;
@@ -180,7 +188,7 @@ export class GeometryController {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (entity) entity.show = show;
   }
-
+  @pauseGeometryCollectionEvents
   private showHideGeometryByType(show: boolean, type?: GeometryTypes) {
     this.geometriesDataSource!.entities.values.forEach(entity => {
       if (!type || getValueOrUndefined(entity.properties!.type) === type)
@@ -209,6 +217,7 @@ export class GeometryController {
     }
   }
 
+  @pauseGeometryCollectionEvents
   flyToGeometry(id) {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (!entity) return;
@@ -324,6 +333,7 @@ export class GeometryController {
   }
 
 
+  @pauseGeometryCollectionEvents
   updateHighlight(entity, selected) {
     if (entity.billboard) {
       if (selected) {
@@ -406,6 +416,7 @@ export class GeometryController {
     }
   }
 
+  @pauseGeometryCollectionEvents
   copyGeometry(id) {
     const entityToCopy = this.geometriesDataSource!.entities.getById(id);
     if (!entityToCopy) return;
@@ -567,6 +578,7 @@ export class GeometryController {
   }
 
 
+  @pauseGeometryCollectionEvents
   setGeometries(geometries: NgmGeometry[]) {
     this.geometriesDataSource.entities.removeAll();
     geometries.forEach(geom => {

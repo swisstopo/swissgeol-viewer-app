@@ -2,18 +2,25 @@ import {LitElementI18n} from '../i18n';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import type {ConstantProperty, Event, Viewer} from 'cesium';
-import {Entity, PropertyBag, Math as CesiumMath, JulianDate} from 'cesium';
+import {Entity, PropertyBag, Math as CesiumMath, JulianDate, CustomDataSource} from 'cesium';
 import i18next from 'i18next';
 import MainStore from '../store/main';
-import {getAreaProperties, hideVolume, updateEntityVolume, updateVolumePositions} from './helpers';
+import {
+  getAreaProperties,
+  hideVolume,
+  pauseGeometryCollectionEvents,
+  updateEntityVolume,
+  updateVolumePositions
+} from './helpers';
 import {getEntityColor, getValueOrUndefined} from '../cesiumutils';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import type {CesiumDraw} from '../draw/CesiumDraw';
-import {COLORS_WITH_BLACK_TICK, GEOMETRY_COLORS, POINT_SYMBOLS} from '../constants';
+import {COLORS_WITH_BLACK_TICK, GEOMETRY_COLORS, GEOMETRY_DATASOURCE_NAME, POINT_SYMBOLS} from '../constants';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import './ngm-point-edit';
+import {skip, take} from 'rxjs';
 
 @customElement('ngm-geometry-edit')
 export class NgmGeometryEdit extends LitElementI18n {
@@ -40,13 +47,25 @@ export class NgmGeometryEdit extends LitElementI18n {
   private julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;
   private unsubscribeFromChanges: Event.RemoveCallback | undefined;
+  private geometriesDataSource: CustomDataSource | undefined;
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe(viewer => {
+      this.viewer = viewer;
+      if (this.viewer) {
+        this.geometriesDataSource = this.viewer.dataSources.getByName(GEOMETRY_DATASOURCE_NAME)[0];
+      }
+    });
   }
 
   update(changedProps) {
+    this.onEntityChange();
+    super.update(changedProps);
+  }
+
+  @pauseGeometryCollectionEvents
+  onEntityChange() {
     if (this.entity && !this.editingEntity) {
       this.editingEntity = new Entity({properties: new PropertyBag()});
       // deep clone entity and props
@@ -59,19 +78,7 @@ export class NgmGeometryEdit extends LitElementI18n {
       this.selectedSymbol = getValueOrUndefined(this.editingEntity.billboard?.image);
       this.name = this.editingEntity.name || '';
       this.draw = DrawStore.drawValue;
-      this.unsubscribeFromChanges = this.entity.properties!.definitionChanged.addEventListener(properties => {
-        const volumeShowed = getValueOrUndefined(properties.volumeShowed);
-        if (volumeShowed !== getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)) {
-          this.editingEntity!.properties!.volumeShowed = volumeShowed;
-          if (volumeShowed) {
-            updateEntityVolume(this.editingEntity!, this.viewer!.scene.globe);
-          } else {
-            hideVolume(this.editingEntity!);
-          }
-          this.viewer?.scene.requestRender();
-          this.requestUpdate();
-        }
-      });
+      this.unsubscribeFromChanges = this.entity.properties!.definitionChanged.addEventListener(properties => this.onEntityPropertyChange(properties));
       if (this.draw) {
         this.cancelDraw();
         this.draw.entityForEdit = this.editingEntity;
@@ -79,14 +86,21 @@ export class NgmGeometryEdit extends LitElementI18n {
         this.draw.active = true;
       }
     }
-    super.update(changedProps);
   }
 
-  disconnectedCallback() {
-    if (this.unsubscribeFromChanges) this.unsubscribeFromChanges();
-    this.cancelDraw();
-    this.removeEditingEntity();
-    super.disconnectedCallback();
+  @pauseGeometryCollectionEvents
+  onEntityPropertyChange(properties) {
+    const volumeShowed = getValueOrUndefined(properties.volumeShowed);
+    if (volumeShowed !== getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)) {
+      this.editingEntity!.properties!.volumeShowed = volumeShowed;
+      if (volumeShowed) {
+        updateEntityVolume(this.editingEntity!, this.viewer!.scene.globe);
+      } else {
+        hideVolume(this.editingEntity!);
+      }
+      this.viewer?.scene.requestRender();
+      this.requestUpdate();
+    }
   }
 
   onHeightLimitChange() {
@@ -137,6 +151,7 @@ export class NgmGeometryEdit extends LitElementI18n {
     }
   }
 
+  @pauseGeometryCollectionEvents
   save() {
     if (this.entity && this.editingEntity) {
       this.entity.properties = <any>getAreaProperties(this.editingEntity, this.editingEntity.properties!.type.getValue());
@@ -174,11 +189,18 @@ export class NgmGeometryEdit extends LitElementI18n {
     if (!this.editingEntity) return;
     this.viewer!.entities.removeById(this.editingEntity!.id);
     this.editingEntity = undefined;
-    this.entity!.show = true;
     this.viewer!.scene.requestRender();
   }
 
   endEditing() {
+    this.geometriesDataSource?.entities.suspendEvents();
+    if (this.unsubscribeFromChanges) this.unsubscribeFromChanges();
+    this.cancelDraw();
+    this.removeEditingEntity();
+    if (this.entity) this.entity.show = true;
+    ToolboxStore.openedGeometryOptions.pipe(skip(1), take(1)).subscribe(() => {
+      this.geometriesDataSource?.entities.resumeEvents();
+    });
     ToolboxStore.setOpenedGeometryOptions(this.entity ? {id: this.entity.id} : null);
   }
 
