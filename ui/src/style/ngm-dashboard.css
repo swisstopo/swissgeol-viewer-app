@@ -20,9 +20,14 @@ ngm-dashboard .ngm-panel-header,
   margin-right: 15px;
 }
 
+.ngm-proj-title-icon .ngm-user-icon,
 .ngm-proj-title-icon .ngm-screenshot-icon {
   width: 24px;
   height: 24px;
+}
+
+.ngm-proj-title-icon .ngm-user-icon {
+  background-color: black;
 }
 
 .ngm-dashboard-tabs {

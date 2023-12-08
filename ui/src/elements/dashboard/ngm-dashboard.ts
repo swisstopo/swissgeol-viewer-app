@@ -43,6 +43,12 @@ export interface Asset {
   key: string,
 }
 
+export interface Member {
+  email: string,
+  name: string,
+  surname: string
+}
+
 export interface Topic {
   id: string,
   title: TextualAttribute,
@@ -64,9 +70,9 @@ export interface CreateProject {
   views: View[],
   assets: Asset[],
   geometries?: NgmGeometry[],
-  owner: string,
-  members: string[],
-  viewers: string[],
+  owner: Member,
+  members: Member[],
+  viewers: Member[],
 }
 
 export interface Project extends CreateProject {
@@ -328,7 +334,11 @@ export class NgmDashboard extends LitElementI18n {
         title: `${i18next.t('dashboard_project_view')} 1`,
         permalink: getPermalink()
       }],
-      owner: this.userEmail,
+      owner: {
+        email: this.userEmail,
+        name: this.userEmail.split('@')[0],
+        surname: '',
+      },
       members: [],
       viewers: [],
     };

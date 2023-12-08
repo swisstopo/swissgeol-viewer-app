@@ -90,7 +90,7 @@ export class ProjectSelector extends LitElementI18n {
                     <i class="dropdown icon"></i>
                     <div class="default text">${i18next.t('select_project')}</div>
                     <div class="menu">
-                        ${this.projects?.filter(p => [p.owner, ...p.members].includes(this.userEmail!)).map(project => html`
+                        ${this.projects?.filter(p => [p.owner.email, ...p.members].includes(this.userEmail!)).map(project => html`
                             <div class="item"
                                  data-value="${project.id}"
                             >${project.title}</div>

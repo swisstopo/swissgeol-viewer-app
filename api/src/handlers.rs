@@ -16,9 +16,11 @@ use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct CreateProject {
-    pub owner: String,
-    pub viewers: Vec<String>,
-    pub members: Vec<String>,
+    pub owner: Member,
+    #[serde(default)]
+    pub viewers: Vec<Member>,
+    #[serde(default)]
+    pub members: Vec<Member>,
     pub title: String,
     pub description: Option<String>,
     pub image: Option<String>,
@@ -29,6 +31,13 @@ pub struct CreateProject {
     pub assets: Vec<Asset>,
     #[serde(default)]
     pub geometries: Vec<Geometry>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct Member {
+    pub email: String,
+    pub name: String,
+    pub surname: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -44,9 +53,11 @@ pub struct Project {
     pub views: Vec<View>,
     #[serde(default)]
     pub assets: Vec<Asset>,
-    pub owner: String,
-    pub viewers: Vec<String>,
-    pub members: Vec<String>,
+    pub owner: Member,
+    #[serde(default)]
+    pub viewers: Vec<Member>,
+    #[serde(default)]
+    pub members: Vec<Member>,
     #[serde(default)]
     pub geometries: Vec<Geometry>,
 }
@@ -142,7 +153,7 @@ pub async fn create_project(
     Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
     // Sanity check
-    if project.owner != claims.email {
+    if project.owner.email != claims.email {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -162,7 +173,7 @@ pub async fn create_project(
         color: project.color,
         views: project.views,
         assets: project.assets,
-        owner: claims.email,
+        owner: project.owner,
         viewers: project.viewers,
         members: project.members,
         geometries: project.geometries,
@@ -204,8 +215,8 @@ pub async fn update_project(
 ) -> Result<StatusCode> {
 
     let email = claims.email;
-
-    if project.owner != email && !project.members.contains(&email) {
+    let member_emails: Vec<String> = project.members.iter().map(|p| p.email.clone()).collect();
+    if project.owner.email != email && !member_emails.contains(&email) {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -274,7 +285,8 @@ pub async fn update_project_geometries(
     .await?
     .0;
 
-    if project.owner != email && !project.members.contains(&email) {
+    let member_emails: Vec<String> = project.members.iter().map(|p| p.email.clone()).collect();
+    if project.owner.email != email && !member_emails.contains(&email) {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -299,13 +311,21 @@ pub async fn list_projects(
     Extension(pool): Extension<PgPool>,
     claims: Claims,
 ) -> Result<Json<Vec<Project>>> {
-    let result = sqlx::query_scalar!(
+    let result = sqlx::query_as!(
+        sqlx::types::Json<Project>,
         r#"
         SELECT project AS "project: sqlx::types::Json<Project>"
         FROM projects
-        WHERE project->>'owner' = $1 OR
-        project->'viewers' ? $1 OR
-        project->'members' ? $1
+        WHERE
+            project->'owner'->>'email' = $1 OR
+            EXISTS (
+                SELECT 1 FROM jsonb_array_elements(project->'viewers') AS viewer
+                WHERE viewer->>'email' = $1
+            ) OR
+            EXISTS (
+                SELECT 1 FROM jsonb_array_elements(project->'members') AS member
+                WHERE member->>'email' = $1
+            )
         "#,
         claims.email
     )
@@ -328,7 +348,7 @@ pub async fn duplicate_project(
     Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
     // Sanity check
-    if project.owner != claims.email {
+    if project.owner.email != claims.email {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -346,7 +366,7 @@ pub async fn duplicate_project(
         color: project.color,
         views: project.views,
         assets: Vec::new(),
-        owner: claims.email,
+        owner: project.owner,
         viewers: Vec::new(),
         members: Vec::new(),
         geometries: project.geometries,
