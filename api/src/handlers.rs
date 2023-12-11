@@ -253,7 +253,6 @@ pub async fn delete_project(
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
 ) -> Result<StatusCode> {
-         
     // Delete assets from bucket
     let saved_project: Project = sqlx::query_scalar!(
         r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
@@ -262,18 +261,16 @@ pub async fn delete_project(
     .fetch_one(&pool)
     .await?
     .0;
-    
+
     if !saved_project.assets.is_empty() {
         delete_assets(client, &saved_project.assets).await
     }
 
     // Delete project from database
-    let delete_project = sqlx::query(
-        r#"DELETE FROM projects WHERE id = $1"#,
-    )
-    .bind(id)
-    .execute(&pool)
-    .await?;
+    sqlx::query(r#"DELETE FROM projects WHERE id = $1"#)
+        .bind(id)
+        .execute(&pool)
+        .await?;
 
     Ok(StatusCode::NO_CONTENT)
 }
