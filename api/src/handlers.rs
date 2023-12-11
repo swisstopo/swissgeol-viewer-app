@@ -16,7 +16,7 @@ use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct ProjectQuery {
-    project: sqlx::types::Json<Project>
+    project: sqlx::types::Json<Project>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -218,7 +218,6 @@ pub async fn update_project(
     claims: Claims,
     Json(mut project): Json<Project>,
 ) -> Result<StatusCode> {
-
     let email = claims.email;
     let member_emails: Vec<String> = project.members.iter().map(|p| p.email.clone()).collect();
     if project.owner.email != email && !member_emails.contains(&email) {
@@ -279,7 +278,6 @@ pub async fn update_project_geometries(
     claims: Claims,
     Json(geometries): Json<Vec<Geometry>>,
 ) -> Result<StatusCode> {
-
     let email = claims.email;
 
     let mut project: Project = sqlx::query_scalar!(
