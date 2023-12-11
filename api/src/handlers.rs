@@ -239,7 +239,7 @@ pub async fn update_project(
 
     let project_assets = &project.assets;
     let saved_project_keys: HashSet<_> = saved_project.assets.into_iter().map(|a| a.key).collect();
-    let new_project_keys: HashSet<_> = project_assets.into_iter().map(|a| a.key.clone()).collect();
+    let new_project_keys: HashSet<_> = project_assets.iter().map(|a| a.key.clone()).collect();
 
     // Find keys that are in saved_project_keys but not in new_project_keys
     let keys_to_delete: HashSet<_> = saved_project_keys.difference(&new_project_keys).collect();
@@ -439,9 +439,9 @@ pub async fn upload_asset(
         }
     }
 
-    return Ok(Json(UploadResponse {
+    Ok(Json(UploadResponse {
         key: generated_file_name,
-    }));
+    }))
 }
 
 async fn save_assets(client: Client, project_assets: &Vec<Asset>) {
