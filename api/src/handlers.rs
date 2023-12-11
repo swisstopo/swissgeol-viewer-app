@@ -15,6 +15,11 @@ use serde_json::Number;
 use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct ProjectQuery {
+    project: sqlx::types::Json<Project>
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct CreateProject {
     pub owner: Member,
     #[serde(default)]
@@ -31,13 +36,6 @@ pub struct CreateProject {
     pub assets: Vec<Asset>,
     #[serde(default)]
     pub geometries: Vec<Geometry>,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
-pub struct Member {
-    pub email: String,
-    pub name: String,
-    pub surname: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -73,6 +71,13 @@ pub struct View {
 pub struct Asset {
     pub name: String,
     pub key: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct Member {
+    pub email: String,
+    pub name: String,
+    pub surname: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -312,9 +317,9 @@ pub async fn list_projects(
     claims: Claims,
 ) -> Result<Json<Vec<Project>>> {
     let result = sqlx::query_as!(
-        sqlx::types::Json<Project>,
+        ProjectQuery,
         r#"
-        SELECT project AS "project: sqlx::types::Json<Project>"
+        SELECT project AS "project!: sqlx::types::Json<Project>"
         FROM projects
         WHERE
             project->'owner'->>'email' = $1 OR
@@ -335,7 +340,7 @@ pub async fn list_projects(
     Ok(Json(
         result
             .iter()
-            .map(|v: &sqlx::types::Json<Project>| v.to_owned().0)
+            .map(|v: &ProjectQuery| v.project.to_owned().0)
             .collect(),
     ))
 }
