@@ -248,6 +248,37 @@ pub async fn update_project(
 }
 
 #[axum_macros::debug_handler]
+pub async fn delete_project(
+    Path(id): Path<Uuid>,
+    Extension(pool): Extension<PgPool>,
+    Extension(client): Extension<Client>,
+) -> Result<StatusCode> {
+         
+    // Delete assets from bucket
+    let saved_project: Project = sqlx::query_scalar!(
+        r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
+        id
+    )
+    .fetch_one(&pool)
+    .await?
+    .0;
+    
+    if !saved_project.assets.is_empty() {
+        delete_assets(client, &saved_project.assets).await
+    }
+
+    // Delete project from database
+    let delete_project = sqlx::query(
+        r#"DELETE FROM projects WHERE id = $1"#,
+    )
+    .bind(id)
+    .execute(&pool)
+    .await?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+#[axum_macros::debug_handler]
 pub async fn update_project_geometries(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
@@ -443,6 +474,32 @@ async fn save_assets(client: Client, project_assets: &Vec<Asset>) {
                 .delete_object()
                 .bucket(&bucket)
                 .key(&temp_key)
+                .send()
+                .await
+                .unwrap();
+        }
+    }
+}
+
+async fn delete_assets(client: Client, project_assets: &Vec<Asset>) {
+    let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
+    for asset in project_assets {
+        let permanent_key = format!("assets/saved/{}", asset.key);
+
+        // Check if the file exists in the destination directory
+        let destination_exists = client
+            .head_object()
+            .bucket(&bucket)
+            .key(&permanent_key)
+            .send()
+            .await
+            .is_ok();
+
+        if destination_exists {
+            client
+                .delete_object()
+                .bucket(&bucket)
+                .key(&permanent_key)
                 .send()
                 .await
                 .unwrap();

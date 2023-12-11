@@ -21,8 +21,7 @@ class ApiClient {
     }
 
     async refreshProjects() {
-        const response = await this.getProjects();
-        const projects = await response.json();
+        const projects = await this.getProjects();
         this.projectsChange.next(projects);
     }
 
@@ -37,6 +36,20 @@ class ApiClient {
         method: 'PUT',
         headers: headers,
         body: JSON.stringify(project),
+      })
+      .then(response => {
+        this.refreshProjects();
+        return response;
+      });
+    }
+
+    deleteProject(id: string): Promise<Response> {
+      const headers = {};
+      addAuthorization(headers, this.token);
+
+      return fetch(`${this.apiUrl}/projects/${id}`, {
+        method: 'DELETE',
+        headers: headers,
       })
       .then(response => {
         this.refreshProjects();
@@ -72,17 +85,25 @@ class ApiClient {
     }
 
 
-    getProjects(): Promise<Response> {
+    async getProjects(): Promise<Project[]> {
+      let projects: Project[] = [];
+      if (!this.token) {
+          return projects;
+      }
       const headers = {
         'Accept': 'application/json',
       };
 
       addAuthorization(headers, this.token);
-
-      return fetch(`${this.apiUrl}/projects`, {
-        method: 'GET',
-        headers: headers,
-      });
+        const response = await fetch(`${this.apiUrl}/projects`, {
+            method: 'GET',
+            headers: headers,
+        });
+        if (!response.ok) {
+            return projects;
+        }
+        projects = await response.json();
+        return projects;
     }
 
     duplicateProject(project: CreateProject): Promise<Response> {

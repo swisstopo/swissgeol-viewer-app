@@ -4,6 +4,7 @@ use axum::{
     routing::get,
     routing::post,
     routing::put,
+    routing::delete,
     Router,
 };
 use clap::Parser;
@@ -48,7 +49,7 @@ pub async fn app(pool: PgPool) -> Router {
         .route("/api/projects/duplicate", post(handlers::duplicate_project))
         .route(
             "/api/projects/:id",
-            get(handlers::get_project).put(handlers::update_project),
+            get(handlers::get_project).put(handlers::update_project).delete(handlers::delete_project),
         )
         .route(
             "/api/projects/:id/geometries",

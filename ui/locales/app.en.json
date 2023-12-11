@@ -17,6 +17,8 @@
   "created_on": "Created on",
   "dashboard_back_to_topics": "Back to overview topics",
   "dashboard_by_swisstopo_title": "by swisstopo",
+  "dashboard_delete_warning_description": "The project and its assests will be permanently deleted. This action cannot be undone.",
+  "dashboard_delete_warning_title": "Are you sure you want to delete?",
   "dashboard_description": "Description",
   "dashboard_modified_title": "Modified on",
   "dashboard_my_projects": "My projects",
