@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT project as \"project: sqlx::types::Json<Project>\" FROM projects WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "project: sqlx::types::Json<Project>",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "5c4b5175d59b4d6c8fee6f823c3a7cbdbdb18f355ddf32cad8b85e6e149a7c0b"
+}

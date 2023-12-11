@@ -23,7 +23,7 @@ tower = "0.4.13"
 tower-http = { version = "0.3.5", features = ["cors", "trace"] }
 
 # Database
-sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "postgres", "offline", "uuid", "time"] }
+sqlx = { version = "0.7.3", features = ["runtime-tokio-rustls", "postgres", "uuid", "time"] }
 
 # AWS
 aws-config = "0.51.0"

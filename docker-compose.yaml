@@ -30,6 +30,7 @@ services:
     volumes:
       - ./api/src:/app/src:ro
       - ./api/migrations:/app/migrations:ro
+      - ./api/.sqlx:/app/.sqlx:ro
       - ./api/Cargo.toml:/app/Cargo.toml:ro
     links:
       - db
