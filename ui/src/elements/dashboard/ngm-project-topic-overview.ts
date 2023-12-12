@@ -1,4 +1,4 @@
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, query} from 'lit/decorators.js';
 import {LitElementI18n, toLocaleDateString, translated} from '../../i18n';
 import {html, PropertyValues} from 'lit';
 import i18next from 'i18next';
@@ -12,6 +12,7 @@ import $ from '../../jquery';
 import {DEFAULT_PROJECT_COLOR} from '../../constants';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
+import './ngm-delete-warning-modal';
 import './ngm-project-members-section';
 
 @customElement('ngm-project-topic-overview')
@@ -26,6 +27,8 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     accessor userEmail: string = '';
     @property({type: Number})
     accessor selectedViewIndx: number | undefined;
+    @query('ngm-delete-warning-modal')
+    accessor deleteWarningModal;
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {
         return this.topicOrProject !== undefined;
@@ -46,6 +49,9 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         const projectModerator = [ownerEmail, ...memberEmails].includes(this.userEmail);
 
         return html`
+      <ngm-delete-warning-modal
+        @onProjectDeleted="${() => this.deleteProject()}"
+      > </ngm-delete-warning-modal>
       <div>
         <div class="ngm-proj-title">
           ${translated(this.topicOrProject.title)}
@@ -131,6 +137,11 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink() || '')}">
           ${i18next.t('dashboard_share_topic_email')}
         </a>
+        <div class="item"
+            ?hidden=${this.activeTab === 'topics'}     
+            @click=${() => this.deleteWarningModal.show = true}>
+          ${i18next.t('delete')}
+        </div>
       </div>
     `;
     }
@@ -142,6 +153,10 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         const projectResponse = await apiClient.getProject(id);
         const project = await projectResponse.json();
         this.dispatchEvent(new CustomEvent('onProjectDuplicated', {detail: {project}}));
+    }
+
+    async deleteProject() {
+      await apiClient.deleteProject(this.topicOrProject!.id);
     }
 
     async copyLink(viewId?: string) {

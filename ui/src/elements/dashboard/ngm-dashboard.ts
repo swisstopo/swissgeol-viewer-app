@@ -523,6 +523,7 @@ export class NgmDashboard extends LitElementI18n {
                      @onDeselect="${this.deselectTopicOrProject}"
                      @onEdit="${this.onProjectEdit}"
                      @onProjectDuplicated="${(evt: {detail: {project: Project}}) => this.onProjectDuplicated(evt.detail.project)}"
+                     @onProjectDeleted="${() => this.deselectTopicOrProject()}"
                     ></ngm-project-topic-overview>`}
         </div>
       </div>

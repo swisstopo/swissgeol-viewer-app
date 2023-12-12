@@ -43,6 +43,20 @@ class ApiClient {
       });
     }
 
+    deleteProject(id: string): Promise<Response> {
+      const headers = {};
+      addAuthorization(headers, this.token);
+
+      return fetch(`${this.apiUrl}/projects/${id}`, {
+        method: 'DELETE',
+        headers: headers,
+      })
+      .then(response => {
+        this.refreshProjects();
+        return response;
+      });
+    }
+
     updateProjectGeometries(id: string, geometries: NgmGeometry[]): Promise<Response> {
         const headers = {
             'Content-Type': 'application/json'
