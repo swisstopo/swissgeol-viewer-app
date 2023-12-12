@@ -9,9 +9,9 @@ export class NgmProjectMembersSection extends LitElementI18n {
     @property({type: Object})
     accessor project!: Project;
 
-    memberInfoRender(member: Member, role: 'owner' | 'member' | 'viewer') {
+    memberInfoRender(member: Member, role: 'owner' | 'editor' | 'viewer') {
         let roleText = i18next.t('dashboard_project_owner');
-        if (role === 'member') roleText = i18next.t('dashboard_project_editor');
+        if (role === 'editor') roleText = i18next.t('dashboard_project_editor');
         else if (role === 'viewer') roleText = i18next.t('dashboard_project_member');
         return html`
             <div class="ngm-member">

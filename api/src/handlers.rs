@@ -25,7 +25,7 @@ pub struct CreateProject {
     #[serde(default)]
     pub viewers: Vec<Member>,
     #[serde(default)]
-    pub members: Vec<Member>,
+    pub editors: Vec<Member>,
     pub title: String,
     pub description: Option<String>,
     pub image: Option<String>,
@@ -55,7 +55,7 @@ pub struct Project {
     #[serde(default)]
     pub viewers: Vec<Member>,
     #[serde(default)]
-    pub members: Vec<Member>,
+    pub editors: Vec<Member>,
     #[serde(default)]
     pub geometries: Vec<Geometry>,
 }
@@ -180,7 +180,7 @@ pub async fn create_project(
         assets: project.assets,
         owner: project.owner,
         viewers: project.viewers,
-        members: project.members,
+        editors: project.editors,
         geometries: project.geometries,
     };
 
@@ -219,7 +219,7 @@ pub async fn update_project(
     Json(mut project): Json<Project>,
 ) -> Result<StatusCode> {
     let email = claims.email;
-    let member_emails: Vec<String> = project.members.iter().map(|p| p.email.clone()).collect();
+    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone()).collect();
     if project.owner.email != email && !member_emails.contains(&email) {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
@@ -316,7 +316,7 @@ pub async fn update_project_geometries(
     .await?
     .0;
 
-    let member_emails: Vec<String> = project.members.iter().map(|p| p.email.clone()).collect();
+    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone()).collect();
     if project.owner.email != email && !member_emails.contains(&email) {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
@@ -354,8 +354,8 @@ pub async fn list_projects(
                 WHERE viewer->>'email' = $1
             ) OR
             EXISTS (
-                SELECT 1 FROM jsonb_array_elements(project->'members') AS member
-                WHERE member->>'email' = $1
+                SELECT 1 FROM jsonb_array_elements(project->'editors') AS editor
+                WHERE editor->>'email' = $1
             )
         "#,
         claims.email
@@ -399,7 +399,7 @@ pub async fn duplicate_project(
         assets: Vec::new(),
         owner: project.owner,
         viewers: Vec::new(),
-        members: Vec::new(),
+        editors: Vec::new(),
         geometries: project.geometries,
     };
 

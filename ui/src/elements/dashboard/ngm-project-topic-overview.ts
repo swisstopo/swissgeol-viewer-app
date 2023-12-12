@@ -46,8 +46,8 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         const owner = ownerEmail || i18next.t('swisstopo');
         const date = this.topicOrProject?.modified ? this.topicOrProject?.modified : this.topicOrProject?.created;
         const backgroundImage = this.topicOrProject.image?.length ? `url('${this.topicOrProject.image}')` : 'none';
-        const memberEmails = project?.members?.map(m => m.email) || [];
-        const projectModerator = [ownerEmail, ...memberEmails].includes(this.userEmail);
+        const editorEmails = project?.editors?.map(m => m.email) || [];
+        const projectModerator = [ownerEmail, ...editorEmails].includes(this.userEmail);
 
         return html`
       <ngm-delete-warning-modal
@@ -196,7 +196,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
                 name: this.userEmail.split('@')[0],
                 surname: '',
             },
-            members: [],
+            editors: [],
             viewers: [],
         };
     }

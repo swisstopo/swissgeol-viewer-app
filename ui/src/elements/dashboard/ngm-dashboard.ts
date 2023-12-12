@@ -71,7 +71,7 @@ export interface CreateProject {
   assets: Asset[],
   geometries?: NgmGeometry[],
   owner: Member,
-  members: Member[],
+  editors: Member[],
   viewers: Member[],
 }
 
@@ -339,7 +339,7 @@ export class NgmDashboard extends LitElementI18n {
         name: this.userEmail.split('@')[0],
         surname: '',
       },
-      members: [],
+      editors: [],
       viewers: [],
     };
     this.projectMode = 'create';
