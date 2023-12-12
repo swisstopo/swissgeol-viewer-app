@@ -334,3 +334,28 @@ ngm-project-edit .ngm-action-list-item .ngm-input input {
   height: 36px;
   padding: 0;
 }
+
+.ngm-member {
+  display: flex;
+  gap: 12px;
+}
+
+.ngm-member .ngm-member-info div {
+  user-select: text;
+}
+
+.ngm-member-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #DEE2E6;
+  border-radius: 20px;
+  font: normal normal bold 14px/20px Inter;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ngm-member-email {
+  font: normal normal 500 12px/15px Inter;
+  color: var(--ngm-interaction);
+}

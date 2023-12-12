@@ -42,10 +42,11 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     render() {
         if (!this.topicOrProject) return '';
         const ownerEmail = (<Project> this.topicOrProject).owner?.email;
+        const project: Project | undefined = ownerEmail ? <Project> this.topicOrProject : undefined;
         const owner = ownerEmail || i18next.t('swisstopo');
         const date = this.topicOrProject?.modified ? this.topicOrProject?.modified : this.topicOrProject?.created;
         const backgroundImage = this.topicOrProject.image?.length ? `url('${this.topicOrProject.image}')` : 'none';
-        const memberEmails = (<Project> this.topicOrProject).members?.map(m => m.email) || [];
+        const memberEmails = project?.members?.map(m => m.email) || [];
         const projectModerator = [ownerEmail, ...memberEmails].includes(this.userEmail);
 
         return html`
@@ -112,8 +113,10 @@ export class NgmProjectTopicOverview extends LitElementI18n {
                   .toastPlaceholder="${this.toastPlaceholder}"
                   .viewMode=${true}></ngm-project-assets-section>
       </div>
-      <div class="ngm-divider"></div>
-      <ngm-project-members-section></ngm-project-members-section>
+      ${!project ? '' : html`
+          <div class="ngm-divider"></div>
+          <ngm-project-members-section .project=${project}></ngm-project-members-section>
+      `}
       <div class="ngm-divider"></div>
       <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onDeselect'))}>
         <div class="ngm-back-icon"></div>
