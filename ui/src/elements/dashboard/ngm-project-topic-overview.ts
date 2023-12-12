@@ -140,11 +140,12 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink() || '')}">
           ${i18next.t('dashboard_share_topic_email')}
         </a>
-        <div class="item"
-            ?hidden=${this.activeTab === 'topics'}     
-            @click=${() => this.deleteWarningModal.show = true}>
-          ${i18next.t('delete')}
-        </div>
+        ${(<Project> this.topicOrProject)?.owner?.email !== this.userEmail ? '' : html`
+            <div class="item"
+                 ?hidden=${this.activeTab === 'topics'}
+                 @click=${() => this.deleteWarningModal.show = true}>
+                ${i18next.t('delete')}
+            </div>`}
       </div>
     `;
     }

@@ -61,3 +61,45 @@
 .ngm-input input::-webkit-input-placeholder {
   opacity: 0;
 }
+
+/* Input style dropdown */
+
+.ngm-input.ui.dropdown {
+  height: 56px;
+  padding-top: 21px !important;
+  border: none !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-bottom: 2px solid #52A8BC !important;
+}
+
+.ngm-input.ui.selection.active.dropdown .menu {
+  border-top: 2px solid #52A8BC !important;
+}
+
+.ngm-input.ui.dropdown > .dropdown.icon {
+  padding-top: 21px !important;
+  color: #52A8BC !important;
+  opacity: 1 !important;
+}
+
+.ngm-input.ui.active.selection {
+  background-color: #C5F6FA;
+}
+
+.ngm-input.ui.dropdown .menu .item.active.selected {
+  background-color: #F8F9FA;
+  font-weight: normal !important;
+}
+
+.ngm-input.ui.dropdown .menu.visible {
+  display: block !important;
+}
+
+.ngm-input.ui.dropdown.ngm-input-warning .text {
+  color: var(--ngm-warning) !important;
+}
+
+.ngm-input.ui.dropdown.ngm-input-warning {
+  border-bottom-color: var(--ngm-warning) !important;
+}

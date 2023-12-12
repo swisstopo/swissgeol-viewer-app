@@ -13,6 +13,7 @@ import {apiClient} from '../../api-client';
 import {showSnackbarError} from '../../notifications';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
+import {MemberToAdd} from './ngm-add-member-form';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -22,6 +23,8 @@ export class NgmProjectEdit extends LitElementI18n {
     accessor saveOrCancelWarning = false;
     @property({type: Boolean})
     accessor createMode = true;
+    @property({type: String})
+    accessor userEmail: string = '';
     @query('.ngm-proj-toast-placeholder')
     accessor toastPlaceholder;
 
@@ -38,6 +41,21 @@ export class NgmProjectEdit extends LitElementI18n {
             console.error(e);
             showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
         }
+    }
+
+    async onMemberAdd(evt: { detail: MemberToAdd }) {
+        if (!this.project) return;
+        const member = {
+            name: evt.detail.name,
+            surname: evt.detail.surname,
+            email: evt.detail.email
+        };
+        if (evt.detail.role === 'editor') {
+            this.project.editors.push(member);
+        } else if (evt.detail.role === 'viewer') {
+            this.project.viewers.push(member);
+        }
+        this.project = {...this.project};
     }
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {
@@ -166,6 +184,9 @@ export class NgmProjectEdit extends LitElementI18n {
                             this.project = {...project};
                         }}"></ngm-project-assets-section>
             </div>
+            <div class="ngm-divider"></div>
+            <ngm-project-members-section .project=${project} .edit=${project.owner.email === this.userEmail}
+                                         @onMemberAdd=${evt => this.onMemberAdd(evt)}></ngm-project-members-section>
             <div class="ngm-divider"></div>
             <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onBack'))}>
               <div class="ngm-back-icon"></div>

@@ -163,3 +163,9 @@ export function setBit(num: number, pos: number): number {
 export function getBit(num: number, pos: number): number {
   return (num & (1 << pos));
 }
+
+export function isEmail(email: string | undefined) {
+  if (!email) return false;
+  const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  return regex.test(email);
+}

@@ -229,6 +229,7 @@ ngm-dashboard .ngm-delete-icon {
   margin-left: 5px;
 }
 
+ngm-dashboard .ngm-label-btn:hover .ngm-zoom-p-icon,
 ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   background-color: var(--ngm-interaction-hover);
 }
@@ -358,4 +359,47 @@ ngm-project-edit .ngm-action-list-item .ngm-input input {
 .ngm-member-email {
   font: normal normal 500 12px/15px Inter;
   color: var(--ngm-interaction);
+}
+
+ngm-project-members-section .project-edit-fields {
+  display: flex;
+  flex-direction: column;
+  row-gap: 27px;
+  align-items: start;
+}
+
+ngm-project-members-section .ngm-label-btn .ngm-zoom-p-icon {
+  background-color: var(--ngm-interaction);
+  width: 12px;
+  height: 12px;
+}
+
+ngm-project-members-section .ngm-label-btn {
+  margin-left: 0;
+  display: flex;
+  column-gap: 18px;
+  align-items: center;
+}
+
+.ngm-member-add-form {
+  width: 324px;
+  background-color: #DEE2E6;
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px;
+  padding: 16px 12px;
+}
+
+.ngm-members-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 819px)  {
+  .ngm-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 }

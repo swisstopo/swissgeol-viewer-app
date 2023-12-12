@@ -12,7 +12,7 @@ import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
 import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
-import {showSnackbarError, showBannerWarning} from '../../notifications';
+import {showBannerWarning, showSnackbarError} from '../../notifications';
 import type {Config} from '../../layers/ngm-layers-item';
 import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
 import {fromGeoJSON} from '../../toolbox/helpers';
@@ -81,7 +81,7 @@ export interface Project extends CreateProject {
   modified: string,
 }
 
-export type TabTypes = 'topics' | 'overview' | 'projects';
+export type TabTypes = 'topics' | 'overview' | 'projects' | 'shared';
 
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
@@ -405,7 +405,7 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   recentlyViewedTemplate() {
-    if (this.isProjectSelected || this.activeTab === 'projects' ||
+    if (this.isProjectSelected || this.activeTab === 'projects' || this.activeTab === 'shared' ||
     (this.activeTab === 'overview' && !apiClient.token)) return '';
 
     const topicsOrProjects = this.activeTab === 'topics' ? this.topics : this.projects;
@@ -474,8 +474,18 @@ export class NgmDashboard extends LitElementI18n {
                    this.activeTab = 'projects';
                    this.deselectTopicOrProject();
                  });
-                }}>
-            ${i18next.t('dashboard_my_projects')} (${this.projects.length})
+               }}>${i18next.t('dashboard_my_projects')}
+              (${this.projects.filter(p => p.owner.email === this.userEmail).length})
+          </div>
+          <div class=${classMap({active: this.activeTab === 'shared'})}
+               ?hidden=${!apiClient.token}
+               @click=${() => {
+                 this.runIfNotEditCreate(() => {
+                   this.activeTab = 'shared';
+                   this.deselectTopicOrProject();
+                 });
+               }}>${i18next.t('dashboard_shared_projects')}
+              (${this.projects.filter(p => p.owner.email !== this.userEmail).length})
           </div>
         </div>
         <div class="ngm-close-icon" @click=${() => {
@@ -498,11 +508,17 @@ export class NgmDashboard extends LitElementI18n {
         <div ?hidden=${this.activeTab !== 'projects' || this.isProjectSelected}>
           <div class="ngm-proj-title">${i18next.t('dashboard_my_projects')}</div>
           <div class="ngm-projects-list">
-            ${this.projects.map(data => this.previewTemplate(data))}
+            ${this.projects.filter(p => p.owner.email === this.userEmail).map(data => this.previewTemplate(data))}
             <div class="ngm-proj-preview ngm-proj-create" @click=${() => this.onProjectCreate()}>
               <div class="ngm-zoom-p-icon"></div>
               <div>${i18next.t('dashboard_project_create_btn')}</div>
             </div>
+          </div>
+        </div>
+        <div ?hidden=${this.activeTab !== 'shared' || this.isProjectSelected}>
+          <div class="ngm-proj-title">${i18next.t('dashboard_shared_projects')}</div>
+          <div class="ngm-projects-list">
+            ${this.projects.filter(p => p.owner.email !== this.userEmail).map(data => this.previewTemplate(data))}
           </div>
         </div>
         <div ?hidden=${!this.isProjectSelected}>
@@ -511,6 +527,7 @@ export class NgmDashboard extends LitElementI18n {
                      .project="${this.projectMode === 'create' ? this.projectToCreate : this.selectedTopicOrProject}" 
                      .saveOrCancelWarning="${this.saveOrCancelWarning}"
                      .createMode="${this.projectMode === 'create'}"
+                     .userEmail="${this.userEmail}"
                      @onBack=${this.deselectTopicOrProject}
                      @onSave="${async (evt: {detail: {project: Project}}) => this.onProjectSave(evt.detail.project)}"
                      @onCancel="${this.cancelEditCreate}"></ngm-project-edit>` :

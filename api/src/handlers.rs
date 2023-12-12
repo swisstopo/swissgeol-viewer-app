@@ -275,6 +275,7 @@ pub async fn delete_project(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
+    claims: Claims,
 ) -> Result<StatusCode> {
     // Delete assets from bucket
     let saved_project: Project = sqlx::query_scalar!(
@@ -284,6 +285,13 @@ pub async fn delete_project(
     .fetch_one(&pool)
     .await?
     .0;
+
+    if saved_project.owner.email != claims.email {
+        return Err(Error::Api(
+            StatusCode::BAD_REQUEST,
+            "Project owner does not match token claims.",
+        ));
+    }
 
     if !saved_project.assets.is_empty() {
         delete_assets(client, &saved_project.assets).await
