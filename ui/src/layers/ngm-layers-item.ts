@@ -32,6 +32,8 @@ export class LayerTreeItem extends LitElementI18n {
   accessor config!: Config;
   @property({type: Boolean})
   accessor changeOrderActive = false;
+  @property({type: Boolean})
+  accessor layerVisible = false;
   @state()
   accessor loading = 0;
   @state()
@@ -45,9 +47,6 @@ export class LayerTreeItem extends LitElementI18n {
 
   firstUpdated() {
     $(this.querySelector('.ui.dropdown')).dropdown();
-    if (!this.config.opacity) {
-      this.config.opacity = DEFAULT_LAYER_OPACITY;
-    }
   }
 
   updated(changedProps) {
@@ -59,6 +58,9 @@ export class LayerTreeItem extends LitElementI18n {
 
   connectedCallback() {
     super.connectedCallback();
+    if (!this.config.opacity) {
+      this.config.opacity = DEFAULT_LAYER_OPACITY;
+    }
     if (!this.actions || !this.actions.listenForEvent) return;
     this.loading = 0;
     const callback = (pending, processing) => {
@@ -84,6 +86,7 @@ export class LayerTreeItem extends LitElementI18n {
 
   changeVisibility() {
     this.config.visible = !this.config.visible;
+    this.layerVisible = !this.layerVisible;
     this.actions.changeVisibility(this.config, this.config.visible);
     this.dispatchEvent(new CustomEvent('layerChanged'));
     this.requestUpdate();
@@ -182,10 +185,10 @@ export class LayerTreeItem extends LitElementI18n {
       </div>
 
       <div ?hidden=${this.loading > 0 || this.changeOrderActive}
-           title=${this.config.visible ? i18next.t('dtd_hide') : i18next.t('dtd_show')}
+           title=${this.layerVisible ? i18next.t('dtd_hide') : i18next.t('dtd_show')}
            class="ngm-layer-icon ${classMap({
-             'ngm-visible-icon': !!this.config.visible,
-             'ngm-invisible-icon': !this.config.visible
+             'ngm-visible-icon': !!this.layerVisible,
+             'ngm-invisible-icon': !this.layerVisible
            })}" @click=${this.changeVisibility}>
       </div>
       <div ?hidden=${this.loading === 0} class="ngm-determinate-loader">
@@ -199,8 +202,8 @@ export class LayerTreeItem extends LitElementI18n {
           <i class=${this.config.restricted ? 'lock icon' : ''}></i>
           ${i18next.t(this.config.label)} ${this.sublabel}
         </label>
-        <label ?hidden=${!this.config.setOpacity}>${(this.config.opacity! * 100).toFixed()} %</label>
-        <input type="range" class="ngm-slider" ?hidden=${!this.config.setOpacity}
+        <label ?hidden=${this.config.opacityDisabled}>${(this.config.opacity! * 100).toFixed()} %</label>
+        <input type="range" class="ngm-slider" ?hidden=${this.config.opacityDisabled}
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
                .value=${this.config.opacity?.toString() || '1'}

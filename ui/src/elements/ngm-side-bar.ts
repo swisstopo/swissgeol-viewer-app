@@ -665,7 +665,8 @@ export class SideBar extends LitElementI18n {
       zoomToBbox: true,
       opacity: DEFAULT_LAYER_OPACITY,
       notSaveToPermalink: true,
-      ownKml: true
+      ownKml: true,
+      opacityDisabled: true
     };
 
     this.requestUpdate();
