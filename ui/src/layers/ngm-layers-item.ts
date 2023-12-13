@@ -32,8 +32,6 @@ export class LayerTreeItem extends LitElementI18n {
   accessor config!: Config;
   @property({type: Boolean})
   accessor changeOrderActive = false;
-  @property({type: Boolean})
-  accessor layerVisible = false;
   @state()
   accessor loading = 0;
   @state()
@@ -185,10 +183,10 @@ export class LayerTreeItem extends LitElementI18n {
       </div>
 
       <div ?hidden=${this.loading > 0 || this.changeOrderActive}
-           title=${this.layerVisible ? i18next.t('dtd_hide') : i18next.t('dtd_show')}
+           title=${this.config.visible ? i18next.t('dtd_hide') : i18next.t('dtd_show')}
            class="ngm-layer-icon ${classMap({
-             'ngm-visible-icon': !!this.layerVisible,
-             'ngm-invisible-icon': !this.layerVisible
+             'ngm-visible-icon': !!this.config.visible,
+             'ngm-invisible-icon': !this.config.visible
            })}" @click=${this.changeVisibility}>
       </div>
       <div ?hidden=${this.loading === 0} class="ngm-determinate-loader">

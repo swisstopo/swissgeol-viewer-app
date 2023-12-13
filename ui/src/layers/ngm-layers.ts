@@ -69,7 +69,6 @@ export default class LayerTree extends LitElementI18n {
       <ngm-layers-item
         .actions=${this.actions}
         .config=${config}
-        .layerVisible=${config.visible!}
         .changeOrderActive=${this.changeOrderActive}
         @removeDisplayedLayer=${() => this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}))}
         @zoomTo=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}
@@ -87,7 +86,7 @@ export default class LayerTree extends LitElementI18n {
     return html`
       ${repeat(
         reverse,
-        (config) => config.label,
+        (config) => `${config.label}_${config.visible}_${config.opacity}`,
         (config, idx) => this.createLayerTemplate(config, idx, len)
       )}
     `;
