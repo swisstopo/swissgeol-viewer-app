@@ -84,7 +84,6 @@ export class LayerTreeItem extends LitElementI18n {
 
   changeVisibility() {
     this.config.visible = !this.config.visible;
-    this.layerVisible = !this.layerVisible;
     this.actions.changeVisibility(this.config, this.config.visible);
     this.dispatchEvent(new CustomEvent('layerChanged'));
     this.requestUpdate();
