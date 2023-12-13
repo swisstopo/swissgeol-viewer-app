@@ -5,11 +5,15 @@ import {classMap} from 'lit/directives/class-map.js';
 import i18next from 'i18next';
 import {isEmail} from '../../utils';
 
+export type EditableRole = 'editor' | 'viewer'
+
+export type MemberRole = 'owner' | EditableRole
+
 export type MemberToAdd = {
     name: string;
     surname: string;
     email: string;
-    role: 'viewer' | 'editor'
+    role: EditableRole
 }
 
 @customElement('ngm-add-member-form')
@@ -103,10 +107,16 @@ export class NgmAddMemberForm extends LitElementI18n {
                         </div>
                     </div>
                 </div>
-                <button class="ui button ngm-action-btn"
-                        @click=${this.onAdd}
-                >${i18next.t('dashboard_project_add_member')}
-                </button>
+                <div class="action-buttons">
+                    <button class="ui button ngm-action-btn"
+                            @click=${this.onAdd}
+                    >${i18next.t('dashboard_project_add_member')}
+                    </button>
+                    <button class="ui button ngm-action-btn ngm-cancel-btn"
+                            @click=${() => this.dispatchEvent(new CustomEvent('onCancel'))}>
+                        ${i18next.t('cancel')}
+                    </button>
+                </div>
             </div>`;
     }
 

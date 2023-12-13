@@ -1,7 +1,6 @@
 use axum::{
     extract::Extension,
     http::{HeaderValue, Method},
-    routing::delete,
     routing::get,
     routing::post,
     routing::put,

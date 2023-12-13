@@ -4,7 +4,7 @@ import {html} from 'lit';
 import i18next from 'i18next';
 import {Member, Project} from './ngm-dashboard';
 import './ngm-add-member-form';
-import {MemberToAdd} from './ngm-add-member-form';
+import {MemberRole, MemberToAdd} from './ngm-add-member-form';
 
 @customElement('ngm-project-members-section')
 export class NgmProjectMembersSection extends LitElementI18n {
@@ -20,19 +20,29 @@ export class NgmProjectMembersSection extends LitElementI18n {
         this.dispatchEvent(new CustomEvent('onMemberAdd', evt));
     }
 
-    memberInfoRender(member: Member, role: 'owner' | 'editor' | 'viewer') {
+    onMemberDelete(member: MemberToAdd) {
+        this.dispatchEvent(new CustomEvent('onMemberDelete', {detail: member}));
+    }
+
+    memberInfoRender(member: Member, role: MemberRole) {
         let roleText = i18next.t('dashboard_project_owner');
         if (role === 'editor') roleText = i18next.t('dashboard_project_editor');
         else if (role === 'viewer') roleText = i18next.t('dashboard_project_viewer');
         return html`
-            <div class="ngm-member">
-                <div class="ngm-member-icon">
-                    ${member.name.charAt(0).toUpperCase()}${member.surname.charAt(0).toUpperCase()}
+            <div class="ngm-member-container">
+                <div class="ngm-member">
+                    <div class="ngm-member-icon">
+                        ${member.name.charAt(0).toUpperCase()}${member.surname.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="ngm-member-info">
+                        <div>${member.name} ${member.surname} (${roleText})</div>
+                        <div class="ngm-member-email">${member.email}</div>
+                    </div>
                 </div>
-                <div class="ngm-member-info">
-                    <div>${member.name} ${member.surname} (${roleText})</div>
-                    <div class="ngm-member-email">${member.email}</div>
-                </div>
+                ${!this.edit || role === 'owner' ? '' : html`
+                    <div class="ngm-icon ngm-delete-icon"
+                         @click=${() => this.onMemberDelete({...member, role})}>
+                    </div>`}
             </div>
         `;
     }
@@ -57,7 +67,8 @@ export class NgmProjectMembersSection extends LitElementI18n {
                         </div>`
                     }
                     ${!this.edit || !this.showAddForm ? '' : html`
-                        <ngm-add-member-form @onMemberAdd=${evt => this.onMemberAdd(evt)}></ngm-add-member-form>
+                        <ngm-add-member-form @onMemberAdd=${evt => this.onMemberAdd(evt)}
+                                             @onCancel=${() => this.showAddForm = false}></ngm-add-member-form>
                     `}
                 </div>
             </div>`;

@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import {classMap} from 'lit/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import {COLORS_WITH_BLACK_TICK, PROJECT_COLORS} from '../../constants';
-import {Asset, CreateProject, Project} from './ngm-dashboard';
+import {Asset, CreateProject, Member, Project} from './ngm-dashboard';
 import {customElement, property, query} from 'lit/decorators.js';
 import $ from '../../jquery';
 import '../../toolbox/ngm-geometries-list';
@@ -43,17 +43,35 @@ export class NgmProjectEdit extends LitElementI18n {
         }
     }
 
-    async onMemberAdd(evt: { detail: MemberToAdd }) {
+    onMemberAdd(evt: { detail: MemberToAdd }) {
         if (!this.project) return;
+        const role = evt.detail.role;
         const member = {
             name: evt.detail.name,
             surname: evt.detail.surname,
             email: evt.detail.email
         };
-        if (evt.detail.role === 'editor') {
+        if (role === 'editor') {
             this.project.editors.push(member);
-        } else if (evt.detail.role === 'viewer') {
+        } else if (role === 'viewer') {
             this.project.viewers.push(member);
+        }
+        this.project = {...this.project};
+    }
+
+    onMemberDelete(evt: { detail: MemberToAdd }) {
+        if (!this.project) return;
+        const role = evt.detail.role;
+        const memberEmail = evt.detail.email;
+        let arrayToEdit: Member[] = [];
+        if (role === 'editor') {
+            arrayToEdit = this.project.editors;
+        } else if (role === 'viewer') {
+            arrayToEdit = this.project.viewers;
+        }
+        const index = arrayToEdit.findIndex(m => m.email === memberEmail);
+        if (index > -1) {
+            arrayToEdit.splice(index, 1);
         }
         this.project = {...this.project};
     }
@@ -186,7 +204,8 @@ export class NgmProjectEdit extends LitElementI18n {
             </div>
             <div class="ngm-divider"></div>
             <ngm-project-members-section .project=${project} .edit=${project.owner.email === this.userEmail}
-                                         @onMemberAdd=${evt => this.onMemberAdd(evt)}></ngm-project-members-section>
+                                         @onMemberAdd=${evt => this.onMemberAdd(evt)}
+                                         @onMemberDelete=${evt => this.onMemberDelete(evt)}></ngm-project-members-section>
             <div class="ngm-divider"></div>
             <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onBack'))}>
               <div class="ngm-back-icon"></div>
