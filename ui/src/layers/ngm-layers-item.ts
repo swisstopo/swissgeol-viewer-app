@@ -45,9 +45,6 @@ export class LayerTreeItem extends LitElementI18n {
 
   firstUpdated() {
     $(this.querySelector('.ui.dropdown')).dropdown();
-    if (!this.config.opacity) {
-      this.config.opacity = DEFAULT_LAYER_OPACITY;
-    }
   }
 
   updated(changedProps) {
@@ -59,6 +56,9 @@ export class LayerTreeItem extends LitElementI18n {
 
   connectedCallback() {
     super.connectedCallback();
+    if (!this.config.opacity) {
+      this.config.opacity = DEFAULT_LAYER_OPACITY;
+    }
     if (!this.actions || !this.actions.listenForEvent) return;
     this.loading = 0;
     const callback = (pending, processing) => {
@@ -199,8 +199,8 @@ export class LayerTreeItem extends LitElementI18n {
           <i class=${this.config.restricted ? 'lock icon' : ''}></i>
           ${i18next.t(this.config.label)} ${this.sublabel}
         </label>
-        <label ?hidden=${!this.config.setOpacity}>${(this.config.opacity! * 100).toFixed()} %</label>
-        <input type="range" class="ngm-slider" ?hidden=${!this.config.setOpacity}
+        <label ?hidden=${this.config.opacityDisabled}>${(this.config.opacity! * 100).toFixed()} %</label>
+        <input type="range" class="ngm-slider" ?hidden=${this.config.opacityDisabled}
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
                .value=${this.config.opacity?.toString() || '1'}

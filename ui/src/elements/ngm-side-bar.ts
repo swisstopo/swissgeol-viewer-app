@@ -432,7 +432,7 @@ export class SideBar extends LitElementI18n {
         layer.displayed = false;
         layer.visible = false;
         layer.remove && layer.remove();
-        const idx = this.activeLayers.findIndex(l => l === layer);
+        const idx = this.activeLayers.findIndex(l => l.label === layer.label);
         this.activeLayers.splice(idx, 1);
       } else {
         layer.visible = true;
@@ -456,10 +456,12 @@ export class SideBar extends LitElementI18n {
   onLayerChanged(evt) {
     this.queryManager!.hideObjectInformation();
     this.catalogLayers = [...this.catalogLayers];
+    this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);
     if (evt.detail) {
       this.maybeShowVisibilityHint(evt.detail);
     }
+    this.requestUpdate();
   }
 
   maybeShowVisibilityHint(config: Config) {
@@ -665,7 +667,8 @@ export class SideBar extends LitElementI18n {
       zoomToBbox: true,
       opacity: DEFAULT_LAYER_OPACITY,
       notSaveToPermalink: true,
-      ownKml: true
+      ownKml: true,
+      opacityDisabled: true
     };
 
     this.requestUpdate();

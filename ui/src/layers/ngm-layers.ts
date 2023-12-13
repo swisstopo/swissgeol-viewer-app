@@ -86,7 +86,7 @@ export default class LayerTree extends LitElementI18n {
     return html`
       ${repeat(
         reverse,
-        (config) => config.label,
+        (config) => `${config.label}_${config.visible}_${config.opacity}`,
         (config, idx) => this.createLayerTemplate(config, idx, len)
       )}
     `;
