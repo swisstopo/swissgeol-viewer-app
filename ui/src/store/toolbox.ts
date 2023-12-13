@@ -20,6 +20,7 @@ export default class ToolboxStore {
   private static slicerSubject = new BehaviorSubject<Slicer | null>(null);
   private static rtcSubject = new Subject<any>();
   private static geometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
+  private static noEditGeometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
   private static openedGeometryOptionsSubject = new BehaviorSubject<OpenedGeometryOptions | null>(null);
   private static sliceGeometrySubject = new BehaviorSubject<NgmGeometry | null | undefined>(null);
   private static geomActionSubject = new Subject<GeometryAction>();
@@ -55,6 +56,14 @@ export default class ToolboxStore {
 
   static get geometries(): BehaviorSubject<NgmGeometry[]> {
     return this.geometriesSubject;
+  }
+
+  static setNoEditGeometries(value: NgmGeometry[]): void {
+    this.noEditGeometriesSubject.next(value);
+  }
+
+  static get noEditGeometries(): BehaviorSubject<NgmGeometry[]> {
+    return this.noEditGeometriesSubject;
   }
 
   static setOpenedGeometryOptions(value: OpenedGeometryOptions | null): void {

@@ -12,7 +12,7 @@ import './ngm-measure';
 import i18next from 'i18next';
 import type {Viewer} from 'cesium';
 import {CustomDataSource, JulianDate} from 'cesium';
-import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME} from '../constants';
+import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME, NO_EDIT_GEOMETRY_DATASOURCE_NAME} from '../constants';
 import MainStore from '../store/main';
 import LocalStorageController from '../LocalStorageController';
 import ToolboxStore from '../store/toolbox';
@@ -40,10 +40,12 @@ export class NgmToolbox extends LitElementI18n {
   @query('ngm-slicer')
   accessor slicerElement;
   geometriesDataSource: CustomDataSource = new CustomDataSource(GEOMETRY_DATASOURCE_NAME);
+  noEditGeometriesDataSource: CustomDataSource = new CustomDataSource(NO_EDIT_GEOMETRY_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;
   private geometryController: GeometryController | undefined;
+  private geometryControllerNoEdit: GeometryController | undefined;
   private forceSlicingToolOpen = false;
 
   constructor() {
@@ -53,7 +55,7 @@ export class NgmToolbox extends LitElementI18n {
       this.viewer?.dataSources.add(this.geometriesDataSource);
       this.geometriesDataSource!.entities.collectionChanged.addEventListener((_collection) => {
         const projectEditMode = DashboardStore.projectMode.value;
-        if (!projectEditMode || projectEditMode === 'private') {
+        if (!projectEditMode || projectEditMode === 'viewOnly') {
           LocalStorageController.setAoiInStorage(this.entitiesList);
         } else if (projectEditMode === 'viewEdit' || projectEditMode === 'edit') {
           const geometries = this.entitiesList;
@@ -116,8 +118,10 @@ export class NgmToolbox extends LitElementI18n {
       if (editMode === 'edit' || editMode === 'viewEdit') {
         const geometries = DashboardStore.selectedTopicOrProject.value?.geometries;
         this.geometryController!.setGeometries(geometries || []);
+        // todo geometryControllerNoEdit
       } else {
         this.geometryController!.setGeometries(LocalStorageController.getStoredAoi());
+        // todo geometryControllerNoEdit
       }
     });
 
@@ -147,6 +151,8 @@ export class NgmToolbox extends LitElementI18n {
   updated() {
     if (!this.geometryController && this.viewer && this.toastPlaceholder)
       this.geometryController = new GeometryController(this.geometriesDataSource, this.toastPlaceholder);
+    if (!this.geometryControllerNoEdit && this.viewer && this.toastPlaceholder)
+      this.geometryControllerNoEdit = new GeometryController(this.noEditGeometriesDataSource, this.toastPlaceholder, true);
   }
 
   showSectionModal(imageUrl) {

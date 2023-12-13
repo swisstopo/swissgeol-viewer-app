@@ -347,7 +347,7 @@ ngm-project-edit .ngm-action-list-item .ngm-input input {
   user-select: text;
   text-overflow: ellipsis;
   overflow: hidden;
-  max-width: 230px;
+  max-width: 233px;
 }
 
 .ngm-member-icon {
@@ -407,20 +407,20 @@ ngm-add-member-form .action-buttons {
   column-gap: 5px;
 }
 
-ngm-add-member-form .ui.button {
+ngm-add-member-form .ngm-action-btn.ui.button {
+  display: flex;
+  justify-content: center;
   width: auto;
   flex: 2;
 }
 
 ngm-add-member-form .ngm-cancel-btn.ui.button {
   flex: 1;
-  display: flex;
-  justify-content: center;
 }
 
 .ngm-member-container {
   display: flex;
-  width: 321px;
+  width: 324px;
   align-items: center;
 }
 
