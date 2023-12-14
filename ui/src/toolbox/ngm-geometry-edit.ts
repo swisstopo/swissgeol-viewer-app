@@ -159,6 +159,9 @@ export class NgmGeometryEdit extends LitElementI18n {
         this.entity.position = <any> this.editingEntity.position?.getValue(this.julianDate);
         this.entity.billboard.color = this.editingEntity.billboard!.color;
         this.entity.billboard.image = this.editingEntity.billboard!.image;
+        if (this.editingEntity.properties!.volumeShowed) {
+          updateEntityVolume(this.entity!, this.viewer!.scene.globe);
+        }
       } else if (this.entity.polyline) {
         const positions = this.editingEntity.polyline!.positions?.getValue(this.julianDate);
         (<ConstantProperty> this.entity.polyline.positions).setValue(positions);
