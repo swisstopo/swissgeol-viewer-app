@@ -1,22 +1,18 @@
 import i18next from 'i18next';
 import {html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, state} from 'lit/decorators.js';
 import {createDataGenerator, createZipFromData} from '../download';
 import {LitElementI18n} from '../i18n';
 import {showSnackbarInfo} from '../notifications';
 import {cartesianToDegrees} from '../projection';
 import {coordinatesToBbox} from '../utils';
 import {saveAs} from 'file-saver';
-
-import type {CustomDataSource} from 'cesium';
 import type {NgmGeometry} from './interfaces';
 import type {Config} from '../layers/ngm-layers-item';
 
 
 @customElement('data-download')
 export class DataDownload extends LitElementI18n {
-  @property({type: Object})
-  accessor geometriesDataSource: CustomDataSource | undefined;
   @state()
   accessor selectedGeometryId = '';
 
@@ -107,17 +103,11 @@ export class DataDownload extends LitElementI18n {
       <ngm-draw-section .enabledTypes=${['rectangle']} .showUpload=${false}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list 
-          listTitle="${i18next.t('tbx_my_geometries')}"
         .selectedId=${this.selectedGeometryId}
         .disabledTypes=${['point', 'polygon', 'line']}
         .optionsTemplate=${(geom: NgmGeometry) => this.downloadOptionsTemplate(geom)}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.onGeomClick(evt.detail.id)}
         @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}
-      ></ngm-geometries-list>
-      <ngm-geometries-list
-          listTitle=${i18next.t('tbx_geometries_from_topic')}
-        .disabledTypes=${['point', 'polygon', 'line']}
-        .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
       ></ngm-geometries-list>
     `;
   }

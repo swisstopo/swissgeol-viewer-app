@@ -105,7 +105,6 @@ pub struct Geometry {
     depth: Option<Number>,
     editable: Option<bool>,
     copyable: Option<bool>,
-    fromTopic: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]

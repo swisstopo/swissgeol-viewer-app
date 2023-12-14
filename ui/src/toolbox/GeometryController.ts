@@ -46,7 +46,6 @@ import {
   POINT_SYMBOLS
 } from '../constants';
 import {saveAs} from 'file-saver';
-import LocalStorageController from '../LocalStorageController';
 import {getDimensionLabel} from '../draw/helpers';
 
 export class GeometryController {
@@ -76,10 +75,9 @@ export class GeometryController {
     MainStore.viewer.subscribe(viewer => {
       this.viewer = viewer;
       if (viewer) {
-        this.setGeometries(LocalStorageController.getStoredAoi());
         this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
         this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
-        viewer.dataSources.add(this.measureDataSource);
+        if (!this.noEdit) viewer.dataSources.add(this.measureDataSource);
       } else if (this.screenSpaceEventHandler) {
         this.screenSpaceEventHandler.destroy();
       }
@@ -191,7 +189,8 @@ export class GeometryController {
     if (entity) entity.show = show;
   }
   @pauseGeometryCollectionEvents
-  private showHideGeometryByType(show: boolean, type?: GeometryTypes) {
+  private showHideGeometryByType(show: boolean, noEditGeometries: boolean, type?: GeometryTypes) {
+    if (noEditGeometries !== this.noEdit) return;
     this.geometriesDataSource!.entities.values.forEach(entity => {
       if (!type || getValueOrUndefined(entity.properties!.type) === type)
         entity.show = show;
@@ -389,13 +388,13 @@ export class GeometryController {
         break;
       case 'hideAll':
       case 'showAll':
-        this.showHideGeometryByType(options.action === 'showAll', options.type);
+        this.showHideGeometryByType(options.action === 'showAll', !!options.noEditGeometries, options.type);
         break;
       case 'pick':
         this.pickGeometry(options.id);
         break;
       case 'downloadAll':
-        this.downloadVisibleGeometries(options.type);
+        this.downloadVisibleGeometries(!!options.noEditGeometries, options.type);
         break;
       case 'add':
         this.onAddGeometry(options.type!);
@@ -433,7 +432,8 @@ export class GeometryController {
     this.viewer!.scene.requestRender();
   }
 
-  async downloadVisibleGeometries(type?: GeometryTypes) {
+  async downloadVisibleGeometries(noEditGeometries: boolean, type?: GeometryTypes) {
+    if (noEditGeometries !== this.noEdit) return;
     const visibleGeometries = new EntityCollection();
     this.geometriesDataSource!.entities.values.forEach(ent => {
       if (ent.isShowing && (!type || type === getValueOrUndefined(ent.properties!.type))) {
@@ -470,7 +470,6 @@ export class GeometryController {
         website: attributes.website || '',
         editable: attributes.editable === undefined ? true : attributes.editable,
         copyable: attributes.copyable === undefined ? true : attributes.copyable,
-        fromTopic: attributes.fromTopic === undefined ? false : attributes.fromTopic,
       }
     };
     const color = attributes.color;

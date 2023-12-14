@@ -11,9 +11,10 @@ export interface GeometryAction {
   id?: string,
   type?: GeometryTypes,
   file?: File,
-  newName?: string
+  newName?: string,
+  noEditGeometries?: boolean,
   action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll' | 'profile' |
-      'add' | 'upload' | 'measure' | 'clearMeasure' | 'changeName'
+      'add' | 'upload' | 'measure' | 'clearMeasure' | 'changeName',
 }
 
 export default class ToolboxStore {
@@ -79,7 +80,15 @@ export default class ToolboxStore {
   }
 
   static get openedGeometry(): NgmGeometry | undefined {
-    return this.geometriesSubject.getValue().find(geom => geom.id === this.openedGeometryOptionsValue?.id);
+    let geom = this.geometriesSubject
+        .getValue()
+        .find(geom => geom.id === this.openedGeometryOptionsValue?.id);
+    if (!geom) {
+      geom = this.noEditGeometriesSubject
+          .getValue()
+          .find(geom => geom.id === this.openedGeometryOptionsValue?.id);
+    }
+    return geom;
   }
 
   static setSliceGeometry(value: NgmGeometry | null | undefined): void {

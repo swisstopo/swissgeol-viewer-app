@@ -1,7 +1,7 @@
 import {
   DRILL_PICK_LENGTH,
   DRILL_PICK_LIMIT,
-  GEOMETRY_DATASOURCE_NAME,
+  GEOMETRY_DATASOURCE_NAME, NO_EDIT_GEOMETRY_DATASOURCE_NAME,
   OBJECT_HIGHLIGHT_COLOR,
   OBJECT_ZOOMTO_RADIUS
 } from '../constants';
@@ -95,12 +95,13 @@ export default class ObjectSelector {
     const orderedProps = sortPropertyNames(Object.keys(props), props.propsOrder);
     attributes.properties = orderedProps.map((key) => [key, props[key]]);
     const geomDataSource = this.viewer.dataSources.getByName(GEOMETRY_DATASOURCE_NAME)[0];
+    const noEditGeomDataSource = this.viewer.dataSources.getByName(NO_EDIT_GEOMETRY_DATASOURCE_NAME)[0];
     const earthquakesDataSources = this.viewer.dataSources.getByName('earthquakes').concat(
       this.viewer.dataSources.getByName('historical_earthquakes'));
 
     attributes.zoom = () => this.viewer.zoomTo(entity, props.zoomHeadingPitchRange);
 
-    if (geomDataSource.entities.contains(entity)) {
+    if (geomDataSource.entities.contains(entity) || noEditGeomDataSource.entities.contains(entity)) {
       return {geomId: props.id};
     } else if (earthquakesDataSources.some((e) => e.entities.contains(entity))) {
       this.toggleEarthquakeHighlight(entity);

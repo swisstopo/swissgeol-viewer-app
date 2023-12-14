@@ -3,6 +3,7 @@ import {LitElementI18n} from '../../i18n';
 import {html} from 'lit';
 import i18next from 'i18next';
 import {NgmGeometry} from '../../toolbox/interfaces';
+import '../../toolbox/ngm-geometries-simple-list';
 
 @customElement('ngm-project-geoms-section')
 export class NgmProjectGeomsSection extends LitElementI18n {
@@ -21,11 +22,11 @@ export class NgmProjectGeomsSection extends LitElementI18n {
                 <div class="project-edit-fields">
                     ${this.geometries?.length ?
                             html`
-                                <ngm-geometries-list .viewMode=${this.viewMode}
+                                <ngm-geometries-simple-list .viewMode=${this.viewMode}
                                                      .geometries="${this.geometries}"
                                                      .hideMapInteractionButtons=${true}
                                                      .directNameEdit=${!this.viewMode}>
-                                </ngm-geometries-list>` :
+                                </ngm-geometries-simple-list>` :
                             html`
                                 <div>${i18next.t('dashboard_no_geom_text')}</div>`}
                 </div>

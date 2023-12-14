@@ -32,6 +32,7 @@ export function updateBoreholeHeights(entity: Entity, date: JulianDate) {
   const depth = entity.properties.depth ? entity.properties.depth.getValue() : undefined;
   if (depth) {
     const position = entity.position.getValue(date);
+    if (!position) return;
     const height = Cartographic.fromCartesian(position).height;
     entity.ellipse.extrudedHeight = <any>height;
     entity.ellipse.height = <any>(height - depth);

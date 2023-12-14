@@ -2,10 +2,10 @@ import {LitElementI18n} from '../i18n';
 import {customElement, query, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import draggable from '../elements/draggable';
-import type {Entity, Viewer, CustomDataSource} from 'cesium';
+import type {CustomDataSource, Entity, Viewer} from 'cesium';
 import {Cartographic} from 'cesium';
 import MainStore from '../store/main';
-import {GEOMETRY_DATASOURCE_NAME} from '../constants';
+import {GEOMETRY_DATASOURCE_NAME, NO_EDIT_GEOMETRY_DATASOURCE_NAME} from '../constants';
 import ToolboxStore from '../store/toolbox';
 import i18next from 'i18next';
 import type {NgmGeometry} from './interfaces';
@@ -24,6 +24,8 @@ export class NgmGeometryInfo extends LitElementI18n {
   accessor editing = false;
   @state()
   accessor geometry: NgmGeometry | undefined;
+  @state()
+  accessor noEdit = false;
   @query('.ngm-geom-info-body')
   accessor infoBodyElement;
   private viewer: Viewer | null = null;
@@ -33,23 +35,27 @@ export class NgmGeometryInfo extends LitElementI18n {
     super();
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
     ToolboxStore.openedGeometryOptions.subscribe(options => {
-      if (this.viewer && !this.geometriesDataSource)
-        this.geometriesDataSource = this.viewer.dataSources.getByName(GEOMETRY_DATASOURCE_NAME)[0];
+      this.noEdit = false;
+      this.geometriesDataSource = this.viewer?.dataSources.getByName(GEOMETRY_DATASOURCE_NAME)[0];
       if (!options?.id) {
         this.editing = false;
         this.geomEntity = undefined;
         return;
       }
-      const entity = this.geometriesDataSource?.entities.getById(options.id);
-      if (!entity) return;
+      let entity = this.geometriesDataSource?.entities.getById(options.id);
+      if (!entity) {
+        this.geometriesDataSource = this.viewer?.dataSources.getByName(NO_EDIT_GEOMETRY_DATASOURCE_NAME)[0];
+        entity = this.geometriesDataSource?.entities.getById(options.id);
+        if (!entity) return;
+        this.noEdit = true;
+      }
       this.geomEntity = entity;
       this.geometry = ToolboxStore.openedGeometry;
       this.editing = !!options.editing;
     });
     ToolboxStore.sliceGeometry.subscribe(() => this.requestUpdate());
-    ToolboxStore.geometries.subscribe(geometries => {
-      this.geometry = geometries.find(geom => geom.id === this.geomEntity?.id);
-    });
+    ToolboxStore.geometries.subscribe(() => this.geometry = ToolboxStore.openedGeometry);
+    ToolboxStore.noEditGeometries.subscribe(() => this.geometry = ToolboxStore.openedGeometry);
   }
 
   connectedCallback() {
@@ -209,10 +215,11 @@ export class NgmGeometryInfo extends LitElementI18n {
           <div class="ngm-extrusion-icon ${classMap({active: !!this.geometry.volumeShowed})}"
                title=${i18next.t('tbx_extrusion')}
                @click=${() => this.toggleGeomVolume(this.geometry!)}></div>
-          <div class="ngm-icon ngm-edit-icon ${classMap({active: this.editing, disabled: !this.geometry.editable})}"
-               title=${i18next.t('tbx_edit_btn')}
-               @click=${() => this.onEditClick()}>
-          </div>
+          ${this.noEdit ? '' : html`
+            <div class="ngm-icon ngm-edit-icon ${classMap({active: this.editing, disabled: !this.geometry.editable})}"
+                 title=${i18next.t('tbx_edit_btn')}
+                 @click=${() => this.onEditClick()}>
+            </div>`}
         </div>
         <div class="ngm-divider"></div>
         ${this.editing ?

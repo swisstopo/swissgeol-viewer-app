@@ -32,6 +32,13 @@ ngm-measure .ngm-action-list-item .ngm-action-list-item-header {
   width: 100%;
 }
 
+.ngm-geom-list .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1) > div {
+  white-space: nowrap;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 ngm-draw-section .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1),
 ngm-measure .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1) {
   width: 24px;

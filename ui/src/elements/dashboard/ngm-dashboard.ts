@@ -192,7 +192,6 @@ export class NgmDashboard extends LitElementI18n {
   getGeometries(features: Array<GeoJSON.Feature>) {
     return features.map(feature => {
       return Object.assign(fromGeoJSON(feature), {
-        fromTopic: true,
         editable: false,
         copyable: false,
       });

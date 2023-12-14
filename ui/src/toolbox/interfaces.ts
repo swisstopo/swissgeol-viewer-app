@@ -41,5 +41,4 @@ export interface NgmGeometry {
   depth?: number;
   editable?: boolean;
   copyable?: boolean;
-  fromTopic?: boolean;
 }

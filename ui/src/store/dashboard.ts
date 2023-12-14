@@ -30,9 +30,11 @@ export default class DashboardStore {
   }
 
   static setViewIndex(value: number | undefined): void {
-    const project = <Project | undefined> this.selectedTopicOrProjectSubject.value;
-    if (value !== undefined && project?.owner) {
-      this.setProjectMode(project.owner.email === AuthStore.userEmail ? 'viewEdit' : 'viewOnly');
+    const projectOrTopic = this.selectedTopicOrProjectSubject.value;
+    if (value !== undefined && projectOrTopic) {
+      const owner = (<Project> projectOrTopic).owner?.email === AuthStore.userEmail;
+      const editor = !!(<Project> projectOrTopic).editors?.find(e => e.email === AuthStore.userEmail);
+      this.setProjectMode(owner || editor ? 'viewEdit' : 'viewOnly');
     } else {
       this.setProjectMode(undefined);
     }
