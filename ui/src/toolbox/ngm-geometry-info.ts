@@ -100,7 +100,7 @@ export class NgmGeometryInfo extends LitElementI18n {
 
   getHeight(geom: NgmGeometry) {
     const height = geom.type === 'point' ? Cartographic.fromCartesian(geom.positions[0]).height : geom.volumeHeightLimits?.height;
-    return height ? height.toFixed(1) : '';
+    return (height || height === 0) ? height.toFixed(1) : '';
   }
 
   showLostChangesWarn() {
