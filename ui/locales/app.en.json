@@ -277,7 +277,7 @@
   "tbx_point_depth_label": "Depth (m BGL)",
   "tbx_profile": "Topo Profile",
   "tbx_profile_btn": "Show height profile",
-  "tbx_project_geometries": "Project Geometries",
+  "tbx_project_geometries": "Project",
   "tbx_remove_btn_label": "Remove",
   "tbx_request_aborted_warning": "Request aborted",
   "tbx_save_editing_btn_label": "Save",

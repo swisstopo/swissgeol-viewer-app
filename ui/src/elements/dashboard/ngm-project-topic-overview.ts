@@ -14,6 +14,7 @@ import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
 import './ngm-delete-warning-modal';
 import './ngm-project-members-section';
+import {isProject} from './helpers';
 
 @customElement('ngm-project-topic-overview')
 export class NgmProjectTopicOverview extends LitElementI18n {
@@ -41,8 +42,8 @@ export class NgmProjectTopicOverview extends LitElementI18n {
 
     render() {
         if (!this.topicOrProject) return '';
-        const ownerEmail = (<Project> this.topicOrProject).owner?.email;
-        const project: Project | undefined = ownerEmail ? <Project> this.topicOrProject : undefined;
+        const project = isProject(this.topicOrProject) ? this.topicOrProject : undefined;
+        const ownerEmail = project?.owner?.email;
         const owner = ownerEmail || i18next.t('swisstopo');
         const date = this.topicOrProject?.modified ? this.topicOrProject?.modified : this.topicOrProject?.created;
         const backgroundImage = this.topicOrProject.image?.length ? `url('${this.topicOrProject.image}')` : 'none';
@@ -133,14 +134,13 @@ export class NgmProjectTopicOverview extends LitElementI18n {
           ${i18next.t('dashboard_share_topic')}
         </div>
         <div class="item ${apiClient.token ? '' : 'disabled'}"
-             ?hidden=${this.activeTab !== 'topics'}
              @click=${() => this.duplicateToProject()}>
           ${i18next.t('duplicate_to_project')}
         </div>
         <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink() || '')}">
           ${i18next.t('dashboard_share_topic_email')}
         </a>
-        ${(<Project> this.topicOrProject)?.owner?.email !== this.userEmail ? '' : html`
+        ${isProject(this.topicOrProject) && this.topicOrProject.owner.email !== this.userEmail ? '' : html`
             <div class="item"
                  ?hidden=${this.activeTab === 'topics'}
                  @click=${() => this.deleteWarningModal.show = true}>
@@ -181,12 +181,21 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     }
 
     toCreateProject(topicOrProject: Topic | Project): CreateProject {
+        const title = isProject(topicOrProject) ?
+            `${i18next.t('tbx_copy_of_label')} ${topicOrProject.title}` :
+            translated(topicOrProject.title);
+        let description: string | undefined;
+        if (isProject(topicOrProject)) {
+            description = topicOrProject.description;
+        } else if (topicOrProject.description) {
+            description = translated(topicOrProject.description);
+        }
         return {
-            color: DEFAULT_PROJECT_COLOR,
-            description: topicOrProject.description ? translated(topicOrProject.description) : undefined,
-            title: translated(topicOrProject.title),
-            geometries: topicOrProject.geometries, // not a copy
-            assets: topicOrProject.assets, // not a copy
+            title,
+            description,
+            color: isProject(topicOrProject) ? topicOrProject.color : DEFAULT_PROJECT_COLOR,
+            geometries: isProject(topicOrProject) ? topicOrProject.geometries : [], // not a copy for topic
+            assets: isProject(topicOrProject) ? topicOrProject.assets : [], // not a copy for topic
             views: topicOrProject.views.map(view => ({
                 id: crypto.randomUUID(),
                 title: translated(view.title),

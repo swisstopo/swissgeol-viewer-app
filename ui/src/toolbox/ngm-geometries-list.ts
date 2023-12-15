@@ -8,7 +8,7 @@ import $ from '../jquery.js';
 import './ngm-geometries-simple-list';
 import i18next from 'i18next';
 import DashboardStore from '../store/dashboard';
-import {Project} from '../elements/dashboard/ngm-dashboard';
+import {isProject} from '../elements/dashboard/helpers';
 
 @customElement('ngm-geometries-list')
 export default class NgmGeometriesList extends LitElementI18n {
@@ -70,14 +70,16 @@ export default class NgmGeometriesList extends LitElementI18n {
   render() {
     const projectMode = DashboardStore.projectMode.value;
     const projectEditMode = projectMode === 'viewEdit' || projectMode === 'edit';
-    const isProjectSelected = !!(<Project> DashboardStore.selectedTopicOrProject.value)?.owner;
+    const selectedProject = DashboardStore.selectedTopicOrProject.value;
     return html`
       <ngm-geometries-simple-list
           .hidden=${!this.noEditGeometries?.length}
           .geometries=${this.noEditGeometries}
           .noEditMode=${true}
           .selectedId=${this.selectedId}
-          .listTitle="${isProjectSelected ? i18next.t('tbx_project_geometries') : i18next.t('tbx_geometries_from_topic')}"
+          .listTitle="${isProject(selectedProject) ?
+              i18next.t('tbx_project_geometries') :
+              i18next.t('tbx_geometries_from_topic')}"
           .optionsTemplate=${this.optionsTemplate}
           .disabledTypes=${this.disabledTypes}
           .disabledCallback=${this.disabledCallback}
@@ -87,7 +89,9 @@ export default class NgmGeometriesList extends LitElementI18n {
       <ngm-geometries-simple-list
           .geometries=${this.geometries}
           .selectedId=${this.selectedId}
-          .listTitle="${projectEditMode ? i18next.t('tbx_project_geometries') : i18next.t('tbx_my_geometries')}"
+          .listTitle="${projectEditMode ?
+              `${selectedProject?.title} ${i18next.t('tbx_project_geometries')}` :
+              i18next.t('tbx_my_geometries')}"
           .optionsTemplate=${this.optionsTemplate}
           .disabledTypes=${this.disabledTypes}
           .disabledCallback=${this.disabledCallback}
