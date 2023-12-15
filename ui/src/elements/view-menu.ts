@@ -9,6 +9,7 @@ import $ from '../jquery';
 
 import type {Project, Topic, View} from './dashboard/ngm-dashboard';
 import {getPermalink} from '../permalink';
+import {isProject} from './dashboard/helpers';
 
 @customElement('view-menu')
 export class ViewMenu extends LitElementI18n {
@@ -41,7 +42,8 @@ export class ViewMenu extends LitElementI18n {
     }
 
     async saveViewToProject() {
-        const project = <Project> this.selectedProject;
+        if (!isProject(this.selectedProject)) return;
+        const project = this.selectedProject;
         if (this.viewIndex && this.userEmail && project.owner) {
             if ([project.owner.email, ...project.editors].includes(this.userEmail)) {
                 const view: View = {

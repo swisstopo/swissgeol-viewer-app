@@ -22,6 +22,7 @@ import AuthStore from '../../store/auth';
 import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
+import {isProject} from './helpers';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -349,8 +350,8 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   async onProjectSave(project: Project | CreateProject) {
-    if (this.projectMode === 'edit') {
-      await apiClient.updateProject(<Project>project);
+    if (this.projectMode === 'edit' && isProject(project)) {
+      await apiClient.updateProject(project);
       this.projectMode = 'view';
     } else if (this.projectMode === 'create' && this.projectToCreate) {
       try {

@@ -14,6 +14,7 @@ import {showSnackbarError} from '../../notifications';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
 import {MemberToAdd} from './ngm-add-member-form';
+import {isProject} from './helpers';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -110,9 +111,10 @@ export class NgmProjectEdit extends LitElementI18n {
                   </div>
                 </div>
               </div>
-              <div class="ngm-proj-data" ?hidden="${this.createMode}">
-                ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString((<Project>project).modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
-              </div>
+                ${this.createMode || !isProject(project) ? '' : html`
+                    <div class="ngm-proj-data">
+                        ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(project.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
+                    </div>`}
               <div class="ngm-proj-information">
                 <div class="project-image-and-color">
                   <div class="ngm-proj-preview-img"

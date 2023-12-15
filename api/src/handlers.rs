@@ -10,6 +10,7 @@ use uuid::Uuid;
 
 use crate::auth::Claims;
 use crate::{Error, Result};
+use anyhow::Context;
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::Number;
 use std::collections::HashSet;
@@ -381,7 +382,7 @@ pub async fn list_projects(
 #[axum_macros::debug_handler]
 pub async fn duplicate_project(
     Extension(pool): Extension<PgPool>,
-    Extension(_client): Extension<Client>,
+    Extension(client): Extension<Client>,
     claims: Claims,
     Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
@@ -394,7 +395,7 @@ pub async fn duplicate_project(
     }
 
     // Create project
-    let duplicate = Project {
+    let mut duplicate = Project {
         id: Uuid::new_v4(),
         title: project.title,
         description: project.description,
@@ -410,30 +411,40 @@ pub async fn duplicate_project(
         geometries: project.geometries,
     };
 
-    // // TODO: make static
-    // let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
+    let mut assets: Vec<Asset> = Vec::new();
+    let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
 
-    // for asset in &project.assets {
-    //     let url = Url::parse(asset.href.as_str()).context("Failed to parse asset url")?;
-    //     let path = &url.path()[1..];
-    //     let name_opt = path.split('/').last();
-    //     if !path.is_empty() && name_opt.is_some() {
-    //         let new_path = format!("assets/{}/{}", project.id, name_opt.unwrap());
-    //         client
-    //             .copy_object()
-    //             .copy_source(format!("{}/{}", &bucket, &path))
-    //             .bucket(&bucket)
-    //             .key(&new_path)
-    //             .send()
-    //             .await
-    //             .context("Failed to copy object")?;
-    //         assets.push(Asset {
-    //             href: format!("https://download.swissgeol.ch/{new_path}"),
-    //         });
-    //     }
-    // }
+    for asset in &project.assets {
+        let generated_file_name: String = generate_asset_name();
+        let asset_key = format!("assets/saved/{}", asset.key);
+        let dest_key = format!("assets/saved/{}", generated_file_name);
+        // Check if the file exists in the source directory
+        let source_exists = client
+            .head_object()
+            .bucket(&bucket)
+            .key(&asset_key)
+            .send()
+            .await
+            .is_ok();
 
-    // duplicate.assets = assets;
+        if source_exists {
+            client
+                .copy_object()
+                .copy_source(format!("{}/{}", &bucket, &asset_key))
+                .bucket(&bucket)
+                .key(&dest_key)
+                .send()
+                .await
+                .context("Failed to copy object")?;
+
+            assets.push(Asset {
+                name: asset.name.clone(),
+                key: generated_file_name,
+            });
+        }
+    }
+
+    duplicate.assets = assets;
 
     let result = sqlx::query_scalar!(
         "INSERT INTO projects (id, project) VALUES ($1, $2) RETURNING id",
@@ -452,12 +463,7 @@ pub async fn upload_asset(
     mut multipart: Multipart,
 ) -> Result<Json<UploadResponse>> {
     let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
-    let rand_string: String = rand::thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(40)
-        .map(char::from)
-        .collect();
-    let generated_file_name: String = format!("{}_{}.kml", Utc::now().timestamp(), rand_string);
+    let generated_file_name: String = generate_asset_name();
     let temp_name = format!("assets/temp/{}", generated_file_name);
     while let Some(field) = multipart.next_field().await.unwrap() {
         if field.name() == Some("file") {
@@ -548,4 +554,13 @@ async fn delete_assets(client: Client, project_assets: &Vec<Asset>) {
                 .unwrap();
         }
     }
+}
+
+fn generate_asset_name() -> String {
+    let rand_string: String = rand::thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(40)
+        .map(char::from)
+        .collect();
+    return format!("{}_{}.kml", Utc::now().timestamp(), rand_string);
 }
