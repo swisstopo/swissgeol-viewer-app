@@ -10,10 +10,10 @@ use uuid::Uuid;
 
 use crate::auth::Claims;
 use crate::{Error, Result};
+use anyhow::Context;
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::Number;
 use std::collections::HashSet;
-use anyhow::Context;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct ProjectQuery {
