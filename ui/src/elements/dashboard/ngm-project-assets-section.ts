@@ -54,7 +54,7 @@ export class NgmProjectAssetsSection extends LitElementI18n {
                         <ngm-layers-upload
                                 .toastPlaceholder=${this.toastPlaceholder}
                                 .onKmlUpload=${this.onKmlUpload}></ngm-layers-upload>`}
-                    ${this.assets.map((kml, index) => {
+                    ${this.assets?.map((kml, index) => {
                         return html`
                             <div class="ngm-action-list-item ngm-geom-item">
                                 <div class="ngm-action-list-item-header ${classMap({view: this.viewMode})}">

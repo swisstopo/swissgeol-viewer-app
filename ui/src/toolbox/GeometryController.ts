@@ -46,7 +46,6 @@ import {
   POINT_SYMBOLS
 } from '../constants';
 import {saveAs} from 'file-saver';
-import LocalStorageController from '../LocalStorageController';
 import {getDimensionLabel} from '../draw/helpers';
 
 export class GeometryController {
@@ -66,43 +65,46 @@ export class GeometryController {
   };
   private measureDataSource = new CustomDataSource('measure');
   private measure = false;
+  private noEdit: boolean;
 
-  constructor(geometriesDataSource: CustomDataSource, toastPlaceholder: HTMLElement) {
+  constructor(geometriesDataSource: CustomDataSource, toastPlaceholder: HTMLElement, noEdit = false) {
     this.geometriesDataSource = geometriesDataSource;
     this.toastPlaceholder = toastPlaceholder;
+    this.noEdit = noEdit;
 
     MainStore.viewer.subscribe(viewer => {
       this.viewer = viewer;
       if (viewer) {
-        this.setGeometries(LocalStorageController.getStoredAoi());
         this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
         this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
-        viewer.dataSources.add(this.measureDataSource);
+        if (!this.noEdit) viewer.dataSources.add(this.measureDataSource);
       } else if (this.screenSpaceEventHandler) {
         this.screenSpaceEventHandler.destroy();
       }
     });
-    ToolboxStore.geometryToCreate.subscribe(conf => {
-      this.increaseGeometriesCounter(conf.type);
-      this.addGeometry(conf);
-    });
-    DrawStore.draw.subscribe(draw => {
-      if (draw) {
-        this.draw = draw;
-        this.draw.addEventListener('drawend', (evt) => this.endDrawing_((<CustomEvent>evt).detail));
-        this.draw.addEventListener('drawerror', evt => {
-          if (this.draw!.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
-            showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
-          }
-        });
-      }
-    });
+    if (!this.noEdit) {
+      ToolboxStore.geometryToCreate.subscribe(conf => {
+        this.increaseGeometriesCounter(conf.type);
+        this.addGeometry(conf);
+      });
+      DrawStore.draw.subscribe(draw => {
+        if (draw) {
+          this.draw = draw;
+          this.draw.addEventListener('drawend', (evt) => this.endDrawing_((<CustomEvent>evt).detail));
+          this.draw.addEventListener('drawerror', evt => {
+            if (this.draw!.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
+              showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
+            }
+          });
+        }
+      });
+    }
     ToolboxStore.geometryAction.subscribe(options => this.handleActions(options));
     ToolboxStore.openedGeometryOptions.subscribe(options => this.selectGeometry(options));
   }
 
   onClick_(click) {
-    if (!this.draw!.active) {
+    if (!this.draw || !this.draw.active) {
       if (this.measure) {
         const position = Cartesian3.clone(this.viewer!.scene.pickPosition(click.position));
         if (position) {
@@ -113,9 +115,7 @@ export class GeometryController {
         const pickedObject = this.viewer!.scene.pick(click.position);
         if (pickedObject && pickedObject.id) { // to prevent error on tileset click
           if (this.geometriesDataSource!.entities.contains(pickedObject.id)) {
-            if (this.geometriesDataSource!.entities.contains(pickedObject.id)) {
-              this.pickGeometry(pickedObject.id.id);
-            }
+            this.pickGeometry(pickedObject.id.id);
           }
         }
       }
@@ -189,7 +189,8 @@ export class GeometryController {
     if (entity) entity.show = show;
   }
   @pauseGeometryCollectionEvents
-  private showHideGeometryByType(show: boolean, type?: GeometryTypes) {
+  private showHideGeometryByType(show: boolean, noEditGeometries: boolean, type?: GeometryTypes) {
+    if (noEditGeometries !== this.noEdit) return;
     this.geometriesDataSource!.entities.values.forEach(entity => {
       if (!type || getValueOrUndefined(entity.properties!.type) === type)
         entity.show = show;
@@ -197,12 +198,14 @@ export class GeometryController {
   }
 
   private removeGeometry(id) {
+    if (this.noEdit) return;
     if (this.selectedArea && id === this.selectedArea.id)
       this.deselectGeometry();
     this.geometriesDataSource!.entities.removeById(id);
   }
 
   private onAddGeometry(type: GeometryTypes, measure = false, clickEvent?: {position: Cartesian2}) {
+    if (this.noEdit) return;
     this.measure = measure;
     const currentType = this.draw!.type;
     if (this.draw!.active) {
@@ -229,7 +232,7 @@ export class GeometryController {
   }
 
   private async uploadFile(file: File | undefined) {
-    if (!file) return;
+    if (!file || this.noEdit) return;
     const lowercaseName = file.name.toLowerCase();
     if (lowercaseName.endsWith('.kml')) {
       return this.uploadKml(file);
@@ -335,6 +338,7 @@ export class GeometryController {
 
   @pauseGeometryCollectionEvents
   updateHighlight(entity, selected) {
+    if (!entity) return;
     if (entity.billboard) {
       if (selected) {
         entity.properties.colorBeforeHighlight = entity.billboard.color.getValue(this.julianDate);
@@ -384,13 +388,13 @@ export class GeometryController {
         break;
       case 'hideAll':
       case 'showAll':
-        this.showHideGeometryByType(options.action === 'showAll', options.type);
+        this.showHideGeometryByType(options.action === 'showAll', !!options.noEditGeometries, options.type);
         break;
       case 'pick':
         this.pickGeometry(options.id);
         break;
       case 'downloadAll':
-        this.downloadVisibleGeometries(options.type);
+        this.downloadVisibleGeometries(!!options.noEditGeometries, options.type);
         break;
       case 'add':
         this.onAddGeometry(options.type!);
@@ -428,7 +432,8 @@ export class GeometryController {
     this.viewer!.scene.requestRender();
   }
 
-  async downloadVisibleGeometries(type?: GeometryTypes) {
+  async downloadVisibleGeometries(noEditGeometries: boolean, type?: GeometryTypes) {
+    if (noEditGeometries !== this.noEdit) return;
     const visibleGeometries = new EntityCollection();
     this.geometriesDataSource!.entities.values.forEach(ent => {
       if (ent.isShowing && (!type || type === getValueOrUndefined(ent.properties!.type))) {
@@ -465,7 +470,6 @@ export class GeometryController {
         website: attributes.website || '',
         editable: attributes.editable === undefined ? true : attributes.editable,
         copyable: attributes.copyable === undefined ? true : attributes.copyable,
-        fromTopic: attributes.fromTopic === undefined ? false : attributes.fromTopic,
       }
     };
     const color = attributes.color;

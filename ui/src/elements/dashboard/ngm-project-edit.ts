@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import {classMap} from 'lit/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import {COLORS_WITH_BLACK_TICK, PROJECT_COLORS} from '../../constants';
-import {Asset, CreateProject, Project} from './ngm-dashboard';
+import {Asset, CreateProject, Member, Project} from './ngm-dashboard';
 import {customElement, property, query} from 'lit/decorators.js';
 import $ from '../../jquery';
 import '../../toolbox/ngm-geometries-list';
@@ -13,6 +13,7 @@ import {apiClient} from '../../api-client';
 import {showSnackbarError} from '../../notifications';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
+import {MemberToAdd} from './ngm-add-member-form';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -22,6 +23,8 @@ export class NgmProjectEdit extends LitElementI18n {
     accessor saveOrCancelWarning = false;
     @property({type: Boolean})
     accessor createMode = true;
+    @property({type: String})
+    accessor userEmail: string = '';
     @query('.ngm-proj-toast-placeholder')
     accessor toastPlaceholder;
 
@@ -38,6 +41,39 @@ export class NgmProjectEdit extends LitElementI18n {
             console.error(e);
             showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
         }
+    }
+
+    onMemberAdd(evt: { detail: MemberToAdd }) {
+        if (!this.project) return;
+        const role = evt.detail.role;
+        const member = {
+            name: evt.detail.name,
+            surname: evt.detail.surname,
+            email: evt.detail.email
+        };
+        if (role === 'editor') {
+            this.project.editors.push(member);
+        } else if (role === 'viewer') {
+            this.project.viewers.push(member);
+        }
+        this.project = {...this.project};
+    }
+
+    onMemberDelete(evt: { detail: MemberToAdd }) {
+        if (!this.project) return;
+        const role = evt.detail.role;
+        const memberEmail = evt.detail.email;
+        let arrayToEdit: Member[] = [];
+        if (role === 'editor') {
+            arrayToEdit = this.project.editors;
+        } else if (role === 'viewer') {
+            arrayToEdit = this.project.viewers;
+        }
+        const index = arrayToEdit.findIndex(m => m.email === memberEmail);
+        if (index > -1) {
+            arrayToEdit.splice(index, 1);
+        }
+        this.project = {...this.project};
     }
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {
@@ -166,6 +202,10 @@ export class NgmProjectEdit extends LitElementI18n {
                             this.project = {...project};
                         }}"></ngm-project-assets-section>
             </div>
+            <div class="ngm-divider"></div>
+            <ngm-project-members-section .project=${project} .edit=${project.owner.email === this.userEmail}
+                                         @onMemberAdd=${evt => this.onMemberAdd(evt)}
+                                         @onMemberDelete=${evt => this.onMemberDelete(evt)}></ngm-project-members-section>
             <div class="ngm-divider"></div>
             <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onBack'))}>
               <div class="ngm-back-icon"></div>

@@ -1,15 +1,16 @@
 import {BehaviorSubject, Subject} from 'rxjs';
 import type {Project, Topic} from '../elements/dashboard/ngm-dashboard';
 import {NgmGeometry} from '../toolbox/interfaces';
+import AuthStore from './auth';
 
 export type TopicParam = { topicId: string, viewId?: string | null }
 
 /**
  * 'edit' - edit from dashboard (create / edit project)
  * 'viewEdit' - view selected and geometries can be edited in the toolbox
- * 'private' - user has no rights to edit the project
+ * 'viewOnly' - user has no rights to edit the project
  */
-export type ProjectMode = 'edit' | 'viewEdit' | 'private' | undefined
+export type ProjectMode = 'edit' | 'viewEdit' | 'viewOnly' | undefined
 
 export default class DashboardStore {
   private static selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
@@ -29,7 +30,14 @@ export default class DashboardStore {
   }
 
   static setViewIndex(value: number | undefined): void {
-    this.setProjectMode(value !== undefined ? 'viewEdit' : undefined);
+    const projectOrTopic = this.selectedTopicOrProjectSubject.value;
+    if (value !== undefined && projectOrTopic) {
+      const owner = (<Project> projectOrTopic).owner?.email === AuthStore.userEmail;
+      const editor = !!(<Project> projectOrTopic).editors?.find(e => e.email === AuthStore.userEmail);
+      this.setProjectMode(owner || editor ? 'viewEdit' : 'viewOnly');
+    } else {
+      this.setProjectMode(undefined);
+    }
     this.viewIndexSubject.next(value);
   }
 

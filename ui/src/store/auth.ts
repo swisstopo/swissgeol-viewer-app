@@ -11,4 +11,9 @@ export default class AuthStore {
   static setUser(user: AuthUser | null): void {
     this.userSubject.next(user);
   }
+
+  static get userEmail(): string | undefined {
+    // FIXME: extract from claims
+    return this.user?.value?.username.split('_')[1];
+  }
 }

@@ -15,10 +15,17 @@ use serde_json::Number;
 use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct ProjectQuery {
+    project: sqlx::types::Json<Project>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct CreateProject {
-    pub owner: String,
-    pub viewers: Vec<String>,
-    pub members: Vec<String>,
+    pub owner: Member,
+    #[serde(default)]
+    pub viewers: Vec<Member>,
+    #[serde(default)]
+    pub editors: Vec<Member>,
     pub title: String,
     pub description: Option<String>,
     pub image: Option<String>,
@@ -44,9 +51,11 @@ pub struct Project {
     pub views: Vec<View>,
     #[serde(default)]
     pub assets: Vec<Asset>,
-    pub owner: String,
-    pub viewers: Vec<String>,
-    pub members: Vec<String>,
+    pub owner: Member,
+    #[serde(default)]
+    pub viewers: Vec<Member>,
+    #[serde(default)]
+    pub editors: Vec<Member>,
     #[serde(default)]
     pub geometries: Vec<Geometry>,
 }
@@ -62,6 +71,13 @@ pub struct View {
 pub struct Asset {
     pub name: String,
     pub key: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct Member {
+    pub email: String,
+    pub name: String,
+    pub surname: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -89,7 +105,6 @@ pub struct Geometry {
     depth: Option<Number>,
     editable: Option<bool>,
     copyable: Option<bool>,
-    fromTopic: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -142,7 +157,7 @@ pub async fn create_project(
     Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
     // Sanity check
-    if project.owner != claims.email {
+    if project.owner.email != claims.email {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -162,9 +177,9 @@ pub async fn create_project(
         color: project.color,
         views: project.views,
         assets: project.assets,
-        owner: claims.email,
+        owner: project.owner,
         viewers: project.viewers,
-        members: project.members,
+        editors: project.editors,
         geometries: project.geometries,
     };
 
@@ -199,10 +214,17 @@ pub async fn update_project(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
-    _claims: Claims,
+    claims: Claims,
     Json(mut project): Json<Project>,
 ) -> Result<StatusCode> {
-    // TODO: Validate rights
+    let email = claims.email;
+    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone()).collect();
+    if project.owner.email != email && !member_emails.contains(&email) {
+        return Err(Error::Api(
+            StatusCode::BAD_REQUEST,
+            "Project owner does not match token claims.",
+        ));
+    }
 
     let bucket = std::env::var("PROJECTS_S3_BUCKET").unwrap();
 
@@ -216,7 +238,7 @@ pub async fn update_project(
 
     let project_assets = &project.assets;
     let saved_project_keys: HashSet<_> = saved_project.assets.into_iter().map(|a| a.key).collect();
-    let new_project_keys: HashSet<_> = project_assets.into_iter().map(|a| a.key.clone()).collect();
+    let new_project_keys: HashSet<_> = project_assets.iter().map(|a| a.key.clone()).collect();
 
     // Find keys that are in saved_project_keys but not in new_project_keys
     let keys_to_delete: HashSet<_> = saved_project_keys.difference(&new_project_keys).collect();
@@ -252,6 +274,7 @@ pub async fn delete_project(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
+    claims: Claims,
 ) -> Result<StatusCode> {
     // Delete assets from bucket
     let saved_project: Project = sqlx::query_scalar!(
@@ -261,6 +284,13 @@ pub async fn delete_project(
     .fetch_one(&pool)
     .await?
     .0;
+
+    if saved_project.owner.email != claims.email {
+        return Err(Error::Api(
+            StatusCode::BAD_REQUEST,
+            "Project owner does not match token claims.",
+        ));
+    }
 
     if !saved_project.assets.is_empty() {
         delete_assets(client, &saved_project.assets).await
@@ -280,10 +310,10 @@ pub async fn update_project_geometries(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
     Extension(_client): Extension<Client>,
-    _claims: Claims,
+    claims: Claims,
     Json(geometries): Json<Vec<Geometry>>,
 ) -> Result<StatusCode> {
-    // TODO: Validate rights
+    let email = claims.email;
 
     let mut project: Project = sqlx::query_scalar!(
         r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
@@ -292,6 +322,14 @@ pub async fn update_project_geometries(
     .fetch_one(&pool)
     .await?
     .0;
+
+    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone()).collect();
+    if project.owner.email != email && !member_emails.contains(&email) {
+        return Err(Error::Api(
+            StatusCode::BAD_REQUEST,
+            "Project owner does not match token claims.",
+        ));
+    }
 
     project.geometries = geometries;
 
@@ -311,13 +349,21 @@ pub async fn list_projects(
     Extension(pool): Extension<PgPool>,
     claims: Claims,
 ) -> Result<Json<Vec<Project>>> {
-    let result = sqlx::query_scalar!(
+    let result = sqlx::query_as!(
+        ProjectQuery,
         r#"
-        SELECT project AS "project: sqlx::types::Json<Project>"
+        SELECT project AS "project!: sqlx::types::Json<Project>"
         FROM projects
-        WHERE project->>'owner' = $1 OR
-        project->'viewers' ? $1 OR
-        project->'members' ? $1
+        WHERE
+            project->'owner'->>'email' = $1 OR
+            EXISTS (
+                SELECT 1 FROM jsonb_array_elements(project->'viewers') AS viewer
+                WHERE viewer->>'email' = $1
+            ) OR
+            EXISTS (
+                SELECT 1 FROM jsonb_array_elements(project->'editors') AS editor
+                WHERE editor->>'email' = $1
+            )
         "#,
         claims.email
     )
@@ -327,7 +373,7 @@ pub async fn list_projects(
     Ok(Json(
         result
             .iter()
-            .map(|v: &sqlx::types::Json<Project>| v.to_owned().0)
+            .map(|v: &ProjectQuery| v.project.to_owned().0)
             .collect(),
     ))
 }
@@ -340,7 +386,7 @@ pub async fn duplicate_project(
     Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
     // Sanity check
-    if project.owner != claims.email {
+    if project.owner.email != claims.email {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -358,9 +404,9 @@ pub async fn duplicate_project(
         color: project.color,
         views: project.views,
         assets: Vec::new(),
-        owner: claims.email,
+        owner: project.owner,
         viewers: Vec::new(),
-        members: Vec::new(),
+        editors: Vec::new(),
         geometries: project.geometries,
     };
 
@@ -428,9 +474,9 @@ pub async fn upload_asset(
         }
     }
 
-    return Ok(Json(UploadResponse {
+    Ok(Json(UploadResponse {
         key: generated_file_name,
-    }));
+    }))
 }
 
 async fn save_assets(client: Client, project_assets: &Vec<Asset>) {

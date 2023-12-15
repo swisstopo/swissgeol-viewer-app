@@ -43,7 +43,7 @@ export class ViewMenu extends LitElementI18n {
     async saveViewToProject() {
         const project = <Project> this.selectedProject;
         if (this.viewIndex && this.userEmail && project.owner) {
-            if ([project.owner, ...project.members].includes(this.userEmail)) {
+            if ([project.owner.email, ...project.editors].includes(this.userEmail)) {
                 const view: View = {
                     id: crypto.randomUUID(),
                     title: `${i18next.t('view')} ${this.viewIndex + 2}`,

@@ -44,11 +44,9 @@ While editing existing migrations already applied, use the following command to 
 sqlx database reset
 ```
 
-### `sqlx` offline
+### `sqlx`
 
-To use sqlx macros without access to a running database, use the `offline` feature to create & update the [sqlx-data.json](./sqlx-data.json) file.
-
-This is only required for building production ready containers and can be kept in sync with
+To update sqlx hash queries
 
 ```bash
 cargo sqlx prepare -- --lib

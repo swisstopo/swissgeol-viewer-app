@@ -13,6 +13,7 @@ import {DEFAULT_PROJECT_COLOR} from '../../constants';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
 import './ngm-delete-warning-modal';
+import './ngm-project-members-section';
 
 @customElement('ngm-project-topic-overview')
 export class NgmProjectTopicOverview extends LitElementI18n {
@@ -40,9 +41,13 @@ export class NgmProjectTopicOverview extends LitElementI18n {
 
     render() {
         if (!this.topicOrProject) return '';
-        const owner = (<Project> this.topicOrProject).owner ? (<Project> this.topicOrProject).owner : i18next.t('swisstopo');
+        const ownerEmail = (<Project> this.topicOrProject).owner?.email;
+        const project: Project | undefined = ownerEmail ? <Project> this.topicOrProject : undefined;
+        const owner = ownerEmail || i18next.t('swisstopo');
         const date = this.topicOrProject?.modified ? this.topicOrProject?.modified : this.topicOrProject?.created;
         const backgroundImage = this.topicOrProject.image?.length ? `url('${this.topicOrProject.image}')` : 'none';
+        const editorEmails = project?.editors?.map(m => m.email) || [];
+        const projectModerator = [ownerEmail, ...editorEmails].includes(this.userEmail);
 
         return html`
       <ngm-delete-warning-modal
@@ -53,7 +58,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
           ${translated(this.topicOrProject.title)}
           <div class="project-menu">
             <div class="edit-project"
-                ?hidden=${this.activeTab === 'topics' || ![(<Project> this.topicOrProject).owner, ...(<Project> this.topicOrProject).members].includes(this.userEmail)}
+                ?hidden=${this.activeTab === 'topics' || !projectModerator}
                 @click=${() => this.dispatchEvent(new CustomEvent('onEdit'))}>
               ${i18next.t('edit_project')}<div class="ngm-edit-icon"></div>
             </div>
@@ -108,6 +113,10 @@ export class NgmProjectTopicOverview extends LitElementI18n {
                   .toastPlaceholder="${this.toastPlaceholder}"
                   .viewMode=${true}></ngm-project-assets-section>
       </div>
+      ${!project ? '' : html`
+          <div class="ngm-divider"></div>
+          <ngm-project-members-section .project=${project}></ngm-project-members-section>
+      `}
       <div class="ngm-divider"></div>
       <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onDeselect'))}>
         <div class="ngm-back-icon"></div>
@@ -131,11 +140,12 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink() || '')}">
           ${i18next.t('dashboard_share_topic_email')}
         </a>
-        <div class="item"
-            ?hidden=${this.activeTab === 'topics'}     
-            @click=${() => this.deleteWarningModal.show = true}>
-          ${i18next.t('delete')}
-        </div>
+        ${(<Project> this.topicOrProject)?.owner?.email !== this.userEmail ? '' : html`
+            <div class="item"
+                 ?hidden=${this.activeTab === 'topics'}
+                 @click=${() => this.deleteWarningModal.show = true}>
+                ${i18next.t('delete')}
+            </div>`}
       </div>
     `;
     }
@@ -182,8 +192,12 @@ export class NgmProjectTopicOverview extends LitElementI18n {
                 title: translated(view.title),
                 permalink: view.permalink
             })),
-            owner: this.userEmail,
-            members: [],
+            owner: {
+                email: this.userEmail,
+                name: this.userEmail.split('@')[0],
+                surname: '',
+            },
+            editors: [],
             viewers: [],
         };
     }

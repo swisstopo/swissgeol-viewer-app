@@ -20,9 +20,14 @@ ngm-dashboard .ngm-panel-header,
   margin-right: 15px;
 }
 
+.ngm-proj-title-icon .ngm-user-icon,
 .ngm-proj-title-icon .ngm-screenshot-icon {
   width: 24px;
   height: 24px;
+}
+
+.ngm-proj-title-icon .ngm-user-icon {
+  background-color: black;
 }
 
 .ngm-dashboard-tabs {
@@ -224,6 +229,7 @@ ngm-dashboard .ngm-delete-icon {
   margin-left: 5px;
 }
 
+ngm-dashboard .ngm-label-btn:hover .ngm-zoom-p-icon,
 ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
   background-color: var(--ngm-interaction-hover);
 }
@@ -299,6 +305,7 @@ ngm-dashboard .ngm-delete-icon:hover,
   margin-right: 12px;
 }
 
+ngm-add-member-form .ngm-cancel-btn.ui.button,
 .project-edit-buttons .ngm-cancel-btn.ui.button {
   background-color: rgba(0, 0, 0, 0);
   color: #0C7285;
@@ -328,4 +335,104 @@ ngm-project-edit .ngm-action-list-item .ngm-input {
 ngm-project-edit .ngm-action-list-item .ngm-input input {
   height: 36px;
   padding: 0;
+}
+
+.ngm-member {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ngm-member .ngm-member-info div {
+  user-select: text;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 233px;
+}
+
+.ngm-member-icon {
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  background-color: #DEE2E6;
+  border-radius: 20px;
+  font: normal normal bold 14px/20px Inter;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ngm-member-email {
+  font: normal normal 500 12px/15px Inter;
+  color: var(--ngm-interaction);
+}
+
+ngm-project-members-section .project-edit-fields {
+  display: flex;
+  flex-direction: column;
+  row-gap: 27px;
+  align-items: start;
+}
+
+ngm-project-members-section .ngm-label-btn .ngm-zoom-p-icon {
+  background-color: var(--ngm-interaction);
+  width: 12px;
+  height: 12px;
+}
+
+ngm-project-members-section .ngm-label-btn {
+  margin-left: 0;
+  display: flex;
+  column-gap: 18px;
+  align-items: center;
+}
+
+.ngm-member-add-form {
+  width: 324px;
+  background-color: #DEE2E6;
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px;
+  padding: 16px 12px;
+}
+
+.ngm-members-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+ngm-add-member-form .action-buttons {
+  display: flex;
+  column-gap: 5px;
+}
+
+ngm-add-member-form .ngm-action-btn.ui.button {
+  display: flex;
+  justify-content: center;
+  width: auto;
+  flex: 2;
+}
+
+ngm-add-member-form .ngm-cancel-btn.ui.button {
+  flex: 1;
+}
+
+.ngm-member-container {
+  display: flex;
+  width: 324px;
+  align-items: center;
+}
+
+.ngm-member-container .ngm-delete-icon {
+  cursor: pointer;
+  margin-left: auto;
+}
+
+@media (max-width: 819px)  {
+  .ngm-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 }

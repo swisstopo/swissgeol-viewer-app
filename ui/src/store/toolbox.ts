@@ -11,15 +11,17 @@ export interface GeometryAction {
   id?: string,
   type?: GeometryTypes,
   file?: File,
-  newName?: string
+  newName?: string,
+  noEditGeometries?: boolean,
   action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll' | 'profile' |
-      'add' | 'upload' | 'measure' | 'clearMeasure' | 'changeName'
+      'add' | 'upload' | 'measure' | 'clearMeasure' | 'changeName',
 }
 
 export default class ToolboxStore {
   private static slicerSubject = new BehaviorSubject<Slicer | null>(null);
   private static rtcSubject = new Subject<any>();
   private static geometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
+  private static noEditGeometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
   private static openedGeometryOptionsSubject = new BehaviorSubject<OpenedGeometryOptions | null>(null);
   private static sliceGeometrySubject = new BehaviorSubject<NgmGeometry | null | undefined>(null);
   private static geomActionSubject = new Subject<GeometryAction>();
@@ -57,6 +59,14 @@ export default class ToolboxStore {
     return this.geometriesSubject;
   }
 
+  static setNoEditGeometries(value: NgmGeometry[]): void {
+    this.noEditGeometriesSubject.next(value);
+  }
+
+  static get noEditGeometries(): BehaviorSubject<NgmGeometry[]> {
+    return this.noEditGeometriesSubject;
+  }
+
   static setOpenedGeometryOptions(value: OpenedGeometryOptions | null): void {
     this.openedGeometryOptionsSubject.next(value);
   }
@@ -70,7 +80,15 @@ export default class ToolboxStore {
   }
 
   static get openedGeometry(): NgmGeometry | undefined {
-    return this.geometriesSubject.getValue().find(geom => geom.id === this.openedGeometryOptionsValue?.id);
+    let geom = this.geometriesSubject
+        .getValue()
+        .find(geom => geom.id === this.openedGeometryOptionsValue?.id);
+    if (!geom) {
+      geom = this.noEditGeometriesSubject
+          .getValue()
+          .find(geom => geom.id === this.openedGeometryOptionsValue?.id);
+    }
+    return geom;
   }
 
   static setSliceGeometry(value: NgmGeometry | null | undefined): void {

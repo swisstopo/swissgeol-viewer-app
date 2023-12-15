@@ -47,6 +47,7 @@ export const CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD = ['polygon', 'polyline', 'poin
 export const AVAILABLE_GEOMETRY_TYPES = ['polygon', 'line', 'point', 'rectangle'];
 
 export const GEOMETRY_DATASOURCE_NAME = 'toolboxGeometry';
+export const NO_EDIT_GEOMETRY_DATASOURCE_NAME = 'noEditToolboxGeometry';
 
 export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Color());
 export const SWISSTOPO_IT_HIGHLIGHT_COLOR = Color.fromCssColorString('#ff8000', new Color());

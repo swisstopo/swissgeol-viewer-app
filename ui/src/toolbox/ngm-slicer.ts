@@ -22,6 +22,8 @@ import NavToolsStore from '../store/navTools';
 export class NgmSlicer extends LitElementI18n {
   @property({type: Object})
   accessor geometriesDataSource: CustomDataSource | undefined;
+  @property({type: Object})
+  accessor noEditGeometriesDataSource: CustomDataSource | undefined;
   @property({type: Boolean})
   accessor hidden = true;
   @state()
@@ -151,7 +153,8 @@ export class NgmSlicer extends LitElementI18n {
           syncBoxPlanesCallback: (sliceInfo) => this.syncSliceInfo({...sliceInfo, type: 'view-box'})
         };
       }
-      const entity = this.geometriesDataSource!.entities.getById(geom.id!);
+      const entity = this.getEntity(geom.id!);
+      if (!entity) return;
       !isGeometryInViewport(MainStore.viewerValue!, geom.positions) && this.flyToSlicingGeom(entity);
       entity!.show = false;
       this.sliceGeomId = geom.id;
@@ -174,7 +177,7 @@ export class NgmSlicer extends LitElementI18n {
       positions = [bboxCorners.bottomLeft, bboxCorners.bottomRight, bboxCorners.topRight, bboxCorners.topLeft];
     }
     this.sliceGeomId = undefined;
-    const entity = this.geometriesDataSource!.entities.getById(geom.id!);
+    const entity = this.getEntity(geom.id!);
     if (!entity) return;
     if (geom.type === 'rectangle') {
       entity.polygon!.hierarchy = <any>{positions};
@@ -227,7 +230,8 @@ export class NgmSlicer extends LitElementI18n {
     this.showBox = event.target.checked;
     this.slicer!.toggleBoxVisibility(this.showBox);
     if (this.sliceGeomId) {
-      const entity = this.geometriesDataSource!.entities.getById(this.sliceGeomId)!;
+      const entity = this.getEntity(this.sliceGeomId);
+      if (!entity) return;
       entity.properties!.showSlicingBox = this.showBox;
     }
   }
@@ -247,6 +251,10 @@ export class NgmSlicer extends LitElementI18n {
 
   get sceneSlicingActive() {
     return (this.slicer?.active && !this.sliceGeomId) || this.slicer?.draw.active;
+  }
+
+  getEntity(id: string) {
+    return this.geometriesDataSource!.entities.getById(id) || this.noEditGeometriesDataSource!.entities.getById(id);
   }
 
   sliceOptionsTemplate(options) {
@@ -326,17 +334,11 @@ export class NgmSlicer extends LitElementI18n {
       </div>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
-          listTitle="${i18next.t('tbx_my_geometries')}"
         .selectedId=${this.sliceGeomId}
         .disabledTypes=${['point', 'polygon']}
         .optionsTemplate=${(geom) => this.sliceOptionsTemplate({geom})}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => ToolboxStore.setSliceGeometry(evt.detail)}>
       </ngm-geometries-list>
-      <ngm-geometries-list
-          listTitle=${i18next.t('tbx_geometries_from_topic')}
-        .disabledTypes=${['point', 'polygon']}
-        .geometryFilter=${(geom: NgmGeometry) => geom.fromTopic}
-      ></ngm-geometries-list>
     `;
   }
 

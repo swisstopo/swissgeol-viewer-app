@@ -10,9 +10,9 @@ import './data-download';
 import './ngm-profile-tool';
 import './ngm-measure';
 import i18next from 'i18next';
-import type {Viewer} from 'cesium';
+import type {DataSource, Viewer} from 'cesium';
 import {CustomDataSource, JulianDate} from 'cesium';
-import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME} from '../constants';
+import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME, NO_EDIT_GEOMETRY_DATASOURCE_NAME} from '../constants';
 import MainStore from '../store/main';
 import LocalStorageController from '../LocalStorageController';
 import ToolboxStore from '../store/toolbox';
@@ -26,6 +26,7 @@ import {GeometryController} from './GeometryController';
 import {showSnackbarInfo} from '../notifications';
 import DashboardStore from '../store/dashboard';
 import {apiClient} from '../api-client';
+import {pairwise} from 'rxjs';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
@@ -40,10 +41,12 @@ export class NgmToolbox extends LitElementI18n {
   @query('ngm-slicer')
   accessor slicerElement;
   geometriesDataSource: CustomDataSource = new CustomDataSource(GEOMETRY_DATASOURCE_NAME);
+  noEditGeometriesDataSource: CustomDataSource = new CustomDataSource(NO_EDIT_GEOMETRY_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
   private julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;
   private geometryController: GeometryController | undefined;
+  private geometryControllerNoEdit: GeometryController | undefined;
   private forceSlicingToolOpen = false;
 
   constructor() {
@@ -51,12 +54,13 @@ export class NgmToolbox extends LitElementI18n {
     MainStore.viewer.subscribe(viewer => {
       this.viewer = viewer;
       this.viewer?.dataSources.add(this.geometriesDataSource);
+      this.viewer?.dataSources.add(this.noEditGeometriesDataSource);
       this.geometriesDataSource!.entities.collectionChanged.addEventListener((_collection) => {
         const projectEditMode = DashboardStore.projectMode.value;
-        if (!projectEditMode || projectEditMode === 'private') {
-          LocalStorageController.setAoiInStorage(this.entitiesList);
+        if (!projectEditMode || projectEditMode === 'viewOnly') {
+          LocalStorageController.setAoiInStorage(this.entitiesList(this.geometriesDataSource));
         } else if (projectEditMode === 'viewEdit' || projectEditMode === 'edit') {
-          const geometries = this.entitiesList;
+          const geometries = this.entitiesList(this.geometriesDataSource);
           DashboardStore.setGeometries(geometries);
           const project = DashboardStore.selectedTopicOrProject.value;
           if (projectEditMode === 'viewEdit' && project && !ToolboxStore.openedGeometryOptions.value?.editing) {
@@ -67,7 +71,12 @@ export class NgmToolbox extends LitElementI18n {
             }
           }
         }
-        ToolboxStore.setGeometries(this.entitiesList);
+        ToolboxStore.setGeometries(this.entitiesList(this.geometriesDataSource));
+        this.viewer!.scene.requestRender();
+        this.requestUpdate();
+      });
+      this.noEditGeometriesDataSource!.entities.collectionChanged.addEventListener((_collection) => {
+        ToolboxStore.setNoEditGeometries(this.entitiesList(this.noEditGeometriesDataSource));
         this.viewer!.scene.requestRender();
         this.requestUpdate();
       });
@@ -111,13 +120,19 @@ export class NgmToolbox extends LitElementI18n {
         this.activeTool = 'profile';
       }
     });
-    DashboardStore.projectMode.subscribe(editMode => {
-      if (!this.geometryController) return;
-      if (editMode === 'edit' || editMode === 'viewEdit') {
-        const geometries = DashboardStore.selectedTopicOrProject.value?.geometries;
-        this.geometryController!.setGeometries(geometries || []);
+    DashboardStore.projectMode.pipe(pairwise()).subscribe(([previousMode, currentMode]) => {
+      if (!this.geometryController || !this.geometryControllerNoEdit) return;
+      const geometries = DashboardStore.selectedTopicOrProject.value?.geometries || [];
+      if (currentMode === 'edit' || currentMode === 'viewEdit') {
+        this.geometryController!.setGeometries(geometries);
+        this.geometryControllerNoEdit.setGeometries([]);
+      } else if (currentMode === 'viewOnly') {
+        this.geometryControllerNoEdit.setGeometries(geometries);
       } else {
-        this.geometryController!.setGeometries(LocalStorageController.getStoredAoi());
+        this.geometryControllerNoEdit.setGeometries([]);
+      }
+      if (previousMode === 'edit' || previousMode === 'viewEdit') {
+        this.geometryController.setGeometries(LocalStorageController.getStoredAoi());
       }
     });
 
@@ -145,17 +160,23 @@ export class NgmToolbox extends LitElementI18n {
   }
 
   updated() {
-    if (!this.geometryController && this.viewer && this.toastPlaceholder)
+    if (!this.geometryController && this.viewer && this.toastPlaceholder) {
       this.geometryController = new GeometryController(this.geometriesDataSource, this.toastPlaceholder);
+      this.geometryController.setGeometries(LocalStorageController.getStoredAoi());
+    }
+    if (!this.geometryControllerNoEdit && this.viewer && this.toastPlaceholder) {
+      this.geometryControllerNoEdit = new GeometryController(this.noEditGeometriesDataSource, this.toastPlaceholder, true);
+    }
   }
 
   showSectionModal(imageUrl) {
     this.sectionImageUrl = imageUrl;
   }
 
-  private get entitiesList(): NgmGeometry[] {
+  private entitiesList(dataSource: DataSource): NgmGeometry[] {
+    if (!dataSource) return [];
     const opnGeomOptions = ToolboxStore.openedGeometryOptionsValue;
-    return this.geometriesDataSource!.entities.values.map(val => {
+    return dataSource.entities.values.map(val => {
       const item = {
         id: val.id,
         name: val.name,
@@ -176,7 +197,6 @@ export class NgmToolbox extends LitElementI18n {
         showSlicingBox: getValueOrUndefined(val.properties!.showSlicingBox),
         editable: getValueOrUndefined(val.properties!.editable),
         copyable: getValueOrUndefined(val.properties!.copyable),
-        fromTopic: getValueOrUndefined(val.properties!.fromTopic),
         color: undefined,
         pointSymbol: undefined
       };
@@ -251,11 +271,11 @@ export class NgmToolbox extends LitElementI18n {
       <ngm-draw-tool ?hidden="${this.activeTool !== 'draw'}">
       </ngm-draw-tool>
       <ngm-slicer ?hidden=${this.activeTool !== 'slicing'}
-                  .geometriesDataSource=${this.geometriesDataSource}></ngm-slicer>
+                  .geometriesDataSource=${this.geometriesDataSource}
+                  .noEditGeometriesDataSource=${this.noEditGeometriesDataSource}></ngm-slicer>
       <ngm-gst-interaction ?hidden="${this.activeTool !== 'gst'}"></ngm-gst-interaction>
       <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
-      <data-download .hidden="${this.activeTool !== 'data-download'}"
-                     .geometriesDataSource=${this.geometriesDataSource}></data-download>
+      <data-download .hidden="${this.activeTool !== 'data-download'}"></data-download>
       <ngm-profile-tool ?hidden="${this.activeTool !== 'profile'}"></ngm-profile-tool>
       ${this.activeTool === 'measure' ? html`<ngm-measure></ngm-measure>` : ''}
       `;
