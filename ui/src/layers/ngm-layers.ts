@@ -6,6 +6,7 @@ import type {Config, LayerTreeItem as NgmLayersItem} from './ngm-layers-item';
 // eslint-disable-next-line no-duplicate-imports
 import './ngm-layers-item';
 import {MultiDrag, Sortable} from 'sortablejs';
+import DashboardStore from '../store/dashboard';
 
 Sortable.mount(new MultiDrag());
 
@@ -52,6 +53,16 @@ export default class LayerTree extends LitElementI18n {
       this.sortable.destroy();
     }
     super.disconnectedCallback();
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has('layers')) {
+      // Don't show KML assets in project view mode
+      const kmlAssets = this.layers.filter(layer => layer.topicKml);
+      if (kmlAssets.length && DashboardStore.projectMode.value) {
+        this.layers = this.layers.filter(layer => !layer.topicKml);
+      }
+    }
   }
 
   createLayerTemplate(config: Config, idx: number, len: number) {
