@@ -58,8 +58,8 @@ export default class LayerTree extends LitElementI18n {
   updated(changedProperties) {
     if (changedProperties.has('layers')) {
       // Don't show KML assets in project view mode
-      const kmlAssets = this.layers.filter(layer => layer.topicKml);
-      if (kmlAssets.length && DashboardStore.projectMode.value) {
+      const hasKmlAssets = this.layers.some(layer => layer.topicKml);
+      if (hasKmlAssets && DashboardStore.projectMode.value) {
         this.layers = this.layers.filter(layer => !layer.topicKml);
       }
     }
