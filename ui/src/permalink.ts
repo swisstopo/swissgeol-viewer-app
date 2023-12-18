@@ -230,14 +230,15 @@ export function getCesiumToolbarParam(): boolean {
 
 export function syncStoredView(stored: string, skipParams: string[] = [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch']) {
   const params = getURLSearchParams();
+  const syncedParams = new URLSearchParams(params);
   const storedParams = new URLSearchParams(stored);
   for (const param of params.entries()) {
-    if (!skipParams.includes(param[0])) params.delete(param[0]);
+    if (!skipParams.includes(param[0])) syncedParams.delete(param[0]);
   }
   for (const param of storedParams.entries()) {
-    if (!skipParams.includes(param[0])) params.set(param[0], param[1]);
+    if (!skipParams.includes(param[0])) syncedParams.set(param[0], param[1]);
   }
-  setURLSearchParams(params);
+  setURLSearchParams(syncedParams);
 }
 
 export function setPermalink(permalink: string) {
