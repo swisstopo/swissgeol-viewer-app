@@ -266,8 +266,10 @@ export class NgmDashboard extends LitElementI18n {
       if (permalink) setPermalink(permalink);
     } else if (viewIndex === undefined) {
       this.removeGeometries();
-      syncStoredView(LocalStorageController.storedView!);
-      LocalStorageController.removeStoredView();
+      if (LocalStorageController.storedView) {
+        syncStoredView(LocalStorageController.storedView!);
+        LocalStorageController.removeStoredView();
+      }
     }
     await this.setDataFromPermalink();
   }
