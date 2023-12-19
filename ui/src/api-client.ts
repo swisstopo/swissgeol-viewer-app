@@ -25,22 +25,24 @@ class ApiClient {
         this.projectsChange.next(projects);
     }
 
-    updateProject(project: Project): Promise<Response> {
+    async updateProject(project: Project): Promise<boolean> {
       const headers = {
         'Content-Type': 'application/json'
       };
 
       addAuthorization(headers, this.token);
-
-      return fetch(`${this.apiUrl}/projects/${project.id}`, {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify(project),
-      })
-      .then(response => {
-        this.refreshProjects();
-        return response;
-      });
+        try {
+            await fetch(`${this.apiUrl}/projects/${project.id}`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify(project),
+            });
+            await this.refreshProjects();
+            return true;
+        } catch (e) {
+            console.error(`Failed to update project: ${e}`);
+            return false;
+        }
     }
 
     deleteProject(id: string): Promise<Response> {

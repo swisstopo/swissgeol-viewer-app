@@ -42,9 +42,8 @@ export class ViewMenu extends LitElementI18n {
     }
 
     async saveViewToProject() {
-        if (!isProject(this.selectedProject)) return;
-        const project = this.selectedProject;
-        if (this.viewIndex && this.userEmail && project.owner) {
+        const project = isProject(this.selectedProject) ? this.selectedProject : undefined;
+        if (this.viewIndex && this.userEmail && project?.owner) {
             if ([project.owner.email, ...project.editors].includes(this.userEmail)) {
                 const view: View = {
                     id: crypto.randomUUID(),
@@ -52,8 +51,10 @@ export class ViewMenu extends LitElementI18n {
                     permalink: getPermalink(),
                 };
                 project.views.splice(this.viewIndex + 1, 0, view);
-                await apiClient.updateProject(project);
-                DashboardStore.setViewIndex(this.viewIndex + 1);
+                const success = await apiClient.updateProject(project);
+                if (success) {
+                    DashboardStore.setViewIndex(this.viewIndex + 1);
+                }
             }
         } else {
             this.dispatchEvent(new CustomEvent('toggleProjectSelector'));
