@@ -264,12 +264,12 @@ export class NgmDashboard extends LitElementI18n {
       this.dispatchEvent(new CustomEvent('close'));
       const permalink = this.selectedTopicOrProject.views[viewIndex]?.permalink;
       if (permalink) setPermalink(permalink);
-    } else if (viewIndex === undefined) {
+    } else if (viewIndex === undefined && LocalStorageController.storedView) {
       this.removeGeometries();
-      if (LocalStorageController.storedView) {
-        syncStoredView(LocalStorageController.storedView!);
-        LocalStorageController.removeStoredView();
-      }
+      syncStoredView(LocalStorageController.storedView!);
+      LocalStorageController.removeStoredView();
+    } else if (viewIndex === undefined && !LocalStorageController.storedView) {
+      return;
     }
     await this.setDataFromPermalink();
   }
