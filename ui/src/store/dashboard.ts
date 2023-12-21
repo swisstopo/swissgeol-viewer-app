@@ -17,7 +17,7 @@ export type ProjectMode = 'edit' | 'viewEdit' | 'viewOnly' | undefined
 export default class DashboardStore {
   private static selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
   private static viewIndexSubject = new Subject<number | undefined>();
-  private static topicParamSubject = new BehaviorSubject<TopicParam | ProjectParam | undefined>(undefined);
+  private static topicOrProjectParamSubject = new BehaviorSubject<TopicParam | ProjectParam | undefined>(undefined);
   private static projectModeSubject = new BehaviorSubject<ProjectMode>(undefined);
   private static geometriesSubject = new Subject<NgmGeometry[]>();
   private static showSaveOrCancelWarningSubject = new Subject<boolean>();
@@ -49,11 +49,11 @@ export default class DashboardStore {
   }
 
   static setTopicOrProjectParam(value: TopicParam | ProjectParam) {
-    this.topicParamSubject.next(value);
+    this.topicOrProjectParamSubject.next(value);
   }
 
-  static get topicParam(): BehaviorSubject<TopicParam | ProjectParam | undefined> {
-    return this.topicParamSubject;
+  static get topicOrProjectParam(): BehaviorSubject<TopicParam | ProjectParam | undefined> {
+    return this.topicOrProjectParamSubject;
   }
 
   static setProjectMode(value: ProjectMode): void {

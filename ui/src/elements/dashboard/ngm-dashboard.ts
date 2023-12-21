@@ -126,7 +126,7 @@ export class NgmDashboard extends LitElementI18n {
           }
           return topic;
         }).sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
-        DashboardStore.topicParam.subscribe(async param => {
+        DashboardStore.topicOrProjectParam.subscribe(async param => {
           if (!param) return;
           if ('topicId' in param) {
             removeTopic();
