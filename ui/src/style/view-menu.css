@@ -19,7 +19,7 @@ view-menu .ngm-screenshot-icon {
 
 view-menu .ui.dropdown .menu {
     border: none;
-    background: none;
+    background: none !important;
     box-shadow: unset !important;
     width: 232px;
     right: 0;
@@ -31,6 +31,7 @@ view-menu .ui.dropdown .menu > .item {
     display: flex;
     align-content: space-between;
     padding: 8px 0 !important;
+    background: none !important;
 }
 
 view-menu .ui.dropdown .menu > .item:hover {

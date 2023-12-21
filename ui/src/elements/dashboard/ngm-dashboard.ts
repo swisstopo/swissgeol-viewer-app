@@ -145,6 +145,9 @@ export class NgmDashboard extends LitElementI18n {
     if (recentlyViewed) {
       this.recentlyViewedIds = JSON.parse(recentlyViewed);
     }
+    DashboardStore.selectedTopicOrProject.subscribe(topicOrProject => {
+      this.selectedTopicOrProject = topicOrProject;
+    });
     DashboardStore.viewIndex.subscribe(async viewIndex => {
       await this.selectView(viewIndex);
     });
@@ -259,8 +262,8 @@ export class NgmDashboard extends LitElementI18n {
       this.geometries.forEach(geometry => ToolboxStore.setGeometryToCreate(geometry));
       if (!LocalStorageController.storedView) LocalStorageController.storeCurrentView();
       this.dispatchEvent(new CustomEvent('close'));
-      const permalink = this.selectedTopicOrProject.views[viewIndex].permalink;
-      setPermalink(permalink);
+      const permalink = this.selectedTopicOrProject.views[viewIndex]?.permalink;
+      if (permalink) setPermalink(permalink);
     } else if (viewIndex === undefined) {
       this.removeGeometries();
       syncStoredView(LocalStorageController.storedView!);
@@ -351,7 +354,6 @@ export class NgmDashboard extends LitElementI18n {
 
   async onProjectSave(project: Project | CreateProject) {
     if (this.projectMode === 'edit' && isProject(project)) {
-      await apiClient.updateProject(project);
       this.projectMode = 'view';
     } else if (this.projectMode === 'create' && this.projectToCreate) {
       try {

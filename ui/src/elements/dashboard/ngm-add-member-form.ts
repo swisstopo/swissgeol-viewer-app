@@ -4,6 +4,7 @@ import {html, PropertyValues} from 'lit';
 import {classMap} from 'lit/directives/class-map.js';
 import i18next from 'i18next';
 import {isEmail} from '../../utils';
+import {DropdownChangedEvent, DropdownItem} from '../ngm-dropdown';
 
 export type EditableRole = 'editor' | 'viewer'
 
@@ -19,7 +20,7 @@ export type MemberToAdd = {
 @customElement('ngm-add-member-form')
 export class NgmAddMemberForm extends LitElementI18n {
     @state()
-    accessor memberRole: 'viewer' | 'editor' | undefined;
+    accessor memberRole: EditableRole | undefined;
     @state()
     accessor name: string | undefined;
     @state()
@@ -27,19 +28,11 @@ export class NgmAddMemberForm extends LitElementI18n {
     @state()
     accessor email: string | undefined;
     @state()
-    accessor roleDropdownShown = false;
-    @state()
     accessor roleNotSelected = false;
-
-    get roleDropdownText() {
-        if (this.memberRole === 'editor') {
-            return i18next.t('dashboard_project_editor');
-        } else if (this.memberRole === 'viewer') {
-            return i18next.t('dashboard_project_viewer');
-        } else {
-            return i18next.t('dashboard_project_choose_role');
-        }
-    }
+    private roleDropdownItems: DropdownItem[] = [
+        {title: i18next.t('dashboard_project_viewer'), value: 'viewer'},
+        {title: i18next.t('dashboard_project_editor'), value: 'editor'},
+    ];
 
     onAdd() {
         if (!this.name || !this.surname || !isEmail(this.email) || !this.memberRole) {
@@ -90,23 +83,11 @@ export class NgmAddMemberForm extends LitElementI18n {
                            }}/>
                     <span class="ngm-floating-label">${i18next.t('project_member_email')}</span>
                 </div>
-                <div class="ui selection dropdown ngm-input ${classMap({
-                    active: this.roleDropdownShown,
-                    'ngm-input-warning': this.roleNotSelected
-                })}"
-                     @click=${() => this.roleDropdownShown = !this.roleDropdownShown}>
-                    <input type="hidden" name="member-role">
-                    <i class="dropdown icon"></i>
-                    <div class="text ${classMap({default: !this.memberRole})}">${this.roleDropdownText}</div>
-                    <div class="menu ${classMap({visible: this.roleDropdownShown})}">
-                        <div class="item" @click=${() => this.memberRole = 'viewer'}>
-                            ${i18next.t('dashboard_project_viewer')}
-                        </div>
-                        <div class="item" @click=${() => this.memberRole = 'editor'}>
-                            ${i18next.t('dashboard_project_editor')}
-                        </div>
-                    </div>
-                </div>
+                <ngm-dropdown .items=${this.roleDropdownItems}
+                              .selectedValue=${this.memberRole}
+                              .defaultText=${i18next.t('dashboard_project_choose_role')}
+                              @changed=${(evt: DropdownChangedEvent<EditableRole>) => this.memberRole = evt.detail.newValue}>
+                </ngm-dropdown>
                 <div class="action-buttons">
                     <button class="ui button ngm-action-btn"
                             @click=${this.onAdd}

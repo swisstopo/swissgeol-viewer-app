@@ -1,15 +1,17 @@
 import i18next from 'i18next';
 import {html} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import {apiClient} from '../api-client';
 import draggable from './draggable';
 import {LitElementI18n} from '../i18n';
 import DashboardStore from '../store/dashboard';
 import AuthStore from '../store/auth';
-import $ from '../jquery';
 
-import type {Project, Topic, View} from './dashboard/ngm-dashboard';
+import type {Project, View} from './dashboard/ngm-dashboard';
 import {getPermalink} from '../permalink';
+import {isProject} from './dashboard/helpers';
+import './ngm-dropdown';
+import {DropdownChangedEvent} from './ngm-dropdown';
 
 @customElement('project-selector')
 export class ProjectSelector extends LitElementI18n {
@@ -19,14 +21,15 @@ export class ProjectSelector extends LitElementI18n {
     accessor projects: Project[] | undefined;
     @state()
     accessor userEmail: string | undefined;
-    @query('.item.active.selected')
-    accessor selection: any;
-    private selectedProject: Topic | Project | undefined;
+    @state()
+    accessor selectedProjectId: string | undefined;
 
     constructor() {
         super();
-        DashboardStore.selectedTopicOrProject.subscribe(topic => {
-            this.selectedProject = topic;
+        DashboardStore.selectedTopicOrProject.subscribe(project => {
+            if (isProject(project)) {
+                this.selectedProjectId = project.id;
+            }
         });
 
         AuthStore.user.subscribe(user => {
@@ -34,7 +37,9 @@ export class ProjectSelector extends LitElementI18n {
             this.userEmail = user?.username.split('_')[1];
         });
 
-        apiClient.projectsChange.subscribe((projects) => this.projects = projects);
+        apiClient.projectsChange.subscribe((projects) => {
+            this.projects = projects;
+        });
         apiClient.refreshProjects();
     }
 
@@ -45,18 +50,11 @@ export class ProjectSelector extends LitElementI18n {
         super.connectedCallback();
     }
 
-    updated(changedProperties) {
-        this.querySelectorAll('.ui.dropdown').forEach(elem => {
-            this.selectedProject ?
-            $(elem).dropdown('set selected', this.selectedProject.id) :
-            $(elem).dropdown();
-        });
-        super.updated(changedProperties);
-    }
-
     async saveViewToProject() {
-        const id = this.selection.getAttribute('data-value');
-        const project = this.projects!.find(project => project.id === id)!;
+        if (!this.selectedProjectId) return;
+        const project = this.projects!.find(project => project.id === this.selectedProjectId)!;
+        if (!project) return;
+        DashboardStore.setSelectedTopicOrProject(project);
 
         const view: View = {
             id: crypto.randomUUID(),
@@ -66,37 +64,36 @@ export class ProjectSelector extends LitElementI18n {
 
         project.views.push(view);
 
-        await apiClient.updateProject(project!);
-
-        this.dispatchEvent(new CustomEvent('close'));
-
-        DashboardStore.setSelectedTopicOrProject(project);
-        DashboardStore.setViewIndex(project?.views.length - 1);
+        const success = await apiClient.updateProject(project!);
+        if (success) {
+            this.dispatchEvent(new CustomEvent('close'));
+            DashboardStore.setViewIndex(project?.views.length - 1);
+        }
     }
 
     render() {
         if (!this.showProjectSelector) {
             return html``;
         }
-
+        const dropdownItems = this.projects?.filter(p => [p.owner.email, ...p.editors]
+            .includes(this.userEmail!))
+            .map(project => {
+                return {
+                    title: project.title,
+                    value: project.id
+                };
+            });
         return html`
             <div class="ngm-floating-window-header drag-handle">
                 ${i18next.t('save_view_in_project')}
                 <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
             </div>
             <div>
-                <div class="ui selection dropdown ngm-input">
-                    <input type="hidden" name="project">
-                    <i class="dropdown icon"></i>
-                    <div class="default text">${i18next.t('select_project')}</div>
-                    <div class="menu">
-                        ${this.projects?.filter(p => [p.owner.email, ...p.editors].includes(this.userEmail!)).map(project => html`
-                            <div class="item"
-                                 data-value="${project.id}"
-                            >${project.title}</div>
-                            `)}
-                    </div>
-                </div>
+                <ngm-dropdown .items=${dropdownItems}
+                              .selectedValue=${this.selectedProjectId}
+                              .defaultText=${i18next.t('select_project')}
+                              @changed=${(evt: DropdownChangedEvent) => this.selectedProjectId = evt.detail.newValue}>
+                </ngm-dropdown>
                 <button class="ui button ngm-action-btn"
                         @click=${async () => await this.saveViewToProject()}
                 >${i18next.t('save')}</button>
