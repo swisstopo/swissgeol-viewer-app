@@ -5,6 +5,7 @@ import AuthStore from './auth';
 import {isProject} from '../elements/dashboard/helpers';
 
 export type TopicParam = { topicId: string, viewId?: string | null }
+export type ProjectParam = { projectId: string, viewId?: string | null }
 
 /**
  * 'edit' - edit from dashboard (create / edit project)
@@ -16,7 +17,7 @@ export type ProjectMode = 'edit' | 'viewEdit' | 'viewOnly' | undefined
 export default class DashboardStore {
   private static selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
   private static viewIndexSubject = new Subject<number | undefined>();
-  private static topicParamSubject = new BehaviorSubject<TopicParam | undefined>(undefined);
+  private static topicParamSubject = new BehaviorSubject<TopicParam | ProjectParam | undefined>(undefined);
   private static projectModeSubject = new BehaviorSubject<ProjectMode>(undefined);
   private static geometriesSubject = new Subject<NgmGeometry[]>();
   private static showSaveOrCancelWarningSubject = new Subject<boolean>();
@@ -47,11 +48,11 @@ export default class DashboardStore {
     return this.viewIndexSubject;
   }
 
-  static setTopicParam(value: TopicParam) {
+  static setTopicOrProjectParam(value: TopicParam | ProjectParam) {
     this.topicParamSubject.next(value);
   }
 
-  static get topicParam(): BehaviorSubject<TopicParam | undefined> {
+  static get topicParam(): BehaviorSubject<TopicParam | ProjectParam | undefined> {
     return this.topicParamSubject;
   }
 

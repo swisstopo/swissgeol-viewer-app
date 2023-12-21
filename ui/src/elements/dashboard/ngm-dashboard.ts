@@ -6,7 +6,7 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import MainStore from '../../store/main';
 import ToolboxStore from '../../store/toolbox';
-import {getCameraView, getPermalink, removeTopic, setPermalink, syncStoredView, syncTargetParam} from '../../permalink';
+import {getCameraView, getPermalink, removeTopic, removeProject, setPermalink, syncStoredView, syncTargetParam} from '../../permalink';
 import NavToolsStore from '../../store/navTools';
 import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
@@ -128,15 +128,19 @@ export class NgmDashboard extends LitElementI18n {
         }).sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
         DashboardStore.topicParam.subscribe(async param => {
           if (!param) return;
-          const {viewId, topicId} = param;
-          removeTopic();
-          const topic = this.topics?.find(p => p.id === topicId);
-          if (!topic) return;
-          this.selectTopicOrProject(topic);
-          if (viewId) {
-            const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === viewId);
-            if (viewIndex !== -1)
-              DashboardStore.setViewIndex(viewIndex);
+          if ('topicId' in param) {
+            removeTopic();
+            const topic = this.topics?.find(p => p.id === param.topicId);
+            this.selectTopicOrProject(topic);
+          } else if ('projectId' in param) {
+            removeProject();
+            const projectResponse = await apiClient.getProject(param.projectId);
+            const project = await projectResponse.json();
+            this.selectTopicOrProject(project);
+          } else return;
+          if (param.viewId) {
+            const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === param.viewId);
+            if (viewIndex !== -1) DashboardStore.setViewIndex(viewIndex);
           }
           this.hidden = false;
         });

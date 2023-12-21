@@ -14,11 +14,12 @@ import {
   SLICE_PARAM,
   TARGET_PARAM,
   TOPIC_PARAM,
+  PROJECT_PARAM,
   VIEW_PARAM,
   ZOOM_TO_PARAM
 } from './constants';
 import type {Cartographic, Camera} from 'cesium';
-import type {TopicParam} from './store/dashboard';
+import type {TopicParam, ProjectParam} from './store/dashboard';
 
 
 export function rewriteParams() {
@@ -246,10 +247,15 @@ export function setPermalink(permalink: string) {
   setURLSearchParams(params);
 }
 
-export function getTopic(): TopicParam | undefined {
+export function getTopicOrProject(): TopicParam | ProjectParam | undefined {
   const params = getURLSearchParams();
   const topicId = params.get(TOPIC_PARAM);
-  return topicId ? {topicId: topicId, viewId: params.get(VIEW_PARAM)} : undefined;
+  const projectId = params.get(PROJECT_PARAM);
+  return topicId
+  ? {topicId, viewId: params.get(VIEW_PARAM)}
+  : projectId
+  ? {projectId, viewId: params.get(VIEW_PARAM)}
+  : undefined;
 }
 
 export function setTopic(topicId: string, viewId: string) {
@@ -262,6 +268,13 @@ export function setTopic(topicId: string, viewId: string) {
 export function removeTopic() {
   const params = getURLSearchParams();
   params.delete(TOPIC_PARAM);
+  params.delete(VIEW_PARAM);
+  setURLSearchParams(params);
+}
+
+export function removeProject() {
+  const params = getURLSearchParams();
+  params.delete(PROJECT_PARAM);
   params.delete(VIEW_PARAM);
   setURLSearchParams(params);
 }
