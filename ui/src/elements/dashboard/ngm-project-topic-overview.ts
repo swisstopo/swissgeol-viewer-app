@@ -175,7 +175,9 @@ export class NgmProjectTopicOverview extends LitElementI18n {
 
     getLink(viewId?: string): string | undefined {
         if (!this.topicOrProject) return;
-        let link = `${location.protocol}//${location.host}${location.pathname}?${this.activeTab === 'topics' ? 'topicId=' : 'projectId='}${this.topicOrProject.id}`;
+        let link = `${location.protocol}//${location.host}${location.pathname}?`;
+        const idKey = isProject(this.topicOrProject) ? 'projectId' : 'topicId';
+        link = `${link}${idKey}=${this.topicOrProject.id}`;
         if (viewId) link = `${link}&viewId=${viewId}`;
         return link;
     }

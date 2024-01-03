@@ -255,7 +255,7 @@ export class NgmApp extends LitElementI18n {
     this.startCesiumLoadingProcess(viewer);
     const topicOrProjectParam = getTopicOrProject();
     if (topicOrProjectParam) {
-      this.waitForViewLoading = !!topicOrProjectParam.viewId;
+      this.waitForViewLoading = !!topicOrProjectParam.param.viewId;
       !this.waitForViewLoading && (<SideBar> this.querySelector('ngm-side-bar')).togglePanel('dashboard');
       DashboardStore.setTopicOrProjectParam(topicOrProjectParam);
     } else {

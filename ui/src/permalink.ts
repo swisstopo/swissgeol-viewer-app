@@ -19,7 +19,7 @@ import {
   ZOOM_TO_PARAM
 } from './constants';
 import type {Cartographic, Camera} from 'cesium';
-import type {TopicParam, ProjectParam} from './store/dashboard';
+import type {TopicParamSubject, ProjectParamSubject} from './store/dashboard';
 
 
 export function rewriteParams() {
@@ -247,14 +247,14 @@ export function setPermalink(permalink: string) {
   setURLSearchParams(params);
 }
 
-export function getTopicOrProject(): TopicParam | ProjectParam | undefined {
+export function getTopicOrProject(): TopicParamSubject | ProjectParamSubject | undefined {
   const params = getURLSearchParams();
   const topicId = params.get(TOPIC_PARAM);
   const projectId = params.get(PROJECT_PARAM);
   return topicId
-  ? {topicId, viewId: params.get(VIEW_PARAM)}
+  ? {kind: 'topic', param: {topicId, viewId: params.get(VIEW_PARAM)}}
   : projectId
-  ? {projectId, viewId: params.get(VIEW_PARAM)}
+  ? {kind: 'project', param: {projectId, viewId: params.get(VIEW_PARAM)}}
   : undefined;
 }
 

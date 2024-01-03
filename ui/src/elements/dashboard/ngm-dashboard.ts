@@ -126,20 +126,20 @@ export class NgmDashboard extends LitElementI18n {
           }
           return topic;
         }).sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
-        DashboardStore.topicOrProjectParam.subscribe(async param => {
-          if (!param) return;
-          if ('topicId' in param) {
+        DashboardStore.topicOrProjectParam.subscribe(async value => {
+          if (!value) return;
+          if (value.kind === 'topic') {
             removeTopic();
-            const topic = this.topics?.find(p => p.id === param.topicId);
+            const topic = this.topics?.find(p => p.id === value.param.topicId);
             this.selectTopicOrProject(topic);
-          } else if ('projectId' in param) {
+          } else if (value.kind === 'project') {
             removeProject();
-            const projectResponse = await apiClient.getProject(param.projectId);
+            const projectResponse = await apiClient.getProject(value.param.projectId);
             const project = await projectResponse.json();
             this.selectTopicOrProject(project);
           } else return;
-          if (param.viewId) {
-            const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === param.viewId);
+          if (value.param.viewId) {
+            const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === value.param.viewId);
             if (viewIndex !== -1) DashboardStore.setViewIndex(viewIndex);
           }
           this.hidden = false;
