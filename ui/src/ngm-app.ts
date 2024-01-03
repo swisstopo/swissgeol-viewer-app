@@ -32,7 +32,7 @@ import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 import {
   getCameraView,
   getCesiumToolbarParam,
-  getTopic,
+  getTopicOrProject,
   getZoomToPosition,
   rewriteParams,
   syncCamera,
@@ -253,11 +253,11 @@ export class NgmApp extends LitElementI18n {
     window['viewer'] = viewer; // for debugging
 
     this.startCesiumLoadingProcess(viewer);
-    const topicParam = getTopic();
-    if (topicParam) {
-      this.waitForViewLoading = !!topicParam.viewId;
+    const topicOrProjectParam = getTopicOrProject();
+    if (topicOrProjectParam) {
+      this.waitForViewLoading = !!topicOrProjectParam.param.viewId;
       !this.waitForViewLoading && (<SideBar> this.querySelector('ngm-side-bar')).togglePanel('dashboard');
-      DashboardStore.setTopicParam(topicParam);
+      DashboardStore.setTopicOrProjectParam(topicOrProjectParam);
     } else {
       const storedView = LocalStorageController.storedView;
       if (storedView) {
