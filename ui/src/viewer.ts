@@ -99,7 +99,8 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
 
     const searchParams = new URLSearchParams(location.search);
 
-    const terrainExaggeration = parseFloat(searchParams.get('terrainExaggeration') || '1');
+    let zExaggeration = parseFloat(searchParams.get('zExaggeration') || '1');
+    zExaggeration = (zExaggeration >= 1 && zExaggeration <= 100) ? zExaggeration : 1;
     if (searchParams.get('noLimit') === 'false') {
         noLimit = false;
     }
@@ -163,7 +164,7 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
     enableCenterOfRotate(viewer);
 
     const globe = scene.globe;
-    globe.terrainExaggeration = terrainExaggeration;
+    globe.terrainExaggeration = zExaggeration;
 
     if (searchParams.get('swissrectangle') !== 'false') {
         const rectangle = Rectangle.fromDegrees(
