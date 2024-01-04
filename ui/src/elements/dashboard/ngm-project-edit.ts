@@ -10,11 +10,12 @@ import $ from '../../jquery';
 import '../../toolbox/ngm-geometries-list';
 import '../../layers/ngm-layers-upload';
 import {apiClient} from '../../api-client';
-import {showSnackbarError} from '../../notifications';
+import {showSnackbarError, showBannerWarning, isBannerShown} from '../../notifications';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
 import {MemberToAdd} from './ngm-add-member-form';
 import {isProject} from './helpers';
+import DashboardStore from '../../store/dashboard';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -26,7 +27,7 @@ export class NgmProjectEdit extends LitElementI18n {
     accessor createMode = true;
     @property({type: String})
     accessor userEmail: string = '';
-    @query('.ngm-proj-toast-placeholder')
+    @query('.ngm-toast-placeholder')
     accessor toastPlaceholder;
 
     async onKmlUpload(file: File) {
@@ -81,6 +82,15 @@ export class NgmProjectEdit extends LitElementI18n {
         return this.project !== undefined;
     }
 
+    showSaveOrCancelWarning() {
+            if (!isBannerShown(this.toastPlaceholder)) showBannerWarning(this.toastPlaceholder, i18next.t('project_lost_changes_warning'));
+            DashboardStore.showSaveOrCancelWarning(false);
+    }
+
+    updated(changedProperties) {
+        if (changedProperties.has('saveOrCancelWarning') && this.saveOrCancelWarning === true) this.showSaveOrCancelWarning();
+    }
+
     firstUpdated(_changedProperties: PropertyValues) {
         this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown());
         super.firstUpdated(_changedProperties);
@@ -92,10 +102,7 @@ export class NgmProjectEdit extends LitElementI18n {
         const backgroundImage = project.image?.length ? `url('${project.image}')` : '';
         return html`
             <div>
-              <div class="ui warning message" ?hidden=${!this.saveOrCancelWarning}>
-                ${i18next.t('project_lost_changes_warning')}
-              </div>
-              <div class="ngm-proj-toast-placeholder"></div>
+              <div class="ngm-toast-placeholder" id="project-toast"></div>
               <div class="ngm-proj-title">
                 <div class="ngm-input project-title ${classMap({'ngm-input-warning': !project.title})}">
                   <input type="text" placeholder="required" .value=${<string>project.title}
