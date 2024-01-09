@@ -151,6 +151,13 @@ export class NgmDashboard extends LitElementI18n {
     }
     DashboardStore.selectedTopicOrProject.subscribe(topicOrProject => {
       this.selectedTopicOrProject = topicOrProject;
+      if (isProject(topicOrProject)) {
+        if (topicOrProject.owner.email === this.userEmail) {
+          this.activeTab = 'projects';
+        } else {
+          this.activeTab = 'shared';
+        }
+      }
     });
     DashboardStore.viewIndex.subscribe(async viewIndex => {
       await this.selectView(viewIndex);
