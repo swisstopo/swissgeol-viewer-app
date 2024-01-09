@@ -81,3 +81,7 @@ export function showMessage(message: string, options: any = {}) {
 export function showBanner(element: HTMLElement, options) {
   $(element).toast({position: 'attached', context: $(element), displayTime: 20000, ...options});
 }
+
+export function isBannerShown(element: HTMLElement) {
+  return element.firstChild?.hasChildNodes();
+}
