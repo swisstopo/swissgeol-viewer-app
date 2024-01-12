@@ -93,7 +93,8 @@ export function filterCsvString(str: string, bbox4326: number[]): string {
   });
 }
 
-export function parseJson(string: string): Record<string, any> | undefined {
+export function parseJson(string: string | null): Record<string, any> | undefined {
+  if (!string) return undefined;
   try {
     return JSON.parse(string);
   } catch (e) {

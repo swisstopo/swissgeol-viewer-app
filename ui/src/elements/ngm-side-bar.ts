@@ -595,7 +595,7 @@ export class SideBar extends LitElementI18n {
           const tryToSelect = () => setTimeout(() => {
             updateValues();
             this.zoomToObjectCoordinates(cartesianPosition);
-            this.queryManager!.pickObject(windowPosition);
+            windowPosition && this.queryManager!.pickObject(windowPosition);
             triesCounter += 1;
             if (!this.queryManager!.objectSelector.selectedObj && triesCounter <= maxTries) {
               tryToSelect();
