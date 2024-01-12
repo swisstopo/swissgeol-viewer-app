@@ -265,17 +265,23 @@ export class NgmApp extends LitElementI18n {
         LocalStorageController.removeStoredView();
       }
     }
+
+    viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
     const {destination, orientation} = getCameraView();
     const zoomToPosition = getZoomToPosition();
     if (!zoomToPosition) {
       viewer.camera.flyTo({
         destination: destination || DEFAULT_VIEW.destination,
         orientation: orientation || DEFAULT_VIEW.orientation,
-        duration: 0
+        duration: 0,
+        complete: () => {
+          const {destination, orientation} = getCameraView();
+          if (!destination || !orientation) {
+            syncCamera(viewer.camera);
+          }
+        }
       });
     }
-
-    viewer.camera.moveEnd.addEventListener(() => syncCamera(viewer.camera));
 
     MainStore.setViewer(viewer);
 

@@ -1,6 +1,6 @@
 import ObjectSelector from './ObjectSelector';
 import SwisstopoIdentify from './SwisstopoIdentify';
-import type {Scene, Viewer} from 'cesium';
+import type {Cartesian2, Scene, Viewer} from 'cesium';
 import {Cartesian3, Cartographic, Color, Entity, HeightReference, ScreenSpaceEventType} from 'cesium';
 import i18next from 'i18next';
 import {OBJECT_HIGHLIGHT_COLOR, SWISSTOPO_IT_HIGHLIGHT_COLOR} from '../constants';
@@ -82,7 +82,7 @@ export default class QueryManager {
     await this.pickObject(click.position);
   }
 
-  async pickObject(position) {
+  async pickObject(position: Cartesian2) {
     const pickedPosition = this.scene.pickPosition(position);
     const object = this.objectSelector.getObjectAtPosition(position);
     let attributes = this.objectSelector.pickAttributes(position, pickedPosition, object);
