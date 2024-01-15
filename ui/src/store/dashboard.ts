@@ -38,7 +38,7 @@ export default class DashboardStore {
 
   static setSelectedTopicOrProject(value: Topic | Project | undefined): void {
     this.selectedTopicOrProjectSubject.next(value);
-    if (!value) this.viewIndexSubject.next(undefined);
+    if (!value) this.setViewIndex(undefined);
   }
 
   static setViewIndex(value: number | undefined): void {
