@@ -367,6 +367,7 @@ export class NgmDashboard extends LitElementI18n {
 
   async onProjectSave(project: Project | CreateProject) {
     if (this.projectMode === 'edit' && isProject(project)) {
+      await apiClient.updateProject(project);
       this.projectMode = 'view';
     } else if (this.projectMode === 'create' && this.projectToCreate) {
       try {
