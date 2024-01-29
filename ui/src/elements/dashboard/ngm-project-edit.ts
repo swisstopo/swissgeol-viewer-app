@@ -8,7 +8,6 @@ import {Asset, CreateProject, Member, Project} from './ngm-dashboard';
 import {customElement, property, query} from 'lit/decorators.js';
 import $ from '../../jquery';
 import '../../toolbox/ngm-geometries-list';
-import '../../layers/ngm-layers-upload';
 import {apiClient} from '../../api-client';
 import {showSnackbarError, showBannerWarning, isBannerShown} from '../../notifications';
 import './ngm-project-geoms-section';
@@ -16,6 +15,8 @@ import './ngm-project-assets-section';
 import {MemberToAdd} from './ngm-add-member-form';
 import {isProject} from './helpers';
 import DashboardStore from '../../store/dashboard';
+import {CustomDataSource, KmlDataSource} from 'cesium';
+import MainStore from '../../store/main';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -27,6 +28,8 @@ export class NgmProjectEdit extends LitElementI18n {
     accessor createMode = true;
     @property({type: String})
     accessor userEmail: string = '';
+    @property({type: Object})
+    accessor tempKmlDataSource: CustomDataSource | undefined;
     @query('.ngm-toast-placeholder')
     accessor toastPlaceholder;
 
@@ -38,6 +41,17 @@ export class NgmProjectEdit extends LitElementI18n {
             if (key) {
                 const assets = [...this.project!.assets, {name: file.name, key}];
                 this.project = {...this.project, assets};
+                const viewer = MainStore.viewer.value;
+                if (viewer && this.tempKmlDataSource) {
+                    const kmlDataSource = await KmlDataSource.load(file, {
+                        camera: viewer.scene.camera,
+                        canvas: viewer.scene.canvas
+                    });
+                    kmlDataSource.entities.values.forEach(ent => {
+                        this.tempKmlDataSource!.entities.add(ent);
+                    });
+                    viewer.flyTo(kmlDataSource);
+                }
             }
         } catch (e) {
             console.error(e);

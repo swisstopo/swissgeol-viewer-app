@@ -154,8 +154,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         const createProject = this.toCreateProject(this.topicOrProject!);
         const response = await apiClient.duplicateProject(createProject);
         const id = await response.json();
-        const projectResponse = await apiClient.getProject(id);
-        const project = await projectResponse.json();
+        const project = await apiClient.getProject(id);
         this.dispatchEvent(new CustomEvent('onProjectDuplicated', {detail: {project}}));
     }
 

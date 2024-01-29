@@ -32,9 +32,8 @@ export class ProjectSelector extends LitElementI18n {
             }
         });
 
-        AuthStore.user.subscribe(user => {
-            // FIXME: extract from claims
-            this.userEmail = user?.username.split('_')[1];
+        AuthStore.user.subscribe(() => {
+            this.userEmail = AuthStore.userEmail;
         });
 
         apiClient.projectsChange.subscribe((projects) => {
@@ -75,7 +74,7 @@ export class ProjectSelector extends LitElementI18n {
         if (!this.showProjectSelector) {
             return html``;
         }
-        const dropdownItems = this.projects?.filter(p => [p.owner.email, ...p.editors]
+        const dropdownItems = this.projects?.filter(p => [p.owner.email, ...p.editors.map(e => e.email)]
             .includes(this.userEmail!))
             .map(project => {
                 return {

@@ -114,10 +114,14 @@ export class NgmDashboard extends LitElementI18n {
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
   private userEmail: string | undefined;
+  private tempKmlDataSource = new CustomDataSource('tempKmlDataSource');
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe(viewer => {
+      this.viewer = viewer;
+      this.viewer?.dataSources.add(this.tempKmlDataSource);
+    });
     fetch('./src/sampleData/topics.json').then(topicsResponse =>
       topicsResponse.json().then(topics => {
         this.topics = topics.map(topic => {
@@ -134,8 +138,7 @@ export class NgmDashboard extends LitElementI18n {
             this.selectTopicOrProject(topic);
           } else if (value.kind === 'project') {
             removeProject();
-            const projectResponse = await apiClient.getProject(value.param.projectId);
-            const project = await projectResponse.json();
+            const project = await apiClient.getProject(value.param.projectId);
             this.selectTopicOrProject(project);
           } else return;
           if (value.param.viewId) {
@@ -173,9 +176,8 @@ export class NgmDashboard extends LitElementI18n {
         }));
       }
     });
-    AuthStore.user.subscribe(user => {
-      // FIXME: extract from claims
-      this.userEmail = user?.username.split('_')[1];
+    AuthStore.user.subscribe(() => {
+      this.userEmail = AuthStore.userEmail;
     });
     apiClient.projectsChange.subscribe((projects) => {
       this.refreshProjects(projects);
@@ -373,8 +375,7 @@ export class NgmDashboard extends LitElementI18n {
       try {
         const response = await apiClient.createProject(project);
         const id = await response.json();
-        const projectResponse = await apiClient.getProject(id);
-        const createdProject = await projectResponse.json();
+        const createdProject = await apiClient.getProject(id);
         this.selectTopicOrProject(createdProject);
       } catch (e) {
         console.error(e);
@@ -383,7 +384,11 @@ export class NgmDashboard extends LitElementI18n {
       this.projectMode = 'view';
       this.projectToCreate = undefined;
     }
+    this.tempKmlDataSource.entities.removeAll();
     this.saveOrCancelWarning = false;
+    if (this.selectedViewIndx && this.selectedTopicOrProject?.assets) {
+        this.assets = await this.fetchAssets(this.selectedTopicOrProject.assets);
+    }
   }
 
   cancelEditCreate() {
@@ -391,6 +396,7 @@ export class NgmDashboard extends LitElementI18n {
       this.projectMode = 'view';
       this.saveOrCancelWarning = false;
       this.projectToCreate = undefined;
+      this.tempKmlDataSource.entities.removeAll();
   }
 
   runIfNotEditCreate(callback: () => void) {
@@ -401,6 +407,11 @@ export class NgmDashboard extends LitElementI18n {
     }
   }
 
+  async onProjectPreviewClick(id: string) {
+    const project = await apiClient.getProject(id);
+    this.selectTopicOrProject(project);
+  }
+
   get isProjectSelected() {
     return this.selectedTopicOrProject || this.projectToCreate;
   }
@@ -409,7 +420,7 @@ export class NgmDashboard extends LitElementI18n {
     if (!proj) return '';
     const backgroundImage = proj.image?.length ? `url('${proj.image}')` : 'none';
     return html`
-      <div class="ngm-proj-preview" @click=${() => this.selectTopicOrProject(proj)}>
+      <div class="ngm-proj-preview" @click=${() => this.onProjectPreviewClick(proj.id)}>
         <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage})}></div>
         <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: proj.color})}>
           <span>${translated(proj.title)}</span>
@@ -544,6 +555,7 @@ export class NgmDashboard extends LitElementI18n {
                      .saveOrCancelWarning="${this.saveOrCancelWarning}"
                      .createMode="${this.projectMode === 'create'}"
                      .userEmail="${this.userEmail}"
+                     .tempKmlDataSource="${this.tempKmlDataSource}"
                      @onBack=${this.deselectTopicOrProject}
                      @onSave="${async (evt: {detail: {project: Project}}) => this.onProjectSave(evt.detail.project)}"
                      @onCancel="${this.cancelEditCreate}"></ngm-project-edit>` :

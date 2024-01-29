@@ -73,17 +73,18 @@ class ApiClient {
         });
     }
 
-    getProject(id: string): Promise<Response> {
+    async getProject(id: string): Promise<Project> {
       const headers = {
         'Accept': 'application/json',
       };
 
       addAuthorization(headers, this.token);
-
-      return fetch(`${this.apiUrl}/projects/${id}`, {
-        method: 'GET',
-        headers: headers,
+      const response = await fetch(`${this.apiUrl}/projects/${id}`, {
+          method: 'GET',
+          headers: headers,
       });
+
+      return await response.json();
     }
 
 

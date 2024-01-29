@@ -158,7 +158,7 @@ pub async fn create_project(
     Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
     // Sanity check
-    if project.owner.email != claims.email {
+    if project.owner.email.to_lowercase() != claims.email.to_lowercase() {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -207,7 +207,17 @@ pub async fn get_project(
     .fetch_one(&pool)
     .await?;
 
-    Ok(Json(result.0))
+    let mut project = result;
+
+    for viewer in project.viewers.iter_mut() {
+        viewer.email = viewer.email.to_lowercase();
+    }
+    for editor in project.editors.iter_mut() {
+        editor.email = editor.email.to_lowercase();
+    }
+    project.owner.email = project.owner.email.to_lowercase();
+
+    Ok(Json(project.0))
 }
 
 #[axum_macros::debug_handler]
@@ -218,9 +228,9 @@ pub async fn update_project(
     claims: Claims,
     Json(mut project): Json<Project>,
 ) -> Result<StatusCode> {
-    let email = claims.email;
-    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone()).collect();
-    if project.owner.email != email && !member_emails.contains(&email) {
+    let email = claims.email.to_lowercase();
+    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone().to_lowercase()).collect();
+    if project.owner.email.to_lowercase() != email && !member_emails.contains(&email) {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -286,7 +296,7 @@ pub async fn delete_project(
     .await?
     .0;
 
-    if saved_project.owner.email != claims.email {
+    if saved_project.owner.email.to_lowercase() != claims.email.to_lowercase() {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -314,7 +324,7 @@ pub async fn update_project_geometries(
     claims: Claims,
     Json(geometries): Json<Vec<Geometry>>,
 ) -> Result<StatusCode> {
-    let email = claims.email;
+    let email = claims.email.to_lowercase();
 
     let mut project: Project = sqlx::query_scalar!(
         r#"SELECT project as "project: sqlx::types::Json<Project>" FROM projects WHERE id = $1"#,
@@ -324,8 +334,8 @@ pub async fn update_project_geometries(
     .await?
     .0;
 
-    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone()).collect();
-    if project.owner.email != email && !member_emails.contains(&email) {
+    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone().to_lowercase()).collect();
+    if project.owner.email.to_lowercase() != email && !member_emails.contains(&email) {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
@@ -356,23 +366,35 @@ pub async fn list_projects(
         SELECT project AS "project!: sqlx::types::Json<Project>"
         FROM projects
         WHERE
-            project->'owner'->>'email' = $1 OR
+            LOWER(project->'owner'->>'email') = $1 OR
             EXISTS (
                 SELECT 1 FROM jsonb_array_elements(project->'viewers') AS viewer
-                WHERE viewer->>'email' = $1
+                WHERE LOWER(viewer->>'email') = $1
             ) OR
             EXISTS (
                 SELECT 1 FROM jsonb_array_elements(project->'editors') AS editor
-                WHERE editor->>'email' = $1
+                WHERE LOWER(editor->>'email') = $1
             )
         "#,
-        claims.email
+        claims.email.to_lowercase()
     )
     .fetch_all(&pool)
     .await?;
 
+    let mut project_queries = result;
+
+    for project_query in project_queries.iter_mut() {
+        for viewer in project_query.project.viewers.iter_mut() {
+            viewer.email = viewer.email.to_lowercase();
+        }
+        for editor in project_query.project.editors.iter_mut() {
+            editor.email = editor.email.to_lowercase();
+        }
+        project_query.project.owner.email = project_query.project.owner.email.to_lowercase();
+    }
+
     Ok(Json(
-        result
+        project_queries
             .iter()
             .map(|v: &ProjectQuery| v.project.to_owned().0)
             .collect(),
@@ -387,7 +409,7 @@ pub async fn duplicate_project(
     Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
     // Sanity check
-    if project.owner.email != claims.email {
+    if project.owner.email.to_lowercase() != claims.email.to_lowercase()  {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
