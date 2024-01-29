@@ -97,7 +97,7 @@
     "rollup-plugin-copy": "3.5.0",
     "rollup-plugin-postcss": "4.0.2",
     "sortablejs": "1.15.2",
-    "source-map-loader": "4.0.2",
+    "source-map-loader": "5.0.0",
     "start-server-and-test": "2.0.3",
     "stream-to-promise": "3.0.0",
     "ts-loader": "9.5.1",
