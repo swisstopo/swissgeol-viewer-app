@@ -229,7 +229,11 @@ pub async fn update_project(
     Json(mut project): Json<Project>,
 ) -> Result<StatusCode> {
     let email = claims.email.to_lowercase();
-    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone().to_lowercase()).collect();
+    let member_emails: Vec<String> = project
+        .editors
+        .iter()
+        .map(|p| p.email.clone().to_lowercase())
+        .collect();
     if project.owner.email.to_lowercase() != email && !member_emails.contains(&email) {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
@@ -334,7 +338,11 @@ pub async fn update_project_geometries(
     .await?
     .0;
 
-    let member_emails: Vec<String> = project.editors.iter().map(|p| p.email.clone().to_lowercase()).collect();
+    let member_emails: Vec<String> = project
+        .editors
+        .iter()
+        .map(|p| p.email.clone().to_lowercase())
+        .collect();
     if project.owner.email.to_lowercase() != email && !member_emails.contains(&email) {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
@@ -409,7 +417,7 @@ pub async fn duplicate_project(
     Json(project): Json<CreateProject>,
 ) -> Result<Json<Uuid>> {
     // Sanity check
-    if project.owner.email.to_lowercase() != claims.email.to_lowercase()  {
+    if project.owner.email.to_lowercase() != claims.email.to_lowercase() {
         return Err(Error::Api(
             StatusCode::BAD_REQUEST,
             "Project owner does not match token claims.",
