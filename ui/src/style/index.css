@@ -563,3 +563,13 @@ body:after { /* Beta label */
   line-height: 27px;
   transform: rotate(-45deg);
 }
+
+.cursor-preloader,
+.cursor-preloader * {
+  cursor: wait !important;
+}
+
+.disabled-container {
+  pointer-events: none;
+  opacity: 0.5;
+}

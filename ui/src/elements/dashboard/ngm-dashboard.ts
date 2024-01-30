@@ -6,7 +6,15 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import MainStore from '../../store/main';
 import ToolboxStore from '../../store/toolbox';
-import {getCameraView, getPermalink, removeTopic, removeProject, setPermalink, syncStoredView, syncTargetParam} from '../../permalink';
+import {
+  getCameraView,
+  getPermalink,
+  removeProject,
+  removeTopic,
+  setPermalink,
+  syncStoredView,
+  syncTargetParam
+} from '../../permalink';
 import NavToolsStore from '../../store/navTools';
 import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
@@ -104,6 +112,8 @@ export class NgmDashboard extends LitElementI18n {
   accessor projectMode: 'edit' | 'create' | 'view' = 'view';
   @state()
   accessor saveOrCancelWarning = false;
+  @state()
+  accessor showCursorPreloader = false;
   @query('.ngm-toast-placeholder')
   accessor toastPlaceholder;
   @query('#overview-toast')
@@ -407,26 +417,32 @@ export class NgmDashboard extends LitElementI18n {
     }
   }
 
-  async onProjectPreviewClick(id: string) {
-    const project = await apiClient.getProject(id);
-    this.selectTopicOrProject(project);
+  async onProjectPreviewClick(projOrTopic: Topic | Project) {
+    if (isProject(projOrTopic)) {
+      this.showCursorPreloader = true;
+      projOrTopic = await apiClient.getProject(projOrTopic.id);
+      this.showCursorPreloader = false;
+    }
+    this.selectTopicOrProject(projOrTopic);
   }
 
   get isProjectSelected() {
     return this.selectedTopicOrProject || this.projectToCreate;
   }
 
-  previewTemplate(proj?: Topic | Project) {
-    if (!proj) return '';
-    const backgroundImage = proj.image?.length ? `url('${proj.image}')` : 'none';
+  previewTemplate(projOrTopic?: Topic | Project) {
+    if (!projOrTopic) return '';
+    const backgroundImage = projOrTopic.image?.length ? `url('${projOrTopic.image}')` : 'none';
     return html`
-      <div class="ngm-proj-preview" @click=${() => this.onProjectPreviewClick(proj.id)}>
+      <div class="ngm-proj-preview ${classMap({
+        'cursor-preloader': this.showCursorPreloader
+      })}" @click=${() => this.onProjectPreviewClick(projOrTopic)}>
         <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage})}></div>
-        <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: proj.color})}>
-          <span>${translated(proj.title)}</span>
+        <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: projOrTopic.color})}>
+          <span>${translated(projOrTopic.title)}</span>
         </div>
         <div class="ngm-proj-preview-subtitle">
-          <span>${proj.description ? translated(proj.description) : ''}</span>
+          <span>${projOrTopic.description ? translated(projOrTopic.description) : ''}</span>
         </div>
       </div>`;
   }
@@ -465,11 +481,17 @@ export class NgmDashboard extends LitElementI18n {
     return html``;
   }
 
-  updated(changedProperties: PropertyValues) {
-    if (changedProperties.has('projectMode')) {
+  updated(changed: PropertyValues) {
+    if (changed.has('projectMode')) {
       DashboardStore.setProjectMode(this.projectMode !== 'view' ? 'edit' : undefined);
     }
-    super.updated(changedProperties);
+    if (
+        (changed.has('hidden') || changed.has('activeTab') || changed.has('selectedTopicOrProject')) &&
+        this.activeTab !== 'topics' && !this.selectedTopicOrProject && !this.hidden
+    ) {
+      apiClient.refreshProjects();
+    }
+    super.updated(changed);
   }
 
   render() {
