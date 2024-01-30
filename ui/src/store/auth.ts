@@ -14,6 +14,6 @@ export default class AuthStore {
 
   static get userEmail(): string | undefined {
     // FIXME: extract from claims
-    return this.user?.value?.username.split('_')[1];
+    return this.user?.value?.username.split('_')[1].toLowerCase();
   }
 }

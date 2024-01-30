@@ -22,9 +22,8 @@ export class ViewMenu extends LitElementI18n {
 
     constructor() {
         super();
-        AuthStore.user.subscribe(user => {
-            // FIXME: extract from claims
-            this.userEmail = user?.username.split('_')[1];
+        AuthStore.user.subscribe(() => {
+            this.userEmail = AuthStore.userEmail;
           });
         DashboardStore.selectedTopicOrProject.subscribe(topic => {
             this.selectedProject = topic;

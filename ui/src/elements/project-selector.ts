@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import {html} from 'lit';
+import {html, PropertyValues} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {apiClient} from '../api-client';
 import draggable from './draggable';
@@ -12,6 +12,7 @@ import {getPermalink} from '../permalink';
 import {isProject} from './dashboard/helpers';
 import './ngm-dropdown';
 import {DropdownChangedEvent} from './ngm-dropdown';
+import {classMap} from 'lit/directives/class-map.js';
 
 @customElement('project-selector')
 export class ProjectSelector extends LitElementI18n {
@@ -23,6 +24,8 @@ export class ProjectSelector extends LitElementI18n {
     accessor userEmail: string | undefined;
     @state()
     accessor selectedProjectId: string | undefined;
+    @state()
+    accessor waitProjects = false;
 
     constructor() {
         super();
@@ -32,15 +35,13 @@ export class ProjectSelector extends LitElementI18n {
             }
         });
 
-        AuthStore.user.subscribe(user => {
-            // FIXME: extract from claims
-            this.userEmail = user?.username.split('_')[1];
+        AuthStore.user.subscribe(() => {
+            this.userEmail = AuthStore.userEmail;
         });
 
         apiClient.projectsChange.subscribe((projects) => {
             this.projects = projects;
         });
-        apiClient.refreshProjects();
     }
 
     connectedCallback() {
@@ -48,6 +49,14 @@ export class ProjectSelector extends LitElementI18n {
             allowFrom: '.drag-handle'
         });
         super.connectedCallback();
+    }
+
+    protected updated(changedProperties: PropertyValues) {
+        if (changedProperties.has('showProjectSelector') && this.showProjectSelector) {
+            this.waitProjects = true;
+            apiClient.refreshProjects().then(() => this.waitProjects = false);
+        }
+        super.updated(changedProperties);
     }
 
     async saveViewToProject() {
@@ -75,7 +84,7 @@ export class ProjectSelector extends LitElementI18n {
         if (!this.showProjectSelector) {
             return html``;
         }
-        const dropdownItems = this.projects?.filter(p => [p.owner.email, ...p.editors]
+        const dropdownItems = this.projects?.filter(p => [p.owner.email, ...p.editors.map(e => e.email)]
             .includes(this.userEmail!))
             .map(project => {
                 return {
@@ -88,15 +97,17 @@ export class ProjectSelector extends LitElementI18n {
                 ${i18next.t('save_view_in_project')}
                 <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
             </div>
-            <div>
-                <ngm-dropdown .items=${dropdownItems}
+            <div class="${classMap({'cursor-preloader': this.waitProjects})}">
+                <div class="${classMap({'disabled-container': this.waitProjects})}">
+                    <ngm-dropdown .items=${dropdownItems}
                               .selectedValue=${this.selectedProjectId}
                               .defaultText=${i18next.t('select_project')}
                               @changed=${(evt: DropdownChangedEvent) => this.selectedProjectId = evt.detail.newValue}>
-                </ngm-dropdown>
-                <button class="ui button ngm-action-btn"
-                        @click=${async () => await this.saveViewToProject()}
-                >${i18next.t('save')}</button>
+                    </ngm-dropdown>
+                    <button class="ui button ngm-action-btn"
+                            @click=${async () => await this.saveViewToProject()}
+                    >${i18next.t('save')}</button>
+                </div>
             </div>
         `;
     }

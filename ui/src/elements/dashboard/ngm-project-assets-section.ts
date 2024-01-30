@@ -4,6 +4,7 @@ import {html, PropertyValues} from 'lit';
 import i18next from 'i18next';
 import {classMap} from 'lit/directives/class-map.js';
 import {Asset} from './ngm-dashboard';
+import '../../layers/ngm-layers-upload';
 
 @customElement('ngm-project-assets-section')
 export class NgmProjectAssetsSection extends LitElementI18n {
