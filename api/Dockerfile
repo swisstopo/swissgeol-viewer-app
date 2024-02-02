@@ -44,13 +44,31 @@ RUN cargo fmt --all -- --check
 # we don't care about linting dependencies, but clippy still does so despite our use
 # of --package and --no-deps flags
 # this is relatively fast so not a blocker
-RUN cargo clippy --package api --target x86_64-unknown-linux-musl --tests --examples --offline --release  --no-deps
+RUN if [ "$mac" = "true" ]; then \
+        RUSTFLAGS="-C linker=x86_64-linux-gnu-gcc" \
+        CC_x86_64_unknown_linux_musl="clang" \
+        AR_x86_64_unknown_linux_musl="llvm-ar" \
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="-Clink-self-contained=yes -Clinker=rust-lld" \
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUNNER="qemu-x86_64 -L /usr/x86-64-linux-gnu" \
+        cargo clippy --package api --target x86_64-unknown-linux-musl --tests --examples --offline --release  --no-deps; \
+    else \
+        cargo clippy --package api --target x86_64-unknown-linux-musl --tests --examples --offline --release  --no-deps; \
+    fi
 
 # The tests actually requires a live DB so it must be run after the image is built
 # See "make acceptance"
 
 # We build the app
-RUN cargo build --target x86_64-unknown-linux-musl --release --offline
+RUN if [ "$mac" = "true" ]; then \
+        RUSTFLAGS="-C linker=x86_64-linux-gnu-gcc" \
+        CC_x86_64_unknown_linux_musl="clang" \
+        AR_x86_64_unknown_linux_musl="llvm-ar" \
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="-Clink-self-contained=yes -Clinker=rust-lld" \
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUNNER="qemu-x86_64 -L /usr/x86-64-linux-gnu" \
+        cargo build --target x86_64-unknown-linux-musl --release --offline; \
+    else \
+        cargo build --target x86_64-unknown-linux-musl --release --offline; \
+    fi
 
 
 ## The final image is quite small and almost minimal
