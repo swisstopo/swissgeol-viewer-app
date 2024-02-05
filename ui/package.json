@@ -85,7 +85,7 @@
     "i18next-parser": "8.12.0",
     "jsdom": "24.0.0",
     "jsdom-global": "3.0.2",
-    "marked": "11.2.0",
+    "marked": "12.0.0",
     "mini-css-extract-plugin": "2.8.0",
     "mocha": "10.2.0",
     "node-fetch": "3.3.2",
