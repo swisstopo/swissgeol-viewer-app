@@ -102,7 +102,7 @@ jobs:
         run: cd ui && npm run test
 
       - name: Cypress run
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
           command: npm run test:e2e
           working-directory: ui
