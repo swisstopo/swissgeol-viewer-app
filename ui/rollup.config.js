@@ -19,7 +19,7 @@ const extensions = ['.ts', '.js'];
 const config = {
   input: 'src/index.ts',
   output: [{
-    file: 'dist/bundle.debug.js',
+    dir: 'dist/debug',
     sourcemap: true,
     format: 'esm',
   }],
@@ -103,7 +103,7 @@ const config = {
 
 if (process.env.mode === 'production') {
   config.output.push({
-    file: 'dist/bundle.min.js',
+    dir: 'dist/min',
     sourcemap: true,
     format: 'esm',
     plugins: [
