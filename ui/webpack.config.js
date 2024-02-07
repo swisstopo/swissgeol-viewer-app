@@ -61,7 +61,7 @@ export default {
     }
   },
   output: {
-    filename: 'bundle.debug.js',
+    filename: 'debug/index.js',
   },
   devtool: 'eval',
   module: {
