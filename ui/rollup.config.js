@@ -19,7 +19,7 @@ const extensions = ['.ts', '.js'];
 const config = {
   input: 'src/index.ts',
   output: [{
-    dir: 'dist/debug',
+    dir: 'dist',
     sourcemap: true,
     format: 'esm',
   }],
@@ -77,6 +77,7 @@ const config = {
         'node_modules/**' // yes, this is eXtreme excluding (includes aws-sdk)
       ],
     }),
+    terser(),
     copy({
       targets: [
         {src: 'index.html', dest: 'dist/'},
@@ -100,16 +101,5 @@ const config = {
 
   ],
 };
-
-if (process.env.mode === 'production') {
-  config.output.push({
-    dir: 'dist/min',
-    sourcemap: true,
-    format: 'esm',
-    plugins: [
-      terser(),
-    ]
-  });
-}
 
 export default config;
