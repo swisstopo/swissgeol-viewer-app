@@ -2,43 +2,54 @@ import {customElement, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
 import {html, PropertyValues} from 'lit';
 import i18next from 'i18next';
-import ToolboxStore from '../store/toolbox';
 import {classMap} from 'lit-html/directives/class-map.js';
 import DrawStore from '../store/draw';
-import {Subscription} from 'rxjs';
+import MainStore from '../store/main';
+import MeasureTool from '../measure/MeasureTool';
+import {DrawInfo} from '../draw/CesiumDraw';
 
 @customElement('ngm-measure')
 export class NgmMeasure extends LitElementI18n {
     @state()
     accessor active = false;
     @state()
-    accessor lineInfo = DrawStore.lineInfo.value;
-    private lineInfoSubscription: Subscription | undefined;
+    accessor lineInfo = {
+        lengthLabel: '0km',
+        segments: 0,
+        type: 'line'
+    };
+    private measure: MeasureTool | undefined;
+
+    constructor() {
+        super();
+        MainStore.viewer.subscribe(viewer => {
+            if (!viewer) return;
+            this.measure = new MeasureTool(viewer);
+            this.measure.draw.addEventListener('drawInfo', (event) => {
+                const info: DrawInfo = (<CustomEvent>event).detail;
+                if (info.type === 'line') {
+                    this.lineInfo = info;
+                }
+            });
+        });
+    }
 
     connectedCallback() {
         this.active = true;
-        this.lineInfoSubscription =
-            DrawStore.lineInfo.subscribe(value => this.lineInfo = value);
         super.connectedCallback();
     }
 
     disconnectedCallback() {
         if (this.active) {
-            ToolboxStore.nextGeometryAction({type: 'line', action: 'clearMeasure'});
             this.active = false;
         }
-        this.lineInfoSubscription?.unsubscribe();
         super.disconnectedCallback();
     }
 
     updated(changedProperties: PropertyValues) {
-        if (changedProperties.has('active')) {
+        if (changedProperties.has('active') && this.measure) {
             DrawStore.measureState.next(this.active);
-            if (this.active) {
-                ToolboxStore.nextGeometryAction({type: 'line', action: 'measure'});
-            } else {
-                ToolboxStore.nextGeometryAction({type: 'line', action: 'clearMeasure'});
-            }
+            this.measure.active = this.active;
         }
         super.updated(changedProperties);
     }

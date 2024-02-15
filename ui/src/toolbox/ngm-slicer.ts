@@ -14,9 +14,10 @@ import type {Cartesian3, CustomDataSource} from 'cesium';
 import type {NgmGeometry} from './interfaces';
 import {flyToGeom, hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
-import {skip, Subscription} from 'rxjs';
+import {skip} from 'rxjs';
 import DrawStore from '../store/draw';
 import NavToolsStore from '../store/navTools';
+import {DrawInfo} from '../draw/CesiumDraw';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
@@ -35,10 +36,13 @@ export class NgmSlicer extends LitElementI18n {
   @state()
   accessor editingEnabled = false;
   @state()
-  accessor lineInfo = DrawStore.lineInfo.value;
+  accessor lineInfo: DrawInfo = {
+    lengthLabel: '0km',
+    segments: 0,
+    type: 'line'
+  };
   private sliceGeomId: string | undefined;
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
-  private lineInfoSubscription: Subscription | undefined;
 
 
   constructor() {
@@ -50,6 +54,12 @@ export class NgmSlicer extends LitElementI18n {
         DrawStore.setDrawState((<CustomEvent>evt).detail.active);
         this.requestUpdate();
       });
+      this.slicer.draw.addEventListener('drawInfo', (event) => {
+        const info: DrawInfo = (<CustomEvent>event).detail;
+        if (info.type === 'line') {
+          this.lineInfo = info;
+        }
+      });
       this.syncSlice();
     });
     ToolboxStore.sliceGeometry.pipe(skip(1)).subscribe(geom => this.toggleGeomSlicer(geom));
@@ -59,17 +69,6 @@ export class NgmSlicer extends LitElementI18n {
         this.toggleSlicer();
     });
     ToolboxStore.syncSlice.subscribe(() => this.syncSlice());
-  }
-
-  connectedCallback() {
-    this.lineInfoSubscription =
-        DrawStore.lineInfo.subscribe(value => this.lineInfo = value);
-    super.connectedCallback();
-  }
-
-  disconnectedCallback() {
-    this.lineInfoSubscription?.unsubscribe();
-    super.disconnectedCallback();
   }
 
   protected update(changedProperties) {

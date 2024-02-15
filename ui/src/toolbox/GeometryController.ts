@@ -8,8 +8,6 @@ import type {CesiumDraw} from '../draw/CesiumDraw';
 import type {Cartesian2, Event, exportKmlResultKml, Viewer} from 'cesium';
 
 import {
-
-  Cartesian3,
   Cartographic,
   Color,
   CornerType,
@@ -46,7 +44,6 @@ import {
   POINT_SYMBOLS
 } from '../constants';
 import {saveAs} from 'file-saver';
-import {getDimensionLabel} from '../draw/helpers';
 
 export class GeometryController {
   private draw: CesiumDraw | undefined;
@@ -63,8 +60,6 @@ export class GeometryController {
     rectangle: 0,
     polygon: 0
   };
-  private measureDataSource = new CustomDataSource('measure');
-  private measure = false;
   private noEdit: boolean;
 
   constructor(geometriesDataSource: CustomDataSource, toastPlaceholder: HTMLElement, noEdit = false) {
@@ -77,7 +72,6 @@ export class GeometryController {
       if (viewer) {
         this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
         this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
-        if (!this.noEdit) viewer.dataSources.add(this.measureDataSource);
       } else if (this.screenSpaceEventHandler) {
         this.screenSpaceEventHandler.destroy();
       }
@@ -104,19 +98,11 @@ export class GeometryController {
   }
 
   onClick_(click) {
-    if (!this.draw || !this.draw.active) {
-      if (this.measure) {
-        const position = Cartesian3.clone(this.viewer!.scene.pickPosition(click.position));
-        if (position) {
-          this.clearMeasureGeometry();
-          this.onAddGeometry('line', true, click);
-        }
-      } else {
-        const pickedObject = this.viewer!.scene.pick(click.position);
-        if (pickedObject && pickedObject.id) { // to prevent error on tileset click
-          if (this.geometriesDataSource!.entities.contains(pickedObject.id)) {
-            this.pickGeometry(pickedObject.id.id);
-          }
+    if (!this.draw?.active && !DrawStore.measureState.value) {
+      const pickedObject = this.viewer!.scene.pick(click.position);
+      if (pickedObject && pickedObject.id) { // to prevent error on tileset click
+        if (this.geometriesDataSource!.entities.contains(pickedObject.id)) {
+          this.pickGeometry(pickedObject.id.id);
         }
       }
     }
@@ -127,24 +113,20 @@ export class GeometryController {
     this.draw.active = false;
     this.draw.clear();
 
-    if (this.measure) {
-      this.addMeasureGeometry(info.positions);
-    } else {
-      const positions = info.positions;
-      const measurements = info.measurements;
-      const type = info.type;
-      const attributes: NgmGeometry = {
-        positions: positions,
-        area: measurements.area,
-        perimeter: measurements.perimeter,
-        sidesLength: measurements.sidesLength,
-        numberOfSegments: measurements.numberOfSegments,
-        type: type,
-        clampPoint: true
-      };
-      this.increaseGeometriesCounter(type);
-      this.addGeometry(attributes);
-    }
+    const positions = info.positions;
+    const measurements = info.measurements;
+    const type = info.type;
+    const attributes: NgmGeometry = {
+      positions: positions,
+      area: measurements.area,
+      perimeter: measurements.perimeter,
+      sidesLength: measurements.sidesLength,
+      numberOfSegments: measurements.numberOfSegments,
+      type: type,
+      clampPoint: true
+    };
+    this.increaseGeometriesCounter(type);
+    this.addGeometry(attributes);
   }
 
   cancelDraw() {
@@ -204,16 +186,14 @@ export class GeometryController {
     this.geometriesDataSource!.entities.removeById(id);
   }
 
-  private onAddGeometry(type: GeometryTypes, measure = false, clickEvent?: {position: Cartesian2}) {
+  private onAddGeometry(type: GeometryTypes, clickEvent?: {position: Cartesian2}) {
     if (this.noEdit) return;
-    this.measure = measure;
     const currentType = this.draw!.type;
     if (this.draw!.active) {
       this.cancelDraw();
       if (currentType === type) return;
     }
     this.draw!.type = type;
-    this.draw!.measure = measure;
     this.draw!.active = true;
     if (clickEvent) {
       this.draw!.onLeftClick(clickEvent);
@@ -399,12 +379,6 @@ export class GeometryController {
       case 'add':
         this.onAddGeometry(options.type!);
         break;
-      case 'measure':
-        this.onAddGeometry(options.type!, true);
-        break;
-      case 'clearMeasure':
-        this.clearMeasureGeometry();
-        break;
       case 'upload':
         this.uploadFile(options.file);
         break;
@@ -536,49 +510,6 @@ export class GeometryController {
       updateEntityVolume(entity, this.viewer!.scene.globe);
     }
     return entity;
-  }
-
-  addMeasureGeometry(positions: Cartesian3[]) {
-    const distances = positions.map((position, key) => {
-      if (key === positions.length - 1) return 0;
-      return Cartesian3.distance(position, positions[key + 1]) / 1000;
-    }, 0);
-    this.measureDataSource.entities.add({
-      show: true,
-      polyline: {
-        show: true,
-        positions: positions,
-        clampToGround: false,
-        width: 4,
-        material: DEFAULT_AOI_COLOR.withAlpha(GEOMETRY_LINE_ALPHA),
-      }
-    });
-    positions.forEach((pos, indx) => {
-      const entity: Entity.ConstructorOptions = {
-        position: pos,
-        point: {
-          color: Color.WHITE,
-          outlineWidth: 1,
-          outlineColor: Color.BLACK,
-          pixelSize: 9,
-          heightReference: HeightReference.NONE,
-        }
-      };
-      if (indx === positions.length - 1) {
-        entity.label = getDimensionLabel('line', distances);
-      }
-      this.measureDataSource.entities.add(entity);
-    });
-  }
-
-  clearMeasureGeometry() {
-    if (this.draw && this.draw.active) {
-      this.draw.active = false;
-      this.draw.clear();
-    }
-    this.measure = false;
-    this.measureDataSource.entities.removeAll();
-    this.viewer?.scene.render();
   }
 
 

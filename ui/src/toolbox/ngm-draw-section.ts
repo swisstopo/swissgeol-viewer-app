@@ -8,8 +8,7 @@ import ToolboxStore from '../store/toolbox';
 import type {GeometryTypes} from './interfaces';
 import {clickOnElement} from '../utils';
 import DrawStore from '../store/draw';
-import type {CesiumDraw} from '../draw/CesiumDraw';
-import {Subscription} from 'rxjs';
+import {CesiumDraw, DrawInfo} from '../draw/CesiumDraw';
 
 const fileUploadInputId = 'fileUpload';
 
@@ -23,7 +22,11 @@ export class NgmDrawSection extends LitElementI18n {
   @property({type: Boolean})
   accessor hidden = true;
   @state()
-  accessor lineInfo = DrawStore.lineInfo.value;
+  accessor lineInfo = {
+    lengthLabel: '0km',
+    segments: 0,
+    type: 'line'
+  };
   private draw: CesiumDraw | undefined;
   private drawGeometries = [
     {label: () => i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},
@@ -32,26 +35,22 @@ export class NgmDrawSection extends LitElementI18n {
     {label: () => i18next.t('tbx_add_rect_area_btn_label'), type: 'rectangle', icon: 'ngm-rectangle-draw-icon'},
   ];
   private shownDrawTypes = this.drawGeometries;
-  private lineInfoSubscription: Subscription | undefined;
 
 
   constructor() {
     super();
     DrawStore.draw.subscribe(draw => {
       this.draw = draw;
-      if (draw) draw.addEventListener('statechanged', () => this.requestUpdate());
+      if (draw) {
+        draw.addEventListener('drawInfo', (event) => {
+          const info: DrawInfo = (<CustomEvent>event).detail;
+          if (info.type === 'line') {
+            this.lineInfo = info;
+          }
+        });
+        draw.addEventListener('statechanged', () => this.requestUpdate());
+      }
     });
-  }
-
-  connectedCallback() {
-    this.lineInfoSubscription =
-        DrawStore.lineInfo.subscribe(value => this.lineInfo = value);
-    super.connectedCallback();
-  }
-
-  disconnectedCallback() {
-    this.lineInfoSubscription?.unsubscribe();
-    super.disconnectedCallback();
   }
 
   update(changedProperties: PropertyValues) {

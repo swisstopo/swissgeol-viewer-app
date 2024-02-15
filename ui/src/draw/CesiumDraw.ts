@@ -16,13 +16,29 @@ import {
 import {getDimensionLabel, rectanglify} from './helpers';
 import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import type {GeometryTypes} from '../toolbox/interfaces';
-import DrawStore from '../store/draw';
 
+type PointOptions = {
+  color?: Color,
+  virtualColor?: Color,
+  outlineWidth?: number,
+  outlineColor?: Color,
+  pixelSizeDefault?: number,
+  pixelSizeEdit?: number,
+  heightReference?: HeightReference,
+}
 export interface DrawOptions {
-  fillColor: string | Color;
+  fillColor?: string | Color;
   strokeColor?: string | Color;
   strokeWidth?: number;
   minPointsStop?: boolean;
+  pointOptions?: PointOptions;
+  lineClampToGround?: boolean;
+}
+
+export type DrawInfo = {
+  lengthLabel: string,
+  segments: number,
+  type: GeometryTypes
 }
 
 export class CesiumDraw extends EventTarget {
@@ -40,26 +56,39 @@ export class CesiumDraw extends EventTarget {
   private sketchPoints_: Entity[] = [];
   private isDoubleClick = false;
   private singleClickTimer;
-  type: GeometryTypes;
+  type: GeometryTypes | undefined;
   julianDate = new JulianDate();
   drawingDataSource = new CustomDataSource('drawing');
   minPointsStop: boolean;
   moveEntity = false;
   entityForEdit: Entity | undefined;
   ERROR_TYPES = {needMorePoints: 'need_more_points'};
-  measure = false;
+  pointOptions: PointOptions;
+  // todo line options?
+  lineClampToGround: boolean = true;
 
-  constructor(viewer: Viewer, type: GeometryTypes, options: DrawOptions) {
+  constructor(viewer: Viewer, options?: DrawOptions) {
     super();
+    // todo move default values to constants
     this.viewer_ = viewer;
-    this.type = type;
     this.viewer_.dataSources.add(this.drawingDataSource);
-    this.strokeColor_ = options.strokeColor instanceof Color ?
-      options.strokeColor : Color.fromCssColorString(options.strokeColor || 'rgba(0, 153, 255, 0.75)');
-    this.strokeWidth_ = options.strokeWidth !== undefined ? options.strokeWidth : 4;
-    this.fillColor_ = options.fillColor instanceof Color ?
-      options.fillColor : Color.fromCssColorString(options.fillColor || 'rgba(0, 153, 255, 0.3)');
-    this.minPointsStop = !!options.minPointsStop;
+    this.strokeColor_ = options?.strokeColor instanceof Color ?
+      options.strokeColor : Color.fromCssColorString(options?.strokeColor || 'rgba(0, 153, 255, 0.75)');
+    this.strokeWidth_ = options?.strokeWidth !== undefined ? options.strokeWidth : 4;
+    this.fillColor_ = options?.fillColor instanceof Color ?
+      options.fillColor : Color.fromCssColorString(options?.fillColor || 'rgba(0, 153, 255, 0.3)');
+    this.minPointsStop = !!options?.minPointsStop;
+    this.lineClampToGround = typeof options?.lineClampToGround === 'boolean' ? options.lineClampToGround : true;
+    const pointOptions = options?.pointOptions;
+    this.pointOptions = {
+      color: pointOptions?.color instanceof Color ? pointOptions.color : Color.WHITE,
+      virtualColor: pointOptions?.virtualColor instanceof Color ? pointOptions.virtualColor : Color.GREY,
+      outlineColor: pointOptions?.outlineColor instanceof Color ? pointOptions.outlineColor : Color.BLACK,
+      outlineWidth: typeof pointOptions?.outlineWidth === 'number' && !isNaN(pointOptions?.outlineWidth) ? pointOptions?.outlineWidth : 1,
+      pixelSizeDefault: typeof pointOptions?.pixelSizeDefault === 'number' && !isNaN(pointOptions?.pixelSizeDefault) ? pointOptions?.pixelSizeDefault : 5,
+      pixelSizeEdit: typeof pointOptions?.pixelSizeEdit === 'number' && !isNaN(pointOptions?.pixelSizeEdit) ? pointOptions?.pixelSizeEdit : 9,
+      heightReference: pointOptions?.heightReference || HeightReference.CLAMP_TO_GROUND,
+    };
   }
 
   renderSceneIfTranslucent() {
@@ -81,7 +110,8 @@ export class CesiumDraw extends EventTarget {
    *
    */
   set active(value) {
-    if (value) {
+    // todo check for type
+    if (value && this.type) {
       if (!this.eventHandler_) {
         this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
         if (this.entityForEdit) {
@@ -92,14 +122,20 @@ export class CesiumDraw extends EventTarget {
         }
         this.eventHandler_.setInputAction(this.onMouseMove_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
       }
-      if (this.type === 'line') DrawStore.lineInfo.next({lengthLabel: '0km', segments: 0});
+      this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
+        detail: {
+          lengthLabel: '0km',
+          segments: 0,
+          type: this.type
+        }
+      }));
     } else {
       if (this.eventHandler_) {
         this.eventHandler_.destroy();
       }
       this.eventHandler_ = undefined;
     }
-    this.dispatchEvent(new CustomEvent('statechanged', {detail: {active: value}}));
+    this.dispatchEvent(new CustomEvent('statechanged', {detail: {active: value && this.type}}));
   }
 
   activateEditing() {
@@ -194,10 +230,13 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.scene.requestRender();
 
     const measurements = getMeasurements(positions, this.type);
-    if (this.type === 'line') DrawStore.lineInfo.next({
+    this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
+      detail: {
         lengthLabel: `${measurements.perimeter}km`,
-        segments: measurements.numberOfSegments!
-    });
+        segments: measurements.numberOfSegments!,
+        type: this.type!
+      }
+    }));
     this.dispatchEvent(new CustomEvent('drawend', {
       detail: {
         positions: positions,
@@ -234,18 +273,18 @@ export class CesiumDraw extends EventTarget {
     const entity: Entity.ConstructorOptions = {
       position: position,
       point: {
-        color: options.virtual ? Color.GREY : Color.WHITE,
-        outlineWidth: 1,
-        outlineColor: Color.BLACK,
-        pixelSize: options.edit || this.measure ? 9 : 5,
-        heightReference: this.measure ? HeightReference.NONE : HeightReference.CLAMP_TO_GROUND,
+        color: options.virtual ? this.pointOptions.virtualColor : this.pointOptions.color,
+        outlineWidth: this.pointOptions.outlineWidth,
+        outlineColor: this.pointOptions.outlineColor,
+        pixelSize: options.edit ? this.pointOptions.pixelSizeEdit : this.pointOptions.pixelSizeDefault,
+        heightReference: this.pointOptions.heightReference,
       },
       properties: {}
     };
     if (options.edit) {
       entity.point!.disableDepthTestDistance = Number.POSITIVE_INFINITY;
     }
-    if (options.label) {
+    if (options.label && this.type) {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
     const pointEntity = this.drawingDataSource.entities.add(entity);
@@ -257,7 +296,7 @@ export class CesiumDraw extends EventTarget {
     return this.drawingDataSource.entities.add({
       polyline: {
         positions: positions,
-        clampToGround: !this.measure,
+        clampToGround: this.lineClampToGround,
         width: this.strokeWidth_,
         material: this.strokeColor_
       }
@@ -273,7 +312,7 @@ export class CesiumDraw extends EventTarget {
           outlineWidth: 2,
           outlineColor: this.strokeColor_,
           pixelSize: this.strokeWidth_,
-          heightReference: this.measure ? HeightReference.NONE : HeightReference.CLAMP_TO_GROUND
+          heightReference: this.lineClampToGround ? HeightReference.CLAMP_TO_GROUND : HeightReference.NONE
         }
       });
 
@@ -282,7 +321,7 @@ export class CesiumDraw extends EventTarget {
         position: positions[positions.length - 1],
         polyline: {
           positions: positions,
-          clampToGround: !this.measure,
+          clampToGround: this.lineClampToGround,
           width: this.strokeWidth_,
           material: this.strokeColor_
         },
@@ -337,11 +376,23 @@ export class CesiumDraw extends EventTarget {
       this.activeDistance_ = distance / 1000;
       const value = `${this.activeDistance_.toFixed(3)}km`;
       (<ConstantProperty> this.sketchPoint_.label!.text).setValue(value);
-      if (this.type === 'line') DrawStore.lineInfo.next({lengthLabel: value, segments: positions.length - 1});
+      this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
+        detail: {
+          lengthLabel: value,
+          segments: positions.length - 1,
+          type: this.type!
+        }
+      }));
       return;
     }
     (<ConstantProperty> this.sketchPoint_.label!.text).setValue('0km');
-      if (this.type === 'line') DrawStore.lineInfo.next({lengthLabel: '0km', segments: 0});
+    this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
+      detail: {
+        lengthLabel: '0km',
+        segments: 0,
+        type: this.type!
+      }
+    }));
   }
 
   onLeftClick(event) {
