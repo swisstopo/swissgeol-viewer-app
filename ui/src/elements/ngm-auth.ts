@@ -47,6 +47,7 @@ export class NgmAuth extends LitElementI18n {
     // wait for the user to be authenticated
     await Auth.waitForAuthenticate();
     Auth.initialize();
+    window.location.reload();
   }
 
   logout() {
