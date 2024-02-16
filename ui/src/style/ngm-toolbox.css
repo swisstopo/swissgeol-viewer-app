@@ -218,3 +218,10 @@ ngm-draw-section .ngm-divider,
   width: 24px;
   height: 24px;
 }
+
+.ngm-measure-segment-info:hover .ngm-measure-segment-title {
+  color: var(--ngm-interaction-hover);
+}
+.ngm-measure-segment-info:hover {
+  background-color: rgba(255, 255, 0, 0.2);
+}

@@ -14,7 +14,7 @@ import {
     ScreenSpaceEventType,
 } from 'cesium';
 import {getDimensionLabel, rectanglify} from './helpers';
-import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
+import {getMeasurements, Measurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import type {GeometryTypes} from '../toolbox/interfaces';
 import {cartesianToLv95} from '../projection';
 
@@ -46,6 +46,12 @@ export type DrawInfo = {
   length: number,
   segments: SegmentInfo[],
   type: GeometryTypes
+}
+
+export type DrawEndDetails = {
+  positions: Cartesian3[],
+  type: GeometryTypes,
+  measurements: Measurements
 }
 
 export class CesiumDraw extends EventTarget {
@@ -245,10 +251,10 @@ export class CesiumDraw extends EventTarget {
         type: this.type!
       }
     }));
-    this.dispatchEvent(new CustomEvent('drawend', {
+    this.dispatchEvent(new CustomEvent<DrawEndDetails>('drawend', {
       detail: {
         positions: positions,
-        type: this.type,
+        type: this.type!,
         measurements: measurements
       }
     }));
@@ -301,7 +307,7 @@ export class CesiumDraw extends EventTarget {
     return pointEntity;
   }
 
-  createSketchLine_(positions) {
+  createSketchLine_(positions: Cartesian3[] | CallbackProperty) {
     return this.drawingDataSource.entities.add({
       polyline: {
         positions: positions,
@@ -312,8 +318,9 @@ export class CesiumDraw extends EventTarget {
     });
   }
 
-  drawShape_(positions) {
-    if (this.type === 'point') {
+  drawShape_(positions: Cartesian3 | Cartesian3[] | undefined) {
+    if (!positions) return;
+    if (this.type === 'point' && !Array.isArray(positions)) {
       this.drawingDataSource.entities.add({
         position: positions,
         point: {
@@ -325,7 +332,7 @@ export class CesiumDraw extends EventTarget {
         }
       });
 
-    } else if (this.type === 'line') {
+    } else if (this.type === 'line' && Array.isArray(positions)) {
       this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polyline: {
@@ -336,7 +343,7 @@ export class CesiumDraw extends EventTarget {
         },
         label: getDimensionLabel(this.type, this.activeDistances_)
       });
-    } else if (this.type === 'polygon' || this.type === 'rectangle') {
+    } else if ((this.type === 'polygon' || this.type === 'rectangle') && Array.isArray(positions)) {
       this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polygon: {
@@ -594,6 +601,9 @@ export class CesiumDraw extends EventTarget {
       this.activeDistances_.push(this.activeDistance_);
     }
     this.activePoints_.pop();
+    if (this.activeDistances_.length === this.activePoints_.length) {
+      this.activeDistances_.pop();
+    }
     this.finishDrawing();
   }
 

@@ -7,6 +7,7 @@ import DrawStore from '../store/draw';
 import MainStore from '../store/main';
 import MeasureTool from '../measure/MeasureTool';
 import {DrawInfo} from '../draw/CesiumDraw';
+import {DEFAULT_AOI_COLOR, GEOMETRY_LINE_ALPHA, HIGHLIGHTED_GEOMETRY_COLOR} from '../constants';
 
 const DEFAULT_LINE_INFO: DrawInfo = {
     length: 0,
@@ -28,7 +29,10 @@ export class NgmMeasure extends LitElementI18n {
         super();
         MainStore.viewer.subscribe(viewer => {
             if (!viewer) return;
-            this.measure = new MeasureTool(viewer);
+            this.measure = new MeasureTool(viewer, {
+                highlightColor: HIGHLIGHTED_GEOMETRY_COLOR,
+                lineColor: DEFAULT_AOI_COLOR.withAlpha(GEOMETRY_LINE_ALPHA),
+            });
             this.measure.draw.addEventListener('drawinfo', (event) => {
                 const info: DrawInfo = (<CustomEvent>event).detail;
                 if (info.type === 'line') {
@@ -90,8 +94,10 @@ export class NgmMeasure extends LitElementI18n {
                     </div>
                 </div>
                 ${this.lineInfo.segments.map((segment, indx) => html`
-                    <div class="ngm-action-list-item active">
-                        <div>
+                    <div class="ngm-action-list-item active ngm-measure-segment-info"
+                         @mouseenter=${() => this.measure?.highlightSegment(indx)}
+                         @mouseleave=${() => this.measure?.removeSegmentHighlight()}>
+                        <div class="ngm-measure-segment-title">
                             <div>${i18next.t('tbx_measure_segment_label')} ${indx + 1}</div>
                         </div>
                         <div class="ngm-geom-info-content">
