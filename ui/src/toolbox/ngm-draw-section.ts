@@ -22,9 +22,9 @@ export class NgmDrawSection extends LitElementI18n {
   @property({type: Boolean})
   accessor hidden = true;
   @state()
-  accessor lineInfo = {
+  accessor lineInfo: DrawInfo = {
     lengthLabel: '0km',
-    segments: 0,
+    segments: [],
     type: 'line'
   };
   private draw: CesiumDraw | undefined;
@@ -99,7 +99,7 @@ export class NgmDrawSection extends LitElementI18n {
                         </div>
                         <div>
                             <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.segments}</div>
+                            <div class="ngm-geom-info-value">${this.lineInfo.segments.length}</div>
                         </div>
                     </div>
             </div>`;

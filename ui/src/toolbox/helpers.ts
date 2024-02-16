@@ -153,13 +153,14 @@ export function getAreaProperties(entity: Entity, type: GeometryTypes) {
     entity.polyline!.positions!.getValue(julianDate) :
     entity.polygon!.hierarchy!.getValue(julianDate).positions;
   const measurements = getMeasurements(positions, type);
+  const segmentsLength = measurements.segmentsLength;
   return {
     ...props,
     type: type,
     area: measurements.area,
     perimeter: measurements.perimeter,
     numberOfSegments: measurements.numberOfSegments,
-    sidesLength: measurements.sidesLength,
+    sidesLength: [segmentsLength[0], segmentsLength[1]],
   };
 }
 

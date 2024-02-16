@@ -8,16 +8,17 @@ import MainStore from '../store/main';
 import MeasureTool from '../measure/MeasureTool';
 import {DrawInfo} from '../draw/CesiumDraw';
 
+const DEFAULT_LINE_INFO: DrawInfo = {
+    lengthLabel: '0km',
+    segments: [],
+    type: 'line'
+};
 @customElement('ngm-measure')
 export class NgmMeasure extends LitElementI18n {
     @state()
     accessor active = false;
     @state()
-    accessor lineInfo = {
-        lengthLabel: '0km',
-        segments: 0,
-        type: 'line'
-    };
+    accessor lineInfo: DrawInfo = DEFAULT_LINE_INFO;
     private measure: MeasureTool | undefined;
 
     constructor() {
@@ -50,6 +51,9 @@ export class NgmMeasure extends LitElementI18n {
         if (changedProperties.has('active') && this.measure) {
             DrawStore.measureState.next(this.active);
             this.measure.active = this.active;
+            if (!this.active) {
+                this.lineInfo = DEFAULT_LINE_INFO;
+            }
         }
         super.updated(changedProperties);
     }
@@ -78,10 +82,43 @@ export class NgmMeasure extends LitElementI18n {
                         </div>
                         <div>
                             <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.segments}</div>
+                            <div class="ngm-geom-info-value">${this.lineInfo.segments.length}</div>
                         </div>
                     </div>
                 </div>
+                ${this.lineInfo.segments.map((segment, indx) => html`
+                    <div class="ngm-action-list-item active">
+                        <div>
+                            <div>${i18next.t('tbx_measure_segment_label')} ${indx + 1}</div>
+                        </div>
+                        <div class="ngm-geom-info-content">
+                            <div>
+                                <div class="ngm-geom-info-label">
+                                    ${i18next.t('obj_info_length_label')}
+                                </div>
+                                <div class="ngm-geom-info-value">${segment.lengthLabel}</div>
+                            </div>
+                            <div>
+                                <div class="ngm-geom-info-label">
+                                    ${i18next.t('tbx_measure_easting_label')}
+                                </div>
+                                <div class="ngm-geom-info-value">${segment.eastingLabel}</div>
+                            </div>
+                            <div>
+                                <div class="ngm-geom-info-label">
+                                    ${i18next.t('tbx_measure_northing_label')}
+                                </div>
+                                <div class="ngm-geom-info-value">${segment.northingLabel}</div>
+                            </div>
+                            <div>
+                                <div class="ngm-geom-info-label">
+                                    ${i18next.t('tbx_measure_height_label')}
+                                </div>
+                                <div class="ngm-geom-info-value">${segment.heightLabel}</div>
+                            </div>
+                        </div>
+                    </div>
+                `)}
             </div>`;
     }
 

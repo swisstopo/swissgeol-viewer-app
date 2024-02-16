@@ -1,6 +1,7 @@
 ngm-draw-tool,
 ngm-slicer,
 ngm-gst-interaction,
+ngm-measure,
 data-download {
   height: calc(100vh - 142px);
   display: block;

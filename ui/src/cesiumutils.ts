@@ -14,7 +14,7 @@ import {
   Rectangle,
   Transforms
 } from 'cesium';
-import type {NgmGeometry} from './toolbox/interfaces';
+import type {GeometryTypes} from './toolbox/interfaces';
 import earcut from 'earcut';
 
 const julianDate = new JulianDate();
@@ -119,29 +119,37 @@ function getPolygonArea(positions, holes = []) {
   return area * Math.pow(10, -6);
 }
 
+export type Measurements = {
+  positions: Cartesian3[],
+  type: GeometryTypes,
+  numberOfSegments: number,
+  segmentsLength: number[]
+  perimeter?: number
+  area?: number
+}
 /**
  * Returns measurements for geometry
  */
-export function getMeasurements(positions, type) {
-  const distances: number[] = [];
+export function getMeasurements(positions: Cartesian3[], type: GeometryTypes): Measurements {
+  const segmentsLength: number[] = [];
   positions.forEach((p, key) => {
     if (key > 0) {
-      distances.push(Cartesian3.distance(positions[key - 1], p) / 1000);
+      segmentsLength.push(Cartesian3.distance(positions[key - 1], p) / 1000);
     }
   });
-  const result: NgmGeometry = {
-    positions: positions,
-    type: type,
-    numberOfSegments: positions.length - 1
+  const result: Measurements = {
+    numberOfSegments: positions.length - 1,
+    segmentsLength: segmentsLength.map(l => Number(l.toFixed(3))),
+    positions,
+    type,
   };
-  let perimeter = distances.reduce((a, b) => a + b, 0);
+  let perimeter = segmentsLength.reduce((a, b) => a + b, 0);
   if (type === 'rectangle') {
     perimeter *= 2;
-    result.sidesLength = [distances[0], distances[1]];
   }
-  result.perimeter = perimeter.toFixed(3);
+  result.perimeter = Number(perimeter.toFixed(3));
   if (type === 'rectangle' || (type === 'polygon' && positions.length > 2)) {
-    result.area = getPolygonArea(positions).toFixed(3);
+    result.area = Number(getPolygonArea(positions).toFixed(3));
   }
   return result;
 }

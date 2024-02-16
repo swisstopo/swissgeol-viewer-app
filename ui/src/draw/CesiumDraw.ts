@@ -16,6 +16,7 @@ import {
 import {getDimensionLabel, rectanglify} from './helpers';
 import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import type {GeometryTypes} from '../toolbox/interfaces';
+import {cartesianToLv95} from '../projection';
 
 type PointOptions = {
   color?: Color,
@@ -35,9 +36,15 @@ export interface DrawOptions {
   lineClampToGround?: boolean;
 }
 
+export type SegmentInfo = {
+  lengthLabel: string,
+  eastingLabel: string,
+  northingLabel: string,
+  heightLabel: string
+};
 export type DrawInfo = {
   lengthLabel: string,
-  segments: number,
+  segments: SegmentInfo[],
   type: GeometryTypes
 }
 
@@ -56,6 +63,7 @@ export class CesiumDraw extends EventTarget {
   private sketchPoints_: Entity[] = [];
   private isDoubleClick = false;
   private singleClickTimer;
+  private segmentsInfo: SegmentInfo[] = [];
   type: GeometryTypes | undefined;
   julianDate = new JulianDate();
   drawingDataSource = new CustomDataSource('drawing');
@@ -125,7 +133,7 @@ export class CesiumDraw extends EventTarget {
       this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
         detail: {
           lengthLabel: '0km',
-          segments: 0,
+          segments: [],
           type: this.type
         }
       }));
@@ -229,11 +237,11 @@ export class CesiumDraw extends EventTarget {
     }
     this.viewer_.scene.requestRender();
 
-    const measurements = getMeasurements(positions, this.type);
+    const measurements = getMeasurements(positions, this.type!);
     this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
       detail: {
         lengthLabel: `${measurements.perimeter}km`,
-        segments: measurements.numberOfSegments!,
+        segments: this.getSegmentsInfo(),
         type: this.type!
       }
     }));
@@ -260,6 +268,7 @@ export class CesiumDraw extends EventTarget {
     this.leftPressedPixel_ = undefined;
     this.moveEntity = false;
     this.sketchPoints_ = [];
+    this.segmentsInfo = [];
   }
 
   /**
@@ -379,7 +388,7 @@ export class CesiumDraw extends EventTarget {
       this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
         detail: {
           lengthLabel: value,
-          segments: positions.length - 1,
+          segments: this.segmentsInfo,
           type: this.type!
         }
       }));
@@ -389,7 +398,7 @@ export class CesiumDraw extends EventTarget {
     this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
       detail: {
         lengthLabel: '0km',
-        segments: 0,
+        segments: [],
         type: this.type!
       }
     }));
@@ -417,6 +426,7 @@ export class CesiumDraw extends EventTarget {
         this.activeDistances_.push(this.activeDistance_);
       }
       this.activePoints_.push(Cartesian3.clone(this.activePoint_!));
+      this.segmentsInfo = this.getSegmentsInfo();
       const forceFinish = this.minPointsStop && (
         (this.type === 'polygon' && this.activePoints_.length === 3) ||
         (this.type === 'line' && this.activePoints_.length === 2)
@@ -782,6 +792,30 @@ export class CesiumDraw extends EventTarget {
         oppositePoint2D.y
       )
     };
+  }
+
+  getSegmentsInfo(): SegmentInfo[] {
+    const positions = this.activePoints_;
+    return this.activeDistances_.map((dist, indx) => {
+      let easting = '0km';
+      let northing = '0km';
+      let height = '0km';
+      if (positions[indx + 1]) {
+        const cartPosition1 = Cartographic.fromCartesian(positions[indx]);
+        const cartPosition2 = Cartographic.fromCartesian(positions[indx + 1]);
+        const lv95Position1 = cartesianToLv95(positions[indx]);
+        const lv95Position2 = cartesianToLv95(positions[indx + 1]);
+        easting = `${(Math.abs(lv95Position2[0] - lv95Position1[0]) / 1000).toFixed(3)}km`;
+        northing = `${(Math.abs(lv95Position2[1] - lv95Position1[1]) / 1000).toFixed(3)}km`;
+        height = `${(Math.abs(cartPosition2.height - cartPosition1.height) / 1000).toFixed(3)}km`;
+      }
+      return {
+        lengthLabel: `${dist.toFixed(3)}km`,
+        eastingLabel: easting,
+        northingLabel: northing,
+        heightLabel: height,
+      };
+    });
   }
 }
 

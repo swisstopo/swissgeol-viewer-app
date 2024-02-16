@@ -38,7 +38,7 @@ export class NgmSlicer extends LitElementI18n {
   @state()
   accessor lineInfo: DrawInfo = {
     lengthLabel: '0km',
-    segments: 0,
+    segments: [],
     type: 'line'
   };
   private sliceGeomId: string | undefined;
@@ -220,7 +220,9 @@ export class NgmSlicer extends LitElementI18n {
         }
       };
     }
-    geomToCreate = {...geomToCreate, ...getMeasurements(positions, type)};
+    const measurements = getMeasurements(positions, type);
+    const segmentsLength = measurements.segmentsLength;
+    geomToCreate = {...geomToCreate, ...measurements, sidesLength: [segmentsLength[0], segmentsLength[1]]};
     ToolboxStore.setGeometryToCreate(geomToCreate);
     this.slicer!.active = false;
   }
@@ -325,7 +327,7 @@ export class NgmSlicer extends LitElementI18n {
                         </div>
                         <div>
                             <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.segments}</div>
+                            <div class="ngm-geom-info-value">${this.lineInfo.segments.length}</div>
                         </div>
                     </div>
             </div>
