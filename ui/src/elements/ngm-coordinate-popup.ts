@@ -17,6 +17,8 @@ export class NgmCoordinatePopup extends LitElementI18n {
     accessor coordinatesWgs84: string[] = [];
     @state()
     accessor elevation = '';
+    @state()
+    accessor terrainDistance = '';
     private eventHandler: ScreenSpaceEventHandler | undefined;
     private integerFormat = new Intl.NumberFormat('de-CH', {
         maximumFractionDigits: 1
@@ -33,8 +35,9 @@ export class NgmCoordinatePopup extends LitElementI18n {
                         const cartCoords = Cartographic.fromCartesian(cartesian);
                         this.coordinatesLv95 = formatCartographicAs2DLv95(cartCoords);
                         this.coordinatesWgs84 = [cartCoords.longitude, cartCoords.latitude].map(radToDeg);
-                        const position = Cartographic.fromCartesian(cartesian);
-                        this.elevation = this.integerFormat.format(position.height);
+                        this.elevation = this.integerFormat.format(cartCoords.height);
+                        const altitude = viewer.scene.globe.getHeight(cartCoords) || 0;
+                        this.terrainDistance = this.integerFormat.format(Math.abs(cartCoords.height - altitude));
                         this.style.left = event.position.x + 'px';
                         this.style.top = event.position.y + 10 + 'px';
                         this.opened = true;
@@ -82,6 +85,10 @@ export class NgmCoordinatePopup extends LitElementI18n {
                 <tr class="top aligned">
                     <td class="key">${i18next.t('map_elevation_label')}</td>
                     <td class="value">${this.elevation} m</td>
+                </tr>
+                <tr class="top aligned">
+                    <td class="key">${i18next.t('map_terrain_distance_label')}</td>
+                    <td class="value">${this.terrainDistance} m</td>
                 </tr>
                 </tbody>
             </table>
