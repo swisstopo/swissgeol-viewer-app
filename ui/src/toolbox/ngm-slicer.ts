@@ -37,7 +37,7 @@ export class NgmSlicer extends LitElementI18n {
   accessor editingEnabled = false;
   @state()
   accessor lineInfo: DrawInfo = {
-    lengthLabel: '0km',
+    length: 0,
     segments: [],
     type: 'line'
   };
@@ -54,7 +54,7 @@ export class NgmSlicer extends LitElementI18n {
         DrawStore.setDrawState((<CustomEvent>evt).detail.active);
         this.requestUpdate();
       });
-      this.slicer.draw.addEventListener('drawInfo', (event) => {
+      this.slicer.draw.addEventListener('drawinfo', (event) => {
         const info: DrawInfo = (<CustomEvent>event).detail;
         if (info.type === 'line') {
           this.lineInfo = info;
@@ -323,7 +323,7 @@ export class NgmSlicer extends LitElementI18n {
                             <div class="ngm-geom-info-label">
                                 ${i18next.t('obj_info_length_label')}
                             </div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.lengthLabel}</div>
+                            <div class="ngm-geom-info-value">${(this.lineInfo.length).toFixed(3)} km</div>
                         </div>
                         <div>
                             <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>

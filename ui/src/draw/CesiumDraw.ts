@@ -37,13 +37,13 @@ export interface DrawOptions {
 }
 
 export type SegmentInfo = {
-  lengthLabel: string,
-  eastingLabel: string,
-  northingLabel: string,
-  heightLabel: string
+  length: number,
+  eastingDiff: number,
+  northingDiff: number,
+  heightDiff: number
 };
 export type DrawInfo = {
-  lengthLabel: string,
+  length: number,
   segments: SegmentInfo[],
   type: GeometryTypes
 }
@@ -130,9 +130,9 @@ export class CesiumDraw extends EventTarget {
         }
         this.eventHandler_.setInputAction(this.onMouseMove_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
       }
-      this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
+      this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
         detail: {
-          lengthLabel: '0km',
+          length: 0,
           segments: [],
           type: this.type
         }
@@ -238,9 +238,9 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.scene.requestRender();
 
     const measurements = getMeasurements(positions, this.type!);
-    this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
+    this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
       detail: {
-        lengthLabel: `${measurements.perimeter}km`,
+        length: measurements.perimeter!,
         segments: this.getSegmentsInfo(),
         type: this.type!
       }
@@ -385,9 +385,9 @@ export class CesiumDraw extends EventTarget {
       this.activeDistance_ = distance / 1000;
       const value = `${this.activeDistance_.toFixed(3)}km`;
       (<ConstantProperty> this.sketchPoint_.label!.text).setValue(value);
-      this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
+      this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
         detail: {
-          lengthLabel: value,
+          length: this.activeDistance_,
           segments: this.segmentsInfo,
           type: this.type!
         }
@@ -395,9 +395,9 @@ export class CesiumDraw extends EventTarget {
       return;
     }
     (<ConstantProperty> this.sketchPoint_.label!.text).setValue('0km');
-    this.dispatchEvent(new CustomEvent<DrawInfo>('drawInfo', {
+    this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
       detail: {
-        lengthLabel: '0km',
+        length: 0,
         segments: [],
         type: this.type!
       }
@@ -797,23 +797,23 @@ export class CesiumDraw extends EventTarget {
   getSegmentsInfo(): SegmentInfo[] {
     const positions = this.activePoints_;
     return this.activeDistances_.map((dist, indx) => {
-      let easting = '0km';
-      let northing = '0km';
-      let height = '0km';
+      let easting = 0;
+      let northing = 0;
+      let height = 0;
       if (positions[indx + 1]) {
         const cartPosition1 = Cartographic.fromCartesian(positions[indx]);
         const cartPosition2 = Cartographic.fromCartesian(positions[indx + 1]);
         const lv95Position1 = cartesianToLv95(positions[indx]);
         const lv95Position2 = cartesianToLv95(positions[indx + 1]);
-        easting = `${(Math.abs(lv95Position2[0] - lv95Position1[0]) / 1000).toFixed(3)}km`;
-        northing = `${(Math.abs(lv95Position2[1] - lv95Position1[1]) / 1000).toFixed(3)}km`;
-        height = `${(Math.abs(cartPosition2.height - cartPosition1.height) / 1000).toFixed(3)}km`;
+        easting = Math.abs(lv95Position2[0] - lv95Position1[0]) / 1000;
+        northing = Math.abs(lv95Position2[1] - lv95Position1[1]) / 1000;
+        height = Math.abs(cartPosition2.height - cartPosition1.height);
       }
       return {
-        lengthLabel: `${dist.toFixed(3)}km`,
-        eastingLabel: easting,
-        northingLabel: northing,
-        heightLabel: height,
+        length: dist,
+        eastingDiff: easting,
+        northingDiff: northing,
+        heightDiff: height,
       };
     });
   }

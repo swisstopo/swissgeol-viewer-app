@@ -23,7 +23,7 @@ export class NgmDrawSection extends LitElementI18n {
   accessor hidden = true;
   @state()
   accessor lineInfo: DrawInfo = {
-    lengthLabel: '0km',
+    length: 0,
     segments: [],
     type: 'line'
   };
@@ -42,7 +42,7 @@ export class NgmDrawSection extends LitElementI18n {
     DrawStore.draw.subscribe(draw => {
       this.draw = draw;
       if (draw) {
-        draw.addEventListener('drawInfo', (event) => {
+        draw.addEventListener('drawinfo', (event) => {
           const info: DrawInfo = (<CustomEvent>event).detail;
           if (info.type === 'line') {
             this.lineInfo = info;
@@ -95,7 +95,7 @@ export class NgmDrawSection extends LitElementI18n {
                             <div class="ngm-geom-info-label">
                                 ${i18next.t('obj_info_length_label')}
                             </div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.lengthLabel}</div>
+                            <div class="ngm-geom-info-value">${(this.lineInfo.length).toFixed(3)} km</div>
                         </div>
                         <div>
                             <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>

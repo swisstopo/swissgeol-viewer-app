@@ -9,7 +9,7 @@ import MeasureTool from '../measure/MeasureTool';
 import {DrawInfo} from '../draw/CesiumDraw';
 
 const DEFAULT_LINE_INFO: DrawInfo = {
-    lengthLabel: '0km',
+    length: 0,
     segments: [],
     type: 'line'
 };
@@ -20,13 +20,16 @@ export class NgmMeasure extends LitElementI18n {
     @state()
     accessor lineInfo: DrawInfo = DEFAULT_LINE_INFO;
     private measure: MeasureTool | undefined;
+    private integerFormat = new Intl.NumberFormat('de-CH', {
+        maximumFractionDigits: 1
+    });
 
     constructor() {
         super();
         MainStore.viewer.subscribe(viewer => {
             if (!viewer) return;
             this.measure = new MeasureTool(viewer);
-            this.measure.draw.addEventListener('drawInfo', (event) => {
+            this.measure.draw.addEventListener('drawinfo', (event) => {
                 const info: DrawInfo = (<CustomEvent>event).detail;
                 if (info.type === 'line') {
                     this.lineInfo = info;
@@ -78,7 +81,7 @@ export class NgmMeasure extends LitElementI18n {
                             <div class="ngm-geom-info-label">
                                 ${i18next.t('obj_info_length_label')}
                             </div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.lengthLabel}</div>
+                            <div class="ngm-geom-info-value">${(this.lineInfo.length).toFixed(3)} km</div>
                         </div>
                         <div>
                             <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
@@ -96,25 +99,25 @@ export class NgmMeasure extends LitElementI18n {
                                 <div class="ngm-geom-info-label">
                                     ${i18next.t('obj_info_length_label')}
                                 </div>
-                                <div class="ngm-geom-info-value">${segment.lengthLabel}</div>
+                                <div class="ngm-geom-info-value">${(segment.length).toFixed(3)} km</div>
                             </div>
                             <div>
                                 <div class="ngm-geom-info-label">
                                     ${i18next.t('tbx_measure_easting_label')}
                                 </div>
-                                <div class="ngm-geom-info-value">${segment.eastingLabel}</div>
+                                <div class="ngm-geom-info-value">${(segment.eastingDiff).toFixed(3)} km</div>
                             </div>
                             <div>
                                 <div class="ngm-geom-info-label">
                                     ${i18next.t('tbx_measure_northing_label')}
                                 </div>
-                                <div class="ngm-geom-info-value">${segment.northingLabel}</div>
+                                <div class="ngm-geom-info-value">${(segment.northingDiff).toFixed(3)} km</div>
                             </div>
                             <div>
                                 <div class="ngm-geom-info-label">
                                     ${i18next.t('tbx_measure_height_label')}
                                 </div>
-                                <div class="ngm-geom-info-value">${segment.heightLabel}</div>
+                                <div class="ngm-geom-info-value">${this.integerFormat.format(segment.heightDiff)} m</div>
                             </div>
                         </div>
                     </div>
