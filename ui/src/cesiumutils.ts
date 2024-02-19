@@ -147,9 +147,9 @@ export function getMeasurements(positions: Cartesian3[], type: GeometryTypes): M
   if (type === 'rectangle') {
     perimeter *= 2;
   }
-  result.perimeter = Number(perimeter.toFixed(3));
+  result.perimeter = perimeter;
   if (type === 'rectangle' || (type === 'polygon' && positions.length > 2)) {
-    result.area = Number(getPolygonArea(positions).toFixed(3));
+    result.area = getPolygonArea(positions);
   }
   return result;
 }

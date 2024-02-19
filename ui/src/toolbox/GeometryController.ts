@@ -4,7 +4,7 @@ import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import {showBannerError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
-import type {CesiumDraw} from '../draw/CesiumDraw';
+import {CesiumDraw, DrawEndDetails} from '../draw/CesiumDraw';
 import type {Cartesian2, Event, exportKmlResultKml, Viewer} from 'cesium';
 
 import {
@@ -108,7 +108,7 @@ export class GeometryController {
     }
   }
 
-  endDrawing_(info) {
+  endDrawing_(info: DrawEndDetails) {
     if (!this.draw) return;
     this.draw.active = false;
     this.draw.clear();
@@ -118,9 +118,9 @@ export class GeometryController {
     const type = info.type;
     const attributes: NgmGeometry = {
       positions: positions,
-      area: measurements.area,
-      perimeter: measurements.perimeter,
-      sidesLength: measurements.sidesLength,
+      area: measurements.area?.toFixed(3),
+      perimeter: measurements.perimeter?.toFixed(3),
+      sidesLength: measurements.segmentsLength?.length > 1 ? [measurements.segmentsLength[0], measurements.segmentsLength[1]] : undefined,
       numberOfSegments: measurements.numberOfSegments,
       type: type,
       clampPoint: true

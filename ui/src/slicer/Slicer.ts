@@ -5,7 +5,7 @@ import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 import SlicingToolBase from './SlicingToolBase';
 import i18next from 'i18next';
-import {CesiumDraw} from '../draw/CesiumDraw';
+import {CesiumDraw, DrawEndDetails} from '../draw/CesiumDraw';
 import {DEFAULT_AOI_COLOR} from '../constants';
 import {showSnackbarInfo} from '../notifications';
 
@@ -69,7 +69,7 @@ export default class Slicer {
   /**
    * @param {Viewer} viewer
    */
-  constructor(viewer) {
+  constructor(viewer: Viewer) {
     this.viewer = viewer;
     /**
      * @type {SliceOptions}
@@ -79,7 +79,7 @@ export default class Slicer {
     this.slicingBox = new SlicingBox(this.viewer, this.slicerDataSource);
     this.slicingLine = new SlicingLine(this.viewer);
     this.draw = new CesiumDraw(this.viewer, {fillColor: DEFAULT_AOI_COLOR, minPointsStop: true});
-    this.draw.addEventListener('drawend', (evt) => this.endDrawing((<CustomEvent>evt).detail));
+    this.draw.addEventListener('drawend', (evt) => this.endDrawing(<DrawEndDetails>(<CustomEvent>evt).detail));
     this.draw.addEventListener('drawerror', evt => {
       if (this.draw.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
         showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
@@ -174,7 +174,7 @@ export default class Slicer {
     this.draw.clear();
   }
 
-  endDrawing(info) {
+  endDrawing(info: DrawEndDetails) {
     this.deactivateDrawing();
     const positions = info.positions;
     const type = info.type;

@@ -24,9 +24,9 @@ export interface NgmGeometry {
   id?: string;
   name?: string;
   show?: boolean;
-  area?: string | number;
-  perimeter?: string | number;
-  sidesLength?: Array<string | number>;
+  area?: string;
+  perimeter?: string;
+  sidesLength?: Array<number>;
   numberOfSegments?: number;
   description?: string;
   image?: string;

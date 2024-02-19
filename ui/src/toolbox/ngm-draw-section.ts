@@ -95,7 +95,7 @@ export class NgmDrawSection extends LitElementI18n {
                             <div class="ngm-geom-info-label">
                                 ${i18next.t('obj_info_length_label')}
                             </div>
-                            <div class="ngm-geom-info-value">${(this.lineInfo.length).toFixed(3)} km</div>
+                            <div class="ngm-geom-info-value">${this.lineInfo.length} km</div>
                         </div>
                         <div>
                             <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>

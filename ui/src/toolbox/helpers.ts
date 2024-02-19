@@ -157,8 +157,8 @@ export function getAreaProperties(entity: Entity, type: GeometryTypes) {
   return {
     ...props,
     type: type,
-    area: measurements.area,
-    perimeter: measurements.perimeter,
+    area: measurements.area?.toFixed(3),
+    perimeter: measurements.perimeter?.toFixed(3),
     numberOfSegments: measurements.numberOfSegments,
     sidesLength: [segmentsLength[0], segmentsLength[1]],
   };
