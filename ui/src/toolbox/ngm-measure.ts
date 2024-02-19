@@ -2,42 +2,64 @@ import {customElement, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
 import {html, PropertyValues} from 'lit';
 import i18next from 'i18next';
-import ToolboxStore from '../store/toolbox';
 import {classMap} from 'lit-html/directives/class-map.js';
 import DrawStore from '../store/draw';
-import {Subscription} from 'rxjs';
+import MainStore from '../store/main';
+import MeasureTool from '../measure/MeasureTool';
+import {DrawInfo} from '../draw/CesiumDraw';
+import {DEFAULT_AOI_COLOR, GEOMETRY_LINE_ALPHA, HIGHLIGHTED_GEOMETRY_COLOR} from '../constants';
 
+const DEFAULT_LINE_INFO: DrawInfo = {
+    length: 0,
+    segments: [],
+    type: 'line'
+};
 @customElement('ngm-measure')
 export class NgmMeasure extends LitElementI18n {
     @state()
     accessor active = false;
     @state()
-    accessor lineInfo = DrawStore.lineInfo.value;
-    private lineInfoSubscription: Subscription | undefined;
+    accessor lineInfo: DrawInfo = DEFAULT_LINE_INFO;
+    private measure: MeasureTool | undefined;
+    private integerFormat = new Intl.NumberFormat('de-CH', {
+        maximumFractionDigits: 1
+    });
+
+    constructor() {
+        super();
+        MainStore.viewer.subscribe(viewer => {
+            if (!viewer) return;
+            this.measure = new MeasureTool(viewer, {
+                highlightColor: HIGHLIGHTED_GEOMETRY_COLOR,
+                lineColor: DEFAULT_AOI_COLOR.withAlpha(GEOMETRY_LINE_ALPHA),
+            });
+            this.measure.draw.addEventListener('drawinfo', (event) => {
+                const info: DrawInfo = (<CustomEvent>event).detail;
+                if (info.type === 'line') {
+                    this.lineInfo = info;
+                }
+            });
+        });
+    }
 
     connectedCallback() {
         this.active = true;
-        this.lineInfoSubscription =
-            DrawStore.lineInfo.subscribe(value => this.lineInfo = value);
         super.connectedCallback();
     }
 
     disconnectedCallback() {
         if (this.active) {
-            ToolboxStore.nextGeometryAction({type: 'line', action: 'clearMeasure'});
             this.active = false;
         }
-        this.lineInfoSubscription?.unsubscribe();
         super.disconnectedCallback();
     }
 
     updated(changedProperties: PropertyValues) {
-        if (changedProperties.has('active')) {
+        if (changedProperties.has('active') && this.measure) {
             DrawStore.measureState.next(this.active);
-            if (this.active) {
-                ToolboxStore.nextGeometryAction({type: 'line', action: 'measure'});
-            } else {
-                ToolboxStore.nextGeometryAction({type: 'line', action: 'clearMeasure'});
+            this.measure.active = this.active;
+            if (!this.active) {
+                this.lineInfo = DEFAULT_LINE_INFO;
             }
         }
         super.updated(changedProperties);
@@ -63,14 +85,49 @@ export class NgmMeasure extends LitElementI18n {
                             <div class="ngm-geom-info-label">
                                 ${i18next.t('obj_info_length_label')}
                             </div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.lengthLabel}</div>
+                            <div class="ngm-geom-info-value">${(this.lineInfo.length).toFixed(3)} km</div>
                         </div>
                         <div>
                             <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.segments}</div>
+                            <div class="ngm-geom-info-value">${this.lineInfo.segments.length}</div>
                         </div>
                     </div>
                 </div>
+                ${this.lineInfo.segments.map((segment, indx) => html`
+                    <div class="ngm-action-list-item active ngm-measure-segment-info"
+                         @mouseenter=${() => this.measure?.highlightSegment(indx)}
+                         @mouseleave=${() => this.measure?.removeSegmentHighlight()}>
+                        <div class="ngm-measure-segment-title">
+                            <div>${i18next.t('tbx_measure_segment_label')} ${indx + 1}</div>
+                        </div>
+                        <div class="ngm-geom-info-content">
+                            <div>
+                                <div class="ngm-geom-info-label">
+                                    ${i18next.t('obj_info_length_label')}
+                                </div>
+                                <div class="ngm-geom-info-value">${(segment.length).toFixed(3)} km</div>
+                            </div>
+                            <div>
+                                <div class="ngm-geom-info-label">
+                                    ${i18next.t('tbx_measure_easting_label')}
+                                </div>
+                                <div class="ngm-geom-info-value">${(segment.eastingDiff).toFixed(3)} km</div>
+                            </div>
+                            <div>
+                                <div class="ngm-geom-info-label">
+                                    ${i18next.t('tbx_measure_northing_label')}
+                                </div>
+                                <div class="ngm-geom-info-value">${(segment.northingDiff).toFixed(3)} km</div>
+                            </div>
+                            <div>
+                                <div class="ngm-geom-info-label">
+                                    ${i18next.t('tbx_measure_height_label')}
+                                </div>
+                                <div class="ngm-geom-info-value">${this.integerFormat.format(segment.heightDiff)} m</div>
+                            </div>
+                        </div>
+                    </div>
+                `)}
             </div>`;
     }
 

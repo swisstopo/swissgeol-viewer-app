@@ -51,11 +51,11 @@ ngm-geometry-info .ngm-download-icon {
   background-color: #495057;
 }
 
-.ngm-geom-info-content {
+.ngm-geom-info-content:not(:first-child) {
   margin-top: 12px;
 }
 
-.ngm-geom-info-content > div {
+.ngm-geom-info-content > div:not(:last-child) {
   margin-bottom: 28px;
 }
 

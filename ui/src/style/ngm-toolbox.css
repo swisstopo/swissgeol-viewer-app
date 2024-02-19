@@ -1,6 +1,7 @@
 ngm-draw-tool,
 ngm-slicer,
 ngm-gst-interaction,
+ngm-measure,
 data-download {
   height: calc(100vh - 142px);
   display: block;
@@ -216,4 +217,11 @@ ngm-draw-section .ngm-divider,
 .data-download-item > .ngm-file-download-icon {
   width: 24px;
   height: 24px;
+}
+
+.ngm-measure-segment-info:hover .ngm-measure-segment-title {
+  color: var(--ngm-interaction-hover);
+}
+.ngm-measure-segment-info:hover {
+  background-color: rgba(255, 255, 0, 0.2);
 }

@@ -14,7 +14,7 @@ export interface GeometryAction {
   newName?: string,
   noEditGeometries?: boolean,
   action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll' | 'profile' |
-      'add' | 'upload' | 'measure' | 'clearMeasure' | 'changeName',
+      'add' | 'upload' | 'changeName',
 }
 
 export default class ToolboxStore {

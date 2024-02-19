@@ -78,7 +78,7 @@ export default class Slicer {
     this.viewer.dataSources.add(this.slicerDataSource);
     this.slicingBox = new SlicingBox(this.viewer, this.slicerDataSource);
     this.slicingLine = new SlicingLine(this.viewer);
-    this.draw = new CesiumDraw(this.viewer, 'line', {fillColor: DEFAULT_AOI_COLOR, minPointsStop: true});
+    this.draw = new CesiumDraw(this.viewer, {fillColor: DEFAULT_AOI_COLOR, minPointsStop: true});
     this.draw.addEventListener('drawend', (evt) => this.endDrawing((<CustomEvent>evt).detail));
     this.draw.addEventListener('drawerror', evt => {
       if (this.draw.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {

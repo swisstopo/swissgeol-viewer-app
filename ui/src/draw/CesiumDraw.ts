@@ -14,15 +14,44 @@ import {
     ScreenSpaceEventType,
 } from 'cesium';
 import {getDimensionLabel, rectanglify} from './helpers';
-import {getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
+import {getMeasurements, Measurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import type {GeometryTypes} from '../toolbox/interfaces';
-import DrawStore from '../store/draw';
+import {cartesianToLv95} from '../projection';
 
+type PointOptions = {
+  color?: Color,
+  virtualColor?: Color,
+  outlineWidth?: number,
+  outlineColor?: Color,
+  pixelSizeDefault?: number,
+  pixelSizeEdit?: number,
+  heightReference?: HeightReference,
+}
 export interface DrawOptions {
-  fillColor: string | Color;
+  fillColor?: string | Color;
   strokeColor?: string | Color;
   strokeWidth?: number;
   minPointsStop?: boolean;
+  pointOptions?: PointOptions;
+  lineClampToGround?: boolean;
+}
+
+export type SegmentInfo = {
+  length: number,
+  eastingDiff: number,
+  northingDiff: number,
+  heightDiff: number
+};
+export type DrawInfo = {
+  length: number,
+  segments: SegmentInfo[],
+  type: GeometryTypes
+}
+
+export type DrawEndDetails = {
+  positions: Cartesian3[],
+  type: GeometryTypes,
+  measurements: Measurements
 }
 
 export class CesiumDraw extends EventTarget {
@@ -40,26 +69,40 @@ export class CesiumDraw extends EventTarget {
   private sketchPoints_: Entity[] = [];
   private isDoubleClick = false;
   private singleClickTimer;
-  type: GeometryTypes;
+  private segmentsInfo: SegmentInfo[] = [];
+  type: GeometryTypes | undefined;
   julianDate = new JulianDate();
   drawingDataSource = new CustomDataSource('drawing');
   minPointsStop: boolean;
   moveEntity = false;
   entityForEdit: Entity | undefined;
   ERROR_TYPES = {needMorePoints: 'need_more_points'};
-  measure = false;
+  pointOptions: PointOptions;
+  // todo line options?
+  lineClampToGround: boolean = true;
 
-  constructor(viewer: Viewer, type: GeometryTypes, options: DrawOptions) {
+  constructor(viewer: Viewer, options?: DrawOptions) {
     super();
+    // todo move default values to constants
     this.viewer_ = viewer;
-    this.type = type;
     this.viewer_.dataSources.add(this.drawingDataSource);
-    this.strokeColor_ = options.strokeColor instanceof Color ?
-      options.strokeColor : Color.fromCssColorString(options.strokeColor || 'rgba(0, 153, 255, 0.75)');
-    this.strokeWidth_ = options.strokeWidth !== undefined ? options.strokeWidth : 4;
-    this.fillColor_ = options.fillColor instanceof Color ?
-      options.fillColor : Color.fromCssColorString(options.fillColor || 'rgba(0, 153, 255, 0.3)');
-    this.minPointsStop = !!options.minPointsStop;
+    this.strokeColor_ = options?.strokeColor instanceof Color ?
+      options.strokeColor : Color.fromCssColorString(options?.strokeColor || 'rgba(0, 153, 255, 0.75)');
+    this.strokeWidth_ = options?.strokeWidth !== undefined ? options.strokeWidth : 4;
+    this.fillColor_ = options?.fillColor instanceof Color ?
+      options.fillColor : Color.fromCssColorString(options?.fillColor || 'rgba(0, 153, 255, 0.3)');
+    this.minPointsStop = !!options?.minPointsStop;
+    this.lineClampToGround = typeof options?.lineClampToGround === 'boolean' ? options.lineClampToGround : true;
+    const pointOptions = options?.pointOptions;
+    this.pointOptions = {
+      color: pointOptions?.color instanceof Color ? pointOptions.color : Color.WHITE,
+      virtualColor: pointOptions?.virtualColor instanceof Color ? pointOptions.virtualColor : Color.GREY,
+      outlineColor: pointOptions?.outlineColor instanceof Color ? pointOptions.outlineColor : Color.BLACK,
+      outlineWidth: typeof pointOptions?.outlineWidth === 'number' && !isNaN(pointOptions?.outlineWidth) ? pointOptions?.outlineWidth : 1,
+      pixelSizeDefault: typeof pointOptions?.pixelSizeDefault === 'number' && !isNaN(pointOptions?.pixelSizeDefault) ? pointOptions?.pixelSizeDefault : 5,
+      pixelSizeEdit: typeof pointOptions?.pixelSizeEdit === 'number' && !isNaN(pointOptions?.pixelSizeEdit) ? pointOptions?.pixelSizeEdit : 9,
+      heightReference: pointOptions?.heightReference || HeightReference.CLAMP_TO_GROUND,
+    };
   }
 
   renderSceneIfTranslucent() {
@@ -81,7 +124,8 @@ export class CesiumDraw extends EventTarget {
    *
    */
   set active(value) {
-    if (value) {
+    // todo check for type
+    if (value && this.type) {
       if (!this.eventHandler_) {
         this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
         if (this.entityForEdit) {
@@ -92,14 +136,20 @@ export class CesiumDraw extends EventTarget {
         }
         this.eventHandler_.setInputAction(this.onMouseMove_.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
       }
-      if (this.type === 'line') DrawStore.lineInfo.next({lengthLabel: '0km', segments: 0});
+      this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
+        detail: {
+          length: 0,
+          segments: [],
+          type: this.type
+        }
+      }));
     } else {
       if (this.eventHandler_) {
         this.eventHandler_.destroy();
       }
       this.eventHandler_ = undefined;
     }
-    this.dispatchEvent(new CustomEvent('statechanged', {detail: {active: value}}));
+    this.dispatchEvent(new CustomEvent('statechanged', {detail: {active: value && this.type}}));
   }
 
   activateEditing() {
@@ -193,15 +243,18 @@ export class CesiumDraw extends EventTarget {
     }
     this.viewer_.scene.requestRender();
 
-    const measurements = getMeasurements(positions, this.type);
-    if (this.type === 'line') DrawStore.lineInfo.next({
-        lengthLabel: `${measurements.perimeter}km`,
-        segments: measurements.numberOfSegments!
-    });
-    this.dispatchEvent(new CustomEvent('drawend', {
+    const measurements = getMeasurements(positions, this.type!);
+    this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
+      detail: {
+        length: measurements.perimeter!,
+        segments: this.getSegmentsInfo(),
+        type: this.type!
+      }
+    }));
+    this.dispatchEvent(new CustomEvent<DrawEndDetails>('drawend', {
       detail: {
         positions: positions,
-        type: this.type,
+        type: this.type!,
         measurements: measurements
       }
     }));
@@ -221,6 +274,7 @@ export class CesiumDraw extends EventTarget {
     this.leftPressedPixel_ = undefined;
     this.moveEntity = false;
     this.sketchPoints_ = [];
+    this.segmentsInfo = [];
   }
 
   /**
@@ -234,18 +288,18 @@ export class CesiumDraw extends EventTarget {
     const entity: Entity.ConstructorOptions = {
       position: position,
       point: {
-        color: options.virtual ? Color.GREY : Color.WHITE,
-        outlineWidth: 1,
-        outlineColor: Color.BLACK,
-        pixelSize: options.edit || this.measure ? 9 : 5,
-        heightReference: this.measure ? HeightReference.NONE : HeightReference.CLAMP_TO_GROUND,
+        color: options.virtual ? this.pointOptions.virtualColor : this.pointOptions.color,
+        outlineWidth: this.pointOptions.outlineWidth,
+        outlineColor: this.pointOptions.outlineColor,
+        pixelSize: options.edit ? this.pointOptions.pixelSizeEdit : this.pointOptions.pixelSizeDefault,
+        heightReference: this.pointOptions.heightReference,
       },
       properties: {}
     };
     if (options.edit) {
       entity.point!.disableDepthTestDistance = Number.POSITIVE_INFINITY;
     }
-    if (options.label) {
+    if (options.label && this.type) {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
     }
     const pointEntity = this.drawingDataSource.entities.add(entity);
@@ -253,19 +307,20 @@ export class CesiumDraw extends EventTarget {
     return pointEntity;
   }
 
-  createSketchLine_(positions) {
+  createSketchLine_(positions: Cartesian3[] | CallbackProperty) {
     return this.drawingDataSource.entities.add({
       polyline: {
         positions: positions,
-        clampToGround: !this.measure,
+        clampToGround: this.lineClampToGround,
         width: this.strokeWidth_,
         material: this.strokeColor_
       }
     });
   }
 
-  drawShape_(positions) {
-    if (this.type === 'point') {
+  drawShape_(positions: Cartesian3 | Cartesian3[] | undefined) {
+    if (!positions) return;
+    if (this.type === 'point' && !Array.isArray(positions)) {
       this.drawingDataSource.entities.add({
         position: positions,
         point: {
@@ -273,22 +328,22 @@ export class CesiumDraw extends EventTarget {
           outlineWidth: 2,
           outlineColor: this.strokeColor_,
           pixelSize: this.strokeWidth_,
-          heightReference: this.measure ? HeightReference.NONE : HeightReference.CLAMP_TO_GROUND
+          heightReference: this.lineClampToGround ? HeightReference.CLAMP_TO_GROUND : HeightReference.NONE
         }
       });
 
-    } else if (this.type === 'line') {
+    } else if (this.type === 'line' && Array.isArray(positions)) {
       this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polyline: {
           positions: positions,
-          clampToGround: !this.measure,
+          clampToGround: this.lineClampToGround,
           width: this.strokeWidth_,
           material: this.strokeColor_
         },
         label: getDimensionLabel(this.type, this.activeDistances_)
       });
-    } else if (this.type === 'polygon' || this.type === 'rectangle') {
+    } else if ((this.type === 'polygon' || this.type === 'rectangle') && Array.isArray(positions)) {
       this.drawingDataSource.entities.add({
         position: positions[positions.length - 1],
         polygon: {
@@ -337,11 +392,23 @@ export class CesiumDraw extends EventTarget {
       this.activeDistance_ = distance / 1000;
       const value = `${this.activeDistance_.toFixed(3)}km`;
       (<ConstantProperty> this.sketchPoint_.label!.text).setValue(value);
-      if (this.type === 'line') DrawStore.lineInfo.next({lengthLabel: value, segments: positions.length - 1});
+      this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
+        detail: {
+          length: this.activeDistance_,
+          segments: this.segmentsInfo,
+          type: this.type!
+        }
+      }));
       return;
     }
     (<ConstantProperty> this.sketchPoint_.label!.text).setValue('0km');
-      if (this.type === 'line') DrawStore.lineInfo.next({lengthLabel: '0km', segments: 0});
+    this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
+      detail: {
+        length: 0,
+        segments: [],
+        type: this.type!
+      }
+    }));
   }
 
   onLeftClick(event) {
@@ -366,6 +433,7 @@ export class CesiumDraw extends EventTarget {
         this.activeDistances_.push(this.activeDistance_);
       }
       this.activePoints_.push(Cartesian3.clone(this.activePoint_!));
+      this.segmentsInfo = this.getSegmentsInfo();
       const forceFinish = this.minPointsStop && (
         (this.type === 'polygon' && this.activePoints_.length === 3) ||
         (this.type === 'line' && this.activePoints_.length === 2)
@@ -533,6 +601,9 @@ export class CesiumDraw extends EventTarget {
       this.activeDistances_.push(this.activeDistance_);
     }
     this.activePoints_.pop();
+    if (this.activeDistances_.length === this.activePoints_.length) {
+      this.activeDistances_.pop();
+    }
     this.finishDrawing();
   }
 
@@ -731,6 +802,30 @@ export class CesiumDraw extends EventTarget {
         oppositePoint2D.y
       )
     };
+  }
+
+  getSegmentsInfo(): SegmentInfo[] {
+    const positions = this.activePoints_;
+    return this.activeDistances_.map((dist, indx) => {
+      let easting = 0;
+      let northing = 0;
+      let height = 0;
+      if (positions[indx + 1]) {
+        const cartPosition1 = Cartographic.fromCartesian(positions[indx]);
+        const cartPosition2 = Cartographic.fromCartesian(positions[indx + 1]);
+        const lv95Position1 = cartesianToLv95(positions[indx]);
+        const lv95Position2 = cartesianToLv95(positions[indx + 1]);
+        easting = Math.abs(lv95Position2[0] - lv95Position1[0]) / 1000;
+        northing = Math.abs(lv95Position2[1] - lv95Position1[1]) / 1000;
+        height = Math.abs(cartPosition2.height - cartPosition1.height);
+      }
+      return {
+        length: dist,
+        eastingDiff: easting,
+        northingDiff: northing,
+        heightDiff: height,
+      };
+    });
   }
 }
 

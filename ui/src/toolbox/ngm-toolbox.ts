@@ -81,7 +81,7 @@ export class NgmToolbox extends LitElementI18n {
         this.requestUpdate();
       });
       if (this.viewer) {
-        this.draw = new CesiumDraw(this.viewer, 'polygon', {
+        this.draw = new CesiumDraw(this.viewer, {
           fillColor: DEFAULT_AOI_COLOR
         });
         this.draw.active = false;

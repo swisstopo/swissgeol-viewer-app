@@ -14,9 +14,10 @@ import type {Cartesian3, CustomDataSource} from 'cesium';
 import type {NgmGeometry} from './interfaces';
 import {flyToGeom, hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
-import {skip, Subscription} from 'rxjs';
+import {skip} from 'rxjs';
 import DrawStore from '../store/draw';
 import NavToolsStore from '../store/navTools';
+import {DrawInfo} from '../draw/CesiumDraw';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
@@ -35,10 +36,13 @@ export class NgmSlicer extends LitElementI18n {
   @state()
   accessor editingEnabled = false;
   @state()
-  accessor lineInfo = DrawStore.lineInfo.value;
+  accessor lineInfo: DrawInfo = {
+    length: 0,
+    segments: [],
+    type: 'line'
+  };
   private sliceGeomId: string | undefined;
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
-  private lineInfoSubscription: Subscription | undefined;
 
 
   constructor() {
@@ -50,6 +54,12 @@ export class NgmSlicer extends LitElementI18n {
         DrawStore.setDrawState((<CustomEvent>evt).detail.active);
         this.requestUpdate();
       });
+      this.slicer.draw.addEventListener('drawinfo', (event) => {
+        const info: DrawInfo = (<CustomEvent>event).detail;
+        if (info.type === 'line') {
+          this.lineInfo = info;
+        }
+      });
       this.syncSlice();
     });
     ToolboxStore.sliceGeometry.pipe(skip(1)).subscribe(geom => this.toggleGeomSlicer(geom));
@@ -59,17 +69,6 @@ export class NgmSlicer extends LitElementI18n {
         this.toggleSlicer();
     });
     ToolboxStore.syncSlice.subscribe(() => this.syncSlice());
-  }
-
-  connectedCallback() {
-    this.lineInfoSubscription =
-        DrawStore.lineInfo.subscribe(value => this.lineInfo = value);
-    super.connectedCallback();
-  }
-
-  disconnectedCallback() {
-    this.lineInfoSubscription?.unsubscribe();
-    super.disconnectedCallback();
   }
 
   protected update(changedProperties) {
@@ -221,7 +220,9 @@ export class NgmSlicer extends LitElementI18n {
         }
       };
     }
-    geomToCreate = {...geomToCreate, ...getMeasurements(positions, type)};
+    const measurements = getMeasurements(positions, type);
+    const segmentsLength = measurements.segmentsLength;
+    geomToCreate = {...geomToCreate, ...measurements, sidesLength: [segmentsLength[0], segmentsLength[1]]};
     ToolboxStore.setGeometryToCreate(geomToCreate);
     this.slicer!.active = false;
   }
@@ -322,11 +323,11 @@ export class NgmSlicer extends LitElementI18n {
                             <div class="ngm-geom-info-label">
                                 ${i18next.t('obj_info_length_label')}
                             </div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.lengthLabel}</div>
+                            <div class="ngm-geom-info-value">${(this.lineInfo.length).toFixed(3)} km</div>
                         </div>
                         <div>
                             <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.segments}</div>
+                            <div class="ngm-geom-info-value">${this.lineInfo.segments.length}</div>
                         </div>
                     </div>
             </div>
