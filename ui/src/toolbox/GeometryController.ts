@@ -186,6 +186,17 @@ export class GeometryController {
     this.geometriesDataSource!.entities.removeById(id);
   }
 
+  @pauseGeometryCollectionEvents
+  private removeAllGeometries(noEditGeometries: boolean, type?: GeometryTypes) {
+    if (noEditGeometries !== this.noEdit) return;
+    const entities = [...this.geometriesDataSource!.entities.values];
+    entities.forEach(entity => {
+      if (!type || getValueOrUndefined(entity.properties!.type) === type) {
+        this.removeGeometry(entity.id);
+      }
+    });
+  }
+
   private onAddGeometry(type: GeometryTypes, clickEvent?: {position: Cartesian2}) {
     if (this.noEdit) return;
     const currentType = this.draw!.type;
@@ -384,6 +395,10 @@ export class GeometryController {
         break;
       case 'changeName':
         this.changeName(options.id!, options.newName!);
+        break;
+      case 'removeAll':
+        this.removeAllGeometries(!!options.noEditGeometries, options.type);
+        break;
     }
   }
 
