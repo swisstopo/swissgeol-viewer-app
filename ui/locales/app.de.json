@@ -283,6 +283,7 @@
   "tbx_profile": "Höhenprofil",
   "tbx_profile_btn": "Höhenprofil erstellen",
   "tbx_project_geometries": "Projekt",
+  "tbx_remove_all_btn": "",
   "tbx_remove_btn_label": "Entfernen",
   "tbx_request_aborted_warning": "Aufruf abgebrochen",
   "tbx_save_editing_btn_label": "Speichern",

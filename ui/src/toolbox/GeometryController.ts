@@ -4,7 +4,7 @@ import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import {showBannerError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
-import type {CesiumDraw} from '../draw/CesiumDraw';
+import {CesiumDraw, DrawEndDetails} from '../draw/CesiumDraw';
 import type {Cartesian2, Event, exportKmlResultKml, Viewer} from 'cesium';
 
 import {
@@ -108,7 +108,7 @@ export class GeometryController {
     }
   }
 
-  endDrawing_(info) {
+  endDrawing_(info: DrawEndDetails) {
     if (!this.draw) return;
     this.draw.active = false;
     this.draw.clear();
@@ -118,9 +118,9 @@ export class GeometryController {
     const type = info.type;
     const attributes: NgmGeometry = {
       positions: positions,
-      area: measurements.area,
-      perimeter: measurements.perimeter,
-      sidesLength: measurements.sidesLength,
+      area: measurements.area?.toFixed(3),
+      perimeter: measurements.perimeter?.toFixed(3),
+      sidesLength: measurements.segmentsLength?.length > 1 ? [measurements.segmentsLength[0], measurements.segmentsLength[1]] : undefined,
       numberOfSegments: measurements.numberOfSegments,
       type: type,
       clampPoint: true
@@ -184,6 +184,17 @@ export class GeometryController {
     if (this.selectedArea && id === this.selectedArea.id)
       this.deselectGeometry();
     this.geometriesDataSource!.entities.removeById(id);
+  }
+
+  @pauseGeometryCollectionEvents
+  private removeAllGeometries(noEditGeometries: boolean, type?: GeometryTypes) {
+    if (noEditGeometries !== this.noEdit) return;
+    const entities = [...this.geometriesDataSource!.entities.values];
+    entities.forEach(entity => {
+      if (!type || getValueOrUndefined(entity.properties!.type) === type) {
+        this.removeGeometry(entity.id);
+      }
+    });
   }
 
   private onAddGeometry(type: GeometryTypes, clickEvent?: {position: Cartesian2}) {
@@ -384,6 +395,10 @@ export class GeometryController {
         break;
       case 'changeName':
         this.changeName(options.id!, options.newName!);
+        break;
+      case 'removeAll':
+        this.removeAllGeometries(!!options.noEditGeometries, options.type);
+        break;
     }
   }
 

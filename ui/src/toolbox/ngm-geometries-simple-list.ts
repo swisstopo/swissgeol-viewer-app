@@ -139,6 +139,14 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                      })}>
                     ${i18next.t('tbx_download_all_btn')}
                 </div>
+                <div class="item"
+                     @click=${() => ToolboxStore.nextGeometryAction({
+                         type: this.selectedFilter,
+                         action: 'removeAll',
+                         noEditGeometries: this.noEditMode
+                     })}>
+                    ${i18next.t('tbx_remove_all_btn')}
+                </div>
             </div>
         `;
     }
