@@ -266,6 +266,7 @@
   "tbx_kml_area_existing_warning": "Eine der hochgeladenen Geometrien besteht bereits",
   "tbx_kml_large_warning": "KML zu gross. Es werden nur 10 Geometrien geladen, um Performanceeinschränkungen zu vermeiden",
   "tbx_lat_label": "Breitengrad",
+  "tbx_length_of_last_segment_label": "",
   "tbx_lon_label": "Längengrad",
   "tbx_lost_changes_warning": "Änderungen bitte speichern oder verwerfen.",
   "tbx_measure": "Messen",

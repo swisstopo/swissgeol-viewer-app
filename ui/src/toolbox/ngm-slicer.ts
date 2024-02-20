@@ -18,6 +18,7 @@ import {skip} from 'rxjs';
 import DrawStore from '../store/draw';
 import NavToolsStore from '../store/navTools';
 import {DrawInfo} from '../draw/CesiumDraw';
+import './ngm-line-info';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
@@ -36,11 +37,7 @@ export class NgmSlicer extends LitElementI18n {
   @state()
   accessor editingEnabled = false;
   @state()
-  accessor lineInfo: DrawInfo = {
-    length: 0,
-    segments: [],
-    type: 'line'
-  };
+  accessor lineInfo: DrawInfo | undefined;
   private sliceGeomId: string | undefined;
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
 
@@ -324,19 +321,10 @@ export class NgmSlicer extends LitElementI18n {
             <div>${i18next.t('tbx_slice_line')}</div>
           </div>
           ${this.sliceOptionsTemplate({type: 'view-line'})}
-          <div class="ngm-geom-info-content" .hidden="${this.slicingType !== 'view-line'}">
-                        <div>
-                            <div class="ngm-geom-info-label">
-                                ${i18next.t('obj_info_length_label')}
-                            </div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.length} km</div>
-                        </div>
-                        <div>
-                            <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.segments.length}</div>
-                        </div>
-                    </div>
-            </div>
+          <ngm-line-info
+              .hidden=${this.slicingType !== 'view-line'}
+              .lineInfo=${this.lineInfo}>
+          </ngm-line-info>
         </div>
       </div>
       <div class="ngm-divider"></div>
