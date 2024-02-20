@@ -1,8 +1,11 @@
 ngm-dashboard .ngm-panel-header,
-.ngm-proj-title,
 .ngm-proj-title-icon,
 .ngm-projects-list {
   margin-bottom: 12px;
+}
+
+.ngm-proj-title {
+  margin-top: 12px;
 }
 
 .ngm-proj-title-icon,
@@ -50,6 +53,7 @@ ngm-dashboard .ngm-panel-header,
 
 .ngm-projects-list {
   display: flex;
+  column-gap: 16px;
   flex-wrap: wrap;
 }
 
@@ -67,7 +71,7 @@ hide-overflow.ngm-projects-list {
   width: 240px;
   height: 228px;
   cursor: pointer;
-  margin: 8px;
+  margin: 8px 0;
 }
 
 .ngm-proj-preview.ngm-proj-create {

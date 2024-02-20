@@ -128,7 +128,7 @@ export class NgmProjectEdit extends LitElementI18n {
                 </div>
                 <div class="project-menu">
                   <div class="edit-project active">
-                    ${this.createMode ? i18next.t('dashboard_project_create') : i18next.t('edit_project')}<div class="ngm-edit-icon active"></div>
+                    ${this.createMode ? i18next.t('dashboard_project_create') : i18next.t('dashboard_project_in_edit')}<div class="ngm-edit-icon active"></div>
                   </div>
                 </div>
               </div>
