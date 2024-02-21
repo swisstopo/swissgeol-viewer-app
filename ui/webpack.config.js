@@ -111,7 +111,7 @@ export default {
     static: {
       directory: join(__dirname, 'dist'),
     },
-    proxy: {
+    proxy: [{
       '/api': {
            target: 'http://api:3000',
            logLevel: 'debug'
@@ -123,7 +123,7 @@ export default {
         },
         logLevel: 'debug'
       }
-   },
+   }],
     compress: true,
     port: 8000,
 
