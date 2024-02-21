@@ -266,6 +266,7 @@
   "tbx_kml_area_existing_warning": "Une des géométries téléchargées existe déjà",
   "tbx_kml_large_warning": "Le KML est trop grand. Seulement 10 géométries ont été ajoutées pour éviter des problèmes de performance",
   "tbx_lat_label": "Latitude",
+  "tbx_length_of_last_segment_label": "",
   "tbx_lon_label": "Longitude",
   "tbx_lost_changes_warning": "Veuillez enregistrer ou effacer vos modifications",
   "tbx_measure": "Mesurer",

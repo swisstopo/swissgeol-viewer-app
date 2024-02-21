@@ -44,8 +44,10 @@ export type SegmentInfo = {
 };
 export type DrawInfo = {
   length: number,
+  numberOfSegments: number,
   segments: SegmentInfo[],
-  type: GeometryTypes
+  type: GeometryTypes,
+  drawInProgress: boolean
 }
 
 export type DrawEndDetails = {
@@ -139,8 +141,10 @@ export class CesiumDraw extends EventTarget {
       this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
         detail: {
           length: 0,
+          numberOfSegments: 0,
           segments: [],
-          type: this.type
+          type: this.type,
+          drawInProgress: true
         }
       }));
     } else {
@@ -244,11 +248,14 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.scene.requestRender();
 
     const measurements = getMeasurements(positions, this.type!);
+    const segments = this.getSegmentsInfo();
     this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
       detail: {
         length: measurements.perimeter!,
-        segments: this.getSegmentsInfo(),
-        type: this.type!
+        numberOfSegments: segments.length,
+        segments: segments,
+        type: this.type!,
+        drawInProgress: false
       }
     }));
     this.dispatchEvent(new CustomEvent<DrawEndDetails>('drawend', {
@@ -395,8 +402,10 @@ export class CesiumDraw extends EventTarget {
       this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
         detail: {
           length: this.activeDistance_,
+          numberOfSegments: this.activePoints_.length === 0 ? 0 : this.segmentsInfo.length + 1,
           segments: this.segmentsInfo,
-          type: this.type!
+          type: this.type!,
+          drawInProgress: true
         }
       }));
       return;
@@ -405,8 +414,10 @@ export class CesiumDraw extends EventTarget {
     this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
       detail: {
         length: 0,
+        numberOfSegments: 0,
         segments: [],
-        type: this.type!
+        type: this.type!,
+        drawInProgress: true
       }
     }));
   }

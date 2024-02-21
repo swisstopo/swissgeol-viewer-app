@@ -8,18 +8,14 @@ import MainStore from '../store/main';
 import MeasureTool from '../measure/MeasureTool';
 import {DrawInfo} from '../draw/CesiumDraw';
 import {DEFAULT_AOI_COLOR, GEOMETRY_LINE_ALPHA, HIGHLIGHTED_GEOMETRY_COLOR} from '../constants';
+import './ngm-line-info';
 
-const DEFAULT_LINE_INFO: DrawInfo = {
-    length: 0,
-    segments: [],
-    type: 'line'
-};
 @customElement('ngm-measure')
 export class NgmMeasure extends LitElementI18n {
     @state()
     accessor active = false;
     @state()
-    accessor lineInfo: DrawInfo = DEFAULT_LINE_INFO;
+    accessor lineInfo: DrawInfo | undefined;
     private measure: MeasureTool | undefined;
     private integerFormat = new Intl.NumberFormat('de-CH', {
         maximumFractionDigits: 1
@@ -59,7 +55,7 @@ export class NgmMeasure extends LitElementI18n {
             DrawStore.measureState.next(this.active);
             this.measure.active = this.active;
             if (!this.active) {
-                this.lineInfo = DEFAULT_LINE_INFO;
+                this.lineInfo = undefined;
             }
         }
         super.updated(changedProperties);
@@ -80,20 +76,12 @@ export class NgmMeasure extends LitElementI18n {
                         ${i18next.t('tbx_measure_hint')}
                         <div class="ngm-info-icon"></div>
                     </div>
-                    <div class="ngm-geom-info-content" .hidden="${!this.active}">
-                        <div>
-                            <div class="ngm-geom-info-label">
-                                ${i18next.t('obj_info_length_label')}
-                            </div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.length} km</div>
-                        </div>
-                        <div>
-                            <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.segments.length}</div>
-                        </div>
-                    </div>
+                    <ngm-line-info
+                            .hidden="${!this.active}"
+                            .lineInfo=${this.lineInfo}>
+                    </ngm-line-info>
                 </div>
-                ${this.lineInfo.segments.map((segment, indx) => html`
+                ${this.lineInfo?.segments.map((segment, indx) => html`
                     <div class="ngm-action-list-item active ngm-measure-segment-info"
                          @mouseenter=${() => this.measure?.highlightSegment(indx)}
                          @mouseleave=${() => this.measure?.removeSegmentHighlight()}>

@@ -51,6 +51,7 @@ ngm-geometry-info .ngm-download-icon {
   background-color: #495057;
 }
 
+ngm-line-info:not(:first-child),
 .ngm-geom-info-content:not(:first-child) {
   margin-top: 12px;
 }

@@ -9,6 +9,7 @@ import type {GeometryTypes} from './interfaces';
 import {clickOnElement} from '../utils';
 import DrawStore from '../store/draw';
 import {CesiumDraw, DrawInfo} from '../draw/CesiumDraw';
+import './ngm-line-info';
 
 const fileUploadInputId = 'fileUpload';
 
@@ -22,11 +23,7 @@ export class NgmDrawSection extends LitElementI18n {
   @property({type: Boolean})
   accessor hidden = true;
   @state()
-  accessor lineInfo: DrawInfo = {
-    length: 0,
-    segments: [],
-    type: 'line'
-  };
+  accessor lineInfo: DrawInfo | undefined;
   private draw: CesiumDraw | undefined;
   private drawGeometries = [
     {label: () => i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},
@@ -90,18 +87,10 @@ export class NgmDrawSection extends LitElementI18n {
                 ${i18next.t('tbx_area_of_interest_add_hint')}
                 <div class="ngm-info-icon"></div>
               </div>
-              <div class="ngm-geom-info-content" .hidden="${!active || it.type !== 'line'}">
-                        <div>
-                            <div class="ngm-geom-info-label">
-                                ${i18next.t('obj_info_length_label')}
-                            </div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.length} km</div>
-                        </div>
-                        <div>
-                            <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
-                            <div class="ngm-geom-info-value">${this.lineInfo.segments.length}</div>
-                        </div>
-                    </div>
+              <ngm-line-info
+                  .hidden="${!active || it.type !== 'line'}"
+                  .lineInfo=${this.lineInfo}>
+              </ngm-line-info>
             </div>`;
         })}
         <div .hidden=${!this.showUpload} class="ngm-action-list-item ${classMap({disabled})}"
