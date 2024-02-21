@@ -29,7 +29,6 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
       <ngm-geometries-list
         .selectedId=${this.selectedAreaId}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => {
-          ToolboxStore.nextGeometryAction({id: evt.detail.id, action: 'zoom'});
           ToolboxStore.setOpenedGeometryOptions({id: evt.detail.id!});
         }}>
       </ngm-geometries-list>`;
