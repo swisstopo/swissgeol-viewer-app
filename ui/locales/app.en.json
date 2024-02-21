@@ -33,6 +33,7 @@
   "dashboard_project_create_error": "Error while creating project",
   "dashboard_project_editor": "Editor",
   "dashboard_project_geometries": "Geometries",
+  "dashboard_project_in_edit": "Project in edit mode",
   "dashboard_project_kml": "KML",
   "dashboard_project_members": "Project members",
   "dashboard_project_owner": "Owner",

@@ -41,12 +41,13 @@ export class ViewMenu extends LitElementI18n {
     }
 
     async saveViewToProject() {
-        const project = isProject(this.selectedProject) ? this.selectedProject : undefined;
-        if (this.viewIndex && this.userEmail && project?.owner) {
-            if ([project.owner.email, ...project.editors].includes(this.userEmail)) {
+        const project: Project | undefined = isProject(this.selectedProject) ? this.selectedProject : undefined;
+        if (typeof this.viewIndex === 'number' && this.userEmail && project?.owner) {
+            const editorEmails = project.editors.map(e => e.email);
+            if ([project.owner.email, ...editorEmails].includes(this.userEmail)) {
                 const view: View = {
                     id: crypto.randomUUID(),
-                    title: `${i18next.t('view')} ${this.viewIndex + 2}`,
+                    title: `${i18next.t('view')} ${project.views.length + 1}`,
                     permalink: getPermalink(),
                 };
                 project.views.splice(this.viewIndex + 1, 0, view);
