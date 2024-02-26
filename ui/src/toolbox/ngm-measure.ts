@@ -5,7 +5,7 @@ import i18next from 'i18next';
 import {classMap} from 'lit-html/directives/class-map.js';
 import DrawStore from '../store/draw';
 import MainStore from '../store/main';
-import MeasureTool from '../measure/MeasureTool';
+import MeasureTool from '../geoblocks/cesium-helpers/measure/MeasureTool';
 import {DrawInfo} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
 import {DEFAULT_AOI_COLOR, GEOMETRY_LINE_ALPHA, HIGHLIGHTED_GEOMETRY_COLOR} from '../constants';
 import './ngm-line-info';
