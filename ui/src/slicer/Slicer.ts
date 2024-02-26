@@ -5,7 +5,7 @@ import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
 import SlicingToolBase from './SlicingToolBase';
 import i18next from 'i18next';
-import {CesiumDraw, DrawEndDetails} from '../draw/CesiumDraw';
+import {CesiumDraw, DrawEndDetails} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
 import {DEFAULT_AOI_COLOR} from '../constants';
 import {showSnackbarInfo} from '../notifications';
 

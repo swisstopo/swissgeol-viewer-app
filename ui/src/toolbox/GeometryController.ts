@@ -4,7 +4,7 @@ import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import {showBannerError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
-import {CesiumDraw, DrawEndDetails} from '../draw/CesiumDraw';
+import {CesiumDraw, DrawEndDetails} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
 import type {Cartesian2, Event, exportKmlResultKml, Viewer} from 'cesium';
 
 import {
@@ -25,7 +25,7 @@ import {
   VerticalOrigin
 } from 'cesium';
 import type {AreasCounter, GeometryTypes, NgmGeometry} from './interfaces';
-import {extendKmlWithProperties, getValueOrUndefined} from '../cesiumutils';
+import {extendKmlWithProperties, getValueOrUndefined} from '../geoblocks/cesium-helpers/cesiumutils';
 import NavToolsStore from '../store/navTools';
 import {
   flyToGeom,

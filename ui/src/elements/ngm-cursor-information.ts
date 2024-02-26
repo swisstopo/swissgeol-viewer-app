@@ -4,7 +4,7 @@ import {LitElementI18n} from '../i18n.js';
 import type {Viewer} from 'cesium';
 import {Cartographic, ScreenSpaceEventHandler, ScreenSpaceEventType, VoxelPrimitive} from 'cesium';
 import {customElement, property, state} from 'lit/decorators.js';
-import {getValueOrUndefined} from '../cesiumutils';
+import {getValueOrUndefined} from '../geoblocks/cesium-helpers/cesiumutils';
 import {formatCartographicAs2DLv95} from '../projection';
 
 @customElement('ngm-cursor-information')

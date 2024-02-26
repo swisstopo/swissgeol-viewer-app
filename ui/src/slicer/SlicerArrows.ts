@@ -11,7 +11,7 @@ import {
 
 } from 'cesium';
 import {DEFAULT_CONFIG_FOR_SLICING_ARROW, SLICING_GEOMETRY_COLOR} from '../constants';
-import {getDirectionFromPoints, updateHeightForCartesianPositions} from '../cesiumutils';
+import {getDirectionFromPoints, updateHeightForCartesianPositions} from '../geoblocks/cesium-helpers/cesiumutils';
 import type {Viewer, DataSource, ColorBlendMode, Quaternion, ShadowMode} from 'cesium';
 import type {BBox} from './helper';
 import {debounce} from '../utils';

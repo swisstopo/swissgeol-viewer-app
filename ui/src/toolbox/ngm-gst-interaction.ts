@@ -16,7 +16,7 @@ import type {NgmToolbox} from './ngm-toolbox';
 import {classMap} from 'lit-html/directives/class-map.js';
 import ToolboxStore from '../store/toolbox';
 import type {NgmGeometry} from './interfaces';
-import {pointInPolygon} from '../cesiumutils';
+import {pointInPolygon} from '../geoblocks/cesium-helpers/cesiumutils';
 
 export type OutputFormat = 'pdf' | 'png' | 'svg';
 

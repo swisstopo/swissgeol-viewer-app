@@ -11,7 +11,7 @@ import {pointer} from 'd3-selection';
 import MainStore from '../store/main';
 import type {Viewer} from 'cesium';
 import {Color, HeightReference, CallbackProperty, Cartesian3, Entity} from 'cesium';
-import {getPointOnPolylineByRatio} from '../cesiumutils';
+import {getPointOnPolylineByRatio} from '../geoblocks/cesium-helpers/cesiumutils';
 import type {NgmGeometry} from './interfaces';
 import {styleMap} from 'lit/directives/style-map.js';
 import {bisector} from 'd3-array';

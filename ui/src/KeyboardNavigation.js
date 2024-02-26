@@ -1,4 +1,4 @@
-import {verticalDirectionRotate} from './cesiumutils.ts';
+import {verticalDirectionRotate} from './geoblocks/cesium-helpers/cesiumutils.ts';
 import NavToolsStore from './store/navTools';
 
 /**

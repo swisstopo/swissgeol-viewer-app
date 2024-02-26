@@ -13,10 +13,9 @@ import {
     ScreenSpaceEventHandler,
     ScreenSpaceEventType,
 } from 'cesium';
-import {getDimensionLabel, rectanglify} from './helpers';
-import {getMeasurements, Measurements, updateHeightForCartesianPositions} from '../cesiumutils';
-import type {GeometryTypes} from '../toolbox/interfaces';
-import {cartesianToLv95} from '../projection';
+import {getDimensionLabel} from './helpers';
+import {getMeasurements, Measurements, rectanglify, updateHeightForCartesianPositions} from '../cesiumutils';
+import type {GeometryTypes} from '../types';
 
 type PointOptions = {
   color?: Color,
@@ -36,16 +35,11 @@ export interface DrawOptions {
   lineClampToGround?: boolean;
 }
 
-export type SegmentInfo = {
-  length: number,
-  eastingDiff: number,
-  northingDiff: number,
-  heightDiff: number
-};
 export type DrawInfo = {
   length: number,
   numberOfSegments: number,
-  segments: SegmentInfo[],
+  points: Cartesian3[],
+  distances: number[],
   type: GeometryTypes,
   drawInProgress: boolean
 }
@@ -71,7 +65,6 @@ export class CesiumDraw extends EventTarget {
   private sketchPoints_: Entity[] = [];
   private isDoubleClick = false;
   private singleClickTimer;
-  private segmentsInfo: SegmentInfo[] = [];
   type: GeometryTypes | undefined;
   julianDate = new JulianDate();
   drawingDataSource = new CustomDataSource('drawing');
@@ -142,7 +135,8 @@ export class CesiumDraw extends EventTarget {
         detail: {
           length: 0,
           numberOfSegments: 0,
-          segments: [],
+          points: this.activePoints_,
+          distances: this.activeDistances_,
           type: this.type,
           drawInProgress: true
         }
@@ -248,12 +242,12 @@ export class CesiumDraw extends EventTarget {
     this.viewer_.scene.requestRender();
 
     const measurements = getMeasurements(positions, this.type!);
-    const segments = this.getSegmentsInfo();
     this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
       detail: {
         length: measurements.perimeter!,
-        numberOfSegments: segments.length,
-        segments: segments,
+        numberOfSegments: this.activeDistances_.length,
+        points: this.activePoints_,
+        distances: this.activeDistances_,
         type: this.type!,
         drawInProgress: false
       }
@@ -281,7 +275,6 @@ export class CesiumDraw extends EventTarget {
     this.leftPressedPixel_ = undefined;
     this.moveEntity = false;
     this.sketchPoints_ = [];
-    this.segmentsInfo = [];
   }
 
   /**
@@ -402,8 +395,9 @@ export class CesiumDraw extends EventTarget {
       this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
         detail: {
           length: this.activeDistance_,
-          numberOfSegments: this.activePoints_.length === 0 ? 0 : this.segmentsInfo.length + 1,
-          segments: this.segmentsInfo,
+          numberOfSegments: this.activeDistances_.length + 1,
+          points: this.activePoints_,
+          distances: this.activeDistances_,
           type: this.type!,
           drawInProgress: true
         }
@@ -415,7 +409,8 @@ export class CesiumDraw extends EventTarget {
       detail: {
         length: 0,
         numberOfSegments: 0,
-        segments: [],
+        points: this.activePoints_,
+        distances: this.activeDistances_,
         type: this.type!,
         drawInProgress: true
       }
@@ -444,13 +439,13 @@ export class CesiumDraw extends EventTarget {
         this.activeDistances_.push(this.activeDistance_);
       }
       this.activePoints_.push(Cartesian3.clone(this.activePoint_!));
-      this.segmentsInfo = this.getSegmentsInfo();
       const forceFinish = this.minPointsStop && (
         (this.type === 'polygon' && this.activePoints_.length === 3) ||
         (this.type === 'line' && this.activePoints_.length === 2)
       );
       if ((this.type === 'rectangle' && this.activePoints_.length === 3) || forceFinish) {
         this.finishDrawing();
+        return;
       } else if (this.type === 'line') {
         if (!this.isDoubleClick) {
           this.singleClickTimer = setTimeout(() => {
@@ -460,6 +455,16 @@ export class CesiumDraw extends EventTarget {
           }, 250);
         }
       }
+      this.dispatchEvent(new CustomEvent<DrawInfo>('drawinfo', {
+        detail: {
+          length: this.activeDistance_,
+          numberOfSegments: this.activeDistances_.length + 1,
+          points: this.activePoints_,
+          distances: this.activeDistances_,
+          type: this.type!,
+          drawInProgress: true
+        }
+      }));
     }
   }
 
@@ -813,30 +818,6 @@ export class CesiumDraw extends EventTarget {
         oppositePoint2D.y
       )
     };
-  }
-
-  getSegmentsInfo(): SegmentInfo[] {
-    const positions = this.activePoints_;
-    return this.activeDistances_.map((dist, indx) => {
-      let easting = 0;
-      let northing = 0;
-      let height = 0;
-      if (positions[indx + 1]) {
-        const cartPosition1 = Cartographic.fromCartesian(positions[indx]);
-        const cartPosition2 = Cartographic.fromCartesian(positions[indx + 1]);
-        const lv95Position1 = cartesianToLv95(positions[indx]);
-        const lv95Position2 = cartesianToLv95(positions[indx + 1]);
-        easting = Math.abs(lv95Position2[0] - lv95Position1[0]) / 1000;
-        northing = Math.abs(lv95Position2[1] - lv95Position1[1]) / 1000;
-        height = Math.abs(cartPosition2.height - cartPosition1.height);
-      }
-      return {
-        length: dist,
-        eastingDiff: easting,
-        northingDiff: northing,
-        heightDiff: height,
-      };
-    });
   }
 }
 

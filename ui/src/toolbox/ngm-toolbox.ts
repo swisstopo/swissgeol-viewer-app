@@ -16,11 +16,11 @@ import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME, NO_EDIT_GEOMETRY_DATASOURCE
 import MainStore from '../store/main';
 import LocalStorageController from '../LocalStorageController';
 import ToolboxStore from '../store/toolbox';
-import {getValueOrUndefined} from '../cesiumutils';
+import {getValueOrUndefined} from '../geoblocks/cesium-helpers/cesiumutils';
 import type {NgmGeometry} from './interfaces';
 import {getAreaPositions, updateBoreholeHeights, updateEntityVolume} from './helpers';
 import {getSliceParam} from '../permalink';
-import {CesiumDraw} from '../draw/CesiumDraw';
+import {CesiumDraw} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
 import DrawStore from '../store/draw';
 import {GeometryController} from './GeometryController';
 import {showSnackbarInfo} from '../notifications';
@@ -82,7 +82,7 @@ export class NgmToolbox extends LitElementI18n {
       });
       if (this.viewer) {
         this.draw = new CesiumDraw(this.viewer, {
-          fillColor: DEFAULT_AOI_COLOR
+          fillColor: DEFAULT_AOI_COLOR,
         });
         this.draw.active = false;
         this.draw.addEventListener('statechanged', (evt) => {

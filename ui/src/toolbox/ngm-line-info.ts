@@ -1,10 +1,10 @@
 import {LitElementI18n} from '../i18n';
 import {html} from 'lit';
 import i18next from 'i18next';
-import {DrawInfo} from '../draw/CesiumDraw';
 import {customElement, property} from 'lit/decorators.js';
+import {LineInfo} from './interfaces';
 
-const DEFAULT_LINE_INFO: DrawInfo = {
+const DEFAULT_LINE_INFO: LineInfo = {
     length: 0,
     numberOfSegments: 0,
     segments: [],
@@ -15,7 +15,7 @@ const DEFAULT_LINE_INFO: DrawInfo = {
 @customElement('ngm-line-info')
 export class NgmLineInfo extends LitElementI18n {
     @property({type: Object})
-    accessor lineInfo: DrawInfo | undefined;
+    accessor lineInfo: LineInfo | undefined;
     render() {
         if (!this.lineInfo) this.lineInfo = DEFAULT_LINE_INFO;
         return html`

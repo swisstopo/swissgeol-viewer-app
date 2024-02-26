@@ -12,10 +12,10 @@ import {
   updateEntityVolume,
   updateVolumePositions
 } from './helpers';
-import {getEntityColor, getValueOrUndefined} from '../cesiumutils';
+import {getEntityColor, getValueOrUndefined} from '../geoblocks/cesium-helpers/cesiumutils';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
-import type {CesiumDraw} from '../draw/CesiumDraw';
+import type {CesiumDraw} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
 import {COLORS_WITH_BLACK_TICK, GEOMETRY_COLORS, GEOMETRY_DATASOURCE_NAME, POINT_SYMBOLS} from '../constants';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';

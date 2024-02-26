@@ -1,5 +1,5 @@
 import {BehaviorSubject} from 'rxjs';
-import type {CesiumDraw} from '../draw/CesiumDraw';
+import type {CesiumDraw} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
 
 export default class DrawStore {
   private static drawSubject = new BehaviorSubject<CesiumDraw | undefined>(undefined);

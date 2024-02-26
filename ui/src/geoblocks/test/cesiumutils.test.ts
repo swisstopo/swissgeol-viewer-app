@@ -1,6 +1,6 @@
 import {Cartographic} from 'cesium';
 import assert from 'assert';
-import {pointInPolygon} from '../cesiumutils';
+import {pointInPolygon} from '../cesium-helpers/cesiumutils';
 
 describe('cesiumutils', () => {
   it('pointInPolygon', () => {

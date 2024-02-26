@@ -10,14 +10,13 @@ import {
   Transforms,
 } from 'cesium';
 import {
-  getDirectionFromPoints,
-  pickCenter,
-  projectPointOntoVector,
-} from '../cesiumutils';
+    getDirectionFromPoints,
+    pickCenter,
+    projectPointOntoVector, rectanglify,
+} from '../geoblocks/cesium-helpers/cesiumutils';
 import {SLICING_BOX_HEIGHT, SLICING_BOX_LOWER_LIMIT, SLICING_BOX_MIN_SIZE} from '../constants';
 import {getPercent, interpolateBetweenNumbers} from '../utils';
 import type {Quaternion, Cesium3DTileset} from 'cesium';
-import {rectanglify} from '../draw/helpers';
 
 
 export interface BBox {

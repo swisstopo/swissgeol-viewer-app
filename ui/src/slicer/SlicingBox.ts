@@ -31,7 +31,7 @@ import {
   planeFromTwoPoints,
   projectPointOnSegment,
   updateHeightForCartesianPositions
-} from '../cesiumutils';
+} from '../geoblocks/cesium-helpers/cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
 import type {Entity, Viewer, DataSource, Cesium3DTileset} from 'cesium';
 

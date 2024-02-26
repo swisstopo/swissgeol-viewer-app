@@ -4,7 +4,7 @@ import {customElement, property, query, state} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {Cartesian3, JulianDate, Math as CesiumMath} from 'cesium';
-import {getValueOrUndefined} from '../cesiumutils';
+import {getValueOrUndefined} from '../geoblocks/cesium-helpers/cesiumutils';
 import {updateBoreholeHeights} from './helpers';
 import MainStore from '../store/main';
 import type {Entity, Viewer} from 'cesium';

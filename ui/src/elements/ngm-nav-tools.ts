@@ -27,7 +27,7 @@ import {
   pickCenterOnMapOrObject,
   positionFromPxDistance,
   updateHeightForCartesianPositions
-} from '../cesiumutils';
+} from '../geoblocks/cesium-helpers/cesiumutils';
 import {showSnackbarError} from '../notifications';
 import i18next from 'i18next';
 import {debounce} from '../utils';

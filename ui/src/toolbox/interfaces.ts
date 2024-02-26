@@ -42,3 +42,18 @@ export interface NgmGeometry {
   editable?: boolean;
   copyable?: boolean;
 }
+
+export type SegmentInfo = {
+  length: number,
+  eastingDiff: number,
+  northingDiff: number,
+  heightDiff: number
+};
+
+export type LineInfo = {
+  length: number,
+  numberOfSegments: number,
+  segments: SegmentInfo[],
+  type: GeometryTypes,
+  drawInProgress: boolean
+}

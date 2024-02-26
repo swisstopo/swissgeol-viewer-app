@@ -6,20 +6,23 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import DrawStore from '../store/draw';
 import MainStore from '../store/main';
 import MeasureTool from '../measure/MeasureTool';
-import {DrawInfo} from '../draw/CesiumDraw';
+import {DrawInfo} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
 import {DEFAULT_AOI_COLOR, GEOMETRY_LINE_ALPHA, HIGHLIGHTED_GEOMETRY_COLOR} from '../constants';
 import './ngm-line-info';
+import {LineInfo, SegmentInfo} from './interfaces';
+import {getSegmentsInfo} from './helpers';
 
 @customElement('ngm-measure')
 export class NgmMeasure extends LitElementI18n {
     @state()
     accessor active = false;
     @state()
-    accessor lineInfo: DrawInfo | undefined;
+    accessor lineInfo: LineInfo | undefined;
     private measure: MeasureTool | undefined;
     private integerFormat = new Intl.NumberFormat('de-CH', {
         maximumFractionDigits: 1
     });
+    private segments: SegmentInfo[] = [];
 
     constructor() {
         super();
@@ -32,7 +35,10 @@ export class NgmMeasure extends LitElementI18n {
             this.measure.draw.addEventListener('drawinfo', (event) => {
                 const info: DrawInfo = (<CustomEvent>event).detail;
                 if (info.type === 'line') {
-                    this.lineInfo = info;
+                    if (this.segments.length !== info.distances.length) {
+                        this.segments = getSegmentsInfo(info.points, info.distances);
+                    }
+                    this.lineInfo = {...info, segments: this.segments};
                 }
             });
         });

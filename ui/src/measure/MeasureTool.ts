@@ -7,8 +7,8 @@ import {
     ScreenSpaceEventType,
     Viewer
 } from 'cesium';
-import {CesiumDraw, DrawEndDetails} from '../draw/CesiumDraw';
-import {getDimensionLabel} from '../draw/helpers';
+import {CesiumDraw, DrawEndDetails} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
+import {getDimensionLabel} from '../geoblocks/cesium-helpers/draw/helpers';
 
 export type MeasureOptions = {
     pointSize: number;
@@ -50,7 +50,7 @@ export default class MeasureTool {
                 pixelSizeDefault: this.measureOptions.pointSize,
                 heightReference: HeightReference.NONE
             },
-            lineClampToGround: false
+            lineClampToGround: false,
         });
         this.draw.type = 'line';
         this.draw.addEventListener('drawend', (evt) => this.endMeasuring((<CustomEvent>evt).detail));

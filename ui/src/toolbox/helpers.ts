@@ -10,11 +10,12 @@ import {
   Cartographic,
   Color,
   EntityCollection} from 'cesium';
-import {extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions} from '../cesiumutils';
+import {extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions} from '../geoblocks/cesium-helpers/cesiumutils';
 import {calculateBoxHeight} from '../slicer/helper';
 import {saveAs} from 'file-saver';
 import {translated} from '../i18n';
-import type {GeometryTypes, NgmGeometry} from './interfaces';
+import type {GeometryTypes, NgmGeometry, SegmentInfo} from './interfaces';
+import {cartesianToLv95} from '../projection';
 
 const julianDate = new JulianDate();
 
@@ -235,4 +236,29 @@ export function pauseGeometryCollectionEvents(originalMethod: any, _context: any
     this.geometriesDataSource.entities.resumeEvents();
     return result;
   };
+}
+
+const sketchPoint1 = new Cartographic();
+const sketchPoint2 = new Cartographic();
+export function getSegmentsInfo(points: Cartesian3[], distances: number[]): SegmentInfo[] {
+  return distances.map((dist, indx) => {
+    let easting = 0;
+    let northing = 0;
+    let height = 0;
+    if (points[indx + 1]) {
+      const cartPosition1 = Cartographic.fromCartesian(points[indx], undefined, sketchPoint1);
+      const cartPosition2 = Cartographic.fromCartesian(points[indx + 1], undefined, sketchPoint2);
+      const lv95Position1 = cartesianToLv95(points[indx]);
+      const lv95Position2 = cartesianToLv95(points[indx + 1]);
+      easting = Math.abs(lv95Position2[0] - lv95Position1[0]) / 1000;
+      northing = Math.abs(lv95Position2[1] - lv95Position1[1]) / 1000;
+      height = Math.abs(cartPosition2.height - cartPosition1.height);
+    }
+    return {
+      length: dist,
+      eastingDiff: easting,
+      northingDiff: northing,
+      heightDiff: height,
+    };
+  });
 }

@@ -5,19 +5,19 @@ import {LitElementI18n} from '../i18n.js';
 import {getSliceParam, syncSliceParam} from '../permalink';
 import 'fomantic-ui-css/components/checkbox';
 import ToolboxStore from '../store/toolbox';
-import {getMeasurements, isGeometryInViewport} from '../cesiumutils';
+import {getMeasurements, isGeometryInViewport} from '../geoblocks/cesium-helpers/cesiumutils';
 import type Slicer from '../slicer/Slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
 import type SlicingBox from '../slicer/SlicingBox';
 import type {BBox} from '../slicer/helper';
 import type {Cartesian3, CustomDataSource} from 'cesium';
-import type {NgmGeometry} from './interfaces';
-import {flyToGeom, hideVolume, updateEntityVolume} from './helpers';
+import {LineInfo, NgmGeometry, SegmentInfo} from './interfaces';
+import {flyToGeom, getSegmentsInfo, hideVolume, updateEntityVolume} from './helpers';
 import MainStore from '../store/main';
 import {skip} from 'rxjs';
 import DrawStore from '../store/draw';
 import NavToolsStore from '../store/navTools';
-import {DrawInfo} from '../draw/CesiumDraw';
+import {DrawInfo} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
 import './ngm-line-info';
 
 @customElement('ngm-slicer')
@@ -37,9 +37,10 @@ export class NgmSlicer extends LitElementI18n {
   @state()
   accessor editingEnabled = false;
   @state()
-  accessor lineInfo: DrawInfo | undefined;
+  accessor lineInfo: LineInfo | undefined;
   private sliceGeomId: string | undefined;
   private sliceInfo: { slicePoints: Cartesian3[], height?: number, lowerLimit?: number } | undefined;
+  private segments: SegmentInfo[] = [];
 
 
   constructor() {
@@ -54,7 +55,10 @@ export class NgmSlicer extends LitElementI18n {
       this.slicer.draw.addEventListener('drawinfo', (event) => {
         const info: DrawInfo = (<CustomEvent>event).detail;
         if (info.type === 'line') {
-          this.lineInfo = info;
+          if (this.segments.length !== info.distances.length) {
+            this.segments = getSegmentsInfo(info.points, info.distances);
+          }
+          this.lineInfo = {...info, segments: this.segments};
         }
       });
       this.syncSlice();

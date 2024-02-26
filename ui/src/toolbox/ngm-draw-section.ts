@@ -5,11 +5,12 @@ import {html} from 'lit';
 import i18next from 'i18next';
 import {classMap} from 'lit-html/directives/class-map.js';
 import ToolboxStore from '../store/toolbox';
-import type {GeometryTypes} from './interfaces';
+import {GeometryTypes, LineInfo, SegmentInfo} from './interfaces';
 import {clickOnElement} from '../utils';
 import DrawStore from '../store/draw';
-import {CesiumDraw, DrawInfo} from '../draw/CesiumDraw';
+import {CesiumDraw, DrawInfo} from '../geoblocks/cesium-helpers/draw/CesiumDraw';
 import './ngm-line-info';
+import {getSegmentsInfo} from './helpers';
 
 const fileUploadInputId = 'fileUpload';
 
@@ -23,7 +24,7 @@ export class NgmDrawSection extends LitElementI18n {
   @property({type: Boolean})
   accessor hidden = true;
   @state()
-  accessor lineInfo: DrawInfo | undefined;
+  accessor lineInfo: LineInfo | undefined;
   private draw: CesiumDraw | undefined;
   private drawGeometries = [
     {label: () => i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},
@@ -32,6 +33,7 @@ export class NgmDrawSection extends LitElementI18n {
     {label: () => i18next.t('tbx_add_rect_area_btn_label'), type: 'rectangle', icon: 'ngm-rectangle-draw-icon'},
   ];
   private shownDrawTypes = this.drawGeometries;
+  private segments: SegmentInfo[] = [];
 
 
   constructor() {
@@ -42,7 +44,10 @@ export class NgmDrawSection extends LitElementI18n {
         draw.addEventListener('drawinfo', (event) => {
           const info: DrawInfo = (<CustomEvent>event).detail;
           if (info.type === 'line') {
-            this.lineInfo = info;
+            if (this.segments.length !== info.distances.length) {
+              this.segments = getSegmentsInfo(info.points, info.distances);
+            }
+            this.lineInfo = {...info, segments: this.segments};
           }
         });
         draw.addEventListener('statechanged', () => this.requestUpdate());

@@ -2,7 +2,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 
 import {LitElementI18n} from '../i18n.js';
-import {updateHeightForCartesianPositions} from '../cesiumutils';
+import {updateHeightForCartesianPositions} from '../geoblocks/cesium-helpers/cesiumutils';
 
 import {Math as CesiumMath, Cartesian3} from 'cesium';
 import {styleMap} from 'lit/directives/style-map.js';
