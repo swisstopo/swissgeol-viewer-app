@@ -9,7 +9,6 @@ import {
   CornerType,
   VoxelPrimitive,
 } from 'cesium';
-import {executeForAllPrimitives} from '../utils';
 import SlicerArrows from './SlicerArrows';
 import type {BBox} from './helper';
 import {
@@ -20,20 +19,23 @@ import {
   moveSlicingBoxCorners
 } from './helper';
 import {
+  executeForAllPrimitives,
+  pickCenterOnEllipsoid,
+  planeFromTwoPoints,
+  projectPointOnSegment,
+  updateHeightForCartesianPositions
+} from '../cesiumutils';
+import SlicingToolBase from './SlicingToolBase';
+import type {Entity, Viewer, DataSource, Cesium3DTileset} from 'cesium';
+
+// todo
+import {
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
   SLICE_BOX_ARROWS_INSIDE,
   SLICE_BOX_ARROWS_OUTSIDE,
   SLICING_BOX_MIN_SIZE,
   SLICING_GEOMETRY_COLOR
-} from '../constants';
-import {
-  pickCenterOnEllipsoid,
-  planeFromTwoPoints,
-  projectPointOnSegment,
-  updateHeightForCartesianPositions
-} from '../geoblocks/cesium-helpers/cesiumutils';
-import SlicingToolBase from './SlicingToolBase';
-import type {Entity, Viewer, DataSource, Cesium3DTileset} from 'cesium';
+} from '../../../constants';
 
 export interface SlicingBoxOptions {
   type: 'box' | 'view-box' | undefined,

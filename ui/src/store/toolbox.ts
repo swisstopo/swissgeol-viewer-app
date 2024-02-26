@@ -1,5 +1,5 @@
 import {BehaviorSubject, Subject} from 'rxjs';
-import type Slicer from '../slicer/Slicer';
+import type Slicer from '../geoblocks/cesium-helpers/slicer/Slicer';
 import type {GeometryTypes, NgmGeometry} from '../toolbox/interfaces';
 
 export interface OpenedGeometryOptions {

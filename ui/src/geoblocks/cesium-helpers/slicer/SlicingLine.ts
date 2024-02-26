@@ -1,5 +1,4 @@
-import {getOrthogonalViewPoints, planeFromTwoPoints} from '../geoblocks/cesium-helpers/cesiumutils';
-import {executeForAllPrimitives} from '../utils';
+import {executeForAllPrimitives, getOrthogonalViewPoints, planeFromTwoPoints} from '../cesiumutils';
 import {createClippingPlanes, createCPCModelMatrixFromSphere, getClippingPlaneFromSegmentWithTricks} from './helper';
 import SlicingToolBase from './SlicingToolBase';
 import {

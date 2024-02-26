@@ -10,11 +10,13 @@ import {
   ScreenSpaceEventHandler,
 
 } from 'cesium';
-import {DEFAULT_CONFIG_FOR_SLICING_ARROW, SLICING_GEOMETRY_COLOR} from '../constants';
-import {getDirectionFromPoints, updateHeightForCartesianPositions} from '../geoblocks/cesium-helpers/cesiumutils';
+import {getDirectionFromPoints, updateHeightForCartesianPositions} from '../cesiumutils';
 import type {Viewer, DataSource, ColorBlendMode, Quaternion, ShadowMode} from 'cesium';
 import type {BBox} from './helper';
-import {debounce} from '../utils';
+
+// todo
+import {debounce} from '../../../utils';
+import {DEFAULT_CONFIG_FOR_SLICING_ARROW, SLICING_GEOMETRY_COLOR} from '../../../constants';
 
 interface ArrowListItem {
   // arrow position label
@@ -56,7 +58,7 @@ export interface SlicerArrowOptions {
   bbox: BBox
 }
 
-
+// todo fix types
 export default class SlicerArrows {
   viewer!: Viewer;
   dataSource!: DataSource;
@@ -94,7 +96,7 @@ export default class SlicerArrows {
    * @param {DataSource} dataSource - dataSource to store entities
    * @param {SlicerArrowOptions} options
    */
-  constructor(viewer, dataSource, options) {
+  constructor(viewer: Viewer, dataSource: DataSource, options: SlicerArrowOptions) {
     this.viewer = viewer;
     this.dataSource = dataSource;
     this.moveCallback = options.moveCallback;

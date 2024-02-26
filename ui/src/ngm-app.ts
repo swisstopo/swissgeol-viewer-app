@@ -39,7 +39,7 @@ import {
   syncStoredView
 } from './permalink';
 import i18next from 'i18next';
-import Slicer from './slicer/Slicer';
+import Slicer from './geoblocks/cesium-helpers/slicer/Slicer';
 
 import {setupI18n} from './i18n.js';
 import QueryManager from './query/QueryManager';
@@ -185,6 +185,11 @@ export class NgmApp extends LitElementI18n {
       });
     }
     this.slicer_ = new Slicer(viewer);
+    this.slicer_.draw.addEventListener('drawerror', evt => {
+      if (this.slicer_?.draw.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
+        showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
+      }
+    });
     ToolboxStore.setSlicer(this.slicer_);
 
     // setup web components

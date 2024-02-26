@@ -19,17 +19,6 @@ export function escapeRegExp(string: string) {
   return string ? string.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&') : string;
 }
 
-export function executeForAllPrimitives(viewer: Viewer, functionToExecute: (primitive: any) => void) {
-  const primitives = viewer.scene.primitives;
-  for (let i = 0, ii = primitives.length; i < ii; i++) {
-    const primitive = primitives.get(i);
-    if (primitive.ready || !primitive.readyPromise)
-      functionToExecute(primitive);
-    else
-      primitive.readyPromise.then(() => functionToExecute(primitive));
-  }
-}
-
 export function areBboxIntersecting(b1: number[], b2: number[]): boolean {
   /**
    * Instead of relying on bboxes, we could check for the inclusion and
@@ -100,16 +89,6 @@ export function parseJson(string: string | null): Record<string, any> | undefine
   } catch (e) {
     return undefined;
   }
-}
-
-export function interpolateBetweenNumbers(min: number, max: number, percent: number): number {
-  const diff = max - min;
-  return min + ((percent / 100) * diff);
-}
-
-export function getPercent(min: number, max: number, value: number): number {
-  const diff = max - min;
-  return value / diff * 100;
 }
 
 export async function zoomTo(viewer: Viewer, config): Promise<void> {

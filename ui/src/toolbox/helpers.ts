@@ -11,7 +11,7 @@ import {
   Color,
   EntityCollection} from 'cesium';
 import {extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions} from '../geoblocks/cesium-helpers/cesiumutils';
-import {calculateBoxHeight} from '../slicer/helper';
+import {calculateBoxHeight} from '../geoblocks/cesium-helpers/slicer/helper';
 import {saveAs} from 'file-saver';
 import {translated} from '../i18n';
 import type {GeometryTypes, NgmGeometry, SegmentInfo} from './interfaces';

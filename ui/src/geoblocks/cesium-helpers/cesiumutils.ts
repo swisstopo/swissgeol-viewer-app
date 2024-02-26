@@ -562,3 +562,14 @@ export function rectanglify(coordinates: Cartesian3[]) {
     return coordinates;
   }
 }
+
+export function executeForAllPrimitives(viewer: Viewer, functionToExecute: (primitive: any) => void) {
+  const primitives = viewer.scene.primitives;
+  for (let i = 0, ii = primitives.length; i < ii; i++) {
+    const primitive = primitives.get(i);
+    if (primitive.ready || !primitive.readyPromise)
+      functionToExecute(primitive);
+    else
+      primitive.readyPromise.then(() => functionToExecute(primitive));
+  }
+}
