@@ -60,8 +60,12 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: La
     provider: provider,
   });
 
+  const searchParams = new URLSearchParams(location.search);
+  const stepSize = parseFloat(searchParams.get('stepSize') || '1');
+  console.log('using stepSize:', stepSize);
+
   primitive.nearestSampling = true;
-  primitive.stepSize = 0.37;
+  primitive.stepSize = stepSize;
   primitive.depthTest = true;
   primitive.show = !!config.visible;
   primitive.pickable = config.pickable !== undefined ? config.pickable : false;
