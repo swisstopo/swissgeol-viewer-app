@@ -480,12 +480,14 @@ export class GeometryController {
       entityAttrs.properties!.swissforagesId = attributes.swissforagesId;
       attributes.depth = attributes.depth || 400;
       entityAttrs.properties!.depth = attributes.depth;
+      attributes.diameter = attributes.diameter || 40;
+      entityAttrs.properties!.diameter = attributes.diameter;
       const height = Cartographic.fromCartesian(entityAttrs.position).height;
       entityAttrs.ellipse = {
         show: !!attributes.swissforagesId || !!attributes.volumeShowed,
         material: Color.GREY,
-        semiMinorAxis: 40.0,
-        semiMajorAxis: 40.0,
+        semiMinorAxis: attributes.diameter,
+        semiMajorAxis: attributes.diameter,
         extrudedHeight: height,
         height: height - attributes.depth,
         heightReference: HeightReference.RELATIVE_TO_GROUND,

@@ -282,6 +282,7 @@
   "tbx_no_data_to_download_warning": "Rien à télécharger",
   "tbx_open_slicing_tool": "Cliquer ici pour ouvrir le découpage et l'enregistrer dans vos géométries.",
   "tbx_point_depth_label": "Profondeur (m BGL)",
+  "tbx_point_diameter_label": "",
   "tbx_profile": "Profil",
   "tbx_profile_btn": "Montrer le profil",
   "tbx_project_geometries": "Projet",

@@ -163,6 +163,12 @@ export class NgmGeometryInfo extends LitElementI18n {
             <div class="ngm-geom-info-value">${geom.depth?.toFixed(1) || '-'} m</div>
           </div>
         </div>
+        <div ?hidden=${!geom.volumeShowed} class="ngm-geom-limits">
+          <div ?hidden=${geom.type !== 'point'}>
+            <div class="ngm-geom-info-label">${i18next.t('tbx_point_diameter_label')}</div>
+            <div class="ngm-geom-info-value">${geom.diameter?.toFixed(1) || '-'} m</div>
+          </div>
+        </div>
         <div ?hidden=${geom.type === 'point' || geom.type === 'line'}>
           <div class="ngm-geom-info-label">${i18next.t('obj_info_area_label')}</div>
           <div class="ngm-geom-info-value">${geom.area || '-'} km²</div>

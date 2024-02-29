@@ -39,6 +39,7 @@ export interface NgmGeometry {
   volumeHeightLimits?: { lowerLimit: number, height: number };
   swissforagesId?: string;
   depth?: number;
+  diameter?: number;
   editable?: boolean;
   copyable?: boolean;
 }

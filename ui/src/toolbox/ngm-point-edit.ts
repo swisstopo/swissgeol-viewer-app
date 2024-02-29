@@ -3,7 +3,7 @@ import {html} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
-import {Cartesian3, JulianDate, Math as CesiumMath} from 'cesium';
+import {Cartesian3, ConstantProperty, JulianDate, Math as CesiumMath} from 'cesium';
 import {getValueOrUndefined} from '../cesiumutils';
 import {updateBoreholeHeights} from './helpers';
 import MainStore from '../store/main';
@@ -58,6 +58,10 @@ export class NgmPointEdit extends LitElementI18n {
         this.heightValue = Number(coords[2].toFixed(1));
       }
     }
+    if (!getValueOrUndefined(this.entity?.properties?.diameter) && this.entity?.ellipse?.semiMajorAxis) {
+      const diameter = this.entity.ellipse.semiMajorAxis.getValue(this.julianDate);
+      this.entity.properties!.diameter = new ConstantProperty(diameter);
+    }
   }
 
   onPositionChange() {
@@ -86,6 +90,15 @@ export class NgmPointEdit extends LitElementI18n {
     if (!this.entity) return;
     this.entity.properties!.depth = Number(event.target.value);
     updateBoreholeHeights(this.entity, this.julianDate);
+  }
+
+  onDiameterChange(event) {
+    if (!this.entity?.ellipse) return;
+    const diameter = Number(event.target.value);
+    this.entity.properties!.diameter = diameter;
+    const diameterProp = new ConstantProperty(diameter);
+    this.entity.ellipse.semiMajorAxis = diameterProp;
+    this.entity.ellipse.semiMinorAxis = diameterProp;
   }
 
   render() {
@@ -130,6 +143,11 @@ export class NgmPointEdit extends LitElementI18n {
           <input type="number" step="0.1" .value=${parseFloat(getValueOrUndefined(this.entity?.properties!.depth)).toFixed(1)}
                  @change="${this.onDepthChange}" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_point_depth_label')}</span>
+        </div>
+        <div class="ngm-input" ?hidden=${!getValueOrUndefined(this.entity?.properties!.volumeShowed)}>
+          <input type="number" step="0.1" .value=${parseFloat(getValueOrUndefined(this.entity?.properties!.diameter)).toFixed(1)}
+                 @change="${this.onDiameterChange}" placeholder="required"/>
+          <span class="ngm-floating-label">${i18next.t('tbx_point_diameter_label')}</span>
         </div>
       </div>
     `;
