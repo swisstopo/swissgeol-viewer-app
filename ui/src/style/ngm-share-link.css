@@ -15,11 +15,45 @@ ngm-share-link > div {
 }
 
 ngm-share-link .ui.button.ngm-action-btn {
-  width: 150px;
+  width: 222px;
   justify-content: center;
   margin-bottom: 13px;
 }
 
+ngm-share-link .ngm-input,
 ngm-share-link .ngm-input input {
-  width: 222px;
+  width: 430px;
+}
+
+.ngm-copy-icon-btn {
+  background-color: white;
+  right: 0;
+  top: 10px;
+  position: absolute;
+  cursor: pointer;
+  border: 0;
+}
+
+.ngm-copy-icon-btn.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+.ngm-copy-icon-btn.disabled .ngm-copy-icon {
+  opacity: 0.5;
+}
+
+.ngm-copy-icon-btn:hover .ngm-copy-icon {
+  background-color: var(--ngm-interaction-hover);
+}
+
+.ngm-copy-icon-btn .ngm-copy-icon {
+  padding: 20px 30px;
+}
+
+@media (max-height: 629px), (max-width: 599px)  {
+  ngm-share-link .ngm-input,
+  ngm-share-link .ngm-input input {
+    width: 100%;
+  }
 }
