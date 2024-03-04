@@ -30,7 +30,7 @@ plugins = [
   ['@babel/plugin-transform-class-static-block'],
   ['@babel/plugin-syntax-dynamic-import'],
   ['@babel/plugin-transform-typescript', {allowDeclareFields: true}],
-  ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, version: "2023-05"}],
+  ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, version: '2023-05'}],
   ['@babel/plugin-proposal-class-properties'],
 ];
 
@@ -111,19 +111,21 @@ export default {
     static: {
       directory: join(__dirname, 'dist'),
     },
-    proxy: [{
-      '/api': {
-           target: 'http://api:3000',
-           logLevel: 'debug'
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://api:3000',
+        logLevel: 'debug',
       },
-      '/abbr': {
+      {
+        context: ['/abbr'],
         target: 'http://abbreviator:8080',
         pathRewrite: {
           '^/abbr': ''
         },
         logLevel: 'debug'
       }
-   }],
+    ],
     compress: true,
     port: 8000,
 

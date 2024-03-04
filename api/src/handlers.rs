@@ -104,6 +104,7 @@ pub struct Geometry {
     volumeHeightLimits: Option<GeometryVolumeHeightLimits>,
     swissforagesId: Option<String>,
     depth: Option<Number>,
+    diameter: Option<Number>,
     editable: Option<bool>,
     copyable: Option<bool>,
 }

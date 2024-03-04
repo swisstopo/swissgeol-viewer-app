@@ -78,7 +78,8 @@ export class NgmGeometryEdit extends LitElementI18n {
       this.selectedSymbol = getValueOrUndefined(this.editingEntity.billboard?.image);
       this.name = this.editingEntity.name || '';
       this.draw = DrawStore.drawValue;
-      this.unsubscribeFromChanges = this.entity.properties!.definitionChanged.addEventListener(properties => this.onEntityPropertyChange(properties));
+      this.unsubscribeFromChanges = this.entity.properties!.definitionChanged.addEventListener(properties =>
+          this.onEntityPropertyChange(properties));
       if (this.draw) {
         this.cancelDraw();
         this.draw.entityForEdit = this.editingEntity;
@@ -159,7 +160,7 @@ export class NgmGeometryEdit extends LitElementI18n {
         this.entity.position = <any> this.editingEntity.position?.getValue(this.julianDate);
         this.entity.billboard.color = this.editingEntity.billboard!.color;
         this.entity.billboard.image = this.editingEntity.billboard!.image;
-        if (this.editingEntity.properties!.volumeShowed) {
+        if (getValueOrUndefined(this.editingEntity.properties!.volumeShowed)) {
           updateEntityVolume(this.entity!, this.viewer!.scene.globe);
         }
       } else if (this.entity.polyline) {

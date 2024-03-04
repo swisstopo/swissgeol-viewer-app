@@ -1,5 +1,5 @@
 import {CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_VOLUME_HEIGHT_LIMITS} from '../constants';
-import type {Entity, exportKmlResultKml, Globe, Scene} from 'cesium';
+import {ConstantProperty, Entity, exportKmlResultKml, Globe, Scene} from 'cesium';
 import {
   BoundingSphere,
   exportKml,
@@ -34,8 +34,8 @@ export function updateBoreholeHeights(entity: Entity, date: JulianDate) {
     const position = entity.position.getValue(date);
     if (!position) return;
     const height = Cartographic.fromCartesian(position).height;
-    entity.ellipse.extrudedHeight = <any>height;
-    entity.ellipse.height = <any>(height - depth);
+    entity.ellipse.extrudedHeight = new ConstantProperty(height);
+    entity.ellipse.height = new ConstantProperty(height - depth);
   }
 }
 
@@ -98,8 +98,10 @@ export function updateEntityVolume(entity: Entity, globe: Globe) {
   }
 
   if (type === 'point') {
-    entity.ellipse!.show = <any>true;
+    entity.ellipse!.show = new ConstantProperty(true);
     updateBoreholeHeights(entity, julianDate);
+    entity.ellipse!.semiMajorAxis = entity.properties.diameter;
+    entity.ellipse!.semiMinorAxis = entity.properties.diameter;
   } else {
     updateVolumePositions(entity, positions, globe);
     entity.polylineVolume!.show = <any>true;

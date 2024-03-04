@@ -1,4 +1,5 @@
 import {JulianDate} from 'cesium';
+import {getValueOrUndefined} from '../cesiumutils';
 
 export function extractPrimitiveAttributes(primitive): [string, number][] {
   const data: [string, number][] = [];
@@ -23,7 +24,7 @@ export function isPickable(object) {
   } else if (object.primitive && object.primitive.allowPicking !== undefined) {
     return object.primitive.allowPicking;
   } else {
-    return false;
+    return object.id && getValueOrUndefined(object.id.properties.type) === 'point';
   }
 }
 

@@ -196,6 +196,7 @@ export class NgmToolbox extends LitElementI18n {
         website: getValueOrUndefined(val.properties!.website),
         swissforagesId: getValueOrUndefined(val.properties!.swissforagesId),
         depth: getValueOrUndefined(val.properties!.depth),
+        diameter: getValueOrUndefined(val.properties!.diameter),
         showSlicingBox: getValueOrUndefined(val.properties!.showSlicingBox),
         editable: getValueOrUndefined(val.properties!.editable),
         copyable: getValueOrUndefined(val.properties!.copyable),
