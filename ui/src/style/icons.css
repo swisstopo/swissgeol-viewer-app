@@ -396,3 +396,11 @@
   -webkit-mask: url('./images/i_save.svg') no-repeat center;
   background-color: var(--ngm-interaction);
 }
+
+.ngm-copy-icon {
+  width: 24px;
+  height: 24px;
+  mask: url('./images/i_copy.svg') no-repeat center;
+  -webkit-mask: url('./images/i_copy.svg') no-repeat center;
+  background-color: var(--ngm-interaction);
+}

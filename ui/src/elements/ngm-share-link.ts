@@ -70,11 +70,9 @@ export class NgmShareLink extends LitElementI18n {
       <div class="ngm-input ${classMap({disabled: this.displayLoader})}">
         <input type="text" placeholder="required" readonly
                .value=${this.shortlink} />
+        <button class="ngm-copy-icon-btn ${classMap({disabled: this.displayLoader})}" @click=${this.onClick}><div class="ngm-copy-icon icon"></div></button>
         <span class="ngm-floating-label">${i18next.t('shortlink_link_label')}</span>
       </div>
-      <button class="ui button ngm-action-btn ${classMap({disabled: this.displayLoader})}" @click=${this.onClick}>
-        ${i18next.t('shortlink_copy_btn_label')}
-      </button>
       <a class="ui button ngm-action-btn ${classMap({disabled: this.displayLoader})}" target="_blank" href="mailto:?body=${this.shortlink}">
         ${i18next.t('shortlink_mailto_btn_label')}
       </a>

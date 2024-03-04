@@ -30,7 +30,7 @@ header.mobile-search-active {
 }
 
 .ngm-search-icon-mobile, .ngm-map-icon {
-  margin-right: 17px;
+  margin-right: 20px;
   background-color: var(--ngm-interaction);
   cursor: pointer;
 }
@@ -60,6 +60,6 @@ header.mobile-search-active {
 
 @media (max-width: 1193px) {
   .ngm-map-icon {
-    margin-right: 0;
+    margin-right: 10px;
   }
 }
