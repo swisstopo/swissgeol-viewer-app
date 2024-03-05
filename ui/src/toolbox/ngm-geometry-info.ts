@@ -230,7 +230,7 @@ export class NgmGeometryInfo extends LitElementI18n {
         <div class="ngm-divider"></div>
         ${this.editing ?
           html`
-            <ngm-geometry-edit .entity=${this.geomEntity}></ngm-geometry-edit>` :
+            <ngm-geometry-edit .entity=${this.geomEntity} .volumeShowed=${this.geometry.volumeShowed}></ngm-geometry-edit>` :
           this.infoTemplate
         }
       </div>

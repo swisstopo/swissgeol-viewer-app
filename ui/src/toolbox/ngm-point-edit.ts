@@ -18,6 +18,8 @@ import {styleMap} from 'lit/directives/style-map.js';
 export class NgmPointEdit extends LitElementI18n {
   @property({type: Object})
   accessor entity: Entity | undefined;
+  @property({type: Boolean})
+  accessor volumeShowed = false;
   xValue = 0;
   yValue = 0;
   heightValue = 0;
@@ -99,6 +101,7 @@ export class NgmPointEdit extends LitElementI18n {
     const diameterProp = new ConstantProperty(diameter);
     this.entity.ellipse.semiMajorAxis = diameterProp;
     this.entity.ellipse.semiMinorAxis = diameterProp;
+    this.viewer!.scene.requestRender();
   }
 
   render() {
@@ -139,12 +142,12 @@ export class NgmPointEdit extends LitElementI18n {
                  placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
-        <div class="ngm-input" ?hidden=${!getValueOrUndefined(this.entity?.properties!.volumeShowed)}>
+        <div class="ngm-input" ?hidden=${!this.volumeShowed}>
           <input type="number" step="0.1" .value=${parseFloat(getValueOrUndefined(this.entity?.properties!.depth)).toFixed(1)}
                  @change="${this.onDepthChange}" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_point_depth_label')}</span>
         </div>
-        <div class="ngm-input" ?hidden=${!getValueOrUndefined(this.entity?.properties!.volumeShowed)}>
+        <div class="ngm-input" ?hidden=${!this.volumeShowed}>
           <input type="number" step="0.1" .value=${parseFloat(getValueOrUndefined(this.entity?.properties!.diameter)).toFixed(1)}
                  @change="${this.onDiameterChange}" placeholder="required"/>
           <span class="ngm-floating-label">${i18next.t('tbx_point_diameter_label')}</span>
