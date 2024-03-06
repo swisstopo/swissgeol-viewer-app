@@ -26,6 +26,8 @@ import {skip, take} from 'rxjs';
 export class NgmGeometryEdit extends LitElementI18n {
   @property({type: Object})
   accessor entity: Entity | undefined;
+  @property({type: Boolean})
+  accessor volumeShowed = false;
   @query('.ngm-lower-limit-input')
   accessor lowerLimitInput;
   @query('.ngm-height-input')
@@ -213,6 +215,7 @@ export class NgmGeometryEdit extends LitElementI18n {
     if (!this.editingEntity) return;
     if (this.editingEntity.billboard) {
       this.editingEntity.billboard.color = color;
+      this.viewer!.scene.requestRender();
       return;
     }
     color = color.withAlpha(0.3);
@@ -268,7 +271,7 @@ export class NgmGeometryEdit extends LitElementI18n {
         <span class="ngm-floating-label">${i18next.t('tbx_website_label')}</span>
       </div>
       <div class="ngm-geom-edit-double-input"
-           ?hidden=${!getValueOrUndefined(this.editingEntity!.properties!.volumeShowed) || type === 'point'}>
+           ?hidden=${!this.volumeShowed || type === 'point'}>
         <div class="ngm-input ${classMap({'ngm-input-warning': !this.validLowerLimit})}">
           <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit}
                  .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed(1)}
@@ -286,7 +289,7 @@ export class NgmGeometryEdit extends LitElementI18n {
           <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
       </div>
-      <ngm-point-edit ?hidden=${type !== 'point'} .entity=${this.editingEntity}></ngm-point-edit>
+      <ngm-point-edit ?hidden=${type !== 'point'} .entity=${this.editingEntity} .volumeShowed=${this.volumeShowed}></ngm-point-edit>
       <div>
         <div class="geom-styles-title">${i18next.t('tbx_styles_title')}</div>
         <div class="ngm-geom-colorpicker">

@@ -15,14 +15,14 @@ ngm-cursor-information .ngm-nci-value {
 
 .ngm-nci-position {
   width: 83px;
-  margin-right: 8px;
+  margin-right: 20px;
 }
 
 .ngm-nci-height {
   display: flex;
   flex-direction: column;
   white-space: nowrap;
-  width: 160px;
+  margin-right: 10px;
 }
 
 ngm-cursor-information > img {
