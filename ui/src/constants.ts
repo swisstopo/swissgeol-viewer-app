@@ -51,6 +51,7 @@ export const GEOMETRY_DATASOURCE_NAME = 'toolboxGeometry';
 export const NO_EDIT_GEOMETRY_DATASOURCE_NAME = 'noEditToolboxGeometry';
 
 export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Color());
+export const OBJECT_HIGHLIGHT_NORMALIZED_RGB = '0.702, 1.0, 0.188';
 export const SWISSTOPO_IT_HIGHLIGHT_COLOR = Color.fromCssColorString('#ff8000', new Color());
 export const OBJECT_ZOOMTO_RADIUS = 500;
 

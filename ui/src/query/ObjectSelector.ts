@@ -7,11 +7,12 @@ import {
 } from '../constants';
 import {
   extractEntitiesAttributes,
-  extractPrimitiveAttributes,
+  extractPrimitiveAttributes, extractVoxelAttributes,
   isPickable,
   sortPropertyNames
 } from './objectInformation';
-import type {Scene, Viewer} from 'cesium';
+import type {Cartesian2, Cartesian3, Scene, Viewer} from 'cesium';
+import {VoxelCell} from 'cesium';
 import {BoundingSphere, Color, ColorMaterialProperty, HeadingPitchRange} from 'cesium';
 import NavToolsStore from '../store/navTools';
 import type {QueryResult} from './types';
@@ -36,10 +37,15 @@ export default class ObjectSelector {
     this.scene = viewer.scene;
   }
 
-  getObjectAtPosition(position) {
+  getObjectAtPosition(position: Cartesian2) {
+    let object: any | VoxelCell | undefined;
+    object = this.scene.pickVoxel(position);
+    if (object) {
+      return object;
+    }
     const slicerDataSource = this.viewer.dataSources.getByName('slicer')[0];
     const objects = this.scene.drillPick(position, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
-    let object = objects[0];
+    object = objects[0];
     // selects second object if first is entity related to slicing box and next is not related to slicing box
     if (object && object.id && slicerDataSource.entities.contains(object.id)) {
       object = undefined;
@@ -50,7 +56,7 @@ export default class ObjectSelector {
     return object;
   }
 
-  pickAttributes(clickPosition, pickedPosition, object) {
+  pickAttributes(clickPosition: Cartesian2, pickedPosition: Cartesian3, object: any) {
     this.unhighlight();
     let attributes: QueryResult = {};
     if (!object) {
@@ -73,6 +79,9 @@ export default class ObjectSelector {
           });
         };
 
+        this.toggleTileHighlight(object);
+      } else if (object instanceof VoxelCell) {
+        attributes.properties = extractVoxelAttributes(object);
         this.toggleTileHighlight(object);
       } else if (object.id) {
         attributes = this.handleEntitySelect(object.id, attributes);
@@ -132,7 +141,14 @@ export default class ObjectSelector {
       this.selectedObj.color = this.savedColor;
       this.selectedObj = null;
     }
-    if (obj) {
+    if (!obj) return;
+    if (obj instanceof VoxelCell) {
+      const {customShader} = obj.primitive;
+      // todo remove when voxel picking released
+      // @ts-ignore
+      customShader.setUniform('u_selectedTile', obj.tileIndex);
+      customShader.setUniform('u_selectedSample', obj.sampleIndex);
+    } else {
       this.selectedObj = obj;
       this.savedColor = Color.clone(obj.color);
       this.selectedObj.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(obj.color.alpha);

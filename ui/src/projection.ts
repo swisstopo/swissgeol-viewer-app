@@ -44,3 +44,7 @@ export function formatCartographicAs2DLv95(carto: Cartographic): Array<string> {
 }
 
 export const radToDeg = rad => (Math.round(100000 * rad * 180 / Math.PI) / 100000).toFixed(5);
+
+export function formatCartesian3AsLv95(position: Cartesian3): Array<string> {
+  return cartesianToLv95(position).map((c: number) => Number(c.toFixed(1))).map(swissIntegerFormat.format);
+}

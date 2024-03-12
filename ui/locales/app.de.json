@@ -337,6 +337,7 @@
   "tracking_deny_btn_label": "Weiter ohne Datenerfassung",
   "tracking_text": "Damit wir unser Webangebot optimal auf Ihre Bedürfnisse ausrichten können, verwenden wir die Analysetools Google Analytics und Sentry. Dabei wird Ihr Verhalten auf der Website in anonymisierter Form erfasst. Es werden also keine personenbezogenen Daten übermittelt oder gespeichert. Wenn Sie damit nicht einverstanden sind, können Sie die Datenerfassung durch Analysetools unterbinden und diese Website trotzdem ohne Einschränkungen nutzen. Weitere Informationen dazu finden Sie auf unserer Seite <a target='_blank' href='legal/legal_de.html'>Rechtliches.</a>",
   "view": "Ansicht",
+  "vox_cell_center": "",
   "vox_filter_and": "AND",
   "vox_filter_apply": "Filter anwenden",
   "vox_filter_filtering_on": "Filtern von: ",
@@ -350,5 +351,6 @@
   "vox_filter_undefined_lithology": "Undefiniert",
   "vox_filter_unselect_all": "Alle abwählen",
   "vox_filter_xor": "XOR",
+  "vox_temperature": "Temperatur (°C)",
   "welcome_get_shortlink_error": "Es ist ein Fehler aufgetreten, so dass der Link konnte nicht erstellt werden konnte. Bitte proboieren Sie es zu einem späteren Zeitpunkt noch einmal."
 }

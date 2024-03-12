@@ -1,6 +1,6 @@
 import ObjectSelector from './ObjectSelector';
 import SwisstopoIdentify from './SwisstopoIdentify';
-import type {Cartesian2, Scene, Viewer} from 'cesium';
+import {Cartesian2, CustomDataSource, Scene, Viewer} from 'cesium';
 import {Cartesian3, Cartographic, Color, Entity, HeightReference, ScreenSpaceEventType} from 'cesium';
 import i18next from 'i18next';
 import {OBJECT_HIGHLIGHT_COLOR, SWISSTOPO_IT_HIGHLIGHT_COLOR} from '../constants';
@@ -19,7 +19,7 @@ export default class QueryManager {
   scene: Scene;
   enabled = true;
   highlightedEntity: Entity | undefined;
-  highlightedGroup: Entity[] = [];
+  highlightedGroup: CustomDataSource = new CustomDataSource('highlightedLayerAreas');
   searchableLayers: any[] = []; // todo type
 
   constructor(viewer) {
@@ -27,6 +27,7 @@ export default class QueryManager {
     this.viewer = viewer;
     this.scene = viewer.scene;
     viewer.screenSpaceEventHandler.setInputAction(click => this.onclick(click), ScreenSpaceEventType.LEFT_CLICK);
+    this.viewer.dataSources.add(this.highlightedGroup);
   }
 
   set activeLayers(layers) {
@@ -165,9 +166,8 @@ export default class QueryManager {
         entity.merge(createPolygon(coords));
       });
     }
-    this.viewer.entities.add(entity);
-    if (group) this.highlightedGroup.push(entity);
-    else this.highlightedEntity = entity;
+    this.highlightedGroup.entities.add(entity);
+    if (!group) this.highlightedEntity = entity;
     this.viewer.render();
   }
 
@@ -177,7 +177,7 @@ export default class QueryManager {
       return Cartesian3.fromDegrees(degCoords[0], degCoords[1]);
 
     });
-    const entity = this.viewer.entities.add({
+    const entity = new Entity({
       polyline: {
         positions: convertedCoords,
         material: group ? OBJECT_HIGHLIGHT_COLOR : SWISSTOPO_IT_HIGHLIGHT_COLOR,
@@ -185,15 +185,15 @@ export default class QueryManager {
         width: 4
       }
     });
-    if (group) this.highlightedGroup.push(entity);
-    else this.highlightedEntity = entity;
+    this.highlightedGroup.entities.add(entity);
+    if (!group) this.highlightedEntity = entity;
     this.viewer.render();
   }
 
   highlightPoint(coordinates, group = false) {
     const degCoords = lv95ToDegrees(coordinates[0]);
     const convertedCoords = Cartesian3.fromDegrees(degCoords[0], degCoords[1]);
-    const entity = this.viewer.entities.add({
+    const entity = new Entity({
       position: convertedCoords,
       point: {
         color: group ? OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7) : SWISSTOPO_IT_HIGHLIGHT_COLOR,
@@ -203,25 +203,21 @@ export default class QueryManager {
         outlineColor: Color.BLACK,
       }
     });
-    if (group) this.highlightedGroup.push(entity);
-    else this.highlightedEntity = entity;
+    this.highlightedGroup.entities.add(entity);
+    if (!group) this.highlightedEntity = entity;
     this.viewer.render();
   }
 
   unhighlightGroup() {
-    if (this.highlightedGroup?.length) {
-      this.highlightedGroup.forEach(e => this.viewer.entities.remove(e));
-      this.highlightedGroup = [];
-      this.scene.requestRender();
-    }
+    this.highlightedGroup.entities.removeAll();
+    this.scene.requestRender();
   }
 
   unhighlightEntity() {
-    if (this.highlightedEntity) {
-      this.viewer.entities.remove(this.highlightedEntity);
-      this.highlightedEntity = undefined;
-      this.scene.requestRender();
-    }
+    if (!this.highlightedEntity) return;
+    this.highlightedGroup.entities.remove(this.highlightedEntity);
+    this.highlightedEntity = undefined;
+    this.scene.requestRender();
   }
 
   async selectTile(feature) {
