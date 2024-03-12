@@ -378,8 +378,8 @@ export class NgmApp extends LitElementI18n {
     return html`
       <header class="${classMap({'mobile-search-active': this.showMobileSearch})}">
         <a id="ngm-home-link" href="" .hidden="${this.showMobileSearch}">
-          <img class="hidden-mobile" src="src/images/logo-CH.svg">
-          <img class="visible-mobile" src="src/images/logo-CH-small.svg">
+          <img class="hidden-mobile" src="src/images/logo_swissgeol_viewer.svg">
+          <img class="visible-mobile" src="src/images/logo-swissgeol_favicon_viewer.svg">
           <div class="logo-text visible-mobile">swissgeol</div>
         </a>
         <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,additionalSource,layer, feature"
