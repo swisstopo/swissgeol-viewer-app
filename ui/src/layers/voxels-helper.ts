@@ -1,4 +1,5 @@
 import {CustomShader, PixelFormat, TextureUniform, UniformType} from 'cesium';
+import {OBJECT_HIGHLIGHT_NORMALIZED_RGB} from '../constants';
 
 type ColorConfig = {
   image: Uint8Array,
@@ -69,7 +70,9 @@ function createCustomShader(config): CustomShader {
         vec3 voxelNormal = czm_normal * fsInput.voxel.surfaceNormal;
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
-        if (u_us_color_index) {
+        if (fsInput.voxel.tileIndex == u_selectedTile && fsInput.voxel.sampleIndex == u_selectedSample) {
+          material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}) * lighting;
+        } else if (u_us_color_index) {
           float textureX = (float(lithologyIndex) / float(lithology_length)) + (lithologyPixelWidth / 2.0);
           material.diffuse = texture(u_colorRamp, vec2(textureX, 0.5)).rgb * lighting;
         } else if (value == u_undefined_data) {
@@ -140,7 +143,15 @@ function createCustomShader(config): CustomShader {
       u_filter_selected_lithology: {
         type: UniformType.SAMPLER_2D,
         value: createLithologyIncludeUniform(Array(lithology.length).fill(1))
-      }
+      },
+      u_selectedTile: {
+        type: UniformType.INT,
+        value: -1.0,
+      },
+      u_selectedSample: {
+        type: UniformType.INT,
+        value: -1.0,
+      },
     },
   });
 }
@@ -156,9 +167,14 @@ function createSimpleCustomShader(config): CustomShader {
         vec3 voxelNormal = czm_normal * fsInput.voxel.surfaceNormal;
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
-        float lerp = (value - u_min) / (u_max - u_min);
-        material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb * lighting;
-        material.alpha = 1.0;
+        if (fsInput.voxel.tileIndex == u_selectedTile && fsInput.voxel.sampleIndex == u_selectedSample) {
+          material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}) * lighting;
+          material.alpha = 1.0;
+        } else {
+          float lerp = (value - u_min) / (u_max - u_min);
+          material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb * lighting;
+          material.alpha = 1.0;
+        }
       }
     }
   `;
@@ -198,6 +214,14 @@ function createSimpleCustomShader(config): CustomShader {
       u_noData: {
         type: UniformType.FLOAT,
         value: colors.noData,
+      },
+      u_selectedTile: {
+        type: UniformType.INT,
+        value: -1.0,
+      },
+      u_selectedSample: {
+        type: UniformType.INT,
+        value: -1.0,
       },
     },
   });

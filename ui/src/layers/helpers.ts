@@ -24,6 +24,14 @@ import type {Config} from './ngm-layers-item.js';
 import {getVoxelShader} from './voxels-helper';
 import MainStore from '../store/main';
 
+interface PickableCesium3DTileset extends Cesium3DTileset {
+  pickable?: boolean;
+}
+export interface PickableVoxelPrimitive extends VoxelPrimitive {
+  pickable?: boolean;
+  layer?: string;
+}
+
 export function createEarthquakeFromConfig(viewer: Viewer, config: Config) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer, config);
   if (config.visible) {
@@ -49,8 +57,7 @@ export function createIonGeoJSONFromConfig(viewer: Viewer, config) {
 export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Config, _): Promise<VoxelPrimitive> {
   const provider = await Cesium3DTilesVoxelProvider.fromUrl(config.url!);
 
-  const primitive = new VoxelPrimitive({
-    /** @ts-ignore */
+  const primitive: PickableVoxelPrimitive = new VoxelPrimitive({
     provider: provider,
   });
 
@@ -58,6 +65,8 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Co
   primitive.stepSize = 0.37;
   primitive.depthTest = true;
   primitive.show = !!config.visible;
+  primitive.pickable = config.pickable !== undefined ? config.pickable : false;
+  primitive.layer = config.layer;
 
   viewer.scene.primitives.add(primitive);
 
@@ -69,7 +78,7 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Co
     primitive.show = !!visible;
   };
 
-  if (!primitive.provider.names.includes(config.voxelDataName)) {
+  if (config.voxelDataName && !primitive.provider.names.includes(config.voxelDataName)) {
     throw new Error(`Voxel data name ${config.voxelDataName} not found in the tileset`);
   }
   primitive.customShader = getVoxelShader(config);
@@ -92,7 +101,7 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, 
     });
   }
 
-  const tileset = await Cesium3DTileset.fromUrl(resource, {
+  const tileset: PickableCesium3DTileset = await Cesium3DTileset.fromUrl(resource, {
     show: !!config.visible,
     backFaceCulling: false,
     maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
@@ -105,7 +114,7 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, 
     tileset.style = new Cesium3DTileStyle(config.style);
   }
 
-  (tileset as any).pickable = config.pickable !== undefined ? config.pickable : false;
+  tileset.pickable = config.pickable !== undefined ? config.pickable : false;
   viewer.scene.primitives.add(tileset);
 
   config.setVisibility = visible => {

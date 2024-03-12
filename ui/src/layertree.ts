@@ -45,6 +45,16 @@ export interface VoxelColors {
   colors: string[];
 }
 
+export type VoxelFilter = {
+  conductivityRange: [number, number],
+  lithologyDataName: string,
+  conductivityDataName: string,
+}
+
+export type IndexVoxelFilter = VoxelFilter & {
+  lithology: {index: number, label: string}[]
+}
+
 export enum LayerType {
   swisstopoWMTS = 'swisstopoWMTS',
   tiles3d = '3dtiles',
@@ -121,8 +131,7 @@ const EARTHQUAKES_PROP_ORDER = ['Time', 'Magnitude', 'Depthkm', 'EventLocationNa
 const voxelNoData = -99999;
 const voxelUndefinedData = -9999;
 
-
-const voxelFilter = {
+const voxelFilter: VoxelFilter = {
   conductivityRange: [-9, -1],
   lithologyDataName: 'Index',
   conductivityDataName: 'logk',
@@ -254,7 +263,7 @@ const birrIndexVoxelColors: VoxelColors = {
   ],
 };
 
-const birrIndexVoxelFilter = {
+const birrIndexVoxelFilter: IndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
     {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
@@ -356,7 +365,7 @@ const aaretalIndexVoxelColors: VoxelColors = {
   ],
 };
 
-const aaretalVoxelFilter = {
+const aaretalVoxelFilter: IndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
     {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
@@ -404,7 +413,7 @@ const genevaIndexVoxelColors: VoxelColors = {
 };
 
 
-const genevaIndexVoxelFilter = {
+const genevaIndexVoxelFilter: IndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
     {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
@@ -452,7 +461,7 @@ const vispIndexVoxelColors: VoxelColors = {
   ]
 };
 
-const vispIndexVoxelFilter = {
+const vispIndexVoxelFilter: IndexVoxelFilter = {
   ...voxelFilter,
   lithology: [
     {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
@@ -481,6 +490,16 @@ const vispIndexVoxelFilter = {
   ],
 };
 
+export const voxelLayerToFilter: Record<string, IndexVoxelFilter> = {
+  'voxel_birrfeld_litho': birrIndexVoxelFilter,
+  'voxel_birrfeld_logk': birrIndexVoxelFilter,
+  'voxel_aaretal_litho': aaretalVoxelFilter,
+  'voxel_aaretal_logk': aaretalVoxelFilter,
+  'voxel_geneva_litho': genevaIndexVoxelFilter,
+  'voxel_geneva_logk': genevaIndexVoxelFilter,
+  'voxel_visp_litho': vispIndexVoxelFilter,
+  'voxel_visp_logk': vispIndexVoxelFilter,
+};
 
 // Layers
 const geo_map_series: LayerTreeNode = {
@@ -652,7 +671,7 @@ const geo_energy: LayerTreeNode = {
           label: t('lyr_temperature_model_label'),
           layer: 'temperature_model',
           opacityDisabled: true,
-          pickable: false,
+          pickable: true,
           zoomToBbox: false,
           geocatId: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
         },
@@ -826,7 +845,7 @@ const subsurface: LayerTreeNode = {
           label: t('lyr_voxel_aaretal_litho_label'),
           layer: 'voxel_aaretal_litho',
           opacityDisabled: true,
-          pickable: false,
+          pickable: true,
           zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
           geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
@@ -840,7 +859,7 @@ const subsurface: LayerTreeNode = {
           label: t('lyr_voxel_aaretal_logk_label'),
           layer: 'voxel_aaretal_logk',
           opacityDisabled: true,
-          pickable: false,
+          pickable: true,
           zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
           geocatId: '9471ee1b-5811-489d-b050-612c011f9d57',
@@ -854,7 +873,7 @@ const subsurface: LayerTreeNode = {
           label: t('lyr_voxel_birrfeld_litho_label'),
           layer: 'voxel_birrfeld_litho',
           opacityDisabled: true,
-          pickable: false,
+          pickable: true,
           zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
           geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
@@ -868,7 +887,7 @@ const subsurface: LayerTreeNode = {
           label: t('lyr_voxel_birrfeld_logk_label'),
           layer: 'voxel_birrfeld_logk',
           opacityDisabled: true,
-          pickable: false,
+          pickable: true,
           zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
           geocatId: '96f923d6-a747-481b-a0d8-2cfec321170e',
@@ -882,7 +901,7 @@ const subsurface: LayerTreeNode = {
           label: t('lyr_voxel_geneva_litho_label'),
           layer: 'voxel_geneva_litho',
           opacityDisabled: true,
-          pickable: false,
+          pickable: true,
           zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
           geocatId: '697f4c99-ed1b-4901-bc87-3710fcce1352',
@@ -896,7 +915,7 @@ const subsurface: LayerTreeNode = {
           label: t('lyr_voxel_geneva_logk_label'),
           layer: 'voxel_geneva_logk',
           opacityDisabled: true,
-          pickable: false,
+          pickable: true,
           zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
           geocatId: '4a4a530f-6a2a-423d-834e-2831d70fde20',
@@ -910,7 +929,7 @@ const subsurface: LayerTreeNode = {
           label: t('lyr_voxel_visp_litho_label'),
           layer: 'voxel_visp_litho',
           opacityDisabled: true,
-          pickable: false,
+          pickable: true,
           zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
           geocatId: 'b621de46-2553-4fb2-88b4-f770e0243299',
@@ -924,7 +943,7 @@ const subsurface: LayerTreeNode = {
           label: t('lyr_voxel_visp_logk_label'),
           layer: 'voxel_visp_logk',
           opacityDisabled: true,
-          pickable: false,
+          pickable: true,
           zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
           geocatId: 'f7847c2c-bd3a-4dda-99c7-d50453b24c3d',

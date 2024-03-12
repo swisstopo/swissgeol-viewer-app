@@ -337,6 +337,7 @@
   "tracking_deny_btn_label": "Continue without data acquisition",
   "tracking_text": "To enable us to optimally tailor our website to your needs, we use the analysis tools Google Analytics and Sentry. Your behaviour on the website is recorded in anonymised form. No personal data is transmitted or stored. If you do not wish to consent to this, you can stop data collection by analysis tools and still use this website without restrictions. You can find more information about this on our <a target='_blank' href='legal/legal_en.html'>Legal framework page.</a>",
   "view": "View",
+  "vox_cell_center": "Cell center",
   "vox_filter_and": "AND",
   "vox_filter_apply": "Apply filter",
   "vox_filter_filtering_on": "Filtering on: ",
@@ -350,5 +351,6 @@
   "vox_filter_undefined_lithology": "Undefined",
   "vox_filter_unselect_all": "Unselect all",
   "vox_filter_xor": "XOR",
+  "vox_temperature": "Temperature (°C)",
   "welcome_get_shortlink_error": "An error occurred and the shortcut cannot be created, please try again later."
 }

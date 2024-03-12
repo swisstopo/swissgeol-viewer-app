@@ -76,7 +76,7 @@ export class NgmObjectInformation extends LitElementI18n {
               } else {
                 return html`
                   <tr class="top aligned">
-                    <td class="key">${i18next.t(`assets:${key}`)}</td>
+                    <td class="key">${key.includes(' ') ? key : i18next.t(`assets:${key}`)}</td>
                     <td class="value">${value}</td>
                   </tr>
                 `;
