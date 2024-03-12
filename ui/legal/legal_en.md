@@ -1,4 +1,4 @@
-﻿![logo](../src/images/logo_swissgeol_viewer.svg)
+﻿![logo](../src/images/swissgeol_viewer.svg)
 
 Legal framework
 ===============
