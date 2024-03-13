@@ -1,4 +1,4 @@
-![logo](../src/images/logo-CH.svg)
+![logo](../src/images/swissgeol_viewer.svg)
 
 Rechtliches
 ===========
