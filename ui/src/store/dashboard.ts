@@ -1,8 +1,7 @@
 import {BehaviorSubject, Subject} from 'rxjs';
 import type {Project, Topic} from '../elements/dashboard/ngm-dashboard';
 import {NgmGeometry} from '../toolbox/interfaces';
-import AuthStore from './auth';
-import {isProject} from '../elements/dashboard/helpers';
+import {isProjectOwnerOrEditor} from '../elements/dashboard/helpers';
 
 export type TopicParam = { topicId: string, viewId?: string | null }
 export type ProjectParam = { projectId: string, viewId?: string | null }
@@ -44,9 +43,7 @@ export default class DashboardStore {
   static setViewIndex(value: number | undefined): void {
     const projectOrTopic = this.selectedTopicOrProjectSubject.value;
     if (value !== undefined && projectOrTopic) {
-      const owner = isProject(projectOrTopic) && projectOrTopic.owner.email === AuthStore.userEmail;
-      const editor = isProject(projectOrTopic) && !!projectOrTopic.editors?.find(e => e.email === AuthStore.userEmail);
-      const mode = owner || editor ? 'viewEdit' : 'viewOnly';
+      const mode = isProjectOwnerOrEditor(projectOrTopic) ? 'viewEdit' : 'viewOnly';
       if (this.projectMode.value !== mode) this.setProjectMode(mode);
     } else {
       this.setProjectMode(undefined);
