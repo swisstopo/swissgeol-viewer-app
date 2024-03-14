@@ -109,6 +109,7 @@ export class LayerTreeItem extends LitElementI18n {
   }
 
   onRemove() {
+    if (this.changeOrderActive) return;
     this.dispatchEvent(new CustomEvent('removeDisplayedLayer'));
   }
 
@@ -200,7 +201,8 @@ export class LayerTreeItem extends LitElementI18n {
           ${i18next.t(this.config.label)} ${this.sublabel}
         </label>
         <label ?hidden=${this.config.opacityDisabled}>${(this.config.opacity! * 100).toFixed()} %</label>
-        <input type="range" class="ngm-slider" ?hidden=${this.config.opacityDisabled}
+        <input type="range" class="ngm-slider ${classMap({disabled: this.changeOrderActive})}" ?hidden=${this.config.opacityDisabled}
+               .disabled=${this.changeOrderActive}
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
                .value=${this.config.opacity?.toString() || '1'}
@@ -222,7 +224,7 @@ export class LayerTreeItem extends LitElementI18n {
              @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
         </div>
         <div title=${i18next.t('dtd_remove')}
-             class="ngm-layer-icon ngm-delete-icon"
+             class="ngm-layer-icon ngm-delete-icon ${classMap({disabled: this.changeOrderActive})}"
              @click=${this.onRemove}>
         </div>
         <div class="ui dropdown right pointing ngm-action-menu">
