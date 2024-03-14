@@ -25,6 +25,10 @@
   margin-left: 2px;
 }
 
+ngm-layers-item {
+  border-bottom: 2px solid #DFE2E6 !important;
+}
+
 ngm-layers-item .ngm-checkbox {
   width: 24px;
   height: 24px;
