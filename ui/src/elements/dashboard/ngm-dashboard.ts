@@ -30,7 +30,7 @@ import AuthStore from '../../store/auth';
 import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
-import {isProject} from './helpers';
+import {isProject, isProjectOwnerOrEditor} from './helpers';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -109,7 +109,7 @@ export class NgmDashboard extends LitElementI18n {
   @state()
   accessor selectedViewIndx: number | undefined;
   @state()
-  accessor projectMode: 'edit' | 'create' | 'view' = 'view';
+  accessor projectTabState: 'edit' | 'create' | 'view' = 'view';
   @state()
   accessor saveOrCancelWarning = false;
   @state()
@@ -202,7 +202,7 @@ export class NgmDashboard extends LitElementI18n {
     apiClient.refreshProjects();
 
     DashboardStore.onSaveOrCancelWarning.subscribe(show => {
-      if (this.projectMode !== 'view') {
+      if (this.projectTabState !== 'view') {
         this.saveOrCancelWarning = show;
       }
     });
@@ -370,18 +370,17 @@ export class NgmDashboard extends LitElementI18n {
       editors: [],
       viewers: [],
     };
-    this.projectMode = 'create';
+    this.projectTabState = 'create';
   }
 
   onProjectEdit() {
-    this.projectMode = 'edit';
+    this.projectTabState = 'edit';
   }
 
   async onProjectSave(project: Project | CreateProject) {
-    if (this.projectMode === 'edit' && isProject(project)) {
+    if (this.projectTabState === 'edit' && isProject(project)) {
       await apiClient.updateProject(project);
-      this.projectMode = 'view';
-    } else if (this.projectMode === 'create' && this.projectToCreate) {
+    } else if (this.projectTabState === 'create' && this.projectToCreate) {
       try {
         const response = await apiClient.createProject(project);
         const id = await response.json();
@@ -391,26 +390,29 @@ export class NgmDashboard extends LitElementI18n {
         console.error(e);
         showSnackbarError(i18next.t('dashboard_project_create_error'));
       }
-      this.projectMode = 'view';
       this.projectToCreate = undefined;
     }
     this.tempKmlDataSource.entities.removeAll();
     this.saveOrCancelWarning = false;
-    if (this.selectedViewIndx && this.selectedTopicOrProject?.assets) {
+    if (this.selectedViewIndx !== undefined) {
+      DashboardStore.setViewIndex(this.selectedViewIndx);
+      if (this.selectedTopicOrProject?.assets) {
         this.assets = await this.fetchAssets(this.selectedTopicOrProject.assets);
+      }
     }
+    this.projectTabState = 'view';
   }
 
   cancelEditCreate() {
       apiClient.refreshProjects();
-      this.projectMode = 'view';
+      this.projectTabState = 'view';
       this.saveOrCancelWarning = false;
       this.projectToCreate = undefined;
       this.tempKmlDataSource.entities.removeAll();
   }
 
   runIfNotEditCreate(callback: () => void) {
-    if (this.projectMode !== 'view') {
+    if (this.projectTabState !== 'view') {
       this.saveOrCancelWarning = true;
     } else {
       callback();
@@ -428,6 +430,14 @@ export class NgmDashboard extends LitElementI18n {
 
   get isProjectSelected() {
     return this.selectedTopicOrProject || this.projectToCreate;
+  }
+
+  get projectMode() {
+    let mode: 'viewEdit' | 'viewOnly' | undefined = undefined;
+    if (this.selectedViewIndx !== undefined && this.selectedTopicOrProject) {
+      mode = isProjectOwnerOrEditor(this.selectedTopicOrProject) ? 'viewEdit' : 'viewOnly';
+    }
+    return this.projectTabState !== 'view' ? 'edit' : mode;
   }
 
   previewTemplate(projOrTopic?: Topic | Project) {
@@ -482,8 +492,8 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   updated(changed: PropertyValues) {
-    if (changed.has('projectMode')) {
-      DashboardStore.setProjectMode(this.projectMode !== 'view' ? 'edit' : undefined);
+    if (changed.has('projectTabState')) {
+      DashboardStore.setProjectMode(this.projectMode);
     }
     if (
         (changed.has('hidden') || changed.has('activeTab') || changed.has('selectedTopicOrProject')) &&
@@ -571,11 +581,11 @@ export class NgmDashboard extends LitElementI18n {
           </div>
         </div>
         <div ?hidden=${!this.isProjectSelected}>
-          ${this.projectMode !== 'view' ?
+          ${this.projectTabState !== 'view' ?
               html`<ngm-project-edit 
-                     .project="${this.projectMode === 'create' ? this.projectToCreate : this.selectedTopicOrProject}" 
+                     .project="${this.projectTabState === 'create' ? this.projectToCreate : this.selectedTopicOrProject}" 
                      .saveOrCancelWarning="${this.saveOrCancelWarning}"
-                     .createMode="${this.projectMode === 'create'}"
+                     .createMode="${this.projectTabState === 'create'}"
                      .userEmail="${this.userEmail}"
                      .tempKmlDataSource="${this.tempKmlDataSource}"
                      @onBack=${this.deselectTopicOrProject}
