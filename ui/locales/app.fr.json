@@ -59,6 +59,7 @@
   "dtd_download_hint": "Télécharger / Légende",
   "dtd_empty_map_label": "Sans arrière-plan",
   "dtd_file_not_kml": "Format pas pris en charge. Seulement en format KML.",
+  "dtd_finish_ordering_label": "",
   "dtd_geocat_link": "Lien Geocat.ch",
   "dtd_grey_map_label": "Carte en niveaux de gris",
   "dtd_hide": "Cacher",

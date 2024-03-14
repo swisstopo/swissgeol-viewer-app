@@ -256,7 +256,7 @@ export class SideBar extends LitElementI18n {
         <div class="ngm-panel-content">
           <div class="ngm-label-btn ${classMap({active: this.layerOrderChangeActive})}"
                @click=${this.toggleLayerOrderChange}>
-            ${i18next.t('dtd_change_order_label')}
+            ${this.layerOrderChangeActive ? i18next.t('dtd_finish_ordering_label') : i18next.t('dtd_change_order_label')}
           </div>
           <ngm-layers
             .layers=${this.activeLayers}

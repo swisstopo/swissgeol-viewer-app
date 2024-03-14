@@ -245,9 +245,24 @@ ngm-layers-item {
 
 ngm-layers-item.selected {
   background-color: var(--ngm-hover);
+  cursor: move;
 }
 
 .ngm-layer-icon.ngm-delete-icon.disabled {
   opacity: .5;
   cursor: not-allowed;
+}
+
+ngm-layers-item.selected .ngm-slider.disabled::-moz-range-thumb{
+  cursor: move;
+}
+
+ngm-layers-item.selected .ngm-slider.disabled::-webkit-slider-thumb{
+  cursor: move;
+}
+
+ngm-layers-item.selected .ngm-displayed-slider label,
+ngm-layers-item.selected .ngm-slider.disabled,
+ngm-layers-item.selected .ngm-layer-icon.ngm-delete-icon.disabled {
+  cursor: move;
 }
