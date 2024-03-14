@@ -109,6 +109,8 @@ export class NgmApp extends LitElementI18n {
   accessor showAxisOnMap = false;
   @state()
   accessor showProjectSelector = false;
+  @state()
+  accessor showCesiumToolbar = getCesiumToolbarParam();
   @query('ngm-cam-configuration')
   accessor camConfigElement;
   @query('ngm-voxel-filter')
@@ -117,7 +119,6 @@ export class NgmApp extends LitElementI18n {
   accessor voxelSimpleFilterElement;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
-  private showCesiumToolbar = getCesiumToolbarParam();
   private waitForViewLoading = false;
 
   constructor() {
@@ -413,7 +414,11 @@ export class NgmApp extends LitElementI18n {
           .mobileView=${this.mobileView}
           @layeradded=${this.onLayerAdded}
           @showLayerLegend=${this.onShowLayerLegend}
-          @showVoxelFilter=${this.onShowVoxelFilter}>
+          @showVoxelFilter=${this.onShowVoxelFilter}
+          @toggleDebugTools=${(evt => {
+            console.log(evt)
+            this.showCesiumToolbar = evt.detail.active;
+          })}>
         </ngm-side-bar>
         <div class='map' oncontextmenu="return false;">
           <div id='cesium'>

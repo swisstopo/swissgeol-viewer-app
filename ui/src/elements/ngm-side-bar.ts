@@ -9,11 +9,11 @@ import {DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constant
 import defaultLayerTree from '../layertree';
 import {
   getAssetIds,
-  getAttribute,
+  getAttribute, getCesiumToolbarParam,
   getIonToken,
   getLayerParams,
   getSliceParam,
-  getZoomToPosition,
+  getZoomToPosition, setCesiumToolbarParam,
   syncLayersParam
 } from '../permalink';
 import {createCesiumObject} from '../layers/helpers';
@@ -69,6 +69,8 @@ export class SideBar extends LitElementI18n {
   accessor hideDataDisplayed = false;
   @state()
   accessor layerOrderChangeActive = false;
+  @state()
+  accessor debugToolsActive = getCesiumToolbarParam();
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder')
   accessor toastPlaceholder;
   @query('ngm-catalog')
@@ -242,6 +244,16 @@ export class SideBar extends LitElementI18n {
             ${SUPPORTED_LANGUAGES.map(lang => html`
               <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
             `)}
+          </div>
+        </div>
+        <div>
+          <label>${i18next.t('lsb_debug_tools')}</label>
+          <div class="ngm-checkbox ngm-debug-tools-toggle ${classMap({active: this.debugToolsActive})}"
+               @click=${() => (<HTMLInputElement> this.querySelector('.ngm-debug-tools-toggle > input')).click()}>
+            <input type="checkbox" ?checked=${this.debugToolsActive} @change="${this.toggleDebugTools}">
+            <span class="ngm-checkbox-icon">
+              </span>
+            <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
           </div>
         </div>
       </div>
@@ -674,6 +686,13 @@ export class SideBar extends LitElementI18n {
     this.requestUpdate();
     await this.onCatalogLayerClicked(config);
     await this.viewer.zoomTo(uploadedLayer);
+  }
+
+  toggleDebugTools(event) {
+    const active = event.target.checked;
+    this.debugToolsActive = active;
+    setCesiumToolbarParam(active);
+    this.dispatchEvent(new CustomEvent('toggleDebugTools', {detail: {active}}));
   }
 
   createRenderRoot() {

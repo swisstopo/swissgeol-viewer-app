@@ -229,6 +229,17 @@ export function getCesiumToolbarParam(): boolean {
   return getURLSearchParams().has('cesiumToolbar');
 }
 
+export function setCesiumToolbarParam(value: boolean) {
+  const params = getURLSearchParams();
+  console.log(value, !params.has('cesiumToolbar'));
+  if (value && !params.has('cesiumToolbar')) {
+    params.append('cesiumToolbar', '');
+  } else if (!value && params.has('cesiumToolbar')) {
+    params.delete('cesiumToolbar');
+  }
+  setURLSearchParams(params);
+}
+
 export function syncStoredView(stored: string, skipParams: string[] = [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch']) {
   const params = getURLSearchParams();
   const syncedParams = new URLSearchParams(params);
