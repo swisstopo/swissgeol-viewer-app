@@ -1,4 +1,4 @@
-import {SWITZERLAND_RECTANGLE} from './constants';
+import {SWITZERLAND_RECTANGLE, webMercatorTilingScheme} from './constants';
 
 import {UrlTemplateImageryProvider, ImageryLayer, Credit, WebMapServiceImageryProvider} from 'cesium';
 import i18next from 'i18next';
@@ -13,7 +13,7 @@ const wmtsLayerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{t
  * @param {import('cesium/Source/Core/Rectangle').default} [rectangle]
  * @return {Promise<ImageryLayer>}
  */
-export function getSwisstopoImagery(layer, maximumLevel = 16, rectangle = SWITZERLAND_RECTANGLE) {
+export function getSwisstopoImagery(layer, maximumLevel = 25, rectangle = SWITZERLAND_RECTANGLE) {
   return new Promise((resolve, reject) => {
     getLayersConfig().then(layersConfig => {
       const config = layersConfig[layer];
@@ -37,16 +37,20 @@ export function getSwisstopoImagery(layer, maximumLevel = 16, rectangle = SWITZE
             const url = 'https://wms{s}.geo.admin.ch?version=1.3.0';
             imageryProvider = new WebMapServiceImageryProvider({
               url: url,
+              crs: 'EPSG:4326',
               parameters: {
-                FORMAT: config.format,
+                FORMAT: 'image/png',
                 TRANSPARENT: true,
                 LANG: i18next.language,
               },
               subdomains: '0123',
+              tilingScheme: webMercatorTilingScheme,
               layers: config.serverLayerName,
               maximumLevel: maximumLevel,
               rectangle: rectangle,
-              credit: new Credit(config.attribution)
+              credit: new Credit(config.attribution),
+              tileWidth: 1349,
+              tileHeight: 855
             });
             break;
           }
