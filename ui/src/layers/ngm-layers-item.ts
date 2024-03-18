@@ -24,6 +24,13 @@ export interface Config extends LayerTreeNode {
   topicKml?: boolean;
 }
 
+const GEOCAT_LANG_CODE = {
+  'de': 'ger',
+  'fr': 'fre',
+  'it': 'ita',
+  'en': 'eng',
+};
+
 @customElement('ngm-layers-item')
 export class LayerTreeItem extends LitElementI18n {
   @property({type: Object})
@@ -139,14 +146,27 @@ export class LayerTreeItem extends LitElementI18n {
     }));
   }
 
+  geocatLink(id: string) {
+    const lang = GEOCAT_LANG_CODE[i18next.language];
+    return `https://www.geocat.ch/geonetwork/srv/${lang}/catalog.search#/metadata/${id}`;
+  }
+
   get buttons() {
     return html`
       <div class="menu">
-        ${this.config?.geocatId || this.config?.legend ? html`
+        ${this.config?.legend ? html`
           <div class="item"
                @click=${() => this.showLayerLegend(this.config)}>
-            ${i18next.t('dtd_legend_geocat_hint')}
+            ${i18next.t('dtd_legend')}
           </div>` : ''}
+        ${this.config?.geocatId ? html`
+          <a 
+            class="item" 
+            href="${this.geocatLink(this.config.geocatId)}" 
+            target="_blank" rel="noopener"
+          >
+            ${i18next.t('dtd_geocat_link')}
+          </a>` : ''}
         ${this.config?.downloadUrl && this.config?.type !== LayerType.earthquakes ? html`
           <div class="item"
                @click=${() => window.open(this.config?.downloadUrl)}>
@@ -173,6 +193,7 @@ export class LayerTreeItem extends LitElementI18n {
       }
     }
   }
+
 
   render() {
     return html`
