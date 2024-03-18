@@ -25,17 +25,21 @@
   margin-left: 2px;
 }
 
+ngm-layers-item {
+  border-bottom: 2px solid #DFE2E6 !important;
+}
+
 ngm-layers-item .ngm-checkbox {
   width: 24px;
   height: 24px;
   margin-bottom: 0;
 }
 
-.ngm-layer-icon:hover, .ngm-layer-icon:focus {
+.ngm-layer-icon:not(.disabled):hover, .ngm-layer-icon:not(.disabled):focus {
   background-color: var(--ngm-interaction-hover);
 }
 
-.ngm-layer-icon:active, .ngm-action-menu.active .ngm-action-menu-icon {
+.ngm-layer-icon:not(.disabled):active, .ngm-action-menu.active .ngm-action-menu-icon {
   background-color: var(--ngm-interaction-active);
 }
 
@@ -241,4 +245,24 @@ ngm-layers-item {
 
 ngm-layers-item.selected {
   background-color: var(--ngm-hover);
+  cursor: move;
+}
+
+.ngm-layer-icon.ngm-delete-icon.disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+ngm-layers-item.selected .ngm-slider.disabled::-moz-range-thumb{
+  cursor: move;
+}
+
+ngm-layers-item.selected .ngm-slider.disabled::-webkit-slider-thumb{
+  cursor: move;
+}
+
+ngm-layers-item.selected .ngm-displayed-slider label,
+ngm-layers-item.selected .ngm-slider.disabled,
+ngm-layers-item.selected .ngm-layer-icon.ngm-delete-icon.disabled {
+  cursor: move;
 }

@@ -256,7 +256,7 @@ export class SideBar extends LitElementI18n {
         <div class="ngm-panel-content">
           <div class="ngm-label-btn ${classMap({active: this.layerOrderChangeActive})}"
                @click=${this.toggleLayerOrderChange}>
-            ${i18next.t('dtd_change_order_label')}
+            ${this.layerOrderChangeActive ? i18next.t('dtd_finish_ordering_label') : i18next.t('dtd_change_order_label')}
           </div>
           <ngm-layers
             .layers=${this.activeLayers}
@@ -324,7 +324,7 @@ export class SideBar extends LitElementI18n {
     });
 
     const activeLayers: any[] = [];
-    await Promise.all(urlLayers.map(async (urlLayer) => {
+    for (const urlLayer of urlLayers) {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.layer);
       if (!layer) {
         // Layers from the search are not present in the flat layers.
@@ -339,7 +339,7 @@ export class SideBar extends LitElementI18n {
       layer.displayed = true;
       layer.setVisibility && layer.setVisibility(layer.visible);
       activeLayers.push(layer);
-    }));
+    }
 
     assetIds.forEach(assetId => {
       const layer = {
