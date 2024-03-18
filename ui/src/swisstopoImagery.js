@@ -39,7 +39,7 @@ export function getSwisstopoImagery(layer, maximumLevel = 25, rectangle = SWITZE
               url: url,
               crs: 'EPSG:4326',
               parameters: {
-                FORMAT: 'image/png',
+                FORMAT: config.format.includes('image/') ? config.format : `image/${config.format}`,
                 TRANSPARENT: true,
                 LANG: i18next.language,
               },
@@ -49,8 +49,6 @@ export function getSwisstopoImagery(layer, maximumLevel = 25, rectangle = SWITZE
               maximumLevel: maximumLevel,
               rectangle: rectangle,
               credit: new Credit(config.attribution),
-              tileWidth: 1349,
-              tileHeight: 855
             });
             break;
           }
