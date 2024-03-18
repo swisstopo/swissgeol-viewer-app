@@ -1,4 +1,4 @@
-import {SWITZERLAND_RECTANGLE} from './constants';
+import {SWITZERLAND_RECTANGLE, WEB_MERCATOR_TILING_SCHEME} from './constants';
 
 import {UrlTemplateImageryProvider, ImageryLayer, Credit, WebMapServiceImageryProvider} from 'cesium';
 import i18next from 'i18next';
@@ -37,16 +37,18 @@ export function getSwisstopoImagery(layer, maximumLevel = 16, rectangle = SWITZE
             const url = 'https://wms{s}.geo.admin.ch?version=1.3.0';
             imageryProvider = new WebMapServiceImageryProvider({
               url: url,
+              crs: 'EPSG:4326',
               parameters: {
-                FORMAT: config.format,
+                FORMAT: config.format.includes('image/') ? config.format : `image/${config.format}`,
                 TRANSPARENT: true,
                 LANG: i18next.language,
               },
               subdomains: '0123',
+              tilingScheme: WEB_MERCATOR_TILING_SCHEME,
               layers: config.serverLayerName,
               maximumLevel: maximumLevel,
               rectangle: rectangle,
-              credit: new Credit(config.attribution)
+              credit: new Credit(config.attribution),
             });
             break;
           }

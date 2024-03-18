@@ -1,4 +1,4 @@
-import {Cartesian3, Color, ColorBlendMode, Math as CMath, Rectangle, ShadowMode} from 'cesium';
+import {Cartesian3, Color, ColorBlendMode, Math as CMath, Rectangle, ShadowMode, GeographicTilingScheme, Ellipsoid} from 'cesium';
 
 export {LayerType, DEFAULT_LAYER_OPACITY} from './layertree';
 
@@ -7,6 +7,11 @@ export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS);
 
 export const MINIMAP_EXTENT = [5.910642046, 45.191912227, 10.554524194, 48.04750923];
+
+export const WEB_MERCATOR_TILING_SCHEME = new GeographicTilingScheme({
+  ellipsoid: Ellipsoid.WGS84,
+  rectangle: SWITZERLAND_RECTANGLE,
+});
 
 export const DEFAULT_VIEW = {
   destination: Cartesian3.fromDegrees(
