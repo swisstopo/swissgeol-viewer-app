@@ -9,6 +9,7 @@
 
 .ui.toast-container.bottom.center .toast-box.floating .snackbar.info > i {
   margin: 0 0 0 auto;
+  cursor: pointer;
 }
 
 .ui.toast-container.bottom.center .toast-box.floating .snackbar.info .content {
