@@ -163,9 +163,8 @@ export class LayerTreeItem extends LitElementI18n {
           <a 
             class="item" 
             href="${this.geocatLink(this.config.geocatId)}" 
-            target="_blank" rel="noopener"
-          >
-            ${i18next.t('dtd_geocat_link')}
+            target="_blank" rel="noopener">
+            Geocat.ch
           </a>` : ''}
         ${this.config?.downloadUrl && this.config?.type !== LayerType.earthquakes ? html`
           <div class="item"
