@@ -165,6 +165,7 @@ function createSimpleCustomShader(config): CustomShader {
         vec3 voxelNormal = normalize(czm_normal * fsInput.voxel.surfaceNormal);
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
+    
         if (fsInput.voxel.tileIndex == u_selectedTile && fsInput.voxel.sampleIndex == u_selectedSample) {
           material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}) * lighting;
           material.alpha = 1.0;
