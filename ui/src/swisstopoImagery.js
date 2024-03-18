@@ -1,4 +1,4 @@
-import {SWITZERLAND_RECTANGLE, webMercatorTilingScheme} from './constants';
+import {SWITZERLAND_RECTANGLE, WEB_MERCATOR_TILING_SCHEME} from './constants';
 
 import {UrlTemplateImageryProvider, ImageryLayer, Credit, WebMapServiceImageryProvider} from 'cesium';
 import i18next from 'i18next';
@@ -13,7 +13,7 @@ const wmtsLayerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{t
  * @param {import('cesium/Source/Core/Rectangle').default} [rectangle]
  * @return {Promise<ImageryLayer>}
  */
-export function getSwisstopoImagery(layer, maximumLevel = 25, rectangle = SWITZERLAND_RECTANGLE) {
+export function getSwisstopoImagery(layer, maximumLevel = 16, rectangle = SWITZERLAND_RECTANGLE) {
   return new Promise((resolve, reject) => {
     getLayersConfig().then(layersConfig => {
       const config = layersConfig[layer];
@@ -44,7 +44,7 @@ export function getSwisstopoImagery(layer, maximumLevel = 25, rectangle = SWITZE
                 LANG: i18next.language,
               },
               subdomains: '0123',
-              tilingScheme: webMercatorTilingScheme,
+              tilingScheme: WEB_MERCATOR_TILING_SCHEME,
               layers: config.serverLayerName,
               maximumLevel: maximumLevel,
               rectangle: rectangle,

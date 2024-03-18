@@ -8,7 +8,7 @@ export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS
 
 export const MINIMAP_EXTENT = [5.910642046, 45.191912227, 10.554524194, 48.04750923];
 
-export const webMercatorTilingScheme = new GeographicTilingScheme({
+export const WEB_MERCATOR_TILING_SCHEME = new GeographicTilingScheme({
   ellipsoid: Ellipsoid.WGS84,
   rectangle: SWITZERLAND_RECTANGLE,
 });
