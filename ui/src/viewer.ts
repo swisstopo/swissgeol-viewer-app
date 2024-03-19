@@ -32,6 +32,7 @@ import {
     FrameRateMonitor
 } from 'cesium';
 import MainStore from './store/main';
+import {getExaggeration} from './permalink';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -99,8 +100,7 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
 
     const searchParams = new URLSearchParams(location.search);
 
-    let zExaggeration = parseFloat(searchParams.get('zExaggeration') || '1');
-    zExaggeration = (zExaggeration >= 1 && zExaggeration <= 100) ? zExaggeration : 1;
+    const zExaggeration = getExaggeration();
     if (searchParams.get('noLimit') === 'false') {
         noLimit = false;
     }

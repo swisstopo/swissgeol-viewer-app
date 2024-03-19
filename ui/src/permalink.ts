@@ -16,7 +16,7 @@ import {
   TOPIC_PARAM,
   PROJECT_PARAM,
   VIEW_PARAM,
-  ZOOM_TO_PARAM
+  ZOOM_TO_PARAM, EXAGGERATION_PARAM
 } from './constants';
 import type {Cartographic, Camera} from 'cesium';
 import type {TopicParamSubject, ProjectParamSubject} from './store/dashboard';
@@ -314,3 +314,22 @@ export function removeProject() {
 export function getPermalink() {
   return window.location.search;
 }
+
+export function getExaggeration() {
+  const params = getURLSearchParams();
+  let zExaggeration = parseFloat(params.get(EXAGGERATION_PARAM) || '1');
+  if (zExaggeration < 1) zExaggeration = 1;
+  if (zExaggeration > 100) zExaggeration = 100;
+  return zExaggeration;
+}
+
+export function setExaggeration(zExaggeration: number) {
+  const params = getURLSearchParams();
+  if (params.has(EXAGGERATION_PARAM)) {
+    params.set(EXAGGERATION_PARAM, zExaggeration.toFixed());
+  } else {
+    params.append(EXAGGERATION_PARAM, zExaggeration.toString());
+  }
+  setURLSearchParams(params);
+}
+

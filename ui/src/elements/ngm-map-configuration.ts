@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-map-chooser';
-import {getMapOpacityParam, syncMapOpacityParam} from '../permalink';
+import {getMapOpacityParam, setExaggeration, syncMapOpacityParam} from '../permalink';
 import MainStore from '../store/main';
 import type {Viewer} from 'cesium';
 import type MapChooser from '../MapChooser.js';
@@ -19,6 +19,8 @@ export class NgmMapConfiguration extends LitElementI18n {
   @state()
   accessor opacity: number = getMapOpacityParam();
   @state()
+  accessor exaggeration: number = 1;
+  @state()
   accessor baseMapId = 'ch.swisstopo.pixelkarte-grau';
   @query('ngm-map-chooser')
   accessor mapChooserElement;
@@ -29,6 +31,7 @@ export class NgmMapConfiguration extends LitElementI18n {
 
     MainStore.viewer.subscribe(viewer => {
       this.viewer = viewer;
+      this.exaggeration = this.viewer?.scene.globe.terrainExaggeration || 1;
     });
     MainStore.mapChooser.subscribe(chooser => {
       this.mapChooser = chooser;
@@ -107,6 +110,26 @@ export class NgmMapConfiguration extends LitElementI18n {
                    this.debouncedOpacityUpdate(evt);
                  }}/>
         </div>
+      </div>
+      <div class="ui divider"></div>
+      <div class="ngm-displayed-slider">
+        <div>
+          <label>${i18next.t('dtd_exaggeration_map')}</label>
+          <label>${(this.exaggeration).toFixed()}x</label>
+        </div>
+        <input type="range"
+               class="ngm-slider ${classMap({'ngm-disabled': this.mapChooser!.selectedMap.id === 'empty_map'})}"
+               style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.exaggeration}%, white ${this.exaggeration}%)"
+               min=1 max=100 step=1
+               .value=${!isNaN(this.exaggeration) ? this.exaggeration : 1}
+               @input=${evt => {
+                 if (this.viewer) {
+                   this.exaggeration = Number((<HTMLInputElement>evt.target).value);
+                   this.viewer.scene.globe.terrainExaggeration = this.exaggeration;
+                   this.viewer.scene.requestRender();
+                   setExaggeration(this.exaggeration);
+                 }
+               }}>
       </div>
     `;
   }
