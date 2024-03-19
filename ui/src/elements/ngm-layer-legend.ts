@@ -22,7 +22,6 @@ export class NgmLayerLegend extends LitElementI18n {
 
   render() {
     const legendImage = this.config.legend ? `https://api.geo.admin.ch/static/images/legends/${this.config.legend}_${i18next.language}.png` : undefined;
-    const geocatUrl = this.config.geocatId ? geocatLink(this.config.geocatId) : undefined;
     return html`
       <div class="ngm-floating-window-header drag-handle">
       ${i18next.t(this.config.label)}
@@ -37,12 +36,6 @@ export class NgmLayerLegend extends LitElementI18n {
               <td class="value"><img src="${legendImage}"></td>
             </tr>
             ` : ''}
-          ${geocatUrl ? html`
-          <tr class="top aligned">
-            <td class="key">${i18next.t('dtd_geocat_link')}</td>
-            <td class="value"><a href="${geocatUrl}" target="_blank" rel="noopener">${i18next.t('link')}</a></td>
-          </tr>
-          ` : ''}
           </tbody>
         </table>
       </div>
@@ -53,16 +46,4 @@ export class NgmLayerLegend extends LitElementI18n {
     // no shadow dom
     return this;
   }
-}
-
-const GEOCAT_LANG_CODE = {
-  'de': 'ger',
-  'fr': 'fre',
-  'it': 'ita',
-  'en': 'eng',
-};
-
-function geocatLink(id: string) {
-  const lang = GEOCAT_LANG_CODE[i18next.language];
-  return `https://www.geocat.ch/geonetwork/srv/${lang}/catalog.search#/metadata/${id}`;
 }
