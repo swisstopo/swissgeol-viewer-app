@@ -3,6 +3,19 @@
   box-shadow: none;
 }
 
+.ui.toast-container.bottom.center .toast-box.floating .snackbar.info {
+  display: flex;
+}
+
+.ui.toast-container.bottom.center .toast-box.floating .snackbar.info > i {
+  margin: 0 0 0 auto;
+  cursor: pointer;
+}
+
+.ui.toast-container.bottom.center .toast-box.floating .snackbar.info .content {
+  padding-right: 8px;
+}
+
 .snackbar {
   color: white;
   background-color: #495057;
@@ -68,3 +81,5 @@
 .ngm-toast-placeholder div.snackbar > i {
   margin-left: auto;
 }
+
+

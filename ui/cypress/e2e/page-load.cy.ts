@@ -6,7 +6,7 @@ describe('Page load', () => {
 
     (<any>cy).loadPage(true);
     cy.get('.ngm-nav-hint').should('be.visible');
-    cy.get('.ngm-nav-hint').click();
+    cy.get('.ngm-nav-hint .close.icon').click();
     cy.get('.ngm-nav-hint').should('not.exist');
 
     (<any>cy).loadPage(true);
