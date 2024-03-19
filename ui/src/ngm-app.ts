@@ -54,7 +54,7 @@ import {customElement, query, state} from 'lit/decorators.js';
 import {showSnackbarInfo} from './notifications';
 import type MapChooser from './MapChooser';
 import type {NgmSlowLoading} from './elements/ngm-slow-loading';
-import type {Globe, Viewer} from 'cesium';
+import {Event, FrameRateMonitor, Globe, Viewer} from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type {SideBar} from './elements/ngm-side-bar';
@@ -123,6 +123,7 @@ export class NgmApp extends LitElementI18n {
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
   private waitForViewLoading = false;
+  private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
 
   constructor() {
     super();
@@ -253,6 +254,9 @@ export class NgmApp extends LitElementI18n {
     rewriteParams();
     const cesiumContainer = this.querySelector('#cesium')!;
     const viewer = await setupViewer(cesiumContainer, isLocalhost);
+    if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
+      this.setResolutionScale();
+    }
     this.viewer = viewer;
     window['viewer'] = viewer; // for debugging
 
@@ -342,6 +346,14 @@ export class NgmApp extends LitElementI18n {
         });
       }
     }
+    if (changedProperties.has('showCesiumToolbar')) {
+      if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
+        this.setResolutionScale();
+      } else if (this.showCesiumToolbar && this.resolutionScaleRemoveCallback) {
+        this.resolutionScaleRemoveCallback();
+        this.resolutionScaleRemoveCallback = undefined;
+      }
+    }
     super.updated(changedProperties);
   }
 
@@ -356,6 +368,21 @@ export class NgmApp extends LitElementI18n {
         }
       }, timeout - performance.now());
     }
+  }
+
+  setResolutionScale() {
+    if (!this.viewer) return;
+    const viewer = this.viewer;
+    const frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
+    const scaleDownFps = 20;
+    const scaleUpFps = 30;
+    this.resolutionScaleRemoveCallback = viewer.scene.postRender.addEventListener(() => {
+      if (frameRateMonitor.lastFramesPerSecond < scaleDownFps && viewer.resolutionScale > 0.45) {
+        viewer.resolutionScale = Number((viewer.resolutionScale - 0.05).toFixed(2));
+      } else if (frameRateMonitor.lastFramesPerSecond > scaleUpFps && viewer.resolutionScale < 1) {
+        viewer.resolutionScale = Number((viewer.resolutionScale + 0.05).toFixed(2));
+      }
+    });
   }
 
   onTrackingAllowedChanged(event) {
