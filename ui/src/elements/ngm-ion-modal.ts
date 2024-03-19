@@ -20,6 +20,8 @@ export class NgmIonModal extends LitElementI18n {
     accessor errorMessage: string | undefined;
     @state()
     accessor preloader = false;
+    @state()
+    accessor confirmationToast: HTMLElement | undefined;
 
     connectedCallback() {
         draggable(this, {
@@ -27,14 +29,17 @@ export class NgmIonModal extends LitElementI18n {
         });
         super.connectedCallback();
     }
-    async onLoadAssets() {
+    async onLoadAssets(removeAssets = false) {
         if (!this.token) return;
+        this.confirmationToast = undefined;
         this.errorMessage = undefined;
         this.assets = [];
         this.preloader = true;
         const res = await getAssets(this.token);
         if (res.items) {
-            MainStore.removeIonAssets();
+            if (removeAssets) {
+                MainStore.removeIonAssets();
+            }
             MainStore.setIonToken(this.token);
             this.assets = res.items;
         } else {
@@ -44,13 +49,16 @@ export class NgmIonModal extends LitElementI18n {
     }
 
     loadAssets() {
-        if (!this.token) return;
+        if (!this.token || this.confirmationToast || this.preloader) return;
         const currentToken = MainStore.ionToken.value;
         const assets = getAssetIds();
         if (currentToken !== this.token && assets.length) {
-            showSnackbarConfirmation(
+            this.confirmationToast = showSnackbarConfirmation(
                 i18next.t('dtd_remove_assets_confirmation'),
-                {onApprove: () => this.onLoadAssets()}
+                {
+                    onApprove: () => this.onLoadAssets(true),
+                    onDeny: () => this.confirmationToast = undefined
+                }
             );
         } else {
             this.onLoadAssets();
@@ -58,14 +66,22 @@ export class NgmIonModal extends LitElementI18n {
     }
 
     addAsset(ionAsset: IonAsset) {
-        if (!ionAsset?.id) return;
+        if (!ionAsset?.id || this.preloader) return;
         MainStore.addIonAssetId(ionAsset);
+    }
+
+    onClose() {
+        if (this.confirmationToast) {
+            this.confirmationToast.querySelector<HTMLElement>('.deny')?.click();
+            this.confirmationToast = undefined;
+        }
+        this.dispatchEvent(new CustomEvent('close'));
     }
 
     render() {
         return html`
         <div class="ngm-floating-window-header drag-handle">
-          <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
+          <div class="ngm-close-icon" @click=${() => this.onClose()}></div>
         </div>
         <div class="content-container">
             <div class="ngm-ion-load-container">
@@ -76,7 +92,10 @@ export class NgmIonModal extends LitElementI18n {
                            }}/>
                     <span class="ngm-floating-label">${i18next.t('dtd_ion_token_label')}</span>
                 </div>
-                <button class="ui button ngm-load-ion-btn ngm-action-btn" @click=${() => this.loadAssets()}>
+                <button class="ui button ngm-load-ion-btn ngm-action-btn ${classMap({
+                    disabled: !!this.confirmationToast,
+                    preloader: this.preloader
+                })}" @click=${() => this.loadAssets()}>
                     ${this.preloader ? html` <div class="ui loader"></div>` : i18next.t('dtd_load_ion_assets_btn')}
                 </button>
             </div>

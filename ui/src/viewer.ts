@@ -28,8 +28,7 @@ import {
     ScreenSpaceEventType,
     SunLight,
     Transforms,
-    Viewer,
-    FrameRateMonitor
+    Viewer
 } from 'cesium';
 import MainStore from './store/main';
 import {getExaggeration} from './permalink';

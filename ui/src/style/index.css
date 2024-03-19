@@ -409,6 +409,10 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   width: auto;
 }
 
+.ngm-action-btn.ui.button.preloader {
+  cursor: wait;
+}
+
 .visible-mobile {
   display: none;
 }

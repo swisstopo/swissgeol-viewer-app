@@ -112,7 +112,7 @@ export class NgmMapConfiguration extends LitElementI18n {
         </div>
       </div>
       <div class="ui divider"></div>
-      <div class="ngm-displayed-slider">
+      <div class="ngm-displayed-slider ngm-exaggeration-slider">
         <div>
           <label>${i18next.t('dtd_exaggeration_map')}</label>
           <label>${(this.exaggeration).toFixed()}x</label>
