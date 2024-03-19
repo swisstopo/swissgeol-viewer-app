@@ -35,6 +35,7 @@ export interface LayerTreeNode {
   voxelDataName?: string;
   voxelColors?: VoxelColors;
   voxelFilter?: any;
+  customAsset?: boolean
 }
 
 export interface VoxelColors {

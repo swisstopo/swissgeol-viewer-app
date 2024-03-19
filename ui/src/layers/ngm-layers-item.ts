@@ -10,18 +10,34 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {Sortable} from 'sortablejs';
 import type LayersAction from './LayersActions';
 import {debounce} from '../utils';
+import {CustomDataSource, GeoJsonDataSource, ImageryLayer, VoxelPrimitive} from 'cesium';
+import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer';
+import {PickableCesium3DTileset} from './helpers';
 
 export interface Config extends LayerTreeNode {
   add?: (number) => void;
   remove?: () => void;
   heightOffset?: number;
-  load: () => Promise<any>;
+  load?: () =>
+      Promise<GeoJsonDataSource> |
+      Promise<PickableCesium3DTileset> |
+      Promise<VoxelPrimitive> |
+      Promise<ImageryLayer> |
+      Promise<CustomDataSource> |
+      EarthquakeVisualizer;
   setVisibility?: (boolean) => void;
   setOpacity?: (number) => void;
-  promise?: Promise<any>;
+  promise?:
+      Promise<GeoJsonDataSource> |
+      Promise<PickableCesium3DTileset> |
+      Promise<VoxelPrimitive> |
+      Promise<ImageryLayer> |
+      Promise<CustomDataSource> |
+      EarthquakeVisualizer;
   notSaveToPermalink?: boolean;
   ownKml?: boolean;
   topicKml?: boolean;
+  origin?: string;
 }
 
 const GEOCAT_LANG_CODE = {

@@ -8,9 +8,9 @@ import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
 import defaultLayerTree from '../layertree';
 import {
+  addAssetId,
   getAssetIds,
   getAttribute, getCesiumToolbarParam,
-  getIonToken,
   getLayerParams,
   getSliceParam,
   getZoomToPosition, setCesiumToolbarParam,
@@ -44,6 +44,7 @@ import {getLayerLabel} from '../swisstopoImagery.js';
 
 import type {Config} from '../layers/ngm-layers-item.js';
 import DashboardStore from '../store/dashboard';
+import {getAssets} from '../api-ion';
 
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
@@ -54,9 +55,9 @@ export class SideBar extends LitElementI18n {
   @property({type: Boolean})
   accessor displayUndergroundHint = true;
   @state()
-  accessor catalogLayers: any;
+  accessor catalogLayers: Config[] | undefined;
   @state()
-  accessor activeLayers: any;
+  accessor activeLayers: Config[] = [];
   @state()
   accessor activePanel: string | null = null;
   @state()
@@ -106,6 +107,44 @@ export class SideBar extends LitElementI18n {
       await this.syncActiveLayers();
       this.catalogElement.requestUpdate();
       MainStore.nextLayersRemove();
+    });
+
+    MainStore.onIonAssetAdd.subscribe(asset => {
+      const assetIds = getAssetIds();
+      if (!asset.id || assetIds.includes(asset.id.toString())) {
+        showSnackbarInfo(i18next.t('dtd_asset_exists_info'));
+        return;
+      }
+      const token = MainStore.ionToken.value;
+      if (!token) return;
+      const layer: Config = {
+        type: LayerType.tiles3d,
+        assetId: asset.id,
+        ionToken: token,
+        label: asset.name,
+        layer: asset.id.toString(),
+        visible: true,
+        displayed: true,
+        opacityDisabled: true,
+        pickable: true,
+        customAsset: true,
+      };
+      layer.load = () => this.addLayer(layer);
+      this.activeLayers.push(layer);
+
+      addAssetId(asset.id);
+      this.activeLayers = [...this.activeLayers];
+      syncLayersParam(this.activeLayers);
+    });
+
+    MainStore.onRemoveIonAssets.subscribe(async () => {
+      const assets = this.activeLayers.filter(l => !!l.assetId);
+      for (const asset of assets) {
+        await this.removeLayerWithoutSync(asset);
+      }
+      this.viewer!.scene.requestRender();
+      this.requestUpdate();
+      syncLayersParam(this.activeLayers);
     });
 
     const sliceOptions = getSliceParam();
@@ -246,7 +285,7 @@ export class SideBar extends LitElementI18n {
             `)}
           </div>
         </div>
-        <div>
+        <div class="toolbar-settings">
           <label>${i18next.t('lsb_debug_tools')}</label>
           <div class="ngm-checkbox ngm-debug-tools-toggle ${classMap({active: this.debugToolsActive})}"
                @click=${() => (<HTMLInputElement> this.querySelector('.ngm-debug-tools-toggle > input')).click()}>
@@ -286,6 +325,10 @@ export class SideBar extends LitElementI18n {
               .toastPlaceholder=${this.toastPlaceholder} 
               .onKmlUpload=${(file: File) => this.onKmlUpload(file)}>
           </ngm-layers-upload>
+          <button class="ui button ngm-ion-add-content-btn ngm-action-btn" 
+                  @click=${() => this.dispatchEvent(new CustomEvent('openIonModal'))}>
+            ${i18next.t('dtd_add_ion_token')}
+          </button>
           <h5 class="ui header ngm-background-label">
             ${i18next.t('dtd_background_map_label')}
             <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
@@ -321,7 +364,7 @@ export class SideBar extends LitElementI18n {
       const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
-    const ionToken = getIonToken();
+    const ionToken = MainStore.ionToken.value;
 
     if (!urlLayers.length && !assetIds.length) {
       this.activeLayers = flatLayers.filter(l => l.displayed);
@@ -353,24 +396,28 @@ export class SideBar extends LitElementI18n {
       activeLayers.push(layer);
     }
 
-    assetIds.forEach(assetId => {
-      const layer = {
-        type: LayerType.tiles3d,
-        assetId: assetId,
-        ionToken: ionToken,
-        label: assetId,
-        layer: assetId,
-        visible: true,
-        displayed: true,
-        opacityDisabled: true,
-        pickable: true,
-        customAsset: true,
-        load: () => {
-        }
-      };
-      layer.load = () => this.addLayer(layer);
-      activeLayers.push(layer);
-    });
+    if (ionToken) {
+      const ionAssetsRes = await getAssets(ionToken);
+      const ionAssets = ionAssetsRes?.items || [];
+
+      assetIds.forEach(assetId => {
+        const ionAsset = ionAssets.find(asset => asset.id === Number(assetId));
+        const layer: Config = {
+          type: LayerType.tiles3d,
+          assetId: Number(assetId),
+          ionToken: ionToken,
+          label: ionAsset?.name || assetId,
+          layer: assetId,
+          visible: true,
+          displayed: true,
+          opacityDisabled: true,
+          pickable: true,
+          customAsset: true
+        };
+        layer.load = () => this.addLayer(layer);
+        activeLayers.push(layer);
+      });
+    }
 
     this.activeLayers = activeLayers;
     syncLayersParam(this.activeLayers);
@@ -460,14 +507,16 @@ export class SideBar extends LitElementI18n {
     layer.setVisibility && layer.setVisibility(layer.visible);
 
     syncLayersParam(this.activeLayers);
-    this.catalogLayers = [...this.catalogLayers];
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
     this.activeLayers = [...this.activeLayers];
     this.viewer!.scene.requestRender();
   }
 
   onLayerChanged(evt) {
     this.queryManager!.hideObjectInformation();
-    this.catalogLayers = [...this.catalogLayers];
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
     this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);
     if (evt.detail) {
@@ -492,12 +541,14 @@ export class SideBar extends LitElementI18n {
     await this.removeLayer(config);
   }
 
-  async removeLayerWithoutSync(config) {
+  async removeLayerWithoutSync(config: Config) {
     if (config.setVisibility) {
       config.setVisibility(false);
     } else {
       const c = await config.promise;
-      this.viewer!.dataSources.getByName(c.name)[0].show = false;
+      if (c instanceof CustomDataSource) {
+        this.viewer!.dataSources.getByName(c.name)[0].show = false;
+      }
     }
     config.visible = false;
     config.displayed = false;
@@ -506,11 +557,12 @@ export class SideBar extends LitElementI18n {
     }
   }
 
-  async removeLayer(config) {
+  async removeLayer(config: Config) {
     await this.removeLayerWithoutSync(config);
     this.viewer!.scene.requestRender();
     syncLayersParam(this.activeLayers);
-    this.catalogLayers = [...this.catalogLayers];
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
     this.activeLayers = [...this.activeLayers];
     this.requestUpdate();
   }
@@ -558,7 +610,7 @@ export class SideBar extends LitElementI18n {
   }
 
   createSearchLayer(searchLayer) {
-    let config;
+    let config: Config;
     if (searchLayer.type) {
       config = searchLayer;
       config.visible = true;
@@ -571,9 +623,7 @@ export class SideBar extends LitElementI18n {
         visible: true,
         displayed: true,
         opacity: DEFAULT_LAYER_OPACITY,
-        queryType: 'geoadmin',
-        load: () => {
-        }
+        queryType: 'geoadmin'
       };
     }
     config.load = () => this.addLayer(config);
@@ -639,7 +689,7 @@ export class SideBar extends LitElementI18n {
     });
   }
 
-  addLayer(layer) {
+  addLayer(layer: Config) {
     layer.promise = createCesiumObject(this.viewer!, layer);
     this.dispatchEvent(new CustomEvent('layeradded', {
       detail: {

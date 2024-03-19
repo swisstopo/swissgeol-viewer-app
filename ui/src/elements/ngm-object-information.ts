@@ -60,7 +60,7 @@ export class NgmObjectInformation extends LitElementI18n {
             ${unsafeHTML(it.content)}
           </div>`) :
         html`
-          <table class="ui compact small very basic table">
+          <table class="ui compact small very basic table ngm-info-table">
             <tbody>
             ${this.info.properties!.map(row => {
               const key = row[0];

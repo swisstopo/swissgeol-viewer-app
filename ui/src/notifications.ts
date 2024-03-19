@@ -46,16 +46,17 @@ export function showBannerSuccess(element: HTMLElement, message: string) {
 export function showSnackbarConfirmation(message: string, callbacks: { onApprove?: () => void, onDeny?: () => void }) {
   showSnackbarMessage(message, 'snackbar info actions', {
     displayTime: 0,
+    closeOnClick: false,
+    onApprove: callbacks.onApprove,
+    onDeny: callbacks.onDeny,
     actions: [
       {
         class: 'approve ngm-action-btn',
-        text: 'OK',
-        click: callbacks.onApprove
+        text: 'OK'
       },
       {
         class: 'deny ngm-action-btn ngm-cancel-btn',
-        text: i18next.t('app_cancel_btn_label'),
-        click: callbacks.onDeny
+        text: i18next.t('app_cancel_btn_label')
       }]
   });
 }

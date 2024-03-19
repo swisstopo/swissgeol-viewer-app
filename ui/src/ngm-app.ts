@@ -21,6 +21,7 @@ import './elements/ngm-project-popup';
 import './elements/view-menu';
 import './elements/project-selector';
 import './elements/ngm-coordinate-popup';
+import './elements/ngm-ion-modal';
 
 import '@geoblocks/cesium-view-cube';
 
@@ -111,6 +112,8 @@ export class NgmApp extends LitElementI18n {
   accessor showProjectSelector = false;
   @state()
   accessor showCesiumToolbar = getCesiumToolbarParam();
+  @state()
+  accessor showIonModal = false
   @query('ngm-cam-configuration')
   accessor camConfigElement;
   @query('ngm-voxel-filter')
@@ -416,9 +419,9 @@ export class NgmApp extends LitElementI18n {
           @showLayerLegend=${this.onShowLayerLegend}
           @showVoxelFilter=${this.onShowVoxelFilter}
           @toggleDebugTools=${(evt => {
-            console.log(evt)
             this.showCesiumToolbar = evt.detail.active;
-          })}>
+          })}
+          @openIonModal=${() => this.showIonModal = true}>
         </ngm-side-bar>
         <div class='map' oncontextmenu="return false;">
           <div id='cesium'>
@@ -474,6 +477,10 @@ export class NgmApp extends LitElementI18n {
             <cesium-toolbar></cesium-toolbar>` : ''}
           ${this.showTrackingConsent ? html`
             <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>` : ''}
+          <ngm-ion-modal class="ngm-floating-window"
+                         .hidden=${!this.showIonModal} 
+                         @close=${() => this.showIonModal = false}>
+          </ngm-ion-modal>
         </div>
       </main>
     `;

@@ -1,5 +1,5 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
-import type {Viewer} from 'cesium';
+import {ImageryLayer, Rectangle, Viewer} from 'cesium';
 import {
   Cartesian3,
   Cartographic,
@@ -13,7 +13,6 @@ import {
   LabelStyle,
   Matrix3,
   Matrix4,
-  Rectangle,
   VoxelPrimitive,
 } from 'cesium';
 import {getSwisstopoImagery} from '../swisstopoImagery.js';
@@ -24,7 +23,7 @@ import type {Config} from './ngm-layers-item.js';
 import {getVoxelShader} from './voxels-helper';
 import MainStore from '../store/main';
 
-interface PickableCesium3DTileset extends Cesium3DTileset {
+export interface PickableCesium3DTileset extends Cesium3DTileset {
   pickable?: boolean;
 }
 export interface PickableVoxelPrimitive extends VoxelPrimitive {
@@ -157,7 +156,7 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, 
 }
 
 export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: Config) {
-  let layer = {} as any;
+  let layer: ImageryLayer;
   config.setVisibility = visible => layer.show = !!visible;
   config.setOpacity = opacity => layer.alpha = opacity;
   config.remove = () => viewer.scene.imageryLayers.remove(layer, false);

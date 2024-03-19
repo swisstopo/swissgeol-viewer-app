@@ -1,6 +1,8 @@
 import {BehaviorSubject, Subject} from 'rxjs';
 import type {Viewer} from 'cesium';
 import type MapChooser from '../MapChooser';
+import {getIonToken, setIonToken} from '../permalink';
+import {IonAsset} from '../api-ion';
 
 export default class MainStore {
   private static viewerSubject = new BehaviorSubject<Viewer | null>(null);
@@ -9,6 +11,9 @@ export default class MainStore {
   private static layersRemovedSubject = new Subject<void>();
   private static syncMapSubject = new Subject<void>();
   private static voxelLayerCountSubject = new BehaviorSubject<string[]>([]);
+  private static ionTokenSubject = new BehaviorSubject<string | null>(getIonToken());
+  private static ionAssetSubject = new Subject<IonAsset>();
+  private static removeIonAssetsSubject = new Subject<void>();
 
   static get viewer(): BehaviorSubject<Viewer | null> {
     return this.viewerSubject;
@@ -69,6 +74,31 @@ export default class MainStore {
   static removeVisibleVoxelLayer(layer) {
     const voxelLayers = this.visibleVoxelLayers.filter(l => l !== layer);
     this.voxelLayerCountSubject.next(voxelLayers);
+  }
+
+  static setIonToken(token: string) {
+    this.ionTokenSubject.next(token);
+    setIonToken(token);
+  }
+
+  static get ionToken(): BehaviorSubject<string | null> {
+    return this.ionTokenSubject;
+  }
+
+  static addIonAssetId(ionAsset: IonAsset) {
+    this.ionAssetSubject.next(ionAsset);
+  }
+
+  static get onIonAssetAdd() {
+    return this.ionAssetSubject;
+  }
+
+  static removeIonAssets() {
+    this.removeIonAssetsSubject.next();
+  }
+
+  static get onRemoveIonAssets(): Subject<void> {
+    return this.removeIonAssetsSubject;
   }
 
 }

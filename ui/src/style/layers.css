@@ -266,3 +266,9 @@ ngm-layers-item.selected .ngm-slider.disabled,
 ngm-layers-item.selected .ngm-layer-icon.ngm-delete-icon.disabled {
   cursor: move;
 }
+
+.ngm-ion-add-content-btn.ngm-action-btn.ui.button {
+  width: 325px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
