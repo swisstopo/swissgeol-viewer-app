@@ -1,3 +1,6 @@
+import {CustomDataSource, GeoJsonDataSource, ImageryLayer, VoxelPrimitive} from 'cesium';
+import {PickableCesium3DTileset} from './layers/helpers';
+import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer';
 
 export interface LayerTreeNode {
   type?: LayerType;
@@ -36,6 +39,32 @@ export interface LayerTreeNode {
   voxelColors?: VoxelColors;
   voxelFilter?: any;
   customAsset?: boolean
+}
+
+export interface LayerConfig extends LayerTreeNode {
+  add?: (value: number) => void;
+  remove?: () => void;
+  heightOffset?: number;
+  load?: () =>
+      Promise<GeoJsonDataSource> |
+      Promise<PickableCesium3DTileset> |
+      Promise<VoxelPrimitive> |
+      Promise<ImageryLayer> |
+      Promise<CustomDataSource> |
+      EarthquakeVisualizer;
+  setVisibility?: (value: boolean) => void;
+  setOpacity?: (value: number) => void;
+  promise?:
+      Promise<GeoJsonDataSource> |
+      Promise<PickableCesium3DTileset> |
+      Promise<VoxelPrimitive> |
+      Promise<ImageryLayer> |
+      Promise<CustomDataSource> |
+      EarthquakeVisualizer;
+  notSaveToPermalink?: boolean;
+  ownKml?: boolean;
+  topicKml?: boolean;
+  origin?: string;
 }
 
 export interface VoxelColors {

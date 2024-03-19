@@ -19,9 +19,9 @@ import {getSwisstopoImagery} from '../swisstopoImagery.js';
 import {LayerType} from '../constants';
 import {isLabelOutlineEnabled} from '../permalink';
 import AmazonS3Resource from '../AmazonS3Resource.js';
-import type {Config} from './ngm-layers-item.js';
 import {getVoxelShader} from './voxels-helper';
 import MainStore from '../store/main';
+import {LayerConfig} from '../layertree';
 
 export interface PickableCesium3DTileset extends Cesium3DTileset {
   pickable?: boolean;
@@ -31,7 +31,7 @@ export interface PickableVoxelPrimitive extends VoxelPrimitive {
   layer?: string;
 }
 
-export function createEarthquakeFromConfig(viewer: Viewer, config: Config) {
+export function createEarthquakeFromConfig(viewer: Viewer, config: LayerConfig) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer, config);
   if (config.visible) {
     earthquakeVisualizer.setVisible(true);
@@ -53,7 +53,7 @@ export function createIonGeoJSONFromConfig(viewer: Viewer, config) {
 }
 
 
-export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Config, _): Promise<VoxelPrimitive> {
+export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: LayerConfig, _): Promise<VoxelPrimitive> {
   const provider = await Cesium3DTilesVoxelProvider.fromUrl(config.url!);
 
   const primitive: PickableVoxelPrimitive = new VoxelPrimitive({
@@ -85,7 +85,7 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: Co
 
   return primitive;
 }
-export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, tileLoadCallback) {
+export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerConfig, tileLoadCallback) {
   let resource: string | IonResource | AmazonS3Resource;
   if (config.aws_s3_bucket && config.aws_s3_key) {
     resource = new AmazonS3Resource({
@@ -155,7 +155,7 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: Config, 
   return tileset;
 }
 
-export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: Config) {
+export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: LayerConfig) {
   let layer: ImageryLayer;
   config.setVisibility = visible => layer.show = !!visible;
   config.setOpacity = opacity => layer.alpha = opacity;
@@ -180,7 +180,7 @@ export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: Config) 
 }
 
 
-export function createCesiumObject(viewer: Viewer, config: Config, tileLoadCallback?) {
+export function createCesiumObject(viewer: Viewer, config: LayerConfig, tileLoadCallback?) {
   const factories = {
     [LayerType.ionGeoJSON]: createIonGeoJSONFromConfig,
     [LayerType.tiles3d]: create3DTilesetFromConfig,

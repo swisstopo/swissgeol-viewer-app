@@ -3,7 +3,8 @@ import {calculateBox, calculateRectangle, getBoxFromRectangle} from './helpers';
 import {LayerType} from '../constants';
 import {Cartesian3, Rectangle, Cartographic, Color} from 'cesium';
 import type {Viewer, ImageryLayer} from 'cesium';
-import type {Config} from './ngm-layers-item.js';
+
+import {LayerConfig} from '../layertree';
 
 
 export default class LayersAction {
@@ -28,7 +29,7 @@ export default class LayersAction {
     });
   }
 
-  async changeVisibility(config: Config, checked: boolean) {
+  async changeVisibility(config: LayerConfig, checked: boolean) {
     if (config.setVisibility) {
       config.setVisibility(checked);
     } else {
@@ -38,12 +39,12 @@ export default class LayersAction {
     this.viewer.scene.requestRender();
   }
 
-  changeOpacity(config: Config, value: number) {
+  changeOpacity(config: LayerConfig, value: number) {
     config.setOpacity!(value);
     this.viewer.scene.requestRender();
   }
 
-  async showBoundingBox(config: Config) {
+  async showBoundingBox(config: LayerConfig) {
     const p = await config.promise;
     if (p.boundingRectangle) { // earthquakes
       this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
@@ -75,7 +76,7 @@ export default class LayersAction {
     }
   }
 
-  async reorderLayers(_: Config[], newLayers: Config[]) {
+  async reorderLayers(_: LayerConfig[], newLayers: LayerConfig[]) {
     const imageries = this.viewer.scene.imageryLayers;
     for (const config of newLayers) {
       if (config.type === LayerType.swisstopoWMTS) {
@@ -87,7 +88,7 @@ export default class LayersAction {
   }
 
 
-  listenForEvent(config: Config, eventName, callback) {
+  listenForEvent(config: LayerConfig, eventName, callback) {
     const stuff = config.promise!; // yes, this is not a promise ! Why?
     if (stuff[eventName]) {
       console.debug('Adding event', eventName, 'on', config.layer);

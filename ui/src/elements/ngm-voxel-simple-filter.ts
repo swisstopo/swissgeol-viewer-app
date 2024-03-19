@@ -4,14 +4,14 @@ import {customElement, property, query} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
 import draggable from './draggable';
 import {dragArea} from './helperElements';
-import type {Config} from '../layers/ngm-layers-item';
 import {getVoxelShader} from '../layers/voxels-helper';
 import type {Viewer} from 'cesium';
+import {LayerConfig} from '../layertree';
 
 @customElement('ngm-voxel-simple-filter')
 export class NgmVoxelSimpleFilter extends LitElementI18n {
   @property({type: Object})
-  accessor config!: Config;
+  accessor config!: LayerConfig;
   @property({type: Object})
   accessor viewer!: Viewer;
 

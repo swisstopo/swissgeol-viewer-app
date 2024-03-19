@@ -6,7 +6,7 @@ import '../layers/ngm-catalog';
 import './dashboard/ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
-import defaultLayerTree from '../layertree';
+import defaultLayerTree, {LayerConfig} from '../layertree';
 import {
   addAssetId,
   getAssetIds,
@@ -42,7 +42,6 @@ import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
 import {getLayerLabel} from '../swisstopoImagery.js';
 
-import type {Config} from '../layers/ngm-layers-item.js';
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
 
@@ -55,9 +54,9 @@ export class SideBar extends LitElementI18n {
   @property({type: Boolean})
   accessor displayUndergroundHint = true;
   @state()
-  accessor catalogLayers: Config[] | undefined;
+  accessor catalogLayers: LayerConfig[] | undefined;
   @state()
-  accessor activeLayers: Config[] = [];
+  accessor activeLayers: LayerConfig[] = [];
   @state()
   accessor activePanel: string | null = null;
   @state()
@@ -117,7 +116,7 @@ export class SideBar extends LitElementI18n {
       }
       const token = MainStore.ionToken.value;
       if (!token) return;
-      const layer: Config = {
+      const layer: LayerConfig = {
         type: LayerType.tiles3d,
         assetId: asset.id,
         ionToken: token,
@@ -402,7 +401,7 @@ export class SideBar extends LitElementI18n {
 
       assetIds.forEach(assetId => {
         const ionAsset = ionAssets.find(asset => asset.id === Number(assetId));
-        const layer: Config = {
+        const layer: LayerConfig = {
           type: LayerType.tiles3d,
           assetId: Number(assetId),
           ionToken: ionToken,
@@ -525,7 +524,7 @@ export class SideBar extends LitElementI18n {
     this.requestUpdate();
   }
 
-  maybeShowVisibilityHint(config: Config) {
+  maybeShowVisibilityHint(config: LayerConfig) {
     if (this.displayUndergroundHint
       && config.visible
       && [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!)
@@ -541,7 +540,7 @@ export class SideBar extends LitElementI18n {
     await this.removeLayer(config);
   }
 
-  async removeLayerWithoutSync(config: Config) {
+  async removeLayerWithoutSync(config: LayerConfig) {
     if (config.setVisibility) {
       config.setVisibility(false);
     } else {
@@ -557,7 +556,7 @@ export class SideBar extends LitElementI18n {
     }
   }
 
-  async removeLayer(config: Config) {
+  async removeLayer(config: LayerConfig) {
     await this.removeLayerWithoutSync(config);
     this.viewer!.scene.requestRender();
     syncLayersParam(this.activeLayers);
@@ -610,7 +609,7 @@ export class SideBar extends LitElementI18n {
   }
 
   createSearchLayer(searchLayer) {
-    let config: Config;
+    let config: LayerConfig;
     if (searchLayer.type) {
       config = searchLayer;
       config.visible = true;
@@ -689,7 +688,7 @@ export class SideBar extends LitElementI18n {
     });
   }
 
-  addLayer(layer: Config) {
+  addLayer(layer: LayerConfig) {
     layer.promise = createCesiumObject(this.viewer!, layer);
     this.dispatchEvent(new CustomEvent('layeradded', {
       detail: {
@@ -722,7 +721,7 @@ export class SideBar extends LitElementI18n {
     await this.viewer.dataSources.add(uploadedLayer);
     // done like this to have correct rerender of component
     const promise = Promise.resolve(uploadedLayer);
-    const config: Config = {
+    const config: LayerConfig = {
       load() {return promise;},
       label: name,
       promise: promise,

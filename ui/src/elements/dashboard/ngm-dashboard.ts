@@ -21,7 +21,6 @@ import LocalStorageController from '../../LocalStorageController';
 import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
 import {showBannerWarning, showSnackbarError} from '../../notifications';
-import type {Config} from '../../layers/ngm-layers-item';
 import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
 import {fromGeoJSON} from '../../toolbox/helpers';
 import type {NgmGeometry} from '../../toolbox/interfaces';
@@ -31,6 +30,7 @@ import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
 import {isProject, isProjectOwnerOrEditor} from './helpers';
+import {LayerConfig} from '../../layertree';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -120,7 +120,7 @@ export class NgmDashboard extends LitElementI18n {
   accessor overviewToast;
   private viewer: Viewer | null = null;
   private assetConfigs: any = {};
-  private assets: Config[] | undefined;
+  private assets: LayerConfig[] | undefined;
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
   private userEmail: string | undefined;
@@ -225,8 +225,8 @@ export class NgmDashboard extends LitElementI18n {
     });
   }
 
-  async fetchAssets(assets: Asset[]): Promise<Config[]> {
-    const assetsData: Config[] = [];
+  async fetchAssets(assets: Asset[]): Promise<LayerConfig[]> {
+    const assetsData: LayerConfig[] = [];
     if (!this.viewer) return assetsData;
     for (const asset of assets) {
       try {

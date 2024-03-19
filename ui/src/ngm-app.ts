@@ -55,10 +55,10 @@ import {showSnackbarInfo} from './notifications';
 import type MapChooser from './MapChooser';
 import type {NgmSlowLoading} from './elements/ngm-slow-loading';
 import type {Globe, Viewer} from 'cesium';
-import type {Config} from './layers/ngm-layers-item';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type {SideBar} from './elements/ngm-side-bar';
+import {LayerConfig} from './layertree';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -99,7 +99,7 @@ export class NgmApp extends LitElementI18n {
   @state()
   accessor queueLength = 0;
   @state()
-  accessor legendConfigs: Config[] = [];
+  accessor legendConfigs: LayerConfig[] = [];
   @state()
   accessor showTrackingConsent = false;
   @state()

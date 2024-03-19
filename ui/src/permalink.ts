@@ -20,7 +20,8 @@ import {
 } from './constants';
 import type {Cartographic, Camera} from 'cesium';
 import type {TopicParamSubject, ProjectParamSubject} from './store/dashboard';
-import {Config} from './layers/ngm-layers-item';
+
+import {LayerConfig} from './layertree';
 
 
 export function rewriteParams() {
@@ -122,7 +123,7 @@ export function setIonToken(token: string) {
   setURLSearchParams(params);
 }
 
-export function syncLayersParam(activeLayers: Config[]) {
+export function syncLayersParam(activeLayers: LayerConfig[]) {
   const params = getURLSearchParams();
   const layerNames: string[] = [];
   const layersTransparency: string[] = [];

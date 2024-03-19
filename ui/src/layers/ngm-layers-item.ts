@@ -5,40 +5,11 @@ import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import $ from '../jquery.js';
-import type {LayerTreeNode} from '../layertree';
+import type {LayerConfig} from '../layertree';
 import {styleMap} from 'lit/directives/style-map.js';
 import {Sortable} from 'sortablejs';
 import type LayersAction from './LayersActions';
 import {debounce} from '../utils';
-import {CustomDataSource, GeoJsonDataSource, ImageryLayer, VoxelPrimitive} from 'cesium';
-import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer';
-import {PickableCesium3DTileset} from './helpers';
-
-export interface Config extends LayerTreeNode {
-  add?: (number) => void;
-  remove?: () => void;
-  heightOffset?: number;
-  load?: () =>
-      Promise<GeoJsonDataSource> |
-      Promise<PickableCesium3DTileset> |
-      Promise<VoxelPrimitive> |
-      Promise<ImageryLayer> |
-      Promise<CustomDataSource> |
-      EarthquakeVisualizer;
-  setVisibility?: (boolean) => void;
-  setOpacity?: (number) => void;
-  promise?:
-      Promise<GeoJsonDataSource> |
-      Promise<PickableCesium3DTileset> |
-      Promise<VoxelPrimitive> |
-      Promise<ImageryLayer> |
-      Promise<CustomDataSource> |
-      EarthquakeVisualizer;
-  notSaveToPermalink?: boolean;
-  ownKml?: boolean;
-  topicKml?: boolean;
-  origin?: string;
-}
 
 const GEOCAT_LANG_CODE = {
   'de': 'ger',
@@ -52,7 +23,7 @@ export class LayerTreeItem extends LitElementI18n {
   @property({type: Object})
   accessor actions!: LayersAction;
   @property({type: Object})
-  accessor config!: Config;
+  accessor config!: LayerConfig;
   @property({type: Boolean})
   accessor changeOrderActive = false;
   @state()
@@ -144,7 +115,7 @@ export class LayerTreeItem extends LitElementI18n {
     else return '';
   }
 
-  showLayerLegend(config: Config) {
+  showLayerLegend(config: LayerConfig) {
     this.dispatchEvent(new CustomEvent('showLayerLegend', {
       bubbles: true,
       detail: {
@@ -153,7 +124,7 @@ export class LayerTreeItem extends LitElementI18n {
     }));
   }
 
-  showVoxelFilter(config: Config) {
+  showVoxelFilter(config: LayerConfig) {
     this.dispatchEvent(new CustomEvent('showVoxelFilter', {
       bubbles: true,
       detail: {
