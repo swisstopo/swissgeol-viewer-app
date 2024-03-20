@@ -76,9 +76,8 @@ export function showMessage(message: string, options: any = {}): HTMLElement {
   // hide same toasts
   if (options.class) (<HTMLElement>document.querySelector(`.${options.class}`))?.parentElement?.remove();
   $('body').toast(Object.assign({
-    showIcon: 'close',
-    imageClass: 'ngm-toast-image',
-    message: message
+    message: message,
+    showIcon: 'close'
   }, options));
 }
 
