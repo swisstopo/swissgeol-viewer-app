@@ -26,7 +26,7 @@ import {
   BoundingSphere,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-  Math as CMath, KmlDataSource, CustomDataSource
+  Math as CMath, KmlDataSource, CustomDataSource, GeoJsonDataSource
 } from 'cesium';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
@@ -545,7 +545,7 @@ export class SideBar extends LitElementI18n {
       config.setVisibility(false);
     } else {
       const c = await config.promise;
-      if (c instanceof CustomDataSource) {
+      if (c instanceof CustomDataSource || c instanceof GeoJsonDataSource) {
         this.viewer!.dataSources.getByName(c.name)[0].show = false;
       }
     }

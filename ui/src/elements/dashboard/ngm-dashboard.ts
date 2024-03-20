@@ -31,6 +31,7 @@ import './ngm-project-edit';
 import './ngm-project-topic-overview';
 import {isProject, isProjectOwnerOrEditor} from './helpers';
 import {LayerConfig} from '../../layertree';
+import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -179,7 +180,7 @@ export class NgmDashboard extends LitElementI18n {
       if (this.selectedViewIndx !== undefined && this.assets) {
         await Promise.all(this.assets.map(async layer => {
           const data = await layer.promise;
-          data.show = true;
+          if (data && !(data instanceof EarthquakeVisualizer)) data.show = true;
           this.dispatchEvent(new CustomEvent('layerclick', {
             detail: {layer}
           }));

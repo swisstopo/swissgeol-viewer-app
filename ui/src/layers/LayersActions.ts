@@ -1,10 +1,20 @@
 import {syncLayersParam} from '../permalink';
 import {calculateBox, calculateRectangle, getBoxFromRectangle} from './helpers';
 import {LayerType} from '../constants';
-import {Cartesian3, Rectangle, Cartographic, Color} from 'cesium';
-import type {Viewer, ImageryLayer} from 'cesium';
+import {
+  Cartesian3,
+  Rectangle,
+  Cartographic,
+  Color,
+  Cesium3DTileset,
+  ImageryLayer,
+  CustomDataSource,
+  GeoJsonDataSource
+} from 'cesium';
+import type {Viewer} from 'cesium';
 
 import {LayerConfig} from '../layertree';
+import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer';
 
 
 export default class LayersAction {
@@ -33,7 +43,10 @@ export default class LayersAction {
     if (config.setVisibility) {
       config.setVisibility(checked);
     } else {
-      this.viewer.dataSources.getByName((await config.promise)!.name)[0].show = checked;
+      const layer = await config.promise;
+      if (layer instanceof CustomDataSource || layer instanceof GeoJsonDataSource) {
+        this.viewer.dataSources.getByName(layer.name)[0].show = checked;
+      }
     }
     config.visible = checked;
     this.viewer.scene.requestRender();
@@ -46,18 +59,20 @@ export default class LayersAction {
 
   async showBoundingBox(config: LayerConfig) {
     const p = await config.promise;
-    if (p.boundingRectangle) { // earthquakes
+    // wrong type in cesium;
+    const rootBoundingVolume = (<any> p)?.root?.boundingVolume;
+    if (p instanceof EarthquakeVisualizer && p.boundingRectangle) { // earthquakes
       this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
       this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(p.boundingRectangle, p.maximumHeight);
       this.boundingBoxEntity.rectangle.coordinates = p.boundingRectangle;
       this.boundingBoxEntity.show = true;
       this.viewer.scene.requestRender();
-    } else if (p.root && p.root.boundingVolume) {
-      const boundingVolume = p.root.boundingVolume.boundingVolume;
-      const boundingRectangle = p.root.boundingVolume.rectangle;
+    } else if ((p instanceof Cesium3DTileset) && rootBoundingVolume) {
+      const boundingVolume = rootBoundingVolume.boundingVolume;
+      const boundingRectangle = rootBoundingVolume.rectangle;
       this.boundingBoxEntity.position = boundingVolume.center;
       if (boundingRectangle) {
-        this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(boundingRectangle, p.root.boundingVolume.maximumHeight);
+        this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(boundingRectangle, rootBoundingVolume.maximumHeight);
         this.boundingBoxEntity.rectangle.coordinates = boundingRectangle;
       } else {
         const boxSize = calculateBox(boundingVolume.halfAxes, p.root.boundingSphere.radius);
@@ -80,8 +95,8 @@ export default class LayersAction {
     const imageries = this.viewer.scene.imageryLayers;
     for (const config of newLayers) {
       if (config.type === LayerType.swisstopoWMTS) {
-        const imagery: ImageryLayer = await config.promise;
-        imageries.raiseToTop(imagery);
+        const imagery = await config.promise;
+        if (imagery instanceof ImageryLayer) imageries.raiseToTop(imagery);
       }
     }
     syncLayersParam(newLayers);
