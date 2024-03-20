@@ -8,7 +8,8 @@ import {cartesianToDegrees} from '../projection';
 import {coordinatesToBbox} from '../utils';
 import {saveAs} from 'file-saver';
 import type {NgmGeometry} from './interfaces';
-import type {Config} from '../layers/ngm-layers-item';
+
+import {LayerConfig} from '../layertree';
 
 
 @customElement('data-download')
@@ -20,15 +21,15 @@ export class DataDownload extends LitElementI18n {
   /**
    * Get configs of all displayed and downloadable layers.
    *
-   * @returns {Config[]}
+   * @returns {LayerConfig[]}
    */
-  activeLayersForDownload(): Config[] {
+  activeLayersForDownload(): LayerConfig[] {
     return (<any>document.getElementsByTagName('ngm-side-bar')[0]).activeLayers
-      .filter((l: Config) => l.visible && (!!l.downloadDataType || l.downloadUrl));
+      .filter((l: LayerConfig) => l.visible && (!!l.downloadDataType || l.downloadUrl));
   }
 
 
-  async downloadData(config: Config, geom: NgmGeometry) {
+  async downloadData(config: LayerConfig, geom: NgmGeometry) {
     // Get bbox
     const rectangle = geom.positions.map(cartesianToDegrees);
     rectangle.pop();
@@ -72,7 +73,7 @@ export class DataDownload extends LitElementI18n {
 
     const activeLayers = this.activeLayersForDownload();
     const content = activeLayers.length ?
-      activeLayers.map((config: Config) =>
+      activeLayers.map((config: LayerConfig) =>
         html`
           <div class="data-download-item">
             <div class="ngm-file-download-icon" @click=${() => {

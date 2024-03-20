@@ -21,7 +21,6 @@ import LocalStorageController from '../../LocalStorageController';
 import type {Viewer} from 'cesium';
 import {CustomDataSource, KmlDataSource} from 'cesium';
 import {showBannerWarning, showSnackbarError} from '../../notifications';
-import type {Config} from '../../layers/ngm-layers-item';
 import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
 import {fromGeoJSON} from '../../toolbox/helpers';
 import type {NgmGeometry} from '../../toolbox/interfaces';
@@ -31,6 +30,8 @@ import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
 import {isProject, isProjectOwnerOrEditor} from './helpers';
+import {LayerConfig} from '../../layertree';
+import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -120,7 +121,7 @@ export class NgmDashboard extends LitElementI18n {
   accessor overviewToast;
   private viewer: Viewer | null = null;
   private assetConfigs: any = {};
-  private assets: Config[] | undefined;
+  private assets: LayerConfig[] | undefined;
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
   private userEmail: string | undefined;
@@ -179,7 +180,7 @@ export class NgmDashboard extends LitElementI18n {
       if (this.selectedViewIndx !== undefined && this.assets) {
         await Promise.all(this.assets.map(async layer => {
           const data = await layer.promise;
-          data.show = true;
+          if (data && !(data instanceof EarthquakeVisualizer)) data.show = true;
           this.dispatchEvent(new CustomEvent('layerclick', {
             detail: {layer}
           }));
@@ -225,8 +226,8 @@ export class NgmDashboard extends LitElementI18n {
     });
   }
 
-  async fetchAssets(assets: Asset[]): Promise<Config[]> {
-    const assetsData: Config[] = [];
+  async fetchAssets(assets: Asset[]): Promise<LayerConfig[]> {
+    const assetsData: LayerConfig[] = [];
     if (!this.viewer) return assetsData;
     for (const asset of assets) {
       try {

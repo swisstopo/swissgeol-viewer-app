@@ -2,11 +2,12 @@ import {html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {repeat} from 'lit/directives/repeat.js';
 import {LitElementI18n} from '../i18n.js';
-import type {Config, LayerTreeItem as NgmLayersItem} from './ngm-layers-item';
+import type {LayerTreeItem as NgmLayersItem} from './ngm-layers-item';
 // eslint-disable-next-line no-duplicate-imports
 import './ngm-layers-item';
 import {MultiDrag, Sortable} from 'sortablejs';
 import DashboardStore from '../store/dashboard';
+import {LayerConfig} from '../layertree';
 
 Sortable.mount(new MultiDrag());
 
@@ -14,7 +15,7 @@ Sortable.mount(new MultiDrag());
 @customElement('ngm-layers')
 export default class LayerTree extends LitElementI18n {
   @property({type: Array})
-  accessor layers: Config[] = [];
+  accessor layers: LayerConfig[] = [];
   @property({type: Object})
   accessor actions: any;
   @property({type: Boolean})
@@ -65,7 +66,7 @@ export default class LayerTree extends LitElementI18n {
     }
   }
 
-  createLayerTemplate(config: Config, idx: number, len: number) {
+  createLayerTemplate(config: LayerConfig, idx: number, len: number) {
     idx = len - 1 - idx; // we want to create in reverse order
     if (!config.promise) {
       config.promise = config.load();

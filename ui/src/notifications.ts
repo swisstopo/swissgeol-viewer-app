@@ -4,20 +4,20 @@ import 'fomantic-ui-css/components/toast.js';
 import i18next from 'i18next';
 
 
-export function showSnackbarInfo(message: string, options?) {
-  showSnackbarMessage(message, 'snackbar info', options);
+export function showSnackbarInfo(message: string, options?): HTMLElement {
+  return showSnackbarMessage(message, 'snackbar info', options);
 }
 
-export function showSnackbarSuccess(message: string) {
-  showSnackbarMessage(message, 'snackbar success');
+export function showSnackbarSuccess(message: string): HTMLElement {
+  return showSnackbarMessage(message, 'snackbar success');
 }
 
-export function showSnackbarError(message: string) {
-  showSnackbarMessage(message, 'snackbar error');
+export function showSnackbarError(message: string): HTMLElement {
+  return showSnackbarMessage(message, 'snackbar error');
 }
 
-export function showBannerError(element: HTMLElement, message: string) {
-  showBanner(element, {
+export function showBannerError(element: HTMLElement, message: string): HTMLElement {
+  return showBanner(element, {
     showImage: 'src/images/i_error.svg',
     closeIcon: true,
     className: {toast: 'snackbar error'},
@@ -25,8 +25,8 @@ export function showBannerError(element: HTMLElement, message: string) {
   });
 }
 
-export function showBannerWarning(element: HTMLElement, message: string) {
-  showBanner(element, {
+export function showBannerWarning(element: HTMLElement, message: string): HTMLElement {
+  return showBanner(element, {
     showImage: 'src/images/I_warning.svg',
     closeIcon: true,
     className: {toast: 'snackbar warning'},
@@ -34,8 +34,8 @@ export function showBannerWarning(element: HTMLElement, message: string) {
   });
 }
 
-export function showBannerSuccess(element: HTMLElement, message: string) {
-  showBanner(element, {
+export function showBannerSuccess(element: HTMLElement, message: string): HTMLElement {
+  return showBanner(element, {
     showImage: 'src/images/i_success.svg',
     closeIcon: true,
     className: {toast: 'snackbar success'},
@@ -43,25 +43,27 @@ export function showBannerSuccess(element: HTMLElement, message: string) {
   });
 }
 
-export function showSnackbarConfirmation(message: string, callbacks: { onApprove?: () => void, onDeny?: () => void }) {
-  showSnackbarMessage(message, 'snackbar info actions', {
+export function showSnackbarConfirmation(message: string, callbacks: { onApprove?: () => void, onDeny?: () => void }): HTMLElement {
+  return showSnackbarMessage(message, 'snackbar info actions', {
     displayTime: 0,
+    closeOnClick: false,
+    closeIcon: false,
+    onApprove: callbacks.onApprove,
+    onDeny: callbacks.onDeny,
     actions: [
       {
         class: 'approve ngm-action-btn',
-        text: 'OK',
-        click: callbacks.onApprove
+        text: 'OK'
       },
       {
         class: 'deny ngm-action-btn ngm-cancel-btn',
-        text: i18next.t('app_cancel_btn_label'),
-        click: callbacks.onDeny
+        text: i18next.t('app_cancel_btn_label')
       }]
   });
 }
 
-function showSnackbarMessage(message: string, className: string, options = {}) {
-  showMessage(message, {
+function showSnackbarMessage(message: string, className: string, options = {}): HTMLElement {
+  return showMessage(message, {
     position: 'bottom center',
     className: {
       toast: className
@@ -70,17 +72,17 @@ function showSnackbarMessage(message: string, className: string, options = {}) {
   });
 }
 
-export function showMessage(message: string, options: any = {}) {
+export function showMessage(message: string, options: any = {}): HTMLElement {
   // hide same toasts
   if (options.class) (<HTMLElement>document.querySelector(`.${options.class}`))?.parentElement?.remove();
-  $('body').toast(Object.assign({
+  return $('body').toast(Object.assign({
     message: message,
     closeIcon: true,
-  }, options));
+  }, options))[0];
 }
 
 export function showBanner(element: HTMLElement, options) {
-  $(element).toast({position: 'attached', context: $(element), displayTime: 20000, ...options});
+  return $(element).toast({position: 'attached', context: $(element), displayTime: 20000, ...options})[0];
 }
 
 export function isBannerShown(element: HTMLElement) {

@@ -64,6 +64,8 @@
 @import 'ngm-voxel-filter.css';
 @import 'ngm-voxel-simple-filter.css';
 @import 'ngm-coordinate-popup.css';
+@import 'ngm-ion-modal.css';
+@import 'ngm-info-table.css';
 
 * {
   scrollbar-color: light;
@@ -192,11 +194,13 @@ cesium-view-cube {
   pointer-events: all;
 }
 
+.toolbar-settings,
 .language-settings {
   display: flex;
   flex-direction: column;
 }
 
+.toolbar-settings > label,
 .language-settings label {
   margin-top: 12px;
   margin-bottom: 12px;
@@ -403,6 +407,10 @@ ngm-full-screen-view.full-active {
 
 ngm-voxel-filter .ngm-action-btn.ui.button {
   width: auto;
+}
+
+.ngm-action-btn.ui.button.preloader {
+  cursor: wait;
 }
 
 .visible-mobile {

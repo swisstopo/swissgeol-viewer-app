@@ -28,10 +28,10 @@ import {
     ScreenSpaceEventType,
     SunLight,
     Transforms,
-    Viewer,
-    FrameRateMonitor
+    Viewer
 } from 'cesium';
 import MainStore from './store/main';
+import {getExaggeration} from './permalink';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -99,8 +99,7 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
 
     const searchParams = new URLSearchParams(location.search);
 
-    let zExaggeration = parseFloat(searchParams.get('zExaggeration') || '1');
-    zExaggeration = (zExaggeration >= 1 && zExaggeration <= 100) ? zExaggeration : 1;
+    const zExaggeration = getExaggeration();
     if (searchParams.get('noLimit') === 'false') {
         noLimit = false;
     }
@@ -156,7 +155,7 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
         requestRenderMode: requestRenderMode,
         // maximumRenderTimeChange: 10,
     });
-    setResolutionScale(viewer);
+
     const scene = viewer.scene;
     scene.rethrowRenderErrors = rethrowRenderErrors;
     // remove the default behaviour of calling 'zoomTo' on the double clicked entity
@@ -295,19 +294,6 @@ function enableCenterOfRotate(viewer: Viewer) {
     // free view if ctrl released
     document.addEventListener('keyup', (evt) => {
         if (evt.key === 'Control') scene.camera.lookAtTransform(Matrix4.IDENTITY);
-    });
-}
-
-function setResolutionScale(viewer: Viewer) {
-    const frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
-    const scaleDownFps = 20;
-    const scaleUpFps = 30;
-    viewer.scene.postRender.addEventListener(() => {
-        if (frameRateMonitor.lastFramesPerSecond < scaleDownFps && viewer.resolutionScale > 0.45) {
-            viewer.resolutionScale = Number((viewer.resolutionScale - 0.05).toFixed(2));
-        } else if (frameRateMonitor.lastFramesPerSecond > scaleUpFps && viewer.resolutionScale < 1) {
-            viewer.resolutionScale = Number((viewer.resolutionScale + 0.05).toFixed(2));
-        }
     });
 }
 

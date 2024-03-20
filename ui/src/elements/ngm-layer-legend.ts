@@ -3,12 +3,13 @@ import {customElement, state} from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
-import type {Config} from '../layers/ngm-layers-item';
+
+import {LayerConfig} from '../layertree';
 
 @customElement('ngm-layer-legend')
 export class NgmLayerLegend extends LitElementI18n {
   @state()
-  accessor config!: Config;
+  accessor config!: LayerConfig;
 
   protected firstUpdated(_changedProperties) {
     // hidden is required to have correct window placing

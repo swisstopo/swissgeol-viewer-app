@@ -3,12 +3,10 @@
   box-shadow: none;
 }
 
-.ui.toast-container.bottom.center .toast-box.floating .snackbar.info {
-  display: flex;
-}
-
 .ui.toast-container.bottom.center .toast-box.floating .snackbar.info > i {
-  margin: 0 0 0 auto;
+  top: 10px;
+  right: 10px;
+  position: absolute;
   cursor: pointer;
 }
 

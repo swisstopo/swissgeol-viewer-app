@@ -6,14 +6,14 @@ import '../layers/ngm-catalog';
 import './dashboard/ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
-import defaultLayerTree from '../layertree';
+import defaultLayerTree, {LayerConfig} from '../layertree';
 import {
+  addAssetId,
   getAssetIds,
-  getAttribute,
-  getIonToken,
+  getAttribute, getCesiumToolbarParam,
   getLayerParams,
   getSliceParam,
-  getZoomToPosition,
+  getZoomToPosition, setCesiumToolbarParam,
   syncLayersParam
 } from '../permalink';
 import {createCesiumObject} from '../layers/helpers';
@@ -26,7 +26,7 @@ import {
   BoundingSphere,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-  Math as CMath, KmlDataSource, CustomDataSource
+  Math as CMath, KmlDataSource, CustomDataSource, GeoJsonDataSource
 } from 'cesium';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
@@ -42,8 +42,8 @@ import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
 import {getLayerLabel} from '../swisstopoImagery.js';
 
-import type {Config} from '../layers/ngm-layers-item.js';
 import DashboardStore from '../store/dashboard';
+import {getAssets} from '../api-ion';
 
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
@@ -54,9 +54,9 @@ export class SideBar extends LitElementI18n {
   @property({type: Boolean})
   accessor displayUndergroundHint = true;
   @state()
-  accessor catalogLayers: any;
+  accessor catalogLayers: LayerConfig[] | undefined;
   @state()
-  accessor activeLayers: any;
+  accessor activeLayers: LayerConfig[] = [];
   @state()
   accessor activePanel: string | null = null;
   @state()
@@ -69,6 +69,8 @@ export class SideBar extends LitElementI18n {
   accessor hideDataDisplayed = false;
   @state()
   accessor layerOrderChangeActive = false;
+  @state()
+  accessor debugToolsActive = getCesiumToolbarParam();
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder')
   accessor toastPlaceholder;
   @query('ngm-catalog')
@@ -104,6 +106,44 @@ export class SideBar extends LitElementI18n {
       await this.syncActiveLayers();
       this.catalogElement.requestUpdate();
       MainStore.nextLayersRemove();
+    });
+
+    MainStore.onIonAssetAdd.subscribe(asset => {
+      const assetIds = getAssetIds();
+      if (!asset.id || assetIds.includes(asset.id.toString())) {
+        showSnackbarInfo(i18next.t('dtd_asset_exists_info'));
+        return;
+      }
+      const token = MainStore.ionToken.value;
+      if (!token) return;
+      const layer: LayerConfig = {
+        type: LayerType.tiles3d,
+        assetId: asset.id,
+        ionToken: token,
+        label: asset.name,
+        layer: asset.id.toString(),
+        visible: true,
+        displayed: true,
+        opacityDisabled: true,
+        pickable: true,
+        customAsset: true,
+      };
+      layer.load = () => this.addLayer(layer);
+      this.activeLayers.push(layer);
+
+      addAssetId(asset.id);
+      this.activeLayers = [...this.activeLayers];
+      syncLayersParam(this.activeLayers);
+    });
+
+    MainStore.onRemoveIonAssets.subscribe(async () => {
+      const assets = this.activeLayers.filter(l => !!l.assetId);
+      for (const asset of assets) {
+        await this.removeLayerWithoutSync(asset);
+      }
+      this.viewer!.scene.requestRender();
+      this.requestUpdate();
+      syncLayersParam(this.activeLayers);
     });
 
     const sliceOptions = getSliceParam();
@@ -244,6 +284,16 @@ export class SideBar extends LitElementI18n {
             `)}
           </div>
         </div>
+        <div class="toolbar-settings">
+          <label>${i18next.t('lsb_debug_tools')}</label>
+          <div class="ngm-checkbox ngm-debug-tools-toggle ${classMap({active: this.debugToolsActive})}"
+               @click=${() => (<HTMLInputElement> this.querySelector('.ngm-debug-tools-toggle > input')).click()}>
+            <input type="checkbox" ?checked=${this.debugToolsActive} @change="${this.toggleDebugTools}">
+            <span class="ngm-checkbox-icon">
+              </span>
+            <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
+          </div>
+        </div>
       </div>
       <div .hidden=${this.activePanel !== 'data' || this.hideDataDisplayed}
            class="ngm-side-bar-panel ngm-extension-panel">
@@ -274,6 +324,10 @@ export class SideBar extends LitElementI18n {
               .toastPlaceholder=${this.toastPlaceholder} 
               .onKmlUpload=${(file: File) => this.onKmlUpload(file)}>
           </ngm-layers-upload>
+          <button class="ui button ngm-ion-add-content-btn ngm-action-btn" 
+                  @click=${() => this.dispatchEvent(new CustomEvent('openIonModal'))}>
+            ${i18next.t('dtd_add_ion_token')}
+          </button>
           <h5 class="ui header ngm-background-label">
             ${i18next.t('dtd_background_map_label')}
             <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
@@ -309,7 +363,7 @@ export class SideBar extends LitElementI18n {
       const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
-    const ionToken = getIonToken();
+    const ionToken = MainStore.ionToken.value;
 
     if (!urlLayers.length && !assetIds.length) {
       this.activeLayers = flatLayers.filter(l => l.displayed);
@@ -341,24 +395,28 @@ export class SideBar extends LitElementI18n {
       activeLayers.push(layer);
     }
 
-    assetIds.forEach(assetId => {
-      const layer = {
-        type: LayerType.tiles3d,
-        assetId: assetId,
-        ionToken: ionToken,
-        label: assetId,
-        layer: assetId,
-        visible: true,
-        displayed: true,
-        opacityDisabled: true,
-        pickable: true,
-        customAsset: true,
-        load: () => {
-        }
-      };
-      layer.load = () => this.addLayer(layer);
-      activeLayers.push(layer);
-    });
+    if (ionToken) {
+      const ionAssetsRes = await getAssets(ionToken);
+      const ionAssets = ionAssetsRes?.items || [];
+
+      assetIds.forEach(assetId => {
+        const ionAsset = ionAssets.find(asset => asset.id === Number(assetId));
+        const layer: LayerConfig = {
+          type: LayerType.tiles3d,
+          assetId: Number(assetId),
+          ionToken: ionToken,
+          label: ionAsset?.name || assetId,
+          layer: assetId,
+          visible: true,
+          displayed: true,
+          opacityDisabled: true,
+          pickable: true,
+          customAsset: true
+        };
+        layer.load = () => this.addLayer(layer);
+        activeLayers.push(layer);
+      });
+    }
 
     this.activeLayers = activeLayers;
     syncLayersParam(this.activeLayers);
@@ -448,14 +506,16 @@ export class SideBar extends LitElementI18n {
     layer.setVisibility && layer.setVisibility(layer.visible);
 
     syncLayersParam(this.activeLayers);
-    this.catalogLayers = [...this.catalogLayers];
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
     this.activeLayers = [...this.activeLayers];
     this.viewer!.scene.requestRender();
   }
 
   onLayerChanged(evt) {
     this.queryManager!.hideObjectInformation();
-    this.catalogLayers = [...this.catalogLayers];
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
     this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);
     if (evt.detail) {
@@ -464,7 +524,7 @@ export class SideBar extends LitElementI18n {
     this.requestUpdate();
   }
 
-  maybeShowVisibilityHint(config: Config) {
+  maybeShowVisibilityHint(config: LayerConfig) {
     if (this.displayUndergroundHint
       && config.visible
       && [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!)
@@ -480,12 +540,14 @@ export class SideBar extends LitElementI18n {
     await this.removeLayer(config);
   }
 
-  async removeLayerWithoutSync(config) {
+  async removeLayerWithoutSync(config: LayerConfig) {
     if (config.setVisibility) {
       config.setVisibility(false);
     } else {
       const c = await config.promise;
-      this.viewer!.dataSources.getByName(c.name)[0].show = false;
+      if (c instanceof CustomDataSource || c instanceof GeoJsonDataSource) {
+        this.viewer!.dataSources.getByName(c.name)[0].show = false;
+      }
     }
     config.visible = false;
     config.displayed = false;
@@ -494,11 +556,12 @@ export class SideBar extends LitElementI18n {
     }
   }
 
-  async removeLayer(config) {
+  async removeLayer(config: LayerConfig) {
     await this.removeLayerWithoutSync(config);
     this.viewer!.scene.requestRender();
     syncLayersParam(this.activeLayers);
-    this.catalogLayers = [...this.catalogLayers];
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
     this.activeLayers = [...this.activeLayers];
     this.requestUpdate();
   }
@@ -546,7 +609,7 @@ export class SideBar extends LitElementI18n {
   }
 
   createSearchLayer(searchLayer) {
-    let config;
+    let config: LayerConfig;
     if (searchLayer.type) {
       config = searchLayer;
       config.visible = true;
@@ -559,9 +622,7 @@ export class SideBar extends LitElementI18n {
         visible: true,
         displayed: true,
         opacity: DEFAULT_LAYER_OPACITY,
-        queryType: 'geoadmin',
-        load: () => {
-        }
+        queryType: 'geoadmin'
       };
     }
     config.load = () => this.addLayer(config);
@@ -627,7 +688,7 @@ export class SideBar extends LitElementI18n {
     });
   }
 
-  addLayer(layer) {
+  addLayer(layer: LayerConfig) {
     layer.promise = createCesiumObject(this.viewer!, layer);
     this.dispatchEvent(new CustomEvent('layeradded', {
       detail: {
@@ -660,7 +721,7 @@ export class SideBar extends LitElementI18n {
     await this.viewer.dataSources.add(uploadedLayer);
     // done like this to have correct rerender of component
     const promise = Promise.resolve(uploadedLayer);
-    const config: Config = {
+    const config: LayerConfig = {
       load() {return promise;},
       label: name,
       promise: promise,
@@ -674,6 +735,13 @@ export class SideBar extends LitElementI18n {
     this.requestUpdate();
     await this.onCatalogLayerClicked(config);
     await this.viewer.zoomTo(uploadedLayer);
+  }
+
+  toggleDebugTools(event) {
+    const active = event.target.checked;
+    this.debugToolsActive = active;
+    setCesiumToolbarParam(active);
+    this.dispatchEvent(new CustomEvent('toggleDebugTools', {detail: {active}}));
   }
 
   createRenderRoot() {

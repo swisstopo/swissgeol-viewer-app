@@ -16,10 +16,12 @@ import {
   TOPIC_PARAM,
   PROJECT_PARAM,
   VIEW_PARAM,
-  ZOOM_TO_PARAM
+  ZOOM_TO_PARAM, EXAGGERATION_PARAM
 } from './constants';
 import type {Cartographic, Camera} from 'cesium';
 import type {TopicParamSubject, ProjectParamSubject} from './store/dashboard';
+
+import {LayerConfig} from './layertree';
 
 
 export function rewriteParams() {
@@ -69,7 +71,7 @@ export function syncCamera(camera: Camera) {
   setURLSearchParams(params);
 }
 
-function safeSplit(str) {
+function safeSplit(str): string[] {
   return str ? str.split(',') : [];
 }
 
@@ -85,7 +87,7 @@ export function getLayerParams() {
   return layers.map((layer, key) => {
     return {
       layer: layer,
-      opacity: Number(1 - layersTransparency[key]),
+      opacity: Number(1 - Number(layersTransparency[key])),
       visible: layersVisibility[key] === 'true',
     };
   });
@@ -96,22 +98,42 @@ export function getAssetIds() {
   return safeSplit(params.get(ASSET_IDS_URL_PARAM));
 }
 
+export function addAssetId(id: number) {
+  const params = getURLSearchParams();
+  const assetIds = safeSplit(params.get(ASSET_IDS_URL_PARAM));
+
+  if (assetIds.length) {
+    assetIds.push(id.toString());
+    params.set(ASSET_IDS_URL_PARAM, assetIds.join(','));
+  } else {
+    params.append(ASSET_IDS_URL_PARAM, id.toString());
+  }
+
+  setURLSearchParams(params);
+}
+
 export function getIonToken() {
   const params = getURLSearchParams();
   return params.get(ION_TOKEN_URL_PARAM);
 }
 
-export function syncLayersParam(activeLayers) {
+export function setIonToken(token: string) {
+  const params = getURLSearchParams();
+  params.set(ION_TOKEN_URL_PARAM, token);
+  setURLSearchParams(params);
+}
+
+export function syncLayersParam(activeLayers: LayerConfig[]) {
   const params = getURLSearchParams();
   const layerNames: string[] = [];
   const layersTransparency: string[] = [];
   const layersVisibility: boolean[] = [];
   activeLayers.forEach(l => {
-    if (!l.customAsset && !l.notSaveToPermalink) {
+    if (!l.customAsset && !l.notSaveToPermalink && l.layer) {
       layerNames.push(l.layer);
-      const transparency = isNaN(l.opacity) ? 0 : (1 - l.opacity);
+      const transparency = !l.opacity || isNaN(l.opacity) ? 0 : (1 - l.opacity);
       layersTransparency.push(transparency.toFixed(2));
-      layersVisibility.push(l.visible);
+      layersVisibility.push(!!l.visible);
     }
   });
 
@@ -128,7 +150,7 @@ export function syncLayersParam(activeLayers) {
   const assetParams = getAssetIds();
 
   if (assetParams.length) {
-    const assetIds = assetParams.filter(id => activeLayers.find(l => l.assetId === id && l.displayed));
+    const assetIds = assetParams.filter(id => activeLayers.find(l => l.assetId === Number(id) && l.displayed));
     if (assetIds.length) {
       params.set(ASSET_IDS_URL_PARAM, assetIds.join(','));
     } else {
@@ -229,6 +251,16 @@ export function getCesiumToolbarParam(): boolean {
   return getURLSearchParams().has('cesiumToolbar');
 }
 
+export function setCesiumToolbarParam(value: boolean) {
+  const params = getURLSearchParams();
+  if (value && !params.has('cesiumToolbar')) {
+    params.append('cesiumToolbar', '');
+  } else if (!value && params.has('cesiumToolbar')) {
+    params.delete('cesiumToolbar');
+  }
+  setURLSearchParams(params);
+}
+
 export function syncStoredView(stored: string, skipParams: string[] = [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch']) {
   const params = getURLSearchParams();
   const syncedParams = new URLSearchParams(params);
@@ -282,3 +314,22 @@ export function removeProject() {
 export function getPermalink() {
   return window.location.search;
 }
+
+export function getExaggeration() {
+  const params = getURLSearchParams();
+  let zExaggeration = parseFloat(params.get(EXAGGERATION_PARAM) || '1');
+  if (zExaggeration < 1) zExaggeration = 1;
+  if (zExaggeration > 100) zExaggeration = 100;
+  return zExaggeration;
+}
+
+export function setExaggeration(zExaggeration: number) {
+  const params = getURLSearchParams();
+  if (params.has(EXAGGERATION_PARAM)) {
+    params.set(EXAGGERATION_PARAM, zExaggeration.toFixed());
+  } else {
+    params.append(EXAGGERATION_PARAM, zExaggeration.toString());
+  }
+  setURLSearchParams(params);
+}
+

@@ -21,6 +21,7 @@ import './elements/ngm-project-popup';
 import './elements/view-menu';
 import './elements/project-selector';
 import './elements/ngm-coordinate-popup';
+import './elements/ngm-ion-modal';
 
 import '@geoblocks/cesium-view-cube';
 
@@ -53,11 +54,11 @@ import {customElement, query, state} from 'lit/decorators.js';
 import {showSnackbarInfo} from './notifications';
 import type MapChooser from './MapChooser';
 import type {NgmSlowLoading} from './elements/ngm-slow-loading';
-import type {Globe, Viewer} from 'cesium';
-import type {Config} from './layers/ngm-layers-item';
+import {Event, FrameRateMonitor, Globe, Viewer} from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type {SideBar} from './elements/ngm-side-bar';
+import {LayerConfig} from './layertree';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -98,7 +99,7 @@ export class NgmApp extends LitElementI18n {
   @state()
   accessor queueLength = 0;
   @state()
-  accessor legendConfigs: Config[] = [];
+  accessor legendConfigs: LayerConfig[] = [];
   @state()
   accessor showTrackingConsent = false;
   @state()
@@ -109,6 +110,10 @@ export class NgmApp extends LitElementI18n {
   accessor showAxisOnMap = false;
   @state()
   accessor showProjectSelector = false;
+  @state()
+  accessor showCesiumToolbar = getCesiumToolbarParam();
+  @state()
+  accessor showIonModal = false
   @query('ngm-cam-configuration')
   accessor camConfigElement;
   @query('ngm-voxel-filter')
@@ -117,8 +122,8 @@ export class NgmApp extends LitElementI18n {
   accessor voxelSimpleFilterElement;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
-  private showCesiumToolbar = getCesiumToolbarParam();
   private waitForViewLoading = false;
+  private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
 
   constructor() {
     super();
@@ -249,6 +254,9 @@ export class NgmApp extends LitElementI18n {
     rewriteParams();
     const cesiumContainer = this.querySelector('#cesium')!;
     const viewer = await setupViewer(cesiumContainer, isLocalhost);
+    if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
+      this.setResolutionScale();
+    }
     this.viewer = viewer;
     window['viewer'] = viewer; // for debugging
 
@@ -338,6 +346,14 @@ export class NgmApp extends LitElementI18n {
         });
       }
     }
+    if (changedProperties.has('showCesiumToolbar')) {
+      if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
+        this.setResolutionScale();
+      } else if (this.showCesiumToolbar && this.resolutionScaleRemoveCallback) {
+        this.resolutionScaleRemoveCallback();
+        this.resolutionScaleRemoveCallback = undefined;
+      }
+    }
     super.updated(changedProperties);
   }
 
@@ -352,6 +368,21 @@ export class NgmApp extends LitElementI18n {
         }
       }, timeout - performance.now());
     }
+  }
+
+  setResolutionScale() {
+    if (!this.viewer) return;
+    const viewer = this.viewer;
+    const frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
+    const scaleDownFps = 20;
+    const scaleUpFps = 30;
+    this.resolutionScaleRemoveCallback = viewer.scene.postRender.addEventListener(() => {
+      if (frameRateMonitor.lastFramesPerSecond < scaleDownFps && viewer.resolutionScale > 0.45) {
+        viewer.resolutionScale = Number((viewer.resolutionScale - 0.05).toFixed(2));
+      } else if (frameRateMonitor.lastFramesPerSecond > scaleUpFps && viewer.resolutionScale < 1) {
+        viewer.resolutionScale = Number((viewer.resolutionScale + 0.05).toFixed(2));
+      }
+    });
   }
 
   onTrackingAllowedChanged(event) {
@@ -413,7 +444,11 @@ export class NgmApp extends LitElementI18n {
           .mobileView=${this.mobileView}
           @layeradded=${this.onLayerAdded}
           @showLayerLegend=${this.onShowLayerLegend}
-          @showVoxelFilter=${this.onShowVoxelFilter}>
+          @showVoxelFilter=${this.onShowVoxelFilter}
+          @toggleDebugTools=${(evt => {
+            this.showCesiumToolbar = evt.detail.active;
+          })}
+          @openIonModal=${() => this.showIonModal = true}>
         </ngm-side-bar>
         <div class='map' oncontextmenu="return false;">
           <div id='cesium'>
@@ -469,6 +504,10 @@ export class NgmApp extends LitElementI18n {
             <cesium-toolbar></cesium-toolbar>` : ''}
           ${this.showTrackingConsent ? html`
             <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>` : ''}
+          <ngm-ion-modal class="ngm-floating-window"
+                         .hidden=${!this.showIonModal} 
+                         @close=${() => this.showIonModal = false}>
+          </ngm-ion-modal>
         </div>
       </main>
     `;

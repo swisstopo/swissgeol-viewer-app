@@ -41,6 +41,7 @@ export const TARGET_PARAM = 'target';
 export const TOPIC_PARAM = 'topicId';
 export const PROJECT_PARAM = 'projectId';
 export const VIEW_PARAM = 'viewId';
+export const EXAGGERATION_PARAM = 'zExaggeration';
 
 export const MANTEL_COLOR = Color.fromCssColorString('#383838');
 

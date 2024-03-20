@@ -31,43 +31,6 @@ ngm-object-information .query-list-item:first-child .item-zoom-btn-container {
   margin-top: 0;
 }
 
-ngm-object-information .ui.small.table {
-  font-size: unset;
-}
-
-ngm-object-information .ui.basic.table {
-  background-color: #F8F9FA;
-  border-spacing: 4px;
-  border-collapse: collapse;
-}
-
-ngm-object-information .ui.basic.table tbody tr {
-  border-bottom-width: 4px;
-  border-bottom-color: #F1F3F5;
-}
-
-ngm-object-information .ui.table .key {
-  padding-left: 8px !important;
-  vertical-align: top;
-}
-
-ngm-object-information .ui.table .value {
-  min-width: 160px;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: bold;
-  padding-right: 8px !important;
-}
-
-ngm-object-information .ui.table .value a {
-  color: #357183;
-}
-
-ngm-object-information .ui.table .value img {
-  max-width: 200px;
-}
-
 ngm-object-information .ui.divider {
   margin: 10px 0 0 0;
 }
