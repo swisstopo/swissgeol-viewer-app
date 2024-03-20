@@ -68,7 +68,7 @@ export default class LayerTree extends LitElementI18n {
 
   createLayerTemplate(config: LayerConfig, idx: number, len: number) {
     idx = len - 1 - idx; // we want to create in reverse order
-    if (!config.promise) {
+    if (!config.promise && config.load) {
       config.promise = config.load();
     }
 

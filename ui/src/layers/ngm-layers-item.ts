@@ -26,6 +26,8 @@ export class LayerTreeItem extends LitElementI18n {
   accessor config!: LayerConfig;
   @property({type: Boolean})
   accessor changeOrderActive = false;
+  @property({type: Boolean})
+  accessor clone = false;
   @state()
   accessor loading = 0;
   @state()
@@ -182,6 +184,7 @@ export class LayerTreeItem extends LitElementI18n {
 
 
   render() {
+    if (this.clone) return '';
     return html`
       <div ?hidden=${!this.changeOrderActive || this.loading > 0} class="ngm-checkbox ${this.movable ? 'active' : ''}"
            @click=${() => this.movable = !this.movable}>
@@ -209,11 +212,11 @@ export class LayerTreeItem extends LitElementI18n {
         </label>
         <label ?hidden=${this.config.opacityDisabled}>${(this.config.opacity! * 100).toFixed()} %</label>
         <input type="range" class="ngm-slider ${classMap({disabled: this.changeOrderActive})}" ?hidden=${this.config.opacityDisabled}
-               .disabled=${this.changeOrderActive}
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
                .value=${this.config.opacity?.toString() || '1'}
-               @input=${this.inputOpacity}/>
+               @input=${this.inputOpacity}
+               @mousedown=${e => this.changeOrderActive && e.preventDefault()}>
       </div>
       </div>
       <div .hidden=${!this.config.previewColor} class="ngm-displayed-color"
@@ -250,6 +253,8 @@ export class LayerTreeItem extends LitElementI18n {
     const node = super.cloneNode(deep) as LayerTreeItem;
     node.config = this.config;
     node.actions = this.actions;
+    node.changeOrderActive = this.changeOrderActive;
+    node.clone = true;
     return node;
   }
 }
