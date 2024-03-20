@@ -394,7 +394,7 @@ export class NgmApp extends LitElementI18n {
   showNavigationHint() {
     const ctrlHandler = evt => {
       if (evt.key === 'Control') {
-        (<HTMLElement | null>document.querySelector('.ngm-nav-hint .close.icon'))?.click();
+        (<HTMLElement | null>document.querySelector('.ngm-nav-hint'))?.click();
       }
     };
     showSnackbarInfo(i18next.t('navigation_hint'), {
