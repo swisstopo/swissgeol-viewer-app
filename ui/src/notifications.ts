@@ -75,10 +75,11 @@ function showSnackbarMessage(message: string, className: string, options = {}): 
 export function showMessage(message: string, options: any = {}): HTMLElement {
   // hide same toasts
   if (options.class) (<HTMLElement>document.querySelector(`.${options.class}`))?.parentElement?.remove();
-  return $('body').toast(Object.assign({
-    message: message,
-    closeIcon: true,
-  }, options))[0];
+  $('body').toast(Object.assign({
+    showIcon: 'close',
+    imageClass: 'ngm-toast-image',
+    message: message
+  }, options));
 }
 
 export function showBanner(element: HTMLElement, options) {
