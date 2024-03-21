@@ -341,10 +341,11 @@ export class NgmApp extends LitElementI18n {
               }]
           });
         // closeOnClick doesn't work with actions
-        document.querySelector('.ngm-cam-lock-info')?.addEventListener('click', () => {
+        document.querySelector('.ngm-cam-lock-info .close.icon')?.addEventListener('click', () => {
           (<HTMLElement>document.querySelector('.ngm-cam-lock-info'))?.parentElement?.remove();
         });
       }
+
     }
     if (changedProperties.has('showCesiumToolbar')) {
       if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {

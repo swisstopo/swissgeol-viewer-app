@@ -4,15 +4,16 @@ import 'fomantic-ui-css/components/toast.js';
 import i18next from 'i18next';
 
 
-export function showSnackbarInfo(message: string, options?): HTMLElement {
+export function showSnackbarInfo(message: string, optionsParam?): void {
+  const options = {...optionsParam, showIcon: 'close'};
   return showSnackbarMessage(message, 'snackbar info', options);
 }
 
-export function showSnackbarSuccess(message: string): HTMLElement {
+export function showSnackbarSuccess(message: string): void {
   return showSnackbarMessage(message, 'snackbar success');
 }
 
-export function showSnackbarError(message: string): HTMLElement {
+export function showSnackbarError(message: string): void {
   return showSnackbarMessage(message, 'snackbar error');
 }
 
@@ -43,7 +44,7 @@ export function showBannerSuccess(element: HTMLElement, message: string): HTMLEl
   });
 }
 
-export function showSnackbarConfirmation(message: string, callbacks: { onApprove?: () => void, onDeny?: () => void }): HTMLElement {
+export function showSnackbarConfirmation(message: string, callbacks: { onApprove?: () => void, onDeny?: () => void }): void {
   return showSnackbarMessage(message, 'snackbar info actions', {
     displayTime: 0,
     closeOnClick: false,
@@ -62,7 +63,7 @@ export function showSnackbarConfirmation(message: string, callbacks: { onApprove
   });
 }
 
-function showSnackbarMessage(message: string, className: string, options = {}): HTMLElement {
+function showSnackbarMessage(message: string, className: string, options = {}): void {
   return showMessage(message, {
     position: 'bottom center',
     className: {
@@ -72,12 +73,11 @@ function showSnackbarMessage(message: string, className: string, options = {}): 
   });
 }
 
-export function showMessage(message: string, options: any = {}): HTMLElement {
+export function showMessage(message: string, options: any = {}): void {
   // hide same toasts
   if (options.class) (<HTMLElement>document.querySelector(`.${options.class}`))?.parentElement?.remove();
   $('body').toast(Object.assign({
     message: message,
-    showIcon: 'close'
   }, options));
 }
 
