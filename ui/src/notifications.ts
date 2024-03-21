@@ -4,7 +4,8 @@ import 'fomantic-ui-css/components/toast.js';
 import i18next from 'i18next';
 
 
-export function showSnackbarInfo(message: string, options?): HTMLElement {
+export function showSnackbarInfo(message: string, optionsParam?): HTMLElement {
+  const options = {...optionsParam, showIcon: 'close'};
   return showSnackbarMessage(message, 'snackbar info', options);
 }
 
@@ -77,8 +78,7 @@ export function showMessage(message: string, options: any = {}): HTMLElement {
   if (options.class) (<HTMLElement>document.querySelector(`.${options.class}`))?.parentElement?.remove();
   return $('body').toast(Object.assign({
     message: message,
-    closeIcon: true,
-  }, options))[0];
+  }, options));
 }
 
 export function showBanner(element: HTMLElement, options) {

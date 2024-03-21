@@ -8,10 +8,11 @@
   right: 10px;
   position: absolute;
   cursor: pointer;
+  margin: 0;
 }
 
 .ui.toast-container.bottom.center .toast-box.floating .snackbar.info .content {
-  padding-right: 8px;
+  padding-right: 10px;
 }
 
 .snackbar {
