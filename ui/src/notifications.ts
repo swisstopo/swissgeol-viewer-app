@@ -4,16 +4,16 @@ import 'fomantic-ui-css/components/toast.js';
 import i18next from 'i18next';
 
 
-export function showSnackbarInfo(message: string, optionsParam?): void {
+export function showSnackbarInfo(message: string, optionsParam?): HTMLElement {
   const options = {...optionsParam, showIcon: 'close'};
   return showSnackbarMessage(message, 'snackbar info', options);
 }
 
-export function showSnackbarSuccess(message: string): void {
+export function showSnackbarSuccess(message: string): HTMLElement {
   return showSnackbarMessage(message, 'snackbar success');
 }
 
-export function showSnackbarError(message: string): void {
+export function showSnackbarError(message: string): HTMLElement {
   return showSnackbarMessage(message, 'snackbar error');
 }
 
@@ -44,7 +44,7 @@ export function showBannerSuccess(element: HTMLElement, message: string): HTMLEl
   });
 }
 
-export function showSnackbarConfirmation(message: string, callbacks: { onApprove?: () => void, onDeny?: () => void }): void {
+export function showSnackbarConfirmation(message: string, callbacks: { onApprove?: () => void, onDeny?: () => void }): HTMLElement {
   return showSnackbarMessage(message, 'snackbar info actions', {
     displayTime: 0,
     closeOnClick: false,
@@ -63,7 +63,7 @@ export function showSnackbarConfirmation(message: string, callbacks: { onApprove
   });
 }
 
-function showSnackbarMessage(message: string, className: string, options = {}): void {
+function showSnackbarMessage(message: string, className: string, options = {}): HTMLElement {
   return showMessage(message, {
     position: 'bottom center',
     className: {
@@ -73,10 +73,10 @@ function showSnackbarMessage(message: string, className: string, options = {}): 
   });
 }
 
-export function showMessage(message: string, options: any = {}): void {
+export function showMessage(message: string, options: any = {}): HTMLElement {
   // hide same toasts
   if (options.class) (<HTMLElement>document.querySelector(`.${options.class}`))?.parentElement?.remove();
-  $('body').toast(Object.assign({
+  return $('body').toast(Object.assign({
     message: message,
   }, options));
 }
