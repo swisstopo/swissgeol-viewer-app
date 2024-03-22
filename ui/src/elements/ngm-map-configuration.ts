@@ -21,6 +21,8 @@ export class NgmMapConfiguration extends LitElementI18n {
   @state()
   accessor exaggeration: number = 1;
   @state()
+  accessor hideExaggeration = false;
+  @state()
   accessor baseMapId = 'ch.swisstopo.pixelkarte-grau';
   @query('ngm-map-chooser')
   accessor mapChooserElement;
@@ -112,24 +114,41 @@ export class NgmMapConfiguration extends LitElementI18n {
         </div>
       </div>
       <div class="ui divider"></div>
-      <div class="ngm-displayed-slider ngm-exaggeration-slider">
-        <div>
-          <label>${i18next.t('dtd_exaggeration_map')}</label>
-          <label>${(this.exaggeration).toFixed()}x</label>
+      <div class="ngm-base-layer">
+        <div
+            title=${!this.hideExaggeration ? i18next.t('dtd_hide_exaggeration') : i18next.t('dtd_show_exaggeration')}
+            class="ngm-layer-icon ${classMap({
+              'ngm-visible-icon': !this.hideExaggeration,
+              'ngm-invisible-icon': this.hideExaggeration
+            })}"
+            @click=${() => {
+              if (!this.viewer) return;
+              this.hideExaggeration = !this.hideExaggeration;
+              this.viewer.scene.globe.terrainExaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+              this.viewer.scene.requestRender();
+            }}></div>
+        <div class="ngm-displayed-slider ngm-exaggeration-slider">
+          <div>
+            <label>${i18next.t('dtd_exaggeration_map')}</label>
+            <label>${(this.exaggeration).toFixed()}x</label>
+          </div>
+          <input type="range"
+                 class="ngm-slider ${classMap({'ngm-disabled': this.mapChooser!.selectedMap.id === 'empty_map'})}"
+                 style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.exaggeration * 5}%, white ${this.exaggeration * 5}%)"
+                 min=1 max=20 step=1
+                 .value=${!isNaN(this.exaggeration) ? this.exaggeration : 1}
+                 @input=${evt => {
+                   if (this.viewer) {
+                     if (this.hideExaggeration) {
+                       this.hideExaggeration = false;
+                     }
+                     this.exaggeration = Number((<HTMLInputElement>evt.target).value);
+                     this.viewer.scene.globe.terrainExaggeration = this.exaggeration;
+                     this.viewer.scene.requestRender();
+                     setExaggeration(this.exaggeration);
+                   }
+                 }}>
         </div>
-        <input type="range"
-               class="ngm-slider ${classMap({'ngm-disabled': this.mapChooser!.selectedMap.id === 'empty_map'})}"
-               style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.exaggeration}%, white ${this.exaggeration}%)"
-               min=1 max=100 step=1
-               .value=${!isNaN(this.exaggeration) ? this.exaggeration : 1}
-               @input=${evt => {
-                 if (this.viewer) {
-                   this.exaggeration = Number((<HTMLInputElement>evt.target).value);
-                   this.viewer.scene.globe.terrainExaggeration = this.exaggeration;
-                   this.viewer.scene.requestRender();
-                   setExaggeration(this.exaggeration);
-                 }
-               }}>
       </div>
     `;
   }

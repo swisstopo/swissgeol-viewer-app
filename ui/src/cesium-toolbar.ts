@@ -2,7 +2,7 @@ import {css, html, LitElement} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
 import MainStore from './store/main';
 import type {Event, Viewer} from 'cesium';
-import {Cartesian4, Color, FrameRateMonitor} from 'cesium';
+import {Cartesian4, Color, FrameRateMonitor, ShadowMode} from 'cesium';
 
 @customElement('cesium-toolbar')
 export class CesiumToolbar extends LitElement {
@@ -36,6 +36,8 @@ export class CesiumToolbar extends LitElement {
   @state()
   accessor undergroundColor = '#000';
   @state()
+  accessor undergroundColorAlpha = 0.5;
+  @state()
   accessor backgroundColor = '#000';
   @state()
   accessor autoScale = false;
@@ -47,6 +49,24 @@ export class CesiumToolbar extends LitElement {
   accessor scaleUpFps = 40;
   @state()
   accessor showFramesPerSecond = false;
+  @state()
+  accessor lightIntensity = 1.0;
+  @state()
+  accessor atmosphereLightIntensity = 10;
+  @state()
+  accessor shadowEnabled = true;
+  @state()
+  accessor shadowFadingEnabled = true;
+  @state()
+  accessor shadowNormalOffset = true;
+  @state()
+  accessor softShadows = false;
+  @state()
+  accessor shadowDarkness = 0.3;
+  @state()
+  accessor shadowMaximumDistance = 5000;
+  @state()
+  accessor terrainShadowMode: ShadowMode = ShadowMode.ENABLED;
 
   constructor() {
     super();
@@ -77,10 +97,22 @@ export class CesiumToolbar extends LitElement {
       fog.uniforms.fogByDistance = new Cartesian4(this.fogX, this.fogY, this.fogZ, this.fogIntensity);
       fog.uniforms.fogColor = Color.fromCssColorString(this.fogColor);
 
-      this.viewer.scene.globe.undergroundColor = Color.fromCssColorString(this.undergroundColor);
+      this.viewer.scene.globe.undergroundColor = Color.fromCssColorString(this.undergroundColor).withAlpha(this.undergroundColorAlpha);
       this.viewer.scene.backgroundColor = Color.fromCssColorString(this.backgroundColor);
 
+      this.viewer.scene.atmosphere.lightIntensity = this.atmosphereLightIntensity;
+
       this.showFramesPerSecond = this.viewer.scene.debugShowFramesPerSecond;
+
+      this.viewer.scene.light.intensity = this.lightIntensity;
+
+      this.viewer.shadows = this.shadowEnabled;
+      this.viewer.shadowMap.maximumDistance = this.shadowMaximumDistance;
+      this.viewer.shadowMap.softShadows = this.softShadows;
+      this.viewer.shadowMap.normalOffset = this.shadowNormalOffset;
+      this.viewer.shadowMap.maximumDistance = this.shadowMaximumDistance;
+      this.viewer.shadowMap.darkness = this.shadowDarkness;
+      this.viewer.terrainShadows = this.terrainShadowMode;
 
       this.viewer!.scene.requestRender();
     }
@@ -159,6 +191,22 @@ export class CesiumToolbar extends LitElement {
       </div>
       <div class="divider"></div>
       <div>
+        Light Intensity
+        <input type="range" min="1" max="50000" step="1" .value=${this.lightIntensity}
+               @input=${evt => this.lightIntensity = Number(evt.target.value)}>
+        <input type="number" min="0" max="50000" step="1" .value=${this.lightIntensity}
+               @input=${evt => this.lightIntensity = Number(evt.target.value)}>
+      </div>
+      <div class="divider"></div>
+      <div>
+        Atmosphere Light Intensity
+        <input type="range" min="1" max="50" step="1" .value=${this.atmosphereLightIntensity}
+               @input=${evt => this.atmosphereLightIntensity = Number(evt.target.value)}>
+        <input type="number" min="0" max="50" step="1" .value=${this.atmosphereLightIntensity}
+               @input=${evt => this.atmosphereLightIntensity = Number(evt.target.value)}>
+      </div>
+      <div class="divider"></div>
+      <div>
         Fog X Direction
         <input type="range" min="0" max="1000000" step="1" .value=${this.fogX}
                @input=${evt => this.fogX = Number(evt.target.value)}>
@@ -192,6 +240,11 @@ export class CesiumToolbar extends LitElement {
       <div>
         Underground Color
         <input type="color" .value=${this.undergroundColor} @input=${evt => this.undergroundColor = evt.target.value}>
+      </div>
+      <div>
+        Underground Color Alpha
+        <input type="range" min="0" max="1" step="0.1" .value=${this.undergroundColorAlpha}
+               @input=${evt => this.undergroundColorAlpha = Number(evt.target.value)}>
       </div>
       <div class="divider"></div>
       <div>
@@ -227,6 +280,50 @@ export class CesiumToolbar extends LitElement {
                    this.viewer!.resolutionScale = Number(evt.target.value);
                    this.currentScale = this.viewer!.resolutionScale;
                }}>
+      </div>
+      <div class="divider"></div>
+      <div>
+        Enable shadows
+        <input type="checkbox" ?checked=${this.shadowEnabled}
+               @change=${event => this.shadowEnabled = event.target.checked}>
+      </div>
+      <div>
+        Shadow Normal Offset
+        <input type="checkbox" ?checked=${this.shadowNormalOffset}
+               @change=${event => this.shadowNormalOffset = event.target.checked}>
+      </div>
+      <div>
+        Enable soft shadows
+        <input type="checkbox" ?checked=${this.softShadows}
+               @change=${event => this.softShadows = event.target.checked}>
+      </div>
+      <div>
+        Enable shadows fading
+        <input type="checkbox" ?checked=${this.shadowFadingEnabled}
+               @change=${event => this.shadowFadingEnabled = event.target.checked}>
+      </div>
+      <div>
+        Shadow darkness
+        <input type="range" min="0.05" max="1" step="0.05" .value=${this.shadowDarkness}
+               @input=${evt => {
+                 this.shadowDarkness = Number(evt.target.value);
+               }}>
+      </div>
+      <div>
+        Shadow maximum distance
+        <input type="range" min="0.05" max="100000" step="100" .value=${this.shadowMaximumDistance}
+               @input=${evt => {
+                 this.shadowMaximumDistance = Number(evt.target.value);
+               }}>
+      </div>
+      <div>
+        Terrain Shadows Mode
+        <select @change=${e => this.terrainShadowMode = Number(e.target.value)}>
+          <option .value=${ShadowMode.ENABLED}>ENABLED</option>
+          <option .value=${ShadowMode.DISABLED}>DISABLED</option>
+          <option .value=${ShadowMode.CAST_ONLY}>CAST_ONLY</option>
+          <option .value=${ShadowMode.RECEIVE_ONLY}>RECEIVE_ONLY</option>
+        </select>
       </div>`;
   }
 }
