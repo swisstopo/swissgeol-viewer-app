@@ -330,10 +330,11 @@ export function addMantelEllipsoid(viewer: Viewer) {
     viewer.scene.postRender.addEventListener((scene) => {
         if (!entity.ellipsoid) return;
         const voxelVisible = MainStore.visibleVoxelLayers.length > 0;
-        if (voxelVisible && entity.isShowing) {
+        const exaggeration = getExaggeration();
+        if ((exaggeration > 1 || voxelVisible) && entity.isShowing) {
             entity.show = false;
             viewer.scene.requestRender();
-        } else if (!voxelVisible && !entity.isShowing) {
+        } else if ((exaggeration === 1 && !voxelVisible) && !entity.isShowing) {
             entity.show = true;
             viewer.scene.requestRender();
         }

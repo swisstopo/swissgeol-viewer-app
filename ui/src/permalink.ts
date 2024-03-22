@@ -319,7 +319,7 @@ export function getExaggeration() {
   const params = getURLSearchParams();
   let zExaggeration = parseFloat(params.get(EXAGGERATION_PARAM) || '1');
   if (zExaggeration < 1) zExaggeration = 1;
-  if (zExaggeration > 100) zExaggeration = 100;
+  if (zExaggeration > 20) zExaggeration = 20;
   return zExaggeration;
 }
 

@@ -40,7 +40,3 @@ ngm-map-configuration ngm-map-chooser {
 ngm-map-configuration ngm-map-chooser .ngm-maps-container > div:nth-last-child(-n+2) {
   display: none;
 }
-
-.ngm-exaggeration-slider {
-  margin-left: 47px;
-}
