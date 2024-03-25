@@ -379,6 +379,7 @@ ngm-full-screen-view.full-active {
   overflow-wrap: break-word;
   align-items: center;
   width: 208px;
+  height: 36px;
   min-height: 36px;
   letter-spacing: 0.25px;
   box-shadow: 0 1px 3px #00000033;

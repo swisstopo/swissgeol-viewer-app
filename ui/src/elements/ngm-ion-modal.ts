@@ -113,7 +113,7 @@ export class NgmIonModal extends LitElementI18n {
                             html`
                             <tr class="top aligned">
                                 <td class="key">${row.id}</td>
-                                <td class="value">${row.description || row.name}</td>
+                                <td class="value">${row.name}</td>
                                 <td>
                                     <button class="ui button ngm-add-ion-btn ngm-action-btn" @click=${() => this.addAsset(row)}>
                                         ${i18next.t('dtd_add_ion_asset_btn')}
