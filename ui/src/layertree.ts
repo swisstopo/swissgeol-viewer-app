@@ -868,7 +868,7 @@ const subsurface: LayerTreeNode = {
       children: [
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20231122/Voxel-Aaretal-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-Aaretal-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: aaretalIndexVoxelColors,
           voxelFilter: aaretalVoxelFilter,
@@ -882,7 +882,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20231122/Voxel-Aaretal-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-Aaretal-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
           voxelFilter: aaretalVoxelFilter,
@@ -896,7 +896,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20231122/Voxel-BIRR-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-BIRR-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: birrIndexVoxelColors,
           voxelFilter: birrIndexVoxelFilter,
@@ -910,7 +910,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20231122/Voxel-BIRR-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-BIRR-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
           voxelFilter: birrIndexVoxelFilter,
@@ -924,7 +924,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20231122/Voxel-GENF-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-GENF-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: genevaIndexVoxelColors,
           voxelFilter: genevaIndexVoxelFilter,
@@ -938,7 +938,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20231122/Voxel-GENF-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-GENF-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
           voxelFilter: genevaIndexVoxelFilter,
@@ -952,7 +952,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20231122/Voxel-VISP-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-VISP-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: vispIndexVoxelColors,
           voxelFilter: vispIndexVoxelFilter,
@@ -966,7 +966,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20231122/Voxel-VISP-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-VISP-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
           voxelFilter: vispIndexVoxelFilter,
