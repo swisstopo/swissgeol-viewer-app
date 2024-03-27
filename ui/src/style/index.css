@@ -582,3 +582,13 @@ body:after { /* Beta label */
   pointer-events: none;
   opacity: 0.5;
 }
+
+.ngm-date-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: auto;
+  gap: 10px;
+  max-height: 300px;
+  overflow: auto;
+  padding: 10px;
+}

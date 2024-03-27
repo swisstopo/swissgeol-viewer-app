@@ -1,6 +1,6 @@
 import '@geoblocks/ga-search';
 
-import {getLayersConfig} from './swisstopoImagery.js';
+import {getLayersConfig} from './swisstopoImagery.ts';
 import {escapeRegExp} from './utils';
 import {lv95ToDegrees} from './projection';
 

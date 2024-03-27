@@ -15,7 +15,7 @@ import {
   Matrix4,
   VoxelPrimitive,
 } from 'cesium';
-import {getSwisstopoImagery} from '../swisstopoImagery.js';
+import {getLayerTimes, getSwisstopoImagery} from '../swisstopoImagery';
 import {LayerType} from '../constants';
 import {isLabelOutlineEnabled} from '../permalink';
 import AmazonS3Resource from '../AmazonS3Resource.js';
@@ -155,8 +155,8 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerCon
   return tileset;
 }
 
-export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: LayerConfig) {
-  let layer: ImageryLayer;
+export async function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: LayerConfig) {
+  const layer: ImageryLayer = await getSwisstopoImagery(config.layer!, config.maximumLevel);
   config.setVisibility = visible => layer.show = !!visible;
   config.setOpacity = opacity => layer.alpha = opacity;
   config.remove = () => viewer.scene.imageryLayers.remove(layer, false);
@@ -169,14 +169,11 @@ export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: LayerCon
     }
     viewer.scene.imageryLayers.add(layer);
   };
-
-  return getSwisstopoImagery(config.layer!, config.maximumLevel).then(l => {
-    layer = l;
-    viewer.scene.imageryLayers.add(layer);
-    layer.alpha = config.opacity || 1;
-    layer.show = !!config.visible;
-    return layer;
-  });
+  config.wmtsTimes = await getLayerTimes(config.layer!);
+  viewer.scene.imageryLayers.add(layer);
+  layer.alpha = config.opacity || 1;
+  layer.show = !!config.visible;
+  return layer;
 }
 
 

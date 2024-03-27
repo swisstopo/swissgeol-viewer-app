@@ -40,7 +40,7 @@ import {customElement, property, query, state} from 'lit/decorators.js';
 import type {Cartesian2, Viewer} from 'cesium';
 import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
-import {getLayerLabel} from '../swisstopoImagery.js';
+import {getLayerLabel} from '../swisstopoImagery';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
@@ -377,7 +377,7 @@ export class SideBar extends LitElementI18n {
       l.displayed = false;
     });
 
-    const activeLayers: any[] = [];
+    const activeLayers: LayerConfig[] = [];
     for (const urlLayer of urlLayers) {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.layer);
       if (!layer) {

@@ -39,6 +39,7 @@ export interface LayerTreeNode {
   voxelColors?: VoxelColors;
   voxelFilter?: any;
   customAsset?: boolean
+  wmtsTimes?: string[];
 }
 
 export interface LayerConfig extends LayerTreeNode {

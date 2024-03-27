@@ -4,7 +4,7 @@ import NavigableVolumeLimiter from './NavigableVolumeLimiter';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
 import MapChooser from './MapChooser';
-import {addSwisstopoLayer} from './swisstopoImagery.js';
+import {addSwisstopoLayer} from './swisstopoImagery';
 
 import type {ImageryLayer, WebGLOptions} from 'cesium';
 import {
