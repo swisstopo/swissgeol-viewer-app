@@ -494,6 +494,7 @@ export class NgmApp extends LitElementI18n {
             <ngm-voxel-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-filter>
             <ngm-voxel-simple-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-simple-filter>
             <ngm-coordinate-popup class="ngm-floating-window"></ngm-coordinate-popup>
+            <ngm-wmts-date-picker class="ngm-floating-window"></ngm-wmts-date-picker>
             <div class="on-map-menu">
               <cesium-view-cube ?hidden=${this.mobileView || this.showAxisOnMap}
                                 .scene="${this.viewer?.scene}"></cesium-view-cube>
@@ -517,7 +518,6 @@ export class NgmApp extends LitElementI18n {
                          .hidden=${!this.showIonModal} 
                          @close=${() => this.showIonModal = false}>
           </ngm-ion-modal>
-          <ngm-wmts-date-picker class="ngm-floating-window"></ngm-wmts-date-picker>
         </div>
       </main>
     `;

@@ -47,6 +47,11 @@ export class LayerTreeItem extends LitElementI18n {
     if (changedProps.has('changeOrderActive')) {
       this.updateMovableState();
     }
+    if (changedProps.has('config')) {
+      this.config.promise?.then(() => {
+        this.requestUpdate();
+      });
+    }
     super.updated(changedProps);
   }
 
@@ -150,7 +155,6 @@ export class LayerTreeItem extends LitElementI18n {
   }
 
   get buttons() {
-    console.log(this.config.wmtsTimes?.length);
     return html`
       <div class="menu">
         ${this.config?.legend ? html`

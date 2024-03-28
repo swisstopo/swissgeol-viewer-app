@@ -40,11 +40,13 @@ export interface LayerTreeNode {
   voxelFilter?: any;
   customAsset?: boolean
   wmtsTimes?: string[];
+  wmtsCurrentTime?: string;
 }
 
 export interface LayerConfig extends LayerTreeNode {
   add?: (value: number) => void;
   remove?: () => void;
+  render?: () => void;
   heightOffset?: number;
   load?: () =>
       Promise<GeoJsonDataSource> |
@@ -52,7 +54,7 @@ export interface LayerConfig extends LayerTreeNode {
       Promise<VoxelPrimitive> |
       Promise<ImageryLayer> |
       Promise<CustomDataSource> |
-      EarthquakeVisualizer;
+      Promise<EarthquakeVisualizer>;
   setVisibility?: (value: boolean) => void;
   setOpacity?: (value: number) => void;
   promise?:
@@ -61,7 +63,7 @@ export interface LayerConfig extends LayerTreeNode {
       Promise<VoxelPrimitive> |
       Promise<ImageryLayer> |
       Promise<CustomDataSource> |
-      EarthquakeVisualizer;
+      Promise<EarthquakeVisualizer>;
   notSaveToPermalink?: boolean;
   ownKml?: boolean;
   topicKml?: boolean;

@@ -10,6 +10,7 @@ import {
 } from 'cesium';
 import i18next from 'i18next';
 import {getURLSearchParams} from './utils';
+import {LayerConfig} from './layertree';
 
 export type SwisstopoImageryLayer = {
   attribution: string
@@ -42,55 +43,67 @@ const wmtsLayerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{t
 let timesOfSwisstopoWMTSLayers: Record<string, string[]> | undefined;
 
 /**
- * @param {string} layer Layer identifier
+ * @param localConfig
  * @param {number} [maximumLevel]
  * @param {import('cesium/Source/Core/Rectangle').default} [rectangle]
  * @return {Promise<ImageryLayer>}
  */
-export function getSwisstopoImagery(layer: string, maximumLevel: number = 16, rectangle: Rectangle = SWITZERLAND_RECTANGLE): Promise<ImageryLayer> {
+export function getSwisstopoImagery(
+    localConfig: LayerConfig,
+    maximumLevel: number = 16,
+    rectangle: Rectangle = SWITZERLAND_RECTANGLE
+): Promise<ImageryLayer> {
   return new Promise((resolve, reject) => {
     getLayersConfig().then(async layersConfig => {
-      const config = layersConfig[layer];
-      if (config) {
+      const swisstopoConfig = layersConfig[localConfig.layer!];
+      if (swisstopoConfig) {
         let imageryProvider: UrlTemplateImageryProvider | WebMapServiceImageryProvider;
-        if (config.type === 'wmts') {
+        if (swisstopoConfig.type === 'wmts') {
+          if (!localConfig.wmtsCurrentTime) {
+            localConfig.wmtsTimes = await getLayerTimes(localConfig.layer!);
+            localConfig.wmtsCurrentTime = localConfig.wmtsTimes[0];
+          }
           const url = wmtsLayerUrlTemplate
-              .replace('{layer}', config.serverLayerName)
-              .replace('{timestamp}', config.timestamps[0])
-              .replace('{format}', config.format);
+              .replace('{layer}', swisstopoConfig.serverLayerName)
+              .replace('{format}', swisstopoConfig.format);
           imageryProvider = new UrlTemplateImageryProvider({
             url: url,
             maximumLevel: maximumLevel,
             rectangle: rectangle,
-            credit: new Credit(config.attribution)
+            credit: new Credit(swisstopoConfig.attribution),
+            customTags: {
+              timestamp: () => {
+                return localConfig.wmtsCurrentTime;
+              }
+            }
           });
-        } else if (config.type === 'wms') {
+        } else if (swisstopoConfig.type === 'wms') {
           const url = 'https://wms{s}.geo.admin.ch?version=1.3.0';
           imageryProvider = new WebMapServiceImageryProvider({
             url: url,
             crs: 'EPSG:4326',
             parameters: {
-              FORMAT: config.format.includes('image/') ? config.format : `image/${config.format}`,
+              FORMAT: swisstopoConfig.format.includes('image/') ? swisstopoConfig.format : `image/${swisstopoConfig.format}`,
               TRANSPARENT: true,
               LANG: i18next.language,
             },
             subdomains: '0123',
             tilingScheme: WEB_MERCATOR_TILING_SCHEME,
-            layers: config.serverLayerName,
+            layers: swisstopoConfig.serverLayerName,
             maximumLevel: maximumLevel,
             rectangle: rectangle,
-            credit: new Credit(config.attribution),
+            credit: new Credit(swisstopoConfig.attribution),
           });
         } else {
-          reject(`unsupported layer type: ${config.type}`);
+          reject(`unsupported layer type: ${swisstopoConfig.type}`);
           return;
         }
         const imageryLayer = new ImageryLayer(imageryProvider, {
-          alpha: config.opacity !== undefined ? config.opacity : 1
+          alpha: swisstopoConfig.opacity !== undefined ? swisstopoConfig.opacity : 1
         });
         resolve(imageryLayer);
       } else {
-        reject(`layer not found: ${layer}`);
+        reject(`layer not found: ${localConfig.layer}`);
       }
     });
   });
@@ -176,7 +189,7 @@ async function fetchAndParseTimeValues(): Promise<Record<string, string[]>> {
   return timestamps;
 }
 
-export async function getLayerTimes(layerId: string): Promise<string[]> {
+async function getLayerTimes(layerId: string): Promise<string[]> {
   if (!timesOfSwisstopoWMTSLayers) {
     timesOfSwisstopoWMTSLayers = await fetchAndParseTimeValues();
   }
