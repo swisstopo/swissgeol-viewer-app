@@ -13,36 +13,18 @@ import {getURLSearchParams} from './utils';
 import {LayerConfig} from './layertree';
 
 export type SwisstopoImageryLayer = {
-  attribution: string
-  attributionUrl: string
-  background: boolean
-  chargeable: boolean
-  format: 'png' | 'jpeg'
-  hasLegend: boolean
-  highlightable: boolean
-  label: string
-  resolutions: number[]
-  searchable: string
-  serverLayerName: string
-  timeEnabled: boolean
-  timestamps: string[]
-  tooltip:boolean
-  topics: string
+  format: string
   type: 'wmts' | 'wms'
-  updateDelay?: number
-  opacity?: number
-  styleUrl?: string
-  geojsonUrl?: string
+  attribution: string
+  timestamps?: string[]
+  defaultTimestamp?: string
 }
 
 export type SwisstopoImageryLayersConfig = Record<string, SwisstopoImageryLayer>
-type LayerTimestamps = {timestamps: string[], defaultTime: string};
-type TimestampsByLayer = Record<string, LayerTimestamps>;
-
 
 const wmtsLayerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}';
 
-let timesOfSwisstopoWMTSLayers: TimestampsByLayer | undefined;
+let layerConfigs: SwisstopoImageryLayersConfig | undefined;
 
 /**
  * @param localConfig
@@ -61,13 +43,12 @@ export function getSwisstopoImagery(
       if (swisstopoConfig) {
         let imageryProvider: UrlTemplateImageryProvider | WebMapServiceImageryProvider;
         if (swisstopoConfig.type === 'wmts') {
-          const layerTimestamps = await getLayerTimes(localConfig.layer!);
-          localConfig.wmtsTimes = layerTimestamps.timestamps;
+          localConfig.wmtsTimes = swisstopoConfig.timestamps;
           if (!localConfig.wmtsCurrentTime) {
-            localConfig.wmtsCurrentTime = layerTimestamps.defaultTime;
+            localConfig.wmtsCurrentTime = swisstopoConfig.defaultTimestamp;
           }
           const url = wmtsLayerUrlTemplate
-              .replace('{layer}', swisstopoConfig.serverLayerName)
+              .replace('{layer}', localConfig.layer!)
               .replace('{format}', swisstopoConfig.format);
           imageryProvider = new UrlTemplateImageryProvider({
             url: url,
@@ -86,13 +67,13 @@ export function getSwisstopoImagery(
             url: url,
             crs: 'EPSG:4326',
             parameters: {
-              FORMAT: swisstopoConfig.format.includes('image/') ? swisstopoConfig.format : `image/${swisstopoConfig.format}`,
+              FORMAT: swisstopoConfig.format,
               TRANSPARENT: true,
               LANG: i18next.language,
             },
             subdomains: '0123',
             tilingScheme: WEB_MERCATOR_TILING_SCHEME,
-            layers: swisstopoConfig.serverLayerName,
+            layers: localConfig.layer!,
             maximumLevel: maximumLevel,
             rectangle: rectangle,
             credit: new Credit(swisstopoConfig.attribution),
@@ -102,7 +83,7 @@ export function getSwisstopoImagery(
           return;
         }
         const imageryLayer = new ImageryLayer(imageryProvider, {
-          alpha: swisstopoConfig.opacity !== undefined ? swisstopoConfig.opacity : 1
+          alpha: localConfig.opacity !== undefined ? localConfig.opacity : 1
         });
         resolve(imageryLayer);
       } else {
@@ -110,17 +91,6 @@ export function getSwisstopoImagery(
       }
     });
   });
-}
-
-
-let layersConfigPromise: Promise<SwisstopoImageryLayersConfig>;
-
-export function getLayersConfig(): Promise<SwisstopoImageryLayersConfig> {
-  if (!layersConfigPromise) {
-    layersConfigPromise = fetch('https://map.geo.admin.ch/configs/en/layersConfig.json')
-      .then(response => response.json());
-  }
-  return layersConfigPromise;
 }
 
 let layerLabelPromise: Promise<string>;
@@ -154,50 +124,95 @@ export function addSwisstopoLayer(viewer: Viewer, layer: string, format: 'png' |
   return imageryLayer;
 }
 
-const wmtsCapabilitiesUrl = 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml';
-async function fetchWMTSCapabilities(): Promise<string> {
-  const response = await fetch(wmtsCapabilitiesUrl);
-  return await response.text();
-}
 
-let wmtsCapabilities: Document | undefined;
 const parser = new DOMParser();
 const owsNamespace = 'http://www.opengis.net/ows/1.1';
-
-/**
- * Fetch WMTSCapabilities and parse time values
- */
-async function fetchAndParseTimeValues() {
-  const timestamps: TimestampsByLayer = {};
-  if (!wmtsCapabilities) {
-    const text = await fetchWMTSCapabilities();
-    wmtsCapabilities = parser.parseFromString(text, 'text/xml');
-  }
+async function parseWMTSCapabilities(wmtsCapabilities: Document): Promise<SwisstopoImageryLayersConfig> {
+  const configs: SwisstopoImageryLayersConfig = {};
   const layers = wmtsCapabilities.querySelectorAll('Layer');
   for (const layer of layers.values()) {
     const identifiers = layer.getElementsByTagNameNS(owsNamespace, 'Identifier');
     Array.from(identifiers).forEach(identifier => {
       // check for ch. to exclude Time identifier
       if (identifier?.textContent?.includes('ch.')) {
-        timestamps[identifier.textContent] = {timestamps: [], defaultTime: ''};
-        const layerTime = timestamps[identifier.textContent];
-        const times = layer.querySelectorAll('Dimension > Value');
-        const defaultTime = layer.querySelector('Dimension > Default')?.textContent;
-        times.forEach(time => {
-          if (time.textContent) {
-            layerTime.timestamps.push(time.textContent);
-          }
-        });
-        layerTime.defaultTime = defaultTime || layerTime.timestamps[0];
+        const layerName = identifier.textContent;
+        const defaultTimestamp = layer.querySelector('Dimension > Default')?.textContent;
+        const format = layer.querySelector('Format')?.textContent;
+        if (format) {
+          configs[identifier.textContent] = {
+            attribution: layerName.split('.')[1],
+            format: format.split('/')[1],
+            type: 'wmts',
+            timestamps: [],
+            defaultTimestamp: defaultTimestamp || undefined
+          };
+          const times = layer.querySelectorAll('Dimension > Value');
+          times.forEach(time => {
+            if (time.textContent) {
+              configs[identifier.textContent!].timestamps!.push(time.textContent);
+            }
+          });
+        }
       }
     });
   }
-  return timestamps;
+  return configs;
 }
 
-async function getLayerTimes(layerId: string): Promise<LayerTimestamps> {
-  if (!timesOfSwisstopoWMTSLayers) {
-    timesOfSwisstopoWMTSLayers = await fetchAndParseTimeValues();
+async function parseWMSCapabilities(wmsCapabilities: Document): Promise<SwisstopoImageryLayersConfig> {
+  const configs: SwisstopoImageryLayersConfig = {};
+  const layers = wmsCapabilities.querySelectorAll('Layer');
+  for (const layer of layers.values()) {
+    const layerName = layer.querySelector('Name')?.textContent;
+    if (layerName) {
+      const defaultTimestamp = layer.querySelector('Dimension')?.getAttribute('default');
+      const format = layer.querySelector('LegendURL > Format')?.textContent;
+      if (format) {
+        configs[layerName] = {
+          attribution: layerName.split('.')[1],
+          format: format,
+          type: 'wms',
+          timestamps: [],
+          defaultTimestamp: defaultTimestamp || undefined
+        };
+        configs[layerName].timestamps = layer.querySelector('Dimension')?.textContent?.split(',') || [];
+      }
+    }
   }
-  return timesOfSwisstopoWMTSLayers[layerId] || {timestamps: ['current'], defaultTime: 'current'};
+  return configs;
+}
+
+const wmtsCapabilitiesUrl = 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml';
+const wmsCapabilitiesUrl = 'https://wms.geo.admin.ch/?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0';
+
+async function fetchWMTSCapabilities() {
+  try {
+    const wmtsCapabilitiesResponse = await fetch(wmtsCapabilitiesUrl);
+    const wmtsCapabilities = parser.parseFromString((await wmtsCapabilitiesResponse.text()), 'text/xml');
+    return await parseWMTSCapabilities(wmtsCapabilities);
+  } catch (e) {
+    console.error(`Can't fetch WMTS Capabilities: ${e}`);
+    return {};
+  }
+}
+
+async function fetchWMSCapabilities() {
+  try {
+    const wmsCapabilitiesResponse = await fetch(wmsCapabilitiesUrl);
+    const wmsCapabilities = parser.parseFromString((await wmsCapabilitiesResponse.text()), 'text/xml');
+    return await parseWMSCapabilities(wmsCapabilities);
+  } catch (e) {
+    console.error(`Can't fetch WMS Capabilities: ${e}`);
+    return {};
+  }
+}
+
+
+export async function getLayersConfig(): Promise<SwisstopoImageryLayersConfig> {
+  if (!layerConfigs) {
+    const wmsConfig = await fetchWMSCapabilities();
+    const wmtsConfig = await fetchWMTSCapabilities();
+    layerConfigs = {...wmsConfig, ...wmtsConfig};
+  }
+  return layerConfigs;
 }
