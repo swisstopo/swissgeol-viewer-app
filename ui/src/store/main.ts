@@ -7,13 +7,14 @@ import {IonAsset} from '../api-ion';
 export default class MainStore {
   private static viewerSubject = new BehaviorSubject<Viewer | null>(null);
   private static mapChooserSubject = new BehaviorSubject<MapChooser | null>(null);
-  private static syncLayersSubject = new Subject<void>();
   private static layersRemovedSubject = new Subject<void>();
   private static syncMapSubject = new Subject<void>();
   private static voxelLayerCountSubject = new BehaviorSubject<string[]>([]);
   private static ionTokenSubject = new BehaviorSubject<string | null>(getIonToken());
   private static ionAssetSubject = new Subject<IonAsset>();
   private static removeIonAssetsSubject = new Subject<void>();
+  static setUrlLayersSubject = new Subject<void>();
+  static syncLayerParams = new Subject<void>();
 
   static get viewer(): BehaviorSubject<Viewer | null> {
     return this.viewerSubject;
@@ -33,14 +34,6 @@ export default class MainStore {
 
   static setMapChooser(value: MapChooser): void {
     this.mapChooserSubject.next(value);
-  }
-
-  static get syncLayers() {
-    return this.syncLayersSubject;
-  }
-
-  static nextLayersSync() {
-    this.syncLayersSubject.next();
   }
 
   static get layersRemoved() {

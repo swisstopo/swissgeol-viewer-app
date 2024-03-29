@@ -29,6 +29,7 @@ export const DRILL_PICK_LENGTH = 1;
 export const LAYERS_URL_PARAM = 'layers';
 export const LAYERS_VISIBILITY_URL_PARAM = 'layers_visibility';
 export const LAYERS_TRANSPARENCY_URL_PARAM = 'layers_transparency';
+export const LAYERS_TIMESTAMP_URL_PARAM = 'layers_timestamp';
 export const ASSET_IDS_URL_PARAM = 'ionAssetIds';
 export const ION_TOKEN_URL_PARAM = 'ionToken';
 export const MAP_URL_PARAM = 'map';

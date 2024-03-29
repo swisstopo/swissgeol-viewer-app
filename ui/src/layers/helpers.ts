@@ -169,7 +169,8 @@ export async function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: La
     }
     viewer.scene.imageryLayers.add(layer);
   };
-  config.render = () => {
+  config.setTime = (time: string) => {
+    config.wmtsCurrentTime = time;
     layer.show = false;
     viewer.scene.render();
     setTimeout(() => {

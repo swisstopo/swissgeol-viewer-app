@@ -63,9 +63,9 @@ export class NgmWmtsDatePicker extends LitElementI18n {
           ${this.dates.map(d => html`
               <div class="ngm-label-btn ${classMap({active: d.value === this.config?.wmtsCurrentTime})}"
                    @click=${() => {
-                       if (!this.config?.render) return;
-                       this.config.wmtsCurrentTime = d.value;
-                       this.config.render();
+                       if (!this.config?.setTime) return;
+                       this.config.setTime(d.value);
+                       MainStore.syncLayerParams.next();
                        this.requestUpdate();
                    }}>
                   ${d.title}

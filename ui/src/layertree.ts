@@ -43,27 +43,24 @@ export interface LayerTreeNode {
   wmtsCurrentTime?: string;
 }
 
+type LayerInstances = GeoJsonDataSource | PickableCesium3DTileset | VoxelPrimitive | ImageryLayer | CustomDataSource | EarthquakeVisualizer;
+export type LayerPromise = Promise<GeoJsonDataSource> |
+    Promise<PickableCesium3DTileset> |
+    Promise<VoxelPrimitive> |
+    Promise<ImageryLayer> |
+    Promise<CustomDataSource> |
+    Promise<EarthquakeVisualizer> |
+    Promise<LayerInstances>;
+
 export interface LayerConfig extends LayerTreeNode {
   add?: (value: number) => void;
   remove?: () => void;
-  render?: () => void;
+  setTime?: (time: string) => void;
   heightOffset?: number;
-  load?: () =>
-      Promise<GeoJsonDataSource> |
-      Promise<PickableCesium3DTileset> |
-      Promise<VoxelPrimitive> |
-      Promise<ImageryLayer> |
-      Promise<CustomDataSource> |
-      Promise<EarthquakeVisualizer>;
+  load?: () => LayerPromise;
   setVisibility?: (value: boolean) => void;
   setOpacity?: (value: number) => void;
-  promise?:
-      Promise<GeoJsonDataSource> |
-      Promise<PickableCesium3DTileset> |
-      Promise<VoxelPrimitive> |
-      Promise<ImageryLayer> |
-      Promise<CustomDataSource> |
-      Promise<EarthquakeVisualizer>;
+  promise?: LayerPromise;
   notSaveToPermalink?: boolean;
   ownKml?: boolean;
   topicKml?: boolean;

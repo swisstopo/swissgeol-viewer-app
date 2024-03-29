@@ -321,7 +321,7 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   async setDataFromPermalink() {
-    MainStore.nextLayersSync();
+    MainStore.setUrlLayersSubject.next();
     MainStore.nextMapSync();
     const {destination, orientation} = getCameraView();
     if (destination && orientation)

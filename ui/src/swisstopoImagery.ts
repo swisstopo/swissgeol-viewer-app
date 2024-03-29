@@ -36,11 +36,13 @@ export type SwisstopoImageryLayer = {
 }
 
 export type SwisstopoImageryLayersConfig = Record<string, SwisstopoImageryLayer>
+type LayerTimestamps = {timestamps: string[], defaultTime: string};
+type TimestampsByLayer = Record<string, LayerTimestamps>;
 
 
 const wmtsLayerUrlTemplate = 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}';
 
-let timesOfSwisstopoWMTSLayers: Record<string, string[]> | undefined;
+let timesOfSwisstopoWMTSLayers: TimestampsByLayer | undefined;
 
 /**
  * @param localConfig
@@ -59,9 +61,10 @@ export function getSwisstopoImagery(
       if (swisstopoConfig) {
         let imageryProvider: UrlTemplateImageryProvider | WebMapServiceImageryProvider;
         if (swisstopoConfig.type === 'wmts') {
+          const layerTimestamps = await getLayerTimes(localConfig.layer!);
+          localConfig.wmtsTimes = layerTimestamps.timestamps;
           if (!localConfig.wmtsCurrentTime) {
-            localConfig.wmtsTimes = await getLayerTimes(localConfig.layer!);
-            localConfig.wmtsCurrentTime = localConfig.wmtsTimes[0];
+            localConfig.wmtsCurrentTime = layerTimestamps.defaultTime;
           }
           const url = wmtsLayerUrlTemplate
               .replace('{layer}', swisstopoConfig.serverLayerName)
@@ -164,8 +167,8 @@ const owsNamespace = 'http://www.opengis.net/ows/1.1';
 /**
  * Fetch WMTSCapabilities and parse time values
  */
-async function fetchAndParseTimeValues(): Promise<Record<string, string[]>> {
-  const timestamps: Record<string, string[]> = {};
+async function fetchAndParseTimeValues() {
+  const timestamps: TimestampsByLayer = {};
   if (!wmtsCapabilities) {
     const text = await fetchWMTSCapabilities();
     wmtsCapabilities = parser.parseFromString(text, 'text/xml');
@@ -176,22 +179,25 @@ async function fetchAndParseTimeValues(): Promise<Record<string, string[]>> {
     Array.from(identifiers).forEach(identifier => {
       // check for ch. to exclude Time identifier
       if (identifier?.textContent?.includes('ch.')) {
-        timestamps[identifier.textContent] = [];
+        timestamps[identifier.textContent] = {timestamps: [], defaultTime: ''};
+        const layerTime = timestamps[identifier.textContent];
         const times = layer.querySelectorAll('Dimension > Value');
+        const defaultTime = layer.querySelector('Dimension > Default')?.textContent;
         times.forEach(time => {
           if (time.textContent) {
-            timestamps[identifier.textContent!].push(time.textContent);
+            layerTime.timestamps.push(time.textContent);
           }
         });
+        layerTime.defaultTime = defaultTime || layerTime.timestamps[0];
       }
     });
   }
   return timestamps;
 }
 
-async function getLayerTimes(layerId: string): Promise<string[]> {
+async function getLayerTimes(layerId: string): Promise<LayerTimestamps> {
   if (!timesOfSwisstopoWMTSLayers) {
     timesOfSwisstopoWMTSLayers = await fetchAndParseTimeValues();
   }
-  return timesOfSwisstopoWMTSLayers[layerId] || ['current'];
+  return timesOfSwisstopoWMTSLayers[layerId] || {timestamps: ['current'], defaultTime: 'current'};
 }
