@@ -1,5 +1,5 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
-import {ImageryLayer, Rectangle, Viewer} from 'cesium';
+import {ImageryLayer, OrientedBoundingBox, Rectangle, Viewer} from 'cesium';
 import {
   Cartesian3,
   Cartographic,
@@ -225,6 +225,26 @@ export function calculateRectangle(width: number, height: number, center: Cartes
   result.north = Ellipsoid.WGS84.cartesianToCartographic(n).latitude;
 
   return result;
+}
+
+export function calculateRectangleFromOBB(obb: OrientedBoundingBox) {
+  const corners = OrientedBoundingBox.computeCorners(obb);
+
+  let minLon = Number.POSITIVE_INFINITY;
+  let maxLon = Number.NEGATIVE_INFINITY;
+  let minLat = Number.POSITIVE_INFINITY;
+  let maxLat = Number.NEGATIVE_INFINITY;
+
+  for (let i = 0; i < corners.length; i++) {
+    const cartographic = Ellipsoid.WGS84.cartesianToCartographic(corners[i]);
+
+    minLon = Math.min(minLon, cartographic.longitude);
+    maxLon = Math.max(maxLon, cartographic.longitude);
+    minLat = Math.min(minLat, cartographic.latitude);
+    maxLat = Math.max(maxLat, cartographic.latitude);
+  }
+
+  return new Rectangle(minLon, minLat, maxLon, maxLat);
 }
 
 /**
