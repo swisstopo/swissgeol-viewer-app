@@ -882,7 +882,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-Aaretal-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230526/Voxel-Aaretal-Combined/tileset.json',
           voxelDataName: 'logk',
           voxelColors: logkVoxelColors,
           voxelFilter: aaretalVoxelFilter,
@@ -896,7 +896,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20230525/Voxel-BIRR-Combined/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20230526/Voxel-BIRR-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: birrIndexVoxelColors,
           voxelFilter: birrIndexVoxelFilter,
