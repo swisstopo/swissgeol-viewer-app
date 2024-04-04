@@ -47,6 +47,11 @@ export class LayerTreeItem extends LitElementI18n {
     if (changedProps.has('changeOrderActive')) {
       this.updateMovableState();
     }
+    if (changedProps.has('config')) {
+      this.config.promise?.then(() => {
+        this.requestUpdate();
+      });
+    }
     super.updated(changedProps);
   }
 
@@ -126,6 +131,15 @@ export class LayerTreeItem extends LitElementI18n {
     }));
   }
 
+  showWmtsDatePicker(config: LayerConfig) {
+    this.dispatchEvent(new CustomEvent('showWmtsDatePicker', {
+      bubbles: true,
+      detail: {
+        config
+      }
+    }));
+  }
+
   showVoxelFilter(config: LayerConfig) {
     this.dispatchEvent(new CustomEvent('showVoxelFilter', {
       bubbles: true,
@@ -164,6 +178,11 @@ export class LayerTreeItem extends LitElementI18n {
           <div class="item"
                @click=${() => this.showVoxelFilter(this.config)}>
             ${i18next.t('dtd_voxel_filter')}
+          </div>` : ''}
+        ${this.config?.wmtsTimes && this.config.wmtsTimes.length > 1 ? html`
+          <div class="item"
+               @click=${() => this.showWmtsDatePicker(this.config)}>
+            ${i18next.t('dtd_time_journey')}
           </div>` : ''}
       </div>
     `;

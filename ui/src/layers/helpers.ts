@@ -15,7 +15,7 @@ import {
   Matrix4,
   VoxelPrimitive,
 } from 'cesium';
-import {getSwisstopoImagery} from '../swisstopoImagery.js';
+import {getSwisstopoImagery} from '../swisstopoImagery';
 import {LayerType} from '../constants';
 import {isLabelOutlineEnabled} from '../permalink';
 import AmazonS3Resource from '../AmazonS3Resource.js';
@@ -31,10 +31,10 @@ export interface PickableVoxelPrimitive extends VoxelPrimitive {
   layer?: string;
 }
 
-export function createEarthquakeFromConfig(viewer: Viewer, config: LayerConfig) {
+export async function createEarthquakeFromConfig(viewer: Viewer, config: LayerConfig) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer, config);
   if (config.visible) {
-    earthquakeVisualizer.setVisible(true);
+    await earthquakeVisualizer.setVisible(true);
   }
   config.setVisibility = visible => earthquakeVisualizer.setVisible(visible);
   config.setOpacity = (opacity: number) => earthquakeVisualizer.setOpacity(opacity);
@@ -155,8 +155,8 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerCon
   return tileset;
 }
 
-export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: LayerConfig) {
-  let layer: ImageryLayer;
+export async function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: LayerConfig) {
+  const layer: ImageryLayer = await getSwisstopoImagery(config, config.maximumLevel);
   config.setVisibility = visible => layer.show = !!visible;
   config.setOpacity = opacity => layer.alpha = opacity;
   config.remove = () => viewer.scene.imageryLayers.remove(layer, false);
@@ -169,14 +169,19 @@ export function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: LayerCon
     }
     viewer.scene.imageryLayers.add(layer);
   };
-
-  return getSwisstopoImagery(config.layer!, config.maximumLevel).then(l => {
-    layer = l;
-    viewer.scene.imageryLayers.add(layer);
-    layer.alpha = config.opacity || 1;
-    layer.show = !!config.visible;
-    return layer;
-  });
+  config.setTime = (time: string) => {
+    config.wmtsCurrentTime = time;
+    layer.show = false;
+    viewer.scene.render();
+    setTimeout(() => {
+      layer.show = true;
+      viewer.scene.render();
+    }, 100);
+  };
+  viewer.scene.imageryLayers.add(layer);
+  layer.alpha = config.opacity || 1;
+  layer.show = !!config.visible;
+  return layer;
 }
 
 

@@ -22,6 +22,7 @@ import './elements/view-menu';
 import './elements/project-selector';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
+import './elements/ngm-wmts-date-picker';
 
 import '@geoblocks/cesium-view-cube';
 
@@ -120,6 +121,8 @@ export class NgmApp extends LitElementI18n {
   accessor voxelFilterElement;
   @query('ngm-voxel-simple-filter')
   accessor voxelSimpleFilterElement;
+  @query('ngm-wmts-date-picker')
+  accessor wmtsDatePickerElement;
   private viewer: Viewer | undefined;
   private queryManager: QueryManager | undefined;
   private waitForViewLoading = false;
@@ -166,6 +169,10 @@ export class NgmApp extends LitElementI18n {
     } else {
       this.voxelSimpleFilterElement.config = config;
     }
+  }
+
+  onShowWmtsDatePicker(event: CustomEvent) {
+    this.wmtsDatePickerElement.config = event.detail.config;
   }
 
   onCloseLayerLegend(event) {
@@ -446,6 +453,7 @@ export class NgmApp extends LitElementI18n {
           @layeradded=${this.onLayerAdded}
           @showLayerLegend=${this.onShowLayerLegend}
           @showVoxelFilter=${this.onShowVoxelFilter}
+          @showWmtsDatePicker=${this.onShowWmtsDatePicker}
           @toggleDebugTools=${(evt => {
             this.showCesiumToolbar = evt.detail.active;
           })}
@@ -486,6 +494,7 @@ export class NgmApp extends LitElementI18n {
             <ngm-voxel-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-filter>
             <ngm-voxel-simple-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-simple-filter>
             <ngm-coordinate-popup class="ngm-floating-window"></ngm-coordinate-popup>
+            <ngm-wmts-date-picker class="ngm-floating-window"></ngm-wmts-date-picker>
             <div class="on-map-menu">
               <cesium-view-cube ?hidden=${this.mobileView || this.showAxisOnMap}
                                 .scene="${this.viewer?.scene}"></cesium-view-cube>

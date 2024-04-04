@@ -13,7 +13,7 @@ import {
   getAttribute, getCesiumToolbarParam,
   getLayerParams,
   getSliceParam,
-  getZoomToPosition, setCesiumToolbarParam,
+  getZoomToPosition, LayerFromParam, setCesiumToolbarParam,
   syncLayersParam
 } from '../permalink';
 import {createCesiumObject} from '../layers/helpers';
@@ -40,10 +40,17 @@ import {customElement, property, query, state} from 'lit/decorators.js';
 import type {Cartesian2, Viewer} from 'cesium';
 import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
-import {getLayerLabel} from '../swisstopoImagery.js';
+import {getLayerLabel} from '../swisstopoImagery';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
+
+type SearchLayer = {
+  label: string
+  layer: string
+  type?: LayerType
+  title?: string
+}
 
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
@@ -99,13 +106,17 @@ export class SideBar extends LitElementI18n {
         });
       }
     });
-    MainStore.syncLayers.subscribe(async () => {
+    MainStore.setUrlLayersSubject.subscribe(async () => {
       if (this.activeLayers) {
         this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
       }
       await this.syncActiveLayers();
       this.catalogElement.requestUpdate();
       MainStore.nextLayersRemove();
+    });
+
+    MainStore.syncLayerParams.subscribe(() => {
+      syncLayersParam(this.activeLayers);
     });
 
     MainStore.onIonAssetAdd.subscribe(asset => {
@@ -377,7 +388,7 @@ export class SideBar extends LitElementI18n {
       l.displayed = false;
     });
 
-    const activeLayers: any[] = [];
+    const activeLayers: LayerConfig[] = [];
     for (const urlLayer of urlLayers) {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.layer);
       if (!layer) {
@@ -389,6 +400,7 @@ export class SideBar extends LitElementI18n {
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
+      layer.wmtsCurrentTime = urlLayer.timestamp;
       layer.setOpacity && layer.setOpacity(layer.opacity);
       layer.displayed = true;
       layer.setVisibility && layer.setVisibility(layer.visible);
@@ -580,7 +592,7 @@ export class SideBar extends LitElementI18n {
   }
 
   // adds layer from search to 'Displayed Layers'
-  addLayerFromSearch(searchLayer) {
+  async addLayerFromSearch(searchLayer) {
     let layer;
     if (searchLayer.dataSourceName) {
       layer = this.activeLayers.find(l => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
@@ -608,16 +620,17 @@ export class SideBar extends LitElementI18n {
     this.requestUpdate();
   }
 
-  createSearchLayer(searchLayer) {
+  createSearchLayer(searchLayer: SearchLayer) {
     let config: LayerConfig;
     if (searchLayer.type) {
       config = searchLayer;
       config.visible = true;
       config.origin = 'layer';
+      config.label = searchLayer.title || searchLayer.label;
     } else {
       config = {
         type: LayerType.swisstopoWMTS,
-        label: searchLayer.title,
+        label: searchLayer.title || searchLayer.label,
         layer: searchLayer.layer,
         visible: true,
         displayed: true,
@@ -625,14 +638,20 @@ export class SideBar extends LitElementI18n {
         queryType: 'geoadmin'
       };
     }
-    config.load = () => this.addLayer(config);
+    config.load = async () => {
+      const layer = await this.addLayer(config);
+      this.activeLayers = [...this.activeLayers];
+      syncLayersParam(this.activeLayers);
+      return layer;
+    };
+
     return config;
   }
 
-  async getLayerFromUrl(urlLayer) {
-    const searchLayer = await getLayerLabel(urlLayer.layer);
-    urlLayer.title = searchLayer;
-    return this.createSearchLayer(urlLayer);
+  async getLayerFromUrl(urlLayer: LayerFromParam) {
+    const searchLayerLabel = await getLayerLabel(urlLayer.layer);
+    const searchLayer: SearchLayer = {label: searchLayerLabel, layer: urlLayer.layer};
+    return this.createSearchLayer(searchLayer);
   }
 
   zoomToPermalinkObject() {

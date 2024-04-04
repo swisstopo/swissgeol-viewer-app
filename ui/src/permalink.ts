@@ -16,13 +16,19 @@ import {
   TOPIC_PARAM,
   PROJECT_PARAM,
   VIEW_PARAM,
-  ZOOM_TO_PARAM, EXAGGERATION_PARAM
+  ZOOM_TO_PARAM, EXAGGERATION_PARAM, LAYERS_TIMESTAMP_URL_PARAM
 } from './constants';
 import type {Cartographic, Camera} from 'cesium';
 import type {TopicParamSubject, ProjectParamSubject} from './store/dashboard';
 
 import {LayerConfig} from './layertree';
 
+export type LayerFromParam = {
+  layer: string
+  opacity: number
+  visible: boolean
+  timestamp?: string
+}
 
 export function rewriteParams() {
   const params = getURLSearchParams();
@@ -78,10 +84,11 @@ function safeSplit(str): string[] {
 /**
  * Parses the URL and returns an array of layer configs.
  */
-export function getLayerParams() {
+export function getLayerParams(): LayerFromParam[] {
   const params = getURLSearchParams();
   const layersTransparency = safeSplit(params.get(LAYERS_TRANSPARENCY_URL_PARAM));
   const layersVisibility = safeSplit(params.get(LAYERS_VISIBILITY_URL_PARAM));
+  const layersTimestamp = safeSplit(params.get(LAYERS_TIMESTAMP_URL_PARAM));
   const layers = safeSplit(params.get(LAYERS_URL_PARAM));
 
   return layers.map((layer, key) => {
@@ -89,6 +96,7 @@ export function getLayerParams() {
       layer: layer,
       opacity: Number(1 - Number(layersTransparency[key])),
       visible: layersVisibility[key] === 'true',
+      timestamp: layersTimestamp[key] || undefined,
     };
   });
 }
@@ -127,6 +135,7 @@ export function syncLayersParam(activeLayers: LayerConfig[]) {
   const params = getURLSearchParams();
   const layerNames: string[] = [];
   const layersTransparency: string[] = [];
+  const layersTimestamps: string[] = [];
   const layersVisibility: boolean[] = [];
   activeLayers.forEach(l => {
     if (!l.customAsset && !l.notSaveToPermalink && l.layer) {
@@ -134,6 +143,7 @@ export function syncLayersParam(activeLayers: LayerConfig[]) {
       const transparency = !l.opacity || isNaN(l.opacity) ? 0 : (1 - l.opacity);
       layersTransparency.push(transparency.toFixed(2));
       layersVisibility.push(!!l.visible);
+      layersTimestamps.push(l.wmtsCurrentTime || '');
     }
   });
 
@@ -141,10 +151,12 @@ export function syncLayersParam(activeLayers: LayerConfig[]) {
     params.set(LAYERS_URL_PARAM, layerNames.join(','));
     params.set(LAYERS_VISIBILITY_URL_PARAM, layersVisibility.join(','));
     params.set(LAYERS_TRANSPARENCY_URL_PARAM, layersTransparency.join(','));
+    params.set(LAYERS_TIMESTAMP_URL_PARAM, layersTimestamps.join(','));
   } else {
     params.delete(LAYERS_URL_PARAM);
     params.delete(LAYERS_TRANSPARENCY_URL_PARAM);
     params.delete(LAYERS_VISIBILITY_URL_PARAM);
+    params.delete(LAYERS_TIMESTAMP_URL_PARAM);
   }
 
   const assetParams = getAssetIds();
