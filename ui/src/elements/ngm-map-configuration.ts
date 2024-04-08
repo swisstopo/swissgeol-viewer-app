@@ -33,7 +33,7 @@ export class NgmMapConfiguration extends LitElementI18n {
 
     MainStore.viewer.subscribe(viewer => {
       this.viewer = viewer;
-      this.exaggeration = this.viewer?.scene.globe.terrainExaggeration || 1;
+      this.exaggeration = this.viewer?.scene.verticalExaggeration || 1;
     });
     MainStore.mapChooser.subscribe(chooser => {
       this.mapChooser = chooser;
@@ -124,7 +124,7 @@ export class NgmMapConfiguration extends LitElementI18n {
             @click=${() => {
               if (!this.viewer) return;
               this.hideExaggeration = !this.hideExaggeration;
-              this.viewer.scene.globe.terrainExaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+              this.viewer.scene.verticalExaggeration = this.hideExaggeration ? 1 : this.exaggeration;
               this.viewer.scene.requestRender();
             }}></div>
         <div class="ngm-displayed-slider ngm-exaggeration-slider">
@@ -143,7 +143,7 @@ export class NgmMapConfiguration extends LitElementI18n {
                        this.hideExaggeration = false;
                      }
                      this.exaggeration = Number((<HTMLInputElement>evt.target).value);
-                     this.viewer.scene.globe.terrainExaggeration = this.exaggeration;
+                     this.viewer.scene.verticalExaggeration = this.exaggeration;
                      this.viewer.scene.requestRender();
                      setExaggeration(this.exaggeration);
                    }
