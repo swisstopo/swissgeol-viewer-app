@@ -163,7 +163,7 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
     enableCenterOfRotate(viewer);
 
     const globe = scene.globe;
-    globe.terrainExaggeration = zExaggeration;
+    scene.verticalExaggeration = zExaggeration;
 
     if (searchParams.get('swissrectangle') !== 'false') {
         const rectangle = Rectangle.fromDegrees(
