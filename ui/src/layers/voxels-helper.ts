@@ -67,7 +67,7 @@ function createCustomShader(config): CustomShader {
       }
 
       if (display) {
-        vec3 voxelNormal = czm_normal * fsInput.voxel.surfaceNormal;
+        vec3 voxelNormal = normalize(czm_normal * fsInput.voxel.surfaceNormal);
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
         if (fsInput.voxel.tileIndex == u_selectedTile && fsInput.voxel.sampleIndex == u_selectedSample) {
@@ -158,26 +158,25 @@ function createCustomShader(config): CustomShader {
 
 function createSimpleCustomShader(config): CustomShader {
   const fragmentShaderText = `
-    void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
-      float value = fsInput.metadata.${config.voxelDataName};
-
-      bool valueInRange = value >= u_filter_min && value <= u_filter_max;
-
-      if (valueInRange && value != u_noData) {
-        vec3 voxelNormal = czm_normal * fsInput.voxel.surfaceNormal;
+  void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material)
+    {
+        float value = fsInput.metadata.${config.voxelDataName};
+    
+        vec3 voxelNormal = normalize(czm_normal * fsInput.voxel.surfaceNormal);
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
+    
         if (fsInput.voxel.tileIndex == u_selectedTile && fsInput.voxel.sampleIndex == u_selectedSample) {
           material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}) * lighting;
           material.alpha = 1.0;
-        } else {
-          float lerp = (value - u_min) / (u_max - u_min);
-          material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb * lighting;
-          material.alpha = 1.0;
+        } else if (u_min <= value && value <= u_max) {
+            float lerp = (value - u_min) / (u_max - u_min);
+            material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb * lighting;
+            material.alpha = 1.0;
         }
-      }
     }
   `;
+
 
   const colors = config.voxelColors;
   const colorRamp = createColorGradient(colors.colors);
