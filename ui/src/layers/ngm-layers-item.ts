@@ -19,9 +19,9 @@ const GEOCAT_LANG_CODE = {
 };
 
 @customElement('ngm-layers-item')
-export class LayerTreeItem extends LitElementI18n {
+export class NgmLayersItem extends LitElementI18n {
   @property({type: Object})
-  accessor actions!: LayersAction;
+  accessor actions: LayersAction | undefined;
   @property({type: Object})
   accessor config!: LayerConfig;
   @property({type: Boolean})
@@ -83,15 +83,16 @@ export class LayerTreeItem extends LitElementI18n {
     }
   }
 
-  changeVisibility() {
+  async changeVisibility() {
+    if (!this.actions) return;
     this.config.visible = !this.config.visible;
-    this.actions.changeVisibility(this.config, this.config.visible);
+    await this.actions.changeVisibility(this.config, this.config.visible);
     this.dispatchEvent(new CustomEvent('layerChanged'));
     this.requestUpdate();
   }
 
   changeOpacity() {
-    if (!this.config.opacity) return;
+    if (!this.actions || !this.config.opacity) return;
     this.actions.changeOpacity(this.config, this.config.opacity);
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
@@ -269,7 +270,7 @@ export class LayerTreeItem extends LitElementI18n {
   }
 
   cloneNode(deep) {
-    const node = super.cloneNode(deep) as LayerTreeItem;
+    const node = super.cloneNode(deep) as NgmLayersItem;
     node.config = this.config;
     node.actions = this.actions;
     node.changeOrderActive = this.changeOrderActive;

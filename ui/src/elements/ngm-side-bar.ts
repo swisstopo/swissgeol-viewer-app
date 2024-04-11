@@ -2,6 +2,7 @@ import {html} from 'lit';
 import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
+import '../layers/ngm-layers-sort';
 import '../layers/ngm-catalog';
 import './dashboard/ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
@@ -83,7 +84,7 @@ export class SideBar extends LitElementI18n {
   @query('ngm-catalog')
   accessor catalogElement;
   private viewer: Viewer | null = null;
-  private layerActions: any;
+  private layerActions: LayersActions | undefined;
   private zoomedToPosition = false;
   private accordionInited = false;
   private shareListenerAdded = false;
@@ -319,17 +320,28 @@ export class SideBar extends LitElementI18n {
                @click=${this.toggleLayerOrderChange}>
             ${this.layerOrderChangeActive ? i18next.t('dtd_finish_ordering_label') : i18next.t('dtd_change_order_label')}
           </div>
-          <ngm-layers
-            .layers=${this.activeLayers}
-            .actions=${this.layerActions}
-            .changeOrderActive=${this.layerOrderChangeActive}
-            @zoomTo=${evt => {
-              NavToolsStore.hideTargetPoint();
-              zoomTo(this.viewer!, evt.detail);
-            }}
-            @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
-            @layerChanged=${evt => this.onLayerChanged(evt)}>
-          </ngm-layers>
+          ${this.layerOrderChangeActive ?
+              html`
+                <ngm-layers-sort
+                    .layers=${this.activeLayers}
+                    @orderChanged=${(evt) => this.onLayersOrderChange(evt.detail)}
+                    @zoomTo=${evt => {
+                      NavToolsStore.hideTargetPoint();
+                      zoomTo(this.viewer!, evt.detail);
+                    }}>
+                </ngm-layers-sort>` :
+              html`
+                <ngm-layers
+                    .layers=${this.activeLayers}
+                    .actions=${this.layerActions}
+                    @zoomTo=${evt => {
+                      NavToolsStore.hideTargetPoint();
+                      zoomTo(this.viewer!, evt.detail);
+                    }}
+                    @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
+                    @layerChanged=${evt => this.onLayerChanged(evt)}>
+                </ngm-layers>`
+          }
           <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
           <ngm-layers-upload 
               .toastPlaceholder=${this.toastPlaceholder} 
@@ -719,6 +731,15 @@ export class SideBar extends LitElementI18n {
 
   toggleLayerOrderChange() {
     this.layerOrderChangeActive = !this.layerOrderChangeActive;
+  }
+
+  async onLayersOrderChange(layers: LayerConfig[]) {
+    await this.layerActions!.reorderLayers(layers);
+    // update activeLayers only when ordering finished
+    if (!this.layerOrderChangeActive) {
+      this.activeLayers = [...layers];
+    }
+    this.dispatchEvent(new CustomEvent('layerChanged'));
   }
 
   async onKmlUpload(file: File) {

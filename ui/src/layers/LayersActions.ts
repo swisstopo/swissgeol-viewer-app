@@ -91,7 +91,7 @@ export default class LayersAction {
     }
   }
 
-  async reorderLayers(_: LayerConfig[], newLayers: LayerConfig[]) {
+  async reorderLayers(newLayers: LayerConfig[]) {
     const imageries = this.viewer.scene.imageryLayers;
     for (const config of newLayers) {
       if (config.type === LayerType.swisstopoWMTS) {
