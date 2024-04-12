@@ -41,6 +41,14 @@ export function pickCenterOnEllipsoid(scene: Scene): Cartesian3 | undefined {
   return camera.pickEllipsoid(windowPosition);
 }
 
+export function pickPositionOrVoxel(scene: Scene, windowPosition: Cartesian2): Cartesian3 {
+  const voxel = scene.pickVoxel(windowPosition);
+  if (voxel) {
+    return voxel.orientedBoundingBox.center;
+  }
+  return scene.pickPosition(windowPosition);
+}
+
 /**
  * Return the position of the point, on the map or object at the center of the Cesium viewport.
  */
@@ -49,7 +57,7 @@ export function pickCenterOnMapOrObject(scene: Scene): Cartesian3 {
     scene.canvas.clientWidth / 2,
     scene.canvas.clientHeight / 2
   );
-  return scene.pickPosition(windowPosition);
+  return pickPositionOrVoxel(scene, windowPosition);
 }
 
 export function verticalDirectionRotate(camera: Camera, angle: number) {
