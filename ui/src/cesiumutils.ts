@@ -1,4 +1,4 @@
-import type {Camera, Scene, Viewer} from 'cesium';
+import type {Camera, EntityCollection, Scene, Viewer} from 'cesium';
 import {
   BoundingSphere,
   Cartesian2,
@@ -8,54 +8,31 @@ import {
   JulianDate,
   Math as CMath,
   Matrix3,
-  Matrix4,
   OrientedBoundingBox,
   Plane,
   Rectangle,
-  Transforms
 } from 'cesium';
 import type {GeometryTypes} from './toolbox/interfaces';
 import earcut from 'earcut';
 
 const julianDate = new JulianDate();
 
-/**
- * @param {import('cesium/Source/Scene/Scene').default} scene
- * @param {boolean} useCamera
- * @param {function(import('cesium/Source/Scene/Camera').default): any} func
- */
-export function aroundCenter(scene, useCamera, func) {
-  const camera = scene.camera;
-  const center = useCamera ? camera.positionWC : pickCenter(scene);
-  console.assert(center !== undefined);
-  const transform = Transforms.eastNorthUpToFixedFrame(center);
-  const oldTransform = Matrix4.clone(camera.transform);
-  camera.lookAtTransform(transform);
-  func(camera);
-  camera.lookAtTransform(oldTransform);
-}
-
-/**
- * @param {import('cesium/Source/Scene/Scene').default} scene
- * @return {Cartesian3}
- */
-export function pickCenter(scene) {
+export function pickCenter(scene: Scene): Cartesian3 {
   const camera = scene.camera;
   const windowPosition = new Cartesian2(
     scene.canvas.clientWidth / 2,
     scene.canvas.clientHeight / 2
   );
   const ray = camera.getPickRay(windowPosition);
+  if (!ray) return camera.positionWC;
   const center = scene.globe.pick(ray, scene);
   return center !== undefined ? center : camera.positionWC;
 }
 
 /**
  * Return the position of the point, on the ellipsoid at the center of the Cesium viewport.
- * @param {import('cesium/Source/Scene/Scene').default} scene
- * @return {Cartesian3 | undefined}
  */
-export function pickCenterOnEllipsoid(scene) {
+export function pickCenterOnEllipsoid(scene: Scene): Cartesian3 | undefined {
   const camera = scene.camera;
   const windowPosition = new Cartesian2(
     scene.canvas.clientWidth / 2,
@@ -66,10 +43,8 @@ export function pickCenterOnEllipsoid(scene) {
 
 /**
  * Return the position of the point, on the map or object at the center of the Cesium viewport.
- * @param {import('cesium/Source/Scene/Scene').default} scene
- * @return {Cartesian3 | undefined}
  */
-export function pickCenterOnMapOrObject(scene) {
+export function pickCenterOnMapOrObject(scene: Scene): Cartesian3 {
   const windowPosition = new Cartesian2(
     scene.canvas.clientWidth / 2,
     scene.canvas.clientHeight / 2
@@ -77,11 +52,7 @@ export function pickCenterOnMapOrObject(scene) {
   return scene.pickPosition(windowPosition);
 }
 
-/**
- * @param {import('cesium/Source/Scene/Camera').default} camera
- * @param {number} angle
- */
-export function verticalDirectionRotate(camera, angle) {
+export function verticalDirectionRotate(camera: Camera, angle: number) {
   const position = Cartesian3.normalize(camera.position, new Cartesian3());
   const up = Cartesian3.normalize(camera.up, new Cartesian3());
 
@@ -94,12 +65,7 @@ export function verticalDirectionRotate(camera, angle) {
   camera.rotate(tangent, angle);
 }
 
-/**
- * @param {Array<Cartesian3>} positions
- * @param {Array<number>} [holes]
- * @return {number}
- */
-function getPolygonArea(positions, holes = []) {
+function getPolygonArea(positions: Cartesian3[], holes: number[] = []): number {
   const indices = triangulate(positions, holes);
   let area = 0;
 
@@ -156,13 +122,17 @@ export function getMeasurements(positions: Cartesian3[], type: GeometryTypes): M
 
 /**
  * Sets height in meters for each cartesian3 position in array
- * @param {Array<Cartesian3>} positions
- * @param {number | undefined} height
- * @param {import('cesium/Source/Scene/Scene').default} [scene]
- * @param {boolean} assignBack assign value to initial position
- * @return {Array<Cartesian3>}
+ * @param positions
+ * @param [height]
+ * @param [scene]
+ * @param assignBack assign value to initial position
  */
-export function updateHeightForCartesianPositions(positions, height, scene?, assignBack = false) {
+export function updateHeightForCartesianPositions(
+    positions: Cartesian3[],
+    height?: number,
+    scene?: Scene,
+    assignBack: boolean = false
+): Cartesian3[] {
   return positions.map(p => {
     const cartographicPosition = Cartographic.fromCartesian(p);
     if (height)
@@ -180,9 +150,8 @@ export function updateHeightForCartesianPositions(positions, height, scene?, ass
  * @param {Cartesian3} point1
  * @param {Cartesian3} point2
  * @param {boolean} negate - if true changes direction from left on the right
- * @return {Plane}
  */
-export function planeFromTwoPoints(point1, point2, negate = false) {
+export function planeFromTwoPoints(point1: Cartesian3, point2: Cartesian3, negate: boolean = false): Plane {
   const p1p2 = Cartesian3.subtract(point2, point1, new Cartesian3());
   const cross = Cartesian3.cross(point1, p1p2, new Cartesian3());
   const normal = Cartesian3.normalize(cross, new Cartesian3());
@@ -193,29 +162,16 @@ export function planeFromTwoPoints(point1, point2, negate = false) {
 }
 
 /**
- * @param {import('cesium/Source/Core/Cartesian3').default} cartesian
- * @return {Array<number>}
- */
-export function cartesianToDegrees(cartesian) {
-  const cartographic = Cartographic.fromCartesian(cartesian);
-  return [
-    cartographic.longitude * 180 / Math.PI,
-    cartographic.latitude * 180 / Math.PI,
-    cartographic.height
-  ];
-}
-
-/**
  * Extend kml for export with entities properties
  * @param {string} kml - kml for export
  * @param {EntityCollection} entities - list of entities for export
  * @return {string}
  */
-export function extendKmlWithProperties(kml, entities) {
+export function extendKmlWithProperties(kml: string, entities: EntityCollection): string {
   entities.values.forEach(entity => {
     let kmlProperties = '<ExtendedData>';
-    entity.properties.propertyNames.forEach(prop => {
-      let value = entity.properties[prop] ? entity.properties[prop].getValue() : undefined;
+    entity.properties!.propertyNames.forEach(prop => {
+      let value = entity.properties![prop] ? entity.properties![prop].getValue() : undefined;
       if (value !== undefined && value !== null) {
         value = typeof value === 'object' ? JSON.stringify(value) : value;
         kmlProperties += `<Data name="${prop}"><value>${value}</value></Data>`;
@@ -235,13 +191,13 @@ const scratchProjectionVector = new Cartesian3();
 
 /**
  * Calculates point projection on vector from provided points
- * @param vectorPoint1
- * @param vectorPoint2
- * @param pointToProject
- * @param result
- * @return {Cartesian3}
  */
-export function projectPointOntoVector(vectorPoint1, vectorPoint2, pointToProject, result = new Cartesian3()) {
+export function projectPointOntoVector(
+    vectorPoint1: Cartesian3,
+    vectorPoint2: Cartesian3,
+    pointToProject: Cartesian3,
+    result: Cartesian3 = new Cartesian3()
+): Cartesian3 {
   Cartesian3.subtract(vectorPoint2, vectorPoint1, scratchVector1);
   Cartesian3.subtract(pointToProject, vectorPoint1, scratchVector2);
   Cartesian3.projectVector(scratchVector2, scratchVector1, scratchProjectionVector);
@@ -253,13 +209,14 @@ const maxDifferenceScratch = new Cartesian3();
 
 /**
  * Wrapper for Cartesian3.lerp. Computes position on segment.
- * @param position
- * @param minPosition
- * @param maxPosition
- * @param start
- * @param end
  */
-export function clampPosition(position, minPosition, maxPosition, start, end) {
+export function clampPosition(
+    position: Cartesian3,
+    minPosition: Cartesian3,
+    maxPosition: Cartesian3,
+    start: number,
+    end: number
+) {
   let distanceScalar = start;
   const minDifference = Cartesian3.subtract(minPosition, position, minDifferenceScratch);
   const min = minDifference.x + minDifference.y + minDifference.z;
@@ -278,16 +235,15 @@ export function clampPosition(position, minPosition, maxPosition, start, end) {
   Cartesian3.lerp(minPosition, maxPosition, distanceScalar, position);
 }
 
-/**
- * @param {Cartesian3} point
- * @param {Cartesian3} startPoint
- * @param {Cartesian3} endPoint
- * @param {number} start - The value corresponding to point at 0.0.
- * @param {number} end - The value corresponding to point at 1.0.
- * @param {number} height - height in meters
- * @return {Cartesian3}
- */
-export function projectPointOnSegment(point, startPoint, endPoint, start, end, height) {
+
+export function projectPointOnSegment(
+    point: Cartesian3,
+    startPoint: Cartesian3,
+    endPoint: Cartesian3,
+    start: number,
+    end: number,
+    height: number
+): Cartesian3 {
   const position = projectPointOntoVector(startPoint, endPoint, point);
   clampPosition(position, startPoint, endPoint, start, end);
   return updateHeightForCartesianPositions([position], height)[0];
@@ -348,13 +304,12 @@ const eastPointScratch = new Cartesian3();
 /**
  * Returns vector orthogonal to view vector (vector from camera position to position on map)
  * https://user-images.githubusercontent.com/51954170/108503213-abff8580-72bc-11eb-8b75-3385b5fd171e.png
- * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
- * @return {Cartesian3}
  */
-export function getVectorOrthogonalToView(viewer) {
+export function getVectorOrthogonalToView(viewer: Viewer): Cartesian3 | undefined {
   const hpr = new HeadingPitchRoll(viewer.scene.camera.heading, 0.0, 0.0);
   const rotation = Matrix3.fromHeadingPitchRoll(hpr);
   const viewRect = viewer.scene.camera.computeViewRectangle();
+  if (!viewRect) return undefined;
 
   const northwest = Cartographic.toCartesian(Rectangle.northwest(viewRect));
   const southwest = Cartographic.toCartesian(Rectangle.southwest(viewRect));
@@ -369,14 +324,15 @@ export function getVectorOrthogonalToView(viewer) {
 
 /**
  * Returns left,right points of view rectangle
- * @param {import('cesium/Source/Widgets/Viewer/Viewer').default} viewer
- * @return {Array<Cartesian3>}
  */
-export function getOrthogonalViewPoints(viewer) {
+export function getOrthogonalViewPoints(viewer: Viewer): Cartesian3[] {
   const center = pickCenterOnEllipsoid(viewer.scene);
+  if (!center) return [];
+
   const left = new Cartesian3();
   const right = new Cartesian3();
   const orthogonalVector = getVectorOrthogonalToView(viewer);
+  if (!orthogonalVector) return [];
 
   Cartesian3.divideByScalar(orthogonalVector, 2, orthogonalVector);
   Cartesian3.subtract(center, orthogonalVector, left);
