@@ -1,37 +1,36 @@
 {
   "input": {
-    "path": "./Voxel-Aaretal-Combined_20220311_with_ecef_heights.csv",
+    "path": "./Voxel-Aaretal-Combined_20231005.csv",
     "crs": "EPSG:2056"
   },
   "output": {
     "path": "./output/20230526/Voxel-Aaretal-Combined/"
   },
+  "gltf": {
+    "binary": true
+  },
   "csv": {
     "properties": {
       "logk": {
-        "noData": -99999.0,
+        "noData": -9999.0,
         "type": "FLOAT32"
       },
       "Index": {
-        "noData": -99999.0,
+        "noData": -9999.0,
         "type": "FLOAT32"
       }
     }
   },
-  "tileset": {
-    "voxelContentBinary": true,
-    "voxelContentCombineBuffers": true
-  },
   "pipeline": {
     "voxelTiler": {
-      "tileDimensions": 32,
       "properties": ["logk", "Index"],
       "grid": {
+        "voxelShape": "BOX",
         "xSpacing": 50,
         "ySpacing": 50,
-        "zSpacing": 2
+        "zSpacing": 2,
+        "rotation": 0
       }
     }
-  },
-  "force": true
+  }
 }

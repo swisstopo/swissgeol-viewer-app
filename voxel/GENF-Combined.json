@@ -1,10 +1,13 @@
 {
   "input": {
-    "path": "./Voxel-GENF-Combined_20220311_with_ecef_heights.csv",
+    "path": "./Voxel-GENF-Combined_20231005.csv",
     "crs": "EPSG:2056"
   },
   "output": {
     "path": "./output/20230526/Voxel-GENF-Combined/"
+  },
+  "gltf": {
+    "binary": true
   },
   "csv": {
     "properties": {
@@ -18,20 +21,16 @@
       }
     }
   },
-  "tileset": {
-    "voxelContentBinary": true,
-    "voxelContentCombineBuffers": true
-  },
   "pipeline": {
     "voxelTiler": {
-      "tileDimensions": 32,
       "properties": ["logk", "Index"],
       "grid": {
+        "voxelShape": "BOX",
         "xSpacing": 10,
         "ySpacing": 10,
-        "zSpacing": 1
+        "zSpacing": 1,
+        "rotation": 0
       }
     }
-  },
-  "force": true
+  }
 }
