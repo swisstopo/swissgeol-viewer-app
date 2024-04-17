@@ -32,6 +32,7 @@ import {
 } from 'cesium';
 import MainStore from './store/main';
 import {getExaggeration} from './permalink';
+import {pickPositionOrVoxel} from './cesiumutils';
 
 
 window['CESIUM_BASE_URL'] = '.';
@@ -268,7 +269,7 @@ function enableCenterOfRotate(viewer: Viewer) {
     scene.camera.constrainedAxis = new Cartesian3(0, 0, 1);
     // look fix camera on picked position when ctrl pressed
     eventHandler.setInputAction(event => {
-        const pickedPosition = scene.pickPosition(event.position);
+        const pickedPosition = pickPositionOrVoxel(scene, event.position);
         if (pickedPosition) {
             const transform = Transforms.eastNorthUpToFixedFrame(pickedPosition);
             scene.camera.lookAtTransform(transform);

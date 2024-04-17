@@ -24,7 +24,7 @@ import type {Interactable} from '@interactjs/types';
 import {classMap} from 'lit/directives/class-map.js';
 import {
   lookAtPoint,
-  pickCenterOnMapOrObject,
+  pickCenterOnMapOrObject, pickPositionOrVoxel,
   positionFromPxDistance,
   updateHeightForCartesianPositions
 } from '../cesiumutils';
@@ -122,7 +122,7 @@ export class NgmNavTools extends LitElementI18n {
       this.refIcon = this.viewer.entities.add(this.refIcon);
       this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
       this.eventHandler.setInputAction(event => {
-        const pickedPosition = scene.pickPosition(event.position);
+        const pickedPosition = pickPositionOrVoxel(scene, event.position);
         this.toggleAxis(pickedPosition);
       }, ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.CTRL);
       document.addEventListener('keyup', (evt) => {
@@ -181,7 +181,7 @@ export class NgmNavTools extends LitElementI18n {
     });
   }
 
-  toggleReference(forcePosition?) {
+  toggleReference(forcePosition?: Cartesian3) {
     if (!this.eventHandler) return;
     let position: Cartesian3 | undefined = forcePosition;
     if (this.showTargetPoint && !forcePosition) {
@@ -251,8 +251,8 @@ export class NgmNavTools extends LitElementI18n {
   }
 
   startTracking() {
-    this.addTargetPoint(this.refIcon.position!.getValue(this.julianDate));
-    const center = this.refIcon.position!.getValue(this.julianDate);
+    const center = this.refIcon.position!.getValue(this.julianDate)!;
+    this.addTargetPoint(center);
     const camera = this.viewer!.camera;
     lookAtPoint(center, camera);
     const transform = Transforms.eastNorthUpToFixedFrame(center);
@@ -267,7 +267,7 @@ export class NgmNavTools extends LitElementI18n {
 
   onMouseMove(event) {
     if (this.moveRef) {
-      const position = this.viewer!.scene.pickPosition(event.endPosition);
+      const position = pickPositionOrVoxel(this.viewer!.scene, event.endPosition);
       if (!position) return;
       this.addTargetPoint(position);
       syncTargetParam(Cartographic.fromCartesian(position));
