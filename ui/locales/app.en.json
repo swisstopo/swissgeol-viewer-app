@@ -58,6 +58,7 @@
   "dtd_background_map_label": "Background map",
   "dtd_cant_upload_kml_error": "Error while uploading KML",
   "dtd_change_order_label": "Change order",
+  "dtd_clamp_to_ground": "Clamp to terrain",
   "dtd_configure_data_btn": "Configure data displayed",
   "dtd_displayed_data_label": "Data displayed",
   "dtd_download_hint": "Download / Legend",

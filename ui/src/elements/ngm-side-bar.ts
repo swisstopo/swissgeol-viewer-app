@@ -27,7 +27,9 @@ import {
   BoundingSphere,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-  Math as CMath, KmlDataSource, CustomDataSource, GeoJsonDataSource
+  Math as CMath,
+  CustomDataSource,
+  GeoJsonDataSource,
 } from 'cesium';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
@@ -45,6 +47,7 @@ import {getLayerLabel} from '../swisstopoImagery';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
+import {parseKml} from '../cesiumutils';
 
 type SearchLayer = {
   label: string
@@ -308,7 +311,7 @@ export class SideBar extends LitElementI18n {
         </div>
       </div>
       <div .hidden=${this.activePanel !== 'data' || this.hideDataDisplayed}
-           class="ngm-side-bar-panel ngm-extension-panel">
+           class="ngm-side-bar-panel ngm-extension-panel ngm-data-panel">
         <div class="ngm-panel-header">
           ${this.mobileView ? dataMobileHeader : i18next.t('dtd_displayed_data_label')}
           <div class="ngm-close-icon"
@@ -345,7 +348,7 @@ export class SideBar extends LitElementI18n {
           <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
           <ngm-layers-upload 
               .toastPlaceholder=${this.toastPlaceholder} 
-              .onKmlUpload=${(file: File) => this.onKmlUpload(file)}>
+              .onKmlUpload=${(file: File, clampToGround: boolean) => this.onKmlUpload(file, clampToGround)}>
           </ngm-layers-upload>
           <button class="ui button ngm-ion-add-content-btn ngm-action-btn" 
                   @click=${() => this.dispatchEvent(new CustomEvent('openIonModal'))}>
@@ -742,25 +745,16 @@ export class SideBar extends LitElementI18n {
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
 
-  async onKmlUpload(file: File) {
+  async onKmlUpload(file: File, clampToGround: boolean) {
     if (!this.viewer) return;
-    const kmlDataSource = await KmlDataSource.load(file, {
-      camera: this.viewer.scene.camera,
-      canvas: this.viewer.scene.canvas
-    });
-    const uploadedLayer = new CustomDataSource();
-    let name = kmlDataSource.name;
-    kmlDataSource.entities.values.forEach((ent, indx) => {
-      if (indx === 0 && !name) {
-        name = ent.name!;
-      }
-      uploadedLayer.entities.add(ent);
-    });
+    const dataSource = new CustomDataSource();
+    const name = await parseKml(this.viewer, file, dataSource, clampToGround);
     // name used as id for datasource
-    uploadedLayer.name = `${name}_${Date.now()}`;
-    await this.viewer.dataSources.add(uploadedLayer);
+    dataSource.name = `${name}_${Date.now()}`;
+    await this.viewer.dataSources.add(dataSource);
+    this.viewer.scene.requestRender();
     // done like this to have correct rerender of component
-    const promise = Promise.resolve(uploadedLayer);
+    const promise = Promise.resolve(dataSource);
     const config: LayerConfig = {
       load() {return promise;},
       label: name,
@@ -771,10 +765,9 @@ export class SideBar extends LitElementI18n {
       ownKml: true,
       opacityDisabled: true
     };
-
-    this.requestUpdate();
     await this.onCatalogLayerClicked(config);
-    await this.viewer.zoomTo(uploadedLayer);
+    this.viewer.zoomTo(dataSource);
+    this.requestUpdate();
   }
 
   toggleDebugTools(event) {

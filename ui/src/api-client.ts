@@ -145,7 +145,7 @@ class ApiClient {
         return response;
     }
 
-    async uploadProjectAsset(file: File) {
+    async uploadProjectAsset(file: File | Blob) {
         const headers = {};
         const formData = new FormData();
         formData.append('file', file);

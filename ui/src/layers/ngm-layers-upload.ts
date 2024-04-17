@@ -11,9 +11,11 @@ export default class LayersUpload extends LitElementI18n {
   @property({type: Object})
   accessor toastPlaceholder!: HTMLElement;
   @property({type: Function})
-  accessor onKmlUpload!: (file: File) => Promise<void> | void;
+  accessor onKmlUpload!: (file: File, clampToGround: boolean) => Promise<void> | void;
   @state()
   accessor loading = false;
+  @state()
+  accessor clampToGround = true;
   @query('.ngm-upload-kml')
   accessor uploadKmlInput!: HTMLInputElement;
 
@@ -25,7 +27,7 @@ export default class LayersUpload extends LitElementI18n {
     } else {
       try {
         this.loading = true;
-        await this.onKmlUpload(file);
+        await this.onKmlUpload(file, this.clampToGround);
         this.uploadKmlInput.value = '';
         this.loading = false;
       } catch (e) {
@@ -61,6 +63,13 @@ export default class LayersUpload extends LitElementI18n {
       </button>
       <input class="ngm-upload-kml" type='file' accept=".kml,.KML" hidden
              @change=${(e) => this.uploadKml(e.target ? e.target.files[0] : null)}/>
+      <div class="ngm-checkbox ${classMap({active: this.clampToGround})}"
+           @click=${() => (<HTMLInputElement> this.querySelector('.ngm-checkbox > input')).click()}>
+        <input type="checkbox" ?checked=${this.clampToGround} @change=${(evt => this.clampToGround = evt.target.checked)}>
+        <span class="ngm-checkbox-icon">
+              </span>
+        <label>${i18next.t('dtd_clamp_to_ground')}</label>
+      </div>
     `;
   }
 
