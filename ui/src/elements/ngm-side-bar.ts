@@ -277,7 +277,7 @@ export class SideBar extends LitElementI18n {
                    @open=${() => this.activePanel = 'tools'}
                    @close=${() => this.activePanel = ''}></ngm-tools>
       </div>
-      <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel ngm-large-panel">
+      <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel ngm-share-panel">
         <div class="ngm-panel-header">${i18next.t('lsb_share')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
