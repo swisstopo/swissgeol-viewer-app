@@ -86,6 +86,10 @@ ngm-auth:hover {
   width: calc(100vw - 144px);
 }
 
+.ngm-side-bar-panel.ngm-share-panel {
+  width: 436px;
+}
+
 .ngm-side-bar-panel.ngm-extension-panel {
   width: 528px;
   left: 250px;
@@ -237,6 +241,10 @@ ngm-auth:hover {
     width: calc(100vw - 64px);
   }
 
+  .ngm-side-bar-panel.ngm-share-panel {
+    width: 100%
+  }
+
   .ngm-menu-1 > div > div:nth-child(1),
   .ngm-menu-mobile > div > div:nth-child(1),
   ngm-auth .ngm-user-icon {
@@ -265,6 +273,7 @@ ngm-auth:hover {
     width: 100%;
   }
 
+  .ngm-side-bar-panel.ngm-share-panel,
   .ngm-side-bar-panel.ngm-large-panel {
     overflow: auto;
   }
