@@ -1,16 +1,26 @@
-import type {Camera, EntityCollection, Scene, Viewer} from 'cesium';
+import type {EntityCollection} from 'cesium';
 import {
+  ArcType,
   BoundingSphere,
+  Camera,
   Cartesian2,
   Cartesian3,
   Cartographic,
+  Color,
+  ColorMaterialProperty,
+  ConstantProperty,
+  CustomDataSource,
   HeadingPitchRoll,
+  HeightReference,
   JulianDate,
+  KmlDataSource,
   Math as CMath,
   Matrix3,
   OrientedBoundingBox,
   Plane,
   Rectangle,
+  Scene,
+  Viewer
 } from 'cesium';
 import type {GeometryTypes} from './toolbox/interfaces';
 import earcut from 'earcut';
@@ -484,4 +494,59 @@ export function isGeometryInViewport(viewer: Viewer, positions: Cartesian3[]): b
   );
 
   return cullingVolume.computeVisibility(OrientedBoundingBox.fromPoints(positions)) !== -1;
+}
+
+/**
+ * Parses KML file with fixes for clampToGround and adding missing properties.
+ */
+export async function parseKml(viewer: Viewer, data: File | string, dataSource: CustomDataSource, clampToGround: boolean) {
+  const kmlDataSource = await KmlDataSource.load(data, {
+    camera: viewer.scene.camera,
+    canvas: viewer.scene.canvas,
+    clampToGround
+  });
+  let name = kmlDataSource.name;
+  kmlDataSource.entities.suspendEvents();
+  dataSource.entities.suspendEvents();
+  for (const ent of kmlDataSource.entities.values) {
+    ent.show = true;
+    if (!name) {
+      name = ent.name!;
+    }
+    ent.show = true;
+    if (ent['point']) {
+      const point = ent['point'];
+      const color: Color = point.color?.getValue(julianDate)?.color || Color.WHITE;
+      if (color.alpha === 0) {
+        color.alpha = 1;
+      }
+      point.color = new ConstantProperty(color);
+      point.pixelSize = point.pixelSize?.getValue(julianDate) || 1;
+      point.heightReference = clampToGround ? HeightReference.CLAMP_TO_GROUND : point.heightReference?.getValue(julianDate);
+    }
+    if (ent['polygon']) {
+      const polygon = ent['polygon'];
+      const color: Color = polygon.material?.getValue(julianDate)?.color || Color.WHITE;
+      if (color.alpha === 0) {
+        color.alpha = 1;
+      }
+      polygon.perPositionHeight = new ConstantProperty(true);
+      polygon.material = new ColorMaterialProperty(color);
+    }
+    if (ent['polyline']) {
+      const line = ent['polyline'];
+      const color: Color = line.material?.getValue(julianDate)?.color || Color.WHITE;
+      if (color.alpha === 0) {
+        color.alpha = 1;
+      }
+      line.arcType = new ConstantProperty(ArcType.GEODESIC);
+      line.clampToGround = new ConstantProperty(clampToGround);
+      line.material = new ColorMaterialProperty(color);
+      line.width = line.width?.getValue(julianDate) || 1;
+    }
+    dataSource.entities.add(ent);
+  }
+  dataSource.entities.resumeEvents();
+
+  return name;
 }

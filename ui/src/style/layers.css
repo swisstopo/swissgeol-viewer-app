@@ -68,6 +68,19 @@ ngm-layers-item .ngm-displayed-menu .ngm-layer-icon.ngm-action-menu-icon {
 }
 
 /* KML upload */
+.ngm-data-panel ngm-layers-upload {
+  display: flex;
+  column-gap: 12px;
+}
+
+ngm-layers-upload .ngm-checkbox label {
+  margin-left: 8px;
+}
+
+ngm-layers-upload .ngm-checkbox .ngm-checkbox-icon {
+  min-width: 19px;
+}
+
 ngm-layers-upload button {
   cursor: pointer;
   display: flex;
@@ -80,7 +93,7 @@ ngm-layers-upload button {
   margin-top: 9px;
   padding-left: 10px;
   height: 46px;
-  width: 100%;
+  width: 325px;
 }
 
 ngm-layers-upload .ngm-file-upload-icon {
@@ -136,6 +149,12 @@ ngm-layers-item .ui.dropdown .menu .item:hover {
   margin-bottom: 8px;
   border-top: 1px solid #DFE2E6 !important;
   border-bottom: 1px solid #DFE2E6 !important;
+}
+
+@media (min-width: 600px) {
+  ngm-layers-upload button {
+    min-width: 325px;
+  }
 }
 
 /* Layer catalog */

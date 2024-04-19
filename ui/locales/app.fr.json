@@ -58,6 +58,7 @@
   "dtd_background_map_label": "Carte d'arrière-plan",
   "dtd_cant_upload_kml_error": "Erreur lors du téléchargement de KML",
   "dtd_change_order_label": "Réarranger",
+  "dtd_clamp_to_ground": "",
   "dtd_configure_data_btn": "Configurer les données affichées",
   "dtd_displayed_data_label": "Données affichées",
   "dtd_download_hint": "Télécharger / Légende",

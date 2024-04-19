@@ -15,8 +15,9 @@ import './ngm-project-assets-section';
 import {MemberToAdd} from './ngm-add-member-form';
 import {isProject} from './helpers';
 import DashboardStore from '../../store/dashboard';
-import {CustomDataSource, KmlDataSource} from 'cesium';
+import {CustomDataSource} from 'cesium';
 import MainStore from '../../store/main';
+import {parseKml} from '../../cesiumutils';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -33,24 +34,19 @@ export class NgmProjectEdit extends LitElementI18n {
     @query('.ngm-toast-placeholder')
     accessor toastPlaceholder;
 
-    async onKmlUpload(file: File) {
+    async onKmlUpload(file: File, clampToGround: boolean) {
         if (!this.project) return;
         try {
             const response = await apiClient.uploadProjectAsset(file);
             const key: string = (await response.json())?.key;
             if (key) {
-                const assets = [...this.project!.assets, {name: file.name, key}];
+                const assets = [...this.project!.assets, {name: file.name, key, clampToGround}];
                 this.project = {...this.project, assets};
                 const viewer = MainStore.viewer.value;
                 if (viewer && this.tempKmlDataSource) {
-                    const kmlDataSource = await KmlDataSource.load(file, {
-                        camera: viewer.scene.camera,
-                        canvas: viewer.scene.canvas
-                    });
-                    kmlDataSource.entities.values.forEach(ent => {
-                        this.tempKmlDataSource!.entities.add(ent);
-                    });
-                    viewer.flyTo(kmlDataSource);
+                    await parseKml(viewer, file, this.tempKmlDataSource, clampToGround);
+                    viewer.scene.requestRender();
+                    viewer.flyTo(this.tempKmlDataSource);
                 }
             }
         } catch (e) {
@@ -219,7 +215,7 @@ export class NgmProjectEdit extends LitElementI18n {
                 <ngm-project-assets-section
                         .assets="${project.assets}"
                         .toastPlaceholder="${this.toastPlaceholder}"
-                        .onKmlUpload="${(file: File) => this.onKmlUpload(file)}"
+                        .onKmlUpload="${(file: File, clampToGround: boolean) => this.onKmlUpload(file, clampToGround)}"
                         @assetsChanged="${(evt: { detail: { assets: Asset[] } }) => {
                             project!.assets = evt.detail.assets;
                             this.project = {...project};

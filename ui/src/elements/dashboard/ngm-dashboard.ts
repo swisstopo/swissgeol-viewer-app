@@ -19,7 +19,7 @@ import NavToolsStore from '../../store/navTools';
 import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
 import type {Viewer} from 'cesium';
-import {CustomDataSource, KmlDataSource} from 'cesium';
+import {CustomDataSource} from 'cesium';
 import {showBannerWarning, showSnackbarError} from '../../notifications';
 import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
 import {fromGeoJSON} from '../../toolbox/helpers';
@@ -32,6 +32,7 @@ import './ngm-project-topic-overview';
 import {isProject, isProjectOwnerOrEditor} from './helpers';
 import {LayerConfig} from '../../layertree';
 import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
+import {parseKml} from '../../cesiumutils';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -51,6 +52,7 @@ export interface View {
 export interface Asset {
   name: string,
   key: string,
+  clampToGround?: boolean
 }
 
 export interface Member {
@@ -238,18 +240,8 @@ export class NgmDashboard extends LitElementI18n {
           uploadedLayer = dataSources[0];
           uploadedLayer.show = true;
         } else {
-          const kmlDataSource = await KmlDataSource.load(href, {
-            camera: this.viewer.scene.camera,
-            canvas: this.viewer.scene.canvas
-          });
           uploadedLayer = new CustomDataSource(href);
-          let name = kmlDataSource.name;
-          kmlDataSource.entities.values.forEach((ent, indx) => {
-            if (indx === 0 && !name) {
-              name = ent.name!;
-            }
-            uploadedLayer.entities.add(ent);
-          });
+          const name = await parseKml(this.viewer, href, uploadedLayer, !!asset.clampToGround);
           this.assetConfigs[href] = {
             label: name,
             zoomToBbox: true,

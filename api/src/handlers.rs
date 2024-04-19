@@ -69,9 +69,11 @@ pub struct View {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+#[allow(non_snake_case)]
 pub struct Asset {
     pub name: String,
     pub key: String,
+    pub clampToGround: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -471,6 +473,7 @@ pub async fn duplicate_project(
             assets.push(Asset {
                 name: asset.name.clone(),
                 key: generated_file_name,
+                clampToGround: asset.clampToGround,
             });
         }
     }
