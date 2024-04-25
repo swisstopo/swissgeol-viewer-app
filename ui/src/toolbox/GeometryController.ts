@@ -25,7 +25,7 @@ import {
   VerticalOrigin
 } from 'cesium';
 import type {AreasCounter, GeometryTypes, NgmGeometry} from './interfaces';
-import {extendKmlWithProperties, getValueOrUndefined} from '../cesiumutils';
+import {extendKmlWithProperties, getValueOrUndefined, renderWithDelay} from '../cesiumutils';
 import NavToolsStore from '../store/navTools';
 import {
   flyToGeom,
@@ -248,6 +248,7 @@ export class GeometryController {
       entities = entities.slice(0, 10);
     }
     let atLeastOneValid = false;
+    const addedEntities: Entity[] = [];
     entities.forEach(ent => {
       const exists = this.geometriesDataSource!.entities.getById(ent.id);
       if (!exists) {
@@ -256,12 +257,15 @@ export class GeometryController {
         atLeastOneValid = true;
         showBannerError(this.toastPlaceholder, i18next.t('tbx_kml_area_existing_warning'));
       }
+      const newEnt = exists || this.geometriesDataSource!.entities.getById(ent.id);
+      if (newEnt) addedEntities.push(newEnt);
     });
+    await renderWithDelay(this.viewer!);
 
     if (!atLeastOneValid) {
       showBannerError(this.toastPlaceholder, i18next.t('tbx_unsupported_kml_warning'));
     } else {
-      this.viewer!.zoomTo(entities);
+      this.viewer!.zoomTo(addedEntities);
     }
   }
 

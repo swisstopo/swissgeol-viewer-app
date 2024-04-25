@@ -47,7 +47,7 @@ import {getLayerLabel} from '../swisstopoImagery';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
-import {parseKml} from '../cesiumutils';
+import {parseKml, renderWithDelay} from '../cesiumutils';
 
 type SearchLayer = {
   label: string
@@ -752,7 +752,7 @@ export class SideBar extends LitElementI18n {
     // name used as id for datasource
     dataSource.name = `${name}_${Date.now()}`;
     await this.viewer.dataSources.add(dataSource);
-    this.viewer.scene.requestRender();
+    await renderWithDelay(this.viewer);
     // done like this to have correct rerender of component
     const promise = Promise.resolve(dataSource);
     const config: LayerConfig = {

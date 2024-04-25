@@ -32,7 +32,7 @@ import './ngm-project-topic-overview';
 import {isProject, isProjectOwnerOrEditor} from './helpers';
 import {LayerConfig} from '../../layertree';
 import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
-import {parseKml} from '../../cesiumutils';
+import {parseKml, renderWithDelay} from '../../cesiumutils';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -250,6 +250,7 @@ export class NgmDashboard extends LitElementI18n {
             topicKml: true
           };
           await this.viewer.dataSources.add(uploadedLayer);
+          await renderWithDelay(this.viewer);
         }
         const promise = Promise.resolve(uploadedLayer);
         assetsData.push({

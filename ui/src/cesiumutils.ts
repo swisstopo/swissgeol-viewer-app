@@ -550,3 +550,11 @@ export async function parseKml(viewer: Viewer, data: File | string, dataSource: 
 
   return name;
 }
+
+// workaround to rerender map after dataSources update in requestRenderMode
+export async function renderWithDelay(viewer: Viewer) {
+  await new Promise<void>(resolve => setTimeout(() => {
+    viewer.scene.requestRender();
+    resolve();
+  }, 1000));
+}
