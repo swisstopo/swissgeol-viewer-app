@@ -1,53 +1,48 @@
 
 ngm-layer-legend {
-  max-width: 528px;
-  max-height: 643px;
+  max-height: 100%;
+}
+
+ngm-layer-legend .content-container {
+  max-width: 504px;
   font-size: 14px;
-  font-weight: bold;
 }
 
-ngm-layer-legend .htmlpopup-header {
-  font-weight: bold;
-  border-bottom: 2px solid #DFE2E6;
-  padding-bottom: 8px;
-  margin-bottom: 8px;
+ngm-layer-legend .content-container.legend-html {
+  width: 504px;
+  max-width: 100%;
 }
 
-ngm-layer-legend .ui.small.table {
-  font-size: unset;
-}
-
-ngm-layer-legend .ui.basic.table {
+ngm-layer-legend .ngm-legend-container {
   background-color: #F8F9FA;
-  border-spacing: 4px;
-  border-collapse: collapse;
+  display: flex;
 }
 
-ngm-layer-legend .ui.basic.table tbody tr {
-  border-bottom-width: 4px;
-  border-bottom-color: #F1F3F5;
-}
-
-ngm-layer-legend .ui.table .key {
+ngm-layer-legend .ngm-legend-container > div {
   padding-left: 8px !important;
   vertical-align: top;
   white-space: nowrap;
+  font-weight: bold;
 }
 
-ngm-layer-legend .ui.table .value {
+ngm-layer-legend .ngm-legend-image {
   min-width: 160px;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: bold;
   padding-right: 8px !important;
 }
 
-ngm-layer-legend .ui.table .value a {
+ngm-layer-legend .ngm-legend-html table a {
   color: #357183;
 }
 
-ngm-layer-legend .ui.table .value img {
+ngm-layer-legend .ngm-legend-html span,
+ngm-layer-legend .ngm-legend-html p.bod-title {
+  font-weight: bold;
+}
+
+ngm-layer-legend .ngm-legend-container img {
   width: 200px;
 }
 
@@ -60,9 +55,5 @@ ngm-layer-legend .content-container {
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 505px;
-}
-
-ngm-layer-legend div.content-container td,
-ngm-layer-legend div.content-container span {
   user-select: text;
 }

@@ -11,25 +11,29 @@ import defaultLayerTree, {LayerConfig} from '../layertree';
 import {
   addAssetId,
   getAssetIds,
-  getAttribute, getCesiumToolbarParam,
+  getAttribute,
+  getCesiumToolbarParam,
   getLayerParams,
   getSliceParam,
-  getZoomToPosition, LayerFromParam, setCesiumToolbarParam,
+  getZoomToPosition,
+  LayerFromParam,
+  setCesiumToolbarParam,
   syncLayersParam
 } from '../permalink';
 import {createCesiumObject} from '../layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import './ngm-map-configuration';
+import type {Cartesian2, Viewer} from 'cesium';
 import {
-  Cartesian3,
-  HeadingPitchRange,
   BoundingSphere,
-  ScreenSpaceEventHandler,
-  ScreenSpaceEventType,
-  Math as CMath,
+  Cartesian3,
   CustomDataSource,
   GeoJsonDataSource,
+  HeadingPitchRange,
+  Math as CMath,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
 } from 'cesium';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
@@ -40,7 +44,6 @@ import {classMap} from 'lit/directives/class-map.js';
 import {zoomTo} from '../utils';
 import $ from '../jquery';
 import {customElement, property, query, state} from 'lit/decorators.js';
-import type {Cartesian2, Viewer} from 'cesium';
 import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
 import {getLayerLabel} from '../swisstopoImagery';
@@ -54,6 +57,7 @@ type SearchLayer = {
   layer: string
   type?: LayerType
   title?: string
+  dataSourceName?: string
 }
 
 @customElement('ngm-side-bar')
@@ -607,7 +611,7 @@ export class SideBar extends LitElementI18n {
   }
 
   // adds layer from search to 'Displayed Layers'
-  async addLayerFromSearch(searchLayer) {
+  async addLayerFromSearch(searchLayer: SearchLayer) {
     let layer;
     if (searchLayer.dataSourceName) {
       layer = this.activeLayers.find(l => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
@@ -642,6 +646,7 @@ export class SideBar extends LitElementI18n {
       config.visible = true;
       config.origin = 'layer';
       config.label = searchLayer.title || searchLayer.label;
+      config.legend = config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
     } else {
       config = {
         type: LayerType.swisstopoWMTS,
@@ -650,7 +655,8 @@ export class SideBar extends LitElementI18n {
         visible: true,
         displayed: true,
         opacity: DEFAULT_LAYER_OPACITY,
-        queryType: 'geoadmin'
+        queryType: 'geoadmin',
+        legend: searchLayer.layer
       };
     }
     config.load = async () => {

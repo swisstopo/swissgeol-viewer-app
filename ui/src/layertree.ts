@@ -548,6 +548,7 @@ const geo_map_series: LayerTreeNode = {
           opacity: 0.7,
           queryType: 'geoadmin',
           geocatId: '2467ab13-e794-4c13-8c55-59fe276398c5',
+          legend: 'ch.swisstopo.geologie-geocover',
         },
         {
           type: LayerType.swisstopoWMTS,
@@ -559,6 +560,7 @@ const geo_map_series: LayerTreeNode = {
           opacity: 0.7,
           queryType: 'geoadmin',
           geocatId: 'a4cdef47-505e-41ab-b6a7-ad5b92d80e41',
+          legend: 'ch.swisstopo.geologie-geologische_karte',
         },
         {
           type: LayerType.swisstopoWMTS,
@@ -570,6 +572,7 @@ const geo_map_series: LayerTreeNode = {
           opacity: 0.7,
           queryType: 'geoadmin',
           geocatId: 'ca917a71-dcc9-44b6-8804-823c694be516',
+          legend: 'ch.swisstopo.geologie-tektonische_karte',
         },
         {
           type: LayerType.swisstopoWMTS,
@@ -581,6 +584,7 @@ const geo_map_series: LayerTreeNode = {
           opacity: 0.7,
           noQuery: true,
           geocatId: 'f1455593-7571-48b0-8603-307ec59a6702',
+          legend: 'ch.swisstopo.geologie-eiszeit-lgm-raster',
         },
       ]
     },
