@@ -160,7 +160,7 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerCon
 }
 
 export async function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: LayerConfig) {
-  const layer: ImageryLayer = await getSwisstopoImagery(config, config.maximumLevel);
+  const layer: ImageryLayer = await getSwisstopoImagery(config);
   config.setVisibility = visible => layer.show = !!visible;
   config.setOpacity = opacity => layer.alpha = opacity;
   config.remove = () => viewer.scene.imageryLayers.remove(layer, false);

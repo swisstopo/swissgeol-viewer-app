@@ -3,7 +3,6 @@ import {SWITZERLAND_RECTANGLE, WEB_MERCATOR_TILING_SCHEME} from './constants';
 import {
   Credit,
   ImageryLayer,
-  Rectangle,
   UrlTemplateImageryProvider,
   Viewer,
   WebMapServiceImageryProvider,
