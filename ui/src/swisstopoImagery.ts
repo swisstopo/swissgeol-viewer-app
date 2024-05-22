@@ -17,7 +17,9 @@ export type SwisstopoImageryLayer = {
   type: 'wmts' | 'wms'
   attribution: string
   timestamps?: string[]
-  defaultTimestamp?: string
+  defaultTimestamp?: string,
+  sr?: number,
+  maximumLevel?: number
 }
 
 export type SwisstopoImageryLayersConfig = Record<string, SwisstopoImageryLayer>
@@ -34,8 +36,6 @@ let layerConfigs: SwisstopoImageryLayersConfig | undefined;
  */
 export function getSwisstopoImagery(
     localConfig: LayerConfig,
-    maximumLevel: number = 16,
-    rectangle: Rectangle = SWITZERLAND_RECTANGLE
 ): Promise<ImageryLayer> {
   return new Promise((resolve, reject) => {
     getLayersConfig().then(async layersConfig => {
@@ -52,8 +52,8 @@ export function getSwisstopoImagery(
               .replace('{format}', swisstopoConfig.format);
           imageryProvider = new UrlTemplateImageryProvider({
             url: url,
-            maximumLevel: maximumLevel,
-            rectangle: rectangle,
+            maximumLevel: localConfig.maximumLevel || swisstopoConfig.maximumLevel,
+            rectangle: SWITZERLAND_RECTANGLE,
             credit: new Credit(swisstopoConfig.attribution),
             customTags: {
               timestamp: () => {
@@ -74,8 +74,8 @@ export function getSwisstopoImagery(
             subdomains: '0123',
             tilingScheme: WEB_MERCATOR_TILING_SCHEME,
             layers: localConfig.layer!,
-            maximumLevel: maximumLevel,
-            rectangle: rectangle,
+            maximumLevel: localConfig.maximumLevel,
+            rectangle: SWITZERLAND_RECTANGLE,
             credit: new Credit(swisstopoConfig.attribution),
           });
         } else {
@@ -138,13 +138,16 @@ async function parseWMTSCapabilities(wmtsCapabilities: Document): Promise<Swisst
         const layerName = identifier.textContent;
         const defaultTimestamp = layer.querySelector('Dimension > Default')?.textContent;
         const format = layer.querySelector('Format')?.textContent;
+        const tileMatrixSet = layer.querySelector('TileMatrixSet')?.textContent?.split('_');
         if (format) {
           configs[identifier.textContent] = {
             attribution: layerName.split('.')[1],
             format: format.split('/')[1],
             type: 'wmts',
             timestamps: [],
-            defaultTimestamp: defaultTimestamp || undefined
+            defaultTimestamp: defaultTimestamp || undefined,
+            sr: tileMatrixSet && Number(tileMatrixSet[0]),
+            maximumLevel: tileMatrixSet && Number(tileMatrixSet[1]),
           };
           const times = layer.querySelectorAll('Dimension > Value');
           times.forEach(time => {
