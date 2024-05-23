@@ -15,6 +15,7 @@ export type SwisstopoImageryLayer = {
   format: string
   type: 'wmts' | 'wms'
   attribution: string
+  title: string
   timestamps?: string[]
   defaultTimestamp?: string,
   sr?: number,
@@ -41,6 +42,7 @@ export function getSwisstopoImagery(
       const swisstopoConfig = layersConfig[localConfig.layer!];
       if (swisstopoConfig) {
         let imageryProvider: UrlTemplateImageryProvider | WebMapServiceImageryProvider;
+        localConfig.label = swisstopoConfig.title;
         if (swisstopoConfig.type === 'wmts') {
           localConfig.wmtsTimes = swisstopoConfig.timestamps;
           if (!localConfig.wmtsCurrentTime) {
@@ -92,16 +94,6 @@ export function getSwisstopoImagery(
   });
 }
 
-let layerLabelPromise: Promise<string>;
-export function getLayerLabel(searchLayer: string) {
-  const params = getURLSearchParams();
-  const lang = params.get('lang');
-  layerLabelPromise = fetch(`https://map.geo.admin.ch/configs/${lang}/layersConfig.json`)
-      .then(response => response.json())
-      .then(data => data = data[searchLayer].label);
-  return layerLabelPromise;
-}
-
 export function addSwisstopoLayer(viewer: Viewer, layer: string, format: 'png' | 'jpeg', maximumLevel: number, timestamp = 'current'): ImageryLayer {
   const url = wmtsLayerUrlTemplate
     .replace('{layer}', layer)
@@ -131,6 +123,7 @@ async function parseWMTSCapabilities(wmtsCapabilities: Document): Promise<Swisst
   const layers = wmtsCapabilities.querySelectorAll('Layer');
   for (const layer of layers.values()) {
     const identifiers = layer.getElementsByTagNameNS(owsNamespace, 'Identifier');
+    const titles = layer.getElementsByTagNameNS(owsNamespace, 'Title');
     Array.from(identifiers).forEach(identifier => {
       // check for ch. to exclude Time identifier
       if (identifier?.textContent?.includes('ch.')) {
@@ -147,6 +140,7 @@ async function parseWMTSCapabilities(wmtsCapabilities: Document): Promise<Swisst
             defaultTimestamp: defaultTimestamp || undefined,
             sr: tileMatrixSet && Number(tileMatrixSet[0]),
             maximumLevel: tileMatrixSet && Number(tileMatrixSet[1]),
+            title: titles && titles[0]?.textContent ? titles[0].textContent : layerName
           };
           const times = layer.querySelectorAll('Dimension > Value');
           times.forEach(time => {
@@ -166,6 +160,7 @@ async function parseWMSCapabilities(wmsCapabilities: Document): Promise<Swisstop
   const layers = wmsCapabilities.querySelectorAll('Layer');
   for (const layer of layers.values()) {
     const layerName = layer.querySelector('Name')?.textContent;
+    const layerTitle = layer.querySelector('Title')?.textContent;
     if (layerName) {
       const defaultTimestamp = layer.querySelector('Dimension')?.getAttribute('default');
       const format = layer.querySelector('LegendURL > Format')?.textContent;
@@ -175,7 +170,8 @@ async function parseWMSCapabilities(wmsCapabilities: Document): Promise<Swisstop
           format: format,
           type: 'wms',
           timestamps: [],
-          defaultTimestamp: defaultTimestamp || undefined
+          defaultTimestamp: defaultTimestamp || undefined,
+          title: layerTitle || layerName
         };
         configs[layerName].timestamps = layer.querySelector('Dimension')?.textContent?.split(',') || [];
       }
@@ -187,9 +183,9 @@ async function parseWMSCapabilities(wmsCapabilities: Document): Promise<Swisstop
 const wmtsCapabilitiesUrl = 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml';
 const wmsCapabilitiesUrl = 'https://wms.geo.admin.ch/?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0';
 
-async function fetchWMTSCapabilities() {
+async function fetchWMTSCapabilities(lang: string) {
   try {
-    const wmtsCapabilitiesResponse = await fetch(wmtsCapabilitiesUrl);
+    const wmtsCapabilitiesResponse = await fetch(`${wmtsCapabilitiesUrl}?lang=${lang}`);
     const wmtsCapabilities = parser.parseFromString((await wmtsCapabilitiesResponse.text()), 'text/xml');
     return await parseWMTSCapabilities(wmtsCapabilities);
   } catch (e) {
@@ -198,9 +194,9 @@ async function fetchWMTSCapabilities() {
   }
 }
 
-async function fetchWMSCapabilities() {
+async function fetchWMSCapabilities(lang: string) {
   try {
-    const wmsCapabilitiesResponse = await fetch(wmsCapabilitiesUrl);
+    const wmsCapabilitiesResponse = await fetch(`${wmsCapabilitiesUrl}&lang=${lang}`);
     const wmsCapabilities = parser.parseFromString((await wmsCapabilitiesResponse.text()), 'text/xml');
     return await parseWMSCapabilities(wmsCapabilities);
   } catch (e) {
@@ -212,8 +208,10 @@ async function fetchWMSCapabilities() {
 
 export async function getLayersConfig(): Promise<SwisstopoImageryLayersConfig> {
   if (!layerConfigs) {
-    const wmsConfig = await fetchWMSCapabilities();
-    const wmtsConfig = await fetchWMTSCapabilities();
+    const params = getURLSearchParams();
+    const lang = params.get('lang') || 'en';
+    const wmsConfig = await fetchWMSCapabilities(lang);
+    const wmtsConfig = await fetchWMTSCapabilities(lang);
     layerConfigs = {...wmsConfig, ...wmtsConfig};
   }
   return layerConfigs;
