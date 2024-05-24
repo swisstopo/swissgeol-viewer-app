@@ -54,7 +54,7 @@ export class NgmCursorInformation extends LitElementI18n {
   }
 
   onMouseMove(movement) {
-    if (!this.cameraMoving && this.viewer) {
+    if (!this.cameraMoving && this.viewer && movement.endPosition) {
       const feature = this.viewer.scene.pick(movement.endPosition);
       const cartesian = this.viewer.scene.pickPosition(movement.endPosition);
       if (cartesian && !(feature?.primitive instanceof VoxelPrimitive)) {

@@ -1,4 +1,3 @@
-import type {EntityCollection} from 'cesium';
 import {
   ArcType,
   BoundingSphere,
@@ -9,7 +8,8 @@ import {
   Color,
   ColorMaterialProperty,
   ConstantProperty,
-  CustomDataSource,
+  CustomDataSource, Ellipsoid,
+  EntityCollection,
   HeadingPitchRoll,
   HeightReference,
   JulianDate,
@@ -24,6 +24,7 @@ import {
 } from 'cesium';
 import type {GeometryTypes} from './toolbox/interfaces';
 import earcut from 'earcut';
+import {DEFAULT_UPLOADED_KML_COLOR} from './constants';
 
 const julianDate = new JulianDate();
 
@@ -159,7 +160,7 @@ export function updateHeightForCartesianPositions(
       const altitude = scene.globe.getHeight(cartographicPosition) || 0;
       cartographicPosition.height += altitude;
     }
-    return assignBack ? Cartographic.toCartesian(cartographicPosition, undefined, p) : Cartographic.toCartesian(cartographicPosition);
+    return assignBack ? Cartographic.toCartesian(cartographicPosition, Ellipsoid.WGS84, p) : Cartographic.toCartesian(cartographicPosition);
   });
 }
 
@@ -513,10 +514,9 @@ export async function parseKml(viewer: Viewer, data: File | string, dataSource: 
     if (!name) {
       name = ent.name!;
     }
-    ent.show = true;
     if (ent['point']) {
       const point = ent['point'];
-      const color: Color = point.color?.getValue(julianDate)?.color || Color.WHITE;
+      const color: Color = point.color?.getValue(julianDate)?.color || DEFAULT_UPLOADED_KML_COLOR;
       if (color.alpha === 0) {
         color.alpha = 1;
       }
@@ -526,23 +526,31 @@ export async function parseKml(viewer: Viewer, data: File | string, dataSource: 
     }
     if (ent['polygon']) {
       const polygon = ent['polygon'];
-      const color: Color = polygon.material?.getValue(julianDate)?.color || Color.WHITE;
+      const color: Color = polygon.material?.getValue(julianDate)?.color || DEFAULT_UPLOADED_KML_COLOR;
       if (color.alpha === 0) {
         color.alpha = 1;
       }
-      polygon.perPositionHeight = new ConstantProperty(true);
       polygon.material = new ColorMaterialProperty(color);
+      polygon.heightReference = clampToGround ? HeightReference.CLAMP_TO_GROUND : polygon.heightReference?.getValue(julianDate);
+      const hierarchy = polygon?.hierarchy?.getValue(julianDate);
+      if (clampToGround && hierarchy) {
+        const positions = updateHeightForCartesianPositions(hierarchy.positions, 0, undefined, true);
+        polygon.hierarchy = new ConstantProperty({
+          holes: [],
+          positions
+        });
+      }
     }
     if (ent['polyline']) {
       const line = ent['polyline'];
-      const color: Color = line.material?.getValue(julianDate)?.color || Color.WHITE;
+      const color: Color = line.material?.getValue(julianDate)?.color || DEFAULT_UPLOADED_KML_COLOR;
       if (color.alpha === 0) {
         color.alpha = 1;
       }
       line.arcType = new ConstantProperty(ArcType.GEODESIC);
       line.clampToGround = new ConstantProperty(clampToGround);
       line.material = new ColorMaterialProperty(color);
-      line.width = line.width?.getValue(julianDate) || 1;
+      line.width = line.width?.getValue(julianDate) || 2;
     }
     dataSource.entities.add(ent);
   }

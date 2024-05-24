@@ -140,3 +140,5 @@ export const API_BY_PAGE_HOST = {
   'swissgeol.ch': 'https://api.swissgeol.ch/api',
   'viewer.swissgeol.ch': 'https://api.swissgeol.ch/api',
 };
+
+export const DEFAULT_UPLOADED_KML_COLOR = Color.fromCssColorString('#0056A4');
