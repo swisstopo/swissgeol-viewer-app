@@ -33,6 +33,8 @@ export class Catalog extends LitElementI18n {
       node => !(node.restricted && (!this.userGroups.includes(node.restricted)))
       ).map(node => this.getCategoryOrLayerTemplate(node, 'second-level'));
 
+    if (!content?.length) return html``;
+
     return html`
       <div class="ui accordion">
         <div class="title ${level}">
