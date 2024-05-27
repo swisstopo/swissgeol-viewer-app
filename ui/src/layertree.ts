@@ -606,8 +606,8 @@ const geo_base: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           visible: false,
-          displayed: false, //true,
-          restricted: 'ngm-prod-privileged', // the group required to see this layer
+          displayed: false, // private until they have been re-integrated
+          restricted: 'ngm-prod-privileged', // private until they have been re-integrated
           // Temporarily disable the boreholes download, see https://jira.camptocamp.com/browse/GSNGM-936
           // downloadDataType: 'csv',
           // downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
