@@ -5,6 +5,7 @@ UNAME_S := $(shell uname -s)
 
 .PHONY: run
 run: build_local_api ui/node_modules/.timestamp
+	cd ui && npm run build-static
 	docker-compose up --remove-orphans --force-recreate --renew-anon-volumes
 
 .PHONY: acceptance
