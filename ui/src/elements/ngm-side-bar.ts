@@ -16,7 +16,6 @@ import {
   getLayerParams,
   getSliceParam,
   getZoomToPosition,
-  LayerFromParam,
   setCesiumToolbarParam,
   syncLayersParam
 } from '../permalink';
@@ -46,15 +45,14 @@ import $ from '../jquery';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import type QueryManager from '../query/QueryManager';
 import NavToolsStore from '../store/navTools';
-import {getLayerLabel} from '../swisstopoImagery';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
 import {parseKml, renderWithDelay} from '../cesiumutils';
 
 type SearchLayer = {
-  label: string
   layer: string
+  label: string
   type?: LayerType
   title?: string
   dataSourceName?: string
@@ -412,7 +410,7 @@ export class SideBar extends LitElementI18n {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.layer);
       if (!layer) {
         // Layers from the search are not present in the flat layers.
-        layer = await this.getLayerFromUrl(urlLayer);
+        layer = this.createSearchLayer({layer: urlLayer.layer, label: urlLayer.layer}); // the proper label will be taken from getCapabilities
       } else {
         await (layer.promise || this.addLayer(layer));
         layer.add && layer.add();
@@ -667,12 +665,6 @@ export class SideBar extends LitElementI18n {
     };
 
     return config;
-  }
-
-  async getLayerFromUrl(urlLayer: LayerFromParam) {
-    const searchLayerLabel = await getLayerLabel(urlLayer.layer);
-    const searchLayer: SearchLayer = {label: searchLayerLabel, layer: urlLayer.layer};
-    return this.createSearchLayer(searchLayer);
   }
 
   zoomToPermalinkObject() {
