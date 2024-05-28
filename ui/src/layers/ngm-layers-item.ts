@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import {html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
@@ -36,6 +36,8 @@ export class NgmLayersItem extends LitElementI18n {
   accessor loadProgressRemover_: any;
   @state()
   accessor movable = false;
+  @query('.menu')
+  accessor actionMenu!: HTMLElement;
   private toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
   private debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
 
@@ -202,6 +204,10 @@ export class NgmLayersItem extends LitElementI18n {
     }
   }
 
+  isMenuNotEmpty(): boolean {
+    return this.actionMenu?.children.length > 0;
+  }
+
 
   render() {
     if (this.clone) return '';
@@ -257,7 +263,7 @@ export class NgmLayersItem extends LitElementI18n {
              class="ngm-layer-icon ngm-delete-icon ${classMap({disabled: this.changeOrderActive})}"
              @click=${this.onRemove}>
         </div>
-        <div class="ui dropdown right pointing ngm-action-menu">
+        <div class="ui dropdown right pointing ngm-action-menu ${classMap({'ngm-disabled': !this.isMenuNotEmpty()})}">
           <div class="ngm-layer-icon ngm-action-menu-icon"></div>
           ${this.buttons}
         </div>
