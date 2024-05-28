@@ -88,7 +88,6 @@ export class DataDownload extends LitElementI18n {
         `) : html`
         <div class="data-download-hint">
           ${i18next.t('tbx_data_download_hint')}
-          <div class="ngm-info-icon"></div>
         </div>
       `;
 
@@ -103,7 +102,7 @@ export class DataDownload extends LitElementI18n {
     return html`
       <ngm-draw-section .enabledTypes=${['rectangle']} .showUpload=${false}></ngm-draw-section>
       <div class="ngm-divider"></div>
-      <ngm-geometries-list 
+      <ngm-geometries-list
         .selectedId=${this.selectedGeometryId}
         .disabledTypes=${['point', 'polygon', 'line']}
         .optionsTemplate=${(geom: NgmGeometry) => this.downloadOptionsTemplate(geom)}

@@ -271,7 +271,6 @@ export class NgmSlicer extends LitElementI18n {
       <div class="ngm-draw-hint"
            ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || !this.slicer!.draw.active}>
         ${i18next.t('tbx_slice_draw_hint')}
-        <div class="ngm-info-icon"></div>
       </div>
       <div class="ngm-slice-options"
            ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || this.slicer!.draw.active}>

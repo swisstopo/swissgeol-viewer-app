@@ -86,11 +86,6 @@ data-download .ngm-action-list-item.active  {
   background-color: var(--ngm-action-hover);
 }
 
-.ngm-draw-hint > .ngm-info-icon,
-.data-download-hint > .ngm-info-icon {
-  margin-left: auto;
-}
-
 .ngm-slice-side {
   display: flex;
   font: normal normal 500 14px/28px Inter;
