@@ -13,7 +13,7 @@ import {
 } from './objectInformation';
 import type {Cartesian2, Cartesian3, Scene, Viewer} from 'cesium';
 import {VoxelCell} from 'cesium';
-import {BoundingSphere, Color, ColorMaterialProperty, HeadingPitchRange} from 'cesium';
+import {BoundingSphere, Color, ColorMaterialProperty, HeadingPitchRange, Math as CMath} from 'cesium';
 import NavToolsStore from '../store/navTools';
 import type {QueryResult} from './types';
 
@@ -82,6 +82,15 @@ export default class ObjectSelector {
         this.toggleTileHighlight(object);
       } else if (object instanceof VoxelCell) {
         attributes.properties = extractVoxelAttributes(object);
+        attributes.zoom = () => {
+          NavToolsStore.hideTargetPoint();
+          const boundingSphere = BoundingSphere.fromOrientedBoundingBox(object.orientedBoundingBox); // new BoundingSphere(pickedPosition, OBJECT_ZOOMTO_RADIUS);
+          const zoomHeadingPitchRange = new HeadingPitchRange(0, CMath.toRadians(-90.0), boundingSphere.radius * 3);
+          this.scene.camera.flyToBoundingSphere(boundingSphere, {
+            duration: 0,
+            offset: zoomHeadingPitchRange
+          });
+        };
         this.toggleTileHighlight(object);
       } else if (object.id) {
         attributes = this.handleEntitySelect(object.id, attributes);
