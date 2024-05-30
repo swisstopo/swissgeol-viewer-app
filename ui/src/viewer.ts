@@ -224,7 +224,7 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
 
     scene.screenSpaceCameraController.enableCollisionDetection = false;
     scene.useDepthPicking = true;
-    scene.pickTranslucentDepth = true;
+    scene.pickTranslucentDepth = true; // required to have accurate position when picking translucent objects
     scene.backgroundColor = Color.TRANSPARENT;
     globe.baseColor = Color.TRANSPARENT;
     globe.depthTestAgainstTerrain = true;

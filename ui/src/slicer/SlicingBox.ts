@@ -134,17 +134,23 @@ export default class SlicingBox extends SlicingToolBase {
         positions: new CallbackProperty(() => {
           const height =
             Cartographic.fromCartesian(this.boxCenter!, undefined, scratchCenter).height - (this.bbox!.height / 2);
+          // Fixme workaround, see https://github.com/CesiumGS/cesium/issues/12005
+          this.viewer.scene.requestRender();
           return updateHeightForCartesianPositions(boxPositions, height);
         }, false),
         cornerType: CornerType.MITERED,
         outline: false,
         material: SLICING_GEOMETRY_COLOR.withAlpha(0.2),
-        shape: new CallbackProperty(() => [
-          Cartesian2.ZERO,
-          Cartesian2.ZERO,
-          scratchCartesian2,
-          new Cartesian2(0, this.bbox!.height),
-        ], false)
+        shape: new CallbackProperty(() => {
+          // Fixme workaround, see https://github.com/CesiumGS/cesium/issues/12005
+          this.viewer.scene.requestRender();
+          return [
+            Cartesian2.ZERO,
+            Cartesian2.ZERO,
+            scratchCartesian2,
+            new Cartesian2(0, this.bbox!.height),
+          ];
+        }, false)
       }
     });
 
