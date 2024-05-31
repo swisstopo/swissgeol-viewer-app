@@ -73,6 +73,7 @@
   "dtd_lakes_rivers_map_label": "Lacs et rivières",
   "dtd_legend": "Légende",
   "dtd_load_ion_assets_btn": "Charger la liste des jeux de données",
+  "dtd_max_size_exceeded_warn": "",
   "dtd_no_file_to_upload_warn": "Aucun fichier à télécharger",
   "dtd_object_on_coordinates_not_found_warning": "Objet non trouvé ou caméra éloignée de sa position initiale",
   "dtd_opacity_base_map": "Opacité de la carte d'arrière-plan",

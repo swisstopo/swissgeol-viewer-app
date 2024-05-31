@@ -66,6 +66,9 @@ const hostname = document.location.hostname;
 export const PROJECT_ASSET_URL = hostname === 'localhost' ?
     'http://localhost:9000/ngmpub-project-files-local/assets/saved/' : `https://project-files.${hostname}/assets/saved/`;
 
+// Size in MB. DefaultBodyLimit should be updated on backend after this value update
+export const PROJECT_ASSET_MAX_SIZE = 2;
+
 export const DEFAULT_VOLUME_HEIGHT_LIMITS = {
   lowerLimit: -5000,
   height: 10000
