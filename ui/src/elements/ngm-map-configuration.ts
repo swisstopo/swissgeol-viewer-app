@@ -6,9 +6,13 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import './ngm-map-chooser';
 import {getMapOpacityParam, setExaggeration, syncMapOpacityParam} from '../permalink';
 import MainStore from '../store/main';
-import type {Viewer} from 'cesium';
+import {
+  CustomDataSource, DataSource, DataSourceCollection,
+  Viewer
+} from 'cesium';
 import type MapChooser from '../MapChooser.js';
 import {debounce} from '../utils';
+import {updateExaggerationForKmlDataSource} from '../cesiumutils';
 
 @customElement('ngm-map-configuration')
 export class NgmMapConfiguration extends LitElementI18n {
@@ -27,6 +31,7 @@ export class NgmMapConfiguration extends LitElementI18n {
   @query('ngm-map-chooser')
   accessor mapChooserElement;
   private debouncedOpacityUpdate = debounce((evt: Event) => this.updateOpacity(Number((<HTMLInputElement>evt.target).value)), 250, true);
+  private prevExaggeration: number = 1;
 
   constructor() {
     super();
@@ -34,6 +39,13 @@ export class NgmMapConfiguration extends LitElementI18n {
     MainStore.viewer.subscribe(viewer => {
       this.viewer = viewer;
       this.exaggeration = this.viewer?.scene.verticalExaggeration || 1;
+      this.prevExaggeration = this.exaggeration;
+      this.viewer?.dataSources.dataSourceAdded.addEventListener((_collection: DataSourceCollection, dataSource: DataSource | CustomDataSource) => {
+        if (MainStore.uploadedKmlNames.includes(dataSource.name)) {
+          const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+          updateExaggerationForKmlDataSource(dataSource, exaggeration, 1);
+        }
+      });
     });
     MainStore.mapChooser.subscribe(chooser => {
       this.mapChooser = chooser;
@@ -82,6 +94,28 @@ export class NgmMapConfiguration extends LitElementI18n {
     this.requestUpdate();
   }
 
+  updateExaggerationForKmls() {
+    const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+    MainStore.uploadedKmlNames.forEach(name => {
+      const dataSource = this.viewer?.dataSources.getByName(name)[0];
+      updateExaggerationForKmlDataSource(dataSource, exaggeration, this.prevExaggeration);
+    });
+    this.prevExaggeration = exaggeration;
+    this.viewer?.scene.requestRender();
+  }
+
+  updateExaggeration(evt: InputEvent) {
+    if (this.viewer) {
+      if (this.hideExaggeration) {
+        this.hideExaggeration = false;
+      }
+      this.exaggeration = Number((<HTMLInputElement>evt.target).value);
+      this.viewer.scene.verticalExaggeration = this.exaggeration;
+      this.viewer.scene.requestRender();
+      setExaggeration(this.exaggeration);
+    }
+  }
+
   render() {
     return html`
       <div class="base-map-labels">
@@ -125,6 +159,7 @@ export class NgmMapConfiguration extends LitElementI18n {
               if (!this.viewer) return;
               this.hideExaggeration = !this.hideExaggeration;
               this.viewer.scene.verticalExaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+              this.updateExaggerationForKmls();
               this.viewer.scene.requestRender();
             }}></div>
         <div class="ngm-displayed-slider ngm-exaggeration-slider">
@@ -137,17 +172,8 @@ export class NgmMapConfiguration extends LitElementI18n {
                  style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.exaggeration * 5}%, white ${this.exaggeration * 5}%)"
                  min=1 max=20 step=1
                  .value=${!isNaN(this.exaggeration) ? this.exaggeration : 1}
-                 @input=${evt => {
-                   if (this.viewer) {
-                     if (this.hideExaggeration) {
-                       this.hideExaggeration = false;
-                     }
-                     this.exaggeration = Number((<HTMLInputElement>evt.target).value);
-                     this.viewer.scene.verticalExaggeration = this.exaggeration;
-                     this.viewer.scene.requestRender();
-                     setExaggeration(this.exaggeration);
-                   }
-                 }}>
+                 @input=${(evt: InputEvent) => this.updateExaggeration(evt)}
+                 @pointerup=${debounce(() => this.updateExaggerationForKmls(), 300)}>
         </div>
       </div>
     `;

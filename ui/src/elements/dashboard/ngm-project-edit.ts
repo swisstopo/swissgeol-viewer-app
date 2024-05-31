@@ -44,7 +44,8 @@ export class NgmProjectEdit extends LitElementI18n {
                 this.project = {...this.project, assets};
                 const viewer = MainStore.viewer.value;
                 if (viewer && this.tempKmlDataSource) {
-                    await parseKml(viewer, file, this.tempKmlDataSource, clampToGround);
+                    const name = await parseKml(viewer, file, this.tempKmlDataSource, clampToGround);
+                    MainStore.addUploadedKmlName(name);
                     viewer.scene.requestRender();
                     viewer.flyTo(this.tempKmlDataSource);
                 }

@@ -249,6 +249,7 @@ export class NgmDashboard extends LitElementI18n {
             notSaveToPermalink: true,
             topicKml: true
           };
+          MainStore.addUploadedKmlName(name);
           await this.viewer.dataSources.add(uploadedLayer);
           await renderWithDelay(this.viewer);
         }

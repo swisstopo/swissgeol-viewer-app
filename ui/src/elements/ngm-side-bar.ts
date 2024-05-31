@@ -749,6 +749,7 @@ export class SideBar extends LitElementI18n {
     const name = await parseKml(this.viewer, file, dataSource, clampToGround);
     // name used as id for datasource
     dataSource.name = `${name}_${Date.now()}`;
+    MainStore.addUploadedKmlName(dataSource.name);
     await this.viewer.dataSources.add(dataSource);
     await renderWithDelay(this.viewer);
     // done like this to have correct rerender of component
