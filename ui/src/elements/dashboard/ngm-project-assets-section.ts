@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import {classMap} from 'lit/directives/class-map.js';
 import {Asset} from './ngm-dashboard';
 import '../../layers/ngm-layers-upload';
+import {PROJECT_ASSET_MAX_SIZE} from '../../constants';
 
 @customElement('ngm-project-assets-section')
 export class NgmProjectAssetsSection extends LitElementI18n {
@@ -54,6 +55,7 @@ export class NgmProjectAssetsSection extends LitElementI18n {
                     ${this.viewMode ? '' : html`
                         <ngm-layers-upload
                                 .toastPlaceholder=${this.toastPlaceholder}
+                                .maxFileSize=${PROJECT_ASSET_MAX_SIZE}
                                 .onKmlUpload=${this.onKmlUpload}></ngm-layers-upload>`}
                     ${this.assets?.map((kml, index) => {
                         return html`

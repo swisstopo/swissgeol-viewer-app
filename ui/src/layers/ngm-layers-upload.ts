@@ -12,6 +12,8 @@ export default class LayersUpload extends LitElementI18n {
   accessor toastPlaceholder!: HTMLElement;
   @property({type: Function})
   accessor onKmlUpload!: (file: File, clampToGround: boolean) => Promise<void> | void;
+  @property({type: Number})
+  accessor maxFileSize: number | undefined;
   @state()
   accessor loading = false;
   @state()
@@ -24,6 +26,8 @@ export default class LayersUpload extends LitElementI18n {
       showSnackbarInfo(i18next.t('dtd_no_file_to_upload_warn'));
     } else if (!file.name.toLowerCase().endsWith('kml')) {
       showBannerError(this.toastPlaceholder, i18next.t('dtd_file_not_kml'));
+    } else if (typeof this.maxFileSize === 'number' && !isNaN(this.maxFileSize) && file.size > this.maxFileSize * 1024 * 1024) {
+      showBannerError(this.toastPlaceholder, `${i18next.t('dtd_max_size_exceeded_warn')} ${this.maxFileSize}MB`);
     } else {
       try {
         this.loading = true;

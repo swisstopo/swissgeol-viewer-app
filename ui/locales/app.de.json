@@ -73,6 +73,7 @@
   "dtd_lakes_rivers_map_label": "Seen & Flüsse",
   "dtd_legend": "Legende",
   "dtd_load_ion_assets_btn": "Liste der Datensätze laden",
+  "dtd_max_size_exceeded_warn": "",
   "dtd_no_file_to_upload_warn": "Keine Datei vorhanden",
   "dtd_object_on_coordinates_not_found_warning": "Objekt wurde nicht gefunden oder Kamera wurde von initialer Position wegbewegt",
   "dtd_opacity_base_map": "Deckkraft Hintergrundkarte",

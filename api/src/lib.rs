@@ -1,5 +1,6 @@
+use axum::response::IntoResponse;
 use axum::{
-    extract::Extension,
+    extract::{DefaultBodyLimit, Extension},
     http::{HeaderValue, Method},
     routing::get,
     routing::post,
@@ -9,7 +10,7 @@ use axum::{
 use clap::Parser;
 use hyper::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE};
 use sqlx::PgPool;
-use tower::ServiceBuilder;
+use tower::{ServiceBuilder, ServiceExt};
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
 pub use config::Config;
@@ -73,6 +74,7 @@ pub async fn app(pool: PgPool) -> Router {
                         .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]),
                 )
                 .layer(Extension(pool))
-                .layer(Extension(aws_client)),
+                .layer(Extension(aws_client))
+                .layer(DefaultBodyLimit::max(2 * 1024 * 1024)), // 2 MB limit (default value). PROJECT_ASSET_MAX_SIZE should be updated on frontend after this value update
         )
 }
