@@ -1,5 +1,5 @@
 import {BehaviorSubject, Subject} from 'rxjs';
-import type {Viewer} from 'cesium';
+import {Viewer} from 'cesium';
 import type MapChooser from '../MapChooser';
 import {getIonToken, setIonToken} from '../permalink';
 import {IonAsset} from '../api-ion';
@@ -15,6 +15,11 @@ export default class MainStore {
   private static removeIonAssetsSubject = new Subject<void>();
   static setUrlLayersSubject = new Subject<void>();
   static syncLayerParams = new Subject<void>();
+  /**
+   * List of uploaded KML dataSource names. Required to get list of uploaded layers and update properties in batch (e.g. exaggeration)
+   * @private
+   */
+  private static uploadedKmlListSubject = new BehaviorSubject<string[]>([]);
 
   static get viewer(): BehaviorSubject<Viewer | null> {
     return this.viewerSubject;
@@ -92,6 +97,22 @@ export default class MainStore {
 
   static get onRemoveIonAssets(): Subject<void> {
     return this.removeIonAssetsSubject;
+  }
+
+  /**
+   * Returns the list of uploaded KML dataSource names
+   */
+  static get uploadedKmlNames(): string[] {
+    return this.uploadedKmlListSubject.value;
+  }
+
+  /**
+   * Adds uploaded KML dataSource name to the list
+   */
+  static addUploadedKmlName(name: string) {
+    const names = this.uploadedKmlNames;
+    names.push(name);
+    this.uploadedKmlListSubject.next(names);
   }
 
 }

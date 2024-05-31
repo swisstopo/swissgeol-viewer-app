@@ -6,9 +6,9 @@ import {
   Cartesian3,
   Cartographic,
   Color,
-  ColorMaterialProperty,
+  ColorMaterialProperty, ConstantPositionProperty,
   ConstantProperty,
-  CustomDataSource, Ellipsoid,
+  CustomDataSource, DataSource, Ellipsoid,
   EntityCollection,
   HeadingPitchRoll,
   HeightReference,
@@ -154,6 +154,7 @@ export function updateHeightForCartesianPositions(
 ): Cartesian3[] {
   return positions.map(p => {
     const cartographicPosition = Cartographic.fromCartesian(p);
+    // fixme 0 height will be not set. Fix the condition and check all places where the function uses
     if (height)
       cartographicPosition.height = height;
     if (scene) {
@@ -161,6 +162,20 @@ export function updateHeightForCartesianPositions(
       cartographicPosition.height += altitude;
     }
     return assignBack ? Cartographic.toCartesian(cartographicPosition, Ellipsoid.WGS84, p) : Cartographic.toCartesian(cartographicPosition);
+  });
+}
+
+/**
+ * Update exaggeration for each cartesian3 position in array
+ */
+export function updateExaggerationForCartesianPositions(
+    positions: Cartesian3[],
+    exaggeration: number,
+): Cartesian3[] {
+  return positions.map(p => {
+    const cartographicPosition = Cartographic.fromCartesian(p);
+    cartographicPosition.height *= exaggeration;
+    return Cartographic.toCartesian(cartographicPosition, Ellipsoid.WGS84, p);
   });
 }
 
@@ -532,14 +547,6 @@ export async function parseKml(viewer: Viewer, data: File | string, dataSource: 
       }
       polygon.material = new ColorMaterialProperty(color);
       polygon.heightReference = clampToGround ? HeightReference.CLAMP_TO_GROUND : polygon.heightReference?.getValue(julianDate);
-      const hierarchy = polygon?.hierarchy?.getValue(julianDate);
-      if (clampToGround && hierarchy) {
-        const positions = updateHeightForCartesianPositions(hierarchy.positions, 0, undefined, true);
-        polygon.hierarchy = new ConstantProperty({
-          holes: [],
-          positions
-        });
-      }
     }
     if (ent['polyline']) {
       const line = ent['polyline'];
@@ -565,4 +572,37 @@ export async function renderWithDelay(viewer: Viewer) {
     viewer.scene.requestRender();
     resolve();
   }, 1000));
+}
+
+export function updateExaggerationForKmlDataSource(dataSource: CustomDataSource | DataSource | undefined, exaggeration: number, prevExaggeration: number) {
+  if (dataSource && dataSource.show) {
+    dataSource.entities.suspendEvents();
+    const exaggerationScale = exaggeration / prevExaggeration;
+    dataSource.entities.values.forEach(ent => {
+      if (ent.position) {
+        const position = ent.position.getValue(julianDate);
+        position && updateExaggerationForCartesianPositions([position], exaggerationScale);
+        ent.position = new ConstantPositionProperty(position);
+      }
+      if (ent['polygon']) {
+        const polygon = ent['polygon'];
+        const hierarchy = polygon?.hierarchy?.getValue(julianDate);
+        if (hierarchy?.positions) {
+          const positions = updateExaggerationForCartesianPositions(hierarchy.positions, exaggerationScale);
+          polygon.hierarchy = new ConstantProperty({
+            holes: [],
+            positions
+          });
+        }
+      }
+      if (ent['polyline']) {
+        const line = ent['polyline'];
+        const positions = line.positions?.getValue(julianDate);
+        if (positions) {
+          line.positions = new ConstantProperty(updateExaggerationForCartesianPositions(positions, exaggerationScale));
+        }
+      }
+    });
+    dataSource.entities.resumeEvents();
+  }
 }
