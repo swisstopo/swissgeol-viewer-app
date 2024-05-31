@@ -417,7 +417,7 @@ export class SideBar extends LitElementI18n {
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
-      layer.wmtsCurrentTime = urlLayer.timestamp;
+      layer.wmtsCurrentTime = urlLayer.timestamp || layer.wmtsCurrentTime;
       layer.setOpacity && layer.setOpacity(layer.opacity);
       layer.displayed = true;
       layer.setVisibility && layer.setVisibility(layer.visible);
