@@ -154,8 +154,7 @@ export function updateHeightForCartesianPositions(
 ): Cartesian3[] {
   return positions.map(p => {
     const cartographicPosition = Cartographic.fromCartesian(p);
-    // fixme 0 height will be not set. Fix the condition and check all places where the function uses
-    if (height)
+    if (typeof height === 'number' && !isNaN(height))
       cartographicPosition.height = height;
     if (scene) {
       const altitude = scene.globe.getHeight(cartographicPosition) || 0;
