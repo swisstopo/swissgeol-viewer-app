@@ -13,6 +13,7 @@ import {
 import type MapChooser from '../MapChooser.js';
 import {debounce} from '../utils';
 import {updateExaggerationForKmlDataSource} from '../cesiumutils';
+import NavToolsStore from '../store/navTools';
 
 @customElement('ngm-map-configuration')
 export class NgmMapConfiguration extends LitElementI18n {
@@ -113,6 +114,7 @@ export class NgmMapConfiguration extends LitElementI18n {
       this.viewer.scene.verticalExaggeration = this.exaggeration;
       this.viewer.scene.requestRender();
       setExaggeration(this.exaggeration);
+      NavToolsStore.exaggerationChanged.next(this.exaggeration);
     }
   }
 
