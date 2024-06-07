@@ -3,7 +3,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {html} from 'lit';
 import draggable from './draggable';
 import {DEFAULT_VIEW} from '../constants';
-import type {Event, Scene, Viewer} from 'cesium';
+import {ConstantPositionProperty, Event, Scene, Viewer} from 'cesium';
 import {
   ArcType,
   CallbackProperty,
@@ -23,10 +23,9 @@ import {
 import type {Interactable} from '@interactjs/types';
 import {classMap} from 'lit/directives/class-map.js';
 import {
-  lookAtPoint,
+  lookAtPoint, pickCenter,
   pickCenterOnMapOrObject, pickPositionOrVoxel,
   positionFromPxDistance,
-  updateHeightForCartesianPositions
 } from '../cesiumutils';
 import {showSnackbarError} from '../notifications';
 import i18next from 'i18next';
@@ -78,12 +77,8 @@ export class NgmNavTools extends LitElementI18n {
   private xyAxisCalculation = (axis, side) => [this.axisCenter, positionFromPxDistance(this.viewer!.scene, this.axisCenter!, AXIS_LENGTH, axis, side)];
   private xAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('x', -1), false);
   private yAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('y', 1), false);
-  private zAxisCallback = new CallbackProperty(() => {
-    if (!this.axisCenter) return [];
-    const positions = this.xyAxisCalculation('x', -1);
-    const distance = Cartesian3.distance(positions[0]!, positions[1]!);
-    return [this.axisCenter, updateHeightForCartesianPositions([this.axisCenter], distance, this.viewer?.scene)[0]];
-  }, false);
+  private zAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('z', -1), false);
+  private exaggeration = 1;
 
   constructor() {
     super();
@@ -92,6 +87,7 @@ export class NgmNavTools extends LitElementI18n {
       if (!this.viewer) return;
       this.axisDataSource = await this.viewer!.dataSources.add(new CustomDataSource('navigationAxes'));
       this.toggleAxis(this.axisCenter);
+      this.exaggeration = this.viewer.scene.verticalExaggeration;
     });
     NavToolsStore.syncTargetPoint.subscribe(() => this.syncPoint());
     NavToolsStore.hideTargetPointListener.subscribe(() => this.removeTargetPoint());
@@ -105,6 +101,27 @@ export class NgmNavTools extends LitElementI18n {
     NavToolsStore.navLockType.subscribe(type => {
       if (type !== '' && type !== 'elevation' && this.showTargetPoint) this.removeTargetPoint();
       this.lockType = type;
+    });
+    NavToolsStore.exaggerationChanged.subscribe(exaggeration => {
+      if (!this.viewer) return;
+      this.showTargetPoint && this.stopTracking();
+      const exaggerationScale = exaggeration / this.exaggeration;
+      const pc = this.viewer.camera.positionCartographic;
+      const centerOfView = pickCenter(this.viewer.scene);
+      if (centerOfView) {
+        const cartographic = Cartographic.fromCartesian(centerOfView);
+        const height = cartographic.height;
+        const offset = height * exaggerationScale - height;
+        this.viewer.camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, pc.height + offset);
+      }
+      if (this.showTargetPoint) {
+        const iconPos = Cartographic.fromCartesian(this.refIcon.position!.getValue(this.julianDate)!);
+        iconPos.height = iconPos.height * exaggerationScale;
+        this.refIcon.position = new ConstantPositionProperty(Cartographic.toCartesian(iconPos));
+        this.startTracking();
+        syncTargetParam(iconPos);
+      }
+      this.exaggeration = exaggeration;
     });
   }
 
@@ -207,7 +224,7 @@ export class NgmNavTools extends LitElementI18n {
 
   addTargetPoint(center: Cartesian3, lookAtTransform = false) {
     this.showTargetPoint = true;
-    this.refIcon.position = <any>center;
+    this.refIcon.position = new ConstantPositionProperty(center);
     const cam = this.viewer!.camera;
     this.refIcon.show = true;
     if (lookAtTransform) {

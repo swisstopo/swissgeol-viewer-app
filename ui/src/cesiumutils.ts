@@ -477,7 +477,7 @@ const axisVector3dScratch = new Cartesian3();
  * @param axis configures on which axis second points should be placed (x or y axis according to map rectangle)
  * @param side configures where second point will be placed (left/right or above/below first point)
  */
-export function positionFromPxDistance(scene: Scene, firstPoint: Cartesian3, distancePx: number, axis: 'x' | 'y', side: 1 | -1) {
+export function positionFromPxDistance(scene: Scene, firstPoint: Cartesian3, distancePx: number, axis: 'x' | 'y' | 'z', side: 1 | -1) {
   const mapRect = scene.globe.cartographicLimitRectangle;
   scratchBoundingSphere.center = firstPoint;
   const pixelSize = scene.camera.getPixelSize(scratchBoundingSphere, scene.drawingBufferWidth, scene.drawingBufferHeight);
@@ -485,8 +485,10 @@ export function positionFromPxDistance(scene: Scene, firstPoint: Cartesian3, dis
   let corners;
   if (axis === 'y') {
     corners = [Cartographic.toCartesian(Rectangle.northeast(mapRect)), Cartographic.toCartesian(Rectangle.southeast(mapRect))];
-  } else {
+  } else if (axis === 'x') {
     corners = [Cartographic.toCartesian(Rectangle.northwest(mapRect)), Cartographic.toCartesian(Rectangle.northeast(mapRect))];
+  } else {
+    corners = [firstPoint, updateHeightForCartesianPositions([firstPoint], distance)[0]];
   }
   Cartesian3.midpoint(corners[0], corners[1], scratchPosition);
   const pos = projectPointOnSegment(firstPoint, corners[0], corners[1], 0, 1, 0);

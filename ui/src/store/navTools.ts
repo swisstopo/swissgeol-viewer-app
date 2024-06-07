@@ -8,7 +8,7 @@ export default class NavToolsStore {
   private static hideTargetPointSubject = new Subject<void>();
   private static navLockTypeSubject = new BehaviorSubject<LockType>('');
   private static targetPointPositionSubject = new BehaviorSubject<Cartesian3 | undefined>(undefined);
-
+  static exaggerationChanged = new Subject<number>();
 
   static get syncTargetPoint() {
     return this.syncTargetPointSubject;

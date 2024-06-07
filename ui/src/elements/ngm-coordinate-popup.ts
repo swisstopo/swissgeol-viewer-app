@@ -35,7 +35,7 @@ export class NgmCoordinatePopup extends LitElementI18n {
                         const cartCoords = Cartographic.fromCartesian(cartesian);
                         this.coordinatesLv95 = formatCartographicAs2DLv95(cartCoords);
                         this.coordinatesWgs84 = [cartCoords.longitude, cartCoords.latitude].map(radToDeg);
-                        this.elevation = this.integerFormat.format(cartCoords.height);
+                        this.elevation = this.integerFormat.format(cartCoords.height / viewer.scene.verticalExaggeration);
                         const altitude = viewer.scene.globe.getHeight(cartCoords) || 0;
                         this.terrainDistance = this.integerFormat.format(Math.abs(cartCoords.height - altitude));
                         this.style.left = event.position.x + 'px';

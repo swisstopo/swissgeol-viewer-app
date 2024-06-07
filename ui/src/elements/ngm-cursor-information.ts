@@ -61,7 +61,7 @@ export class NgmCursorInformation extends LitElementI18n {
         this.coordinates = formatCartographicAs2DLv95(Cartographic.fromCartesian(cartesian));
         const position = Cartographic.fromCartesian(cartesian);
         const lineOrPolygon = getValueOrUndefined(feature?.id?.polyline?.show) || getValueOrUndefined(feature?.id?.polygon?.show);
-        this.height = position.height;
+        this.height = position.height / this.viewer.scene.verticalExaggeration;
         this.showTerrainHeight = !(feature && !lineOrPolygon);
         return;
       }
