@@ -38,8 +38,8 @@ describe('Toolbox', () => {
     cy.get('.ngm-slice-types > div:nth-child(2) .ngm-slice-side > div:first-child').click();
     cy.get('.ngm-slice-types > div:nth-child(2) .ngm-slice-side > div:first-child').should('have.class', 'active');
     cy.get('.ngm-slice-types > div:nth-child(2) .ngm-slice-to-draw button').click();
-    cy.get('ngm-slicer .ngm-geom-list .ngm-action-list-item:first-child').click();
-    cy.get('ngm-slicer .ngm-geom-list .ngm-action-list-item:first-child > .ngm-action-list-item-header > div:first-child').should('have.class', 'active');
+    cy.get('ngm-slicer .ngm-geom-filter').click();
+    cy.get('ngm-slicer .ngm-geom-filter > .ngm-action-list-item-header > div:first-child').should('have.class', 'active');
     cy.get('.ngm-slice-types > div:first-child').click();
     cy.get('.ngm-slice-types > div:first-child').click();
     cy.get('.cesium-widget > canvas').click(450, 280);
@@ -66,7 +66,7 @@ describe('Toolbox', () => {
     cy.get('.ngm-geom-edit-actions > button:first-child').click();
     cy.get('.ngm-back-icon').click();
     cy.get('.ngm-gst-icon').click();
-    cy.get('ngm-gst-interaction .ngm-geom-list .ngm-point-draw-icon').click();
+    cy.get('ngm-gst-interaction .ngm-geom-filter .ngm-point-draw-icon').click();
     testGstOutput();
   });
 
@@ -79,7 +79,7 @@ describe('Toolbox', () => {
     cy.get('.cesium-widget > canvas').dblclick(450, 200);
     cy.get('.ngm-back-icon').click();
     cy.get('.ngm-gst-icon').click();
-    cy.get('ngm-gst-interaction .ngm-geom-list .ngm-line-draw-icon').click();
+    cy.get('ngm-gst-interaction .ngm-geom-filter .ngm-line-draw-icon').click();
     testGstOutput();
   });
 });
