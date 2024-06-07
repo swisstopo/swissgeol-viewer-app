@@ -1,12 +1,30 @@
+ngm-tools {
+  height: 100%;
+}
+
 ngm-draw-tool,
 ngm-slicer,
 ngm-gst-interaction,
 ngm-measure,
 data-download {
-  height: calc(100vh - 142px);
-  display: block;
+  height: calc(100% - (var(--ngm-panel-header-height) + 10px));
+  display: flex;
+  flex-direction: column;
+}
+
+ngm-geometries-list {
+  min-height: 140px;
+}
+
+ngm-geometries-simple-list {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.ngm-geom-list {
   overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .ngm-draw-list-item,
