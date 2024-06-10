@@ -12,9 +12,10 @@ import $ from '../../jquery';
 import {DEFAULT_PROJECT_COLOR} from '../../constants';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
-import './ngm-delete-warning-modal';
+import '../ngm-confirmation-modal';
 import './ngm-project-members-section';
 import {isProject} from './helpers';
+import {NgmConfirmationModal} from '../ngm-confirmation-modal';
 
 @customElement('ngm-project-topic-overview')
 export class NgmProjectTopicOverview extends LitElementI18n {
@@ -28,8 +29,8 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     accessor userEmail: string = '';
     @property({type: Number})
     accessor selectedViewIndx: number | undefined;
-    @query('ngm-delete-warning-modal')
-    accessor deleteWarningModal;
+    @query('ngm-confirmation-modal')
+    accessor deleteWarningModal!: NgmConfirmationModal;
 
     shouldUpdate(_changedProperties: PropertyValues): boolean {
         return this.topicOrProject !== undefined;
@@ -51,9 +52,15 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         const projectModerator = [ownerEmail, ...editorEmails].includes(this.userEmail);
 
         return html`
-      <ngm-delete-warning-modal
-        @onProjectDeleted="${() => this.deleteProject()}"
-      > </ngm-delete-warning-modal>
+      <ngm-confirmation-modal
+        @onModalConfirmation="${() => this.deleteProject()}"
+        .text="${{
+            title: i18next.t('dashboard_delete_warning_title'),
+            description: i18next.t('dashboard_delete_warning_description'),
+            cancelBtn: i18next.t('cancel'),
+            confirmBtn: i18next.t('delete'),
+        }}"
+      > </ngm-confirmation-modal>
       <div>
         <div class="ngm-proj-title">
           ${translated(this.topicOrProject.title)}
