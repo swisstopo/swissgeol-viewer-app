@@ -27,7 +27,7 @@
     "@fontsource/inter": "5.0.18",
     "@geoblocks/cesium-view-cube": "0.1.1",
     "@geoblocks/ga-search": "0.0.22",
-    "@sentry/browser": "8.7.0",
+    "@sentry/browser": "8.8.0",
     "cesium": "1.118.2",
     "d3-array": "3.2.4",
     "d3-axis": "3.0.0",
