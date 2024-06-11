@@ -300,6 +300,8 @@
   "tbx_profile_btn": "Mostrare il profilo",
   "tbx_project_geometries": "Progetto",
   "tbx_remove_all_btn": "Rimuovi tutto",
+  "tbx_remove_all_warn_description": "",
+  "tbx_remove_all_warn_title": "",
   "tbx_remove_btn_label": "Cancellare",
   "tbx_request_aborted_warning": "Domanda cancellata",
   "tbx_save_editing_btn_label": "Salvare",

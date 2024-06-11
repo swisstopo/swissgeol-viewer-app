@@ -14,6 +14,7 @@ data-download {
 
 ngm-geometries-list {
   min-height: 140px;
+  height: 100%;
 }
 
 ngm-geometries-simple-list {
@@ -25,6 +26,7 @@ ngm-geometries-simple-list {
 
 .ngm-geom-list {
   overflow-y: auto;
+  height: 100%;
 }
 
 .ngm-draw-list-item,

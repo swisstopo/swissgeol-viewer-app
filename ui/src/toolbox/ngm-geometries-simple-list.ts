@@ -1,12 +1,13 @@
 import {LitElementI18n} from '../i18n';
 import type {PropertyValues, TemplateResult} from 'lit';
 import {html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, state, query} from 'lit/decorators.js';
 import i18next from 'i18next';
 import ToolboxStore from '../store/toolbox';
 import {classMap} from 'lit-html/directives/class-map.js';
 import type {GeometryTypes, NgmGeometry} from './interfaces';
 import $ from '../jquery.js';
+import {NgmConfirmationModal} from '../elements/ngm-confirmation-modal';
 
 @customElement('ngm-geometries-simple-list')
 export default class NgmGeometriesSimpleList extends LitElementI18n {
@@ -40,6 +41,8 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
     accessor selectedFilter: GeometryTypes | undefined;
     @state()
     accessor nameEditIndex: number | undefined;
+    @query('ngm-confirmation-modal')
+    accessor deleteWarningModal!: NgmConfirmationModal;
 
     protected firstUpdated() {
         this.querySelectorAll('.ngm-action-menu').forEach(el => $(el).dropdown());
@@ -140,11 +143,7 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                     ${i18next.t('tbx_download_all_btn')}
                 </div>
                 <div class="item"
-                     @click=${() => ToolboxStore.nextGeometryAction({
-                         type: this.selectedFilter,
-                         action: 'removeAll',
-                         noEditGeometries: this.noEditMode
-                     })}>
+                     @click=${() => this.deleteWarningModal.show = true}>
                     ${i18next.t('tbx_remove_all_btn')}
                 </div>
             </div>
@@ -231,7 +230,19 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                     `;
                 })}
             </div>
-            </div>`;
+            <ngm-confirmation-modal
+                    @onModalConfirmation="${() => ToolboxStore.nextGeometryAction({
+                        type: this.selectedFilter,
+                        action: 'removeAll',
+                        noEditGeometries: this.noEditMode
+                    })}"
+                    .text="${{
+                        title: i18next.t('tbx_remove_all_warn_title'),
+                        description: i18next.t('tbx_remove_all_warn_description'),
+                        cancelBtn: i18next.t('cancel'),
+                        confirmBtn: i18next.t('tbx_remove_all_btn'),
+                    }}"
+            > </ngm-confirmation-modal`;
     }
 
     createRenderRoot() {

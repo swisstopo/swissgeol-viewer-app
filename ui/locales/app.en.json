@@ -300,6 +300,8 @@
   "tbx_profile_btn": "Show height profile",
   "tbx_project_geometries": "Project",
   "tbx_remove_all_btn": "Remove all",
+  "tbx_remove_all_warn_description": "Listed geometries will be permanently removed. This action cannot be undone.",
+  "tbx_remove_all_warn_title": "Are you sure you want to remove all?",
   "tbx_remove_btn_label": "Remove",
   "tbx_request_aborted_warning": "Request aborted",
   "tbx_save_editing_btn_label": "Save",
