@@ -747,8 +747,9 @@ export class SideBar extends LitElementI18n {
     if (!this.viewer) return;
     const dataSource = new CustomDataSource();
     const name = await parseKml(this.viewer, file, dataSource, clampToGround);
+    const layer = `${name.replace(' ', '_')}_${Date.now()}`;
     // name used as id for datasource
-    dataSource.name = `${name}_${Date.now()}`;
+    dataSource.name = layer;
     MainStore.addUploadedKmlName(dataSource.name);
     await this.viewer.dataSources.add(dataSource);
     await renderWithDelay(this.viewer);
@@ -757,6 +758,7 @@ export class SideBar extends LitElementI18n {
     const config: LayerConfig = {
       load() {return promise;},
       label: name,
+      layer,
       promise: promise,
       zoomToBbox: true,
       opacity: DEFAULT_LAYER_OPACITY,

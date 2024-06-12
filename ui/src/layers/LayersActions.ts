@@ -93,10 +93,13 @@ export default class LayersAction {
 
   async reorderLayers(newLayers: LayerConfig[]) {
     const imageries = this.viewer.scene.imageryLayers;
+    const dataSources = this.viewer.dataSources;
     for (const config of newLayers) {
-      if (config.type === LayerType.swisstopoWMTS) {
-        const imagery = await config.promise;
-        if (imagery instanceof ImageryLayer) imageries.raiseToTop(imagery);
+      const layer = await config.promise;
+      if (config.type === LayerType.swisstopoWMTS && layer instanceof ImageryLayer) {
+        imageries.raiseToTop(layer);
+      } else if (layer instanceof CustomDataSource && dataSources.contains(layer)) {
+        dataSources.raiseToTop(layer);
       }
     }
     syncLayersParam(newLayers);
