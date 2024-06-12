@@ -23,16 +23,19 @@ import {createCesiumObject} from '../layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import './ngm-map-configuration';
-import type {Cartesian2, Viewer} from 'cesium';
 import {
   BoundingSphere,
+  Cartesian2,
   Cartesian3,
   CustomDataSource,
   GeoJsonDataSource,
   HeadingPitchRange,
   Math as CMath,
+  Rectangle,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
+  SingleTileImageryProvider,
+  Viewer
 } from 'cesium';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
@@ -48,7 +51,8 @@ import NavToolsStore from '../store/navTools';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
-import {parseKml, renderWithDelay} from '../cesiumutils';
+import toGeoJSON from 'togeojson';
+import {geoMercator, geoPath} from 'd3-geo';
 
 type SearchLayer = {
   layer: string
@@ -736,38 +740,126 @@ export class SideBar extends LitElementI18n {
 
   async onLayersOrderChange(layers: LayerConfig[]) {
     await this.layerActions!.reorderLayers(layers);
-    // update activeLayers only when ordering finished
     if (!this.layerOrderChangeActive) {
       this.activeLayers = [...layers];
     }
     this.dispatchEvent(new CustomEvent('layerChanged'));
   }
+  renderGeoJsonToCanvas(geojson) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d')!;
+    canvas.width = 1024;
+    canvas.height = 1024;
 
-  async onKmlUpload(file: File, clampToGround: boolean) {
-    if (!this.viewer) return;
-    const dataSource = new CustomDataSource();
-    const name = await parseKml(this.viewer, file, dataSource, clampToGround);
-    const layer = `${name.replace(' ', '_')}_${Date.now()}`;
-    // name used as id for datasource
-    dataSource.name = layer;
-    MainStore.addUploadedKmlName(dataSource.name);
-    await this.viewer.dataSources.add(dataSource);
-    await renderWithDelay(this.viewer);
-    // done like this to have correct rerender of component
-    const promise = Promise.resolve(dataSource);
-    const config: LayerConfig = {
-      load() {return promise;},
-      label: name,
-      layer,
-      promise: promise,
-      zoomToBbox: true,
-      opacity: DEFAULT_LAYER_OPACITY,
-      notSaveToPermalink: true,
-      ownKml: true,
-      opacityDisabled: true
+    const bounds = this.getGeoJsonBounds(geojson);
+    const projection = geoMercator()
+        .fitSize([canvas.width, canvas.height], geojson);
+
+    context.fillStyle = 'rgba(0, 0, 0, 0)';
+    context.strokeStyle = '#0056A4';
+    context.lineWidth = 2;
+
+    geojson.features.forEach((feature) => {
+      context.beginPath();
+      const path = geoPath(projection, context);
+      path(feature);
+      context.stroke();
+      context.fill();
+    });
+
+    const imageryProvider = new SingleTileImageryProvider({
+      url: canvas.toDataURL(),
+      rectangle: Rectangle.fromDegrees(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY),
+      tileWidth: canvas.width,
+      tileHeight: canvas.height
+    });
+    return this.viewer!.imageryLayers.addImageryProvider(imageryProvider);
+  }
+
+  getGeoJsonBounds(geojson) {
+    const bounds = {
+      minX: Infinity,
+      minY: Infinity,
+      maxX: -Infinity,
+      maxY: -Infinity
     };
-    await this.onCatalogLayerClicked(config);
-    this.viewer.zoomTo(dataSource);
+
+    geojson.features.forEach((feature) => {
+      const coordinates = feature.geometry.coordinates;
+      this.updateBounds(bounds, coordinates);
+    });
+
+    return bounds;
+  }
+
+  updateBounds(bounds, coordinates) {
+    coordinates.forEach((coord) => {
+      if (Array.isArray(coord[0])) {
+        this.updateBounds(bounds, coord);
+      } else {
+        bounds.minX = Math.min(bounds.minX, coord[0]);
+        bounds.maxX = Math.max(bounds.maxX, coord[0]);
+        bounds.minY = Math.min(bounds.minY, coord[1]);
+        bounds.maxY = Math.max(bounds.maxY, coord[1]);
+      }
+    });
+  }
+
+
+  async onKmlUpload(file: File, _clampToGround: boolean) {
+    if (!this.viewer) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const kmlText = <string> e.target!.result;
+      const parser = new DOMParser();
+      const kml = parser.parseFromString(kmlText, 'application/xml');
+      const geojson = toGeoJSON.kml(kml);
+      const imagery = this.renderGeoJsonToCanvas(geojson);
+      // name used as id for datasource
+      const name = Date.now().toString();
+      MainStore.addUploadedKmlName(name);
+      // done like this to have correct rerender of component
+      const promise = Promise.resolve(imagery);
+      const config: LayerConfig = {
+        load() {return promise;},
+        label: name,
+        layer: name,
+        promise: promise,
+        zoomToBbox: true,
+        opacity: DEFAULT_LAYER_OPACITY,
+        notSaveToPermalink: true,
+        ownKml: true,
+        opacityDisabled: true,
+        type: LayerType.swisstopoWMTS
+      };
+      await this.onCatalogLayerClicked(config);
+      this.viewer!.zoomTo(imagery);
+      this.requestUpdate();
+    };
+    reader.readAsText(file);
+    // const dataSource = new CustomDataSource();
+    // const name = await parseKml(this.viewer, file, dataSource, clampToGround);
+    // const layer = `${name.replace(' ', '_')}_${Date.now()}`;
+    // // name used as id for datasource
+    // dataSource.name = layer;
+    // MainStore.addUploadedKmlName(dataSource.name);
+    // await this.viewer.dataSources.add(dataSource);
+    // await renderWithDelay(this.viewer);
+    // // done like this to have correct rerender of component
+    // const promise = Promise.resolve(dataSource);
+    // const config: LayerConfig = {
+    //   load() {return promise;},
+    //   label: name,
+    //   layer,
+    //   promise: promise,
+    //   zoomToBbox: true,
+    //   opacity: DEFAULT_LAYER_OPACITY,
+    //   notSaveToPermalink: true,
+    //   ownKml: true,
+    //   opacityDisabled: true
+    // };
+    // await this.onCatalogLayerClicked(config);
+    // this.viewer.zoomTo(dataSource);
     this.requestUpdate();
   }
 
