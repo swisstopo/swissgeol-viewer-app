@@ -262,7 +262,6 @@ function createColorIndex(colors: string[]): ColorConfig {
   }
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  console.log(canvas.toDataURL());
   return {
     image: new Uint8Array(imageData.data.buffer),
     width: canvas.width,

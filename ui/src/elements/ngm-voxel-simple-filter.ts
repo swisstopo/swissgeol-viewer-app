@@ -11,7 +11,7 @@ import {LayerConfig} from '../layertree';
 @customElement('ngm-voxel-simple-filter')
 export class NgmVoxelSimpleFilter extends LitElementI18n {
   @property({type: Object})
-  accessor config!: LayerConfig;
+  accessor config: LayerConfig | undefined;
   @property({type: Object})
   accessor viewer!: Viewer;
 
@@ -31,13 +31,16 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
   }
 
   willUpdate() {
-    this.minInitialValue = this.minValue = this.config.voxelColors!.range[0];
-    this.maxInitialValue = this.maxValue = this.config.voxelColors!.range[1];
+    if (this.config) {
+      this.minInitialValue = this.minValue = this.config.voxelColors!.range[0];
+      this.maxInitialValue = this.maxValue = this.config.voxelColors!.range[1];
+    }
 
     this.hidden = false;
   }
 
   render() {
+    if (!this.config) return;
     return html`
       <div class="ngm-floating-window-header drag-handle">
         ${i18next.t('vox_filter_filtering_on')} ${i18next.t(this.config.label)}
@@ -88,21 +91,16 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
 
   applyFilter() {
     const shader = getVoxelShader(this.config);
-    shader.setUniform('u_filter_min', this.minValue);
-    shader.setUniform('u_filter_max', this.maxValue);
-
-    console.log({
-      u_filter_min: this.minValue,
-      u_filter_max: this.maxValue,
-    });
+    shader.setUniform('u_min', this.minValue);
+    shader.setUniform('u_max', this.maxValue);
 
     this.viewer.scene.requestRender();
   }
 
   resetShader() {
     const shader = getVoxelShader(this.config);
-    shader.setUniform('u_filter_min', this.minInitialValue);
-    shader.setUniform('u_filter_max', this.maxInitialValue);
+    shader.setUniform('u_min', this.minInitialValue);
+    shader.setUniform('u_max', this.maxInitialValue);
     this.viewer.scene.requestRender();
   }
 
