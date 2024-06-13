@@ -157,14 +157,6 @@ export class NgmVoxelFilter extends LitElementI18n {
     shader.setUniform('u_filter_operator', parseInt(operator.value, 10));
     shader.setUniform('u_filter_include_undefined_conductivity', this.includeUndefinedConductivity.checked);
 
-    console.log({
-      u_filter_conductivity_min: this.minConductivity,
-      u_filter_conductivity_max: this.maxConductivity,
-      u_filter_operator: operator.value,
-      u_filter_selected_lithology: lithologyInclude,
-      u_filter_include_undefined_conductivity: this.includeUndefinedConductivity.checked,
-    });
-
     this.viewer.scene.requestRender();
   }
 
