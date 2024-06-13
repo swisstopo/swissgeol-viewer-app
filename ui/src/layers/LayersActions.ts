@@ -102,6 +102,7 @@ export default class LayersAction {
         dataSources.raiseToTop(layer);
       }
     }
+    this.viewer.scene.requestRender();
     syncLayersParam(newLayers);
   }
 
