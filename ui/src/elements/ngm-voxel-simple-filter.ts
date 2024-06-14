@@ -91,16 +91,16 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
 
   applyFilter() {
     const shader = getVoxelShader(this.config);
-    shader.setUniform('u_min', this.minValue);
-    shader.setUniform('u_max', this.maxValue);
+    shader.setUniform('u_filter_min', this.minValue);
+    shader.setUniform('u_filter_max', this.maxValue);
 
     this.viewer.scene.requestRender();
   }
 
   resetShader() {
     const shader = getVoxelShader(this.config);
-    shader.setUniform('u_min', this.minInitialValue);
-    shader.setUniform('u_max', this.maxInitialValue);
+    shader.setUniform('u_filter_min', this.minInitialValue);
+    shader.setUniform('u_filter_max', this.maxInitialValue);
     this.viewer.scene.requestRender();
   }
 
