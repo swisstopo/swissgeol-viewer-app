@@ -700,7 +700,7 @@ const geo_energy: LayerTreeNode = {
       children: [
         {
           type: LayerType.voxels3dtiles,
-          url: 'https://download.swissgeol.ch/testvoxel/20231122/Voxel-Temperaturmodell-GeoMol15/tileset.json',
+          url: 'https://download.swissgeol.ch/testvoxel/20240617/Voxel-Temperaturmodell-GeoMol15/tileset.json',
           voxelDataName: 'Temp_C',
           voxelColors: temperaturVoxelColors,
           label: t('lyr_temperature_model_label'),
