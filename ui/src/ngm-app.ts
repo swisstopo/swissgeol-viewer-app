@@ -47,7 +47,6 @@ import {setupI18n} from './i18n.js';
 import QueryManager from './query/QueryManager';
 
 import {initAnalytics} from './analytics.js';
-import {initSentry} from './sentry.js';
 import MainStore from './store/main';
 import ToolboxStore from './store/toolbox';
 import {classMap} from 'lit/directives/class-map.js';
@@ -395,7 +394,6 @@ export class NgmApp extends LitElementI18n {
 
   onTrackingAllowedChanged(event) {
     this.showNavigationHint();
-    initSentry(event.detail.allowed);
     initAnalytics(event.detail.allowed);
   }
 

@@ -123,8 +123,3 @@ jobs:
           then
             cd ui; scripts/deploy_to_s3.sh review $GITHUB_HEAD_REF
           fi
-
-      - name: Notify sentry
-        env:
-          SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
-        run: cd ui; scripts/sentry_upload.sh
