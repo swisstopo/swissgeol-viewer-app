@@ -4,6 +4,7 @@ import type {
 import {fromCognitoIdentityPool} from '@aws-sdk/credential-provider-cognito-identity';
 import {CognitoIdentityClient} from '@aws-sdk/client-cognito-identity';
 import auth from './store/auth';
+import {COGNITO_VARIABLES} from './constants';
 
 const cognitoState = 'cognito_state';
 const cognitoUser = 'cognito_user';
@@ -59,13 +60,14 @@ export default class Auth {
 
     const accessToken = this.getAccessToken();
     if (accessToken) {
+      const {region, identityPoolId, userPoolId} = COGNITO_VARIABLES;
       (window as any)['AWSCred'] = _AWSCredentials = fromCognitoIdentityPool({
         client: new CognitoIdentityClient({
-          region: 'eu-west-1'
+          region: region
         }),
-        identityPoolId: 'eu-west-1:8e7b48a6-9d3f-4a46-afa3-d05a78c46a90',
+        identityPoolId: identityPoolId,
         logins: {
-          'cognito-idp.eu-west-1.amazonaws.com/eu-west-1_1NcmOhPt4': accessToken
+          [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: accessToken
         }
       });
     }

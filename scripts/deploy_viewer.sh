@@ -36,7 +36,7 @@ function deploy_ui {
 
   # Change the active environment
   TMP_INDEX="./deployed_index.html"
-  aws s3 cp "s3://$RELEASES_BUCKET/releases/$VERSION/index.html" "$TMP_INDEX"
+  aws s3 cp --cache-control no-cache "s3://$RELEASES_BUCKET/releases/$VERSION/index.html" "$TMP_INDEX"
   sed -i "s/default_active_env/$ENVIRONMENT/" "$TMP_INDEX"
   aws s3 cp --cache-control no-cache "$TMP_INDEX" "s3://$TARGET_BUCKET/index.html"
   rm "$TMP_INDEX"
