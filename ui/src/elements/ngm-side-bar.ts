@@ -6,7 +6,7 @@ import '../layers/ngm-layers-sort';
 import '../layers/ngm-catalog';
 import './dashboard/ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
-import {DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
+import {COGNITO_VARIABLES, DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
 import defaultLayerTree, {LayerConfig} from '../layertree';
 import {
   addAssetId,
@@ -196,8 +196,8 @@ export class SideBar extends LitElementI18n {
       </div>`;
     const authBtn = html`
       <ngm-auth class="ngm-user"
-                endpoint='https://ngm-prod.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
-                clientId='6brvjsufv7fdubr12r9u0gajnj'
+                endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
+                clientId=${COGNITO_VARIABLES.clientId}
       ></ngm-auth>`;
     const dataMobileHeader = html`
       <div @click=${() => this.hideDataDisplayed = true}
@@ -348,11 +348,11 @@ export class SideBar extends LitElementI18n {
                 </ngm-layers>`
           }
           <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
-          <ngm-layers-upload 
-              .toastPlaceholder=${this.toastPlaceholder} 
+          <ngm-layers-upload
+              .toastPlaceholder=${this.toastPlaceholder}
               .onKmlUpload=${(file: File, clampToGround: boolean) => this.onKmlUpload(file, clampToGround)}>
           </ngm-layers-upload>
-          <button class="ui button ngm-ion-add-content-btn ngm-action-btn" 
+          <button class="ui button ngm-ion-add-content-btn ngm-action-btn"
                   @click=${() => this.dispatchEvent(new CustomEvent('openIonModal'))}>
             ${i18next.t('dtd_add_ion_token')}
           </button>

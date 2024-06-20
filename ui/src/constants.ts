@@ -145,3 +145,30 @@ export const API_BY_PAGE_HOST = {
 };
 
 export const DEFAULT_UPLOADED_KML_COLOR = Color.fromCssColorString('#0056A4');
+
+const _COGNITO_VARIABLES = {
+	dev: {
+    env: 'dev',
+    region: 'eu-west-1',
+		clientId: '10h1tga4i933buv25lelalmtrn',
+		identityPoolId: 'eu-west-1:aa0d145d-228e-40be-bb73-a9a2c83879df',
+		userPoolId: 'eu-west-1_dbfEb2FuH',
+	},
+	int: {
+    env: 'int',
+    region: 'eu-west-1',
+		clientId: '35ld39a721f3fhbsgci6gekde2',
+		identityPoolId: 'eu-west-1:8dc87444-330a-4aa6-8e50-975c0aae97ae',
+		userPoolId: 'eu-west-1_HJ4hFAg2P',
+	},
+	prod: {
+    env: 'prod',
+    region: 'eu-west-1',
+		clientId: '6brvjsufv7fdubr12r9u0gajnj',
+		identityPoolId: 'eu-west-1:8e7b48a6-9d3f-4a46-afa3-d05a78c46a90',
+		userPoolId: 'eu-west-1_1NcmOhPt4',
+	},
+};
+_COGNITO_VARIABLES['default_active_env'] = _COGNITO_VARIABLES['dev'];
+export const COGNITO_VARIABLES = _COGNITO_VARIABLES[(window as any).activeEnvironment];
+
