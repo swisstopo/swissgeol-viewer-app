@@ -104,7 +104,7 @@ export class SideBar extends LitElementI18n {
     auth.user.subscribe((user) => {
       if (!user && this.activeLayers) {
         // user logged out, remove restricted layers.
-        const restricted = this.activeLayers.filter(config => config.restricted);
+        const restricted = this.activeLayers.filter(config => config.restricted?.length);
         restricted.forEach(config => {
           const idx = this.activeLayers.indexOf(config);
           this.activeLayers.splice(idx, 1);

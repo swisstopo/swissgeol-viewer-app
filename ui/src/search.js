@@ -128,7 +128,7 @@ export function setupSearch(viewer, element, layerTree) {
           } else {
             if (regexp.test(layer.label)) {
               layer.label = `${i18next.t(layer.label)}`;
-              if (!layer.restricted || user?.['cognito:groups'].includes(layer.restricted)) matches.push(layer);
+              if (!layer.restricted?.length || layer.restricted.some(g => user?.['cognito:groups'].includes(g))) matches.push(layer);
             }
           }
       }};

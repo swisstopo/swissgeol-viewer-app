@@ -233,7 +233,7 @@ export class NgmLayersItem extends LitElementI18n {
       </div>
       <div class="ngm-displayed-slider">
         <label class="ngm-layer-label">
-          <i class=${this.config.restricted ? 'lock icon' : ''}></i>
+          <i class=${this.config.restricted?.length ? 'lock icon' : ''}></i>
           ${i18next.t(this.config.label)} ${this.sublabel}
         </label>
         <label ?hidden=${this.config.opacityDisabled}>${(this.config.opacity! * 100).toFixed()} %</label>
