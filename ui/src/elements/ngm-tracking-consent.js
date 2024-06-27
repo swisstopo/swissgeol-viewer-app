@@ -3,8 +3,6 @@ import {LitElementI18n} from '../i18n';
 import i18next from 'i18next';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
-const TRACKING_ALLOWED_KEY = 'trackingAllowed';
-
 
 class NgmTrackingConsent extends LitElementI18n {
   static get properties() {
@@ -15,9 +13,7 @@ class NgmTrackingConsent extends LitElementI18n {
 
   constructor() {
     super();
-
-    const val = localStorage.getItem(TRACKING_ALLOWED_KEY);
-    this.allowed = val === null ? null : val === 'true';
+    this.allowed = !location.href.includes('localhost') ? null : false;
   }
 
   updated(changedProperties) {
@@ -52,7 +48,6 @@ class NgmTrackingConsent extends LitElementI18n {
 
   saveResponse(allowed) {
     this.allowed = allowed;
-    localStorage.setItem(TRACKING_ALLOWED_KEY, this.allowed.toString());
   }
 
   createRenderRoot() {
