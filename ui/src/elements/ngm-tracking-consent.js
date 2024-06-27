@@ -13,7 +13,7 @@ class NgmTrackingConsent extends LitElementI18n {
 
   constructor() {
     super();
-    this.allowed = !location.href.includes('localhost') ? null : false;
+    this.allowed = !location.href.includes('localhost') || window.Cypress ? null : false;
   }
 
   updated(changedProperties) {
@@ -34,7 +34,7 @@ class NgmTrackingConsent extends LitElementI18n {
             ${unsafeHTML(i18next.t('tracking_text'))}
           </div>
           <div class="content">
-            <button class="ui button" @click="${() => this.saveResponse(true)}">
+            <button data-cy="tracking-agree-btn" class="ui button" @click="${() => this.saveResponse(true)}">
               ${i18next.t('tracking_agree_btn_label')}
               </button>
             <button class="ui button" @click="${() => this.saveResponse(false)}">
