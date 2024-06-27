@@ -30,7 +30,7 @@ export interface LayerTreeNode {
   maximumLevel?: number;
   queryType?: string;
   noQuery?: boolean;
-  restricted?: string;
+  restricted?: string[];
   aws_s3_bucket?: string;
   aws_s3_key?: string;
   previewColor?: string;
@@ -607,7 +607,7 @@ const geo_base: LayerTreeNode = {
           pickable: true,
           visible: false,
           displayed: false, // private until they have been re-integrated
-          restricted: 'ngm-prod-privileged', // private until they have been re-integrated
+          restricted: ['ngm-dev-privileged', 'ngm-int-privileged', 'ngm-prod-privileged'], // private until they have been re-integrated
           // Temporarily disable the boreholes download, see https://jira.camptocamp.com/browse/GSNGM-936
           // downloadDataType: 'csv',
           // downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
@@ -626,7 +626,7 @@ const geo_base: LayerTreeNode = {
           pickable: true,
           visible: false,
           displayed: false,
-          restricted: 'ngm-prod-privileged', // the group required to see this layer
+          restricted: ['ngm-dev-privileged', 'ngm-int-privileged', 'ngm-prod-privileged'], // the group required to see this layer
           aws_s3_bucket: 'ngm-protected-prod',
           aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
         },

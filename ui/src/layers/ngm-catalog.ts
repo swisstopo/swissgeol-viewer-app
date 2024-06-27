@@ -30,7 +30,7 @@ export class Catalog extends LitElementI18n {
   getCategoryTemplate(category: LayerTreeNode, level: string): TemplateResult {
     // if it is a restricted layer, the user must be logged in to see it
     const content = category.children?.filter(
-      node => !(node.restricted && (!this.userGroups.includes(node.restricted)))
+      node => !(node.restricted && (!node.restricted.some(g => this.userGroups.includes(g))))
       ).map(node => this.getCategoryOrLayerTemplate(node, 'second-level'));
 
     if (!content?.length) return html``;
