@@ -216,9 +216,14 @@ export class GeometryController {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (!entity) return;
     NavToolsStore.hideTargetPoint();
+    const sliceGeom = ToolboxStore.sliceGeometry?.value;
     if (!entity.isShowing)
       entity.show = true;
     flyToGeom(this.viewer!.scene, entity);
+    if (sliceGeom && sliceGeom.id === id) {
+      entity.show = false;
+      return;
+    }
     this.pickGeometry(id);
   }
 

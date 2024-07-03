@@ -31,7 +31,7 @@ export class NgmMapConfiguration extends LitElementI18n {
   accessor baseMapId = 'ch.swisstopo.pixelkarte-grau';
   @query('ngm-map-chooser')
   accessor mapChooserElement;
-  private debouncedOpacityUpdate = debounce((evt: Event) => this.updateOpacity(Number((<HTMLInputElement>evt.target).value)), 250, true);
+  private debouncedOpacityUpdate = debounce((evt: Event) => this.updateOpacity(Number((<HTMLInputElement>evt.target).value)), 250);
   private prevExaggeration: number = 1;
 
   constructor() {
@@ -170,7 +170,7 @@ export class NgmMapConfiguration extends LitElementI18n {
             <label>${(this.exaggeration).toFixed()}x</label>
           </div>
           <input type="range"
-                 class="ngm-slider ${classMap({'ngm-disabled': this.mapChooser!.selectedMap.id === 'empty_map'})}"
+                 class="ngm-slider"
                  style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.exaggeration * 5}%, white ${this.exaggeration * 5}%)"
                  min=1 max=20 step=1
                  .value=${!isNaN(this.exaggeration) ? this.exaggeration : 1}
