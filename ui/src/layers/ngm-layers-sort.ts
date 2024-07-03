@@ -33,7 +33,7 @@ export default class NgmLayersSort extends LitElementI18n {
                 const reverse = this.sortedList.reverse();
                 const movedLayers = reverse.filter(l => layerCodes.includes(l.layer));
                 const newLayers = reverse.filter(l => !layerCodes.includes(l.layer));
-                newLayers.splice(evt.newIndex, 0, ...movedLayers);
+                newLayers.splice(evt.newIndicies[0].index, 0, ...movedLayers);
                 this.sortedList = newLayers.reverse();
                 this.dispatchEvent(new CustomEvent('orderChanged', {detail: this.sortedList}));
             },

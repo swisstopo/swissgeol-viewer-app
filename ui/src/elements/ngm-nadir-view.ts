@@ -68,8 +68,11 @@ export class NgmNadirView extends LitElementI18n {
   updateFromCamera() {
     if (!this.viewer) return;
     this.currentHeading = this.viewer.scene.camera.heading;
-    if (this.nadirActive && !CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1)) {
+    const nadirView = CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1);
+    if (this.nadirActive && !nadirView) {
       this.height = undefined;
+      this.toggleNadirStatus();
+    } else if (!this.nadirActive && nadirView) {
       this.toggleNadirStatus();
     }
     const angle = Math.round(this.currentHeading * 180 / Math.PI);
