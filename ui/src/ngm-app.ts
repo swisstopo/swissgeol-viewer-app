@@ -10,7 +10,6 @@ import './elements/ngm-cursor-information';
 import './elements/ngm-nav-tools';
 import './elements/ngm-minimap';
 import './elements/ngm-cam-configuration';
-import './elements/ngm-height-slider';
 import './toolbox/ngm-topo-profile-modal';
 import './toolbox/ngm-geometry-info';
 import './elements/ngm-layer-legend';
@@ -479,7 +478,6 @@ export class NgmApp extends LitElementI18n {
                                .hidden=${!this.showProjectPopup}
                                @close=${() => this.showProjectPopup = false}>
             </ngm-project-popup>
-            <ngm-height-slider .viewer=${this.viewer}></ngm-height-slider>
             ${[...this.legendConfigs].map(config => config ? html`
               <ngm-layer-legend class="ngm-floating-window" .config=${config}
                                 @close=${this.onCloseLayerLegend}></ngm-layer-legend>
