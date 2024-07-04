@@ -31,7 +31,6 @@
 @import 'cesium/Source/Widgets/widgets.css';
 
 @import 'search.css';
-@import 'ngm-height-slider.css';
 @import 'ngm-object-information.css';
 @import 'ngm-modal.css';
 @import 'keyboard-navigation.css';
@@ -293,7 +292,7 @@ ngm-full-screen-view.full-active {
   position: absolute;
   z-index: 2;
   top: 10px;
-  right: 75px;
+  right: 10px;
   padding: 10px 12px 8px 12px;
 }
 
