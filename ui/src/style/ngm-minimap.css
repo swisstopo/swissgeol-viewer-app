@@ -1,6 +1,9 @@
 ngm-minimap {
   display: flex;
   flex-direction: column;
+  border-bottom: 2px solid #DFE2E6;
+  align-items: center;
+  justify-content: center;
 }
 
 .ngm-compass {
@@ -11,29 +14,6 @@ ngm-minimap {
   border-radius: 25px;
   width: 40px;
   height: 40px;
-}
-
-.ngm-nadir {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #FFFFFF;
-  border-radius: 25px;
-  width: 40px;
-  height: 40px;
-}
-
-.ngm-minimap-buttons {
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-  bottom: 20px;
-  pointer-events: none;
-}
-
-.ngm-minimap-buttons .ngm-nadir,
-.ngm-minimap-buttons .ngm-compass {
-  pointer-events: all;
 }
 
 

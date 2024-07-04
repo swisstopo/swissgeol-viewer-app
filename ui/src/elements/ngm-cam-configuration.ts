@@ -20,6 +20,7 @@ import {classMap} from 'lit/directives/class-map.js';
 import './ngm-cam-coordinates';
 import NavToolsStore from '../store/navTools';
 import {dragArea} from './helperElements';
+import './ngm-minimap';
 
 export type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
 
@@ -276,6 +277,7 @@ export class NgmCamConfiguration extends LitElementI18n {
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
       <div class="ngm-cam-container">
+        <ngm-minimap .viewer=${this.viewer}></ngm-minimap>
         ${this.configurations.map(c => html`
           <div>
             <div class=${c.iconClass()} title=${i18next.t('cam_lock')} @click=${c.lock}></div>
