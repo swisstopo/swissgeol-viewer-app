@@ -9,9 +9,6 @@ import type {Interactable} from '@interactjs/types';
 import type {Event, Viewer} from 'cesium';
 import {classMap} from 'lit/directives/class-map.js';
 
-// calculate difference between minimap extent and container
-const width = CesiumMath.toRadians(MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
-const height = CesiumMath.toRadians(MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
 const west = CesiumMath.toRadians(MINIMAP_EXTENT[0]);
 const south = CesiumMath.toRadians(MINIMAP_EXTENT[1]);
 const east = CesiumMath.toRadians(MINIMAP_EXTENT[2]);
