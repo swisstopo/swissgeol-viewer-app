@@ -8,7 +8,6 @@ import './elements/ngm-auth';
 import './elements/ngm-tracking-consent';
 import './elements/ngm-cursor-information';
 import './elements/ngm-nav-tools';
-import './elements/ngm-minimap';
 import './elements/ngm-cam-configuration';
 import './toolbox/ngm-topo-profile-modal';
 import './toolbox/ngm-geometry-info';
@@ -85,8 +84,6 @@ export class NgmApp extends LitElementI18n {
   accessor mapChooser: MapChooser | undefined;
   @state()
   accessor slicer_: Slicer | undefined;
-  @state()
-  accessor showMinimap = false;
   @state()
   accessor showCamConfig = false;
   @state()
@@ -428,8 +425,6 @@ export class NgmApp extends LitElementI18n {
         <div
           class="ngm-search-icon-mobile ngm-search-icon visible-mobile ${classMap({'active': this.showMobileSearch})}"
           @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
-        <div title="${i18next.t('header_show_minimap')}" class="ngm-map-icon ${classMap({'active': this.showMinimap})}" .hidden="${this.showMobileSearch}"
-             @click=${() => this.showMinimap = !this.showMinimap}></div>
         <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
       </header>
       <main>
@@ -466,9 +461,6 @@ export class NgmApp extends LitElementI18n {
                            @togglecamconfig=${() => this.showCamConfig = !this.showCamConfig}
                            @axisstate=${evt => this.showAxisOnMap = evt.detail.showAxis}>
             </ngm-nav-tools>
-            <ngm-minimap class="ngm-floating-window" .viewer=${this.viewer} .hidden=${!this.showMinimap}
-                         @close=${() => this.showMinimap = false}>
-            </ngm-minimap>
             <ngm-cam-configuration class="ngm-floating-window"
                                    .hidden=${!this.showCamConfig}
                                    .viewer=${this.viewer}

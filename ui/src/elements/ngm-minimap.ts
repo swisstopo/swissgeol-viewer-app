@@ -3,23 +3,16 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {Rectangle, Math as CesiumMath, Cartesian3} from 'cesium';
 import {styleMap} from 'lit/directives/style-map.js';
 import {MINIMAP_EXTENT} from '../constants';
-import draggable from './draggable';
-import './ngm-nadir-view';
-import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
 import NavToolsStore from '../store/navTools';
 import type {Interactable} from '@interactjs/types';
 import type {Event, Viewer} from 'cesium';
-import {dragArea} from './helperElements';
 import {classMap} from 'lit/directives/class-map.js';
 
-// calculate difference between minimap extent and container
-const width = CesiumMath.toRadians(MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
-const height = CesiumMath.toRadians(MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
-const west = CesiumMath.toRadians(MINIMAP_EXTENT[0]) - width / 228 * 12;
-const south = CesiumMath.toRadians(MINIMAP_EXTENT[1]) - height / 99 * 24;
-const east = CesiumMath.toRadians(MINIMAP_EXTENT[2]) + width / 228 * 12;
-const north = CesiumMath.toRadians(MINIMAP_EXTENT[3]) + height / 99 * 36;
+const west = CesiumMath.toRadians(MINIMAP_EXTENT[0]);
+const south = CesiumMath.toRadians(MINIMAP_EXTENT[1]);
+const east = CesiumMath.toRadians(MINIMAP_EXTENT[2]);
+const north = CesiumMath.toRadians(MINIMAP_EXTENT[3]);
 
 @customElement('ngm-minimap')
 export class NgmMinimap extends LitElementI18n {
@@ -87,7 +80,7 @@ export class NgmMinimap extends LitElementI18n {
     };
   }
 
-  handleNadirToggle() {
+  private toggleNadirStatus() {
     this.nadirViewActive = !this.nadirViewActive;
   }
 
@@ -105,6 +98,13 @@ export class NgmMinimap extends LitElementI18n {
     this.left = (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
     this.bottom = (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
     this.heading = this.viewer.scene.camera.heading - 1.57;
+
+    const nadirView = CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1);
+    if (this.nadirViewActive && !nadirView) {
+      this.toggleNadirStatus();
+    } else if (!this.nadirViewActive && nadirView) {
+      this.toggleNadirStatus();
+    }
   }
 
   moveCamera(evtX: number, evtY: number, evtType: string) {
@@ -120,8 +120,8 @@ export class NgmMinimap extends LitElementI18n {
     }
     // calculate left, bottom percentage from event
     const boundingRect = this.getBoundingClientRect();
-    const x = evtType === 'mousemove' ? evtX + Math.sin(camera.heading) * 12 : evtX;
-    const y = evtType === 'mousemove' ? evtY - Math.cos(camera.heading) * 12 : evtY;
+    const x = evtType === 'mousemove' ? evtX + Math.sin(camera.heading) : evtX;
+    const y = evtType === 'mousemove' ? evtY - Math.cos(camera.heading) : evtY;
     const left = (x - boundingRect.left) / (boundingRect.right - boundingRect.left);
     const bottom = (y - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
 
@@ -129,13 +129,6 @@ export class NgmMinimap extends LitElementI18n {
     const lon = (west + (east - west) * left) * pinchScaleW;
     const lat = (south + (north - south) * bottom) * pinchScaleH;
     camera.position = Cartesian3.fromRadians(lon, lat, camera.positionCartographic.height);
-  }
-
-  connectedCallback() {
-    draggable(this, {
-      allowFrom: '.drag-handle'
-    });
-    super.connectedCallback();
   }
 
   onIconPress(evt) {
@@ -146,18 +139,12 @@ export class NgmMinimap extends LitElementI18n {
 
   render() {
     return html`
-      <div class="ngm-floating-window-header drag-handle">
-        ${i18next.t('minimap_orientation')}
-        <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
-      </div>
       <div class="ngm-minimap-container">
         <img src="./images/overview.svg" class="ngm-map-overview">
         <div class="ngm-cam ${classMap({'ngm-cam-icon': !this.nadirViewActive, 'ngm-cam-behind-icon': this.nadirViewActive})}" style=${styleMap(this.markerStyle)}
              @mousedown="${(evt) => this.onIconPress(evt)}">
         </div>
-        <ngm-nadir-view .viewer=${this.viewer} @nadirToggled=${this.handleNadirToggle}></ngm-nadir-view>
       </div>
-      ${dragArea}
     `;
   }
 
