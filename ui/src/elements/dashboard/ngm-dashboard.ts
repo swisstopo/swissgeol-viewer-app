@@ -10,7 +10,6 @@ import {
   getCameraView,
   getPermalink,
   removeProject,
-  removeTopic,
   setPermalink,
   syncStoredView,
   syncTargetParam
@@ -102,7 +101,7 @@ export class NgmDashboard extends LitElementI18n {
   @state()
   accessor projects: Project[] = [];
   @state()
-  accessor activeTab: TabTypes = 'topics';
+  accessor activeTab: TabTypes = 'overview';
   @state()
   accessor selectedTopicOrProject: Topic | Project | undefined;
   @state()
@@ -135,32 +134,37 @@ export class NgmDashboard extends LitElementI18n {
       this.viewer = viewer;
       this.viewer?.dataSources.add(this.tempKmlDataSource);
     });
-    fetch('./src/sampleData/topics.json').then(topicsResponse =>
-      topicsResponse.json().then(topics => {
-        this.topics = topics.map(topic => {
-          if (topic.geometries) {
-            topic.geometries = this.getGeometries(topic.geometries);
-          }
-          return topic;
-        }).sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
-        DashboardStore.topicOrProjectParam.subscribe(async value => {
-          if (!value) return;
-          if (value.kind === 'topic') {
-            removeTopic();
-            const topic = this.topics?.find(p => p.id === value.param.topicId);
-            this.selectTopicOrProject(topic);
-          } else if (value.kind === 'project') {
-            removeProject();
-            const project = await apiClient.getProject(value.param.projectId);
-            this.selectTopicOrProject(project);
-          } else return;
-          if (value.param.viewId) {
-            const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === value.param.viewId);
-            if (viewIndex !== -1) DashboardStore.setViewIndex(viewIndex);
-          }
-          this.hidden = false;
-        });
-      }));
+    // topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
+    // fetch('./src/sampleData/topics.json').then(topicsResponse =>
+    //   topicsResponse.json().then(topics => {
+    //     this.topics = topics.map(topic => {
+    //       if (topic.geometries) {
+    //         topic.geometries = this.getGeometries(topic.geometries);
+    //       }
+    //       return topic;
+    //     }).sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
+    //      // todo move DashboardStore.topicOrProjectParam.subscribe here
+    //   }));
+
+    DashboardStore.topicOrProjectParam.subscribe(async value => {
+      if (!value) return;
+      // topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
+      // if (value.kind === 'topic') {
+      //   removeTopic();
+      //   const topic = this.topics?.find(p => p.id === value.param.topicId);
+      //   this.selectTopicOrProject(topic);
+      // } else
+        if (value.kind === 'project') {
+        removeProject();
+        const project = await apiClient.getProject(value.param.projectId);
+        this.selectTopicOrProject(project);
+      } else return;
+      if (value.param.viewId) {
+        const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === value.param.viewId);
+        if (viewIndex !== -1) DashboardStore.setViewIndex(viewIndex);
+      }
+      this.hidden = false;
+    });
     const recentlyViewed = localStorage.getItem('dashboard_recently_viewed');
     if (recentlyViewed) {
       this.recentlyViewedIds = JSON.parse(recentlyViewed);
@@ -219,14 +223,15 @@ export class NgmDashboard extends LitElementI18n {
     }
   }
 
-  getGeometries(features: Array<GeoJSON.Feature>) {
-    return features.map(feature => {
-      return Object.assign(fromGeoJSON(feature), {
-        editable: false,
-        copyable: false,
-      });
-    });
-  }
+  // topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
+  // getGeometries(features: Array<GeoJSON.Feature>) {
+  //   return features.map(feature => {
+  //     return Object.assign(fromGeoJSON(feature), {
+  //       editable: false,
+  //       copyable: false,
+  //     });
+  //   });
+  // }
 
   async fetchAssets(assets: Asset[]): Promise<LayerConfig[]> {
     const assetsData: LayerConfig[] = [];
@@ -503,6 +508,7 @@ export class NgmDashboard extends LitElementI18n {
     return html`
       <div class="ngm-panel-header">
         <div class="ngm-dashboard-tabs">
+          <!-- topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
           <div class=${classMap({active: this.activeTab === 'topics'})}
                @click=${() => {
                  this.runIfNotEditCreate(() => {
@@ -512,6 +518,7 @@ export class NgmDashboard extends LitElementI18n {
                 }}>
             ${i18next.t('dashboard_topics')}
           </div>
+          -->
           <div class=${classMap({active: this.activeTab === 'overview'})}
                @click=${() => {
                  this.runIfNotEditCreate(() => {

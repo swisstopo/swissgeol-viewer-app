@@ -18,7 +18,7 @@ ngm-side-bar {
 
 .ngm-menu,
 .ngm-menu-mobile {
-  width: 80px;
+  width: var(--ngm-left-side-bar-width);
   justify-content: space-between;
   font: normal normal normal 12px/15px Inter;
   color: #222529;
@@ -39,14 +39,13 @@ ngm-side-bar {
   cursor: pointer;
 }
 
-.ngm-menu-2 > .ngm-nav-close {
+.ngm-menu-2 > .ngm-settings {
   margin-bottom: 0;
 }
 
 .ngm-menu-1 > div > div:nth-child(1),
 .ngm-menu-2 > div > div:nth-child(1),
 .ngm-menu-mobile > div > div:nth-child(1) {
-  margin-bottom: 5px;
   background-color: #030303;
 }
 
@@ -70,7 +69,7 @@ ngm-side-bar {
   box-shadow: 4px 0 4px #00000029;
   padding: 10px;
   position: absolute;
-  margin-left: 80px;
+  margin-left: var(--ngm-left-side-bar-width);
   z-index: 5;
   display: flex;
   flex-direction: column;
