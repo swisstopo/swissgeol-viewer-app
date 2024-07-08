@@ -6,7 +6,7 @@ import '../layers/ngm-layers-sort';
 import '../layers/ngm-catalog';
 import './dashboard/ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
-import {COGNITO_VARIABLES, DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
+import {DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
 import defaultLayerTree, {LayerConfig} from '../layertree';
 import {
   addAssetId,
@@ -194,11 +194,6 @@ export class SideBar extends LitElementI18n {
         <div class="ngm-settings-icon"></div>
         ${i18next.t('lsb_settings')}
       </div>`;
-    const authBtn = html`
-      <ngm-auth class="ngm-user"
-                endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
-                clientId=${COGNITO_VARIABLES.clientId}
-      ></ngm-auth>`;
     const dataMobileHeader = html`
       <div @click=${() => this.hideDataDisplayed = true}
            class="ngm-data-catalog-label ${classMap({active: this.hideDataDisplayed})}">
@@ -235,7 +230,6 @@ export class SideBar extends LitElementI18n {
             <div class="ngm-tools-icon"></div>
             ${i18next.t('lsb_tools')}
           </div>
-          ${this.mobileView ? authBtn : ''}
           ${!this.mobileView ? shareBtn : ''}
           <div .hidden=${!this.mobileView}
                class="ngm-mob-menu-toggle"
@@ -248,7 +242,6 @@ export class SideBar extends LitElementI18n {
           </div>
         </div>
         <div .hidden=${this.mobileView} class="ngm-menu-2">
-          ${authBtn}
           ${helpBtn}
           ${settingsBtn}
           <div class="ngm-nav-close ${classMap({'ngm-disabled': !this.activePanel})}"
@@ -292,14 +285,6 @@ export class SideBar extends LitElementI18n {
       <div .hidden=${this.activePanel !== 'settings'} class="ngm-side-bar-panel">
         <div class="ngm-panel-header">${i18next.t('lsb_settings')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
-        </div>
-        <div class="language-settings">
-          <label>${i18next.t('lsb_langs')}</label>
-          <div id="langs" class="ui horizontal selection list">
-            ${SUPPORTED_LANGUAGES.map(lang => html`
-              <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
-            `)}
-          </div>
         </div>
         <div class="toolbar-settings">
           <label>${i18next.t('lsb_debug_tools')}</label>

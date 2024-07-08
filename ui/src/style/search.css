@@ -110,3 +110,15 @@ ga-search > .search-results i {
 ga-search > .search-results b {
   font: normal normal bold 16px/24px Inter;
 }
+
+@media (max-width: 690px) {
+  ga-search {
+    min-width: 180px;
+    max-width: 180px;
+  }
+
+  ga-search > input {
+    padding: 11px 16px !important;
+    width: 150px;
+  }
+}

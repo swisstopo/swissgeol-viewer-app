@@ -8,8 +8,7 @@ ngm-side-bar {
 .ngm-menu-2,
 .ngm-menu-1 > div,
 .ngm-menu-2 > div,
-.ngm-menu-mobile > div,
-ngm-auth > .ngm-user {
+.ngm-menu-mobile > div {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,8 +34,7 @@ ngm-auth > .ngm-user {
 }
 
 .ngm-menu-1 > div,
-.ngm-menu-2 > div,
-.ngm-menu-2 > ngm-auth {
+.ngm-menu-2 > div  {
   margin-bottom: 28px;
   cursor: pointer;
 }
@@ -47,23 +45,20 @@ ngm-auth > .ngm-user {
 
 .ngm-menu-1 > div > div:nth-child(1),
 .ngm-menu-2 > div > div:nth-child(1),
-.ngm-menu-mobile > div > div:nth-child(1),
-ngm-auth .ngm-user-icon {
+.ngm-menu-mobile > div > div:nth-child(1) {
   margin-bottom: 5px;
   background-color: #030303;
 }
 
 .ngm-menu-1 > div:hover > div:nth-child(1),
 .ngm-menu-2 > div:hover > div:nth-child(1),
-.ngm-menu-mobile > div:hover > div:nth-child(1),
-ngm-auth:hover .ngm-user-icon {
+.ngm-menu-mobile > div:hover > div:nth-child(1) {
   background-color: var(--ngm-interaction-hover);
 }
 
 .ngm-menu-1 > div:hover,
 .ngm-menu-2 > div:hover,
-.ngm-menu-mobile > div:hover,
-ngm-auth:hover {
+.ngm-menu-mobile > div:hover {
   color: var(--ngm-interaction-hover);
 }
 
@@ -131,14 +126,12 @@ ngm-auth:hover {
 }
 
 .ngm-menu-1 > div.ngm-active-section > div:nth-child(1),
-.ngm-menu-2 > div.ngm-active-section > div:nth-child(1),
-.ngm-menu-2 > ngm-auth .ngm-active-section > div:nth-child(1) {
+.ngm-menu-2 > div.ngm-active-section > div:nth-child(1) {
   background-color: var(--ngm-interaction-active);
 }
 
 .ngm-menu-1 > div.ngm-active-section,
-.ngm-menu-2 > div.ngm-active-section,
-.ngm-menu-2 > ngm-auth .ngm-active-section {
+.ngm-menu-2 > div.ngm-active-section {
   color: var(--ngm-interaction-active);
 }
 
@@ -204,8 +197,7 @@ ngm-auth:hover {
   }
 
   .ngm-menu-1 > div,
-  .ngm-menu-mobile > div,
-  .ngm-menu-1 > ngm-auth {
+  .ngm-menu-mobile > div {
     margin-bottom: 0;
     width: 68px;
   }
@@ -245,8 +237,7 @@ ngm-auth:hover {
   }
 
   .ngm-menu-1 > div > div:nth-child(1),
-  .ngm-menu-mobile > div > div:nth-child(1),
-  ngm-auth .ngm-user-icon {
+  .ngm-menu-mobile > div > div:nth-child(1) {
     margin-bottom: 1px;
     background-color: #030303;
     height: 24px;
@@ -313,8 +304,7 @@ ngm-auth:hover {
 
 @media (max-width: 350px) {
   .ngm-menu-1 > div,
-  .ngm-menu-mobile > div,
-  .ngm-menu-1 > ngm-auth {
+  .ngm-menu-mobile > div {
     width: 60px;
   }
 }
