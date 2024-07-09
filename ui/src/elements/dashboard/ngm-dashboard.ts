@@ -21,7 +21,6 @@ import type {Viewer} from 'cesium';
 import {CustomDataSource} from 'cesium';
 import {showBannerWarning, showSnackbarError} from '../../notifications';
 import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
-import {fromGeoJSON} from '../../toolbox/helpers';
 import type {NgmGeometry} from '../../toolbox/interfaces';
 import {apiClient} from '../../api-client';
 import AuthStore from '../../store/auth';
