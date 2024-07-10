@@ -112,7 +112,8 @@ export class NgmMapConfiguration extends LitElementI18n {
       }
       this.exaggeration = Number((<HTMLInputElement>evt.target).value);
       this.viewer.scene.verticalExaggeration = this.exaggeration;
-      this.viewer.scene.requestRender();
+      // workaround for billboards positioning
+      setTimeout(() => this.viewer!.scene.requestRender(), 500);
       setExaggeration(this.exaggeration);
       NavToolsStore.exaggerationChanged.next(this.exaggeration);
     }
