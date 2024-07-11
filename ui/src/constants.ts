@@ -15,10 +15,10 @@ export const WEB_MERCATOR_TILING_SCHEME = new GeographicTilingScheme({
 
 export const DEFAULT_VIEW = {
   destination: Cartesian3.fromDegrees(
-    6.06749, 43.77784, 204227),
+      8.41011994246399, 46.831646400427914, 425641),
   orientation: {
-    heading: CMath.toRadians(26.0),
-    pitch: CMath.toRadians(-33.0)
+    heading: CMath.toRadians(0),
+    pitch: CMath.toRadians(-90.0)
   }
 };
 
