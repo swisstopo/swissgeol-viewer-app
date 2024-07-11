@@ -52,7 +52,7 @@ header.mobile-search-active {
   margin: 0 10px;
 }
 
-@media (max-width: 710px) {
+@media (max-width: 760px) {
   header > a {
     margin-right: 30px;
   }

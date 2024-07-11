@@ -193,28 +193,38 @@ cesium-view-cube {
   pointer-events: all;
 }
 
-.toolbar-settings,
-.language-settings {
+.toolbar-settings {
   display: flex;
   flex-direction: column;
 }
 
-.toolbar-settings > label,
-.language-settings label {
+.toolbar-settings > label {
   margin-top: 12px;
   margin-bottom: 12px;
 }
 
-.language-settings .ui.horizontal.list {
-  border: 1px solid lightgrey;
-  width: fit-content;
-  padding-right: 7px;
-  box-shadow: 0 2px 3px #00000029;
+.ngm-lang-dropdown {
+  background-color: #F1F3F5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
 }
 
-.language-settings .ui.selection.list .item {
-  color: #0B7285;
-  font-weight: 900;
+.ngm-lang-title {
+  padding: 5px 5px 5px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ngm-lang-title .ngm-dropdown-icon {
+  background-color: var(--ngm-interaction);
+  transform: rotate(90deg);
+}
+
+.ngm-lang-dropdown.active .ngm-lang-title .ngm-dropdown-icon {
+  transform: rotate(-90deg);
 }
 
 :lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en {
@@ -234,8 +244,40 @@ cesium-view-cube {
   z-index: 10;
 }
 
+ngm-auth {
+  cursor: pointer;
+}
+
+ngm-auth > .ngm-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
 ngm-auth > a {
   cursor: pointer;
+}
+
+ngm-auth .ngm-user-icon {
+  margin-bottom: 5px;
+  background-color: #030303;
+}
+
+ngm-auth:hover .ngm-user-icon {
+  background-color: var(--ngm-interaction-hover);
+}
+
+ngm-auth:hover {
+  color: var(--ngm-interaction-hover);
+}
+
+ngm-auth .ngm-active-section > div:nth-child(1) {
+  background-color: var(--ngm-interaction-active);
+}
+
+ngm-auth .ngm-active-section {
+  color: var(--ngm-interaction-active);
 }
 
 ngm-gst-interaction > .ui.tiny.icon.buttons {
@@ -422,6 +464,12 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   touch-action: none;
 }
 
+@media (max-width: 690px) {
+  .ngm-lang-dropdown {
+    margin-right: 10px;
+  }
+}
+
 @media (max-height: 629px), (max-width: 599px)  {
   .visible-mobile {
     display: initial;
@@ -445,6 +493,10 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   .map {
     margin-bottom: var(--ngm-bottom-menu-height);
     height: calc(100% - var(--ngm-bottom-menu-height));
+  }
+
+  ngm-auth .ngm-user-icon {
+    margin-bottom: 0;
   }
 }
 

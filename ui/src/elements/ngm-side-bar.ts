@@ -6,7 +6,7 @@ import '../layers/ngm-layers-sort';
 import '../layers/ngm-catalog';
 import './dashboard/ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
-import {COGNITO_VARIABLES, DEFAULT_LAYER_OPACITY, LayerType, SUPPORTED_LANGUAGES} from '../constants';
+import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import defaultLayerTree, {LayerConfig} from '../layertree';
 import {
   addAssetId,
@@ -180,25 +180,12 @@ export class SideBar extends LitElementI18n {
       <div class="ngm-share ${classMap({'ngm-active-section': this.activePanel === 'share'})}"
            @click=${() => this.togglePanel('share')}>
         <div class="ngm-share-icon"></div>
-        ${i18next.t('lsb_share')}
-      </div>`;
-    const helpBtn = html`
-      <div class="ngm-help" @click=${() => (<HTMLInputElement> this.querySelector('.ngm-help-link')).click()}>
-        <div class="ngm-help-icon"></div>
-        ${i18next.t('lsb_help')}
-        <a href="/manuals/manual_en.html" target="_blank" .hidden=${true} class="ngm-help-link"></a>
       </div>`;
     const settingsBtn = html`
       <div class="ngm-settings ${classMap({'ngm-active-section': this.activePanel === 'settings'})}"
            @click=${() => this.togglePanel('settings')}>
         <div class="ngm-settings-icon"></div>
-        ${i18next.t('lsb_settings')}
       </div>`;
-    const authBtn = html`
-      <ngm-auth class="ngm-user"
-                endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
-                clientId=${COGNITO_VARIABLES.clientId}
-      ></ngm-auth>`;
     const dataMobileHeader = html`
       <div @click=${() => this.hideDataDisplayed = true}
            class="ngm-data-catalog-label ${classMap({active: this.hideDataDisplayed})}">
@@ -212,7 +199,6 @@ export class SideBar extends LitElementI18n {
     return html`
       <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
         ${shareBtn}
-        ${helpBtn}
         ${settingsBtn}
         <!-- required for correct positioning -->
         <div></div>
@@ -223,19 +209,15 @@ export class SideBar extends LitElementI18n {
           <div class="ngm-dashboard ${classMap({'ngm-active-section': this.activePanel === 'dashboard'})}"
                @click=${() => this.togglePanel('dashboard')}>
             <div class="ngm-dashboard-icon"></div>
-            ${i18next.t('lsb_dashboard')}
           </div>
           <div class="ngm-data ${classMap({'ngm-active-section': this.activePanel === 'data'})}"
                @click=${() => this.togglePanel('data')}>
             <div class="ngm-data-icon"></div>
-            ${i18next.t('lsb_data')}
           </div>
           <div class="ngm-tools ${classMap({'ngm-active-section': this.activePanel === 'tools'})}"
                @click=${() => this.togglePanel('tools', false)}>
             <div class="ngm-tools-icon"></div>
-            ${i18next.t('lsb_tools')}
           </div>
-          ${this.mobileView ? authBtn : ''}
           ${!this.mobileView ? shareBtn : ''}
           <div .hidden=${!this.mobileView}
                class="ngm-mob-menu-toggle"
@@ -244,18 +226,10 @@ export class SideBar extends LitElementI18n {
               'ngm-view-all-icon': !this.mobileShowAll,
               'ngm-view-less-icon': this.mobileShowAll
             })}"></div>
-            ${this.mobileShowAll ? i18next.t('lsb_close') : i18next.t('lsb_view_all')}
           </div>
         </div>
         <div .hidden=${this.mobileView} class="ngm-menu-2">
-          ${authBtn}
-          ${helpBtn}
           ${settingsBtn}
-          <div class="ngm-nav-close ${classMap({'ngm-disabled': !this.activePanel})}"
-               @click=${() => this.togglePanel('')}>
-            <div class="ngm-nav-close-icon"></div>
-            ${i18next.t('lsb_close')}
-          </div>
         </div>
       </div>
       <ngm-dashboard class="ngm-side-bar-panel ngm-large-panel"
@@ -292,14 +266,6 @@ export class SideBar extends LitElementI18n {
       <div .hidden=${this.activePanel !== 'settings'} class="ngm-side-bar-panel">
         <div class="ngm-panel-header">${i18next.t('lsb_settings')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
-        </div>
-        <div class="language-settings">
-          <label>${i18next.t('lsb_langs')}</label>
-          <div id="langs" class="ui horizontal selection list">
-            ${SUPPORTED_LANGUAGES.map(lang => html`
-              <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
-            `)}
-          </div>
         </div>
         <div class="toolbar-settings">
           <label>${i18next.t('lsb_debug_tools')}</label>

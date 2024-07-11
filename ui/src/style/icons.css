@@ -49,25 +49,11 @@
   -webkit-mask: url('./images/i_user.svg') no-repeat center;
 }
 
-.ngm-help-icon {
-  width: 22px;
-  height: 20px;
-  mask: url('./images/i_help.svg') no-repeat center;
-  -webkit-mask: url('./images/i_help.svg') no-repeat center;
-}
-
 .ngm-settings-icon {
   width: 20px;
   height: 20px;
   mask: url('./images/i_config.svg') no-repeat center;
   -webkit-mask: url('./images/i_config.svg') no-repeat center;
-}
-
-.ngm-nav-close-icon {
-  width: 24px;
-  height: 24px;
-  mask: url('./images/i_navigation_closed.svg') no-repeat center;
-  -webkit-mask: url('./images/i_navigation_closed.svg') no-repeat center;
 }
 
 .ngm-zoom-p-icon {

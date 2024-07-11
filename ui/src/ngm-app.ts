@@ -21,10 +21,11 @@ import './elements/project-selector';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
+import 'fomantic-ui-css/components/dropdown.js';
 
 import '@geoblocks/cesium-view-cube';
 
-import {DEFAULT_VIEW} from './constants';
+import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
 
 import {setupSearch} from './search.js';
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
@@ -57,6 +58,7 @@ import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type {SideBar} from './elements/ngm-side-bar';
 import {LayerConfig} from './layertree';
+import $ from './jquery';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -347,8 +349,8 @@ export class NgmApp extends LitElementI18n {
           (<HTMLElement>document.querySelector('.ngm-cam-lock-info'))?.parentElement?.remove();
         });
       }
-
     }
+
     if (changedProperties.has('showCesiumToolbar')) {
       if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
         this.setResolutionScale();
@@ -357,6 +359,10 @@ export class NgmApp extends LitElementI18n {
         this.resolutionScaleRemoveCallback = undefined;
       }
     }
+
+    this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown({
+      direction: 'downward'
+    }));
     super.updated(changedProperties);
   }
 
@@ -426,6 +432,21 @@ export class NgmApp extends LitElementI18n {
           class="ngm-search-icon-mobile ngm-search-icon visible-mobile ${classMap({'active': this.showMobileSearch})}"
           @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
         <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
+        <div class="ui dropdown ngm-lang-dropdown">
+            <div class="ngm-lang-title">
+              ${i18next.language?.toUpperCase()}
+              <div class="ngm-dropdown-icon"></div>
+            </div>
+            <div class="menu">
+              ${SUPPORTED_LANGUAGES.map(lang => html`
+                <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
+              `)}
+            </div>
+        </div>
+        <ngm-auth class="ngm-user"
+                  endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
+                  clientId=${COGNITO_VARIABLES.clientId}
+        ></ngm-auth>
       </header>
       <main>
         <div class="ui dimmer ngm-main-load-dimmer ${classMap({active: this.loading})}">
