@@ -263,7 +263,6 @@ export class NgmNavTools extends LitElementI18n {
 
   stopTracking() {
     this.viewer!.scene.screenSpaceCameraController.enableInputs = false;
-    this.eventHandler!.setInputAction(event => this.onMouseMove(event), ScreenSpaceEventType.MOUSE_MOVE);
     this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
   }
 

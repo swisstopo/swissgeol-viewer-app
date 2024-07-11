@@ -60,7 +60,7 @@ export function isPickable(object) {
     const voxelPrimitive: PickableVoxelPrimitive = object.primitive;
     return voxelPrimitive && voxelPrimitive.pickable;
   } else {
-    return object.id && getValueOrUndefined(object.id.properties.type) === 'point';
+    return object.id && getValueOrUndefined(object.id?.properties?.type) === 'point';
   }
 }
 
