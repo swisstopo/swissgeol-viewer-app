@@ -62,7 +62,7 @@ describe('Toolbox', () => {
     cy.get('.ngm-vector-icon').click();
     cy.get('ngm-draw-tool div.ngm-action-list-item:not(.ngm-geom-filter) .ngm-action-menu-icon').click();
     cy.get('div.menu.transition.visible > div:nth-child(3)').click();
-    cy.get('.ngm-coord-y-input').invoke('val', 1200646).trigger('change');
+    cy.get('.ngm-coord-y-input').invoke('val', 1234316).trigger('change');
     cy.get('.ngm-geom-edit-actions > button:first-child').click();
     cy.get('.ngm-back-icon').click();
     cy.get('.ngm-gst-icon').click();
