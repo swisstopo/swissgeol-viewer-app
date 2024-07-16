@@ -248,7 +248,6 @@ export class NgmDashboard extends LitElementI18n {
           const name = await parseKml(this.viewer, href, uploadedLayer, !!asset.clampToGround);
           this.assetConfigs[href] = {
             label: name,
-            zoomToBbox: true,
             opacity: DEFAULT_LAYER_OPACITY,
             notSaveToPermalink: true,
             topicKml: true

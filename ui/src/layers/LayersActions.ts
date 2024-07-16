@@ -1,6 +1,6 @@
 import {syncLayersParam} from '../permalink';
 import {calculateBox, calculateRectangle, getBoxFromRectangle} from './helpers';
-import {LayerType} from '../constants';
+import {LayerType, MAP_RECTANGLE} from '../constants';
 import {
   Cartesian3,
   Rectangle,
@@ -9,7 +9,7 @@ import {
   Cesium3DTileset,
   ImageryLayer,
   CustomDataSource,
-  GeoJsonDataSource
+  GeoJsonDataSource, VoxelPrimitive
 } from 'cesium';
 import type {Viewer} from 'cesium';
 
@@ -61,27 +61,44 @@ export default class LayersAction {
     const p = await config.promise;
     // wrong type in cesium;
     const rootBoundingVolume = (<any> p)?.root?.boundingVolume;
-    if (p instanceof EarthquakeVisualizer && p.boundingRectangle) { // earthquakes
-      this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(p.boundingRectangle));
-      this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(p.boundingRectangle, p.maximumHeight);
-      this.boundingBoxEntity.rectangle.coordinates = p.boundingRectangle;
-      this.boundingBoxEntity.show = true;
-      this.viewer.scene.requestRender();
+    if (p instanceof EarthquakeVisualizer) { // earthquakes
+      // fetch earthquakes to get bbox info
+      if (!isFinite(p.boundingRectangle.west)) {
+        await p.showEarthquakes();
+        p.earthquakeDataSource.show = false;
+      }
+      this.showBbox(p.boundingRectangle, p.maximumHeight, true);
     } else if ((p instanceof Cesium3DTileset) && rootBoundingVolume) {
       const boundingVolume = rootBoundingVolume.boundingVolume;
       const boundingRectangle = rootBoundingVolume.rectangle;
-      this.boundingBoxEntity.position = boundingVolume.center;
       if (boundingRectangle) {
+        this.boundingBoxEntity.position = boundingVolume.center;
         this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(boundingRectangle, rootBoundingVolume.maximumHeight);
         this.boundingBoxEntity.rectangle.coordinates = boundingRectangle;
+        this.boundingBoxEntity.show = true;
+        this.viewer.scene.requestRender();
       } else {
         const boxSize = calculateBox(boundingVolume.halfAxes, p.root.boundingSphere.radius);
-        this.boundingBoxEntity.box.dimensions = boxSize;
-        this.boundingBoxEntity.rectangle.coordinates = calculateRectangle(boxSize.x, boxSize.y, boundingVolume.center);
+        const boundingRectangle = calculateRectangle(boxSize.x, boxSize.y, boundingVolume.center);
+        this.showBbox(boundingRectangle, boxSize.z);
       }
-      this.boundingBoxEntity.show = true;
-      this.viewer.scene.requestRender();
+    } else if (p instanceof ImageryLayer) {
+      this.showBbox(p.imageryProvider.rectangle, 20000);
+    } else if (p instanceof VoxelPrimitive) {
+      const boxSize = calculateBox(p.orientedBoundingBox.halfAxes, p.boundingSphere.radius);
+      const boundingRectangle = calculateRectangle(boxSize.x, boxSize.y, p.orientedBoundingBox.center);
+      this.showBbox(boundingRectangle, boxSize.z);
     }
+  }
+
+  private showBbox(boundingRectangle: Rectangle, height: number = 0, skipIntersectionCheck: boolean = false) {
+    if (!boundingRectangle) return;
+    if (!skipIntersectionCheck) Rectangle.intersection(MAP_RECTANGLE, boundingRectangle, boundingRectangle);
+    this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(boundingRectangle));
+    this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(boundingRectangle, height);
+    this.boundingBoxEntity.rectangle.coordinates = boundingRectangle;
+    this.boundingBoxEntity.show = true;
+    this.viewer.scene.requestRender();
   }
 
   hideBoundingBox() {
@@ -113,5 +130,13 @@ export default class LayersAction {
       console.debug('Adding event', eventName, 'on', config.layer);
       stuff[eventName].addEventListener(callback);
     }
+  }
+
+  zoomToBbox() {
+    this.viewer.zoomTo(this.boundingBoxEntity, {
+      heading: 0,
+      pitch: -1.57079633,
+      range: 0
+    });
   }
 }
