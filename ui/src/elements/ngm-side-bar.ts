@@ -40,11 +40,9 @@ import './ngm-share-link';
 import '../layers/ngm-layers-upload';
 import MainStore from '../store/main';
 import {classMap} from 'lit/directives/class-map.js';
-import {zoomTo} from '../utils';
 import $ from '../jquery';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import type QueryManager from '../query/QueryManager';
-import NavToolsStore from '../store/navTools';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
@@ -295,20 +293,13 @@ export class SideBar extends LitElementI18n {
               html`
                 <ngm-layers-sort
                     .layers=${this.activeLayers}
-                    @orderChanged=${(evt) => this.onLayersOrderChange(evt.detail)}
-                    @zoomTo=${evt => {
-                      NavToolsStore.hideTargetPoint();
-                      zoomTo(this.viewer!, evt.detail);
-                    }}>
+                    .actions=${this.layerActions}
+                    @orderChanged=${(evt) => this.onLayersOrderChange(evt.detail)}>
                 </ngm-layers-sort>` :
               html`
                 <ngm-layers
                     .layers=${this.activeLayers}
                     .actions=${this.layerActions}
-                    @zoomTo=${evt => {
-                      NavToolsStore.hideTargetPoint();
-                      zoomTo(this.viewer!, evt.detail);
-                    }}
                     @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
                     @layerChanged=${evt => this.onLayerChanged(evt)}>
                 </ngm-layers>`
@@ -726,7 +717,6 @@ export class SideBar extends LitElementI18n {
       label: name,
       layer,
       promise: promise,
-      zoomToBbox: true,
       opacity: DEFAULT_LAYER_OPACITY,
       notSaveToPermalink: true,
       ownKml: true,

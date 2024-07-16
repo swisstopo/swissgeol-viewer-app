@@ -250,14 +250,16 @@ export class NgmLayersItem extends LitElementI18n {
       </div>
       <div class="ngm-displayed-menu">
         <div title=${i18next.t('dtd_zoom_to')}
-             class="ngm-layer-icon ngm-zoom-plus-icon" ?hidden=${!this.config.zoomToBbox}
+             class="ngm-layer-icon ngm-zoom-plus-icon"
              @mouseenter=${() => {
                if (this.actions && this.actions.showBoundingBox) this.actions.showBoundingBox(this.config);
              }}
              @mouseleave=${() => {
                if (this.actions && this.actions.hideBoundingBox) this.actions.hideBoundingBox();
              }}
-             @click=${() => this.dispatchEvent(new CustomEvent('zoomTo'))}>
+             @click=${() => {
+               if (this.actions && this.actions.zoomToBbox) this.actions.zoomToBbox();
+             }}>
         </div>
         <div title=${i18next.t('dtd_remove')}
              class="ngm-layer-icon ngm-delete-icon ${classMap({disabled: this.changeOrderActive})}"

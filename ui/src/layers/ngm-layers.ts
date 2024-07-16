@@ -41,7 +41,6 @@ export default class NgmLayers extends LitElementI18n {
         @removeDisplayedLayer=${() => {
           this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}));
         }}
-        @zoomTo=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}
         @layerChanged=${() => this.dispatchEvent(new CustomEvent('layerChanged', {detail: config}))}
       >
       </ngm-layers-item>

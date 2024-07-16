@@ -15,6 +15,8 @@ Sortable.mount(new MultiDrag());
 export default class NgmLayersSort extends LitElementI18n {
     @property({type: Array})
     accessor layers: LayerConfig[] = [];
+    @property({type: Object})
+    accessor actions: any;
     private sortable: Sortable;
     private sortedList: LayerConfig[] = [];
 
@@ -73,7 +75,7 @@ export default class NgmLayersSort extends LitElementI18n {
             <ngm-layers-item
                     .config=${config}
                     .changeOrderActive=${true}
-                    @zoomTo=${() => this.dispatchEvent(new CustomEvent('zoomTo', {detail: config}))}
+                    .actions=${this.actions}
             >
             </ngm-layers-item>
         `;

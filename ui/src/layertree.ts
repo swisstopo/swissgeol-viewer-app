@@ -21,7 +21,6 @@ export interface LayerTreeNode {
   // Normally, visible => displayed
   visible?: boolean;
   pickable?: boolean;
-  zoomToBbox?: boolean;
   opacity?: number;
   opacityDisabled?: boolean;
   style?: any;
@@ -659,7 +658,6 @@ const geo_base: LayerTreeNode = {
           visible: false,
           displayed: true,
           pickable: true,
-          zoomToBbox: true,
           geocatId: '2924c78a-8f1e-4eb4-b6f6-0fb2405fa7df',
         },
         {
@@ -683,7 +681,6 @@ const geo_base: LayerTreeNode = {
           visible: false,
           displayed: false,
           pickable: true,
-          zoomToBbox: true,
           propsOrder: ['CS-AAT-Cross-section', 'CS-AAT-Lithostratigraphy', 'CS-AAT-Type', 'CS-AAT-Legend', 'CS-AAT-Report'],
           geocatId: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
         }
@@ -707,7 +704,6 @@ const geo_energy: LayerTreeNode = {
           layer: 'temperature_model',
           opacityDisabled: true,
           pickable: true,
-          zoomToBbox: false,
           geocatId: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
         },
         {
@@ -881,7 +877,6 @@ const subsurface: LayerTreeNode = {
           layer: 'voxel_aaretal_litho',
           opacityDisabled: true,
           pickable: true,
-          zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
           geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
         },
@@ -895,7 +890,6 @@ const subsurface: LayerTreeNode = {
           layer: 'voxel_aaretal_logk',
           opacityDisabled: true,
           pickable: true,
-          zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
           geocatId: '9471ee1b-5811-489d-b050-612c011f9d57',
         },
@@ -909,7 +903,6 @@ const subsurface: LayerTreeNode = {
           layer: 'voxel_birrfeld_litho',
           opacityDisabled: true,
           pickable: true,
-          zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
           geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
         },
@@ -923,7 +916,6 @@ const subsurface: LayerTreeNode = {
           layer: 'voxel_birrfeld_logk',
           opacityDisabled: true,
           pickable: true,
-          zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
           geocatId: '96f923d6-a747-481b-a0d8-2cfec321170e',
         },
@@ -937,7 +929,6 @@ const subsurface: LayerTreeNode = {
           layer: 'voxel_geneva_litho',
           opacityDisabled: true,
           pickable: true,
-          zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
           geocatId: '697f4c99-ed1b-4901-bc87-3710fcce1352',
         },
@@ -951,7 +942,6 @@ const subsurface: LayerTreeNode = {
           layer: 'voxel_geneva_logk',
           opacityDisabled: true,
           pickable: true,
-          zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
           geocatId: '4a4a530f-6a2a-423d-834e-2831d70fde20',
         },
@@ -965,7 +955,6 @@ const subsurface: LayerTreeNode = {
           layer: 'voxel_visp_litho',
           opacityDisabled: true,
           pickable: true,
-          zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
           geocatId: 'b621de46-2553-4fb2-88b4-f770e0243299',
         },
@@ -979,7 +968,6 @@ const subsurface: LayerTreeNode = {
           layer: 'voxel_visp_logk',
           opacityDisabled: true,
           pickable: true,
-          zoomToBbox: true,
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
           geocatId: 'f7847c2c-bd3a-4dda-99c7-d50453b24c3d',
         },
@@ -1204,7 +1192,6 @@ const subsurface: LayerTreeNode = {
           layer: '3d_model_berne',
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
-          zoomToBbox: true,
           propsOrder: ['3DBern-Unit', '3DBern-Link', '3DBern-Lithology', '3DBern-TectonicUnit',
             '3DBern-ChronoB-T', '3DBern-OrigDesc', '3DBern-Version', '3DBern-Aothor', '3DBern-Purpose',
             '3DBern-Download'],
