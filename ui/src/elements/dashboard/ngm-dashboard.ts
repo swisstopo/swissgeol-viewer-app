@@ -280,7 +280,7 @@ export class NgmDashboard extends LitElementI18n {
     if (this.viewer && this.selectedTopicOrProject && viewIndex !== undefined) {
       if (this.selectedTopicOrProject?.assets)
         this.assets = await this.fetchAssets(this.selectedTopicOrProject.assets);
-      this.geometries.forEach(geometry => ToolboxStore.setGeometryToCreate(geometry));
+      this.geometries.forEach(geometry => ToolboxStore.setGeometryToCreate({geometry}));
       if (!LocalStorageController.storedView) LocalStorageController.storeCurrentView();
       this.dispatchEvent(new CustomEvent('close'));
       const permalink = this.selectedTopicOrProject.views[viewIndex]?.permalink;

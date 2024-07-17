@@ -1,5 +1,5 @@
 import MainStore from '../store/main';
-import type {GeometryAction, OpenedGeometryOptions} from '../store/toolbox';
+import {GeometryAction, GeometryCreateOptions, OpenedGeometryOptions} from '../store/toolbox';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import {showBannerError, showSnackbarInfo} from '../notifications';
@@ -77,9 +77,14 @@ export class GeometryController {
       }
     });
     if (!this.noEdit) {
-      ToolboxStore.geometryToCreate.subscribe(conf => {
-        this.increaseGeometriesCounter(conf.type);
-        this.addGeometry(conf);
+      ToolboxStore.geometryToCreate.subscribe((options: GeometryCreateOptions) => {
+        const geometry = options.geometry;
+        this.increaseGeometriesCounter(geometry.type);
+        const entity = this.addGeometry(geometry);
+        geometry.id = entity.id;
+        if (options.slice) {
+          ToolboxStore.setSliceGeometry(geometry);
+        }
       });
       DrawStore.draw.subscribe(draw => {
         if (draw) {

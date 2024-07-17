@@ -5,7 +5,7 @@ import {LitElementI18n} from '../i18n.js';
 import {getSliceParam, syncSliceParam} from '../permalink';
 import 'fomantic-ui-css/components/checkbox';
 import ToolboxStore from '../store/toolbox';
-import {getMeasurements, isGeometryInViewport} from '../cesiumutils';
+import {isGeometryInViewport} from '../cesiumutils';
 import type Slicer from '../slicer/Slicer';
 import {classMap} from 'lit-html/directives/class-map.js';
 import type SlicingBox from '../slicer/SlicingBox';
@@ -199,37 +199,6 @@ export class NgmSlicer extends LitElementI18n {
     return this.slicer!.active || this.slicer!.draw.active;
   }
 
-  addCurrentSliceToToolbox(sliceType) {
-    const type = sliceType === 'view-box' ? 'rectangle' : 'line';
-    let positions = this.sliceInfo!.slicePoints;
-    let geomToCreate: NgmGeometry = {type: type, positions: positions};
-    if (type === 'rectangle') {
-      const bbox = this.slicer!.slicingBox.bbox!;
-      positions = [bbox.corners.bottomRight, bbox.corners.bottomLeft, bbox.corners.topLeft, bbox.corners.topRight];
-      geomToCreate = {
-        ...geomToCreate,
-        positions: positions,
-        volumeShowed: true,
-        showSlicingBox: this.showBox,
-        volumeHeightLimits: {
-          height: this.sliceInfo!.height!,
-          lowerLimit: this.sliceInfo!.lowerLimit!
-        }
-      };
-    }
-    const measurements = getMeasurements(positions, type);
-    const segmentsLength = measurements.segmentsLength;
-    geomToCreate = {
-      ...geomToCreate,
-      ...measurements,
-      area: measurements.area?.toFixed(3),
-      perimeter: measurements.perimeter?.toFixed(3),
-      sidesLength: [segmentsLength[0], segmentsLength[1]]
-    };
-    ToolboxStore.setGeometryToCreate(geomToCreate);
-    this.slicer!.active = false;
-  }
-
   onShowBoxChange(event) {
     this.showBox = event.target.checked;
     this.slicer!.toggleBoxVisibility(this.showBox);
@@ -294,12 +263,6 @@ export class NgmSlicer extends LitElementI18n {
           <span class="ngm-checkbox-icon">
               </span>
           <label>${i18next.t('nav_box_show_slice_box')}</label>
-        </div>
-        <div class="ngm-slice-to-draw" ?hidden=${!!options.geom}>
-          ${i18next.t('tbx_slice_geom_transform_hint')}
-          <button class="ui button ngm-transform-btn" @click=${() => this.addCurrentSliceToToolbox(type)}>
-            ${i18next.t('tbx_slice_transform_btn')}
-          </button>
         </div>
       </div>
     `;
