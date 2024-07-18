@@ -8,6 +8,9 @@ import i18next from 'i18next';
 import {CesiumDraw, DrawEndDetails} from '../draw/CesiumDraw';
 import {DEFAULT_AOI_COLOR} from '../constants';
 import {showSnackbarInfo} from '../notifications';
+import type {GeometryTypes, NgmGeometry} from '../toolbox/interfaces';
+import {getMeasurements} from '../cesiumutils';
+import ToolboxStore from '../store/toolbox';
 
 
 interface SliceOptions {
@@ -190,8 +193,8 @@ export default class Slicer {
         slicePoints: positions,
       };
     }
-
     this.activateSlicing();
+    this.addSliceGeometry(type);
   }
 
   activateSlicing() {
@@ -199,6 +202,37 @@ export default class Slicer {
     this.slicingTool!.activate(this.sliceOptions);
     if (this.sliceOptions.activationCallback)
       this.sliceOptions.activationCallback();
+  }
+
+  addSliceGeometry(type: GeometryTypes) {
+    if (!this.sliceOptions.slicePoints) return;
+    let positions = this.sliceOptions.slicePoints;
+    let geomToCreate: NgmGeometry = {type: type, positions: positions};
+    if (type === 'rectangle') {
+      const bbox = this.slicingBox.bbox!;
+      positions = [bbox.corners.bottomRight, bbox.corners.bottomLeft, bbox.corners.topLeft, bbox.corners.topRight];
+      geomToCreate = {
+        ...geomToCreate,
+        positions: positions,
+        volumeShowed: true,
+        showSlicingBox: true,
+        volumeHeightLimits: {
+          height: this.sliceOptions.height!,
+          lowerLimit: this.sliceOptions.lowerLimit!
+        }
+      };
+    }
+    const measurements = getMeasurements(positions, type);
+    const segmentsLength = measurements.segmentsLength;
+    geomToCreate = {
+      ...geomToCreate,
+      ...measurements,
+      area: measurements.area?.toFixed(3),
+      perimeter: measurements.perimeter?.toFixed(3),
+      sidesLength: [segmentsLength[0], segmentsLength[1]],
+      show: false
+    };
+    ToolboxStore.setGeometryToCreate({geometry: geomToCreate, slice: true});
   }
 
 

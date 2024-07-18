@@ -17,9 +17,11 @@ export interface GeometryAction {
       'add' | 'upload' | 'changeName' | 'removeAll',
 }
 
+export type GeometryCreateOptions = {geometry: NgmGeometry, slice?: boolean};
+
 export default class ToolboxStore {
   private static slicerSubject = new BehaviorSubject<Slicer | null>(null);
-  private static rtcSubject = new Subject<any>();
+  private static rtcSubject = new Subject<GeometryCreateOptions>();
   private static geometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
   private static noEditGeometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
   private static openedGeometryOptionsSubject = new BehaviorSubject<OpenedGeometryOptions | null>(null);
@@ -47,8 +49,8 @@ export default class ToolboxStore {
     return this.rtcSubject;
   }
 
-  static setGeometryToCreate(value: NgmGeometry): void {
-    this.rtcSubject.next(value);
+  static setGeometryToCreate(options: GeometryCreateOptions): void {
+    this.rtcSubject.next(options);
   }
 
   static setGeometries(value: NgmGeometry[]): void {

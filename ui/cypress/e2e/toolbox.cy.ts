@@ -28,16 +28,15 @@ const testGstOutput = () => {
 
 describe('Toolbox', () => {
 
-  it('Slicing', () => {
+  it.only('Slicing', () => {
     (<any>cy).loadPage();
     cy.get('.ngm-tools').click();
     cy.get('.ngm-slicing-icon').click();
     cy.get('.ngm-slice-types > div:nth-child(2) .ngm-draw-hint').should('be.visible');
     cy.get('.cesium-widget > canvas').click(450, 280);
     cy.get('.cesium-widget > canvas').click(450, 200);
-    cy.get('.ngm-slice-types > div:nth-child(2) .ngm-slice-side > div:first-child').click();
-    cy.get('.ngm-slice-types > div:nth-child(2) .ngm-slice-side > div:first-child').should('have.class', 'active');
-    cy.get('.ngm-slice-types > div:nth-child(2) .ngm-slice-to-draw button').click();
+    cy.get('.ngm-geom-list > div:nth-child(1) .ngm-slice-side > div:first-child').click();
+    cy.get('.ngm-geom-list > div:nth-child(1) .ngm-slice-side > div:first-child').should('have.class', 'active');
     cy.get('ngm-slicer .ngm-geom-filter').click();
     cy.get('ngm-slicer .ngm-geom-filter > .ngm-action-list-item-header > div:first-child').should('have.class', 'active');
     cy.get('.ngm-slice-types > div:first-child').click();
@@ -45,10 +44,8 @@ describe('Toolbox', () => {
     cy.get('.cesium-widget > canvas').click(450, 280);
     cy.get('.cesium-widget > canvas').click(450, 200);
     cy.get('.cesium-widget > canvas').click(650, 200);
-    cy.get('.ngm-slice-types > div:first-child .ngm-slice-box-toggle').click();
-    cy.get('.ngm-slice-types > div:first-child .ngm-slice-box-toggle').should('not.have.class', 'active');
-    (<any>cy).loadPage(true, true);
-    cy.get('.ngm-slice-types > div:first-child .ngm-slice-to-draw button').click();
+    cy.get('.ngm-geom-list > div:nth-child(2) .ngm-slice-box-toggle').click();
+    cy.get('.ngm-geom-list > div:nth-child(2) .ngm-slice-box-toggle').should('not.have.class', 'active');
   });
 
   it('GST point', () => {
