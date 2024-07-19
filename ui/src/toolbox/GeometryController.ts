@@ -5,7 +5,7 @@ import DrawStore from '../store/draw';
 import {showBannerError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
 import {CesiumDraw, DrawEndDetails} from '../draw/CesiumDraw';
-import type {Cartesian2, Event, exportKmlResultKml, Viewer} from 'cesium';
+import {Cartesian2, ClassificationType, Event, exportKmlResultKml, Viewer} from 'cesium';
 
 import {
   Cartographic,
@@ -516,6 +516,7 @@ export class GeometryController {
           show: true,
           hierarchy: <any>attributes.positions,
           material: material,
+          classificationType: ClassificationType.TERRAIN
         };
         entityAttrs.properties!.showSlicingBox = attributes.showSlicingBox;
       } else if (type === 'line') {
@@ -527,6 +528,7 @@ export class GeometryController {
           material: color ?
             new Color(color.red, color.green, color.blue, GEOMETRY_LINE_ALPHA) :
             DEFAULT_AOI_COLOR.withAlpha(GEOMETRY_LINE_ALPHA),
+          classificationType: ClassificationType.TERRAIN
         };
       }
       entityAttrs.polylineVolume = {

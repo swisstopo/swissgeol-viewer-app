@@ -1,17 +1,21 @@
-import type {ConstantPositionProperty, ConstantProperty, Entity, Viewer} from 'cesium';
 import {
-    CallbackProperty,
-    Cartesian2,
-    Cartesian3,
-    Cartographic,
-    Color,
-    CustomDataSource,
-    HeightReference,
-    Intersections2D,
-    JulianDate,
-    PolygonHierarchy,
-    ScreenSpaceEventHandler,
-    ScreenSpaceEventType,
+  CallbackProperty,
+  Cartesian2,
+  Cartesian3,
+  Cartographic,
+  ClassificationType,
+  Color,
+  ConstantPositionProperty,
+  ConstantProperty,
+  CustomDataSource,
+  Entity,
+  HeightReference,
+  Intersections2D,
+  JulianDate,
+  PolygonHierarchy,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+  Viewer
 } from 'cesium';
 import {getDimensionLabel, rectanglify} from './helpers';
 import {getMeasurements, Measurements, updateHeightForCartesianPositions} from '../cesiumutils';
@@ -96,6 +100,7 @@ export class CesiumDraw extends EventTarget {
     this.minPointsStop = !!options?.minPointsStop;
     this.lineClampToGround = typeof options?.lineClampToGround === 'boolean' ? options.lineClampToGround : true;
     const pointOptions = options?.pointOptions;
+    const heightReference = pointOptions?.heightReference;
     this.pointOptions = {
       color: pointOptions?.color instanceof Color ? pointOptions.color : Color.WHITE,
       virtualColor: pointOptions?.virtualColor instanceof Color ? pointOptions.virtualColor : Color.GREY,
@@ -103,7 +108,7 @@ export class CesiumDraw extends EventTarget {
       outlineWidth: typeof pointOptions?.outlineWidth === 'number' && !isNaN(pointOptions?.outlineWidth) ? pointOptions?.outlineWidth : 1,
       pixelSizeDefault: typeof pointOptions?.pixelSizeDefault === 'number' && !isNaN(pointOptions?.pixelSizeDefault) ? pointOptions?.pixelSizeDefault : 5,
       pixelSizeEdit: typeof pointOptions?.pixelSizeEdit === 'number' && !isNaN(pointOptions?.pixelSizeEdit) ? pointOptions?.pixelSizeEdit : 9,
-      heightReference: pointOptions?.heightReference || HeightReference.CLAMP_TO_GROUND,
+      heightReference: typeof heightReference === 'number' && !isNaN(heightReference) ? heightReference : HeightReference.CLAMP_TO_GROUND,
     };
   }
 
@@ -308,6 +313,7 @@ export class CesiumDraw extends EventTarget {
     }
     if (options.label && this.type) {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
+      entity.label.heightReference = this.pointOptions.heightReference;
     }
     const pointEntity = this.drawingDataSource.entities.add(entity);
     pointEntity.properties!.virtual = options.virtual;
@@ -320,7 +326,8 @@ export class CesiumDraw extends EventTarget {
         positions: positions,
         clampToGround: this.lineClampToGround,
         width: this.strokeWidth_,
-        material: this.strokeColor_
+        material: this.strokeColor_,
+        classificationType: this.lineClampToGround ? ClassificationType.TERRAIN : ClassificationType.BOTH
       }
     });
   }
@@ -346,7 +353,8 @@ export class CesiumDraw extends EventTarget {
           positions: positions,
           clampToGround: this.lineClampToGround,
           width: this.strokeWidth_,
-          material: this.strokeColor_
+          material: this.strokeColor_,
+          classificationType: this.lineClampToGround ? ClassificationType.TERRAIN : ClassificationType.BOTH
         },
         label: getDimensionLabel(this.type, this.activeDistances_)
       });
@@ -355,7 +363,8 @@ export class CesiumDraw extends EventTarget {
         position: positions[positions.length - 1],
         polygon: {
           hierarchy: positions,
-          material: this.fillColor_
+          material: this.fillColor_,
+          classificationType: ClassificationType.TERRAIN
         },
         label: getDimensionLabel(this.type, this.activeDistances_)
       });
