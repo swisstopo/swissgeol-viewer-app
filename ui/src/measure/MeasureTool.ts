@@ -143,6 +143,7 @@ export default class MeasureTool {
             };
             if (indx === positions.length - 1) {
                 entity.label = getDimensionLabel('line', distances);
+                entity.label.heightReference = HeightReference.NONE;
             }
             this.points.push(this.measureDataSource.entities.add(entity));
         });
