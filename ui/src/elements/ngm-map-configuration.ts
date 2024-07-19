@@ -70,6 +70,8 @@ export class NgmMapConfiguration extends LitElementI18n {
       this.viewer!.scene.globe.translucency.frontFaceAlpha = opacity;
       if (!this.viewer!.scene.globe.translucency.enabled) {
         this.viewer!.scene.globe.translucency.enabled = true;
+        // first change fix
+        setTimeout(() => this.viewer!.scene.requestRender(), 100);
       }
     }
     this.viewer!.scene.requestRender();
