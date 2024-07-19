@@ -20,11 +20,11 @@ import {
   Plane,
   Rectangle,
   Scene,
-  Viewer
+  Viewer, VoxelCell
 } from 'cesium';
 import type {GeometryTypes} from './toolbox/interfaces';
 import earcut from 'earcut';
-import {DEFAULT_UPLOADED_KML_COLOR} from './constants';
+import {DEFAULT_UPLOADED_KML_COLOR, DRILL_PICK_LENGTH, DRILL_PICK_LIMIT} from './constants';
 
 const julianDate = new JulianDate();
 
@@ -606,4 +606,23 @@ export function updateExaggerationForKmlDataSource(dataSource: CustomDataSource 
     });
     dataSource.entities.resumeEvents();
   }
+}
+
+export function getObjectAtPosition(viewer: Viewer, position: Cartesian2) {
+  let object: any | VoxelCell | undefined;
+  object = viewer.scene.pickVoxel(position);
+  if (object) {
+    return object;
+  }
+  const slicerDataSource = viewer.dataSources.getByName('slicer')[0];
+  const objects = viewer.scene.drillPick(position, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
+  object = objects[0];
+  // selects second object if first is entity related to slicing box and next is not related to slicing box
+  if (object && object.id && slicerDataSource.entities.contains(object.id)) {
+    object = undefined;
+    if (objects[1] && (!objects[1].id || !slicerDataSource.entities.contains(objects[1].id))) {
+      object = objects[1];
+    }
+  }
+  return object;
 }

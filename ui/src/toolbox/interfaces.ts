@@ -1,4 +1,4 @@
-import type {Cartesian3, Color} from 'cesium';
+import type {Cartesian3, ClassificationType, Color} from 'cesium';
 
 export interface SwissforagesModalOptions {
   name: string | undefined;
@@ -42,4 +42,5 @@ export interface NgmGeometry {
   diameter?: number;
   editable?: boolean;
   copyable?: boolean;
+  classificationType?: ClassificationType;
 }

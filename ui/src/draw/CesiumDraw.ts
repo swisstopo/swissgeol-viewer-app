@@ -1,20 +1,24 @@
-import type {ConstantPositionProperty, ConstantProperty, Entity, Viewer} from 'cesium';
 import {
-    CallbackProperty,
-    Cartesian2,
-    Cartesian3,
-    Cartographic,
-    Color,
-    CustomDataSource,
-    HeightReference,
-    Intersections2D,
-    JulianDate,
-    PolygonHierarchy,
-    ScreenSpaceEventHandler,
-    ScreenSpaceEventType,
+  CallbackProperty,
+  Cartesian2,
+  Cartesian3,
+  Cartographic,
+  ClassificationType,
+  Color,
+  ConstantPositionProperty,
+  ConstantProperty,
+  CustomDataSource,
+  Entity,
+  HeightReference,
+  Intersections2D,
+  JulianDate,
+  PolygonHierarchy,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+  Viewer
 } from 'cesium';
 import {getDimensionLabel, rectanglify} from './helpers';
-import {getMeasurements, Measurements, updateHeightForCartesianPositions} from '../cesiumutils';
+import {getMeasurements, getObjectAtPosition, Measurements, updateHeightForCartesianPositions} from '../cesiumutils';
 import type {GeometryTypes} from '../toolbox/interfaces';
 import {cartesianToLv95} from '../projection';
 
@@ -53,7 +57,8 @@ export type DrawInfo = {
 export type DrawEndDetails = {
   positions: Cartesian3[],
   type: GeometryTypes,
-  measurements: Measurements
+  measurements: Measurements,
+  classificationType?: ClassificationType
 }
 
 export class CesiumDraw extends EventTarget {
@@ -82,6 +87,7 @@ export class CesiumDraw extends EventTarget {
   pointOptions: PointOptions;
   // todo line options?
   lineClampToGround: boolean = true;
+  classificationType: ClassificationType = ClassificationType.TERRAIN;
 
   constructor(viewer: Viewer, options?: DrawOptions) {
     super();
@@ -262,7 +268,8 @@ export class CesiumDraw extends EventTarget {
       detail: {
         positions: positions,
         type: this.type!,
-        measurements: measurements
+        measurements: measurements,
+        classificationType: this.classificationType
       }
     }));
 
@@ -280,6 +287,7 @@ export class CesiumDraw extends EventTarget {
     this.entityForEdit = undefined;
     this.leftPressedPixel_ = undefined;
     this.moveEntity = false;
+    this.classificationType = ClassificationType.TERRAIN;
     this.sketchPoints_ = [];
     this.segmentsInfo = [];
   }
@@ -292,6 +300,7 @@ export class CesiumDraw extends EventTarget {
   }
 
   createSketchPoint_(position, options: { edit?: boolean, virtual?: boolean, positionIndex?: number, label?: boolean } = {}) {
+    console.log(this.classificationType);
     const entity: Entity.ConstructorOptions = {
       position: position,
       point: {
@@ -299,7 +308,7 @@ export class CesiumDraw extends EventTarget {
         outlineWidth: this.pointOptions.outlineWidth,
         outlineColor: this.pointOptions.outlineColor,
         pixelSize: options.edit ? this.pointOptions.pixelSizeEdit : this.pointOptions.pixelSizeDefault,
-        heightReference: this.pointOptions.heightReference,
+        heightReference: this.classificationType === ClassificationType.CESIUM_3D_TILE ? HeightReference.CLAMP_TO_3D_TILE : this.pointOptions.heightReference,
       },
       properties: {}
     };
@@ -320,7 +329,8 @@ export class CesiumDraw extends EventTarget {
         positions: positions,
         clampToGround: this.lineClampToGround,
         width: this.strokeWidth_,
-        material: this.strokeColor_
+        material: this.strokeColor_,
+        classificationType: this.classificationType
       }
     });
   }
@@ -346,7 +356,8 @@ export class CesiumDraw extends EventTarget {
           positions: positions,
           clampToGround: this.lineClampToGround,
           width: this.strokeWidth_,
-          material: this.strokeColor_
+          material: this.strokeColor_,
+          classificationType: this.classificationType
         },
         label: getDimensionLabel(this.type, this.activeDistances_)
       });
@@ -355,7 +366,8 @@ export class CesiumDraw extends EventTarget {
         position: positions[positions.length - 1],
         polygon: {
           hierarchy: positions,
-          material: this.fillColor_
+          material: this.fillColor_,
+          classificationType: this.classificationType
         },
         label: getDimensionLabel(this.type, this.activeDistances_)
       });
@@ -429,10 +441,10 @@ export class CesiumDraw extends EventTarget {
     if (pickedPosition) {
       const position = Cartesian3.clone(pickedPosition);
       if (!this.sketchPoint_) {
+        this.classificationType = !getObjectAtPosition(this.viewer_, event.position) ? ClassificationType.TERRAIN : ClassificationType.CESIUM_3D_TILE;
         this.dispatchEvent(new CustomEvent('drawstart'));
         this.sketchPoint_ = this.createSketchPoint_(position, {label: true});
         this.activePoint_ = position;
-
         this.createSketchLine_(this.dynamicSketLinePositions());
         this.viewer_.scene.requestRender();
         if (this.type === 'point') {
@@ -628,7 +640,7 @@ export class CesiumDraw extends EventTarget {
     if (this.entityForEdit) {
       const objects = this.viewer_.scene.drillPick(event.position, 5, 5, 5);
       if (objects.length) {
-        const selectedPoint = objects.find(obj => !!obj.id.point || !!obj.id.billboard);
+        const selectedPoint = objects.find(obj => !!obj.id?.point || !!obj.id?.billboard);
         if (!selectedPoint) return;
         const selectedEntity = selectedPoint.id;
         this.sketchPoint_ = selectedEntity;

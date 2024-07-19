@@ -10,6 +10,7 @@ import QueryStore from '../store/query';
 import ToolboxStore from '../store/toolbox';
 import NavToolsStore from '../store/navTools';
 import type {PopupItem, QueryResult} from './types';
+import {getObjectAtPosition} from '../cesiumutils';
 
 
 export default class QueryManager {
@@ -85,7 +86,7 @@ export default class QueryManager {
 
   async pickObject(position: Cartesian2) {
     const pickedPosition = this.scene.pickPosition(position);
-    const object = this.objectSelector.getObjectAtPosition(position);
+    const object = getObjectAtPosition(this.viewer, position);
     let attributes = this.objectSelector.pickAttributes(position, pickedPosition, object);
     const attributesEmpty = !attributes || !Object.getOwnPropertyNames(attributes).length;
 
