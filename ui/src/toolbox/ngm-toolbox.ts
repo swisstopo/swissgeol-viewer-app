@@ -10,8 +10,7 @@ import './data-download';
 import './ngm-profile-tool';
 import './ngm-measure';
 import i18next from 'i18next';
-import type {DataSource, Viewer} from 'cesium';
-import {CustomDataSource, JulianDate} from 'cesium';
+import {ClassificationType, CustomDataSource, DataSource, JulianDate, Viewer} from 'cesium';
 import {DEFAULT_AOI_COLOR, GEOMETRY_DATASOURCE_NAME, NO_EDIT_GEOMETRY_DATASOURCE_NAME} from '../constants';
 import MainStore from '../store/main';
 import LocalStorageController from '../LocalStorageController';
@@ -179,7 +178,7 @@ export class NgmToolbox extends LitElementI18n {
     if (!dataSource) return [];
     const opnGeomOptions = ToolboxStore.openedGeometryOptionsValue;
     return dataSource.entities.values.map(val => {
-      const item = {
+      const item: NgmGeometry = {
         id: val.id,
         name: val.name,
         show: val.isShowing || !!(!val.isShowing && opnGeomOptions && val.id === opnGeomOptions.id && opnGeomOptions.editing),
@@ -208,8 +207,12 @@ export class NgmToolbox extends LitElementI18n {
         item.pointSymbol = val.billboard.image!.getValue(this.julianDate);
       } else if (val.polyline) {
         item.color = val.properties!.colorBeforeHighlight || val.polyline.material.getValue(this.julianDate).color;
+        const classificationType = val.polyline.classificationType?.getValue(this.julianDate);
+        item.classificationType = typeof classificationType === 'number' && !isNaN(classificationType) ? classificationType : ClassificationType.TERRAIN;
       } else if (val.polygon) {
         item.color = val.properties!.colorBeforeHighlight || val.polygon.material.getValue(this.julianDate).color;
+        const classificationType = val.polygon.classificationType?.getValue(this.julianDate);
+        item.classificationType = typeof classificationType === 'number' && !isNaN(classificationType) ? classificationType : ClassificationType.TERRAIN;
       }
       return item;
     });

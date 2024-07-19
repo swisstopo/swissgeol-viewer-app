@@ -21,6 +21,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import './ngm-point-edit';
 import {skip, take} from 'rxjs';
+import {GeometryTypes} from './interfaces';
 
 @customElement('ngm-geometry-edit')
 export class NgmGeometryEdit extends LitElementI18n {
@@ -85,7 +86,13 @@ export class NgmGeometryEdit extends LitElementI18n {
       if (this.draw) {
         this.cancelDraw();
         this.draw.entityForEdit = this.editingEntity;
-        this.draw.type = this.editingEntity.properties!.type.getValue();
+        const type: GeometryTypes = this.editingEntity.properties!.type.getValue();
+        if (type === 'polygon' || type === 'rectangle') {
+          this.draw.classificationType = this.editingEntity.polygon?.classificationType?.getValue(this.julianDate);
+        } else if (type === 'line') {
+          this.draw.classificationType = this.editingEntity.polyline?.classificationType?.getValue(this.julianDate);
+        }
+        this.draw.type = type;
         this.draw.active = true;
       }
     }

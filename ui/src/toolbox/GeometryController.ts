@@ -5,16 +5,18 @@ import DrawStore from '../store/draw';
 import {showBannerError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
 import {CesiumDraw, DrawEndDetails} from '../draw/CesiumDraw';
-import type {Cartesian2, Event, exportKmlResultKml, Viewer} from 'cesium';
-
 import {
+  Cartesian2,
   Cartographic,
+  ClassificationType,
   Color,
   CornerType,
   CustomDataSource,
   Entity,
   EntityCollection,
+  Event,
   exportKml,
+  exportKmlResultKml,
   GpxDataSource,
   HeightReference,
   JulianDate,
@@ -22,7 +24,8 @@ import {
   PropertyBag,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-  VerticalOrigin
+  VerticalOrigin,
+  Viewer
 } from 'cesium';
 import type {AreasCounter, GeometryTypes, NgmGeometry} from './interfaces';
 import {extendKmlWithProperties, getValueOrUndefined, renderWithDelay} from '../cesiumutils';
@@ -121,6 +124,7 @@ export class GeometryController {
     const positions = info.positions;
     const measurements = info.measurements;
     const type = info.type;
+    console.log(info.classificationType);
     const attributes: NgmGeometry = {
       positions: positions,
       area: measurements.area?.toFixed(3),
@@ -128,7 +132,8 @@ export class GeometryController {
       sidesLength: measurements.segmentsLength?.length > 1 ? [measurements.segmentsLength[0], measurements.segmentsLength[1]] : undefined,
       numberOfSegments: measurements.numberOfSegments,
       type: type,
-      clampPoint: true
+      clampPoint: true,
+      classificationType: info.classificationType
     };
     this.increaseGeometriesCounter(type);
     this.addGeometry(attributes);
@@ -516,9 +521,15 @@ export class GeometryController {
           show: true,
           hierarchy: <any>attributes.positions,
           material: material,
+          classificationType: typeof attributes.classificationType === 'number' && !isNaN(attributes.classificationType) ?
+              attributes.classificationType :
+              ClassificationType.TERRAIN
         };
         entityAttrs.properties!.showSlicingBox = attributes.showSlicingBox;
       } else if (type === 'line') {
+        console.log(attributes.classificationType, typeof attributes.classificationType === 'number' && !isNaN(attributes.classificationType) ?
+            attributes.classificationType :
+            ClassificationType.TERRAIN);
         entityAttrs.polyline = {
           show: true,
           positions: attributes.positions,
@@ -527,6 +538,9 @@ export class GeometryController {
           material: color ?
             new Color(color.red, color.green, color.blue, GEOMETRY_LINE_ALPHA) :
             DEFAULT_AOI_COLOR.withAlpha(GEOMETRY_LINE_ALPHA),
+          classificationType: typeof attributes.classificationType === 'number' && !isNaN(attributes.classificationType) ?
+              attributes.classificationType :
+              ClassificationType.TERRAIN
         };
       }
       entityAttrs.polylineVolume = {

@@ -1,6 +1,4 @@
 import {
-  DRILL_PICK_LENGTH,
-  DRILL_PICK_LIMIT,
   GEOMETRY_DATASOURCE_NAME, NO_EDIT_GEOMETRY_DATASOURCE_NAME,
   OBJECT_HIGHLIGHT_COLOR,
   OBJECT_ZOOMTO_RADIUS
@@ -16,6 +14,7 @@ import {VoxelCell} from 'cesium';
 import {BoundingSphere, Color, ColorMaterialProperty, HeadingPitchRange, Math as CMath} from 'cesium';
 import NavToolsStore from '../store/navTools';
 import type {QueryResult} from './types';
+import {getObjectAtPosition} from '../cesiumutils';
 
 /**
  * Wether the passed value follows the lit TemplateResult interface.
@@ -37,30 +36,11 @@ export default class ObjectSelector {
     this.scene = viewer.scene;
   }
 
-  getObjectAtPosition(position: Cartesian2) {
-    let object: any | VoxelCell | undefined;
-    object = this.scene.pickVoxel(position);
-    if (object) {
-      return object;
-    }
-    const slicerDataSource = this.viewer.dataSources.getByName('slicer')[0];
-    const objects = this.scene.drillPick(position, DRILL_PICK_LIMIT, DRILL_PICK_LENGTH, DRILL_PICK_LENGTH);
-    object = objects[0];
-    // selects second object if first is entity related to slicing box and next is not related to slicing box
-    if (object && object.id && slicerDataSource.entities.contains(object.id)) {
-      object = undefined;
-      if (objects[1] && (!objects[1].id || !slicerDataSource.entities.contains(objects[1].id))) {
-        object = objects[1];
-      }
-    }
-    return object;
-  }
-
   pickAttributes(clickPosition: Cartesian2, pickedPosition: Cartesian3, object: any) {
     this.unhighlight();
     let attributes: QueryResult = {};
     if (!object) {
-      object = this.getObjectAtPosition(clickPosition);
+      object = getObjectAtPosition(this.viewer, clickPosition);
     }
 
     if (object) {
