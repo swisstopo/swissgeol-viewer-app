@@ -19,7 +19,7 @@ import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
 import type {Viewer} from 'cesium';
 import {CustomDataSource} from 'cesium';
-import {showBannerWarning, showSnackbarError} from '../../notifications';
+import {showSnackbarError} from '../../notifications';
 import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
 import type {NgmGeometry} from '../../toolbox/interfaces';
 import {apiClient} from '../../api-client';
@@ -483,7 +483,9 @@ export class NgmDashboard extends LitElementI18n {
           </hide-overflow>
         `;
       } else {
-        showBannerWarning(this.overviewToast, i18next.t('dashboard_overview_not_logged_in'));
+        return html`<div class="ngm-hint">
+          ${i18next.t('dashboard_overview_not_logged_in')}
+        </div>`;
       }
     }
     return html``;

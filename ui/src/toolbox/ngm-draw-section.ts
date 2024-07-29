@@ -83,7 +83,7 @@ export class NgmDrawSection extends LitElementI18n {
                 <div class=${it.icon}></div>
                 <div>${it.label()}</div>
               </div>
-              <div ?hidden=${!active} class="ngm-draw-hint">
+              <div ?hidden=${!active} class="ngm-hint">
                 ${i18next.t('tbx_area_of_interest_add_hint')}
               </div>
               <ngm-line-info

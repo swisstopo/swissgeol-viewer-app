@@ -32,7 +32,7 @@ describe('Toolbox', () => {
     (<any>cy).loadPage();
     cy.get('.ngm-tools').click();
     cy.get('.ngm-slicing-icon').click();
-    cy.get('.ngm-slice-types > div:nth-child(2) .ngm-draw-hint').should('be.visible');
+    cy.get('.ngm-slice-types > div:nth-child(2) .ngm-hint').should('be.visible');
     cy.get('.cesium-widget > canvas').click(450, 280);
     cy.get('.cesium-widget > canvas').click(450, 200);
     cy.get('.ngm-geom-list > div:nth-child(1) .ngm-slice-side > div:first-child').click();

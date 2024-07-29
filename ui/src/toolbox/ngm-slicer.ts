@@ -237,7 +237,7 @@ export class NgmSlicer extends LitElementI18n {
       type = options.geom.type === 'line' ? 'line' : 'box';
     }
     return html`
-      <div class="ngm-draw-hint"
+      <div class="ngm-hint"
            ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || !this.slicer!.draw.active}>
         ${i18next.t('tbx_slice_draw_hint')}
       </div>
