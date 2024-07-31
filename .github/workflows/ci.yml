@@ -32,12 +32,6 @@ jobs:
           node-version: 'lts/*'
           cache: npm
           cache-dependency-path: ui/package-lock.json
-      - name: Log into Docker hub
-        env:
-          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
-          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
-        run: |
-          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
       - run: docker pull rust:1.63
       - name: Run local api tests
         run: make acceptance
@@ -48,18 +42,12 @@ jobs:
     steps:
       # - run: docker system prune --all --force --volumes
       - uses: actions/checkout@v4
-      - name: Log into Docker hub
-        env:
-          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
-          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
-        run: |
-          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
       # Make sure we are building and deploying image with latest security fixes
       - run: docker pull rust:1.63
       - run: docker pull alpine:3.16
       - name: Build api
         run: make build_api
-      - name: Push to docker hub and deploy to dev
+      - name: Push to github packages and deploy to dev
         env:
           AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
           AWS_ACCESS_KEY_ID: ${{secrets.FARGATE_API_AWS_ACCESS_KEY_ID}}
@@ -68,7 +56,7 @@ jobs:
         run: |
           if [[ ${{github.ref}} == "refs/heads/master" ]]
           then
-            docker push camptocamp/swissgeol_api:latest
+            docker push ghcr.io/swisstopo/swissgeol-viewer-app-api:latest
             mkdir myspace
             chmod go-rwx myspace
             echo -n $NGM_ARGOCD_DEPLOYKEY | base64 -d > myspace/id_key

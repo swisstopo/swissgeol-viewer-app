@@ -1,7 +1,7 @@
 services:
   tests:
     init: true # handle kill signals for rust
-    image: camptocamp/swissgeol_local_api:latest
+    image: ghcr.io/swisstopo/swissgeol-viewer-app-local_api:latest
     platform: linux/amd64
     environment:
       PGUSER: www-data

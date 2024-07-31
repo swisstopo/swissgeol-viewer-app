@@ -4,7 +4,7 @@ os=$1 # mac for macos and empty for linux
 
 cd api
 
-IMAGE_NAME="camptocamp/swissgeol_api"
+IMAGE_NAME="ghcr.io/swisstopo/swissgeol-viewer-app-api"
 
 if [[ -z "${VERSION}" ]]
 then

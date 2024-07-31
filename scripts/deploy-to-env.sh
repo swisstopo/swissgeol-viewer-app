@@ -15,7 +15,7 @@ fi
 function get_image_hash() {
   local svc="$1"
 
-  local IMAGE=$(echo camptocamp/$svc | tr [:upper:] [:lower:])
+  local IMAGE=$(echo ghcr.io/swisstopo/$svc | tr [:upper:] [:lower:])
   echo "docker inspect $IMAGE -f '{{ .RepoDigests }}'"
   local HASH=$(docker inspect $IMAGE -f '{{ .RepoDigests }}' | tr -d '[]' | tr " " "\n" | cut -d@ -f2)
 
@@ -37,7 +37,7 @@ cd apps
 file="./api/tag_value.yaml"
 IMAGE_TAG=""
 if [ "$target" = "dev" ]; then
-  get_image_hash "swissgeol_api"
+  get_image_hash "swissgeol-viewer-app-api"
   IMAGE_TAG=$VERSION@$retval
 elif [[ "$target" = "prod" || "$target" = "int" ]]; then
   IMAGE_TAG=$VERSION
