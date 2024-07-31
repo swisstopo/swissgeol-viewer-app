@@ -72,7 +72,7 @@ export class NgmMeasure extends LitElementI18n {
                         <div class="ngm-line-draw-icon"></div>
                         <div>${i18next.t('tbx_measure_line_label')}</div>
                     </div>
-                    <div class="ngm-draw-hint" .hidden="${!this.active}">
+                    <div class="ngm-hint" .hidden="${!this.active}">
                         ${i18next.t('tbx_measure_hint')}
                     </div>
                     <ngm-line-info

@@ -82,7 +82,7 @@ data-download .ngm-action-list-item.active  {
   color: #868E96 !important;
 }
 
-.ngm-draw-hint,
+.ngm-hint,
 .data-download-hint {
   background-color: var(--ngm-hover);
   color: #212529;
@@ -141,10 +141,10 @@ ngm-slicer .ui.button.ngm-transform-btn:hover {
   color: #357183;
 }
 
-ngm-slicer .ngm-draw-hint,
+ngm-slicer .ngm-hint,
 ngm-slicer .ngm-divider,
-ngm-measure .ngm-draw-hint,
-ngm-draw-section .ngm-draw-hint,
+ngm-measure .ngm-hint,
+ngm-draw-section .ngm-hint,
 ngm-measure .ngm-divider,
 ngm-draw-section .ngm-divider,
 .data-download-hint {
