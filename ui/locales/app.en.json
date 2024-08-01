@@ -10,7 +10,7 @@
   "camera_position_angle_label": "Angle (N±)",
   "camera_position_coordinates_label": "Coordinates",
   "camera_position_coordinates_system_label": "Coordinate system",
-  "camera_position_height_label": "Height (m AGL)",
+  "camera_position_height_label": "Height<br>(m AGL)",
   "camera_position_pitch_label": "Pitch",
   "cancel": "Cancel",
   "contact_mailto_text": "Contact",

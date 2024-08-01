@@ -21,6 +21,7 @@ import './ngm-cam-coordinates';
 import NavToolsStore from '../store/navTools';
 import {dragArea} from './helperElements';
 import './ngm-minimap';
+import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 export type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
 
@@ -283,7 +284,7 @@ export class NgmCamConfiguration extends LitElementI18n {
             <div class=${c.iconClass()} title=${i18next.t('cam_lock')} @click=${c.lock}></div>
             <div class="ngm-cam-conf-slider">
               <div>
-                <label>${c.label()}</label>
+                <label>${unsafeHTML(c.label())}</label>
                 <label>${c.getValueLabel()}</label>
               </div>
               <input type="range" class="ngm-slider" style=${styleMap(c.style())}
