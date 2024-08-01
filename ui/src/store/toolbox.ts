@@ -103,8 +103,9 @@ export default class ToolboxStore {
     return this.sliceGeometrySubject;
   }
 
-  static get geomSliceActive(): boolean {
-    return this.sliceGeometrySubject.getValue()?.id === this.openedGeometryOptionsValue?.id;
+  static get sliceGeomId(): string | undefined {
+    const sliceGeom = this.sliceGeometrySubject.value;
+    return sliceGeom?.id || undefined;
   }
 
   static get geometryAction(): Subject<GeometryAction> {

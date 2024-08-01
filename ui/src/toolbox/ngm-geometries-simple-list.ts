@@ -213,7 +213,7 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                 ${geometries.map((geom, index) => {
                     const disabled = (this.disabledCallback && this.disabledCallback(geom)) || this.disabledTypes.includes(geom.type) || this.editingEnabled;
                     const active = !disabled && this.selectedId === geom.id;
-                    const hidden = !disabled && !active && !geom.show;
+                    const hidden = !disabled && !active && (!geom.show && geom.id !== ToolboxStore.sliceGeomId);
                     return html`
                         <div class="ngm-action-list-item ngm-geom-item ${classMap({active, disabled, hidden})}">
                             <div class="ngm-action-list-item-header ${classMap({view: this.viewMode})}">

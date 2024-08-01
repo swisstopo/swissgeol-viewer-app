@@ -26,6 +26,8 @@ export class NgmGeometryInfo extends LitElementI18n {
   accessor geometry: NgmGeometry | undefined;
   @state()
   accessor noEdit = false;
+  @state()
+  accessor sliceActive = false;
   @query('.ngm-geom-info-body')
   accessor infoBodyElement;
   private viewer: Viewer | null = null;
@@ -52,8 +54,13 @@ export class NgmGeometryInfo extends LitElementI18n {
       this.geomEntity = entity;
       this.geometry = ToolboxStore.openedGeometry;
       this.editing = !!options.editing;
+      this.sliceActive = ToolboxStore.sliceGeomId === this.geometry?.id;
+      console.log('geom', this.sliceActive, ToolboxStore.sliceGeomId, this.geometry?.id);
     });
-    ToolboxStore.sliceGeometry.subscribe(() => this.requestUpdate());
+    ToolboxStore.sliceGeometry.subscribe(() => {
+      this.sliceActive = ToolboxStore.sliceGeomId === this.geometry?.id;
+      console.log('slice', this.sliceActive, ToolboxStore.sliceGeomId, this.geometry?.id);
+    });
     ToolboxStore.geometries.subscribe(() => this.geometry = ToolboxStore.openedGeometry);
     ToolboxStore.noEditGeometries.subscribe(() => this.geometry = ToolboxStore.openedGeometry);
   }
@@ -79,7 +86,7 @@ export class NgmGeometryInfo extends LitElementI18n {
     if (this.editing) {
       this.showLostChangesWarn();
     } else {
-      if (ToolboxStore.geomSliceActive) ToolboxStore.setSliceGeometry(null);
+      if (this.sliceActive) ToolboxStore.setSliceGeometry(null);
       ToolboxStore.setOpenedGeometryOptions({
         id: this.geomEntity!.id,
         editing: !this.editing
@@ -216,7 +223,7 @@ export class NgmGeometryInfo extends LitElementI18n {
         <div class="ngm-geom-actions">
           <div ?hidden=${this.geometry.type === 'point' || this.geometry.type === 'polygon'}
                title=${i18next.t('tbx_slicing')}
-               class="ngm-slicing-icon ${classMap({active: ToolboxStore.geomSliceActive})}"
+               class="ngm-slicing-icon ${classMap({active: this.sliceActive})}"
                @click=${() => this.onSliceClick()}></div>
           <div class="ngm-extrusion-icon ${classMap({active: !!this.geometry.volumeShowed})}"
                title=${i18next.t('tbx_extrusion')}
