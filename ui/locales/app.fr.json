@@ -10,7 +10,7 @@
   "camera_position_angle_label": "Angle",
   "camera_position_coordinates_label": "Coordonnées",
   "camera_position_coordinates_system_label": "Système de coordonnées",
-  "camera_position_height_label": "Altitude (m AGL)",
+  "camera_position_height_label": "Altitude<br>(m AGL)",
   "camera_position_pitch_label": "Inclinaison",
   "cancel": "Annuler",
   "contact_mailto_text": "Contact",

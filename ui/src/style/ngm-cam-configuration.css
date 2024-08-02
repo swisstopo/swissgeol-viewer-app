@@ -37,6 +37,10 @@ ngm-cam-configuration {
   justify-content: space-between;
 }
 
+.ngm-cam-conf-slider > div:first-child label:nth-child(2) {
+  white-space: nowrap;
+}
+
 .ngm-cam-conf-slider > input {
   width: 100%;
 }

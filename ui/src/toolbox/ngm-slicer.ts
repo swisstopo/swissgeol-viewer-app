@@ -90,6 +90,7 @@ export class NgmSlicer extends LitElementI18n {
     const active = this.slicer.active;
     const sliceOptionChanged = this.slicingType !== type;
     this.slicer.active = false;
+    ToolboxStore.setSliceGeometry(null);
     if (!type) return;
     if (force || !active || sliceOptionChanged) {
       this.slicer.sliceOptions = {
