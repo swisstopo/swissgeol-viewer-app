@@ -42,6 +42,12 @@ jobs:
     steps:
       # - run: docker system prune --all --force --volumes
       - uses: actions/checkout@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       # Make sure we are building and deploying image with latest security fixes
       - run: docker pull rust:1.63
       - run: docker pull alpine:3.16
@@ -53,7 +59,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{secrets.FARGATE_API_AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.FARGATE_API_AWS_SECRET_ACCESS_KEY}}
           NGM_ARGOCD_DEPLOYKEY: ${{secrets.NGM_ARGOCD_DEPLOYKEY}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           if [[ ${{github.ref}} == "refs/heads/master" ]]
           then
