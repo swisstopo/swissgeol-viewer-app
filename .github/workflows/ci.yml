@@ -53,6 +53,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{secrets.FARGATE_API_AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.FARGATE_API_AWS_SECRET_ACCESS_KEY}}
           NGM_ARGOCD_DEPLOYKEY: ${{secrets.NGM_ARGOCD_DEPLOYKEY}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           if [[ ${{github.ref}} == "refs/heads/master" ]]
           then
