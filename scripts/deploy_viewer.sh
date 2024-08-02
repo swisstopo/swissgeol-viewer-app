@@ -4,7 +4,7 @@ INT_BUCKET="ngmpub-int-bgdi-ch"
 DEV_BUCKET="ngmpub-dev-bgdi-ch"
 RELEASES_BUCKET="ngmpub-releases-bgdi-ch"
 PROD_BUCKET="ngmpub-prod-viewer-bgdi-ch"
-IMAGE_NAME="camptocamp/swissgeol_api"
+IMAGE_NAME="ghcr.io/swisstopo/swissgeol-viewer-app-api"
 
 
 if [[ "$1" == "dev" ]]

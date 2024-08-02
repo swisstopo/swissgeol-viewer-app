@@ -52,7 +52,7 @@ see gopass
 ### Master (CI)
 
 - the UI is built and copied to S3;
-- the API is built, published to docker hub and deployed to the dev and reviews environments.
+- the API is built, published to github packages and deployed to the dev and reviews environments.
 
 This is handled in .github/workflows/ci.yml
 
@@ -73,6 +73,8 @@ export VERSION="" # the version (like 2022.02.0)
 git tag $VERSION -m $VERSION
 git push origin $VERSION
 scripts/release_ui.sh
+export CR_PAT=<your personal github access token (classic)>
+echo $CR_PAT | docker login ghcr.io -u <github login> --password-stdin
 scripts/release_api.sh # (on macos: scripts/release_api.sh mac
 ```
 
@@ -87,6 +89,8 @@ tmux new-session 'scripts/release_ui.sh; bash' \; split-window -h 'scripts/relea
 ```bash
 export VERSION="" # the version (like 2022.02.0)
 git checkout $VERSION
+export CR_PAT=<your personal github access token (classic)>
+echo $CR_PAT | docker login ghcr.io -u <github login> --password-stdin
 scripts/deploy_viewer.sh int
 ```
 
@@ -99,6 +103,8 @@ The version should have been created and tested on int first.
 ```bash
 export VERSION="" # the version (like 2022.02.0)
 git checkout $VERSION
+export CR_PAT=<your personal github access token (classic)>
+echo $CR_PAT | docker login ghcr.io -u <github login> --password-stdin
 scripts/deploy_viewer.sh prod
 ```
 Go to the [ArgoCD dashboard](#argocd) to check if everything went well.
