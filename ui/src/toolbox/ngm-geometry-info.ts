@@ -55,11 +55,9 @@ export class NgmGeometryInfo extends LitElementI18n {
       this.geometry = ToolboxStore.openedGeometry;
       this.editing = !!options.editing;
       this.sliceActive = ToolboxStore.sliceGeomId === this.geometry?.id;
-      console.log('geom', this.sliceActive, ToolboxStore.sliceGeomId, this.geometry?.id);
     });
     ToolboxStore.sliceGeometry.subscribe(() => {
       this.sliceActive = ToolboxStore.sliceGeomId === this.geometry?.id;
-      console.log('slice', this.sliceActive, ToolboxStore.sliceGeomId, this.geometry?.id);
     });
     ToolboxStore.geometries.subscribe(() => this.geometry = ToolboxStore.openedGeometry);
     ToolboxStore.noEditGeometries.subscribe(() => this.geometry = ToolboxStore.openedGeometry);
