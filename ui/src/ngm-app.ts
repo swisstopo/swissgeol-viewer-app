@@ -514,10 +514,10 @@ export class NgmApp extends LitElementI18n {
                          @toggleProjectSelector=${() => this.showProjectSelector = !this.showProjectSelector}>
               </view-menu>
             </div>
-            <a class="contact-mailto-link" target="_blank"
+            <!-- <a class="contact-mailto-link" target="_blank"
                href="mailto:swissgeol@swisstopo.ch">${i18next.t('contact_mailto_text')}</a>
             <a class="disclaimer-link" target="_blank"
-               href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
+               href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a> -->
           </div>
           ${this.showCesiumToolbar ? html`
             <cesium-toolbar></cesium-toolbar>` : ''}
