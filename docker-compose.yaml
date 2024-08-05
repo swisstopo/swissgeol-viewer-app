@@ -65,7 +65,7 @@ services:
       MINIO_ROOT_PASSWORD: *minio_pass
 
   abbreviator:
-    image: camptocamp/abbreviator:main
+    image: ghcr.io/swisstopo/swissgeol-viewer-app-abbreviator:main
     platform: linux/amd64
     ports:
       - "8001:8080"
