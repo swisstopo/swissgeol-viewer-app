@@ -1,13 +1,13 @@
-import { html } from 'lit';
-import { LitElementI18n } from '../i18n.js';
+import {html} from 'lit';
+import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
 import '../layers/ngm-layers-sort';
 import '../layers/ngm-catalog';
 import './dashboard/ngm-dashboard';
 import LayersActions from '../layers/LayersActions';
-import { DEFAULT_LAYER_OPACITY, LayerType } from '../constants';
-import defaultLayerTree, { LayerConfig } from '../layertree';
+import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
+import defaultLayerTree, {LayerConfig} from '../layertree';
 import {
   addAssetId,
   getAssetIds,
@@ -19,11 +19,11 @@ import {
   setCesiumToolbarParam,
   syncLayersParam
 } from '../permalink';
-import { createCesiumObject } from '../layers/helpers';
+import {createCesiumObject} from '../layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import './ngm-map-configuration';
-import type { Cartesian2, Viewer } from 'cesium';
+import type {Cartesian2, Viewer} from 'cesium';
 import {
   BoundingSphere,
   Cartesian3,
@@ -34,19 +34,19 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
 } from 'cesium';
-import { showSnackbarError, showSnackbarInfo } from '../notifications';
+import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
 import './ngm-share-link';
 import '../layers/ngm-layers-upload';
 import MainStore from '../store/main';
-import { classMap } from 'lit/directives/class-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 import $ from '../jquery';
-import { customElement, property, query, state } from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import type QueryManager from '../query/QueryManager';
 
 import DashboardStore from '../store/dashboard';
-import { getAssets } from '../api-ion';
-import { parseKml, renderWithDelay } from '../cesiumutils';
+import {getAssets} from '../api-ion';
+import {parseKml, renderWithDelay} from '../cesiumutils';
 
 type SearchLayer = {
   layer: string
@@ -58,11 +58,11 @@ type SearchLayer = {
 
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
-  @property({ type: Object })
+  @property({type: Object})
   accessor queryManager: QueryManager | null = null;
-  @property({ type: Boolean })
+  @property({type: Boolean})
   accessor mobileView = false;
-  @property({ type: Boolean })
+  @property({type: Boolean})
   accessor displayUndergroundHint = true;
   @state()
   accessor catalogLayers: LayerConfig[] | undefined;
@@ -175,22 +175,22 @@ export class SideBar extends LitElementI18n {
       .filter(config => config.visible && !config.noQuery);
 
     const shareBtn = html`
-      <div class="ngm-share ${classMap({ 'ngm-active-section': this.activePanel === 'share' })}"
+      <div class="ngm-share ${classMap({'ngm-active-section': this.activePanel === 'share'})}"
            @click=${() => this.togglePanel('share')}>
         <div class="ngm-share-icon"></div>
       </div>`;
     const settingsBtn = html`
-      <div class="ngm-settings ${classMap({ 'ngm-active-section': this.activePanel === 'settings' })}"
+      <div class="ngm-settings ${classMap({'ngm-active-section': this.activePanel === 'settings'})}"
            @click=${() => this.togglePanel('settings')}>
         <div class="ngm-settings-icon"></div>
       </div>`;
     const dataMobileHeader = html`
       <div @click=${() => this.hideDataDisplayed = true}
-           class="ngm-data-catalog-label ${classMap({ active: this.hideDataDisplayed })}">
+           class="ngm-data-catalog-label ${classMap({active: this.hideDataDisplayed})}">
         ${i18next.t('lyr_geocatalog_label')}
       </div>
       <div @click=${() => this.hideDataDisplayed = false}
-           class="ngm-data-catalog-label ${classMap({ active: !this.hideDataDisplayed })}">
+           class="ngm-data-catalog-label ${classMap({active: !this.hideDataDisplayed})}">
         ${i18next.t('dtd_displayed_data_label')}
       </div>`;
 
@@ -204,15 +204,15 @@ export class SideBar extends LitElementI18n {
       </div>
       <div class="ngm-menu">
         <div class="ngm-menu-1">
-          <div class="ngm-dashboard ${classMap({ 'ngm-active-section': this.activePanel === 'dashboard' })}"
+          <div class="ngm-dashboard ${classMap({'ngm-active-section': this.activePanel === 'dashboard'})}"
                @click=${() => this.togglePanel('dashboard')}>
             <div class="ngm-dashboard-icon"></div>
           </div>
-          <div class="ngm-data ${classMap({ 'ngm-active-section': this.activePanel === 'data' })}"
+          <div class="ngm-data ${classMap({'ngm-active-section': this.activePanel === 'data'})}"
                @click=${() => this.togglePanel('data')}>
             <div class="ngm-data-icon"></div>
           </div>
-          <div class="ngm-tools ${classMap({ 'ngm-active-section': this.activePanel === 'tools' })}"
+          <div class="ngm-tools ${classMap({'ngm-active-section': this.activePanel === 'tools'})}"
                @click=${() => this.togglePanel('tools', false)}>
             <div class="ngm-tools-icon"></div>
           </div>
@@ -241,7 +241,7 @@ export class SideBar extends LitElementI18n {
           ${this.mobileView ? dataMobileHeader : i18next.t('lyr_geocatalog_label')}
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
-        <div ?hidden=${this.mobileView} class="ngm-label-btn ngm-configure-data ${classMap({ active: !this.hideDataDisplayed })}"
+        <div ?hidden=${this.mobileView} class="ngm-label-btn ngm-configure-data ${classMap({active: !this.hideDataDisplayed})}"
              @click=${() => this.hideDataDisplayed = !this.hideDataDisplayed}>
           ${i18next.t('dtd_configure_data_btn')}
         </div>
@@ -270,7 +270,7 @@ export class SideBar extends LitElementI18n {
             <!-- New container start -->
             <div class="inner-toolbar-settings">
               <label>${i18next.t('lsb_debug_tools')}</label>
-              <div class="ngm-checkbox ngm-debug-tools-toggle ${classMap({ active: this.debugToolsActive })}" @click=${() => (<HTMLInputElement>this.querySelector('.ngm-debug-tools-toggle > input')).click()}>
+              <div class="ngm-checkbox ngm-debug-tools-toggle ${classMap({active: this.debugToolsActive})}" @click=${() => (<HTMLInputElement> this.querySelector('.ngm-debug-tools-toggle > input')).click()}>
                 <input type="checkbox" ?checked=${this.debugToolsActive} @change="${this.toggleDebugTools}">
                 <span class="ngm-checkbox-icon"></span>
                 <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
@@ -293,7 +293,7 @@ export class SideBar extends LitElementI18n {
         </div>
         <div class="ngm-toast-placeholder"></div>
         <div class="ngm-panel-content">
-          <div class="ngm-label-btn ${classMap({ active: this.layerOrderChangeActive })}"
+          <div class="ngm-label-btn ${classMap({active: this.layerOrderChangeActive})}"
                @click=${this.toggleLayerOrderChange}>
             ${this.layerOrderChangeActive ? i18next.t('dtd_finish_ordering_label') : i18next.t('dtd_change_order_label')}
           </div>
@@ -375,7 +375,7 @@ export class SideBar extends LitElementI18n {
       let layer = flatLayers.find(fl => fl.layer === urlLayer.layer);
       if (!layer) {
         // Layers from the search are not present in the flat layers.
-        layer = this.createSearchLayer({ layer: urlLayer.layer, label: urlLayer.layer }); // the proper label will be taken from getCapabilities
+        layer = this.createSearchLayer({layer: urlLayer.layer, label: urlLayer.layer}); // the proper label will be taken from getCapabilities
       } else {
         await (layer.promise || this.addLayer(layer));
         layer.add && layer.add();
@@ -466,7 +466,7 @@ export class SideBar extends LitElementI18n {
           for (let i = 0; i < panelElement.childElementCount; i++) {
             const element = panelElement.children.item(i);
             if (element && element.classList.contains('accordion')) {
-              $(element).accordion({ duration: 150 });
+              $(element).accordion({duration: 150});
             }
           }
           this.accordionInited = true;
@@ -523,13 +523,13 @@ export class SideBar extends LitElementI18n {
       && config.visible
       && [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!)
       && !this.viewer?.scene.cameraUnderground) {
-      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), { displayTime: 20000 });
+      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {displayTime: 20000});
       this.displayUndergroundHint = false;
     }
   }
 
   async onRemoveDisplayedLayer(evt) {
-    const { config, idx } = evt.detail;
+    const {config, idx} = evt.detail;
     this.activeLayers.splice(idx, 1);
     await this.removeLayer(config);
   }
@@ -739,7 +739,7 @@ export class SideBar extends LitElementI18n {
     const active = event.target.checked;
     this.debugToolsActive = active;
     setCesiumToolbarParam(active);
-    this.dispatchEvent(new CustomEvent('toggleDebugTools', { detail: { active } }));
+    this.dispatchEvent(new CustomEvent('toggleDebugTools', {detail: {active}}));
   }
 
   createRenderRoot() {
