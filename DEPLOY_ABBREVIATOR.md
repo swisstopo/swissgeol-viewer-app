@@ -13,7 +13,7 @@ The data is stored in a sqlite db located in a shared NFS drive.
 
 ## Update & Deploy
 
-1. Bump the version of the package in the `Cargo.toml` file of the `camptocamp/abbreviator` [github repository](https://github.com/camptocamp/abbreviator) and create a release. <!-- todo update when moved -->
+1. Bump the version of the package in the `Cargo.toml` file of the `swisstopo/swissgeol-viewer-app-abbreviator` [github repository](https://github.com/swisstopo/swissgeol-viewer-app-abbreviator) and create a release.
 
 2. Create a tag starting with `int` or `prod` to trigger the GitHub action to build and push a docker image to `ghcr.io/swisstopo/swissgeol-viewer-app-abbreviator`.
 
