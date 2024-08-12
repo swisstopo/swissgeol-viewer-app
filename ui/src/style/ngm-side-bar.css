@@ -81,6 +81,7 @@ ngm-side-bar {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 10px;
 }
 /* New css class end*/
 
