@@ -30,11 +30,12 @@ ngm-measure .ngm-action-list-item .ngm-action-list-item-header {
   display: flex;
   align-items: center;
   width: 100%;
+  column-gap: 5px;
 }
 
 .ngm-geom-list .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1) > div {
   white-space: nowrap;
-  max-width: 190px;
+  max-width: 155px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -72,11 +73,15 @@ ngm-measure .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1
   background-color: #868E96 !important;
 }
 
-.ngm-action-list-item.hidden,
+.ngm-action-list-item.hidden .ngm-geom-name,
 .ngm-action-list-item.disabled {
   cursor: default;
   pointer-events: none;
   color: #868E96 !important;
+}
+
+.ngm-action-list-item.disabled .ngm-layer-icon {
+  background-color: #868E96 !important;
 }
 
 .ngm-action-list-item.hidden .ngm-action-menu {
