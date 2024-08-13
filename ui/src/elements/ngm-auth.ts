@@ -63,7 +63,7 @@ export class NgmAuth extends LitElementI18n {
       <div class="ngm-user ${classMap({'ngm-active-section': !!this.user})}"
            @click=${!this.user ? this.login : this.logout}>
         <div class="ngm-user-icon"></div>
-        ${!this.user ? i18next.t('lsb_login') : i18next.t('lsb_logout')}
+        <!-- ${!this.user ? i18next.t('lsb_login') : i18next.t('lsb_logout')} -->
       </div>`;
   }
 
