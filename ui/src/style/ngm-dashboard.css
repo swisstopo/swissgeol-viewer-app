@@ -13,6 +13,7 @@ ngm-dashboard .ngm-panel-header,
   display: flex;
   color: #212529;
   font: normal normal bold 14px/20px Inter;
+  align-items: center;
 }
 
 .ngm-proj-title {
@@ -431,6 +432,30 @@ ngm-add-member-form .ngm-cancel-btn.ui.button {
 .ngm-member-container .ngm-delete-icon {
   cursor: pointer;
   margin-left: auto;
+}
+
+.ngm-proj-views-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ngm-save-view-btn {
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--ngm-interaction);
+}
+
+.ngm-save-view-btn:hover {
+  color: var(--ngm-interaction-hover);
+}
+
+.ngm-save-view-btn:hover .ngm-save-icon {
+  background-color: var(--ngm-interaction-hover);
 }
 
 @media (max-width: 819px)  {

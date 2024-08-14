@@ -5,7 +5,7 @@ import i18next from 'i18next';
 import {classMap} from 'lit/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import DashboardStore from '../../store/dashboard';
-import {CreateProject, Project, TabTypes, Topic} from './ngm-dashboard';
+import {CreateProject, Project, TabTypes, Topic, type View} from './ngm-dashboard';
 import {apiClient} from '../../api-client';
 import {showBannerSuccess} from '../../notifications';
 import $ from '../../jquery';
@@ -16,6 +16,7 @@ import '../ngm-confirmation-modal';
 import './ngm-project-members-section';
 import {isProject} from './helpers';
 import {NgmConfirmationModal} from '../ngm-confirmation-modal';
+import {getPermalink} from '../../permalink';
 
 @customElement('ngm-project-topic-overview')
 export class NgmProjectTopicOverview extends LitElementI18n {
@@ -94,9 +95,17 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         </div>
       </div>
       <div class="ngm-divider"></div>
-      <div class="ngm-proj-title-icon">
-        <div class="ngm-screenshot-icon"></div>
-        <div>${i18next.t('dashboard_views')}</div>
+      <div class="ngm-proj-views-header">
+          <div class="ngm-proj-title-icon">
+              <div class="ngm-screenshot-icon"></div>
+              <div>${i18next.t('dashboard_views')}</div>
+          </div>
+          <button class="ngm-save-view-btn" 
+                  .hidden="${!this.userEmail || !project?.owner}" 
+                  @click=${() => this.saveViewToProject()}>
+              <div>${i18next.t('dashboard_add_view')}</div>
+              <div class="ngm-save-icon icon"></div>
+          </button>
       </div>
       <div class="ngm-project-views">
         ${this.topicOrProject.views.map((view, index) => html`
@@ -217,6 +226,30 @@ export class NgmProjectTopicOverview extends LitElementI18n {
             editors: [],
             viewers: [],
         };
+    }
+
+    async saveViewToProject() {
+        const project: Project | undefined = isProject(this.topicOrProject) ? this.topicOrProject : undefined;
+        const editorEmails = project?.editors.map(e => e.email) || [];
+        if (!project || ![project.owner.email, ...editorEmails].includes(this.userEmail)) return;
+        const view: View = {
+            id: crypto.randomUUID(),
+            title: `${i18next.t('view')} ${project?.views.length + 1}`,
+            permalink: getPermalink(),
+        };
+        if (typeof this.selectedViewIndx !== 'number') {
+            project.views.push(view);
+            const success = await apiClient.updateProject(project);
+            if (success) {
+                DashboardStore.setViewIndex(project?.views.length - 1);
+            }
+        } else {
+            project.views.splice(this.selectedViewIndx + 1, 0, view);
+            const success = await apiClient.updateProject(project);
+            if (success) {
+                DashboardStore.setViewIndex(this.selectedViewIndx + 1);
+            }
+        }
     }
 
     createRenderRoot() {
