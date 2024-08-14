@@ -101,10 +101,6 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                          @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'profile'})}>
                         ${i18next.t('tbx_profile_btn')}
                     </div>` : html``}
-                <div class="item"
-                     @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: geom.show ? 'hide' : 'show'})}>
-                    ${geom.show ? i18next.t('tbx_hide_btn_label') : i18next.t('tbx_unhide_btn_label')}
-                </div>
                 ${this.noEditMode ? '' : html`
                     <div class="item ${classMap({'disabled': !geom.editable})}"
                          @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'remove'})}>
@@ -154,7 +150,13 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
         return html`
             <div>
                 ${this.nameEditIndex !== index ? html`
-                    <div
+                    <div title=${geom.show ? i18next.t('tbx_hide_btn_label') : i18next.t('tbx_unhide_btn_label')}
+                         class="ngm-layer-icon ${classMap({
+                             'ngm-visible-icon': !!geom.show,
+                             'ngm-invisible-icon': !geom.show
+                         })}" @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: geom.show ? 'hide' : 'show'})}>
+                    </div>
+                    <div class="ngm-geom-name"
                             @click=${() => !disabled && this.dispatchEvent(new CustomEvent('geomclick', {detail: geom, bubbles: true}))}>
                         ${geom.name}
                     </div>` : html`
