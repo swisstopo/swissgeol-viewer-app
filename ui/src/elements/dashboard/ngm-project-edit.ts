@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import {classMap} from 'lit/directives/class-map.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import {COLORS_WITH_BLACK_TICK, PROJECT_COLORS} from '../../constants';
-import {Asset, CreateProject, Member, Project} from './ngm-dashboard';
+import {Asset, CreateProject, Member, Project, type View} from './ngm-dashboard';
 import {customElement, property, query} from 'lit/decorators.js';
 import $ from '../../jquery';
 import '../../toolbox/ngm-geometries-list';
@@ -18,6 +18,7 @@ import DashboardStore from '../../store/dashboard';
 import {CustomDataSource} from 'cesium';
 import MainStore from '../../store/main';
 import {parseKml} from '../../cesiumutils';
+import {getPermalink} from '../../permalink';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -99,7 +100,12 @@ export class NgmProjectEdit extends LitElementI18n {
     }
 
     updated(changedProperties) {
-        if (changedProperties.has('saveOrCancelWarning') && this.saveOrCancelWarning === true) this.showSaveOrCancelWarning();
+        if (changedProperties.has('saveOrCancelWarning') && this.saveOrCancelWarning) {
+            this.showSaveOrCancelWarning();
+        }
+        if (changedProperties.has('project')) {
+            this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown());
+        }
     }
 
     firstUpdated(_changedProperties: PropertyValues) {
@@ -164,9 +170,17 @@ export class NgmProjectEdit extends LitElementI18n {
               </div>
             </div>
             <div class="ngm-divider"></div>
-            <div class="ngm-proj-title-icon">
-              <div class="ngm-screenshot-icon"></div>
-              <div>${i18next.t('dashboard_views')}</div>
+            <div class="ngm-proj-views-header">
+                <div class="ngm-proj-title-icon">
+                    <div class="ngm-screenshot-icon"></div>
+                    <div>${i18next.t('dashboard_views')}</div>
+                </div>
+                <button class="ngm-save-view-btn"
+                        .hidden="${!this.userEmail || !project?.owner}"
+                        @click=${() => this.saveViewToProject()}>
+                    <div>${i18next.t('dashboard_add_view')}</div>
+                    <div class="ngm-save-icon icon"></div>
+                </button>
             </div>
             <div class="project-edit-fields">
               ${project.views.map((view, index) => html`
@@ -242,6 +256,18 @@ export class NgmProjectEdit extends LitElementI18n {
               </button>
             </div>
     `;
+    }
+
+    async saveViewToProject() {
+        if (!this.project) return;
+        const project = {...this.project};
+        const view: View = {
+            id: crypto.randomUUID(),
+            title: `${i18next.t('view')} ${project.views.length + 1}`,
+            permalink: getPermalink(),
+        };
+        project.views.push(view);
+        this.project = project;
     }
 
     createRenderRoot() {
