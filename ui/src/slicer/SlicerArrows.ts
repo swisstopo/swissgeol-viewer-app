@@ -15,6 +15,9 @@ import {getDirectionFromPoints, updateHeightForCartesianPositions} from '../cesi
 import type {Viewer, DataSource, ColorBlendMode, Quaternion, ShadowMode} from 'cesium';
 import type {BBox} from './helper';
 import {debounce} from '../utils';
+import NavToolsStore from '../store/navTools';
+import {showSnackbarInfo} from '../notifications';
+import i18next from 'i18next';
 
 interface ArrowListItem {
   // arrow position label
@@ -94,7 +97,7 @@ export default class SlicerArrows {
    * @param {DataSource} dataSource - dataSource to store entities
    * @param {SlicerArrowOptions} options
    */
-  constructor(viewer, dataSource, options) {
+  constructor(viewer: Viewer, dataSource: DataSource, options: SlicerArrowOptions) {
     this.viewer = viewer;
     this.dataSource = dataSource;
     this.moveCallback = options.moveCallback;

@@ -83,6 +83,7 @@
   "dtd_remove_assets_confirmation": "Token hat geändert, aktuelle Datensätze werden entfernt",
   "dtd_show": "Hintergrundkarte anzeigen",
   "dtd_show_exaggeration": "Vertikale Überhöhung anzeigen",
+  "dtd_slice_arrows_hidden": "",
   "dtd_time_journey": "Zeitreise",
   "dtd_topic_kml_tag": "Themen-Objekt",
   "dtd_user_content_label": "Eigenen Inhalt hinzufügen",
