@@ -266,8 +266,6 @@ export class SideBar extends LitElementI18n {
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
         <div class="toolbar-settings">
-            
-            <!-- New container start -->
             <div class="inner-toolbar-settings">
               <label>${i18next.t('lsb_debug_tools')}</label>
               <div class="ngm-checkbox ngm-debug-tools-toggle ${classMap({active: this.debugToolsActive})}" @click=${() => (<HTMLInputElement> this.querySelector('.ngm-debug-tools-toggle > input')).click()}>
@@ -280,8 +278,6 @@ export class SideBar extends LitElementI18n {
             <a class="disclaimer-link" target="_blank"
                href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
             </div>
-            <!-- New container end -->
-        
           </div>
       </div>
       <div .hidden=${this.activePanel !== 'data' || this.hideDataDisplayed}
