@@ -83,6 +83,7 @@
   "dtd_remove_assets_confirmation": "Token changed, current datasets will be removed.",
   "dtd_show": "Show",
   "dtd_show_exaggeration": "Show exaggeration",
+  "dtd_slice_arrows_hidden": "Slice box arrows hidden",
   "dtd_time_journey": "Journey through time",
   "dtd_topic_kml_tag": "Topic object",
   "dtd_user_content_label": "Add user content",

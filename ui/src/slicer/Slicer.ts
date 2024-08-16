@@ -11,6 +11,7 @@ import {showSnackbarInfo} from '../notifications';
 import type {GeometryTypes, NgmGeometry} from '../toolbox/interfaces';
 import {getMeasurements} from '../cesiumutils';
 import ToolboxStore from '../store/toolbox';
+import NavToolsStore from '../store/navTools';
 
 
 interface SliceOptions {
@@ -86,6 +87,24 @@ export default class Slicer {
     this.draw.addEventListener('drawerror', evt => {
       if (this.draw.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
         showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
+      }
+    });
+
+    NavToolsStore.exaggerationChanged.subscribe(exaggeration => {
+      const arrows = this.slicingBox.slicerArrows?.arrows;
+      if (arrows && this.slicingBox.options?.showBox) {
+        let showSnackbar = false;
+        Object.values(arrows).forEach(a => {
+          if (exaggeration > 1 && a.isShowing) {
+            a.show = false;
+            showSnackbar = true;
+          } else if (exaggeration === 1 && !a.isShowing) {
+            a.show = true;
+          }
+        });
+        if (exaggeration > 1 && showSnackbar) {
+          showSnackbarInfo(i18next.t('dtd_slice_arrows_hidden'));
+        }
       }
     });
   }
