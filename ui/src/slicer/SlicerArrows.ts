@@ -15,9 +15,6 @@ import {getDirectionFromPoints, updateHeightForCartesianPositions} from '../cesi
 import type {Viewer, DataSource, ColorBlendMode, Quaternion, ShadowMode} from 'cesium';
 import type {BBox} from './helper';
 import {debounce} from '../utils';
-import NavToolsStore from '../store/navTools';
-import {showSnackbarInfo} from '../notifications';
-import i18next from 'i18next';
 
 interface ArrowListItem {
   // arrow position label
