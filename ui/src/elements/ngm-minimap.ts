@@ -86,20 +86,16 @@ export class NgmMinimap extends LitElementI18n {
 
   updateFromCamera() {
     if (!this.viewer) return;
-    const cameraRect = this.viewer.scene.camera.computeViewRectangle(this.viewer.scene.globe.ellipsoid, new Rectangle());
     const position = this.viewer.scene.camera.positionCartographic;
-    let lon = CesiumMath.toDegrees(position.longitude);
-    let lat = CesiumMath.toDegrees(position.latitude);
-    if (cameraRect) {
-      // fixes camera position when low pitch and zoomed out
-      lon = Math.max(lon, CesiumMath.toDegrees(cameraRect.west));
-      lat = Math.max(lat, CesiumMath.toDegrees(cameraRect.south));
-    }
+    const lon = CesiumMath.toDegrees(position.longitude);
+    const lat = CesiumMath.toDegrees(position.latitude);
     this.left = (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
     this.bottom = (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
     this.heading = this.viewer.scene.camera.heading - 1.57;
 
-    const nadirView = CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1);
+    const nadirView =
+        CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1) ||
+        CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1);
     if (this.nadirViewActive && !nadirView) {
       this.toggleNadirStatus();
     } else if (!this.nadirViewActive && nadirView) {

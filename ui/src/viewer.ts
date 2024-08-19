@@ -6,7 +6,7 @@ import KeyboardNavigation from './KeyboardNavigation.js';
 import MapChooser from './MapChooser';
 import {addSwisstopoLayer} from './swisstopoImagery';
 
-import type {ImageryLayer, WebGLOptions} from 'cesium';
+import {ImageryLayer, WebGLOptions} from 'cesium';
 import {
     CameraEventType,
     Cartesian3,
@@ -28,7 +28,7 @@ import {
     ScreenSpaceEventType,
     SunLight,
     Transforms,
-    Viewer
+    Viewer,
 } from 'cesium';
 import MainStore from './store/main';
 import {getExaggeration} from './permalink';

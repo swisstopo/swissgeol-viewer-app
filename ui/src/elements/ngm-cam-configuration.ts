@@ -5,7 +5,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
 import type {Interactable} from '@interactjs/types';
-import type {Event, Scene, Viewer} from 'cesium';
+import {Event, Scene, Viewer} from 'cesium';
 import {
   Cartesian2,
   KeyboardEventModifier,
@@ -93,10 +93,10 @@ export class NgmCamConfiguration extends LitElementI18n {
     {
       label: () => i18next.t('camera_position_angle_label'),
       iconClass: () => classMap({'ngm-cam-d-icon': true, 'ngm-active-icon': this.lockType === 'angle'}),
-      minValue: -179,
-      maxValue: 180,
+      minValue: 0,
+      maxValue: 359,
       step: 1,
-      style: () => this.getSliderStyle(this.heading, -179, 180),
+      style: () => this.getSliderStyle(this.heading, 0, 359, true),
       getValue: () => this.heading,
       getValueLabel: () => `${this.integerFormat.format(this.heading)}°`,
       onChange: (evt) => this.updateAngle(Number(evt.target.value)),
@@ -147,9 +147,12 @@ export class NgmCamConfiguration extends LitElementI18n {
     const pc = camera.positionCartographic;
     const altitude = this.scene!.globe.getHeight(pc) || 0;
     this.elevation = pc.height - altitude;
-    this.pitch = CesiumMath.toDegrees(camera.pitch);
-    const heading = CesiumMath.toDegrees(camera.heading);
-    this.heading = heading > 180 ? heading - 360 : heading;
+    this.pitch = Math.round(CesiumMath.toDegrees(camera.pitch));
+    let heading = Math.round(CesiumMath.toDegrees(camera.heading));
+    // hack to avoid angle numbers jumping
+    if (this.pitch > 87 && heading > 0 && heading < 180) heading += 180;
+    else if (this.pitch > 87 && heading >= 180) heading -= 180;
+    this.heading = heading === 360 ? 0 : heading;
     this.coordinates = {
       lv95: formatCartographicAs2DLv95(pc),
       wgs84: [pc.longitude, pc.latitude].map(radToDeg)
@@ -181,7 +184,12 @@ export class NgmCamConfiguration extends LitElementI18n {
     });
   }
 
-  getSliderStyle(value: number, minValue: number, maxValue: number) {
+  getSliderStyle(value: number, minValue: number, maxValue: number, oneDirection = false) {
+    if (oneDirection) {
+      return {
+        'background-image': `linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${value / maxValue * 100}%, white ${value / maxValue * 100}%)`
+      };
+    }
     const range = maxValue - minValue;
     const valuePercent = Math.round((value - minValue) / range * 100);
 
