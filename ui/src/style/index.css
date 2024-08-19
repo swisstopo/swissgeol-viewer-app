@@ -511,9 +511,7 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   position: absolute;
   z-index: 2;
   left: 5px;
-  font-size: 12px;
-  color: #fff;
-  text-shadow: 0 0 2px #000;
+  color: #357183;
 }
 .contact-mailto-link {
   bottom: 60px;

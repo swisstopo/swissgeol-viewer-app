@@ -221,9 +221,9 @@ export class SideBar extends LitElementI18n {
                class="ngm-mob-menu-toggle"
                @click=${() => this.mobileShowAll = !this.mobileShowAll}>
             <div class="${classMap({
-              'ngm-view-all-icon': !this.mobileShowAll,
-              'ngm-view-less-icon': this.mobileShowAll
-            })}"></div>
+      'ngm-view-all-icon': !this.mobileShowAll,
+      'ngm-view-less-icon': this.mobileShowAll
+    })}"></div>
           </div>
         </div>
         <div .hidden=${this.mobileView} class="ngm-menu-2">
@@ -266,15 +266,19 @@ export class SideBar extends LitElementI18n {
           <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
         </div>
         <div class="toolbar-settings">
-          <label>${i18next.t('lsb_debug_tools')}</label>
-          <div class="ngm-checkbox ngm-debug-tools-toggle ${classMap({active: this.debugToolsActive})}"
-               @click=${() => (<HTMLInputElement> this.querySelector('.ngm-debug-tools-toggle > input')).click()}>
-            <input type="checkbox" ?checked=${this.debugToolsActive} @change="${this.toggleDebugTools}">
-            <span class="ngm-checkbox-icon">
-              </span>
-            <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
+            <div class="inner-toolbar-settings">
+              <label>${i18next.t('lsb_debug_tools')}</label>
+              <div class="ngm-checkbox ngm-debug-tools-toggle ${classMap({active: this.debugToolsActive})}" @click=${() => (<HTMLInputElement> this.querySelector('.ngm-debug-tools-toggle > input')).click()}>
+                <input type="checkbox" ?checked=${this.debugToolsActive} @change="${this.toggleDebugTools}">
+                <span class="ngm-checkbox-icon"></span>
+                <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
+              </div>
+              <a class="contact-mailto-link" target="_blank"
+               href="mailto:swissgeol@swisstopo.ch">${i18next.t('contact_mailto_text')}</a>
+            <a class="disclaimer-link" target="_blank"
+               href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
+            </div>
           </div>
-        </div>
       </div>
       <div .hidden=${this.activePanel !== 'data' || this.hideDataDisplayed}
            class="ngm-side-bar-panel ngm-extension-panel ngm-data-panel">
@@ -290,20 +294,20 @@ export class SideBar extends LitElementI18n {
             ${this.layerOrderChangeActive ? i18next.t('dtd_finish_ordering_label') : i18next.t('dtd_change_order_label')}
           </div>
           ${this.layerOrderChangeActive ?
-              html`
+        html`
                 <ngm-layers-sort
                     .layers=${this.activeLayers}
                     .actions=${this.layerActions}
                     @orderChanged=${(evt) => this.onLayersOrderChange(evt.detail)}>
                 </ngm-layers-sort>` :
-              html`
+        html`
                 <ngm-layers
                     .layers=${this.activeLayers}
                     .actions=${this.layerActions}
                     @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
                     @layerChanged=${evt => this.onLayerChanged(evt)}>
                 </ngm-layers>`
-          }
+      }
           <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
           <ngm-layers-upload
               .toastPlaceholder=${this.toastPlaceholder}
@@ -345,7 +349,7 @@ export class SideBar extends LitElementI18n {
     const callback = attributeParams ?
       this.getTileLoadCallback(attributeParams.attributeKey, attributeParams.attributeValue) :
       undefined;
-      const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
+    const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
     const ionToken = MainStore.ionToken.value;
@@ -713,7 +717,7 @@ export class SideBar extends LitElementI18n {
     // done like this to have correct rerender of component
     const promise = Promise.resolve(dataSource);
     const config: LayerConfig = {
-      load() {return promise;},
+      load() { return promise; },
       label: name,
       layer,
       promise: promise,

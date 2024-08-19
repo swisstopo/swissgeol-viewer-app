@@ -1,7 +1,6 @@
 import {html} from 'lit';
 import type {AuthUser} from '../auth';
 import Auth from '../auth';
-import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import auth from '../store/auth';
 import {classMap} from 'lit/directives/class-map.js';
@@ -62,8 +61,7 @@ export class NgmAuth extends LitElementI18n {
     return html`
       <div class="ngm-user ${classMap({'ngm-active-section': !!this.user})}"
            @click=${!this.user ? this.login : this.logout}>
-        <div class="ngm-user-icon"></div>
-        ${!this.user ? i18next.t('lsb_login') : i18next.t('lsb_logout')}
+          <div class="ngm-user-icon"></div>
       </div>`;
   }
 

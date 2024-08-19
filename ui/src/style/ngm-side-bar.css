@@ -76,6 +76,14 @@ ngm-side-bar {
   overflow-y: auto;
 }
 
+.inner-toolbar-settings {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+
 .ngm-side-bar-panel.ngm-large-panel {
   width: calc(100vw - 144px);
 }

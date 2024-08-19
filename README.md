@@ -11,9 +11,43 @@ You are welcome to use and adapt this software for your own uses; see [LICENSE](
 
 ## Your own version: getting started
 
+Clone the repository
 ```bash
 git clone https://github.com/swissgeol/ngm.git
-cd ngm
+```
+
+### Linux and Mac OS X
+
+> **Install** *node.js and npm*  
+> See instructions at [https://nodejs.org/en/download/package-manager](https://nodejs.org/en/download/package-manager)  
+
+#### Start frontend
+
+From the root directory change to the ```ui```-dirrectory
+```bash
+cd ui
+```
+Install dependencies
+```bash
+npm install
+```
+start development server
+```bash
+npm start
+```
+
+open http://localhost:8000
+
+#### Start backend api
+
+> **Install** *Docker*  
+> See instructions at [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)  
+
+> **Install** *rust and cargo*  
+> See instructions at [https://doc.rust-lang.org/cargo/getting-started/installation.html](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+
+Start the api and application
+```bash
 make run
 ```
 
