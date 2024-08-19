@@ -94,7 +94,7 @@ export default class SlicerArrows {
    * @param {DataSource} dataSource - dataSource to store entities
    * @param {SlicerArrowOptions} options
    */
-  constructor(viewer, dataSource, options) {
+  constructor(viewer: Viewer, dataSource: DataSource, options: SlicerArrowOptions) {
     this.viewer = viewer;
     this.dataSource = dataSource;
     this.moveCallback = options.moveCallback;

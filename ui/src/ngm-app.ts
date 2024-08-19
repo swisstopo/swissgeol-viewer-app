@@ -16,8 +16,6 @@ import './elements/ngm-voxel-filter';
 import './elements/ngm-voxel-simple-filter';
 import './cesium-toolbar';
 import './elements/ngm-project-popup';
-import './elements/view-menu';
-import './elements/project-selector';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
@@ -495,11 +493,6 @@ export class NgmApp extends LitElementI18n {
               <ngm-layer-legend class="ngm-floating-window" .config=${config}
                                 @close=${this.onCloseLayerLegend}></ngm-layer-legend>
             ` : '')}
-            <project-selector class="ngm-floating-window"
-                              .hidden=${!this.showProjectSelector}
-                              .showProjectSelector=${this.showProjectSelector}
-                              @close=${() => this.showProjectSelector = false}>
-            </project-selector>
             <ngm-voxel-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-filter>
             <ngm-voxel-simple-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-simple-filter>
             <ngm-coordinate-popup class="ngm-floating-window"></ngm-coordinate-popup>
@@ -510,9 +503,6 @@ export class NgmApp extends LitElementI18n {
 
               <ngm-map-chooser .hidden=${this.mobileView} class="ngm-bg-chooser-map"
                               .initiallyOpened=${false}></ngm-map-chooser>
-              <view-menu class="view-menu"
-                         @toggleProjectSelector=${() => this.showProjectSelector = !this.showProjectSelector}>
-              </view-menu>
             </div>
           </div>
           ${this.showCesiumToolbar ? html`
