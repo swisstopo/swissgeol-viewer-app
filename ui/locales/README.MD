@@ -1,6 +1,7 @@
 ###### Prefixes / suffixes explanation:
 
 Main prefixes:
+* cam... of camera... = camera configuration panel
 * tbx... = toobox
 * lyr... = layertree
 * nav... = navigation part
