@@ -163,8 +163,10 @@ export class NgmMapConfiguration extends LitElementI18n {
             @click=${() => {
               if (!this.viewer) return;
               this.hideExaggeration = !this.hideExaggeration;
-              this.viewer.scene.verticalExaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+              const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+              this.viewer.scene.verticalExaggeration = exaggeration;
               this.updateExaggerationForKmls();
+              NavToolsStore.exaggerationChanged.next(exaggeration);
               this.viewer.scene.requestRender();
             }}></div>
         <div class="ngm-displayed-slider ngm-exaggeration-slider">
