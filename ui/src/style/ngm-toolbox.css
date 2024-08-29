@@ -5,8 +5,7 @@ ngm-tools {
 ngm-draw-tool,
 ngm-slicer,
 ngm-gst-interaction,
-ngm-measure,
-data-download {
+ngm-measure {
   height: calc(100% - (var(--ngm-panel-header-height) + 10px));
   display: flex;
   flex-direction: column;
@@ -47,8 +46,7 @@ ngm-geometries-simple-list {
 
 .ngm-slice-side > div:hover > div:nth-child(1),
 .ngm-draw-list-item:hover div:nth-child(1),
-.ngm-tools-list-item:hover div:nth-child(1),
-.data-download-item > .ngm-file-download-icon:hover {
+.ngm-tools-list-item:hover div:nth-child(1) {
   background-color: var(--ngm-interaction-hover);
 }
 
@@ -66,8 +64,7 @@ ngm-geometries-simple-list {
 ngm-gst-interaction .ngm-action-list-item.active,
 ngm-slicer .ngm-action-list-item.active,
 ngm-measure .ngm-action-list-item.active,
-ngm-draw-section .ngm-action-list-item.active,
-data-download .ngm-action-list-item.active  {
+ngm-draw-section .ngm-action-list-item.active {
   height: auto;
 }
 
@@ -82,8 +79,7 @@ data-download .ngm-action-list-item.active  {
   color: #868E96 !important;
 }
 
-.ngm-hint,
-.data-download-hint {
+.ngm-hint {
   background-color: var(--ngm-hover);
   color: #212529;
   font: normal normal bold 14px/20px Inter;
@@ -146,8 +142,7 @@ ngm-slicer .ngm-divider,
 ngm-measure .ngm-hint,
 ngm-draw-section .ngm-hint,
 ngm-measure .ngm-divider,
-ngm-draw-section .ngm-divider,
-.data-download-hint {
+ngm-draw-section .ngm-divider {
   margin-top: 12px;
 }
 
@@ -210,27 +205,6 @@ ngm-draw-section .ngm-divider,
 
 .ngm-section-format-container .ui.dropdown .menu .item:hover {
   background-color: var(--ngm-hover);
-}
-
-.data-download-options {
-  margin-top: 12px;
-}
-
-.data-download-item {
-  margin: 8px 0;
-  display: flex;
-}
-
-.data-download-item > label {
-  color: black;
-  font-weight: normal;
-  margin-left: 6px;
-  max-width: 180px;
-}
-
-.data-download-item > .ngm-file-download-icon {
-  width: 24px;
-  height: 24px;
 }
 
 .ngm-measure-segment-info:hover .ngm-measure-segment-title {

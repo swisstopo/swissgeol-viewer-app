@@ -6,7 +6,6 @@ import './ngm-draw-tool';
 import './ngm-slicer';
 import './ngm-geometries-list';
 import './ngm-draw-section';
-import './data-download';
 import './ngm-profile-tool';
 import './ngm-measure';
 import i18next from 'i18next';
@@ -33,7 +32,7 @@ export class NgmToolbox extends LitElementI18n {
   @property({type: Boolean})
   accessor toolsHidden = true;
   @state()
-  accessor activeTool: 'draw' | 'slicing' | 'gst' | 'data-download' | 'profile' | 'measure' | undefined;
+  accessor activeTool: 'draw' | 'slicing' | 'gst' | 'profile' | 'measure' | undefined;
   @state()
   accessor sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder')
@@ -265,10 +264,6 @@ export class NgmToolbox extends LitElementI18n {
           <div class="ngm-profile-icon"></div>
           <div>${i18next.t('tbx_profile')}</div>
         </div>
-        <div class="ngm-tools-list-item" @click=${() => this.activeTool = 'data-download'}>
-          <div class="ngm-download-icon"></div>
-          <div>${i18next.t('tbx_data-download')}</div>
-        </div>
       </div>
       <div class="ngm-toast-placeholder"></div>
       <ngm-draw-tool ?hidden="${this.activeTool !== 'draw'}">
@@ -278,7 +273,6 @@ export class NgmToolbox extends LitElementI18n {
                   .noEditGeometriesDataSource=${this.noEditGeometriesDataSource}></ngm-slicer>
       <ngm-gst-interaction ?hidden="${this.activeTool !== 'gst'}"></ngm-gst-interaction>
       <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
-      <data-download .hidden="${this.activeTool !== 'data-download'}"></data-download>
       <ngm-profile-tool ?hidden="${this.activeTool !== 'profile'}"></ngm-profile-tool>
       ${this.activeTool === 'measure' ? html`<ngm-measure></ngm-measure>` : ''}
       `;
