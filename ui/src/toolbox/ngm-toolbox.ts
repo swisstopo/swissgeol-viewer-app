@@ -240,7 +240,7 @@ export class NgmToolbox extends LitElementI18n {
     return html`
       <div class="ngm-panel-header">
         <div ?hidden=${!this.activeTool} class="ngm-back-icon" @click=${this.onBackClick}></div>
-        ${i18next.t(this.activeTool ? `tbx_${this.activeTool}` : 'lsb_tools')}
+        ${this.activeTool ? i18next.t(`tbx_${this.activeTool}`) : i18next.t('lsb_tools')}
         <div class="ngm-close-icon" @click=${() => this.onClose()}></div>
       </div>
       <div class="ngm-tools-list" .hidden="${this.activeTool}">
