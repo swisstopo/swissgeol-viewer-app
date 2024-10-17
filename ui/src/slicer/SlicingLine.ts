@@ -68,7 +68,6 @@ export default class SlicingLine extends SlicingToolBase {
       this.addClippingPlanesFromSphere(primitive);
       return;
     }
-    console.log('A transform is used in this tileset');
     const planeNormal = this.plane!.normal;
     const p1 = this.options.slicePoints[0];
     const p2 = this.options.slicePoints[1];

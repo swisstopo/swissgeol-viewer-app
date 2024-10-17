@@ -102,9 +102,7 @@ export default class Auth {
     }
     if (user) {
       const remaining = 1000 * user.exp - Date.now();
-      console.log('Will log out in', Math.floor(remaining / 1000 / 60), 'min');
       authTimeout = window.setTimeout(() => {
-        console.log('Token expired - logout');
         Auth.logout();
       }, remaining);
     }
