@@ -209,8 +209,6 @@ export class NgmApp extends LitElementI18n {
   removeLoading() {
     this.loading = false;
     this.showTrackingConsent = true;
-    const loadingTime = performance.now() / 1000;
-    console.log(`loading mask displayed ${(loadingTime).toFixed(3)}s`);
     (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
   }
 
@@ -231,11 +229,9 @@ export class NgmApp extends LitElementI18n {
       this.queueLength = queueLength;
       if (currentStep === 1 && globe.tilesLoaded) {
         currentStep = 2;
-        console.log('Step 1 finished');
         onStep1Finished(globe, searchParams);
         setTimeout(() => {
           if (currentStep === 2) {
-            console.log('Too long: going straight to step 3');
             currentStep = 3;
             this.onStep2Finished(viewer);
             unlisten();
@@ -243,7 +239,6 @@ export class NgmApp extends LitElementI18n {
         }, SKIP_STEP2_TIMEOUT);
       } else if (currentStep === 2 && globe.tilesLoaded) {
         currentStep = 3;
-        console.log('Step 2 finished');
         this.onStep2Finished(viewer);
         unlisten();
       }

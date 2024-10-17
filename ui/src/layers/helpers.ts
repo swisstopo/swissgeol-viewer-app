@@ -62,7 +62,6 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: La
 
   const searchParams = new URLSearchParams(location.search);
   const stepSize = parseFloat(searchParams.get('stepSize') || '1');
-  console.log('using stepSize:', stepSize);
 
   primitive.nearestSampling = true;
   primitive.stepSize = stepSize;
