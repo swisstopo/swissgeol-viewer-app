@@ -48,7 +48,7 @@ Object.assign(RequestScheduler.requestsByServer, {
     'vectortiles0.geo.admin.ch:443': 18
 });
 
-let noLimit = true;
+let noLimit = false;
 
 const FOG_FRAGMENT_SHADER_SOURCE = `
   float getDistance(sampler2D depthTexture, vec2 texCoords) {
@@ -101,8 +101,8 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
     const searchParams = new URLSearchParams(location.search);
 
     const zExaggeration = getExaggeration();
-    if (searchParams.get('noLimit') === 'false') {
-        noLimit = false;
+    if (searchParams.get('noLimit') === 'true') {
+        noLimit = true;
     }
 
     let terrainUrl;
