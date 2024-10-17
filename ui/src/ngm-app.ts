@@ -209,7 +209,6 @@ export class NgmApp extends LitElementI18n {
   removeLoading() {
     this.loading = false;
     this.showTrackingConsent = true;
-    const loadingTime = performance.now() / 1000;
     (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
   }
 
