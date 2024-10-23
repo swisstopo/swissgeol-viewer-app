@@ -102,7 +102,7 @@ jobs:
 #      - name: Run tests
 #        run: npm run test
 
-  lint:
+  lint-ui:
     runs-on: ubuntu-latest
     needs: install-ui
     steps:
@@ -128,11 +128,11 @@ jobs:
   # since the project is currently split across a multitude of small packages,
   # all of which have to specify their own commands.
   # (Daniel von Atzigen, 2024-04-12)
-  build:
+  build-ui:
     runs-on: ubuntu-latest
     needs:
 #      - test
-      - lint
+      - lint-ui
       - dependency-review
     steps:
       - name: Checkout repository
@@ -144,9 +144,9 @@ jobs:
       - name: Restore cached node modules
         uses: actions/cache/restore@v4
         with:
-          path: ./node_modules
-          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/schema.prisma') }}"
-      - name: Reset nx
-        run: npx nx reset
+          path: ./ui/node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
+#      - name: Reset nx
+#        run: npx nx reset
       - name: Run build
-        run: npm run build
+        run: cd ui && npm run build
