@@ -112,7 +112,7 @@ jobs:
   build-ui:
     runs-on: ubuntu-latest
     needs:
-      - test
+      - test-ui
       - lint-ui
       - dependency-review
     steps:
