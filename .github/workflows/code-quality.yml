@@ -111,11 +111,11 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
       - name: Restore cached node modules
         uses: actions/cache/restore@v4
         with:
-          path: ./node_modules
+          path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
       - name: Run lint
         run: cd ui && npm run lint
