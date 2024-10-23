@@ -63,44 +63,25 @@ jobs:
 #      - name: Install e2e node dependencies
 #        run: cd e2e && npm ci
 
-#  test-ui:
-#    runs-on: ubuntu-latest
-#    needs: install
-#    services:
-#      db:
-#        image: postgis/postgis
-#        ports:
-#          - "5432:5432"
-#        env:
-#          POSTGRES_USER: ${{ env.DB_USERNAME }}
-#          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
-#          POSTGRES_DB: ${{ env.DB_DATABASE }}
-#        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-#      elasticsearch:
-#        image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
-#        ports:
-#          - "9200:9200"
-#        env:
-#          ES_JAVA_OPTS: -Xms512m -Xmx512m
-#          xpack.security.enabled: false
-#          discovery.type: single-node
-#          cluster.routing.allocation.disk.threshold_enabled: false
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#      - name: Setup node
-#        uses: actions/setup-node@v4
-#        with:
-#          node-version: ${{ env.NODE_VERSION }}
-#      - name: Restore cached node modules
-#        uses: actions/cache/restore@v4
-#        with:
-#          path: ./node_modules
-#          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/schema.prisma') }}"
+  test-ui:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node modules
+        uses: actions/cache/restore@v4
+        with:
+          path: ./ui/node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
 #      - name: Migrate database
 #        run: npm run prisma -- migrate deploy
-#      - name: Run tests
-#        run: npm run test
+      - name: Run tests
+        run: cd ui && npm run test
 
   lint-ui:
     runs-on: ubuntu-latest
@@ -131,7 +112,7 @@ jobs:
   build-ui:
     runs-on: ubuntu-latest
     needs:
-#      - test
+      - test
       - lint-ui
       - dependency-review
     steps:
