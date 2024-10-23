@@ -1,0 +1,92 @@
+name: Publish Release Candidate
+
+on:
+  push:
+    branches:
+      - "main"
+
+  workflow_dispatch:
+    inputs:
+      base:
+        type: string
+        description: |
+          The tag of the commit that will be published as release-candidate.
+          Make sure that you also select that tag as the workflow's run location.
+        required: false
+        default: "edge"
+
+permissions: write-all
+
+env:
+  BASE: ${{ github.event.inputs.base || 'edge' }}
+
+jobs:
+  tag_rc_image_app:
+    name: tag rc image app
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Packages
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Pull docker image
+        run: docker pull ${{ vars.BASE_IMAGE_NAME }}-app:${{ env.BASE }}
+
+      - name: Tag docker image
+        run: docker tag ${{ vars.BASE_IMAGE_NAME }}-app:${{ env.BASE }} ${{ vars.BASE_IMAGE_NAME }}-app:release-candidate
+
+      - name: Push docker image
+        run: docker push ${{ vars.BASE_IMAGE_NAME }}-app:release-candidate
+
+  tag_rc_image_api:
+    name: tag rc image api
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Packages
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Pull docker image
+        run: docker pull ${{ vars.BASE_IMAGE_NAME }}-api:${{ env.BASE }}
+
+      - name: Tag docker image
+        run: docker tag ${{ vars.BASE_IMAGE_NAME }}-api:${{ env.BASE }} ${{ vars.BASE_IMAGE_NAME }}-api:release-candidate
+
+      - name: Push docker image
+        run: docker push ${{ vars.BASE_IMAGE_NAME }}-api:release-candidate
+
+  tag_rc_image_sync:
+    name: tag rc image sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Packages
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Pull docker image
+        run: docker pull ${{ vars.BASE_IMAGE_NAME }}-sync:${{ env.BASE }}
+
+      - name: Tag docker image
+        run: docker tag ${{ vars.BASE_IMAGE_NAME }}-sync:${{ env.BASE }} ${{ vars.BASE_IMAGE_NAME }}-sync:release-candidate
+
+      - name: Push docker image
+        run: docker push ${{ vars.BASE_IMAGE_NAME }}-sync:release-candidate
+
+  tag_rc_commit:
+    name: "tag rc commit"
+    needs:
+      - tag_rc_image_app
+      - tag_rc_image_api
+      - tag_rc_image_sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Get base commit
+        id: get_base_commit
+        run: |
+          git fetch --tags
+          BASE_COMMIT=$(git rev-list -n 1 $BASE)
+          echo "sha=$BASE_COMMIT" >> "$GITHUB_OUTPUT"
+      - name: tag release-candidate
+        uses: ./.github/actions/tag-commit
+        with:
+          TAG_NAME: release-candidate
+          SHA: ${{ steps.get_base_commit.outputs.sha }}

@@ -1,0 +1,67 @@
+name: "Create Docker Image"
+description: "Builds a docker image and tags it"
+inputs:
+  IMAGE_NAME:
+    description: "The image name"
+    required: true
+  VERSION:
+    description: "The version of the image"
+    required: true
+  TAG:
+    description: "The tag of the image, in addition to the version"
+    required: true
+  OTHER_TAGS:
+    description: "Any additional tags, passed directly to docker/metadata-action"
+  DOCKERFILE:
+    description: "The path to the Dockerfile"
+    required: true
+  GITHUB_TOKEN:
+    description: "The github token"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set environment variables
+      shell: bash
+      run: |
+        echo COMMITED_AT=$(git show -s --format=%cI ${{ github.sha }}) >> $GITHUB_ENV
+        echo REVISION=$(git rev-parse --short HEAD) >> $GITHUB_ENV
+
+    - name: Collect docker image metadata
+      id: meta-data
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ inputs.IMAGE_NAME }}
+        labels: |
+          org.opencontainers.image.created=${{ env.COMMITED_AT }}
+          org.opencontainers.image.version=v${{ inputs.VERSION }}
+          org.opencontainers.image.maintainer=EBP Schweiz AG
+        flavor: |
+          latest=${{ inputs.TAG == 'latest' }}
+        tags: |
+          type=raw,value=${{ inputs.TAG }}
+          type=raw,value=${{ inputs.VERSION }}
+          ${{ inputs.OTHER_TAGS }}
+
+    - name: Log in to the GitHub container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ inputs.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./
+        file: ${{ inputs.DOCKERFILE }}
+        push: true
+        tags: ${{ steps.meta-data.outputs.tags }}
+        labels: ${{ steps.meta-data.outputs.labels }}
+        no-cache: true
+        build-args: |
+          APP_VERSION=${{ inputs.VERSION }}
