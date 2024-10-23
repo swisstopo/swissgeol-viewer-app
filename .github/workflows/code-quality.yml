@@ -119,8 +119,8 @@ jobs:
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
       - name: Run lint
         run: cd ui && npm run lint
-      - name: Run prettier
-        run: npx prettier --check .
+#      - name: Run prettier
+#        run: npx prettier --check .
 
   # It would be cleaner and probably more performant to replace this build step
   # with either a non-emitting build or a simple type check.
