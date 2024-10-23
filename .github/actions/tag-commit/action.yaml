@@ -1,0 +1,34 @@
+name: "Tag Commit"
+description: "Creates or updates a commit tag"
+inputs:
+  TAG_NAME:
+    description: "The tag's name"
+    required: true
+  SHA:
+    description: "The SHA of the commit to be tagged"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create/update tag
+      uses: actions/github-script@v7
+      env:
+        TAG: ${{ inputs.TAG_NAME }}
+        SHA: ${{ inputs.SHA }}
+      with:
+        script: |
+          github.rest.git.createRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: `refs/tags/${process.env.TAG}`,
+            sha: process.env.SHA
+          }).catch(err => {
+            if (err.status !== 422) throw err;
+            github.rest.git.updateRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `tags/${process.env.TAG}`,
+              sha: process.env.SHA
+            });
+          })

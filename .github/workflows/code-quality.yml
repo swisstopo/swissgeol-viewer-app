@@ -1,0 +1,152 @@
+name: Code Quality
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - "**"
+      - "!main"
+
+env:
+  NODE_VERSION: "22.x"
+  DB_USERNAME: postgres
+  DB_PASSWORD: postgres
+  DB_DATABASE: postgres
+  DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?schema=public
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Review Dependencies
+        uses: actions/dependency-review-action@v4
+
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: "${{ runner.os }}-npm-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}"
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/schema.prisma') }}"
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+      - name: Cache e2e node modules
+        uses: actions/cache@v4
+        with:
+          path: ./e2e/node_modules
+          key: "${{ runner.os }}-node_modules_e2e-${{ env.NODE_VERSION }}-${{ hashFiles('./e2e/package-lock.json') }}"
+          restore-keys: |
+            ${{ runner.os }}-node_modules_e2e-
+      - name: Install node dependencies
+        run: npm install
+      - name: Generate prisma types
+        run: npm run prisma -- generate
+      - name: Install e2e node dependencies
+        run: cd e2e && npm ci
+
+  test:
+    runs-on: ubuntu-latest
+    needs: install
+    services:
+      db:
+        image: postgis/postgis
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_USER: ${{ env.DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_DATABASE }}
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
+        ports:
+          - "9200:9200"
+        env:
+          ES_JAVA_OPTS: -Xms512m -Xmx512m
+          xpack.security.enabled: false
+          discovery.type: single-node
+          cluster.routing.allocation.disk.threshold_enabled: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node modules
+        uses: actions/cache/restore@v4
+        with:
+          path: ./node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/schema.prisma') }}"
+      - name: Migrate database
+        run: npm run prisma -- migrate deploy
+      - name: Run tests
+        run: npm run test
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node modules
+        uses: actions/cache/restore@v4
+        with:
+          path: ./node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/schema.prisma') }}"
+      - name: Run lint
+        run: npm run lint
+      - name: Run prettier
+        run: npx prettier --check .
+
+  # It would be cleaner and probably more performant to replace this build step
+  # with either a non-emitting build or a simple type check.
+  # We only have `build` available for now,
+  # since the project is currently split across a multitude of small packages,
+  # all of which have to specify their own commands.
+  # (Daniel von Atzigen, 2024-04-12)
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      - lint
+      - dependency-review
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node modules
+        uses: actions/cache/restore@v4
+        with:
+          path: ./node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/schema.prisma') }}"
+      - name: Reset nx
+        run: npx nx reset
+      - name: Run build
+        run: npm run build
