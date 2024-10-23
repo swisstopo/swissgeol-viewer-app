@@ -1,0 +1,133 @@
+name: Publish Edge
+
+on:
+  push:
+    branches:
+      - "develop"
+
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: |
+          Version number (e.g. 1.2.3-dev1).
+          Leave empty to determine the next version automatically.
+        required: false
+        default: ""
+      is-edge:
+        type: boolean
+        description: "Tag the commit and published image with `edge`."
+        default: true
+
+permissions: write-all
+
+env:
+  IS_EDGE: ${{ github.event_name == 'push' || github.event.inputs.is-edge == 'true' }}
+
+jobs:
+  determine_version:
+    name: "determine version"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.find_version.outputs.result || github.event.inputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        if: ${{ github.event.inputs.version == '' }}
+      - name: Get tags of edge commit
+        id: get_edge_tags
+        if: ${{ github.event.inputs.version == '' }}
+        run: |
+          git fetch --tags
+          EDGE_COMMIT=$(git rev-list -n 1 edge)
+          EDGE_TAGS=$(printf "%s," $(git tag --contains $EDGE_COMMIT))
+          EDGE_TAGS=${EDGE_TAGS%,}
+          echo "edge_tags=$EDGE_TAGS" >> "$GITHUB_OUTPUT"
+      - name: Find next version
+        id: find_version
+        if: ${{ github.event.inputs.version == '' }}
+        uses: actions/github-script@v7
+        env:
+          EDGE_TAGS: ${{ steps.get_edge_tags.outputs.edge_tags }}
+        with:
+          result-encoding: string
+          script: |
+            const { findNextVersion } = require('./.github/scripts/find-version.js');
+            const tags = process.env.EDGE_TAGS.split(',');
+            const targetBranch = context.payload.ref.replace('refs/heads/', '');
+
+            const pullRequests = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed',
+              base: targetBranch,
+              sort: 'updated',
+              direction: 'desc'
+            });
+
+            const mergedPullRequest = pullRequests.data.find(pr => pr.merge_commit_sha === context.payload.after);
+            const sourceBranch = mergedPullRequest == null
+              ? targetBranch
+              : mergedPullRequest.head.ref.replace('refs/heads/', '')
+
+            console.log(tags)
+            const version = findNextVersion(tags, sourceBranch);
+            return `${version.major}.${version.minor}.${version.patch}-dev${version.preRelease}`;
+
+  build_and_push_api:
+    name: "build and push api"
+    needs:
+      - determine_version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create image
+        uses: ./.github/actions/create-image
+        with:
+          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-api
+          TAG: ${{ env.IS_EDGE == 'true' && 'edge' || '' }}
+          VERSION: ${{ needs.determine_version.outputs.version }}
+          DOCKERFILE: ./api/Dockerfile
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTEXT: ./api
+
+  build_and_push_ui:
+    name: "build and push ui"
+    needs:
+      - determine_version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create image
+        uses: ./.github/actions/create-image
+        with:
+          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-ui
+          TAG: ${{ env.IS_EDGE == 'true' && 'edge' || '' }}
+          VERSION: ${{ needs.determine_version.outputs.version }}
+          DOCKERFILE: ./ui/Dockerfile
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTEXT: ./ui
+
+  tag_commit:
+    name: "tag commit"
+    needs:
+      - determine_version
+      - build_and_push_api
+      - build_and_push_ui
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: tag edge
+        if: ${{ env.IS_EDGE == 'true' }}
+        uses: ./.github/actions/tag-commit
+        with:
+          TAG_NAME: edge
+          SHA: ${{ github.sha }}
+      - name: tag version
+        uses: ./.github/actions/tag-commit
+        with:
+          TAG_NAME: ${{ needs.determine_version.outputs.version }}
+          SHA: ${{ github.sha }}

@@ -1,0 +1,348 @@
+name: Code Quality
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - "**"
+      - "!main"
+
+env:
+  NODE_VERSION: "22.x"
+  RUST_VERSION: "1.73"
+  SQLX_OFFLINE: true
+  SQLX_VERSION: 0.7.3
+
+jobs:
+  #  add_review_links:
+  #    runs-on: ubuntu-22.04
+  #    timeout-minutes: 3
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Add review links
+  #        env:
+  #          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  #        run: scripts/github_add_link_for_reviews.sh
+
+  dependency-review:
+    name: "Dependency Review"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Review Dependencies
+        uses: actions/dependency-review-action@v4
+
+
+  check-changelog:
+    name: "Check CHANGELOG"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history for comparison
+          fetch-depth: 0
+      - name: Determine if branch is a feature branch
+        id: check_feature_branch
+        run: |
+          if [[ "${{ github.head_ref || github.ref_name }} " =~ ^feature/* ]]; then
+            echo "is_feature=true" >> $GITHUB_ENV
+          else
+            echo "is_feature=false" >> $GITHUB_ENV
+          fi
+      - name: Check if CHANGELOG.md has changed
+        if: env.is_feature == 'true'
+        run: |
+          # Compare the CHANGELOG.md file in the current branch with the `develop` branch
+          if git diff --name-only origin/develop...HEAD | grep -q '^CHANGELOG.md$'; then
+            echo "CHANGELOG.md has been updated."
+          else
+            echo "CHANGELOG.md has not been updated."
+            exit 1
+          fi
+
+
+  install-ui:
+    name: "Install UI"
+    runs-on: ubuntu-latest
+    needs:
+      - dependency-review
+      - check-changelog
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: "${{ runner.os }}-npm-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./ui/node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+      - name: Install node dependencies
+        run: cd ui && npm install
+
+
+  check-ui:
+    name: "Check UI"
+    runs-on: ubuntu-latest
+    needs:
+      - install-ui
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node modules
+        uses: actions/cache/restore@v4
+        with:
+          path: ./ui/node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
+      - name: Run build
+        run: cd ui && npm run check
+
+
+  test-ui:
+    name: "Test UI"
+    runs-on: ubuntu-latest
+    needs:
+      - check-ui
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node modules
+        uses: actions/cache/restore@v4
+        with:
+          path: ./ui/node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
+      - name: Run tests
+        run: cd ui && npm run test
+
+
+  lint-ui:
+    name: "Lint UI"
+    runs-on: ubuntu-latest
+    needs:
+      - check-ui
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node modules
+        uses: actions/cache/restore@v4
+        with:
+          path: ./ui/node_modules
+          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
+      - name: Run lint
+        run: cd ui && npm run lint
+
+
+  install-api:
+    name: "Install API"
+    runs-on: ubuntu-latest
+    needs:
+      - dependency-review
+      - check-changelog
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          profile: minimal
+          override: true
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+          restore-keys: |
+            ${{ runner.os }}-cargo_registry-
+      - name: Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+          restore-keys: |
+            ${{ runner.os }}-cargo_index-
+      - name: Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: ./api/target
+          key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+          restore-keys: |
+            ${{ runner.os }}-cargo_build-
+      - name: Cache sqlx binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/sqlx
+          key: "${{ runner.os }}-sqlx-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+          restore-keys: |
+            ${{ runner.os }}-sqlx-
+      - name: Install dependencies
+        run: |
+          cd api
+          rm -r src/*
+          rm -r tests/
+          echo "fn main() {}" > src/main.rs
+          cargo build --all-targets --locked --quiet
+          
+          rustup component add rustfmt
+          rustup component add clippy
+
+
+  check-api:
+    name: "Check API"
+    runs-on: ubuntu-latest
+    needs:
+      - install-api
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          profile: minimal
+          override: true
+      - name: Restore cargo registry
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/registry
+          key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+      - name: Restore cargo index
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/git
+          key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+      - name: Restore cargo build
+        uses: actions/cache/restore@v4
+        with:
+          path: ./api/target
+          key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('/api/Cargo.lock') }}"
+      - name: Run check
+        run: |
+          cd api
+          cargo check --frozen --quiet
+
+
+  lint-api:
+    name: "Lint API"
+    runs-on: ubuntu-latest
+    needs:
+      - check-api
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          profile: minimal
+          override: true
+      - name: Restore cargo registry
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/registry
+          key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+      - name: Restore cargo index
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/git
+          key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+      - name: Restore cargo build
+        uses: actions/cache/restore@v4
+        with:
+          path: ./api/target
+          key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('/api/Cargo.lock') }}"
+      - name: Run rustfmt
+        run: |
+          cd api
+          cargo fmt --check
+      - name: Run clippy
+        run: |
+          cd api
+          cargo clippy --frozen
+
+
+  test-api:
+    name: "Test API"
+    runs-on: ubuntu-latest
+    needs:
+      - check-api
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          profile: minimal
+          override: true
+      - name: Restore cargo registry
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/registry
+          key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+      - name: Restore cargo index
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/git
+          key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+      - name: Restore cargo build
+        uses: actions/cache/restore@v4
+        with:
+          path: ./api/target
+          key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('/api/Cargo.lock') }}"
+      - name: Restore sqlx binary
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/bin/sqlx
+          key: "${{ runner.os }}-sqlx-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
+      - name: Start DB
+        run: |
+          docker compose up --quiet-pull -d db
+          chmod +x ./.github/scripts/wait_for_service.sh
+          ./.github/scripts/wait_for_service.sh db
+      - name: Setup DB
+        run: |
+          cd api
+          sqlx database create
+          sqlx migrate run
+      - name: Start API
+        run: |
+          cd api
+          nohup cargo run --frozen > ../api.log 2>&1 &
+          echo $! > ../api.pid
+      - name: Run test
+        run: |
+          cd api
+          cargo test --frozen
+      - name: Stop services
+        run: |
+          kill $(cat api.pid)
+          docker compose down
