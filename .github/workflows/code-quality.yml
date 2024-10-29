@@ -177,3 +177,46 @@ jobs:
 
       - name: Install Rust dependencies
         run: cd api && cargo build --release
+      - name: test
+        run:  |
+          cd api 
+          docker compose up -d 
+          docker logs $(docker ps --filter "name=api" --format "{{.ID}}")
+          scripts/wait_db.sh && cargo test
+          
+
+  test-api:
+    runs-on: ubuntu-latest
+    needs: install-api
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Restore cached cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: cargo-registry-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-registry-${{ runner.os }}-
+      - name: Restore cached cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: cargo-index-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-index-${{ runner.os }}-
+      - name: Restore cached cargo build
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: cargo-build-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            cargo-build-${{ runner.os }}-
+      - name: Run tests
+        run: cd api && cargo test
