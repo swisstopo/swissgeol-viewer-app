@@ -176,4 +176,4 @@ jobs:
             cargo-build-${{ runner.os }}-
 
       - name: Install Rust dependencies
-        run: cargo build --release
+        run: cd api && cargo build --release
