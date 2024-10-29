@@ -176,7 +176,10 @@ jobs:
             cargo-build-${{ runner.os }}-
 
       - name: Install Rust dependencies
-        run: cd api && cargo build --release
+        run: |
+          cd api 
+          docker compose up -d db
+          cargo build --release
       - name: test
         run:  |
           cd api 
