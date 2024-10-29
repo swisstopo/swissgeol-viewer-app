@@ -15,15 +15,15 @@ env:
   DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?schema=public
 
 jobs:
-  add_review_links:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 3
-    steps:
-      - uses: actions/checkout@v4
-      - name: Add review links
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        run: scripts/github_add_link_for_reviews.sh
+#  add_review_links:
+#    runs-on: ubuntu-22.04
+#    timeout-minutes: 3
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Add review links
+#        env:
+#          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+#        run: scripts/github_add_link_for_reviews.sh
 
   dependency-review:
     runs-on: ubuntu-latest
@@ -68,10 +68,6 @@ jobs:
 #            ${{ runner.os }}-node_modules_e2e-
       - name: Install node dependencies
         run: cd ui && npm install
-#      - name: Generate prisma types
-#        run: npm run prisma -- generate
-#      - name: Install e2e node dependencies
-#        run: cd e2e && npm ci
 
   test-ui:
     runs-on: ubuntu-latest
@@ -88,8 +84,6 @@ jobs:
         with:
           path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
-#      - name: Migrate database
-#        run: npm run prisma -- migrate deploy
       - name: Run tests
         run: cd ui && npm run test
 
@@ -141,3 +135,45 @@ jobs:
 #        run: npx nx reset
       - name: Run build
         run: cd ui && npm run build
+
+
+
+  install-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: cargo-registry-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-registry-${{ runner.os }}-
+
+      - name: Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: cargo-index-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-index-${{ runner.os }}-
+
+      - name: Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: cargo-build-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            cargo-build-${{ runner.os }}-
+
+      - name: Install Rust dependencies
+        run: cargo build --release
