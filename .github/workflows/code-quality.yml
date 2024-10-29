@@ -15,6 +15,16 @@ env:
   DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?schema=public
 
 jobs:
+  add_review_links:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add review links
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: scripts/github_add_link_for_reviews.sh
+
   dependency-review:
     runs-on: ubuntu-latest
     steps:
