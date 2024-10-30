@@ -182,6 +182,9 @@ jobs:
           docker compose up -d db
           docker compose logs -f &
           cd api 
+          cargo install sqlx-cli --no-default-features --features native-tls,postgres
+          sqlx database create
+          sqlx migrate run
           cargo build --release
       - name: test
         run:  |
