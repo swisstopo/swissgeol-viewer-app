@@ -186,14 +186,14 @@ jobs:
           cargo install sqlx-cli --version 0.7.3 --no-default-features --features native-tls,postgres --locked --quiet
           sqlx database create
           sqlx migrate run
-          cargo build --release
+          cargo build --release --quiet
       - name: test
         run:  |
-          docker build -f api/DockerfileDev -t $(DOCKER_BASE)-local_api:latest api --pull
           docker compose up -d 
           cd api
-          docker logs $(docker ps --filter "name=api" --format "{{.ID}}")
-          scripts/wait_db.sh && cargo test
+          docker compose logs -f &
+          scripts/wait_db.sh 
+          cargo test
           
 
   test-api:
