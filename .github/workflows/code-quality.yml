@@ -178,6 +178,7 @@ jobs:
       - name: Install Rust dependencies
         run: |
           docker compose up -d db
+          sleep 120
           cd api 
           cargo build --release
       - name: test
