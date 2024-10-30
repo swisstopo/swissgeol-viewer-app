@@ -190,6 +190,8 @@ jobs:
 
   format-api:
     runs-on: ubuntu-latest
+    needs:
+      - install-api
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -213,15 +215,17 @@ jobs:
           sqlx migrate run
       - name: Run fmt
         run: |
-          rustup component add rustfmt
-          cargo fmt
+          docker compose exec api rustup component add rustfmt
+          docker compose exec api cargo fmt
       - name: Run clippy
         run: |
-          rustup component add clippy
-          cargo clippy
+          docker compose exec api rustup component add clippy
+          docker compose exec api cargo clippy
 
   test-api:
     runs-on: ubuntu-latest
+    needs:
+      - install-api
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -256,7 +260,6 @@ jobs:
     needs:
       - test-api
       - format-api
-      - install-api
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -285,8 +288,6 @@ jobs:
           sleep 10
           cd api
           docker compose exec api cargo build 
-
-#    test-api:
 
           
       
