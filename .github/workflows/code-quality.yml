@@ -179,20 +179,19 @@ jobs:
         env:
           DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
         run: |
-          docker compose up -d db
+          docker compose up -d db 
           docker compose logs -f &
-          sleep 10
+          scripts/wait_db.sh 
           cd api 
           cargo install sqlx-cli --version 0.7.3 --no-default-features --features native-tls,postgres --locked --quiet
           sqlx database create
           sqlx migrate run
-          cargo build --release --quiet
       - name: test
         run:  |
-          docker compose up -d 
-          cd api
+          docker compose up -d
           docker compose logs -f &
-          scripts/wait_db.sh 
+          sleep 10
+          cd api
           cargo test
           
 
