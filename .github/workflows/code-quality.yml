@@ -192,7 +192,8 @@ jobs:
           docker compose logs -f &
           sleep 10
           cd api
-          cargo test
+          docker compose exec api cargo test --offline
+          
           
 
   test-api:
