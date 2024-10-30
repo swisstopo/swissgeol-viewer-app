@@ -178,7 +178,7 @@ jobs:
       - name: Install Rust dependencies
         run: |
           docker compose up -d db
-          docker logs $(docker ps --filter "name=db-1" --format "{{.ID}}")
+          docker compose logs -f &
           cd api 
           cargo build --release
       - name: test
