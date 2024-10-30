@@ -182,9 +182,9 @@ jobs:
           cargo build --release
       - name: test
         run:  |
-          cd api 
           docker build -f api/DockerfileDev -t $(DOCKER_BASE)-local_api:latest api --pull
           docker compose up -d 
+          cd api
           docker logs $(docker ps --filter "name=api" --format "{{.ID}}")
           scripts/wait_db.sh && cargo test
           
