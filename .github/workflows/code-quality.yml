@@ -177,7 +177,7 @@ jobs:
 
       - name: Install Rust dependencies
         env:
-          DATABASE_URL: "postgres://www-data:www-data@db:5432/swissgeol-local"
+          DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
         run: |
           docker compose up -d db
           docker compose logs -f &
