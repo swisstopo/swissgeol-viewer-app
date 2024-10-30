@@ -213,6 +213,10 @@ jobs:
           cargo install sqlx-cli --version 0.7.3 --no-default-features --features native-tls,postgres --locked --quiet
           sqlx database create
           sqlx migrate run
+      - name: Run container
+        run: |
+          docker compose up -d
+          sleep 10
       - name: Run fmt
         run: |
           docker compose exec api rustup component add rustfmt
@@ -260,6 +264,7 @@ jobs:
     needs:
       - test-api
       - format-api
+      - dependency-review
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
