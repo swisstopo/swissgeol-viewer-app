@@ -177,12 +177,13 @@ jobs:
 
       - name: Install Rust dependencies
         run: |
-          cd api 
           docker compose up -d db
+          cd api 
           cargo build --release
       - name: test
         run:  |
           cd api 
+          docker build -f api/DockerfileDev -t $(DOCKER_BASE)-local_api:latest api --pull
           docker compose up -d 
           docker logs $(docker ps --filter "name=api" --format "{{.ID}}")
           scripts/wait_db.sh && cargo test
