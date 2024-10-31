@@ -171,7 +171,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: target
-          key: cargo-build-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          key: cargo-build-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             cargo-build-${{ runner.os }}-
 
@@ -188,7 +188,7 @@ jobs:
           DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
         run: |
           docker compose up -d db 
-#          docker compose logs -f &
+          docker compose logs -f &
           sleep 10 
           cd api
           if [ ! -f ~/.cargo/bin/sqlx ]; then
