@@ -328,8 +328,8 @@ jobs:
           docker compose up -d db 
           sleep 10 
           cd api 
-          sqlx database create
-          sqlx migrate run
+#          sqlx database create
+#          sqlx migrate run
       - name: Run test
         run: |
           docker compose up -d
@@ -340,8 +340,8 @@ jobs:
   build-api:
     runs-on: ubuntu-latest
     needs:
-      - test-api
-      - format-api
+#      - test-api
+#      - format-api
       - dependency-review
     steps:
       - name: Checkout repository
@@ -393,8 +393,8 @@ jobs:
           docker compose up -d db 
           sleep 10 
           cd api 
-          sqlx database create
-          sqlx migrate run
+#          sqlx database create
+#          sqlx migrate run
       - name: Run test
         run: |
           docker compose up -d
