@@ -41,7 +41,7 @@ jobs:
         if: ${{ github.event.inputs.version == '' }}
         run: |
           git fetch --tags
-          EDGE_COMMIT=$(git rev-list -n 1 feature/viewer-1352-remove-console-logs)
+          EDGE_COMMIT=$(git rev-list -n 1 master)
           EDGE_TAGS=$(printf "%s," $(git tag --contains $EDGE_COMMIT))
           EDGE_TAGS=${EDGE_TAGS%,}
           echo "edge_tags=$EDGE_TAGS" >> "$GITHUB_OUTPUT"
