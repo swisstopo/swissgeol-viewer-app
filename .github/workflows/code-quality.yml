@@ -415,6 +415,7 @@ jobs:
           SQLX_OFFLINE: "true"
           DATABASE_URL: "postgres://www-data:www-data@db:5432/swissgeol-local"
         run: |
+          rustup target add x86_64-unknown-linux-musl
           cd api
           cargo build --target x86_64-unknown-linux-musl
           
