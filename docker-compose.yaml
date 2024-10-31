@@ -37,6 +37,8 @@ services:
       - ./api/Cargo.toml:/app/Cargo.toml:ro
     links:
       - db
+#    env_file:
+#      - ./api/.env
 
   ui:
     image: node:lts
@@ -86,7 +88,10 @@ services:
       POSTGRES_DB: *db_name
     ports:
       - 15432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
     # command: postgres -c log_statement=all for debugging
 
 volumes:
   miniodata:
+  db-data:

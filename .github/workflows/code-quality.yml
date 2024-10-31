@@ -188,7 +188,6 @@ jobs:
           DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
         run: |
           docker compose up -d db 
-          docker compose logs -f &
           sleep 10 
           cd api
           if [ ! -f ~/.cargo/bin/sqlx ]; then
@@ -196,6 +195,14 @@ jobs:
           fi
           sqlx database create
           sqlx migrate run
+
+      - name: Cache shared volume
+        uses: actions/cache@v4
+        with:
+          path: /var/lib/postgresql/data
+          key: db-data-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            db-data-${{ runner.os }}-
 
 
   format-api:
@@ -252,8 +259,8 @@ jobs:
           docker compose up -d db 
           sleep 10 
           cd api 
-          sqlx database create
-          sqlx migrate run
+#          sqlx database create
+#          sqlx migrate run
       - name: Run container
         run: |
           docker compose up -d
