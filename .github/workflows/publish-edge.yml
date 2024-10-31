@@ -114,8 +114,8 @@ jobs:
     needs:
       - determine_version
       - build_and_push_api
-      - build_and_push_app
-      - build_and_push_sync
+#      - build_and_push_app
+#      - build_and_push_sync
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
