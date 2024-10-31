@@ -395,12 +395,26 @@ jobs:
           cd api 
 #          sqlx database create
 #          sqlx migrate run
-      - name: Build
+      - name: Build API
+        env:
+          S3_AWS_REGION: eu-west-1
+          AWS_ACCESS_KEY_ID: minio
+          AWS_SECRET_ACCESS_KEY: minio123
+          S3_BUCKET: ngmpub-userdata-local
+          PROJECTS_S3_BUCKET: ngmpub-project-files-local
+          S3_ENDPOINT: http://minio:9000
+          COGNITO_CLIENT_ID: 10h1tga4i933buv25lelalmtrn
+          COGNITO_POOL_ID: eu-west-1_dbfEb2FuH
+          PGUSER: www-data
+          PGPASSWORD: www-data
+          PGDATABASE: swissgeol-local
+          PGHOST: db
+          PGPORT: "5432"
+          APP_PORT: "3000"
+          SQLX_OFFLINE: "true"
+          DATABASE_URL: "postgres://www-data:www-data@db:5432/swissgeol-local"
         run: |
-          docker compose up -d
-          sleep 10
           cd api
-          docker compose exec api cargo build 
-
+          cargo build --target x86_64-unknown-linux-musl
           
       
