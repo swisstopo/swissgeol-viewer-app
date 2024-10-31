@@ -342,6 +342,7 @@ jobs:
     needs:
 #      - test-api
 #      - format-api
+      - install-api
       - dependency-review
     steps:
       - name: Checkout repository
