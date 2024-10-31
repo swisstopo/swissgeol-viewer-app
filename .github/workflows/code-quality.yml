@@ -193,8 +193,8 @@ jobs:
           if [ ! -f ~/.cargo/bin/sqlx ]; then
           cargo install sqlx-cli --version 0.7.3 --no-default-features --features native-tls,postgres --locked --quiet
           fi
-          sqlx database create
-          sqlx migrate run
+#          sqlx database create
+#          sqlx migrate run
 
       - name: Cache shared volume
         uses: actions/cache@v4
@@ -395,7 +395,7 @@ jobs:
           cd api 
 #          sqlx database create
 #          sqlx migrate run
-      - name: Run test
+      - name: Build
         run: |
           docker compose up -d
           sleep 10
