@@ -237,6 +237,14 @@ jobs:
           restore-keys: |
             cargo-build-${{ runner.os }}-
 
+      - name: Cache sqlx binary
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/bin/sqlx
+          key: sqlx-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            sqlx-${{ runner.os }}-
+
       - name: Install Rust dependencies
         env:
           DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
