@@ -263,7 +263,7 @@ jobs:
 #          sqlx migrate run
       - name: Run container
         run: |
-          docker compose up -d
+          docker compose up -d api
           sleep 10
       - name: Run fmt
         run: |
