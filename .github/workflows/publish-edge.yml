@@ -92,6 +92,7 @@ jobs:
           VERSION: ${{ needs.determine_version.outputs.version }}
           DOCKERFILE: ./api/Dockerfile
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTEXT: ./api
 
 #  build_and_push_app:
 #    name: "build and push app"
