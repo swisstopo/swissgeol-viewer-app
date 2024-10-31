@@ -234,7 +234,7 @@ jobs:
           DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
         run: |
           docker compose up -d db 
-#          docker compose logs -f &
+          docker compose logs -f &
           sleep 10 
           cd api 
           cargo install sqlx-cli --version 0.7.3 --no-default-features --features native-tls,postgres --locked --quiet
