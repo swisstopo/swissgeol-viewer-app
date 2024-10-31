@@ -321,18 +321,18 @@ jobs:
           restore-keys: |
             sqlx-${{ runner.os }}-
 
-      - name: Install Rust dependencies
-        env:
-          DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
-        run: |
-          docker compose up -d db 
-          sleep 10 
-          cd api 
+#      - name: Install Rust dependencies
+#        env:
+#          DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
+#        run: |
+#          docker compose up -d db
+#          sleep 10
+#          cd api
 #          sqlx database create
 #          sqlx migrate run
       - name: Run test
         run: |
-          docker compose up -d
+          docker compose up -d api
           sleep 10
           cd api
           docker compose exec api cargo test --offline
