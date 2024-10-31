@@ -237,7 +237,7 @@ jobs:
           restore-keys: |
             cargo-build-${{ runner.os }}-
 
-      - name: Cache sqlx binary
+      - name: Restore cached sqlx binary
         uses: actions/cache/restore@v4
         with:
           path: ~/.cargo/bin/sqlx
@@ -250,7 +250,6 @@ jobs:
           DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
         run: |
           docker compose up -d db 
-          docker compose logs -f &
           sleep 10 
           cd api 
           sqlx database create
@@ -282,21 +281,51 @@ jobs:
           toolchain: 1.73
           profile: minimal
           override: true
+
+      - name: Restore cached cargo registry
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/registry
+          key: cargo-registry-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-registry-${{ runner.os }}-
+
+      - name: Restore cached cargo index
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/git
+          key: cargo-index-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-index-${{ runner.os }}-
+
+      - name: Restore cached cargo build
+        uses: actions/cache/restore@v4
+        with:
+          path: target
+          key: cargo-build-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-build-${{ runner.os }}-
+
+      - name: Restore cached sqlx binary
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/bin/sqlx
+          key: sqlx-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            sqlx-${{ runner.os }}-
+
       - name: Install Rust dependencies
         env:
           DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
         run: |
           docker compose up -d db 
-          docker compose logs -f &
           sleep 10 
           cd api 
-          cargo install sqlx-cli --version 0.7.3 --no-default-features --features native-tls,postgres --locked --quiet
           sqlx database create
           sqlx migrate run
       - name: Run test
         run: |
           docker compose up -d
-          docker compose logs -f &
           sleep 10
           cd api
           docker compose exec api cargo test --offline
@@ -317,21 +346,51 @@ jobs:
           toolchain: 1.73
           profile: minimal
           override: true
+
+      - name: Restore cached cargo registry
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/registry
+          key: cargo-registry-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-registry-${{ runner.os }}-
+
+      - name: Restore cached cargo index
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/git
+          key: cargo-index-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-index-${{ runner.os }}-
+
+      - name: Restore cached cargo build
+        uses: actions/cache/restore@v4
+        with:
+          path: target
+          key: cargo-build-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            cargo-build-${{ runner.os }}-
+
+      - name: Restore cached sqlx binary
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cargo/bin/sqlx
+          key: sqlx-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
+          restore-keys: |
+            sqlx-${{ runner.os }}-
+
       - name: Install Rust dependencies
         env:
           DATABASE_URL: "postgres://www-data:www-data@localhost:15432/swissgeol-local"
         run: |
           docker compose up -d db 
-          docker compose logs -f &
           sleep 10 
           cd api 
-          cargo install sqlx-cli --version 0.7.3 --no-default-features --features native-tls,postgres --locked --quiet
           sqlx database create
           sqlx migrate run
       - name: Run test
         run: |
           docker compose up -d
-          docker compose logs -f &
           sleep 10
           cd api
           docker compose exec api cargo build 
