@@ -72,6 +72,7 @@ jobs:
               ? targetBranch
               : mergedPullRequest.head.ref.replace('refs/heads/', '')
 
+            console.log(tags)
             const version = findNextVersion(tags, sourceBranch);
             return `${version.major}.${version.minor}.${version.patch}-dev${version.preRelease}`;
 
