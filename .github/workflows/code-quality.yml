@@ -206,7 +206,7 @@ jobs:
           override: true
 
       - name: Restore cached cargo registry
-        uses: actions/cache/restore@v4actions/cache/restore@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cargo/registry
           key: cargo-registry-${{ runner.os }}-${{ hashFiles('./api/Cargo.lock') }}
