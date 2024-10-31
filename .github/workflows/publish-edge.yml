@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - "develop"
+      - "**"
+      - "!main"
 
   workflow_dispatch:
     inputs:
@@ -84,45 +86,28 @@ jobs:
       - name: Create image
         uses: ./.github/actions/create-image
         with:
-          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-api
+          IMAGE_NAME: ghcr.io/swisstopo/swissgeol-viewer-app-api
           TAG: ${{ env.IS_EDGE == 'true' && 'edge' || '' }}
           VERSION: ${{ needs.determine_version.outputs.version }}
-          DOCKERFILE: ./apps/server-asset-sg/docker/Dockerfile
+          DOCKERFILE: ./api/Dockerfile
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build_and_push_app:
-    name: "build and push app"
-    needs:
-      - determine_version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Create image
-        uses: ./.github/actions/create-image
-        with:
-          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-app
-          TAG: ${{ env.IS_EDGE == 'true' && 'edge' || '' }}
-          VERSION: ${{ needs.determine_version.outputs.version }}
-          DOCKERFILE: ./apps/client-asset-sg/docker/Dockerfile
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build_and_push_sync:
-    name: "build and push sync"
-    needs:
-      - determine_version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Create image
-        uses: ./.github/actions/create-image
-        with:
-          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-sync
-          TAG: ${{ env.IS_EDGE == 'true' && 'edge' || '' }}
-          VERSION: ${{ needs.determine_version.outputs.version }}
-          DOCKERFILE: ./apps/sync-asset-sg/docker/Dockerfile
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  build_and_push_app:
+#    name: "build and push app"
+#    needs:
+#      - determine_version
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#      - name: Create image
+#        uses: ./.github/actions/create-image
+#        with:
+#          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-app
+#          TAG: ${{ env.IS_EDGE == 'true' && 'edge' || '' }}
+#          VERSION: ${{ needs.determine_version.outputs.version }}
+#          DOCKERFILE: ./apps/client-asset-sg/docker/Dockerfile
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   tag_commit:
     name: "tag commit"
