@@ -1,6 +1,6 @@
-const { Octokit } = require("@octokit/rest");
-
 const removePackageVersions = async (imageUrl, imageVersions) => {
+  const { Octokit } = await import("@octokit/rest");
+
   const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN,
   });
@@ -11,7 +11,7 @@ const removePackageVersions = async (imageUrl, imageVersions) => {
     await octokit.rest.packages.deletePackageVersionForOrg({
       package_type: "container",
       package_name: imageName,
-      username: imageOwner,
+      org: imageOwner,
       package_version_id: imageId,
     });
   }
@@ -26,7 +26,7 @@ const loadOutdatedVersionIds = async (octokit, imageOwner, imageName, versions) 
     const response = await octokit.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
       package_type: "container",
       package_name: imageName,
-      username: imageOwner,
+      org: imageOwner,
       page,
     });
     if (response.data.length === 0) {

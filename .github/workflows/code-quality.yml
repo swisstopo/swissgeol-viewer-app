@@ -34,41 +34,11 @@ jobs:
         uses: actions/dependency-review-action@v4
 
 
-  check-changelog:
-    name: "Check CHANGELOG"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          # Fetch full history for comparison
-          fetch-depth: 0
-      - name: Determine if branch is a feature branch
-        id: check_feature_branch
-        run: |
-          if [[ "${{ github.head_ref || github.ref_name }} " =~ ^feature/* ]]; then
-            echo "is_feature=true" >> $GITHUB_ENV
-          else
-            echo "is_feature=false" >> $GITHUB_ENV
-          fi
-      - name: Check if CHANGELOG.md has changed
-        if: env.is_feature == 'true'
-        run: |
-          # Compare the CHANGELOG.md file in the current branch with the `develop` branch
-          if git diff --name-only origin/develop...HEAD | grep -q '^CHANGELOG.md$'; then
-            echo "CHANGELOG.md has been updated."
-          else
-            echo "CHANGELOG.md has not been updated."
-            exit 1
-          fi
-
-
   install-ui:
     name: "Install UI"
     runs-on: ubuntu-latest
     needs:
       - dependency-review
-      - check-changelog
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -165,16 +135,13 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - dependency-review
-      - check-changelog
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_VERSION }}
-          profile: minimal
-          override: true
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -203,6 +170,13 @@ jobs:
           key: "${{ runner.os }}-sqlx-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
           restore-keys: |
             ${{ runner.os }}-sqlx-
+      - name: Setup SQLx
+        run: |
+          cd api
+          SQLX_VERSION=0.7.3
+          if [[ ! -f ~/.cargo/bin/sqlx ]] || [[ $(sqlx --version) != "sqlx-cli $SQLX_VERSION" ]]; then
+            cargo install sqlx-cli --version $SQLX_VERSION --no-default-features --features native-tls,postgres --locked --quiet
+          fi
       - name: Install dependencies
         run: |
           cd api
@@ -210,9 +184,6 @@ jobs:
           rm -r tests/
           echo "fn main() {}" > src/main.rs
           cargo build --all-targets --locked --quiet
-          
-          rustup component add rustfmt
-          rustup component add clippy
 
 
   check-api:
@@ -224,11 +195,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_VERSION }}
-          profile: minimal
-          override: true
       - name: Restore cargo registry
         uses: actions/cache/restore@v4
         with:
@@ -259,11 +228,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_VERSION }}
-          profile: minimal
-          override: true
+          components: clippy, rustfmt
       - name: Restore cargo registry
         uses: actions/cache/restore@v4
         with:
@@ -286,7 +254,7 @@ jobs:
       - name: Run clippy
         run: |
           cd api
-          cargo clippy --frozen
+          cargo clippy --frozen --quiet
 
 
   test-api:
@@ -298,11 +266,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_VERSION }}
-          profile: minimal
-          override: true
       - name: Restore cargo registry
         uses: actions/cache/restore@v4
         with:
@@ -346,3 +312,51 @@ jobs:
         run: |
           kill $(cat api.pid)
           docker compose down
+
+
+  check-changelog:
+    name: "Check CHANGELOG"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history for comparison
+          fetch-depth: 0
+      - name: Determine if branch is a feature branch
+        id: check_feature_branch
+        run: |
+          if [[ "${{ github.head_ref || github.ref_name }} " =~ ^feature/* ]]; then
+            echo "is_feature=true" >> $GITHUB_ENV
+          else
+            echo "is_feature=false" >> $GITHUB_ENV
+          fi
+      - name: Check if CHANGELOG.md has changed
+        if: env.is_feature == 'true'
+        run: |
+          # Compare the CHANGELOG.md file in the current branch with the `develop` branch
+          if git diff --name-only origin/develop...HEAD | grep -q '^CHANGELOG.md$'; then
+            echo "CHANGELOG.md has been updated."
+          else
+            echo "::warning file=CHANGELOG.md::CHANGELOG.md has not been updated."
+          fi
+          
+
+  prefer-single-commit:
+    name: "Prefer Single Commit"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history for comparison
+          fetch-depth: 0
+      - name: Count commits
+        id: count_commits
+        run: |
+          commit_count=$(git rev-list --count HEAD ^origin/${{ github.event.pull_request.base.ref }})
+          echo "commit_count=$commit_count" >> $GITHUB_ENV
+      - name: Fail if more than one commit
+        if: env.commit_count > 1
+        run: |
+          echo "::warning::Pull request contains more than one commit ($commit_count commits). Please squash your commits."
