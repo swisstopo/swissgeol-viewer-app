@@ -7,7 +7,7 @@ services:
       dockerfile: DockerfileDev
     platform: linux/amd64
     ports:
-      - 8480:3000
+      - "8480:3000"
     environment:
       # S3
       S3_AWS_REGION: &minio_region eu-west-1
@@ -89,9 +89,9 @@ services:
     ports:
       - 15432:5432
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     # command: postgres -c log_statement=all for debugging
 
 volumes:
   miniodata:
-  db-data:
+  db:
