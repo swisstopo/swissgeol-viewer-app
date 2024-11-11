@@ -2,8 +2,8 @@ import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n';
 import './ngm-gst-interaction';
-import './ngm-swissforages-modal';
-import './ngm-swissforages-interaction';
+// import './ngm-swissforages-modal';
+// import './ngm-swissforages-interaction';
 import ToolboxStore from '../store/toolbox';
 import type {NgmGeometry} from './interfaces';
 
