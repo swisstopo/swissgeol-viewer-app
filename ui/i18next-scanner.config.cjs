@@ -2,12 +2,12 @@
 /* eslint-disable no-undef */
 // i18next-scanner.config.cjs
 const path = require('node:path');
-//import path from 'node:path';
+// import path from 'node:path';
 
 module.exports = {
   options: {
     debug: true,
-    sort: false,
+    sort: true,
     func: {
       list: ['i18next.t', 'i18n.t', 't'],
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
@@ -18,7 +18,7 @@ module.exports = {
     defaultValue: '__STRING_NOT_TRANSLATED__',
     resource: {
       loadPath: path.join(__dirname, 'locales/{{ns}}.{{lng}}.json'),
-      savePath: path.join(__dirname, 'locales/{{lng}}/{{ns}}-test.json'),
+      savePath: path.join(__dirname, 'locales/{{lng}}.{{ns}}-test.json'),
     },
     // nsSeparator: '.', // namespace separator
     // keySeparator: false, // key separator
