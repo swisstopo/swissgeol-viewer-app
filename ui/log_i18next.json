@@ -1,0 +1,85 @@
+{
+  "compatibilityJSON": "v3",
+  "debug": true,
+  "sort": true,
+  "attr": {
+    "list": [
+      "data-i18n"
+    ],
+    "extensions": [
+      ".html",
+      ".htm"
+    ]
+  },
+  "func": {
+    "list": [
+      "i18next.t",
+      "i18n.t",
+      "t"
+    ],
+    "extensions": [
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx"
+    ]
+  },
+  "trans": {
+    "component": "Trans",
+    "i18nKey": "i18nKey",
+    "defaultsKey": "defaults",
+    "extensions": [
+      ".js",
+      ".jsx"
+    ],
+    "fallbackKey": false,
+    "supportBasicHtmlNodes": true,
+    "keepBasicHtmlNodesFor": [
+      "br",
+      "strong",
+      "i",
+      "p"
+    ],
+    "acorn": {
+      "ecmaVersion": 2020,
+      "sourceType": "module"
+    }
+  },
+  "lngs": [
+    "en",
+    "de",
+    "fr",
+    "it"
+  ],
+  "fallbackLng": "en",
+  "ns": [
+    "app",
+    "assets"
+  ],
+  "defaultLng": "en",
+  "defaultNs": "app",
+  "defaultValue": "__STRING_NOT_TRANSLATED__",
+  "resource": {
+    "loadPath": "/Users/oeni/Documents/mystuff/repos/viewer/swissgeol-viewer-app/ui/locales/{{ns}}.{{lng}}.json",
+    "savePath": "/Users/oeni/Documents/mystuff/repos/viewer/swissgeol-viewer-app/ui/locales/{{lng}}/{{ns}}-test.json",
+    "jsonIndent": 2,
+    "lineEnding": "\n"
+  },
+  "keySeparator": ".",
+  "nsSeparator": ":",
+  "context": true,
+  "contextFallback": true,
+  "contextSeparator": "_",
+  "contextDefaultValues": [],
+  "plural": true,
+  "pluralFallback": true,
+  "pluralSeparator": "_",
+  "interpolation": {
+    "prefix": "{{",
+    "suffix": "}}"
+  },
+  "metadata": {},
+  "allowDynamicKeys": false,
+  "removeUnused": true
+}
+i18next-scanner: Added a new translation key { "by": "__STRING_NOT_TRANSLATED__" } to "/Users/oeni/Documents/mystuff/repos/viewer/swissgeol-viewer-app/ui/locales/app.de.json"
