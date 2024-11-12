@@ -9,4 +9,6 @@ RUN cargo install cargo-watch --version 7.8.1
 
 COPY . .
 
-CMD ["/app/start.sh"]
+RUN chmod +x start.sh
+
+CMD ["./start.sh"]
