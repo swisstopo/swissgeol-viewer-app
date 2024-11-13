@@ -11,4 +11,5 @@ COPY . .
 
 RUN chmod +x start.sh
 
+# Make sure the start.sh script has LF line endings!
 CMD ["./start.sh"]
