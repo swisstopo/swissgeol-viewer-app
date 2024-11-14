@@ -60,7 +60,7 @@ current_dir = os.getcwd()
 translation_files = os.listdir(empty_path)
 print(translation_files)
 
-# Move original files
+# Move original files to origLocals
 prev_files = os.listdir(new_path)
 
 for file in prev_files:
