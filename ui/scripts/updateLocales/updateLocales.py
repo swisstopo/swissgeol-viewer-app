@@ -10,7 +10,7 @@ orig_path = r'../../locales/origLocals'
 empty_path = r'../../locales/empty'
 new_path = r'../../locales'
 
-def checkAndCombineLocales(orig_path, empty_path, new_path, ns, lng):
+def checkAndCombineLocales(orig_pass, empty_path, new_path, ns, lng):
     """
     Doc-String:
         "name": checkAndCombineLocales
@@ -76,10 +76,11 @@ for file in translation_files:
     lng = file.split('-')[1]
     ns = file.split('-')[0]
 
-    # print('=x=x=x=x=x=x=')
-    # print(f"Working on: {file}")
+    print('=x=x=x=x=x=x=')
+    print(f"Working on: {file}")
 
     # Call function
-    #checkAndCombineLocales(orig_path, empty_path, new_path, ns, lng)
+    checkAndCombineLocales(orig_path, empty_path, new_path, ns, lng)
 
+    print('XxXxXxXxXxXxX')
     print('DONE!')
