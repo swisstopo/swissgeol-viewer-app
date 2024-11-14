@@ -12,6 +12,7 @@ env:
   RUST_VERSION: "1.73"
   SQLX_OFFLINE: true
   SQLX_VERSION: 0.7.3
+  PGHOST: localhost # Overrides the default value in .env
 
 jobs:
   #  add_review_links:
