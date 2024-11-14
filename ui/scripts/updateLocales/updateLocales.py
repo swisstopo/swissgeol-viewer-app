@@ -46,7 +46,7 @@ def checkAndCombineLocales(orig_pass, empty_path, new_path, ns, lng):
             new_trans_object[key] = "__ TO BE TANSLATED __"
     
     # Write compared and combined translations to file
-    with open(os.path.join(new_path,f'{ns}-{lng}-new.json'), 'w') as f:    
+    with open(os.path.join(new_path,f'{ns}-{lng}-new.json'), 'w') as f: # --> "-new" entfernen    
         json.dump(new_trans_object, f, indent=2, ensure_ascii=False)
 
     # Statistiks
@@ -81,6 +81,11 @@ for file in translation_files:
 
     # Call function
     checkAndCombineLocales(orig_path, empty_path, new_path, ns, lng)
+
+    # Clean-up
+    for file in empty_path:
+        # os.remove(os.path.join(empty_path,file))
+        pass
 
     print('XxXxXxXxXxXxX')
     print('DONE!')
