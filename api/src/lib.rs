@@ -1,4 +1,3 @@
-use axum::response::IntoResponse;
 use axum::{
     extract::{DefaultBodyLimit, Extension},
     http::{HeaderValue, Method},
@@ -10,7 +9,7 @@ use axum::{
 use clap::Parser;
 use hyper::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE};
 use sqlx::PgPool;
-use tower::{ServiceBuilder, ServiceExt};
+use tower::{ServiceBuilder};
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
 pub use config::Config;
@@ -41,6 +40,7 @@ pub async fn app(pool: PgPool) -> Router {
     let aws_client = aws_config.create_client().await;
 
     Router::new()
+        .route("/api/config", get(handlers::get_client_config))
         .route("/api/health_check", get(handlers::health_check))
         .route(
             "/api/projects",

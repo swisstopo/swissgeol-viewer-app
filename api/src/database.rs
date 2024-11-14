@@ -1,3 +1,4 @@
+use serde::Serialize;
 use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
     Connection, Executor, PgConnection, PgPool,
@@ -6,19 +7,19 @@ use sqlx::{
 #[derive(clap::Parser)]
 pub struct Database {
     /// The database username
-    #[clap(env)]
+    #[clap(long,env)]
     pub pguser: String,
     /// The database password
-    #[clap(env, hide_env_values = true)]
+    #[clap(long,env, hide_env_values = true)]
     pub pgpassword: String,
     /// The database host name
-    #[clap(env)]
+    #[clap(long,env)]
     pub pghost: String,
     /// The database port
-    #[clap(env)]
+    #[clap(long,env)]
     pub pgport: u16,
     /// The database name
-    #[clap(env)]
+    #[clap(long,env)]
     pub pgdatabase: String,
 }
 
