@@ -7,7 +7,7 @@ const path = require('node:path');
 module.exports = {
   options: {
     debug: true,
-    sort: false,
+    sort: true,
     func: {
       list: ['i18next.t', 'i18n.t', 't'],
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
@@ -18,12 +18,12 @@ module.exports = {
     defaultValue: '__STRING_NOT_TRANSLATED__',
     resource: {
       loadPath: path.join(__dirname, 'locales/{{ns}}.{{lng}}.json'),
-      savePath: path.join(__dirname, 'locales/{{lng}}/{{ns}}-test.json'),
+      savePath: path.join(__dirname, 'locales/empty/{{ns}}-{{lng}}-empty.json'),
     },
     // nsSeparator: '.', // namespace separator
     // keySeparator: false, // key separator
     // merge: false,
-    removeUnused: true, // Diese Option sorgt dafür, dass unbenutzte Keys entfernt werden
+    // removeUnused: true, // Diese Option sorgt dafür, dass unbenutzte Keys entfernt werden
   },
   // Hier kannst du auch spezifische Dateien oder Verzeichnisse angeben
   // die gescannt werden sollen
