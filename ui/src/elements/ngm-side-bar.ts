@@ -468,6 +468,9 @@ export class SideBar extends LitElementI18n {
           this.accordionInited = true;
         }
       }
+      if (changedProperties.has('activeLayers')) {
+        this.layerActions!.reorderLayers(this.activeLayers);
+      }
     }
 
     super.updated(changedProperties);
