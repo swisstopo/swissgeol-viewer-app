@@ -128,6 +128,7 @@ export default {
     ],
     compress: true,
     port: 8000,
+    hot: true,
 
   },
   plugins: [

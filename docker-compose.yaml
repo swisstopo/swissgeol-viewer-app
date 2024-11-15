@@ -1,52 +1,56 @@
 services:
   api:
-    init: true # handle kill signals for rust
-    image: local_api:latest
+    image: swissgeol-viewer-app/api:local
     build:
       context: ./api
       dockerfile: DockerfileDev
-    platform: linux/amd64
+    init: true
     ports:
       - "8480:3000"
-    environment:
-      SQLX_OFFLINE: true
-    command: ["cargo", "watch", "--poll", "--shell", "cargo run --offline --target x86_64-unknown-linux-musl"]
     volumes:
-      - ./api/src:/app/src:ro
-      - ./api/migrations:/app/migrations:ro
-      - ./api/.sqlx:/app/.sqlx:ro
-      - ./api/Cargo.toml:/app/Cargo.toml:ro
+      - ./api:/app
+      - api.cargo:/usr/local/cargo
+      - api.target:/app/target
     depends_on:
       - db
+      - minio
+    env_file:
+      - ./api/.env
+      - .env
 
   ui:
-    image: node:lts
+    image: node:22
+    init: true
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
-      ENVIRONMENT_NAME: local-dev
+      NODE_ENV: development
     working_dir: /app
-    command: ['node_modules/.bin/webpack', 'serve']
+    command: ["sh", "-c", "npm ci && npm run start"]
     depends_on:
       - api
       - abbreviator
     volumes:
-      - "./ui:/app:ro"
+      - ./ui:/app
+      - ui.node_modules:/app/node_modules
 
   minio:
-    init: true # handle kill signals
     image: minio/minio:latest
     command: server /data --console-address :9001
+    init: true
     volumes:
       - minio:/data
     ports:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_BROWSER: 'on'
+      MINIO_BROWSER: "on"
       MINIO_SITE_REGION: ${S3_AWS_REGION}
       MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
       MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+    env_file:
+      - ./api/.env
+      - .env
 
   abbreviator:
     image: ghcr.io/swisstopo/swissgeol-viewer-app-abbreviator:main
@@ -61,20 +65,23 @@ services:
   db:
     image: camptocamp/postgres:14-postgis-3
     platform: linux/amd64
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${PGUSER}
       POSTGRES_PASSWORD: ${PGPASSWORD}
       POSTGRES_DB: ${PGDATABASE}
-    ports:
-      - "15432:5432"
     volumes:
-      - ./volumes/db/:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5
-    # command: postgres -c log_statement=all for debugging
 
 volumes:
   minio:
+  db:
+  api.cargo:
+  api.target:
+  ui.node_modules:

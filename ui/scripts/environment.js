@@ -13,7 +13,14 @@ const execPromise = promisify(exec);
     const filename = 'environment';
 
     if (!branch) {
-      branch = (await execPromise('git rev-parse --abbrev-ref HEAD')).stdout.toString().trim();
+      try {
+        // Check if the current directory is a Git repository
+        await execPromise('git rev-parse --is-inside-work-tree');
+        branch = (await execPromise('git rev-parse --abbrev-ref HEAD')).stdout.toString().trim();
+      } catch (gitError) {
+        console.warn('Not a git repository. Using default branch name.');
+        branch = 'default-branch';
+      }
     }
 
     const jsonContent = `{'branch': '${branch}'}`;
