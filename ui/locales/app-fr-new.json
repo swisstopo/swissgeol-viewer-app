@@ -1,4 +1,5 @@
 {
+  "Temperature": "Température",
   "app_cancel_btn_label": "Annuler",
   "by": "de",
   "cam_configuration_header": "Configuration de la caméra",
@@ -241,8 +242,8 @@
   "tbx_create_section_label": "Créer des coupes",
   "tbx_cross_sections_depth_label": "Profondeur des coupes (m AMSL)",
   "tbx_cross_sections_format_label": "Format du résultat",
-  "tbx_data_download_hint": "Aucune couche téléchargeable est affichée",
   "tbx_data-download": "Télécharger des données",
+  "tbx_data_download_hint": "Aucune couche téléchargeable est affichée",
   "tbx_description_label": "Description",
   "tbx_download_all_btn": "Télécharger kml",
   "tbx_download_kml_btn_label": "Télécharger en format kml",
@@ -331,7 +332,6 @@
   "tbx_volume_height_label": "Distance au terrain",
   "tbx_volume_lower_limit_label": "Limite inférieure",
   "tbx_website_label": "URL site web",
-  "Temperature": "Température",
   "topographic_profile_downloads": "Télécharger",
   "topographic_profile_header": "Profil de l'altitude ",
   "tracking_agree_btn_label": "D'accord avec responsabilité et acquisition de données",

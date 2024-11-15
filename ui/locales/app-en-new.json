@@ -1,4 +1,5 @@
 {
+  "Temperature": "Temperature",
   "app_cancel_btn_label": "Cancel",
   "by": "by",
   "cam_configuration_header": "Camera configuration",
@@ -241,8 +242,8 @@
   "tbx_create_section_label": "Create section",
   "tbx_cross_sections_depth_label": "Cross sections elevation (m AMSL)",
   "tbx_cross_sections_format_label": "Output format",
-  "tbx_data_download_hint": "No data to download. Please switch on some more layers in the data catalogue to download them.",
   "tbx_data-download": "Data download",
+  "tbx_data_download_hint": "No data to download. Please switch on some more layers in the data catalogue to download them.",
   "tbx_description_label": "Description",
   "tbx_download_all_btn": "Download KML",
   "tbx_download_kml_btn_label": "Download as KML",
@@ -331,7 +332,6 @@
   "tbx_volume_height_label": "Distance to terrain",
   "tbx_volume_lower_limit_label": "Lower limit",
   "tbx_website_label": "Website URL",
-  "Temperature": "Temperature",
   "topographic_profile_downloads": "Download",
   "topographic_profile_header": "Elevation profile",
   "tracking_agree_btn_label": "Agreed to Limitation of liability and data acquisition",
