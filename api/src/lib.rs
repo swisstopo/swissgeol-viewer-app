@@ -40,7 +40,7 @@ pub async fn app(pool: PgPool) -> Router {
     let aws_client = aws_config.create_client().await;
 
     Router::new()
-        .route("/api/config", get(handlers::get_client_config))
+        .route("/api/client-config", get(handlers::get_client_config))
         .route("/api/health_check", get(handlers::health_check))
         .route(
             "/api/projects",

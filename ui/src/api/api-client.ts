@@ -1,21 +1,22 @@
-import Auth from './auth';
-import AuthStore from './store/auth';
-import {API_BY_PAGE_HOST} from './constants';
-import type {CreateProject, Project} from './elements/dashboard/ngm-dashboard';
+import AuthService from '../authService';
+import AuthStore from '../store/auth';
+import {API_BY_PAGE_HOST} from '../constants';
+import type {CreateProject, Project} from '../elements/dashboard/ngm-dashboard';
 import {Subject} from 'rxjs';
-import {NgmGeometry} from './toolbox/interfaces';
+import {NgmGeometry} from '../toolbox/interfaces';
 
 
-class ApiClient {
+export class ApiClient {
     projectsChange = new Subject<Project[]>();
-    token = Auth.getAccessToken();
-    private apiUrl: string;
+    token: string | null = null;
+    private readonly apiUrl: string;
 
-    constructor() {
+    constructor(private readonly authService: AuthService) {
       this.apiUrl = API_BY_PAGE_HOST[window.location.host];
+      this.token = this.authService.getAccessToken();
 
       AuthStore.user.subscribe(() => {
-        this.token = Auth.getAccessToken();
+        this.token = this.authService.getAccessToken();
         this.refreshProjects();
       });
     }
@@ -166,5 +167,3 @@ function addAuthorization(headers: any, token: string|null) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 }
-
-export const apiClient = new ApiClient();

@@ -133,7 +133,7 @@ main {
   overflow: hidden;
 }
 
-ngm-app {
+ngm-app, ngm-app-boot {
   flex: auto;
   display: flex;
   flex-direction: column;

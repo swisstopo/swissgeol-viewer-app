@@ -57,6 +57,9 @@ import DashboardStore from './store/dashboard';
 import type {SideBar} from './elements/ngm-side-bar';
 import {LayerConfig} from './layertree';
 import $ from './jquery';
+import {clientConfigContext} from './context';
+import {consume} from '@lit/context';
+import {ClientConfig} from './api/client-config';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -89,7 +92,7 @@ export class NgmApp extends LitElementI18n {
   @state()
   accessor showMobileSearch = false;
   @state()
-  accessor loading = true;
+  accessor loading = false;
   @state()
   accessor determinateLoading = false;
   @state()
@@ -122,6 +125,9 @@ export class NgmApp extends LitElementI18n {
   private queryManager: QueryManager | undefined;
   private waitForViewLoading = false;
   private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
+
+  @consume({context: clientConfigContext})
+  accessor clientConfig!: ClientConfig;
 
   constructor() {
     super();
@@ -505,7 +511,7 @@ export class NgmApp extends LitElementI18n {
           ${this.showTrackingConsent ? html`
             <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>` : ''}
           <ngm-ion-modal class="ngm-floating-window"
-                         .hidden=${!this.showIonModal} 
+                         .hidden=${!this.showIonModal}
                          @close=${() => this.showIonModal = false}>
           </ngm-ion-modal>
         </div>

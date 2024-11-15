@@ -24,8 +24,10 @@ import DrawStore from '../store/draw';
 import {GeometryController} from './GeometryController';
 import {showSnackbarInfo} from '../notifications';
 import DashboardStore from '../store/dashboard';
-import {apiClient} from '../api-client';
 import {pairwise} from 'rxjs';
+import {consume} from '@lit/context';
+import {apiClientContext} from '../context';
+import {ApiClient} from '../api/api-client';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends LitElementI18n {
@@ -48,6 +50,9 @@ export class NgmToolbox extends LitElementI18n {
   private geometryControllerNoEdit: GeometryController | undefined;
   private forceSlicingToolOpen = false;
 
+  @consume({context: apiClientContext})
+  accessor apiClient!: ApiClient;
+
   constructor() {
     super();
     MainStore.viewer.subscribe(viewer => {
@@ -64,7 +69,7 @@ export class NgmToolbox extends LitElementI18n {
           const project = DashboardStore.selectedTopicOrProject.value;
           if (projectEditMode === 'viewEdit' && project && !ToolboxStore.openedGeometryOptions.value?.editing) {
             try {
-              apiClient.updateProjectGeometries(project.id, geometries);
+              this.apiClient.updateProjectGeometries(project.id, geometries);
             } catch (e) {
               console.error(e);
             }
