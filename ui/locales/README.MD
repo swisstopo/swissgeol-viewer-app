@@ -1,3 +1,29 @@
+# Update translations
+
+## 1) Run i18next-scanner
+- Change to `swissgeol-viewer-app/ui`:
+```bash
+cd swissgeol-viewer-app/ui
+```
+- (*optional*) Modifiy configuration:  
+Edit `swissgeol-viewer-app/ui/i18next-scanner.config.cjs`
+
+- run scanner:
+```bash
+npx i18next-scanner --config i18next-scanner.config.cjs
+```
+
+## 2) Run script to campare and combine translations
+- Change to `swissgeol-viewer-app/ui/scripts/updateLocales`:
+```bash
+cd swissgeol-viewer-app/ui/scripts/updateLocales
+``` 
+
+- Run script
+```bash
+./updateLocales.py
+```
+
 ###### Prefixes / suffixes explanation:
 
 Main prefixes:
