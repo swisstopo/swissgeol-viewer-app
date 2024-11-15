@@ -10,6 +10,7 @@ orig_path = r'../../locales/origLocals'
 empty_path = r'../../locales/empty'
 new_path = r'../../locales'
 
+# Declare function 
 def checkAndCombineLocales(orig_pass, empty_path, new_path, ns, lng):
     """
     Doc-String:
@@ -46,7 +47,7 @@ def checkAndCombineLocales(orig_pass, empty_path, new_path, ns, lng):
             new_trans_object[key] = "__ TO BE TANSLATED __"
     
     # Write compared and combined translations to file
-    with open(os.path.join(new_path,f'{ns}-{lng}-new.json'), 'w') as f: # --> "-new" entfernen    
+    with open(os.path.join(new_path,f'{ns}.{lng}.json'), 'w') as f: # --> "-new" entfernen    
         json.dump(new_trans_object, f, indent=2, ensure_ascii=False)
 
     # Statistiks
@@ -55,28 +56,32 @@ def checkAndCombineLocales(orig_pass, empty_path, new_path, ns, lng):
     print(f"Count: of NEW translation ({ns}-{lng}): {len(new_trans)}")
 
 #########################
+# Run script
+print("Compare & Combine STARTED!")
+print('vvvvvvvvv')
 
-current_dir = os.getcwd()
+# Get files to be translated
 translation_files = os.listdir(empty_path)
 print(translation_files)
+print('')
+print(f"Count files to translate: {len(translation_files)}")
+print('')
 
 # Move original files to origLocals
 prev_files = os.listdir(new_path)
 
 for file in prev_files:
     if file.endswith(".json"):
-        print(file) 
         shutil.move(os.path.join(new_path,file), orig_path)
-
-# Run script
-print("Compare & Combine STARTED!")
+        print(f'{file} moved') 
 
 # Iterate over the locales directory
 for file in translation_files:
     lng = file.split('-')[1]
     ns = file.split('-')[0]
 
-    print('=x=x=x=x=x=x=')
+    print('')
+    print('>----------')
     print(f"Working on: {file}")
 
     # Call function
@@ -87,5 +92,5 @@ for file in translation_files:
         # os.remove(os.path.join(empty_path,file))
         pass
 
-    print('XxXxXxXxXxXxX')
+    print('^^^^^^^^^^^')
     print('DONE!')
