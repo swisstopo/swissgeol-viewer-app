@@ -7,3 +7,5 @@
 /ui/types
 /docs
 /secrets.txt
+ui/locales/empty/*.*
+ui/locales/origLocals/*.*
