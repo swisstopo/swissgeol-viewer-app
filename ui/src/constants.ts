@@ -2,9 +2,11 @@ import {Cartesian3, Color, ColorBlendMode, Math as CMath, Rectangle, ShadowMode,
 
 export {LayerType, DEFAULT_LAYER_OPACITY} from './layertree';
 
-export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 
-export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS);
+export const SWITZERLAND_BOUNDS_WGS84 = [4.54249, 44.61921, 12.67250, 48.45365];
+export const SWITZERLAND_BOUNDS_LV95 = [2370000, 945000, 2987000, 1380000];
+
+export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS_WGS84);
 
 export const MINIMAP_EXTENT = [5.910642046, 45.191912227, 10.554524194, 48.04750923];
 
