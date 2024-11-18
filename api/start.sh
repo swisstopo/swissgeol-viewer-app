@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SQLX_VERSION=0.7.3
+SQLX_VERSION=0.8.2
 if [[ ! -f ~/.cargo/bin/sqlx ]] || [[ $(sqlx --version) != "sqlx-cli $SQLX_VERSION" ]]; then
   cargo install sqlx-cli --version $SQLX_VERSION --no-default-features --features native-tls,postgres --locked
 fi

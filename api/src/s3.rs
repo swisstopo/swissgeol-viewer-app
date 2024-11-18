@@ -1,4 +1,6 @@
-use aws_sdk_s3::{Client, Config, Credentials, Endpoint, Region};
+use aws_config::{BehaviorVersion, Region};
+use aws_sdk_s3::config::Credentials;
+use aws_sdk_s3::{Client, Config};
 use hyper::Uri;
 
 /// Configuration for AWS S3 Client
@@ -21,6 +23,11 @@ pub struct S3 {
     pub s3_endpoint: Option<Uri>,
 }
 
+#[inline(always)]
+fn behavior_version() -> BehaviorVersion {
+    BehaviorVersion::latest()
+}
+
 impl S3 {
     pub async fn create_client(&self) -> aws_sdk_s3::Client {
         if let Some(endpoint) = &self.s3_endpoint {
@@ -32,18 +39,17 @@ impl S3 {
                 "my-dev-credentials",
             );
 
-            let endpoint = Endpoint::immutable(endpoint.to_owned());
-
             let config = Config::builder()
+                .behavior_version(behavior_version())
                 .region(Region::new(self.s3_aws_region.to_owned()))
-                .endpoint_resolver(endpoint)
+                .endpoint_url(endpoint.to_string())
                 .credentials_provider(creds)
                 .build();
 
             return Client::from_conf(config);
         }
 
-        let aws_config = aws_config::from_env()
+        let aws_config = aws_config::defaults(behavior_version())
             .region(Region::new(self.s3_aws_region.to_owned()))
             .load()
             .await;
