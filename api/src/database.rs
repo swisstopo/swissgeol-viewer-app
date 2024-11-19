@@ -7,19 +7,19 @@ use sqlx::{
 #[derive(clap::Parser)]
 pub struct Database {
     /// The database username
-    #[clap(long,env)]
+    #[clap(long, env)]
     pub pguser: String,
     /// The database password
-    #[clap(long,env, hide_env_values = true)]
+    #[clap(long, env, hide_env_values = true)]
     pub pgpassword: String,
     /// The database host name
-    #[clap(long,env)]
+    #[clap(long, env)]
     pub pghost: String,
     /// The database port
-    #[clap(long,env)]
+    #[clap(long, env)]
     pub pgport: u16,
     /// The database name
-    #[clap(long,env)]
+    #[clap(long, env)]
     pub pgdatabase: String,
 }
 

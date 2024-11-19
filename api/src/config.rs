@@ -1,5 +1,5 @@
-use serde::Serialize;
 use crate::{auth::Auth, database::Database};
+use serde::Serialize;
 
 #[derive(clap::Parser)]
 pub struct Config {
