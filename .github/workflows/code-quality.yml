@@ -8,7 +8,7 @@ on:
       - "!main"
 
 env:
-  NODE_VERSION: "22.x"
+  NODE_VERSION: "22.5.1"
   RUST_VERSION: "1.82"
   SQLX_OFFLINE: true
   SQLX_VERSION: "0.8.2"
@@ -65,7 +65,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node_modules-
       - name: Install node dependencies
-        run: cd ui && npm install
+        run: cd ui && npm ci
 
 
   check-ui:
@@ -107,7 +107,9 @@ jobs:
           path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
       - name: Run tests
-        run: cd ui && npm run test
+        run: |
+          cd ui
+          npm run test
 
 
   lint-ui:
@@ -128,7 +130,9 @@ jobs:
           path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
       - name: Run lint
-        run: cd ui && npm run lint
+        run: |
+          cd ui
+          npm run lint
 
 
   install-api:

@@ -1,6 +1,6 @@
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
-import {S3Client, GetObjectCommand} from '@aws-sdk/client-s3';
-import {Resource, defer} from 'cesium';
+import {GetObjectCommand, S3Client} from '@aws-sdk/client-s3';
+import {defer, Resource} from 'cesium';
 
 
 function keyFromUrl(val) {
@@ -8,7 +8,7 @@ function keyFromUrl(val) {
     const url = new URL(val);
     // remove the first '/' from the path
     return url.pathname.slice(1);
-  } catch (err) {
+  } catch (_err) {
     return val;
   }
 }
@@ -17,7 +17,7 @@ export default class AmazonS3Resource extends Resource {
   bucket;
   region;
 
-  constructor(options, authService) {
+  constructor(options) {
     super(options);
 
     this.bucket = options.bucket;

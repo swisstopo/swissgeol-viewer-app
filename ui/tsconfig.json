@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
     "module": "esnext",
+    "target": "ES2020",
     "lib": ["es2022", "dom", "dom.iterable"],
     "declaration": true,
     "outDir": "./types",
@@ -15,12 +15,16 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": false,
-    "experimentalDecorators": false
+    "experimentalDecorators": false,
+    "types": [
+      "geojson"
+    ],
+    "baseUrl": "."
   },
-  "types": ["mocha"],
-  "include": ["src/**/*.ts", "test/**/*.ts", "src/**/*.js", "test/**/*.js"],
-  "exclude": []
+  "include": ["src/**/*.ts", "src/**/*.js", "node_modules/fomantic-ui-css/types/**/*.d.ts"],
+  "exclude": ["src/test/**/*"]
 }

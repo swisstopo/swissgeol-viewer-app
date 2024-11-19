@@ -3,7 +3,7 @@ import {customElement, property} from 'lit/decorators.js';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 
-import $ from '../jquery.js';
+import $ from 'jquery';
 import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';
 

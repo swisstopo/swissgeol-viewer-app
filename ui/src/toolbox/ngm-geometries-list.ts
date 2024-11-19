@@ -4,7 +4,7 @@ import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import ToolboxStore from '../store/toolbox';
 import type {GeometryTypes, NgmGeometry} from './interfaces';
-import $ from '../jquery.js';
+import $ from 'jquery';
 import './ngm-geometries-simple-list';
 import i18next from 'i18next';
 import DashboardStore from '../store/dashboard';

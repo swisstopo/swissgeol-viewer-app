@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 SQLX_VERSION=0.8.2
 if [[ ! -f ~/.cargo/bin/sqlx ]] || [[ $(sqlx --version) != "sqlx-cli $SQLX_VERSION" ]]; then

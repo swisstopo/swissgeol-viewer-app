@@ -4,7 +4,7 @@ import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
-import $ from '../jquery.js';
+import $ from 'jquery';
 import type {LayerConfig} from '../layertree';
 import {styleMap} from 'lit/directives/style-map.js';
 import {Sortable} from 'sortablejs';
@@ -42,7 +42,7 @@ export class NgmLayersItem extends LitElementI18n {
   private debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
 
   firstUpdated() {
-    $(this.querySelector('.ui.dropdown')).dropdown();
+    $(this.querySelector('.ui.dropdown')!).dropdown();
   }
 
   updated(changedProps) {

@@ -8,7 +8,7 @@ import DashboardStore from '../../store/dashboard';
 import {CreateProject, Project, TabTypes, Topic, type View} from './ngm-dashboard';
 import {ApiClient} from '../../api/api-client';
 import {showBannerSuccess} from '../../notifications';
-import $ from '../../jquery';
+import $ from 'jquery';
 import {DEFAULT_PROJECT_COLOR} from '../../constants';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
@@ -104,16 +104,16 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       </div>
       <div class="ngm-divider"></div>
       <div class="ngm-proj-views-header">
-        <div class="ngm-proj-title-icon">
-          <div class="ngm-screenshot-icon"></div>
-          <div>${i18next.t('dashboard_views')}</div>
-        </div>
-        <button class="ngm-save-view-btn"
-                .hidden="${!this.userEmail || !project?.owner}"
-                @click=${() => this.saveViewToProject()}>
-          <div>${i18next.t('dashboard_add_view')}</div>
-          <div class="ngm-save-icon icon"></div>
-        </button>
+          <div class="ngm-proj-title-icon">
+              <div class="ngm-screenshot-icon"></div>
+              <div>${i18next.t('dashboard_views')}</div>
+          </div>
+          <button class="ngm-save-view-btn"
+                  .hidden="${!this.userEmail || !project?.owner}"
+                  @click=${() => this.saveViewToProject()}>
+              <div>${i18next.t('dashboard_add_view')}</div>
+              <div class="ngm-save-icon icon"></div>
+          </button>
       </div>
       <div class="ngm-project-views">
         ${this.topicOrProject.views.map((view, index) => html`
@@ -264,3 +264,4 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     return this;
   }
 }
+

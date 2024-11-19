@@ -1,62 +1,58 @@
 import CopyPlugin from 'copy-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import {resolve, dirname, join} from 'path';
+import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer';
+import {dirname, join, resolve} from 'path';
 import {fileURLToPath} from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const cesiumBuild = resolve(__dirname, './node_modules/cesium/Build/Cesium');
 
-const cesiumSource = __dirname + '/node_modules/cesium/Source';
-const cesiumWorkers = '../Build/Cesium/Workers';
-const devMode = process.env.NODE_ENV !== 'production';
-
+const isDev = process.env.NODE_ENV !== 'production';
 
 const presets = [
-  '@babel/preset-typescript',
+  [
+    '@babel/preset-typescript',
+    {
+      allowDeclareFields: true,
+    }
+  ],
   [
     '@babel/preset-env', {
-      'useBuiltIns': 'entry',
-      'corejs': {
-        'version': 3
-      },
-      'targets': {
-        'browsers': ['chrome 94']
-      }
+    'useBuiltIns': 'entry',
+    'corejs': {
+      'version': 3
+    },
+    'targets': {
+      'browsers': ['chrome 94']
     }
+  }
   ]
-],
-
-plugins = [
-  ['@babel/plugin-proposal-nullish-coalescing-operator'],
-  ['@babel/plugin-transform-class-static-block'],
-  ['@babel/plugin-syntax-dynamic-import'],
-  ['@babel/plugin-transform-typescript', {allowDeclareFields: true}],
-  ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, version: '2023-05'}],
-  ['@babel/plugin-proposal-class-properties'],
 ];
 
+const plugins = [
+  ['@babel/plugin-proposal-decorators', {decoratorsBeforeExport: true, version: '2023-05'}],
+];
 
-export default {
-  mode: devMode ? 'development' : 'production',
+const config = {
+  context: __dirname,
+  mode: isDev ? 'development' : 'production',
+  cache: isDev ? {type: 'filesystem'} : false,
   resolve: {
     extensions: ['.ts', '.js'],
-    fallback: {
-      http: false,
-      https: false,
-      zlib: false,
-      url: false,
-    },
     alias: {
       cesium: resolve(__dirname, 'node_modules/cesium'),
       // we need the aliases below for CSS :( don't know why
       './cesium/Build': resolve(__dirname, 'node_modules/cesium/Build'),
       './cesium': resolve(__dirname, 'node_modules/cesium/Source'),
+
       './fomantic-ui-css': resolve(__dirname, 'node_modules/fomantic-ui-css'),
       './images': resolve(__dirname, 'src/images'),
       './@fontsource/inter': resolve(__dirname, 'node_modules@fontsource/inter'),
     },
   },
   output: {
-    filename: 'debug/index.js',
+    path: resolve(__dirname, 'dist'),
+    filename: 'index.js',
   },
   devtool: 'eval',
   module: {
@@ -78,7 +74,7 @@ export default {
       },
       {
         test: /\.css$/i,
-        //use: [devMode ? "style-loader" : MiniCssExtractPlugin.loader, 'css-loader'],
+        //use: [isDev ? "style-loader" : MiniCssExtractPlugin.loader, 'css-loader'],
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
@@ -88,6 +84,7 @@ export default {
           options: {
             presets: presets,
             plugins: plugins,
+            sourceMaps: true,
             assumptions: {
               setPublicClassFields: true
             },
@@ -97,8 +94,9 @@ export default {
       },
     ],
   },
-  // ignore source-map-loader warnings
-  ignoreWarnings: [/Failed to parse source map/],
+  // Ignore source-map-loader warnings.
+  // These are generated for
+  ignoreWarnings: [/Failed to parse source map from '\/app\/ui\/node_modules\/autolinker\//],
   watchOptions: {
     poll: true
   },
@@ -124,20 +122,22 @@ export default {
     compress: true,
     port: 8000,
     hot: true,
-
+    devMiddleware: {
+      writeToDisk: true, // Enable writing to disk
+    },
   },
   plugins: [
     new CopyPlugin({
       patterns: [
-        // FIXME: is there a less ugly way to write these rules?
+        // // FIXME: is there a less ugly way to write these rules?
+        {from: resolve(cesiumBuild, 'Workers'), to: './Workers',},
+        {from: resolve(cesiumBuild, 'ThirdParty'), to: '/.ThirdParty',},
+        {from: resolve(cesiumBuild, 'Assets'), to: './Assets',},
+        {from: resolve(cesiumBuild, 'Widgets'), to: './Widgets',},
         {from: 'index.html', to: './'},
         {from: 'src/', to: 'src/'},
         {from: 'locales/', to: './locales/'},
-        {from: cesiumSource + '/' + cesiumWorkers, to: 'Workers/'},
-        {from: cesiumSource + '/Assets/', to: 'Assets/'},
-        {from: cesiumSource + '/Widgets/', to: 'Widgets/'},
-        {from: cesiumSource + '/ThirdParty/', to: 'ThirdParty/'},
-        {from: 'src/images/', to: 'images/'},
+        {from: 'src/images/', to: './images/'},
         {from: 'node_modules/@fontsource/inter/files/*', to: 'fonts/[name][ext]'},
         {from: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', to: 'fonts/[name][ext]'},
         {from: 'manuals/dist/', to: './manuals/'},
@@ -146,7 +146,13 @@ export default {
       ]
     }),
     new MiniCssExtractPlugin({
-      filename: 'bundle.css'
+      filename: 'index.css'
     }),
-  ]
+    new BundleAnalyzerPlugin(),
+  ],
+  optimization: {
+    sideEffects: false,
+    usedExports: false,
+  },
 };
+export default config;

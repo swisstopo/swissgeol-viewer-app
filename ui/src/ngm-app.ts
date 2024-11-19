@@ -19,7 +19,7 @@ import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
-import 'fomantic-ui-css/components/dropdown.js';
+import 'fomantic-ui-css/components/dropdown';
 
 import '@geoblocks/cesium-view-cube';
 
@@ -56,7 +56,7 @@ import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type {SideBar} from './elements/ngm-side-bar';
 import {LayerConfig} from './layertree';
-import $ from './jquery';
+import $ from 'jquery';
 import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';

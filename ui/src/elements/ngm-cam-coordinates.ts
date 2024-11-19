@@ -1,4 +1,4 @@
-import $ from '../jquery.js';
+import $ from 'jquery';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n';
 import type {PropertyValues} from 'lit';
@@ -69,7 +69,7 @@ export class NgmCamCoordinates extends LitElementI18n {
   }
 
   updated(changedProperties: PropertyValues) {
-    $(this.dropdown).dropdown();
+    ($(this.dropdown) as any).dropdown();
     super.updated(changedProperties);
   }
 

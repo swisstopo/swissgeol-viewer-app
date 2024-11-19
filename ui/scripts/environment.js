@@ -7,30 +7,30 @@ import {exec} from 'child_process';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const execPromise = promisify(exec);
 
-(async (branch) => {
+const resolveGitBranch = async () => {
   try {
-    const dir = '../src';
-    const filename = 'environment';
-
-    if (!branch) {
-      try {
-        // Check if the current directory is a Git repository
-        await execPromise('git rev-parse --is-inside-work-tree');
-        branch = (await execPromise('git rev-parse --abbrev-ref HEAD')).stdout.toString().trim();
-      } catch (gitError) {
-        console.warn('Not a git repository. Using default branch name.');
-        branch = 'default-branch';
-      }
-    }
-
-    const jsonContent = `{'branch': '${branch}'}`;
-    const content = `export const environment = ${jsonContent};`;
-
-    console.log(`Creating environment for ${branch}...`);
-    writeFileSync(resolve(__dirname, `${dir}/${filename}.js`), content, {encoding: 'utf8'}); // for frontend
-    process.exit(0);
-  } catch (e) {
-    console.error(e);
-    process.exit(1);
+    // Check if the current directory is a Git repository
+    await execPromise('git rev-parse --is-inside-work-tree');
+    return (await execPromise('git rev-parse --abbrev-ref HEAD')).stdout.toString().trim();
+  } catch (_gitError) {
+    throw new Error('Failed to resolve git branch: not a git repository');
   }
-})(process.argv.slice(2)[0]);
+};
+
+try {
+  const appVersion = process.env.APP_VERSION;
+  const version = appVersion != null && appVersion.length !== 0
+    ? appVersion
+    : await resolveGitBranch();
+
+  const jsonContent = `{'branch': '${version}'}`;
+  const content = `export const environment = ${jsonContent};`;
+
+  console.log(`Creating environment for ${version}...`);
+  writeFileSync(resolve(__dirname, '../src/environment.js'), content, {encoding: 'utf8'}); // for frontend
+  process.exit(0);
+} catch (e) {
+  console.error(e);
+  process.exit(1);
+}
+
