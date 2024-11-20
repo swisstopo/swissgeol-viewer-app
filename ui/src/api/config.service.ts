@@ -9,11 +9,9 @@ export class ConfigService {
   }
 
   async getConfig(): Promise<ClientConfig | null> {
-    const headers = {};
     try {
       const response = await fetch(`${this.apiUrl}/client-config`, {
         method: 'GET',
-        headers: headers,
       });
       return await response.json() as ClientConfig;
     } catch (e) {

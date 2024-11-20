@@ -18,7 +18,7 @@ import {
 import {getSwisstopoImagery} from '../swisstopoImagery';
 import {LayerType} from '../constants';
 import {isLabelOutlineEnabled} from '../permalink';
-// import AmazonS3Resource from '../AmazonS3Resource.js';
+import AmazonS3Resource from '../AmazonS3Resource.js';
 import {getVoxelShader} from './voxels-helper';
 import MainStore from '../store/main';
 import {LayerConfig} from '../layertree';
@@ -89,13 +89,12 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: La
   return primitive;
 }
 export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerConfig, tileLoadCallback) {
-  let resource: string | IonResource; // | AmazonS3Resource
+  let resource: string | IonResource | AmazonS3Resource;
   if (config.aws_s3_bucket && config.aws_s3_key) {
-    throw new Error('Amazon S3 resources is not implemented');
-    // resource = new AmazonS3Resource({
-    //   bucket: config.aws_s3_bucket,
-    //   url: config.aws_s3_key,
-    // });
+    resource = new AmazonS3Resource({
+      bucket: config.aws_s3_bucket,
+      url: config.aws_s3_key,
+    });
   } else if (config.url) {
     resource = config.url;
   } else {
