@@ -86,7 +86,7 @@ pub struct Member {
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 #[serde(rename_all = "camelCase")]
 pub struct Geometry {
-    #[serde(rename="type")]
+    #[serde(rename = "type")]
     typ: String,
     positions: Vec<Cartesian3>,
     id: Option<String>,

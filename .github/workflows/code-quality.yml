@@ -253,6 +253,9 @@ jobs:
           cd api
           cargo fmt --check
       - name: Run clippy
+        env:
+          # Treat warnings as errors
+          RUSTFLAGS: "-D warnings"
         run: |
           cd api
           cargo clippy --frozen --quiet
