@@ -1,12 +1,13 @@
 import {html} from 'lit';
-import type {AuthUser} from '../auth';
-import Auth from '../auth';
+import type {AuthUser} from '../authService';
+import AuthService from '../authService';
 import {LitElementI18n} from '../i18n.js';
 import auth from '../store/auth';
 import {classMap} from 'lit/directives/class-map.js';
 import {customElement, property, state} from 'lit/decorators.js';
 import DashboardStore from '../store/dashboard';
-
+import {consume} from '@lit/context';
+import {authServiceContext} from '../context';
 
 /**
  * Authentication component
@@ -20,6 +21,9 @@ export class NgmAuth extends LitElementI18n {
   @state()
   accessor user: AuthUser | null = null;
   private popup: Window | null = null;
+
+  @consume({context: authServiceContext})
+  accessor authService!: AuthService;
 
   constructor() {
     super();
@@ -39,13 +43,13 @@ export class NgmAuth extends LitElementI18n {
       + `&client_id=${this.clientId}`
       + `&redirect_uri=${location.origin}${location.pathname}`
       + '&scope=openid+profile'
-      + `&state=${Auth.state()}`;
+      + `&state=${this.authService.state()}`;
 
     // open the authentication popup
     this.popup = window.open(url);
     // wait for the user to be authenticated
-    await Auth.waitForAuthenticate();
-    Auth.initialize();
+    await this.authService.waitForAuthenticate();
+    this.authService.initialize();
     window.location.reload();
   }
 
@@ -54,7 +58,7 @@ export class NgmAuth extends LitElementI18n {
       DashboardStore.showSaveOrCancelWarning(true);
       return;
     }
-    Auth.logout();
+    this.authService.logout();
   }
 
   render() {

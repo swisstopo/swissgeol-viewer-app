@@ -23,16 +23,19 @@ static AUD: OnceCell<String> = OnceCell::new();
 static ISS: OnceCell<String> = OnceCell::new();
 
 /// Configuration for AWS Cognito JWKS
-#[derive(clap::Parser)]
+#[derive(clap::Parser, Serialize)]
 pub struct Auth {
     /// The cognito client id
-    #[clap(env)]
+    #[clap(long, env)]
     pub cognito_client_id: String,
-    /// The identity pool id
-    #[clap(env)]
+    /// The user pool id
+    #[clap(long, env)]
     pub cognito_pool_id: String,
+    /// The identity pool id
+    #[clap(long, env)]
+    pub cognito_identity_pool_id: String,
     /// The AWS region
-    #[clap(env, default_value = "eu-west-1")]
+    #[clap(long, env, default_value = "eu-west-1")]
     pub cognito_aws_region: String,
 }
 

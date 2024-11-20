@@ -17,7 +17,8 @@
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "experimentalDecorators": false
   },
   "types": ["mocha"],
   "include": ["src/**/*.ts", "test/**/*.ts", "src/**/*.js", "test/**/*.js"],
