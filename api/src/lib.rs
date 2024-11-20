@@ -1,4 +1,3 @@
-use axum::response::IntoResponse;
 use axum::{
     extract::{DefaultBodyLimit, Extension},
     http::{HeaderValue, Method},
@@ -10,7 +9,7 @@ use axum::{
 use clap::Parser;
 use hyper::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE};
 use sqlx::PgPool;
-use tower::{ServiceBuilder, ServiceExt};
+use tower::{ServiceBuilder};
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
 pub use config::Config;
