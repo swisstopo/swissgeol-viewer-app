@@ -31,11 +31,11 @@ export class NgmShareLink extends LitElementI18n {
         }),
       });
       if (!response.ok) {
-        throw `Service response status ${response.status}: ${await response.text()}`;
+        throw new Error(`Service response status ${response.status}: ${await response.text()}`);
       } else if (response.headers.has('location')) {
         return response.headers.get('location')!;
       } else {
-        throw 'Location header is missing';
+        throw new Error('Location header is missing');
       }
     } catch (e) {
       console.error(e);

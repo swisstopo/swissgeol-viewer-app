@@ -125,11 +125,9 @@ export function setupSearch(viewer, element, layerTree) {
         for (const layer of layerTree) {
           if (layer.children) {
             addCatalogLayer(layer.children);
-          } else {
-            if (regexp.test(layer.label)) {
-              layer.label = `${i18next.t(layer.label)}`;
-              if (!layer.restricted?.length || layer.restricted.some(g => user?.['cognito:groups'].includes(g))) matches.push(layer);
-            }
+          } else if (regexp.test(layer.label)) {
+            layer.label = `${i18next.t(layer.label)}`;
+            if (!layer.restricted?.length || layer.restricted.some(g => user?.['cognito:groups'].includes(g))) matches.push(layer);
           }
       }};
       addCatalogLayer(defaultLayerTree);

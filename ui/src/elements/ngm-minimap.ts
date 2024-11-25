@@ -96,9 +96,7 @@ export class NgmMinimap extends LitElementI18n {
     const nadirView =
         CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1) ||
         CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1);
-    if (this.nadirViewActive && !nadirView) {
-      this.toggleNadirStatus();
-    } else if (!this.nadirViewActive && nadirView) {
+    if (this.nadirViewActive !== !nadirView) {
       this.toggleNadirStatus();
     }
   }

@@ -180,7 +180,7 @@ export class NgmApp extends LitElementI18n {
     const config = event.target.config;
     const index = this.legendConfigs.findIndex(c => c && c.layer === config.layer);
     console.assert(index !== -1);
-    delete this.legendConfigs[index];
+    this.legendConfigs.splice(index, 1);
     if (!this.legendConfigs.filter(c => !!c).length)
       this.legendConfigs = [];
     this.requestUpdate();

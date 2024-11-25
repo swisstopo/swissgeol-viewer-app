@@ -124,7 +124,7 @@ export class NgmGeometryInfo extends LitElementI18n {
 
   get infoTemplate() {
     const geom: NgmGeometry | undefined = this.geometry;
-    if (!geom) return;
+    if (!geom) return null;
     return html`
       <div>
         <button class="ui button ngm-download-obj-btn ngm-action-btn"

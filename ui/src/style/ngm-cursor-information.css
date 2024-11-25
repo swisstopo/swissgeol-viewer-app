@@ -3,7 +3,7 @@ ngm-cursor-information {
   align-self: center;
   color: #212529;
   text-align: left;
-  font: normal normal normal 14px/20px Inter;
+  font: normal normal normal 14px/20px Inter, sans-serif;
   letter-spacing: 0;
   min-width: 255px;
 }
