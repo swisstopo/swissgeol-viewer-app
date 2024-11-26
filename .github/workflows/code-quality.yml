@@ -33,7 +33,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Review Dependencies
         uses: actions/dependency-review-action@v4
-
+        with:
+          # Disable scorecard output for now, as the output may get too large otherwise,
+          # causing the action to fail.
+          show-openssf-scorecard: false
 
   install-ui:
     name: "Install UI"
