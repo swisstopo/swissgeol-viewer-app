@@ -38,6 +38,13 @@ jobs:
           # causing the action to fail.
           show-openssf-scorecard: false
 
+          # Allow GHSA-qg5g-gv98-5ffh (https://github.com/advisories/GHSA-qg5g-gv98-5ffh)
+          # Very recently found as of now (2024-11-26).
+          # Affects the Rust crate `rustls`, which is in use by multiple of our dependencies.
+          # There are no fixes for it yet.
+          allow-ghsas: GHSA-qg5g-gv98-5ffh
+
+
   install-ui:
     name: "Install UI"
     runs-on: ubuntu-latest
