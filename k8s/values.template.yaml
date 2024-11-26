@@ -1,0 +1,24 @@
+docker:
+  api_image:
+  ui_image:
+
+database:
+  host:
+  port:
+  name:
+  user:
+
+s3:
+  endpoint:
+  region:
+  bucket:
+  project_bucket:
+
+cognito:
+  region:
+  client_id:
+  pool_id:
+  identity_pool_id:
+
+ion:
+  default_access_token:

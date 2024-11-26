@@ -1,0 +1,21 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}-routes
+  namespace: {{ .Release.Namespace }}  
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: Host(`{{ .Values.host }}`)
+      priority: 100
+      services:
+        - name: {{ .Release.Name }}-ui
+          port: 80
+    - kind: Rule
+      match: Host(`{{ .Values.host }}`) && PathPrefix(`/api`)
+      priority: 120
+      services:
+        - name: {{ .Release.Name }}-api
+          port: 3000
