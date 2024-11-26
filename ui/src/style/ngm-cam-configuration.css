@@ -45,6 +45,14 @@ ngm-cam-configuration {
   width: 100%;
 }
 
+.ngm-cam-conf-number-input {
+  border: none;
+  padding: 0;
+  width: 50%;
+  background-color: unset;
+  justify-items: end
+}
+
 .ngm-cam-coord {
   display: flex;
   flex-direction: column;
@@ -65,6 +73,11 @@ ngm-cam-configuration {
   font: normal normal bold 15px/24px Inter;
   letter-spacing: 0.16px;
   color: #222529;
+}
+
+.ngm-cam-coord .ngm-coords-input {
+    background-color: unset;
+    border: none;
 }
 
 .ngm-cam-coord .ui.dropdown .menu {
