@@ -1,6 +1,5 @@
 import {LitElementI18n} from './i18n';
-import type {PropertyValues} from 'lit';
-import {html} from 'lit';
+import {html, PropertyValues} from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
@@ -19,13 +18,13 @@ import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
+import './components/search/search-input';
 import 'fomantic-ui-css/components/dropdown';
 
 import '@geoblocks/cesium-view-cube';
 
 import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
 
-import {setupSearch} from './search.js';
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 
 import {
@@ -35,7 +34,7 @@ import {
   getZoomToPosition,
   rewriteParams,
   syncCamera,
-  syncStoredView
+  syncStoredView,
 } from './permalink';
 import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
@@ -90,8 +89,6 @@ export class NgmApp extends LitElementI18n {
   @state()
   accessor showCamConfig = false;
   @state()
-  accessor showMobileSearch = false;
-  @state()
   accessor loading = false;
   @state()
   accessor determinateLoading = false;
@@ -122,6 +119,7 @@ export class NgmApp extends LitElementI18n {
   @query('ngm-wmts-date-picker')
   accessor wmtsDatePickerElement;
   private viewer: Viewer | undefined;
+  private sidebar: SideBar | null = null;
   private queryManager: QueryManager | undefined;
   private waitForViewLoading = false;
   private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
@@ -207,9 +205,7 @@ export class NgmApp extends LitElementI18n {
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(viewer);
 
-    const sideBar = this.querySelector('ngm-side-bar');
-
-    setupSearch(viewer, this.querySelector('ga-search')!, sideBar);
+    this.sidebar = this.querySelector('ngm-side-bar') as SideBar | null;
   }
 
   removeLoading() {
@@ -414,38 +410,35 @@ export class NgmApp extends LitElementI18n {
 
   render() {
     return html`
-      <header class="${classMap({'mobile-search-active': this.showMobileSearch})}">
-        <a id="ngm-home-link" href="" .hidden="${this.showMobileSearch}">
+      <header>
+        <a id="ngm-home-link" href="">
           <img class="hidden-mobile" src="src/images/swissgeol_viewer.svg">
           <img class="visible-mobile" src="src/images/swissgeol_favicon_viewer.svg">
           <div class="logo-text visible-mobile">swissgeol</div>
         </a>
-        <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,additionalSource,layer, feature"
-                   locationOrigins="zipcode,gg25,gazetteer">
-          <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
-          <div class="ngm-search-icon-container ngm-search-icon"></div>
-          <ul class="search-results"></ul>
-        </ga-search>
-        <div style="flex: 1;" .hidden="${this.showMobileSearch}"></div>
-        <div
-          class="ngm-search-icon-mobile ngm-search-icon visible-mobile ${classMap({'active': this.showMobileSearch})}"
-          @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
-        <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
-        <div class="ui dropdown ngm-lang-dropdown">
-            <div class="ngm-lang-title">
-              ${i18next.language?.toUpperCase()}
-              <div class="ngm-dropdown-icon"></div>
-            </div>
-            <div class="menu">
-              ${SUPPORTED_LANGUAGES.map(lang => html`
-                <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
-              `)}
-            </div>
+        <ngm-search-input
+          .viewer="${this.viewer}"
+          .sidebar="${this.sidebar}"
+        ></ngm-search-input>
+        <div class="ngm-header-suffix">
+          <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
+          <div class="ui dropdown ngm-lang-dropdown">
+          <div class="ngm-lang-title">
+            ${i18next.language?.toUpperCase()}
+            <div class="ngm-dropdown-icon"></div>
+          </div>
+          <div class="menu">
+            ${SUPPORTED_LANGUAGES.map(lang => html`
+              <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
+            `)}
+          </div>
         </div>
-        <ngm-auth class="ngm-user"
-                  endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
-                  clientId=${COGNITO_VARIABLES.clientId}
+        <ngm-auth
+          class="ngm-user"
+          endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
+          clientId=${COGNITO_VARIABLES.clientId}
         ></ngm-auth>
+        </div>
       </header>
       <main>
         <div class="ui dimmer ngm-main-load-dimmer ${classMap({active: this.loading})}">

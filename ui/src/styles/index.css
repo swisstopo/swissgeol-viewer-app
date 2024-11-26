@@ -14,11 +14,12 @@
     --color-action: #a83526;
     --color-action--light: #FF0000;
 
-    --font: 'Inter', sans-serif;
-    font-family: var(--font);
-    font-size: 16px;
-
     --panel-padding: 10px;
 
     --icon-size--normal: 24px;
+
+    --font: 'Inter', sans-serif;
+    font-family: var(--font);
+    font-size: 16px;
 }
+
