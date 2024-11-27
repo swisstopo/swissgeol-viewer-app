@@ -3,7 +3,7 @@ import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import i18next from 'i18next';
 import {showBannerError, showSnackbarInfo} from '../notifications';
-import $ from '../jquery.js';
+import $ from 'jquery';
 import {classMap} from 'lit-html/directives/class-map.js';
 
 @customElement('ngm-layers-upload')
@@ -45,7 +45,7 @@ export default class LayersUpload extends LitElementI18n {
   onDrop(event: DragEvent) {
 
     event.preventDefault();
-    $(event.target).removeClass('active');
+    $(event.target!).removeClass('active');
 
     for (const file of event.dataTransfer!.files) {
       this.uploadKml(file);
@@ -56,9 +56,9 @@ export default class LayersUpload extends LitElementI18n {
     return html`
       <button class="ngm-upload-kml-btn" @click="${() => this.uploadKmlInput.click()}"
               @drop="${this.onDrop}"
-              @dragenter=${(event: DragEvent) => $(event.target).addClass('active')}
+              @dragenter=${(event: DragEvent) => $(event.target!).addClass('active')}
               @dragover="${(event: DragEvent) => event.preventDefault()}"
-              @dragleave=${(event: DragEvent) => $(event.target).removeClass('active')}>
+              @dragleave=${(event: DragEvent) => $(event.target!).removeClass('active')}>
         ${i18next.t('dtd_add_own_kml')}
         <div ?hidden=${this.loading} class="ngm-layer-icon ngm-file-upload-icon"></div>
         <div

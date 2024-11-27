@@ -19,20 +19,21 @@ services:
       - .env
 
   ui:
-    image: node:22
+    image: swissgeol-viewer-app/ui:local
+    build:
+      context: ./ui
+      dockerfile: DockerfileDev
     init: true
     ports:
       - "8000:8000"
-    environment:
-      NODE_ENV: development
-    working_dir: /app
-    command: ["sh", "-c", "npm ci && npm run start"]
     depends_on:
       - api
       - abbreviator
     volumes:
-      - ./ui:/app
-      - ui.node_modules:/app/node_modules
+      - ./:/app
+      - ui.node_modules:/app/ui/node_modules
+    tmpfs:
+      - /app/ui/dist
 
   minio:
     image: minio/minio:latest

@@ -6,7 +6,7 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {COLORS_WITH_BLACK_TICK, PROJECT_COLORS} from '../../constants';
 import {Asset, CreateProject, Member, Project, type View} from './ngm-dashboard';
 import {customElement, property, query} from 'lit/decorators.js';
-import $ from '../../jquery';
+import $ from 'jquery';
 import '../../toolbox/ngm-geometries-list';
 import {ApiClient} from '../../api/api-client';
 import {showSnackbarError, showBannerWarning, isBannerShown} from '../../notifications';

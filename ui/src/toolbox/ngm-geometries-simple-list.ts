@@ -6,7 +6,7 @@ import i18next from 'i18next';
 import ToolboxStore from '../store/toolbox';
 import {classMap} from 'lit-html/directives/class-map.js';
 import type {GeometryTypes, NgmGeometry} from './interfaces';
-import $ from '../jquery.js';
+import $ from 'jquery';
 import {NgmConfirmationModal} from '../elements/ngm-confirmation-modal';
 
 @customElement('ngm-geometries-simple-list')

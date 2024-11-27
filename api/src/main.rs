@@ -25,12 +25,10 @@ async fn main() -> anyhow::Result<()> {
     let app = api::app(pool).await;
 
     // run our app with hyper
-    // `axum::Server` is a re-export of `hyper::Server`
     let address = SocketAddr::from(([0, 0, 0, 0], config.app_port));
     tracing::debug!("listening on {}", address);
-
-    axum::Server::bind(&address)
-        .serve(app.into_make_service())
+    let listener = tokio::net::TcpListener::bind(address).await.unwrap();
+    axum::serve(listener, app.into_make_service())
         .await
         .unwrap();
 

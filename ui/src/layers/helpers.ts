@@ -84,8 +84,6 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: La
     throw new Error(`Voxel data name ${config.voxelDataName} not found in the tileset`);
   }
   primitive.customShader = getVoxelShader(config);
-  primitive.jitter = false;
-
   return primitive;
 }
 export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerConfig, tileLoadCallback) {

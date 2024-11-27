@@ -8,7 +8,7 @@ import {LitElementI18n} from '../i18n.js';
 import {IonResource, Color, KmlDataSource, Cartographic, JulianDate} from 'cesium';
 import './ngm-gst-modal';
 import '../elements/ngm-i18n-content.js';
-import $ from '../jquery';
+import $ from 'jquery';
 import 'fomantic-ui-css/components/popup.js';
 import MainStore from '../store/main';
 import type {Viewer} from 'cesium';
@@ -65,7 +65,7 @@ export class NgmGstInteraction extends LitElementI18n {
 
   initDropdowns() {
     this.querySelectorAll('.ngm-section-format').forEach(el => $(el).dropdown({
-      onChange: value => this.outputFormat = value,
+      onChange: value => this.outputFormat = value as OutputFormat,
       values: [
         {name: 'PDF', value: 'pdf', selected: this.outputFormat === 'pdf'},
         {name: 'SVG', value: 'svg', selected: this.outputFormat === 'svg'},

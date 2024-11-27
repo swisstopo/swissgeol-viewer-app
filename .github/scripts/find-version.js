@@ -10,6 +10,7 @@ const findNextVersion = (tags, branch) => {
     if (version.preRelease == null || version.patch !== 0) {
       version.minor += 1;
       version.patch = 0;
+      version.preRelease = null
     }
   } else {
     // It's a patch.

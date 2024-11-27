@@ -150,14 +150,14 @@ export default class SlicerArrows {
       if (properties.oppositeSide) {
         const oppositeSide: string = properties.oppositeSide.getValue();
         const oppositeArrow = this.arrows[oppositeSide];
-        oppositePosition3d = oppositeArrow.position!.getValue(this.julianDate);
+        oppositePosition3d = oppositeArrow.position!.getValue(this.julianDate)!;
       } else if (properties.oppositePosition) {
         oppositePosition3d = properties.oppositePosition.getValue();
       } else {
         throw new Error('Move axis can\'t be created. Second position missing');
       }
 
-      const arrowPosition3d = this.selectedArrow.position!.getValue(this.julianDate);
+      const arrowPosition3d = this.selectedArrow.position!.getValue(this.julianDate)!;
       scene.cartesianToCanvasCoordinates(arrowPosition3d, this.scratchArrowPosition2d_);
       scene.cartesianToCanvasCoordinates(oppositePosition3d, this.scratchOppositeArrowPosition2d_);
 

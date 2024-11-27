@@ -1,9 +1,10 @@
-FROM node:22-alpine AS build
+FROM node:22.5.1-alpine AS build
 
 WORKDIR /app
 COPY . .
 
-RUN npm install --ignore-scripts && npm run build --omit=dev
+RUN npm install --ignore-scripts \
+ && npm run build --omit=dev
 
 
 FROM nginx:alpine

@@ -19,11 +19,8 @@ export function initAnalytics(active) {
   }
 }
 
-export function sendAnalytics(_command, ..._args) {
-  // @ts-ignore
+export function sendAnalytics(...args) {
   if (window.dataLayer) {
-    // @ts-ignore
-    // eslint-disable-next-line prefer-rest-params
-    window.dataLayer.push(arguments);
+    window.dataLayer.push(args);
   }
 }

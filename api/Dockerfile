@@ -1,4 +1,4 @@
-FROM rust:1.73 AS build
+FROM rust:1.82 AS build
 
 RUN apt update && apt install -y musl-tools musl-dev
 RUN rustup target add x86_64-unknown-linux-musl
