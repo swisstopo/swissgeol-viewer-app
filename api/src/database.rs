@@ -1,5 +1,5 @@
 use sqlx::{
-    postgres::{PgConnectOptions, PgPoolOptions},
+    postgres::{PgConnectOptions, PgPoolOptions, PgSslMode},
     Connection, Executor, PgConnection, PgPool,
 };
 
@@ -20,6 +20,9 @@ pub struct Database {
     /// The database name
     #[clap(long, env)]
     pub pgdatabase: String,
+    /// The database ssl mode
+    #[clap(env)]
+    pub pg_ssl_mode: PgSslMode,
 }
 
 impl Database {
@@ -34,7 +37,8 @@ impl Database {
             .host(&self.pghost)
             .port(self.pgport)
             .username(&self.pguser)
-            .password(&self.pgpassword);
+            .password(&self.pgpassword)
+            .ssl_mode(self.pg_ssl_mode);
 
         if create {
             // Create database
