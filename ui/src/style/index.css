@@ -350,7 +350,7 @@ ngm-full-screen-view.full-active {
   border-bottom: 2px solid #DFE2E6;
   display: flex;
   align-items: center;
-  font: normal normal bold 14px/24px Inter;
+  font: normal normal bold 14px/24px Inter, sans-serif;
   letter-spacing: 0.14px;
   color: #212529;
   margin-bottom: 8px;
@@ -389,7 +389,7 @@ ngm-full-screen-view.full-active {
   border: 0;
   border-radius: 0;
   box-shadow: 6px 6px 8px #00000029;
-  font: normal normal 500 14px/20px Inter;
+  font: normal normal 500 14px/20px Inter, sans-serif;
   color: #212529;
   right: 11px;
 }
@@ -562,7 +562,7 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   color: var(--ngm-interaction);
   position: fixed;
   margin-left: 9px;
-  font: normal normal bold 12px/15px Inter;
+  font: normal normal bold 12px/15px Inter, sans-serif;
 }
 
 .ui.dimmer.ngm-main-load-dimmer {

@@ -22,13 +22,8 @@ export class NgmObjectInformation extends LitElementI18n {
     this.hidden = !this.opened;
 
     QueryStore.objectInfo.subscribe(info => {
-      if (info) {
-        this.info = info;
-        this.opened = !!info;
-      } else if (this.opened) {
-        this.opened = false;
-        this.info = undefined;
-      }
+      this.info = info;
+      this.opened = !!info;
     });
 
     document.addEventListener('keydown', (event) => {

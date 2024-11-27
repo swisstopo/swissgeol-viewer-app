@@ -1,4 +1,3 @@
-use serde::Serialize;
 use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
     Connection, Executor, PgConnection, PgPool,

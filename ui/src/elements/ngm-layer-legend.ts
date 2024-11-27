@@ -27,12 +27,11 @@ export class NgmLayerLegend extends LitElementI18n {
 
   getImageLegend() {
     const legendImage = this.config.legend ? `https://api.geo.admin.ch/static/images/legends/${this.config.legend}_${i18next.language}.png` : undefined;
-    return html`${legendImage ? html`
+    return legendImage && html`
       <div class="ngm-legend-container">
         <div>${i18next.t('dtd_legend')}</div>
         <div class="ngm-legend-image"><img src="${legendImage}"></div>
-      </div>
-    ` : ''}`;
+      </div>`;
   }
 
   async getWmtsLegend() {
@@ -51,8 +50,8 @@ export class NgmLayerLegend extends LitElementI18n {
         <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
       <div class="content-container ${classMap({'legend-html': this.config.type === LayerType.swisstopoWMTS})}">
-        ${this.config.type === LayerType.swisstopoWMTS ? html`${until(this.getWmtsLegend(), html`
-          <div class="ui loader"></div>`)}` : this.getImageLegend()}
+        ${this.config.type === LayerType.swisstopoWMTS ? until(this.getWmtsLegend(), html`
+          <div class="ui loader"></div>`) : this.getImageLegend()}
       </div>
       ${dragArea}
     `;

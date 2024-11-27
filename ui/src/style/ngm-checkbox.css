@@ -1,6 +1,6 @@
 .ngm-checkbox {
   text-align: left;
-  font: normal normal 500 14px/20px Inter;
+  font: normal normal 500 14px/20px Inter, sans-serif;
   color: #357183;
   display: flex;
   align-items: center;

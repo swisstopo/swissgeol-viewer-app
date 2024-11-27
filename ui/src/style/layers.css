@@ -27,6 +27,7 @@
 
 ngm-layers-item {
   border-bottom: 2px solid #DFE2E6 !important;
+  padding: 10px;
 }
 
 ngm-layers-item .ngm-checkbox {
@@ -213,10 +214,6 @@ ngm-catalog .ngm-checkbox {
   width: 24px;
   height: 24px;
   margin-left: 15px;
-}
-
-ngm-layers-item {
-  padding: 10px;
 }
 
 ngm-layers-item.selected {

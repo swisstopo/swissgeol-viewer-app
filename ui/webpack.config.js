@@ -43,6 +43,7 @@ export default {
       http: false,
       https: false,
       zlib: false,
+      url: false,
     },
     alias: {
       cesium: resolve(__dirname, 'node_modules/cesium'),
@@ -53,12 +54,6 @@ export default {
       './images': resolve(__dirname, 'src/images'),
       './@fontsource/inter': resolve(__dirname, 'node_modules@fontsource/inter'),
     },
-    fallback: {
-      'zlib': false,
-      'https': false,
-      'http': false,
-      'url': false,
-    }
   },
   output: {
     filename: 'debug/index.js',

@@ -20,7 +20,7 @@ ngm-side-bar {
 .ngm-menu-mobile {
   width: var(--ngm-left-side-bar-width);
   justify-content: space-between;
-  font: normal normal normal 12px/15px Inter;
+  font: normal normal normal 12px/15px Inter, sans-serif;
   color: #222529;
   background-color: #FFFFFF;
 }
@@ -102,7 +102,7 @@ ngm-side-bar {
   border-bottom: 2px solid #DFE2E6;
   display: flex;
   align-items: center;
-  font: normal normal bold 14px/20px Inter;
+  font: normal normal bold 14px/20px Inter, sans-serif;
   color: #212529;
 }
 
@@ -129,7 +129,6 @@ ngm-side-bar {
   overflow-y: auto;
   overflow-x: hidden;
   padding-bottom: 40px;
-  /* scrollbar-color: #868E96 #F1F3F5; */
 }
 
 .ngm-menu-1 > div.ngm-active-section > div:nth-child(1),
@@ -158,7 +157,7 @@ ngm-side-bar {
 
 .ngm-label-btn {
   margin-left: auto;
-  font: normal normal 500 14px/20px Inter;
+  font: normal normal 500 14px/20px Inter, sans-serif;
   letter-spacing: 0;
   color: var(--ngm-interaction);
   opacity: 1;

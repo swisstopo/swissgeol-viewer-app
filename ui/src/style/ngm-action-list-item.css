@@ -6,7 +6,7 @@
   background-color: #F8F9FA;
   color: var(--ngm-interaction);
   height: 36px;
-  font: normal normal bold 14px/20px Inter;
+  font: normal normal bold 14px/20px Inter, sans-serif;
   padding: 10px 8px;
   margin-bottom: 4px;
   width: 100%;

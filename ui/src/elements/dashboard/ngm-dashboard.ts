@@ -158,7 +158,7 @@ export class NgmDashboard extends LitElementI18n {
       //   const topic = this.topics?.find(p => p.id === value.param.topicId);
       //   this.selectTopicOrProject(topic);
       // } else
-        if (value.kind === 'project') {
+      if (value.kind === 'project') {
         removeProject();
         const project = await this.apiClient.getProject(value.param.projectId);
         this.selectTopicOrProject(project);

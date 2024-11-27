@@ -80,10 +80,8 @@ export default class EarthquakeVisualizer {
     const entities = this.earthquakeDataSource.entities.values;
     if (entities && entities.length) {
       this.earthquakeDataSource.show = visible;
-    } else {
-      if (visible) {
-        await this.showEarthquakes();
-      }
+    } else if (visible) {
+      await this.showEarthquakes();
     }
   }
 

@@ -97,18 +97,18 @@ ga-search > .search-results img {
 
 ga-search > .search-results {
   text-align: left;
-  font: normal normal normal 16px/24px 'Inter';
+  font: normal normal normal 16px/24px 'Inter', sans-serif;
   letter-spacing: 0.16px;
   color: #212529;
 }
 
 ga-search > .search-results i {
-  font: italic normal normal 16px/24px Inter;
+  font: italic normal normal 16px/24px Inter, sans-serif;
   letter-spacing: 0.15px;
 }
 
 ga-search > .search-results b {
-  font: normal normal bold 16px/24px Inter;
+  font: normal normal bold 16px/24px Inter, sans-serif;
 }
 
 @media (max-width: 690px) {
