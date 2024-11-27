@@ -1,5 +1,8 @@
 FROM rust:1.82 AS build
 
+ARG APP_VERSION
+ENV APP_VERSION=${APP_VERSION}
+
 RUN apt update && apt install -y musl-tools musl-dev
 RUN rustup target add x86_64-unknown-linux-musl
 
@@ -12,6 +15,9 @@ RUN cargo build --target x86_64-unknown-linux-musl --release --quiet
 
 
 FROM alpine:3.17
+
+ARG APP_VERSION
+ENV APP_VERSION=${APP_VERSION}
 
 RUN apk add --no-cache util-linux
 
