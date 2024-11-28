@@ -1,4 +1,9 @@
 {
+  "menu_layers": "Angezeigte Daten",
+  "menu_tools": "Werkzeuge",
+  "menu_share": "Teilen",
+  "menu_projects": "Projekte",
+  "menu_settings": "Einstellungen",
   "app_cancel_btn_label": "Abbrechen",
   "by": "von",
   "cam_configuration_header": "Kamera-Einstellungen",
