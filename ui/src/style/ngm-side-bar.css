@@ -35,7 +35,6 @@ ngm-side-bar {
 
 .ngm-menu-1 > div,
 .ngm-menu-2 > div  {
-  margin-bottom: 28px;
   cursor: pointer;
 }
 
@@ -46,7 +45,7 @@ ngm-side-bar {
 .ngm-menu-1 > div > div:nth-child(1),
 .ngm-menu-2 > div > div:nth-child(1),
 .ngm-menu-mobile > div > div:nth-child(1) {
-  background-color: #030303;
+  background-color: #337083;
 }
 
 .ngm-menu-1 > div:hover > div:nth-child(1),

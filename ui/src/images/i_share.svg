@@ -1,4 +1,3 @@
-<svg id="i_share" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <rect id="Rechteck_1906" data-name="Rechteck 1906" width="24" height="24" fill="none"/>
-  <path id="icons8-share_squared" d="M5,5V27H27V5ZM7,7H25V25H7Zm13,3a2,2,0,0,0-1.992,2.156L13.32,14.5a2,2,0,1,0,0,3l4.688,2.344A2,2,0,1,0,18.68,18.5l-4.687-2.344a2,2,0,0,0,0-.312L18.68,13.5A2,2,0,1,0,20,10Z" transform="translate(-4 -4)" fill="#030303"/>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8.59 13.51L15.42 17.49M15.41 6.51L8.59 10.49M21 5C21 6.65685 19.6569 8 18 8C16.3431 8 15 6.65685 15 5C15 3.34315 16.3431 2 18 2C19.6569 2 21 3.34315 21 5ZM9 12C9 13.6569 7.65685 15 6 15C4.34315 15 3 13.6569 3 12C3 10.3431 4.34315 9 6 9C7.65685 9 9 10.3431 9 12ZM21 19C21 20.6569 19.6569 22 18 22C16.3431 22 15 20.6569 15 19C15 17.3431 16.3431 16 18 16C19.6569 16 21 17.3431 21 19Z" stroke="#337083" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
