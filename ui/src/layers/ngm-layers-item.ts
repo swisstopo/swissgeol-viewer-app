@@ -38,8 +38,8 @@ export class NgmLayersItem extends LitElementI18n {
   accessor movable = false;
   @query('.menu')
   accessor actionMenu!: HTMLElement;
-  private toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
-  private debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
+  private readonly toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
+  private readonly debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
 
   firstUpdated() {
     $(this.querySelector('.ui.dropdown')!).dropdown();
@@ -166,9 +166,9 @@ export class NgmLayersItem extends LitElementI18n {
             ${i18next.t('dtd_legend')}
           </div>` : ''}
         ${this.config?.geocatId ? html`
-          <a 
-            class="item" 
-            href="${this.geocatLink(this.config.geocatId)}" 
+          <a
+            class="item"
+            href="${this.geocatLink(this.config.geocatId)}"
             target="_blank" rel="noopener">
             Geocat.ch
           </a>` : ''}

@@ -29,7 +29,7 @@ export class NgmAddMemberForm extends LitElementI18n {
     accessor email: string | undefined;
     @state()
     accessor roleNotSelected = false;
-    private roleDropdownItems: DropdownItem[] = [
+    private readonly roleDropdownItems: DropdownItem[] = [
         {title: i18next.t('dashboard_project_viewer'), value: 'viewer'},
         {title: i18next.t('dashboard_project_editor'), value: 'editor'},
     ];

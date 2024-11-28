@@ -24,7 +24,7 @@ export class NgmDrawSection extends LitElementI18n {
   accessor hidden = true;
   @state()
   accessor lineInfo: DrawInfo | undefined;
-  private draw: CesiumDraw | undefined;
+  private readonly draw: CesiumDraw | undefined;
   private drawGeometries = [
     {label: () => i18next.t('tbx_add_point_btn_label'), type: 'point', icon: 'ngm-point-draw-icon'},
     {label: () => i18next.t('tbx_add_line_btn_label'), type: 'line', icon: 'ngm-line-draw-icon'},

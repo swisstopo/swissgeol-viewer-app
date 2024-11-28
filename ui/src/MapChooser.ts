@@ -6,8 +6,8 @@ import type {BaseLayerConfig} from './viewer';
 import MainStore from './store/main';
 
 export default class MapChooser {
-  private viewer: Viewer;
-  private config: BaseLayerConfig[];
+  private readonly viewer: Viewer;
+  private readonly config: BaseLayerConfig[];
   public selectedMap: BaseLayerConfig;
   public elements: NgmMapChooser[] = [];
 

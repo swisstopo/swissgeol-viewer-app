@@ -91,7 +91,7 @@ export class SideBar extends LitElementI18n {
   private zoomedToPosition = false;
   private accordionInited = false;
   private shareListenerAdded = false;
-  private shareDownListener = evt => {
+  private readonly shareDownListener = evt => {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
 

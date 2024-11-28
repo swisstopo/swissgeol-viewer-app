@@ -20,14 +20,14 @@ export interface GeometryAction {
 export type GeometryCreateOptions = {geometry: NgmGeometry, slice?: boolean};
 
 export default class ToolboxStore {
-  private static slicerSubject = new BehaviorSubject<Slicer | null>(null);
-  private static rtcSubject = new Subject<GeometryCreateOptions>();
-  private static geometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
-  private static noEditGeometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
-  private static openedGeometryOptionsSubject = new BehaviorSubject<OpenedGeometryOptions | null>(null);
-  private static sliceGeometrySubject = new BehaviorSubject<NgmGeometry | null | undefined>(null);
-  private static geomActionSubject = new Subject<GeometryAction>();
-  private static syncSliceSubject = new Subject<void>();
+  private static readonly slicerSubject = new BehaviorSubject<Slicer | null>(null);
+  private static readonly rtcSubject = new Subject<GeometryCreateOptions>();
+  private static readonly geometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
+  private static readonly noEditGeometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
+  private static readonly openedGeometryOptionsSubject = new BehaviorSubject<OpenedGeometryOptions | null>(null);
+  private static readonly sliceGeometrySubject = new BehaviorSubject<NgmGeometry | null | undefined>(null);
+  private static readonly geomActionSubject = new Subject<GeometryAction>();
+  private static readonly syncSliceSubject = new Subject<void>();
 
   static get slicer(): BehaviorSubject<Slicer | null> {
     return this.slicerSubject;

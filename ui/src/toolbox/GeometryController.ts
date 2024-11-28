@@ -47,11 +47,11 @@ import {saveAs} from 'file-saver';
 
 export class GeometryController {
   private draw: CesiumDraw | undefined;
-  private toastPlaceholder: HTMLElement;
+  private readonly toastPlaceholder: HTMLElement;
   private viewer: Viewer | null = null;
-  private unlistenEditPostRender: Event.RemoveCallback | undefined;
-  private geometriesDataSource: CustomDataSource;
-  private julianDate = new JulianDate();
+  private readonly unlistenEditPostRender: Event.RemoveCallback | undefined;
+  private readonly geometriesDataSource: CustomDataSource;
+  private readonly julianDate = new JulianDate();
   private selectedArea: Entity | undefined;
   private screenSpaceEventHandler: ScreenSpaceEventHandler | undefined;
   private geometriesCounter: AreasCounter = {
@@ -60,7 +60,7 @@ export class GeometryController {
     rectangle: 0,
     polygon: 0
   };
-  private noEdit: boolean;
+  private readonly noEdit: boolean;
 
   constructor(geometriesDataSource: CustomDataSource, toastPlaceholder: HTMLElement, noEdit = false) {
     this.geometriesDataSource = geometriesDataSource;
