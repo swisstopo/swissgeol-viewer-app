@@ -1,4 +1,4 @@
-import {html} from 'lit';
+import {css, html} from 'lit';
 import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
@@ -166,6 +166,12 @@ export class SideBar extends LitElementI18n {
     if (sliceOptions?.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
   }
+  // static readonly styles = css`
+  // .mobile {
+  //   width: 100%;
+  //   display: flex;
+  //   justify-content: space-between;
+  // }`;
 
   render() {
     if (!this.queryManager) {
@@ -203,14 +209,14 @@ export class SideBar extends LitElementI18n {
       </div>
       <div class="ngm-menu-test" >
         <div style="width: 100%">
-          <ngm-menu-item icon="layer" title="menu_layers" ?isActive="${this.activePanel === 'data'}"
+          <ngm-menu-item icon="layer" title="menu_layers" ?isActive="${this.activePanel === 'data'}" ?isMobile="${this.mobileView}"
                        @click=${() => this.togglePanel('data')}>
           </ngm-menu-item>
-          <ngm-menu-item icon="tools" title="menu_tools" ?isActive="${this.activePanel === 'tools'}"
+          <ngm-menu-item icon="tools" title="menu_tools" ?isActive="${this.activePanel === 'tools'}" ?isMobile="${this.mobileView}"
                          @click=${() => this.togglePanel('tools')}>
           </ngm-menu-item>
           ${!this.mobileView ? shareBtn : ''}
-          <ngm-menu-item icon="projects" title="menu_projects" ?isActive="${this.activePanel === 'dashboard'}"
+          <ngm-menu-item icon="projects" title="menu_projects" ?isActive="${this.activePanel === 'dashboard'}" ?isMobile="${this.mobileView}"
                          @click=${() => this.togglePanel('dashboard')}>
           </ngm-menu-item>
           <div .hidden=${!this.mobileView}

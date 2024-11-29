@@ -2,18 +2,21 @@ import {customElement, property} from 'lit/decorators.js';
 import {LitElementI18n} from '../../i18n.js';
 import {css, html} from 'lit';
 import {classMap} from 'lit/directives/class-map.js';
-import {IconKey, icons} from '../../icons/icons';
-import i18next from "i18next";
+import {IconKey} from '../../icons/icons';
+import i18next from 'i18next';
+import '../shared/ngm-icon';
 
 
 @customElement('ngm-menu-item')
-export class CustomElement extends LitElementI18n {
+export class MenuItem extends LitElementI18n {
   @property({type: String})
   accessor title: string = '';
   @property()
   accessor icon: IconKey = 'config';
   @property({type: Boolean})
   accessor isActive: boolean = false;
+  @property({type: Boolean})
+  accessor isMobile: boolean = false;
 
   constructor() {
     super();
@@ -43,7 +46,6 @@ export class CustomElement extends LitElementI18n {
     }
 
     .container {
-
       .box > .icon {
         display: flex;
         justify-content: center;
@@ -74,13 +76,12 @@ export class CustomElement extends LitElementI18n {
         background-color: transparent;
         color: #295969;
 
-        .icon svg {
+        .icon {
           color: #295969;
         }
 
         & > .title {
           transform: scaleX(0);
-
           transition: ease-out 100ms;
           transition-property: transform;
           transform-origin: left;
@@ -95,12 +96,11 @@ export class CustomElement extends LitElementI18n {
         white-space: nowrap;
         padding-right: 22px;
 
-
         & > .title {
           transform: scaleX(1);
         }
 
-        .icon svg {
+        .icon {
           color: white;
         }
       }
@@ -108,7 +108,7 @@ export class CustomElement extends LitElementI18n {
     .container .isActive {
       background-color: #607D52;
 
-      .icon svg {
+      .icon {
         color: white;
       }
     }
@@ -116,14 +116,13 @@ export class CustomElement extends LitElementI18n {
   `;
 
   render() {
-    const icon = icons[this.icon];
     return html`
       <div class="container ">
         <div class="box ${classMap({'isActive': this.isActive})}">
           <div class="icon">
-            ${icon}
+            <ngm-icon icon=${this.icon}></ngm-icon>
           </div>
-          <div class="title" translate>
+          <div class="title" translate ?hidden="${this.isMobile}">
             ${i18next.t(this.title)}
           </div>
         </div>
