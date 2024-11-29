@@ -8,7 +8,6 @@ export class Icon extends LitElement {
   accessor icon: IconKey = 'config';
 
   render() {
-    const icon = icons[this.icon];
-    return html`${icon}`;
+    return html`${icons[this.icon]}`;
   }
 }

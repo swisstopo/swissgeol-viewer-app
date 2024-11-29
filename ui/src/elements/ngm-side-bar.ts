@@ -6,6 +6,7 @@ import '../layers/ngm-layers-sort';
 import '../layers/ngm-catalog';
 import './dashboard/ngm-dashboard';
 import './sidebar/ngm-menu-item';
+import './shared/ngm-icon';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import defaultLayerTree, {LayerConfig} from '../layertree';
@@ -181,14 +182,12 @@ export class SideBar extends LitElementI18n {
     this.queryManager.activeLayers = this.activeLayers
       .filter(config => config.visible && !config.noQuery);
 
-    const shareBtn = html`
-      <ngm-menu-item icon="share" title="menu_share" ?isActive="${this.activePanel === 'share'}"
-                     @click=${() => this.togglePanel('share')}
-      ></ngm-menu-item>`;
-    const settingsBtn = html`
-      <ngm-menu-item icon="config" title="menu_settings" ?isActive="${this.activePanel === 'settings'}"
-                     @click=${() => this.togglePanel('settings')}
-      ></ngm-menu-item>`;
+    const layerBtn = html`<ngm-menu-item icon="layer" title="menu_layers" ?isActive="${this.activePanel === 'data'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('data')}></ngm-menu-item>`;
+    const toolsBtn = html`<ngm-menu-item icon="tools" title="menu_tools" ?isActive="${this.activePanel === 'tools'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('tools')}></ngm-menu-item>`;
+    const projectsBtn = html`<ngm-menu-item icon="projects" title="menu_projects" ?isActive="${this.activePanel === 'dashboard'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('dashboard')}></ngm-menu-item>`;
+    const shareBtn = html`<ngm-menu-item icon="share" title="menu_share" ?isActive="${this.activePanel === 'share'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('share')}></ngm-menu-item>`;
+    const settingsBtn = html`<ngm-menu-item icon="config" title="menu_settings" ?isActive="${this.activePanel === 'settings'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('settings')}></ngm-menu-item>`;
+    const mobileExpandBtn = html`<ngm-menu-item icon="${this.mobileShowAll ? 'view_less' : 'view_all'}" @click=${() => this.mobileShowAll = !this.mobileShowAll}></ngm-menu-item>`;
     const dataMobileHeader = html`
       <div @click=${() => this.hideDataDisplayed = true}
            class="ngm-data-catalog-label ${classMap({active: this.hideDataDisplayed})}">
@@ -207,29 +206,15 @@ export class SideBar extends LitElementI18n {
         <div></div>
         <div></div>
       </div>
-      <div class="ngm-menu-test" >
-        <div style="width: 100%">
-          <ngm-menu-item icon="layer" title="menu_layers" ?isActive="${this.activePanel === 'data'}" ?isMobile="${this.mobileView}"
-                       @click=${() => this.togglePanel('data')}>
-          </ngm-menu-item>
-          <ngm-menu-item icon="tools" title="menu_tools" ?isActive="${this.activePanel === 'tools'}" ?isMobile="${this.mobileView}"
-                         @click=${() => this.togglePanel('tools')}>
-          </ngm-menu-item>
+      <div class="ngm-menu-new" >
+        <div style="width: 100%" class="ngm-menu-new-top">
+          ${layerBtn}
+          ${toolsBtn}
           ${!this.mobileView ? shareBtn : ''}
-          <ngm-menu-item icon="projects" title="menu_projects" ?isActive="${this.activePanel === 'dashboard'}" ?isMobile="${this.mobileView}"
-                         @click=${() => this.togglePanel('dashboard')}>
-          </ngm-menu-item>
-          <div .hidden=${!this.mobileView}
-               class="ngm-mob-menu-toggle"
-               @click=${() => this.mobileShowAll = !this.mobileShowAll}>
-            <div class="${classMap({
-              'ngm-view-all-icon': !this.mobileShowAll,
-              'ngm-view-less-icon': this.mobileShowAll
-            })}">
-            </div>
-          </div>
+          ${projectsBtn}
+          ${this.mobileView ? mobileExpandBtn : ''}
         </div>
-        <div .hidden=${this.mobileView} style="width: 100%">
+        <div style="width: 100%" ?hidden="${this.mobileView}" class="ngm-menu-new-top">
           ${settingsBtn}
         </div>
       </div>

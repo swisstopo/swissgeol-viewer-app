@@ -301,20 +301,6 @@
   background-color: var(--ngm-interaction);
 }
 
-.ngm-view-all-icon {
-  width: 24px;
-  height: 24px;
-  mask: url('./images/i_view_all.svg') no-repeat center;
-  -webkit-mask: url('./images/i_view_all.svg') no-repeat center;
-}
-
-.ngm-view-less-icon {
-  width: 24px;
-  height: 24px;
-  mask: url('./images/i_view_less.svg') no-repeat center;
-  -webkit-mask: url('./images/i_view_less.svg') no-repeat center;
-}
-
 .ngm-profile-icon {
   width: 24px;
   height: 24px;

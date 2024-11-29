@@ -26,7 +26,7 @@ export class MenuItem extends LitElementI18n {
 
     :host {
       position: relative;
-      width: 100%;
+      width: 68px;
       height: 58px;
       display: flex;
       justify-content: center;
