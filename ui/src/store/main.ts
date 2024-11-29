@@ -13,8 +13,8 @@ export default class MainStore {
   private static readonly ionTokenSubject = new BehaviorSubject<string | null>(getIonToken());
   private static readonly ionAssetSubject = new Subject<IonAsset>();
   private static readonly removeIonAssetsSubject = new Subject<void>();
-  static setUrlLayersSubject = new Subject<void>();
-  static syncLayerParams = new Subject<void>();
+  static readonly setUrlLayersSubject = new Subject<void>();
+  static readonly syncLayerParams = new Subject<void>();
   /**
    * List of uploaded KML dataSource names. Required to get list of uploaded layers and update properties in batch (e.g. exaggeration)
    * @private
