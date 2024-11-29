@@ -94,7 +94,6 @@ export class MenuItem extends LitElementI18n {
         color: white;
         width: unset;
         white-space: nowrap;
-        padding-right: 22px;
 
         & > .title {
           transform: scaleX(1);
@@ -104,6 +103,12 @@ export class MenuItem extends LitElementI18n {
           color: white;
         }
       }
+
+    @media (min-height: 629px) and (min-width: 599px)  {
+      .container:hover .box {
+        padding-right: 22px;
+      }
+    }
 
     .container .isActive {
       background-color: #607D52;

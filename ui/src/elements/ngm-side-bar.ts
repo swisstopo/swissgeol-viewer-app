@@ -206,15 +206,15 @@ export class SideBar extends LitElementI18n {
         <div></div>
         <div></div>
       </div>
-      <div class="ngm-menu-new" >
-        <div style="width: 100%" class="ngm-menu-new-top">
+      <div class="ngm-menu" >
+        <div style="width: 100%" class="ngm-menu-top">
           ${layerBtn}
           ${toolsBtn}
           ${!this.mobileView ? shareBtn : ''}
           ${projectsBtn}
           ${this.mobileView ? mobileExpandBtn : ''}
         </div>
-        <div style="width: 100%" ?hidden="${this.mobileView}" class="ngm-menu-new-top">
+        <div style="width: 100%" ?hidden="${this.mobileView}" class="ngm-menu-top">
           ${settingsBtn}
         </div>
       </div>
