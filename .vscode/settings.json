@@ -1,4 +1,8 @@
 {
     "javascript.preferences.quoteStyle": "single",
-    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false
+    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "swisstopo",
+        "projectKey": "swisstopo_swissgeol-viewer-app"
+    }
 }
