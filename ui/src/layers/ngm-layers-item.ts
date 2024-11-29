@@ -240,7 +240,7 @@ export class NgmLayersItem extends LitElementI18n {
         <input type="range" class="ngm-slider ${classMap({disabled: this.changeOrderActive})}" ?hidden=${this.config.opacityDisabled}
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
-               .value=${this.config.opacity?.toString() || '1'}
+               .value=${this.config.opacity?.toString() ?? '1'}
                @input=${this.inputOpacity}
                @mousedown=${e => this.changeOrderActive && e.preventDefault()}>
       </div>

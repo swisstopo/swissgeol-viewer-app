@@ -179,7 +179,7 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
     // Position the sun the that shadows look nice
     let sunDate = new Date('2018-06-21T10:00:00.000Z');
     if (searchParams.has('date')) {
-        const betterDate = new Date(searchParams.get('date') || '');
+        const betterDate = new Date(searchParams.get('date') ?? '');
         if (Number.isNaN(betterDate.getDate())) {
             console.error(`Provided date is wrong: ${searchParams.get('date')}`);
         } else {

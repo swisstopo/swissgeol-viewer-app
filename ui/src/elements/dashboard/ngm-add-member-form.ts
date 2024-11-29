@@ -36,9 +36,9 @@ export class NgmAddMemberForm extends LitElementI18n {
 
     onAdd() {
         if (!this.name || !this.surname || !isEmail(this.email) || !this.memberRole) {
-            this.name = this.name || '';
-            this.surname = this.surname || '';
-            this.email = this.email || '';
+            this.name = this.name ?? '';
+            this.surname = this.surname ?? '';
+            this.email = this.email ?? '';
             this.roleNotSelected = !this.memberRole;
             return;
         }
@@ -63,21 +63,21 @@ export class NgmAddMemberForm extends LitElementI18n {
         return html`
             <div class="ngm-member-add-form">
                 <div class="ngm-input ${classMap({'ngm-input-warning': !this.name && this.name !== undefined})}">
-                    <input type="text" placeholder="required" .value=${this.name || ''}
+                    <input type="text" placeholder="required" .value=${this.name ?? ''}
                            @input=${evt => {
                                this.name = evt.target.value;
                            }}/>
                     <span class="ngm-floating-label">${i18next.t('project_member_name')}</span>
                 </div>
                 <div class="ngm-input ${classMap({'ngm-input-warning': !this.surname && this.surname !== undefined})}">
-                    <input type="text" placeholder="required" .value=${this.surname || ''}
+                    <input type="text" placeholder="required" .value=${this.surname ?? ''}
                            @input=${evt => {
                                this.surname = evt.target.value;
                            }}/>
                     <span class="ngm-floating-label">${i18next.t('project_member_surname')}</span>
                 </div>
                 <div class="ngm-input ${classMap({'ngm-input-warning': !isEmail(this.email) && this.email !== undefined})}">
-                    <input type="email" placeholder="required" .value=${this.email || ''}
+                    <input type="email" placeholder="required" .value=${this.email ?? ''}
                            @input=${evt => {
                                this.email = evt.target.value;
                            }}/>

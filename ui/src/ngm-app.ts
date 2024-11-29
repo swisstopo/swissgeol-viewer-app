@@ -228,7 +228,7 @@ export class NgmApp extends LitElementI18n {
 
     // Temporarily increasing the maximum screen space error to load low LOD tiles.
     const searchParams = new URLSearchParams(document.location.search);
-    globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') || '2000');
+    globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') ?? '2000');
 
     let currentStep = 1;
     const unlisten = globe.tileLoadProgressEvent.addEventListener(queueLength => {
