@@ -19,10 +19,6 @@ ngm-side-bar {
 .ngm-menu,
 .ngm-menu-mobile {
   width: var(--ngm-left-side-bar-width);
-  justify-content: space-between;
-  font: normal normal normal 12px/15px Inter, sans-serif;
-  color: #222529;
-  background-color: #FFFFFF;
 }
 
 .ngm-menu-1 {

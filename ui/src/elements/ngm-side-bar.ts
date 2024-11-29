@@ -176,15 +176,13 @@ export class SideBar extends LitElementI18n {
       .filter(config => config.visible && !config.noQuery);
 
     const shareBtn = html`
-      <div class="ngm-share ${classMap({'ngm-active-section': this.activePanel === 'share'})}"
-           @click=${() => this.togglePanel('share')}>
-        <div class="ngm-share-icon"></div>
-      </div>`;
+      <ngm-menu-item icon="share" title="Teilen" ?isActive="${this.activePanel === 'share'}"
+                     @click=${() => this.togglePanel('share')}
+      ></ngm-menu-item>`;
     const settingsBtn = html`
-      <div class="ngm-settings ${classMap({'ngm-active-section': this.activePanel === 'settings'})}"
-           @click=${() => this.togglePanel('settings')}>
-        <div class="ngm-settings-icon"></div>
-      </div>`;
+      <ngm-menu-item icon="config" title="Einstellungen" ?isActive="${this.activePanel === 'settings'}"
+                     @click=${() => this.togglePanel('settings')}
+      ></ngm-menu-item>`;
     const dataMobileHeader = html`
       <div @click=${() => this.hideDataDisplayed = true}
            class="ngm-data-catalog-label ${classMap({active: this.hideDataDisplayed})}">
@@ -204,35 +202,38 @@ export class SideBar extends LitElementI18n {
         <div></div>
       </div>
       <div class="ngm-menu">
-        <ngm-menu-item icon="i_layer" title="Test" ?isActive="${this.activePanel === 'data'}"
+        <div>
+                         <ngm-menu-item icon="layer" title="Layer" ?isActive="${this.activePanel === 'data'}"
                        @click=${() => this.togglePanel('data')}
         ></ngm-menu-item>
-
-        <div class="ngm-menu-1">
-          <div class="ngm-data ${classMap({'ngm-active-section': this.activePanel === 'data'})}"
-               @click=${() => this.togglePanel('data')}>
-            <div class="ngm-data-icon"></div>
-          </div>
-          <div class="ngm-tools ${classMap({'ngm-active-section': this.activePanel === 'tools'})}"
-               @click=${() => this.togglePanel('tools', false)}>
-            <div class="ngm-tools-icon"></div>
-          </div>
-          ${!this.mobileView ? shareBtn : ''}
-          <div class="ngm-dashboard ${classMap({'ngm-active-section': this.activePanel === 'dashboard'})}"
-               @click=${() => this.togglePanel('dashboard')}>
-            <div class="ngm-dashboard-icon"></div>
-          </div>
+        <ngm-menu-item icon="tools" title="Tools" ?isActive="${this.activePanel === 'tools'}"
+                       @click=${() => this.togglePanel('tools')}
+        ></ngm-menu-item>
+        <ngm-menu-item icon="projects" title="Dashboard" ?isActive="${this.activePanel === 'dashboard'}"
+                       @click=${() => this.togglePanel('dashboard')}
+        ></ngm-menu-item>
+        ${!this.mobileView ? shareBtn : ''}
           <div .hidden=${!this.mobileView}
                class="ngm-mob-menu-toggle"
                @click=${() => this.mobileShowAll = !this.mobileShowAll}>
             <div class="${classMap({
-      'ngm-view-all-icon': !this.mobileShowAll,
-      'ngm-view-less-icon': this.mobileShowAll
-    })}"></div>
+              'ngm-view-all-icon': !this.mobileShowAll,
+              'ngm-view-less-icon': this.mobileShowAll
+            })}">
+            </div>
           </div>
         </div>
-        <div .hidden=${this.mobileView} class="ngm-menu-2">
+        <div .hidden=${this.mobileView}>
           ${settingsBtn}
+        </div>
+
+
+
+        <div class="ngm-menu-1">
+
+        </div>
+        <div .hidden=${this.mobileView} class="ngm-menu-2">
+
         </div>
       </div>
       <ngm-dashboard class="ngm-side-bar-panel ngm-large-panel"

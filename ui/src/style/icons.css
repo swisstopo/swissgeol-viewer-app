@@ -14,39 +14,11 @@
   -webkit-mask: url('./images/i_close.svg') no-repeat center;
 }
 
-.ngm-dashboard-icon {
-  width: 24px;
-  height: 24px;
-  mask: url('./images/i_menu.svg') no-repeat center;
-  -webkit-mask: url('./images/i_menu.svg') no-repeat center;
-}
-
-.ngm-tools-icon {
-  width: 24px;
-  height: 24px;
-  mask: url('./images/i_tools.svg') no-repeat center;
-  -webkit-mask: url('./images/i_tools.svg') no-repeat center;
-}
-
-.ngm-share-icon {
-  width: 24px;
-  height: 24px;
-  mask: url('./images/i_share.svg') no-repeat center;
-  -webkit-mask: url('./images/i_share.svg') no-repeat center;
-}
-
 .ngm-user-icon {
   width: 18px;
   height: 18px;
   mask: url('./images/i_user.svg') no-repeat center;
   -webkit-mask: url('./images/i_user.svg') no-repeat center;
-}
-
-.ngm-settings-icon {
-  width: 24px;
-  height: 24px;
-  mask: url('./images/i_config.svg') no-repeat center;
-  -webkit-mask: url('./images/i_config.svg') no-repeat center;
 }
 
 .ngm-zoom-p-icon {

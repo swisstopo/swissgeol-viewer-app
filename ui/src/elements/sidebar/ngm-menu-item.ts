@@ -1,17 +1,16 @@
 import {customElement, property} from 'lit/decorators.js';
 import {LitElementI18n} from '../../i18n.js';
 import {css, html} from 'lit';
-import {layerIcon} from "../../images/i_layer";
-import {classMap} from "lit/directives/class-map.js";
+import {classMap} from 'lit/directives/class-map.js';
+import {IconKey, icons} from '../../icons/icons';
 
-const ICON_BASE_PATH = '../../images/';
 
 @customElement('ngm-menu-item')
 export class CustomElement extends LitElementI18n {
   @property({type: String})
   accessor title: string = '';
-  @property({type: String})
-  accessor icon: string = '';
+  @property()
+  accessor icon: IconKey = 'config';
   @property({type: Boolean})
   accessor isActive: boolean = false;
 
@@ -30,6 +29,7 @@ export class CustomElement extends LitElementI18n {
       align-items: center;
       color: #295969;
       padding-inline: 5px;
+      z-index: 10;
     }
 
     :host > .container,
@@ -74,7 +74,7 @@ export class CustomElement extends LitElementI18n {
         color: #295969;
 
         .icon svg {
-          fill: #295969;
+          color: #295969;
         }
 
         & > .title {
@@ -97,7 +97,7 @@ export class CustomElement extends LitElementI18n {
         }
 
         .icon svg {
-          fill: white;
+          color: white;
         }
       }
 
@@ -105,18 +105,19 @@ export class CustomElement extends LitElementI18n {
       background-color: #607D52;
 
       .icon svg {
-        fill: white;
+        color: white;
       }
     }
 
   `;
 
   render() {
+    const icon = icons[this.icon];
     return html`
       <div class="container ">
         <div class="box ${classMap({'isActive': this.isActive})}">
           <div class="icon">
-            ${layerIcon}
+            ${icon}
           </div>
           <div class="title" translate>
             ${this.title}
