@@ -176,11 +176,11 @@ export class SideBar extends LitElementI18n {
       .filter(config => config.visible && !config.noQuery);
 
     const shareBtn = html`
-      <ngm-menu-item icon="share" title="Teilen" ?isActive="${this.activePanel === 'share'}"
+      <ngm-menu-item icon="share" title="menu_share" ?isActive="${this.activePanel === 'share'}"
                      @click=${() => this.togglePanel('share')}
       ></ngm-menu-item>`;
     const settingsBtn = html`
-      <ngm-menu-item icon="config" title="Einstellungen" ?isActive="${this.activePanel === 'settings'}"
+      <ngm-menu-item icon="config" title="menu_settings" ?isActive="${this.activePanel === 'settings'}"
                      @click=${() => this.togglePanel('settings')}
       ></ngm-menu-item>`;
     const dataMobileHeader = html`
@@ -203,16 +203,16 @@ export class SideBar extends LitElementI18n {
       </div>
       <div class="ngm-menu-test" >
         <div style="width: 100%">
-          <ngm-menu-item icon="layer" title="Layer" ?isActive="${this.activePanel === 'data'}"
+          <ngm-menu-item icon="layer" title="menu_layers" ?isActive="${this.activePanel === 'data'}"
                        @click=${() => this.togglePanel('data')}>
           </ngm-menu-item>
-          <ngm-menu-item icon="tools" title="Tools" ?isActive="${this.activePanel === 'tools'}"
+          <ngm-menu-item icon="tools" title="menu_tools" ?isActive="${this.activePanel === 'tools'}"
                          @click=${() => this.togglePanel('tools')}>
           </ngm-menu-item>
-          <ngm-menu-item icon="projects" title="Dashboard" ?isActive="${this.activePanel === 'dashboard'}"
+          ${!this.mobileView ? shareBtn : ''}
+          <ngm-menu-item icon="projects" title="menu_projects" ?isActive="${this.activePanel === 'dashboard'}"
                          @click=${() => this.togglePanel('dashboard')}>
           </ngm-menu-item>
-          ${!this.mobileView ? shareBtn : ''}
           <div .hidden=${!this.mobileView}
                class="ngm-mob-menu-toggle"
                @click=${() => this.mobileShowAll = !this.mobileShowAll}>

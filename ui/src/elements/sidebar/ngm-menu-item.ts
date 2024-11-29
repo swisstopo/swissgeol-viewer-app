@@ -3,6 +3,7 @@ import {LitElementI18n} from '../../i18n.js';
 import {css, html} from 'lit';
 import {classMap} from 'lit/directives/class-map.js';
 import {IconKey, icons} from '../../icons/icons';
+import i18next from "i18next";
 
 
 @customElement('ngm-menu-item')
@@ -92,6 +93,7 @@ export class CustomElement extends LitElementI18n {
         background-color: #295969;
         color: white;
         width: unset;
+        white-space: nowrap;
 
         & > .title {
           transform: scaleX(1);
@@ -121,7 +123,7 @@ export class CustomElement extends LitElementI18n {
             ${icon}
           </div>
           <div class="title" translate>
-            ${this.title}
+            ${i18next.t(this.title)}
           </div>
         </div>
       </div>
