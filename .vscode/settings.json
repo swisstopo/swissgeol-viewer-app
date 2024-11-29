@@ -4,5 +4,6 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "swisstopo",
         "projectKey": "swisstopo_swissgeol-viewer-app"
-    }
+    },
+    "makefile.configureOnOpen": false
 }
