@@ -201,18 +201,18 @@ export class SideBar extends LitElementI18n {
         <div></div>
         <div></div>
       </div>
-      <div class="ngm-menu">
-        <div>
-                         <ngm-menu-item icon="layer" title="Layer" ?isActive="${this.activePanel === 'data'}"
-                       @click=${() => this.togglePanel('data')}
-        ></ngm-menu-item>
-        <ngm-menu-item icon="tools" title="Tools" ?isActive="${this.activePanel === 'tools'}"
-                       @click=${() => this.togglePanel('tools')}
-        ></ngm-menu-item>
-        <ngm-menu-item icon="projects" title="Dashboard" ?isActive="${this.activePanel === 'dashboard'}"
-                       @click=${() => this.togglePanel('dashboard')}
-        ></ngm-menu-item>
-        ${!this.mobileView ? shareBtn : ''}
+      <div class="ngm-menu-test" >
+        <div style="width: 100%">
+          <ngm-menu-item icon="layer" title="Layer" ?isActive="${this.activePanel === 'data'}"
+                       @click=${() => this.togglePanel('data')}>
+          </ngm-menu-item>
+          <ngm-menu-item icon="tools" title="Tools" ?isActive="${this.activePanel === 'tools'}"
+                         @click=${() => this.togglePanel('tools')}>
+          </ngm-menu-item>
+          <ngm-menu-item icon="projects" title="Dashboard" ?isActive="${this.activePanel === 'dashboard'}"
+                         @click=${() => this.togglePanel('dashboard')}>
+          </ngm-menu-item>
+          ${!this.mobileView ? shareBtn : ''}
           <div .hidden=${!this.mobileView}
                class="ngm-mob-menu-toggle"
                @click=${() => this.mobileShowAll = !this.mobileShowAll}>
@@ -223,17 +223,8 @@ export class SideBar extends LitElementI18n {
             </div>
           </div>
         </div>
-        <div .hidden=${this.mobileView}>
+        <div .hidden=${this.mobileView} style="width: 100%">
           ${settingsBtn}
-        </div>
-
-
-
-        <div class="ngm-menu-1">
-
-        </div>
-        <div .hidden=${this.mobileView} class="ngm-menu-2">
-
         </div>
       </div>
       <ngm-dashboard class="ngm-side-bar-panel ngm-large-panel"

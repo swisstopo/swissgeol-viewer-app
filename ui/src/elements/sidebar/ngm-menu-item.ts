@@ -61,6 +61,7 @@ export class CustomElement extends LitElementI18n {
         left: 0;
         top: 9px;
         height: 40px;
+        padding-right: 22px;
 
         display: flex;
         justify-content: flex-start;
