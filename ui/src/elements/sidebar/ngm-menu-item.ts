@@ -62,7 +62,6 @@ export class CustomElement extends LitElementI18n {
         left: 0;
         top: 9px;
         height: 40px;
-        padding-right: 22px;
 
         display: flex;
         justify-content: flex-start;
@@ -94,6 +93,8 @@ export class CustomElement extends LitElementI18n {
         color: white;
         width: unset;
         white-space: nowrap;
+        padding-right: 22px;
+
 
         & > .title {
           transform: scaleX(1);
