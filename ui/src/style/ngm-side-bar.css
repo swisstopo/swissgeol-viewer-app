@@ -189,6 +189,12 @@ ngm-side-bar {
   }
 }
 
+@media (max-width: 350px) {
+  .ngm-menu-mobile > div {
+    width: 60px;
+  }
+}
+
 @media (max-height: 629px), (max-width: 599px) {
   .ngm-side-bar-panel.ngm-large-panel .ngm-proj-information .ngm-proj-description {
     margin-left: 0;
@@ -233,8 +239,3 @@ ngm-side-bar {
   }
 }
 
-@media (max-width: 350px) {
-  .ngm-menu-mobile > div {
-    width: 60px;
-  }
-}

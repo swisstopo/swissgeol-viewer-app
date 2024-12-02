@@ -97,6 +97,9 @@ export class SideBar extends LitElementI18n {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
 
+  static readonly styles = css`
+  `
+
   constructor() {
     super();
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
