@@ -74,6 +74,12 @@ const config = {
       },
       {
         test: /\.css$/i,
+        issuer: /\.(?:js|ts)$/,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.css$/i,
+        issuer: {not: [/\.(?:js|ts)$/]},
         //use: [isDev ? "style-loader" : MiniCssExtractPlugin.loader, 'css-loader'],
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },

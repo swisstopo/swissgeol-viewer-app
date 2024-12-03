@@ -16,6 +16,18 @@ const cesiumSource = 'node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
 const extensions = ['.ts', '.js'];
 
+const postcssPlugins = [
+  inlinesvg(),
+  cssimport({
+    plugins: [
+      postcssurl([
+        {filter: '**/*.+(woff|woff2)', url: (asset) => `fonts/${path.basename(asset.url)}`},
+      ])
+    ]
+  }),
+  autoprefixer()
+];
+
 const config = {
   input: 'src/index.ts',
   output: [{
@@ -27,18 +39,14 @@ const config = {
     postcss({
       minimize: true,
       inject: false,
-      extract: 'index.css',
-      plugins: [
-        inlinesvg(),
-        cssimport({
-          plugins: [
-            postcssurl([
-              {filter: '**/*.+(woff|woff2)', url: (asset) => `fonts/${path.basename(asset.url)}`},
-            ])
-          ]
-        }),
-        autoprefixer()
-      ]
+      extract: false,
+      plugins: postcssPlugins,
+    }),
+    postcss({
+      minimize: true,
+      inject: false,
+      extract: '**/style/index.css',
+      plugins: postcssPlugins,
     }),
     json(),
     resolve({
