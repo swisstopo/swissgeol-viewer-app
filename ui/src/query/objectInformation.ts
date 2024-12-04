@@ -75,7 +75,10 @@ export function sortPropertyNames(propertyNames: string[], propertiesOrder: stri
     .sort((left, right) => {
       const titleLeft = left.toLowerCase();
       const titleRight = right.toLowerCase();
-      return titleLeft > titleRight ? 1 : titleLeft < titleRight ? -1 : 0;
+      if (titleLeft === titleRight) {
+        return 0;
+      }
+      return titleLeft > titleRight ? 1 : -1;
     });
   return [...propertiesOrder, ...lowerPriorityProps];
 }
