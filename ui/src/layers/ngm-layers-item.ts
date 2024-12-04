@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import {html} from 'lit';
+import {css, html, unsafeCSS} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
@@ -10,6 +10,15 @@ import {styleMap} from 'lit/directives/style-map.js';
 import {Sortable} from 'sortablejs';
 import type LayersAction from './LayersActions';
 import {debounce} from '../utils';
+import {PropertyValues} from '@lit/reactive-element';
+
+import iconsCss from '../style/icons.css';
+import layersCss from '../style/layers.css';
+import sliderCss from '../style/ngm-slider.css';
+
+import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css';
+import fomanticDropdownCss from 'fomantic-ui-css/components/dropdown.css';
+import 'fomantic-ui-css/components/transition.js';
 
 const GEOCAT_LANG_CODE = {
   'de': 'ger',
@@ -41,11 +50,17 @@ export class NgmLayersItem extends LitElementI18n {
   private toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
   private debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
 
-  firstUpdated() {
-    $(this.querySelector('.ui.dropdown')!).dropdown();
+  firstUpdated(): void {
+    if (this.shadowRoot != null) {
+      $(this.shadowRoot.querySelectorAll('.ui.dropdown')).dropdown({
+        on: 'mouseup',
+        collapseOnActionable: false,
+      });
+    }
   }
 
-  updated(changedProps) {
+  updated(changedProps: PropertyValues<this>): void {
+    super.updated(changedProps);
     if (changedProps.has('changeOrderActive')) {
       this.updateMovableState();
     }
@@ -54,7 +69,6 @@ export class NgmLayersItem extends LitElementI18n {
         this.requestUpdate();
       });
     }
-    super.updated(changedProps);
   }
 
   connectedCallback() {
@@ -127,6 +141,7 @@ export class NgmLayersItem extends LitElementI18n {
 
   showLayerLegend(config: LayerConfig) {
     this.dispatchEvent(new CustomEvent('showLayerLegend', {
+      composed: true,
       bubbles: true,
       detail: {
         config
@@ -136,6 +151,7 @@ export class NgmLayersItem extends LitElementI18n {
 
   showWmtsDatePicker(config: LayerConfig) {
     this.dispatchEvent(new CustomEvent('showWmtsDatePicker', {
+      composed: true,
       bubbles: true,
       detail: {
         config
@@ -145,6 +161,7 @@ export class NgmLayersItem extends LitElementI18n {
 
   showVoxelFilter(config: LayerConfig) {
     this.dispatchEvent(new CustomEvent('showVoxelFilter', {
+      composed: true,
       bubbles: true,
       detail: {
         config
@@ -166,9 +183,9 @@ export class NgmLayersItem extends LitElementI18n {
             ${i18next.t('dtd_legend')}
           </div>` : ''}
         ${this.config?.geocatId ? html`
-          <a 
-            class="item" 
-            href="${this.geocatLink(this.config.geocatId)}" 
+          <a
+            class="item"
+            href="${this.geocatLink(this.config.geocatId)}"
             target="_blank" rel="noopener">
             Geocat.ch
           </a>` : ''}
@@ -273,10 +290,6 @@ export class NgmLayersItem extends LitElementI18n {
     `;
   }
 
-  createRenderRoot() {
-    return this;
-  }
-
   cloneNode(deep) {
     const node = super.cloneNode(deep) as NgmLayersItem;
     node.config = this.config;
@@ -285,4 +298,19 @@ export class NgmLayersItem extends LitElementI18n {
     node.clone = true;
     return node;
   }
+
+  static readonly styles = css`
+    ${unsafeCSS(fomanticTransitionCss)}
+    ${unsafeCSS(fomanticDropdownCss)}
+    ${unsafeCSS(iconsCss)}
+    ${unsafeCSS(layersCss.replaceAll('ngm-layers-item', ':host'))}
+    ${unsafeCSS(sliderCss)}
+
+    .ui.dropdown .menu > .item {
+      font-size: 14px;
+      text-decoration: none;
+      padding: 10px 16px;
+      min-height: unset;
+    }
+  `;
 }

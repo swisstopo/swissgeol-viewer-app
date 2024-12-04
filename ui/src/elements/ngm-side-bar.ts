@@ -3,8 +3,8 @@ import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
 import '../layers/ngm-layers-sort';
-import '../layers/ngm-catalog';
 import './dashboard/ngm-dashboard';
+import '../components/navigation/navigation-layer-panel';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import defaultLayerTree, {LayerConfig} from '../layertree';
@@ -17,7 +17,7 @@ import {
   getSliceParam,
   getZoomToPosition,
   setCesiumToolbarParam,
-  syncLayersParam
+  syncLayersParam,
 } from '../permalink';
 import {createCesiumObject} from '../layers/helpers';
 import i18next from 'i18next';
@@ -46,7 +46,7 @@ import type QueryManager from '../query/QueryManager';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
-import {parseKml, renderWithDelay} from '../cesiumutils';
+import {LayerEvent, LayersUpdateEvent} from '../components/layers/layers-display';
 
 type SearchLayer = {
   layer: string
@@ -54,6 +54,12 @@ type SearchLayer = {
   type?: LayerType
   title?: string
   dataSourceName?: string
+}
+
+interface LayerClickEvent {
+  detail: {
+    layer: string
+  }
 }
 
 @customElement('ngm-side-bar')
@@ -68,25 +74,20 @@ export class SideBar extends LitElementI18n {
   accessor catalogLayers: LayerConfig[] | undefined;
   @state()
   accessor activeLayers: LayerConfig[] = [];
+
+  // TODO change this back to `null`
   @state()
   accessor activePanel: string | null = null;
   @state()
   accessor showHeader = false;
   @state()
-  accessor globeQueueLength_ = 0;
-  @state()
   accessor mobileShowAll = false;
   @state()
   accessor hideDataDisplayed = false;
   @state()
-  accessor layerOrderChangeActive = false;
-  @state()
   accessor debugToolsActive = getCesiumToolbarParam();
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder')
   accessor toastPlaceholder;
-  @query('ngm-catalog')
-  accessor catalogElement;
-  private viewer: Viewer | null = null;
   private layerActions: LayersActions | undefined;
   private zoomedToPosition = false;
   private accordionInited = false;
@@ -94,10 +95,18 @@ export class SideBar extends LitElementI18n {
   private shareDownListener = evt => {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
+  private viewer: Viewer | null = null;
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+
+    this.handleDisplayLayersUpdate = this.handleDisplayLayersUpdate.bind(this);
+    this.handleDisplayLayerUpdate = this.handleDisplayLayerUpdate.bind(this);
+    this.handleDisplayLayerRemoval = this.handleDisplayLayerRemoval.bind(this);
+
+    MainStore.viewer.subscribe((viewer) => {
+      this.viewer = viewer;
+    });
 
     auth.user.subscribe((user) => {
       if (!user && this.activeLayers) {
@@ -115,7 +124,7 @@ export class SideBar extends LitElementI18n {
         this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
       }
       await this.syncActiveLayers();
-      this.catalogElement.requestUpdate();
+      this.requestUpdate();
       MainStore.nextLayersRemove();
     });
 
@@ -184,15 +193,6 @@ export class SideBar extends LitElementI18n {
            @click=${() => this.togglePanel('settings')}>
         <div class="ngm-settings-icon"></div>
       </div>`;
-    const dataMobileHeader = html`
-      <div @click=${() => this.hideDataDisplayed = true}
-           class="ngm-data-catalog-label ${classMap({active: this.hideDataDisplayed})}">
-        ${i18next.t('lyr_geocatalog_label')}
-      </div>
-      <div @click=${() => this.hideDataDisplayed = false}
-           class="ngm-data-catalog-label ${classMap({active: !this.hideDataDisplayed})}">
-        ${i18next.t('dtd_displayed_data_label')}
-      </div>`;
 
     return html`
       <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
@@ -232,38 +232,34 @@ export class SideBar extends LitElementI18n {
       </div>
       <ngm-dashboard class="ngm-side-bar-panel ngm-large-panel"
         ?hidden=${this.activePanel !== 'dashboard'}
-        @close=${() => this.activePanel = ''}
-        @layerclick=${evt => this.onCatalogLayerClicked(evt.detail.layer)}
+        @close=${() => this.activePanel = null}
+        @layerclick=${(e: LayerClickEvent) => this.onCatalogLayerClicked(e.detail.layer)}
       ></ngm-dashboard>
-      <div .hidden=${this.activePanel !== 'data' || (this.mobileView && !this.hideDataDisplayed)}
-           class="ngm-side-bar-panel ngm-layer-catalog">
-        <div class="ngm-panel-header">
-          ${this.mobileView ? dataMobileHeader : i18next.t('lyr_geocatalog_label')}
-          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
-        </div>
-        <div ?hidden=${this.mobileView} class="ngm-label-btn ngm-configure-data ${classMap({active: !this.hideDataDisplayed})}"
-             @click=${() => this.hideDataDisplayed = !this.hideDataDisplayed}>
-          ${i18next.t('dtd_configure_data_btn')}
-        </div>
-        <ngm-catalog class="ui accordion ngm-panel-content" .layers=${this.catalogLayers}
-                     @layerclick=${evt => this.onCatalogLayerClicked(evt.detail.layer)}>
-        </ngm-catalog>
-      </div>
+      <ngm-navigation-layer-panel
+        ?hidden="${this.activePanel !== 'data'}"
+        .layers="${this.catalogLayers}"
+        .displayLayers="${this.activeLayers}"
+        @close="${() => this.activePanel = null}"
+        @layer-click=${(e: LayerClickEvent) => this.onCatalogLayerClicked(e.detail.layer)}
+        @display-layers-update="${this.handleDisplayLayersUpdate}"
+        @display-layer-update="${this.handleDisplayLayerUpdate}"
+        @display-layer-removal="${this.handleDisplayLayerRemoval}"
+      ></ngm-navigation-layer-panel>
       <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
         <ngm-tools .toolsHidden=${this.activePanel !== 'tools'}
                    @open=${() => this.activePanel = 'tools'}
-                   @close=${() => this.activePanel = ''}></ngm-tools>
+                   @close=${() => this.activePanel = null}></ngm-tools>
       </div>
       <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel ngm-share-panel">
         <div class="ngm-panel-header">${i18next.t('lsb_share')}
-          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+          <div class="ngm-close-icon" @click=${() => this.activePanel = null}></div>
         </div>
         ${this.activePanel !== 'share' ? '' : html`
           <ngm-share-link></ngm-share-link>`}
       </div>
       <div .hidden=${this.activePanel !== 'settings'} class="ngm-side-bar-panel">
         <div class="ngm-panel-header">${i18next.t('lsb_settings')}
-          <div class="ngm-close-icon" @click=${() => this.activePanel = ''}></div>
+          <div class="ngm-close-icon" @click=${() => this.activePanel = null}></div>
         </div>
         <div class="toolbar-settings">
             <div class="inner-toolbar-settings">
@@ -280,53 +276,6 @@ export class SideBar extends LitElementI18n {
             </div>
           </div>
       </div>
-      <div .hidden=${this.activePanel !== 'data' || this.hideDataDisplayed}
-           class="ngm-side-bar-panel ngm-extension-panel ngm-data-panel">
-        <div class="ngm-panel-header">
-          ${this.mobileView ? dataMobileHeader : i18next.t('dtd_displayed_data_label')}
-          <div class="ngm-close-icon"
-               @click=${() => this.mobileView ? this.activePanel = '' : this.hideDataDisplayed = true}></div>
-        </div>
-        <div class="ngm-toast-placeholder"></div>
-        <div class="ngm-panel-content">
-          <div class="ngm-label-btn ${classMap({active: this.layerOrderChangeActive})}"
-               @click=${this.toggleLayerOrderChange}>
-            ${this.layerOrderChangeActive ? i18next.t('dtd_finish_ordering_label') : i18next.t('dtd_change_order_label')}
-          </div>
-          ${this.layerOrderChangeActive ?
-        html`
-                <ngm-layers-sort
-                    .layers=${this.activeLayers}
-                    .actions=${this.layerActions}
-                    @orderChanged=${(evt) => this.onLayersOrderChange(evt.detail)}>
-                </ngm-layers-sort>` :
-        html`
-                <ngm-layers
-                    .layers=${this.activeLayers}
-                    .actions=${this.layerActions}
-                    @removeDisplayedLayer=${evt => this.onRemoveDisplayedLayer(evt)}
-                    @layerChanged=${evt => this.onLayerChanged(evt)}>
-                </ngm-layers>`
-      }
-          <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
-          <ngm-layers-upload
-              .toastPlaceholder=${this.toastPlaceholder}
-              .onKmlUpload=${(file: File, clampToGround: boolean) => this.onKmlUpload(file, clampToGround)}>
-          </ngm-layers-upload>
-          <button class="ui button ngm-ion-add-content-btn ngm-action-btn"
-                  @click=${() => this.dispatchEvent(new CustomEvent('openIonModal'))}>
-            ${i18next.t('dtd_add_ion_token')}
-          </button>
-          <h5 class="ui header ngm-background-label">
-            ${i18next.t('dtd_background_map_label')}
-            <div class="ui ${this.globeQueueLength_ > 0 ? 'active' : ''} inline mini loader">
-              <span class="ngm-load-counter">${this.globeQueueLength_}</span>
-            </div>
-          </h5>
-          <ngm-map-configuration></ngm-map-configuration>
-          <div class="ui divider"></div>
-        </div>
-      </div>
     `;
   }
 
@@ -341,7 +290,7 @@ export class SideBar extends LitElementI18n {
       return;
     }
     this.activePanel = panelName;
-    if (this.activePanel === 'data' && !this.mobileView) this.hideDataDisplayed = false;
+    // if (this.activePanel === 'data' && !this.mobileView) this.hideDataDisplayed = false;
   }
 
   async syncActiveLayers() {
@@ -434,9 +383,6 @@ export class SideBar extends LitElementI18n {
         this.catalogLayers = [...defaultLayerTree];
         await this.syncActiveLayers();
       }
-      this.viewer.scene.globe.tileLoadProgressEvent.addEventListener(queueLength => {
-        this.globeQueueLength_ = queueLength;
-      });
     }
     // hide share panel on any action outside side bar
     if (!this.shareListenerAdded && this.activePanel === 'share') {
@@ -505,18 +451,6 @@ export class SideBar extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
-  onLayerChanged(evt) {
-    this.queryManager!.hideObjectInformation();
-    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
-    this.catalogLayers = [...catalogLayers];
-    this.activeLayers = [...this.activeLayers];
-    syncLayersParam(this.activeLayers);
-    if (evt.detail) {
-      this.maybeShowVisibilityHint(evt.detail);
-    }
-    this.requestUpdate();
-  }
-
   maybeShowVisibilityHint(config: LayerConfig) {
     if (this.displayUndergroundHint
       && config.visible
@@ -524,28 +458,6 @@ export class SideBar extends LitElementI18n {
       && !this.viewer?.scene.cameraUnderground) {
       showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {displayTime: 20000});
       this.displayUndergroundHint = false;
-    }
-  }
-
-  async onRemoveDisplayedLayer(evt) {
-    const {config, idx} = evt.detail;
-    this.activeLayers.splice(idx, 1);
-    await this.removeLayer(config);
-  }
-
-  async removeLayerWithoutSync(config: LayerConfig) {
-    if (config.setVisibility) {
-      config.setVisibility(false);
-    } else {
-      const c = await config.promise;
-      if (c instanceof CustomDataSource || c instanceof GeoJsonDataSource) {
-        this.viewer!.dataSources.getByName(c.name)[0].show = false;
-      }
-    }
-    config.visible = false;
-    config.displayed = false;
-    if (config.remove) {
-      config.remove();
     }
   }
 
@@ -694,44 +606,40 @@ export class SideBar extends LitElementI18n {
     return layer.promise;
   }
 
-  toggleLayerOrderChange() {
-    this.layerOrderChangeActive = !this.layerOrderChangeActive;
+  private handleDisplayLayersUpdate(e: LayersUpdateEvent): void {
+    this.activeLayers = e.detail.layers;
   }
 
-  async onLayersOrderChange(layers: LayerConfig[]) {
-    await this.layerActions!.reorderLayers(layers);
-    // update activeLayers only when ordering finished
-    if (!this.layerOrderChangeActive) {
-      this.activeLayers = [...layers];
+  private handleDisplayLayerUpdate(e: LayerEvent): void {
+    this.queryManager!.hideObjectInformation();
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
+    this.activeLayers = [...this.activeLayers];
+    syncLayersParam(this.activeLayers);
+    if (e.detail) {
+      this.maybeShowVisibilityHint(e.detail.layer);
     }
-    this.dispatchEvent(new CustomEvent('layerChanged'));
+    this.requestUpdate();
   }
 
-  async onKmlUpload(file: File, clampToGround: boolean) {
-    if (!this.viewer) return;
-    const dataSource = new CustomDataSource();
-    const name = await parseKml(this.viewer, file, dataSource, clampToGround);
-    const layer = `${name.replace(' ', '_')}_${Date.now()}`;
-    // name used as id for datasource
-    dataSource.name = layer;
-    MainStore.addUploadedKmlName(dataSource.name);
-    await this.viewer.dataSources.add(dataSource);
-    await renderWithDelay(this.viewer);
-    // done like this to have correct rerender of component
-    const promise = Promise.resolve(dataSource);
-    const config: LayerConfig = {
-      load() { return promise; },
-      label: name,
-      layer,
-      promise: promise,
-      opacity: DEFAULT_LAYER_OPACITY,
-      notSaveToPermalink: true,
-      ownKml: true,
-      opacityDisabled: true
-    };
-    await this.onCatalogLayerClicked(config);
-    this.viewer.zoomTo(dataSource);
-    this.requestUpdate();
+  private async handleDisplayLayerRemoval(e: LayerEvent): Promise<void> {
+    await this.removeLayer(e.detail.layer);
+  }
+
+  private async removeLayerWithoutSync(layer: LayerConfig): Promise<void> {
+    if (layer.setVisibility) {
+      layer.setVisibility(false);
+    } else {
+      const c = await layer.promise;
+      if (c instanceof CustomDataSource || c instanceof GeoJsonDataSource) {
+        this.viewer!.dataSources.getByName(c.name)[0].show = false;
+      }
+    }
+    layer.visible = false;
+    layer.displayed = false;
+    if (layer.remove) {
+      layer.remove();
+    }
   }
 
   toggleDebugTools(event) {
