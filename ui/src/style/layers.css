@@ -50,7 +50,7 @@ ngm-layers-item, .ngm-base-layer {
   flex-direction: row;
 }
 
-ngm-layers-item, .ngm-base-layer > div:first-child {
+.ngm-base-layer > div:first-child {
   padding: 0 11px;
 }
 
@@ -141,11 +141,11 @@ ngm-layers-item .ui.dropdown .menu .item:hover {
   background-color: var(--ngm-hover);
 }
 
-.ngm-extension-panel .ui.header {
+.ngm-extension-panel .ui.header, ngm-navigation-panel .ui.header {
   margin-top: 7px;
 }
 
-.ngm-extension-panel .ui.divider {
+.ngm-extension-panel .ui.divider, ngm-navigation-panel .ui.divider {
   margin-top: 15px;
   margin-bottom: 8px;
   border-top: 1px solid #DFE2E6 !important;

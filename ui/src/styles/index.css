@@ -1,0 +1,24 @@
+
+:root {
+    --color-bg: #FFF;
+    --color-bg--dark: #F1F3F5;
+
+    --color-bg-contrast: #000;
+    --color-bg-contrast--light: #212529;
+    --color-bg-contrast--lighter: #656363;
+
+    --color-highlight: #C5F6FA;
+    --color-highlight--dark: #66D9E8;
+    --color-highlight--darker: #0B7285;
+
+    --color-action: #a83526;
+    --color-action--light: #FF0000;
+
+    --font: 'Inter', sans-serif;
+    font-family: var(--font);
+    font-size: 16px;
+
+    --panel-padding: 10px;
+
+    --icon-size--normal: 24px;
+}
