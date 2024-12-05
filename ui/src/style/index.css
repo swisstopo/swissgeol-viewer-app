@@ -205,18 +205,18 @@ cesium-view-cube {
 }
 
 .ngm-lang-dropdown {
-  background-color: #F1F3F5;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-right: 20px;
+  color: var(--color-main);
 }
 
 .ngm-lang-title {
-  padding: 5px 5px 5px 10px;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 6px;
 }
 
 .ngm-lang-title .ngm-dropdown-icon {
@@ -226,10 +226,6 @@ cesium-view-cube {
 
 .ngm-lang-dropdown.active .ngm-lang-title .ngm-dropdown-icon {
   transform: rotate(-90deg);
-}
-
-:lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en {
-  color: #A83526 !important;
 }
 
 .ui.checkbox label {
@@ -243,42 +239,6 @@ cesium-view-cube {
 #divinspector {
   position: absolute;
   z-index: 10;
-}
-
-ngm-auth {
-  cursor: pointer;
-}
-
-ngm-auth > .ngm-user {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-ngm-auth > a {
-  cursor: pointer;
-}
-
-ngm-auth .ngm-user-icon {
-  margin-bottom: 5px;
-  background-color: #030303;
-}
-
-ngm-auth:hover .ngm-user-icon {
-  background-color: var(--ngm-interaction-hover);
-}
-
-ngm-auth:hover {
-  color: var(--ngm-interaction-hover);
-}
-
-ngm-auth .ngm-active-section > div:nth-child(1) {
-  background-color: var(--ngm-interaction-active);
-}
-
-ngm-auth .ngm-active-section {
-  color: var(--ngm-interaction-active);
 }
 
 ngm-gst-interaction > .ui.tiny.icon.buttons {

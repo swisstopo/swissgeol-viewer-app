@@ -1,7 +1,7 @@
 header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  padding: 0 16px;
   height: var(--ngm-header-height);
   box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -10,7 +10,6 @@ header {
   --header-padding-l: 56px;
   --header-padding-r: 16px;
   --header-padding-v: 10px;
-  padding: var(--header-padding-v) var(--header-padding-r) var(--header-padding-v) var(--header-padding-l);
 
   --content-width: calc(100vw - var(--header-padding-l) - var(--header-padding-r));
   --suffix-width: 90px;

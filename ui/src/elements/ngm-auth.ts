@@ -1,4 +1,4 @@
-import {html} from 'lit';
+import {css, html} from 'lit';
 import type {AuthUser} from '../authService';
 import AuthService from '../authService';
 import {LitElementI18n} from '../i18n.js';
@@ -8,6 +8,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import DashboardStore from '../store/dashboard';
 import {consume} from '@lit/context';
 import {authServiceContext} from '../context';
+import './shared/ngm-icon';
 
 /**
  * Authentication component
@@ -21,6 +22,7 @@ export class NgmAuth extends LitElementI18n {
   @state()
   accessor user: AuthUser | null = null;
   private popup: Window | null = null;
+  private readonly icon = 'user';
 
   @consume({context: authServiceContext})
   accessor authService!: AuthService;
@@ -61,16 +63,30 @@ export class NgmAuth extends LitElementI18n {
     this.authService.logout();
   }
 
+  static readonly styles = css`
+  ngm-icon {
+    color: var(--color-bg);
+    background-color: var(--color-main);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  `;
+
   render() {
     return html`
-      <div class="ngm-user ${classMap({'ngm-active-section': !!this.user})}"
+      <div
            @click=${!this.user ? this.login : this.logout}>
-          <div class="ngm-user-icon"></div>
+          <ngm-icon icon=${this.icon}></ngm-icon>
       </div>`;
   }
 
-  createRenderRoot() {
-    // no shadow dom
-    return this;
-  }
+  // createRenderRoot() {
+  //   // no shadow dom
+  //   return this;
+  // }
 }

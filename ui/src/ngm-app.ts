@@ -20,8 +20,10 @@ import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
 import './components/search/search-input';
 import 'fomantic-ui-css/components/dropdown';
-
+import 'fomantic-ui-css/components/dropdown.js';
+import './elements/shared/ngm-icon';
 import '@geoblocks/cesium-view-cube';
+import './elements/shared/ngm-lang-selector';
 
 import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
 
@@ -59,6 +61,7 @@ import $ from 'jquery';
 import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
+import {styleMap} from "lit/directives/style-map.js";
 
 const SKIP_STEP2_TIMEOUT = 5000;
 

@@ -14,13 +14,6 @@
   -webkit-mask: url('./images/i_close.svg') no-repeat center;
 }
 
-.ngm-user-icon {
-  width: 18px;
-  height: 18px;
-  mask: url('./images/i_user.svg') no-repeat center;
-  -webkit-mask: url('./images/i_user.svg') no-repeat center;
-}
-
 .ngm-zoom-p-icon {
   width: 24px;
   height: 24px;
