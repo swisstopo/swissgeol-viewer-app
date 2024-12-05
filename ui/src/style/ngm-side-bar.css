@@ -25,6 +25,7 @@ ngm-side-bar {
   width: 100%;
   height: 56px;
   display: flex;
+  justify-content: center;
 
   .ngm-menu-top {
     display: flex;

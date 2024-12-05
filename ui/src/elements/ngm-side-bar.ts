@@ -97,9 +97,6 @@ export class SideBar extends LitElementI18n {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
 
-  static readonly styles = css`
-  `
-
   constructor() {
     super();
     MainStore.viewer.subscribe(viewer => this.viewer = viewer);
@@ -170,12 +167,6 @@ export class SideBar extends LitElementI18n {
     if (sliceOptions?.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
   }
-  // static readonly styles = css`
-  // .mobile {
-  //   width: 100%;
-  //   display: flex;
-  //   justify-content: space-between;
-  // }`;
 
   render() {
     if (!this.queryManager) {
@@ -210,14 +201,14 @@ export class SideBar extends LitElementI18n {
         <div></div>
       </div>
       <div class="ngm-menu" >
-        <div style="width: 100%" class="ngm-menu-top">
+        <div class="ngm-menu-top">
           ${layerBtn}
           ${toolsBtn}
           ${!this.mobileView ? shareBtn : ''}
           ${projectsBtn}
           ${this.mobileView ? mobileExpandBtn : ''}
         </div>
-        <div style="width: 100%" ?hidden="${this.mobileView}" class="ngm-menu-top">
+        <div ?hidden="${this.mobileView}" class="ngm-menu-top">
           ${settingsBtn}
         </div>
       </div>
