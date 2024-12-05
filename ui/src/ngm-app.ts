@@ -20,8 +20,9 @@ import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
 import 'fomantic-ui-css/components/dropdown.js';
-
+import './elements/shared/ngm-icon';
 import '@geoblocks/cesium-view-cube';
+import './elements/shared/ngm-lang-selector';
 
 import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
 
@@ -60,6 +61,7 @@ import $ from './jquery';
 import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
+import {styleMap} from "lit/directives/style-map.js";
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -430,17 +432,25 @@ export class NgmApp extends LitElementI18n {
         <div
           class="ngm-search-icon-mobile ngm-search-icon visible-mobile ${classMap({'active': this.showMobileSearch})}"
           @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
-        <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
+        <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}" style="padding-right:48px"></ngm-cursor-information>
+<!--       <ngm-lang-selector></ngm-lang-selector>-->
         <div class="ui dropdown ngm-lang-dropdown">
             <div class="ngm-lang-title">
               ${i18next.language?.toUpperCase()}
               <div class="ngm-dropdown-icon"></div>
+              <ngm-icon  icon="ngm-dropdown-icon"></ngm-icon>
+
             </div>
-            <div class="menu">
-              ${SUPPORTED_LANGUAGES.map(lang => html`
-                <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
-              `)}
-            </div>
+          <div class="menu">
+            ${SUPPORTED_LANGUAGES.map(lang => html`
+              <div class="item" @click="${() => i18next.changeLanguage(lang)}" style="padding: 0">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; gap: 12px; width: 85px; font-size: 14px">
+                  <ngm-icon style="${styleMap({'visibility': i18next.language?.toUpperCase() === lang?.toUpperCase() ? 'visible' : 'hidden'})}" icon="checkmark"></ngm-icon>
+                  <span>${lang.toUpperCase()}</span>
+                </div>
+                </div>
+            `)}
+          </div>
         </div>
         <ngm-auth class="ngm-user"
                   endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'

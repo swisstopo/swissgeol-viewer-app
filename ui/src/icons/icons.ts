@@ -5,15 +5,19 @@ import {projectsIcon} from './i_menu';
 import {configIcon} from './i_config';
 import {viewAllIcon} from './i_view_all';
 import {viewLessIcon} from './i_view_less';
+import {userIcon} from './i_user';
+import {checkmarkIcon} from './i_checkmark';
 
 export const icons = {
+  checkmark: checkmarkIcon,
   config: configIcon,
   layer: layerIcon,
   projects: projectsIcon,
   tools: toolsIcon,
   share: shareIcon,
+  user: userIcon,
   view_all: viewAllIcon,
-  view_less: viewLessIcon
+  view_less: viewLessIcon,
 };
 
 export type IconKey = keyof typeof icons;

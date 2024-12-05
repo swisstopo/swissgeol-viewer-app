@@ -11,30 +11,32 @@ ga-search.ui.input > input {
   background: #f1f3f5;
   color: #000000;
   font-size: 16px;
-  border: 2px solid transparent;
-  border-radius: 4px;
+  border: none;
+  border-radius: 6px;
+  border-bottom: 2px solid #337083;
+  padding-left: 48px !important;
 }
 
-ga-search.ui.input > input:hover {
-  background-color: #ffffff
-}
+/*ga-search.ui.input > input:hover {*/
+/*  background-color: #ffffff*/
+/*}*/
 
-ga-search.ui.input > input:focus {
-  background-color: var(--ngm-hover);
-}
+/*ga-search.ui.input > input:focus {*/
+/*  background-color: var(--ngm-hover);*/
+/*}*/
 
-ga-search.ui.input > input:focus,
-ga-search.ui.input > input:hover {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-  border-color: transparent;
-  border-bottom-color: #66D9E8;
-}
+/*ga-search.ui.input > input:focus,*/
+/*ga-search.ui.input > input:hover {*/
+/*  border-bottom-right-radius: 0;*/
+/*  border-bottom-left-radius: 0;*/
+/*  border-color: transparent;*/
+/*  border-bottom-color: #66D9E8;*/
+/*}*/
 
-ga-search.ui.input > input:focus,
-ga-search.ui.input > input::placeholder {
-  color: #000000;
-}
+/*ga-search.ui.input > input:focus,*/
+/*ga-search.ui.input > input::placeholder {*/
+/*  color: #000000;*/
+/*}*/
 
 ga-search.ui.input > input::-webkit-search-decoration,
 ga-search.ui.input > input::-webkit-search-cancel-button,
@@ -47,7 +49,7 @@ ga-search.ui.input > input::-webkit-search-results-decoration {
   width: 30px;
   height: 100%;
   position: absolute;
-  right: 12px;
+  left: 12px;
   color: #66D9E8;
   background-color: var(--ngm-interaction);
 }

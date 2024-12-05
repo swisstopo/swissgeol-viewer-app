@@ -1,7 +1,7 @@
 header {
   display: flex;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 16px;
   height: var(--ngm-header-height);
   box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
