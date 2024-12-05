@@ -31,7 +31,7 @@ export class MenuItem extends LitElementI18n {
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #295969;
+      color: var(--color-main);
       padding-inline: 5px;
       z-index: 10;
     }
@@ -74,10 +74,10 @@ export class MenuItem extends LitElementI18n {
         transition: ease-out 100ms;
         transition-property: color;
         background-color: transparent;
-        color: #295969;
+        color: var(--color-main);
 
         .icon {
-          color: #295969;
+          color: var(--color-main);
         }
 
         & > .title {
@@ -90,8 +90,8 @@ export class MenuItem extends LitElementI18n {
     }
 
     .container:hover .box {
-        background-color: #295969;
-        color: white;
+        background-color: var(--color-main);
+        color: var(--color-bg);
         width: unset;
         white-space: nowrap;
 
@@ -100,7 +100,7 @@ export class MenuItem extends LitElementI18n {
         }
 
         .icon {
-          color: white;
+          color: var(--color-bg);
         }
       }
 
@@ -111,10 +111,10 @@ export class MenuItem extends LitElementI18n {
     }
 
     .container .isActive {
-      background-color: #607D52;
+      background-color: var(--color-active);
 
       .icon {
-        color: white;
+        color: var(--color-bg);
       }
     }
 

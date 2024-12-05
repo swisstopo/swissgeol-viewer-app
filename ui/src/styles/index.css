@@ -1,0 +1,20 @@
+:root {
+    --color-bg: #ffffff;
+    --color-bg--dark: #f1f3f5;
+
+    --color-bg-contrast: #000;
+    --color-bg-contrast--light: #212529;
+    --color-bg-contrast--lighter: #656363;
+
+    --color-highlight: #C5F6FA;
+    --color-highlight--dark: #66D9E8;
+    --color-highlight--darker: #0B7285;
+
+    --color-main: #295969;
+    --color-active: #607D52;
+
+    --font: 'Inter', sans-serif;
+
+    font-family: var(--font);
+    font-size: 16px;
+}

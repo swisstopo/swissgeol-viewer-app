@@ -63,6 +63,7 @@
 @import 'ngm-coordinate-popup.css';
 @import 'ngm-ion-modal.css';
 @import 'ngm-info-table.css';
+@import '../styles/index.css';
 
 * {
   scrollbar-color: light;
