@@ -2,7 +2,7 @@ import {BehaviorSubject} from 'rxjs';
 import type {AuthUser} from '../authService';
 
 export default class AuthStore {
-  private static userSubject = new BehaviorSubject<AuthUser | null>(null);
+  private static readonly userSubject = new BehaviorSubject<AuthUser | null>(null);
 
   static get user(): BehaviorSubject<AuthUser | null> {
     return this.userSubject;

@@ -51,7 +51,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     if (!this.topicOrProject) return '';
     const project = isProject(this.topicOrProject) ? this.topicOrProject : undefined;
     const ownerEmail = project?.owner?.email;
-    const owner = ownerEmail || i18next.t('swisstopo');
+    const owner = ownerEmail ?? i18next.t('swisstopo');
     const date = this.topicOrProject?.modified ? this.topicOrProject?.modified : this.topicOrProject?.created;
     const backgroundImage = this.topicOrProject.image?.length ? `url('${this.topicOrProject.image}')` : 'none';
     const editorEmails = project?.editors?.map(m => m.email) || [];
@@ -161,7 +161,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
              @click=${() => this.duplicateToProject()}>
           ${i18next.t('duplicate_to_project')}
         </div>
-        <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink() || '')}">
+        <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink() ?? '')}">
           ${i18next.t('dashboard_share_topic_email')}
         </a>
         ${isProject(this.topicOrProject) && this.topicOrProject.owner.email !== this.userEmail ? '' : html`

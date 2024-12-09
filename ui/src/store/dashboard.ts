@@ -24,12 +24,12 @@ export type ProjectParamSubject = {
 export type ProjectMode = 'edit' | 'viewEdit' | 'viewOnly' | undefined
 
 export default class DashboardStore {
-  private static selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
-  private static viewIndexSubject = new Subject<number | undefined>();
-  private static topicOrProjectParamSubject = new BehaviorSubject<TopicParamSubject | ProjectParamSubject | undefined>(undefined);
-  private static projectModeSubject = new BehaviorSubject<ProjectMode>(undefined);
-  private static geometriesSubject = new Subject<NgmGeometry[]>();
-  private static showSaveOrCancelWarningSubject = new Subject<boolean>();
+  private static readonly selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
+  private static readonly viewIndexSubject = new Subject<number | undefined>();
+  private static readonly topicOrProjectParamSubject = new BehaviorSubject<TopicParamSubject | ProjectParamSubject | undefined>(undefined);
+  private static readonly projectModeSubject = new BehaviorSubject<ProjectMode>(undefined);
+  private static readonly geometriesSubject = new Subject<NgmGeometry[]>();
+  private static readonly showSaveOrCancelWarningSubject = new Subject<boolean>();
 
   static get selectedTopicOrProject(): BehaviorSubject<Topic | Project | undefined> {
     return this.selectedTopicOrProjectSubject;

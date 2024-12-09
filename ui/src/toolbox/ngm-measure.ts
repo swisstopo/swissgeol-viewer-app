@@ -17,7 +17,7 @@ export class NgmMeasure extends LitElementI18n {
     @state()
     accessor lineInfo: DrawInfo | undefined;
     private measure: MeasureTool | undefined;
-    private integerFormat = new Intl.NumberFormat('de-CH', {
+    private readonly integerFormat = new Intl.NumberFormat('de-CH', {
         maximumFractionDigits: 1
     });
 

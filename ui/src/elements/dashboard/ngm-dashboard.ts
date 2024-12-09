@@ -127,7 +127,7 @@ export class NgmDashboard extends LitElementI18n {
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
   private userEmail: string | undefined;
-  private tempKmlDataSource = new CustomDataSource('tempKmlDataSource');
+  private readonly tempKmlDataSource = new CustomDataSource('tempKmlDataSource');
 
   @consume({context: apiClientContext})
   accessor apiClient!: ApiClient;

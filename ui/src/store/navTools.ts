@@ -3,12 +3,12 @@ import type {LockType} from '../elements/ngm-cam-configuration';
 import type {Cartesian3} from 'cesium';
 
 export default class NavToolsStore {
-  private static syncTargetPointSubject = new Subject<void>();
-  private static cameraHeightSubject = new Subject<number>();
-  private static hideTargetPointSubject = new Subject<void>();
-  private static navLockTypeSubject = new BehaviorSubject<LockType>('');
-  private static targetPointPositionSubject = new BehaviorSubject<Cartesian3 | undefined>(undefined);
-  static exaggerationChanged = new Subject<number>();
+  private static readonly syncTargetPointSubject = new Subject<void>();
+  private static readonly cameraHeightSubject = new Subject<number>();
+  private static readonly hideTargetPointSubject = new Subject<void>();
+  private static readonly navLockTypeSubject = new BehaviorSubject<LockType>('');
+  private static readonly targetPointPositionSubject = new BehaviorSubject<Cartesian3 | undefined>(undefined);
+  static readonly exaggerationChanged = new Subject<number>();
 
   static get syncTargetPoint() {
     return this.syncTargetPointSubject;

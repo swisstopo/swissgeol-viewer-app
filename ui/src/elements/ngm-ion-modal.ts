@@ -86,7 +86,7 @@ export class NgmIonModal extends LitElementI18n {
         <div class="content-container">
             <div class="ngm-ion-load-container">
                 <div class="ngm-input ${classMap({'ngm-input-warning': !this.token && this.token !== null})}">
-                    <input type="text" placeholder="required" .value=${this.token || ''}
+                    <input type="text" placeholder="required" .value=${this.token ?? ''}
                            @input=${evt => {
                                this.token = evt.target.value;
                            }}/>

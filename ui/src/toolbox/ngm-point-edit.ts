@@ -29,7 +29,7 @@ export class NgmPointEdit extends LitElementI18n {
   maxHeight = 30000;
   minDepth = -30000;
   maxDepth = 30000;
-  private julianDate: JulianDate = new JulianDate();
+  private readonly julianDate: JulianDate = new JulianDate();
   private viewer: Viewer | null = null;
 
   @query('.dropdown')

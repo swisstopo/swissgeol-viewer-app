@@ -31,8 +31,8 @@ export class NgmGstInteraction extends LitElementI18n {
   @state()
   accessor selectedId: string | undefined;
   private viewer: Viewer | null = null;
-  private minDepth_ = -6000;
-  private maxDepth_ = 1000;
+  private readonly minDepth_ = -6000;
+  private readonly maxDepth_ = 1000;
   private outputFormat: OutputFormat = 'pdf';
   private abortController = new AbortController();
   private extentInited = false;

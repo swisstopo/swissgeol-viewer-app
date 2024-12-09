@@ -61,13 +61,13 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: La
   });
 
   const searchParams = new URLSearchParams(location.search);
-  const stepSize = parseFloat(searchParams.get('stepSize') || '1');
+  const stepSize = parseFloat(searchParams.get('stepSize') ?? '1');
 
   primitive.nearestSampling = true;
   primitive.stepSize = stepSize;
   primitive.depthTest = true;
   primitive.show = !!config.visible;
-  primitive.pickable = config.pickable !== undefined ? config.pickable : false;
+  primitive.pickable = config.pickable ?? false;
   primitive.layer = config.layer;
 
   viewer.scene.primitives.add(primitive);
@@ -114,7 +114,7 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerCon
     tileset.style = new Cesium3DTileStyle(config.style);
   }
 
-  tileset.pickable = config.pickable !== undefined ? config.pickable : false;
+  tileset.pickable = config.pickable ?? false;
   viewer.scene.primitives.add(tileset);
 
   config.setVisibility = visible => {
@@ -180,7 +180,7 @@ export async function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: La
     }, 100);
   };
   viewer.scene.imageryLayers.add(layer);
-  layer.alpha = config.opacity || 1;
+  layer.alpha = config.opacity ?? 1;
   layer.show = !!config.visible;
   return layer;
 }

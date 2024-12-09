@@ -91,7 +91,7 @@ export class SideBar extends LitElementI18n {
   private zoomedToPosition = false;
   private accordionInited = false;
   private shareListenerAdded = false;
-  private shareDownListener = evt => {
+  private readonly shareDownListener = evt => {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
 
@@ -378,7 +378,7 @@ export class SideBar extends LitElementI18n {
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
-      layer.wmtsCurrentTime = urlLayer.timestamp || layer.wmtsCurrentTime;
+      layer.wmtsCurrentTime = urlLayer.timestamp ?? layer.wmtsCurrentTime;
       layer.setOpacity && layer.setOpacity(layer.opacity);
       layer.displayed = true;
       layer.setVisibility && layer.setVisibility(layer.visible);
@@ -395,7 +395,7 @@ export class SideBar extends LitElementI18n {
           type: LayerType.tiles3d,
           assetId: Number(assetId),
           ionToken: ionToken,
-          label: ionAsset?.name || assetId,
+          label: ionAsset?.name ?? assetId,
           layer: assetId,
           visible: true,
           displayed: true,
@@ -607,12 +607,12 @@ export class SideBar extends LitElementI18n {
       config = searchLayer;
       config.visible = true;
       config.origin = 'layer';
-      config.label = searchLayer.title || searchLayer.label;
+      config.label = searchLayer.title ?? searchLayer.label;
       config.legend = config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
     } else {
       config = {
         type: LayerType.swisstopoWMTS,
-        label: searchLayer.title || searchLayer.label,
+        label: searchLayer.title ?? searchLayer.label,
         layer: searchLayer.layer,
         visible: true,
         displayed: true,
