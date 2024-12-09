@@ -22,7 +22,6 @@ export class NgmAuth extends LitElementI18n {
   @state()
   accessor user: AuthUser | null = null;
   private popup: Window | null = null;
-  private readonly icon = 'user';
 
   @consume({context: authServiceContext})
   accessor authService!: AuthService;
@@ -80,13 +79,8 @@ export class NgmAuth extends LitElementI18n {
   render() {
     return html`
       <div
-           @click=${!this.user ? this.login : this.logout}>
-          <ngm-icon icon=${this.icon}></ngm-icon>
+           @click=${this.user ? this.logout : this.login}>
+          <ngm-icon icon='user'></ngm-icon>
       </div>`;
   }
-
-  // createRenderRoot() {
-  //   // no shadow dom
-  //   return this;
-  // }
 }

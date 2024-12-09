@@ -167,6 +167,9 @@ export class SideBar extends LitElementI18n {
     if (sliceOptions?.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
   }
+  private createMenuItem(icon: string, title: string, panel: string) {
+    return html`<ngm-menu-item icon=${icon} title=${title} ?isActive=${this.activePanel === panel} ?isMobile=${this.mobileView} @click=${() => this.togglePanel('data')}></ngm-menu-item>`;
+  }
 
   render() {
     if (!this.queryManager) {
@@ -176,11 +179,17 @@ export class SideBar extends LitElementI18n {
     this.queryManager.activeLayers = this.activeLayers
       .filter(config => config.visible && !config.noQuery);
 
-    const layerBtn = html`<ngm-menu-item icon="layer" title="menu_layers" ?isActive="${this.activePanel === 'data'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('data')}></ngm-menu-item>`;
-    const toolsBtn = html`<ngm-menu-item icon="tools" title="menu_tools" ?isActive="${this.activePanel === 'tools'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('tools')}></ngm-menu-item>`;
-    const projectsBtn = html`<ngm-menu-item icon="projects" title="menu_projects" ?isActive="${this.activePanel === 'dashboard'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('dashboard')}></ngm-menu-item>`;
-    const shareBtn = html`<ngm-menu-item icon="share" title="menu_share" ?isActive="${this.activePanel === 'share'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('share')}></ngm-menu-item>`;
-    const settingsBtn = html`<ngm-menu-item icon="config" title="menu_settings" ?isActive="${this.activePanel === 'settings'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('settings')}></ngm-menu-item>`;
+
+    const layerBtn = this.createMenuItem('layer', 'menu_layers', 'data');
+    const toolsBtn = this.createMenuItem('tools', 'menu_tools', 'tools');
+    const projectsBtn = this.createMenuItem('projects', 'menu_projects', 'dashboard');
+    const shareBtn = this.createMenuItem('share', 'menu_share', 'share');
+    const settingsBtn = this.createMenuItem('config', 'menu_settings', 'settings');
+    // const layerBtn = html`<ngm-menu-item icon="layer" title="menu_layers" ?isActive="${this.activePanel === 'data'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('data')}></ngm-menu-item>`;
+    // const toolsBtn = html`<ngm-menu-item icon="tools" title="menu_tools" ?isActive="${this.activePanel === 'tools'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('tools')}></ngm-menu-item>`;
+    // const projectsBtn = html`<ngm-menu-item icon="projects" title="menu_projects" ?isActive="${this.activePanel === 'dashboard'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('dashboard')}></ngm-menu-item>`;
+    // const shareBtn = html`<ngm-menu-item icon="share" title="menu_share" ?isActive="${this.activePanel === 'share'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('share')}></ngm-menu-item>`;
+    // const settingsBtn = html`<ngm-menu-item icon="config" title="menu_settings" ?isActive="${this.activePanel === 'settings'}" ?isMobile="${this.mobileView}" @click=${() => this.togglePanel('settings')}></ngm-menu-item>`;
     const mobileExpandBtn = html`<ngm-menu-item icon="${this.mobileShowAll ? 'view_less' : 'view_all'}" @click=${() => this.mobileShowAll = !this.mobileShowAll}></ngm-menu-item>`;
     const dataMobileHeader = html`
       <div @click=${() => this.hideDataDisplayed = true}
