@@ -16,8 +16,8 @@ export const icons = {
   tools: toolsIcon,
   share: shareIcon,
   user: userIcon,
-  view_all: viewAllIcon,
-  view_less: viewLessIcon,
+  viewAll: viewAllIcon,
+  viewLess: viewLessIcon,
 };
 
 export type IconKey = keyof typeof icons;

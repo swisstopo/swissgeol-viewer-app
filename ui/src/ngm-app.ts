@@ -23,7 +23,6 @@ import 'fomantic-ui-css/components/dropdown';
 import 'fomantic-ui-css/components/dropdown.js';
 import './elements/shared/ngm-icon';
 import '@geoblocks/cesium-view-cube';
-import './elements/shared/ngm-lang-selector';
 
 import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
 
@@ -61,7 +60,7 @@ import $ from 'jquery';
 import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
-import {styleMap} from "lit/directives/style-map.js";
+import {styleMap} from 'lit/directives/style-map.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -432,7 +431,12 @@ export class NgmApp extends LitElementI18n {
           </div>
           <div class="menu">
             ${SUPPORTED_LANGUAGES.map(lang => html`
-              <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
+              <div class="item" @click="${() => i18next.changeLanguage(lang)}" style="padding: 0">
+                <div class="ngm-lang-item">
+                  <ngm-icon style="${styleMap({'visibility': i18next.language?.toUpperCase() === lang?.toUpperCase() ? 'visible' : 'hidden'})}" icon="checkmark"></ngm-icon>
+                  <span>${lang.toUpperCase()}</span>
+                </div>
+                </div>
             `)}
           </div>
         </div>
