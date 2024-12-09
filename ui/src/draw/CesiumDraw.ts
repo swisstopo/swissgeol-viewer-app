@@ -61,10 +61,10 @@ export type DrawEndDetails = {
 }
 
 export class CesiumDraw extends EventTarget {
-  private viewer_: Viewer;
-  private strokeColor_: Color;
-  private strokeWidth_: number;
-  private fillColor_: Color;
+  private readonly viewer_: Viewer;
+  private readonly strokeColor_: Color;
+  private readonly strokeWidth_: number;
+  private readonly fillColor_: Color;
   private eventHandler_: ScreenSpaceEventHandler | undefined;
   private activePoints_: Cartesian3[] = [];
   private activePoint_: Cartesian3 | undefined;

@@ -1,13 +1,11 @@
 use anyhow::Context;
 use axum::extract::FromRequestParts;
-use axum::{
-    async_trait,
-    extract::TypedHeader,
-    headers::{authorization::Bearer, Authorization},
-    http::request::Parts,
-};
-use jsonwebtoken::jwk::{AlgorithmParameters, JwkSet};
-use jsonwebtoken::{DecodingKey, Validation};
+use axum::{async_trait, http::request::Parts};
+use axum_extra::headers::authorization::Bearer;
+use axum_extra::headers::Authorization;
+use axum_extra::TypedHeader;
+use jsonwebtoken::jwk::{AlgorithmParameters, JwkSet, KeyAlgorithm};
+use jsonwebtoken::{Algorithm, DecodingKey, Validation};
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 
@@ -106,10 +104,10 @@ where
 
                 let algorithm = jwk
                     .common
-                    .algorithm
+                    .key_algorithm
                     .ok_or(Error::Jwt("JWK is missing `algorithm` parameter"))?;
 
-                let mut validation = Validation::new(algorithm);
+                let mut validation = Validation::new(key_algorithm_to_algorithm(algorithm));
                 validation.set_audience(&[AUD.get().context("Once cell `AUD` not initialized")?]);
                 validation.set_issuer(&[ISS.get().context("Once cell `ISS` not initialized")?]);
 
@@ -121,10 +119,23 @@ where
                             Error::Jwt("Failed to decode token")
                         },
                     )?;
-
-                return Ok(decoded_token.claims);
+                Ok(decoded_token.claims)
             }
-            _ => return Err(Error::Jwt("Unreachable!")),
+            _ => Err(Error::Jwt("Unreachable!")),
         }
+    }
+}
+
+fn key_algorithm_to_algorithm(key_algorithm: KeyAlgorithm) -> Algorithm {
+    match key_algorithm {
+        KeyAlgorithm::RS256 => Algorithm::RS256,
+        KeyAlgorithm::RS384 => Algorithm::RS384,
+        KeyAlgorithm::RS512 => Algorithm::RS512,
+        KeyAlgorithm::HS256 => Algorithm::HS256,
+        KeyAlgorithm::HS384 => Algorithm::HS384,
+        KeyAlgorithm::HS512 => Algorithm::HS512,
+        KeyAlgorithm::ES256 => Algorithm::ES256,
+        KeyAlgorithm::ES384 => Algorithm::ES384,
+        _ => panic!("Unsupported algorithm {key_algorithm:?}"),
     }
 }

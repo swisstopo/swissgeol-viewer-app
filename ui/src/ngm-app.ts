@@ -19,7 +19,7 @@ import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
-import 'fomantic-ui-css/components/dropdown.js';
+import 'fomantic-ui-css/components/dropdown';
 import './elements/shared/ngm-icon';
 import '@geoblocks/cesium-view-cube';
 import './elements/shared/ngm-lang-selector';
@@ -57,7 +57,7 @@ import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type {SideBar} from './elements/ngm-side-bar';
 import {LayerConfig} from './layertree';
-import $ from './jquery';
+import $ from 'jquery';
 import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
@@ -230,7 +230,7 @@ export class NgmApp extends LitElementI18n {
 
     // Temporarily increasing the maximum screen space error to load low LOD tiles.
     const searchParams = new URLSearchParams(document.location.search);
-    globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') || '2000');
+    globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') ?? '2000');
 
     let currentStep = 1;
     const unlisten = globe.tileLoadProgressEvent.addEventListener(queueLength => {

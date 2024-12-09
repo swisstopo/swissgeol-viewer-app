@@ -143,7 +143,7 @@ export function syncLayersParam(activeLayers: LayerConfig[]) {
       const transparency = !l.opacity || isNaN(l.opacity) ? 0 : (1 - l.opacity);
       layersTransparency.push(transparency.toFixed(2));
       layersVisibility.push(!!l.visible);
-      layersTimestamps.push(l.wmtsCurrentTime || '');
+      layersTimestamps.push(l.wmtsCurrentTime ?? '');
     }
   });
 
@@ -329,7 +329,7 @@ export function getPermalink() {
 
 export function getExaggeration() {
   const params = getURLSearchParams();
-  let zExaggeration = parseFloat(params.get(EXAGGERATION_PARAM) || '1');
+  let zExaggeration = parseFloat(params.get(EXAGGERATION_PARAM) ?? '1');
   if (zExaggeration < 1) zExaggeration = 1;
   if (zExaggeration > 20) zExaggeration = 20;
   return zExaggeration;

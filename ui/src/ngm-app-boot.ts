@@ -10,7 +10,7 @@ import {ConfigService} from './api/config.service';
 
 @customElement('ngm-app-boot')
 export class NgmAppBoot extends LitElement {
-  private viewerInitialization = new Task(this, {
+  private readonly viewerInitialization = new Task(this, {
     task: async () => {
       const clientConfig = await new ConfigService().getConfig() as ClientConfig;
       if (!clientConfig) {

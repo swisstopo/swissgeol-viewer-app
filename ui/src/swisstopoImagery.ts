@@ -53,7 +53,7 @@ export function getSwisstopoImagery(
               .replace('{format}', swisstopoConfig.format);
           imageryProvider = new UrlTemplateImageryProvider({
             url: url,
-            maximumLevel: localConfig.maximumLevel || swisstopoConfig.maximumLevel,
+            maximumLevel: localConfig.maximumLevel ?? swisstopoConfig.maximumLevel,
             rectangle: SWITZERLAND_RECTANGLE,
             credit: new Credit(swisstopoConfig.attribution),
             customTags: {
@@ -84,7 +84,7 @@ export function getSwisstopoImagery(
           return;
         }
         const imageryLayer = new ImageryLayer(imageryProvider, {
-          alpha: localConfig.opacity !== undefined ? localConfig.opacity : 1
+          alpha: localConfig.opacity ?? 1
         });
         resolve(imageryLayer);
       } else {
@@ -137,7 +137,7 @@ async function parseWMTSCapabilities(wmtsCapabilities: Document): Promise<Swisst
             format: format.split('/')[1],
             type: 'wmts',
             timestamps: [],
-            defaultTimestamp: defaultTimestamp || undefined,
+            defaultTimestamp: defaultTimestamp ?? undefined,
             sr: tileMatrixSet && Number(tileMatrixSet[0]),
             maximumLevel: tileMatrixSet && Number(tileMatrixSet[1]),
             title: titles && titles[0]?.textContent ? titles[0].textContent : layerName
@@ -170,8 +170,8 @@ async function parseWMSCapabilities(wmsCapabilities: Document): Promise<Swisstop
           format: format,
           type: 'wms',
           timestamps: [],
-          defaultTimestamp: defaultTimestamp || undefined,
-          title: layerTitle || layerName
+          defaultTimestamp: defaultTimestamp ?? undefined,
+          title: layerTitle ?? layerName
         };
         configs[layerName].timestamps = layer.querySelector('Dimension')?.textContent?.split(',') || [];
       }
@@ -209,7 +209,7 @@ async function fetchWMSCapabilities(lang: string) {
 export async function getLayersConfig(): Promise<SwisstopoImageryLayersConfig> {
   if (!layerConfigs) {
     const params = getURLSearchParams();
-    const lang = params.get('lang') || 'en';
+    const lang = params.get('lang') ?? 'en';
     const wmsConfig = await fetchWMSCapabilities(lang);
     const wmtsConfig = await fetchWMTSCapabilities(lang);
     layerConfigs = {...wmsConfig, ...wmtsConfig};

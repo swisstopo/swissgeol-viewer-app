@@ -7,8 +7,8 @@ import type {Scene, Rectangle} from 'cesium';
  */
 export default class NavigableVolumeLimiter {
   private blockLimiter = false;
-  private boundingSphere: BoundingSphere;
-  private ratioFunction: (height: number) => number;
+  private readonly boundingSphere: BoundingSphere;
+  private readonly ratioFunction: (height: number) => number;
 
   constructor(scene: Scene, rectangle: Rectangle, height: number, ratioFunction: (height: number) => number) {
     this.boundingSphere = BoundingSphere.fromRectangle3D(rectangle, Ellipsoid.WGS84, height);

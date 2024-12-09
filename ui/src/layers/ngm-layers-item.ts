@@ -4,7 +4,7 @@ import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../i18n.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
-import $ from '../jquery.js';
+import $ from 'jquery';
 import type {LayerConfig} from '../layertree';
 import {styleMap} from 'lit/directives/style-map.js';
 import {Sortable} from 'sortablejs';
@@ -38,11 +38,11 @@ export class NgmLayersItem extends LitElementI18n {
   accessor movable = false;
   @query('.menu')
   accessor actionMenu!: HTMLElement;
-  private toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
-  private debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
+  private readonly toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
+  private readonly debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
 
   firstUpdated() {
-    $(this.querySelector('.ui.dropdown')).dropdown();
+    $(this.querySelector('.ui.dropdown')!).dropdown();
   }
 
   updated(changedProps) {
@@ -166,9 +166,9 @@ export class NgmLayersItem extends LitElementI18n {
             ${i18next.t('dtd_legend')}
           </div>` : ''}
         ${this.config?.geocatId ? html`
-          <a 
-            class="item" 
-            href="${this.geocatLink(this.config.geocatId)}" 
+          <a
+            class="item"
+            href="${this.geocatLink(this.config.geocatId)}"
             target="_blank" rel="noopener">
             Geocat.ch
           </a>` : ''}
@@ -240,7 +240,7 @@ export class NgmLayersItem extends LitElementI18n {
         <input type="range" class="ngm-slider ${classMap({disabled: this.changeOrderActive})}" ?hidden=${this.config.opacityDisabled}
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
-               .value=${this.config.opacity?.toString() || '1'}
+               .value=${this.config.opacity?.toString() ?? '1'}
                @input=${this.inputOpacity}
                @mousedown=${e => this.changeOrderActive && e.preventDefault()}>
       </div>

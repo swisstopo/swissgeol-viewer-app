@@ -42,7 +42,7 @@ import './ngm-share-link';
 import '../layers/ngm-layers-upload';
 import MainStore from '../store/main';
 import {classMap} from 'lit/directives/class-map.js';
-import $ from '../jquery';
+import $ from 'jquery';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import type QueryManager from '../query/QueryManager';
 

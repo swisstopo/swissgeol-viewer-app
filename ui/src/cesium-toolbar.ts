@@ -135,7 +135,7 @@ export class CesiumToolbar extends LitElement {
     super.updated(changedProperties);
   }
 
-  static styles = css`
+  static readonly styles = css`
     :host {
       position: absolute;
       background-color: #0000005c;

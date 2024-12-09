@@ -4,7 +4,7 @@ import {customElement} from 'lit/decorators.js';
 
 @customElement('hide-overflow')
 export class HideOverflow extends LitElement {
-  private observer: IntersectionObserver;
+  private readonly observer: IntersectionObserver;
 
   constructor() {
     super();

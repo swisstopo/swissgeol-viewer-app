@@ -9,7 +9,7 @@
 /secrets.txt
 
 # JetBrains IDE files
-/.idea/
+.idea/
 
 # Local Docker volumes
 /volumes/

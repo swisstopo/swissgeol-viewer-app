@@ -95,7 +95,7 @@ export function parseJson(string: string | null): Record<string, any> | undefine
   if (!string) return undefined;
   try {
     return JSON.parse(string);
-  } catch (e) {
+  } catch (_e) {
     return undefined;
   }
 }

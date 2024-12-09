@@ -44,7 +44,7 @@ export class NgmToolbox extends LitElementI18n {
   geometriesDataSource: CustomDataSource = new CustomDataSource(GEOMETRY_DATASOURCE_NAME);
   noEditGeometriesDataSource: CustomDataSource = new CustomDataSource(NO_EDIT_GEOMETRY_DATASOURCE_NAME);
   private viewer: Viewer | null = null;
-  private julianDate = new JulianDate();
+  private readonly julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;
   private geometryController: GeometryController | undefined;
   private geometryControllerNoEdit: GeometryController | undefined;

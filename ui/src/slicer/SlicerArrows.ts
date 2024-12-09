@@ -69,18 +69,18 @@ export default class SlicerArrows {
 
   private enableInputs = true;
 
-  private scratchBoundingSphere_ = new BoundingSphere();
-  private scratchArrowPosition2d_ = new Cartesian2();
-  private scratchOppositeArrowPosition2d_ = new Cartesian2();
-  private scratchAxisVector2d_ = new Cartesian2();
-  private scratchMouseMoveVector_ = new Cartesian2();
-  private scratchObjectMoveVector2d_ = new Cartesian2();
-  private scratchNewArrowPosition2d_ = new Cartesian2();
-  private axisVector3d = new Cartesian3();
-  private scratchLeft = new Cartesian3();
-  private scratchRight = new Cartesian3();
-  private scratchTop = new Cartesian3();
-  private scratchBottom = new Cartesian3();
+  private readonly scratchBoundingSphere_ = new BoundingSphere();
+  private readonly scratchArrowPosition2d_ = new Cartesian2();
+  private readonly scratchOppositeArrowPosition2d_ = new Cartesian2();
+  private readonly scratchAxisVector2d_ = new Cartesian2();
+  private readonly scratchMouseMoveVector_ = new Cartesian2();
+  private readonly scratchObjectMoveVector2d_ = new Cartesian2();
+  private readonly scratchNewArrowPosition2d_ = new Cartesian2();
+  private readonly axisVector3d = new Cartesian3();
+  private readonly scratchLeft = new Cartesian3();
+  private readonly scratchRight = new Cartesian3();
+  private readonly scratchTop = new Cartesian3();
+  private readonly scratchBottom = new Cartesian3();
 
   private eventHandler: (ScreenSpaceEventHandler | null) = null;
   highlightedArrow: Entity | undefined = undefined;
@@ -150,14 +150,14 @@ export default class SlicerArrows {
       if (properties.oppositeSide) {
         const oppositeSide: string = properties.oppositeSide.getValue();
         const oppositeArrow = this.arrows[oppositeSide];
-        oppositePosition3d = oppositeArrow.position!.getValue(this.julianDate);
+        oppositePosition3d = oppositeArrow.position!.getValue(this.julianDate)!;
       } else if (properties.oppositePosition) {
         oppositePosition3d = properties.oppositePosition.getValue();
       } else {
         throw new Error('Move axis can\'t be created. Second position missing');
       }
 
-      const arrowPosition3d = this.selectedArrow.position!.getValue(this.julianDate);
+      const arrowPosition3d = this.selectedArrow.position!.getValue(this.julianDate)!;
       scene.cartesianToCanvasCoordinates(arrowPosition3d, this.scratchArrowPosition2d_);
       scene.cartesianToCanvasCoordinates(oppositePosition3d, this.scratchOppositeArrowPosition2d_);
 

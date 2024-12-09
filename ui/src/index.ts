@@ -1,3 +1,4 @@
+import './jquery.polyfill';
 import './style/index.css';
 import {ReactiveElement} from 'lit';
 

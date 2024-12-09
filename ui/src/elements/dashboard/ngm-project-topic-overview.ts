@@ -8,7 +8,7 @@ import DashboardStore from '../../store/dashboard';
 import {CreateProject, Project, TabTypes, Topic, type View} from './ngm-dashboard';
 import {ApiClient} from '../../api/api-client';
 import {showBannerSuccess} from '../../notifications';
-import $ from '../../jquery';
+import $ from 'jquery';
 import {DEFAULT_PROJECT_COLOR} from '../../constants';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
@@ -51,7 +51,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     if (!this.topicOrProject) return '';
     const project = isProject(this.topicOrProject) ? this.topicOrProject : undefined;
     const ownerEmail = project?.owner?.email;
-    const owner = ownerEmail || i18next.t('swisstopo');
+    const owner = ownerEmail ?? i18next.t('swisstopo');
     const date = this.topicOrProject?.modified ? this.topicOrProject?.modified : this.topicOrProject?.created;
     const backgroundImage = this.topicOrProject.image?.length ? `url('${this.topicOrProject.image}')` : 'none';
     const editorEmails = project?.editors?.map(m => m.email) || [];
@@ -104,16 +104,16 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       </div>
       <div class="ngm-divider"></div>
       <div class="ngm-proj-views-header">
-        <div class="ngm-proj-title-icon">
-          <div class="ngm-screenshot-icon"></div>
-          <div>${i18next.t('dashboard_views')}</div>
-        </div>
-        <button class="ngm-save-view-btn"
-                .hidden="${!this.userEmail || !project?.owner}"
-                @click=${() => this.saveViewToProject()}>
-          <div>${i18next.t('dashboard_add_view')}</div>
-          <div class="ngm-save-icon icon"></div>
-        </button>
+          <div class="ngm-proj-title-icon">
+              <div class="ngm-screenshot-icon"></div>
+              <div>${i18next.t('dashboard_views')}</div>
+          </div>
+          <button class="ngm-save-view-btn"
+                  .hidden="${!this.userEmail || !project?.owner}"
+                  @click=${() => this.saveViewToProject()}>
+              <div>${i18next.t('dashboard_add_view')}</div>
+              <div class="ngm-save-icon icon"></div>
+          </button>
       </div>
       <div class="ngm-project-views">
         ${this.topicOrProject.views.map((view, index) => html`
@@ -161,7 +161,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
              @click=${() => this.duplicateToProject()}>
           ${i18next.t('duplicate_to_project')}
         </div>
-        <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink() || '')}">
+        <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink() ?? '')}">
           ${i18next.t('dashboard_share_topic_email')}
         </a>
         ${isProject(this.topicOrProject) && this.topicOrProject.owner.email !== this.userEmail ? '' : html`
@@ -264,3 +264,4 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     return this;
   }
 }
+
