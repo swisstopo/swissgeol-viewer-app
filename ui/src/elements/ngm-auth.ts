@@ -3,7 +3,6 @@ import type {AuthUser} from '../authService';
 import AuthService from '../authService';
 import {LitElementI18n} from '../i18n.js';
 import auth from '../store/auth';
-import {classMap} from 'lit/directives/class-map.js';
 import {customElement, property, state} from 'lit/decorators.js';
 import DashboardStore from '../store/dashboard';
 import {consume} from '@lit/context';
@@ -63,17 +62,17 @@ export class NgmAuth extends LitElementI18n {
   }
 
   static readonly styles = css`
-  ngm-icon {
-    color: var(--color-bg);
-    background-color: var(--color-main);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-  }
+    ngm-icon {
+      color: var(--color-bg);
+      background-color: var(--color-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
   `;
 
   render() {

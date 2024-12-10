@@ -36,7 +36,6 @@
 @import 'keyboard-navigation.css';
 @import 'layers.css';
 @import 'ngm-map-configuration.css';
-@import 'ngm-cursor-information.css';
 @import 'ngm-point-edit.css';
 @import 'ngm-position-edit.css';
 @import 'ngm-map-chooser.css';
@@ -215,6 +214,16 @@ cesium-view-cube {
   justify-content: center;
   align-items: center;
   gap: 6px;
+}
+
+.ngm-lang-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 12px;
+  width: 85px;
+  font-size: 14px;
 }
 
 .ngm-lang-title .ngm-dropdown-icon {

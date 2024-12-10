@@ -13,17 +13,12 @@ export class MenuItem extends LitElementI18n {
   accessor title: string = '';
   @property()
   accessor icon: IconKey = 'config';
-  @property({type: Boolean})
+  @property({type: Boolean, attribute: 'isactive', reflect: true})
   accessor isActive: boolean = false;
   @property({type: Boolean})
   accessor isMobile: boolean = false;
 
-  constructor() {
-    super();
-  }
-
   static readonly styles = css`
-
     :host {
       position: relative;
       width: 68px;
@@ -36,8 +31,7 @@ export class MenuItem extends LitElementI18n {
       z-index: 10;
     }
 
-    :host > .container,
-    :host > .container:active {
+    :host > .container {
       position: relative;
       text-decoration: none;
       width: 100%;
@@ -45,89 +39,77 @@ export class MenuItem extends LitElementI18n {
       cursor: pointer;
     }
 
-    .container {
-      .box > .icon {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-width: 58px;
-        height: 40px;
+    .container .box {
+      position: absolute;
+      width: 58px;
+      min-width: 58px;
+      left: 0;
+      top: 9px;
+      height: 40px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      border-radius: 4px;
+      background-color: transparent;
+      color: var(--color-main);
+      transition: ease-out 100ms;
+      transition-property: color, background-color;
+    }
 
-        transition: ease-out 100ms;
-        transition-property: color, background-color;
-      }
+    .container .box > .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 58px;
+      height: 40px;
+      color: var(--color-main);
+    }
 
-      .box {
-        position: absolute;
-        width: 58px;
-        min-width: 58px;
-        left: 0;
-        top: 9px;
-        height: 40px;
-
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-
-        border-radius: 4px;
-
-        transition: ease-out 100ms;
-        transition-property: color;
-        background-color: transparent;
-        color: var(--color-main);
-
-        .icon {
-          color: var(--color-main);
-        }
-
-        & > .title {
-          transform: scaleX(0);
-          transition: ease-out 100ms;
-          transition-property: transform;
-          transform-origin: left;
-        }
-      }
+    .container .box > .title {
+      transform: scaleX(0);
+      transition: ease-out 100ms;
+      transition-property: transform;
+      transform-origin: left;
     }
 
     .container:hover .box {
-        background-color: var(--color-main);
-        color: var(--color-bg);
-        width: unset;
-        white-space: nowrap;
+      background-color: var(--color-main);
+      color: var(--color-bg);
+      width: unset;
+      white-space: nowrap;
+    }
 
-        & > .title {
-          transform: scaleX(1);
-        }
+    .container:hover .box > .title {
+      transform: scaleX(1);
+    }
 
-        .icon {
-          color: var(--color-bg);
-        }
-      }
+    .container:hover .box .icon {
+      color: var(--color-bg);
+    }
 
-    @media (min-height: 629px) and (min-width: 599px)  {
+    @media (min-width: 599px) {
       .container:hover .box {
         padding-right: 22px;
       }
     }
 
-    .container .isActive {
+    :host([isactive]) .container .box {
       background-color: var(--color-active);
-
-      .icon {
-        color: var(--color-bg);
-      }
     }
 
+    :host([isactive]) .container .box .icon {
+      color: var(--color-bg);
+    }
   `;
 
   render() {
     return html`
-      <div class="container ">
+      <div class="container">
         <div class="box ${classMap({'isActive': this.isActive})}">
           <div class="icon">
             <ngm-icon icon=${this.icon}></ngm-icon>
           </div>
-          <div class="title" translate ?hidden="${this.isMobile}">
+          <div class="title" ?hidden="${this.isMobile}">
             ${i18next.t(this.title)}
           </div>
         </div>
