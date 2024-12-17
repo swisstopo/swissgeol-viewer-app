@@ -20,8 +20,8 @@ import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
 import 'fomantic-ui-css/components/dropdown';
-import './elements/shared/ngm-icon';
 import '@geoblocks/cesium-view-cube';
+import './components/core'
 
 import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
 
@@ -436,14 +436,14 @@ export class NgmApp extends LitElementI18n {
             <div class="ngm-lang-title">
               ${i18next.language?.toUpperCase()}
               <div class="ngm-dropdown-icon"></div>
-              <ngm-icon  icon="ngm-dropdown-icon"></ngm-icon>
+              <ngm-core-icon  icon="ngm-dropdown-icon"></ngm-core-icon>
 
             </div>
           <div class="menu">
             ${SUPPORTED_LANGUAGES.map(lang => html`
               <div class="item" @click="${() => i18next.changeLanguage(lang)}" style="padding: 0">
                 <div class="ngm-lang-item">
-                  <ngm-icon style="${styleMap({'visibility': i18next.language?.toUpperCase() === lang?.toUpperCase() ? 'visible' : 'hidden'})}" icon="checkmark"></ngm-icon>
+                  <ngm-core-icon style="${styleMap({'visibility': i18next.language?.toUpperCase() === lang?.toUpperCase() ? 'visible' : 'hidden'})}" icon="checkmark"></ngm-core-icon>
                   <span>${lang.toUpperCase()}</span>
                 </div>
                 </div>

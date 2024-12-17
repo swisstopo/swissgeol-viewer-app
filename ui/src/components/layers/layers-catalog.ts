@@ -5,7 +5,7 @@ import i18next from 'i18next';
 import auth from '../../store/auth';
 import type {LayerTreeNode} from '../../layertree';
 import $ from 'jquery';
-
+import '../core';
 
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css';
 import fomanticAccordionCss from 'fomantic-ui-css/components/accordion.css';
@@ -115,21 +115,20 @@ export class NgmLayersCatalog extends LitElementI18n {
       cursor: pointer;
     }
 
-    .category > .title.active > label {
+    .category > .title.active > label,
+    .category > .title.active > ngm-core-icon {
       color: var(--color-action);
     }
 
-    .category > .title:hover > label {
+    .category > .title:hover > label,
+    .category > .title:hover > ngm-core-icon{
       color: var(--color-action--light);
     }
 
     .category > .title > ngm-core-icon {
-      background-color: var(--color-highlight--darker);
+      color: var(--color-highlight--darker);
     }
 
-    .category > .title:hover > ngm-core-icon {
-      background-color: var(--color-action--light);
-    }
 
     .category > .title.first-level {
       font-weight: 700;
