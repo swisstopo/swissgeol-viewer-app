@@ -7,7 +7,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import DashboardStore from '../store/dashboard';
 import {consume} from '@lit/context';
 import {authServiceContext} from '../context';
-import './shared/ngm-icon';
+import '../components/core';
 
 /**
  * Authentication component
@@ -62,8 +62,9 @@ export class NgmAuth extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <div @click=${this.user ? this.logout : this.login}>
-      <ngm-icon icon="user"></ngm-icon>
+    <div
+      @click=${this.user ? this.logout : this.login}>
+      <ngm-core-icon icon="user"></ngm-core-icon>
     </div>
   `;
 

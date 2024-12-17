@@ -79,8 +79,8 @@ export class SearchInput extends LitElementI18n {
       <ul ${ref(this.resultsRef)} @mouseover="${this.handleResultsHovered}"></ul>
     </ga-search>
 
-    <ngm-icon icon="search" @click="${this.toggleActive}"></ngm-icon>
-    <ngm-icon icon="close" @click="${this.clear}"></ngm-icon>
+    <ngm-core-icon icon="search" @click="${this.toggleActive}"></ngm-core-icon>
+    <ngm-core-icon icon="close" @click="${this.clear}"></ngm-core-icon>
   `;
 
   protected updated(changedProperties: PropertyValues<this>): void {

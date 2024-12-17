@@ -5,7 +5,7 @@ import '../layers/ngm-layers';
 import '../layers/ngm-layers-sort';
 import './dashboard/ngm-dashboard';
 import './sidebar/ngm-menu-item';
-import './shared/ngm-icon';
+import '../components/core';
 import '../components/navigation/navigation-layer-panel';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
