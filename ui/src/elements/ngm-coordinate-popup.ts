@@ -20,7 +20,7 @@ export class NgmCoordinatePopup extends LitElementI18n {
     @state()
     accessor terrainDistance = '';
     private eventHandler: ScreenSpaceEventHandler | undefined;
-    private integerFormat = new Intl.NumberFormat('de-CH', {
+    private readonly integerFormat = new Intl.NumberFormat('de-CH', {
         maximumFractionDigits: 1
     });
 

@@ -47,8 +47,8 @@ export class NgmLayersItem extends LitElementI18n {
   accessor movable = false;
   @query('.menu')
   accessor actionMenu!: HTMLElement;
-  private toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
-  private debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
+  private readonly toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
+  private readonly debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
 
   firstUpdated(): void {
     if (this.shadowRoot != null) {
@@ -257,7 +257,7 @@ export class NgmLayersItem extends LitElementI18n {
         <input type="range" class="ngm-slider ${classMap({disabled: this.changeOrderActive})}" ?hidden=${this.config.opacityDisabled}
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
-               .value=${this.config.opacity?.toString() || '1'}
+               .value=${this.config.opacity?.toString() ?? '1'}
                @input=${this.inputOpacity}
                @mousedown=${e => this.changeOrderActive && e.preventDefault()}>
       </div>

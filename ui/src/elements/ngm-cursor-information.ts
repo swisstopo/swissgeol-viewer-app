@@ -1,4 +1,4 @@
-import {html} from 'lit';
+import {css, html} from 'lit';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import type {Viewer} from 'cesium';
@@ -22,9 +22,49 @@ export class NgmCursorInformation extends LitElementI18n {
   private unlistenMoveStart: any;
   private unlistenMoveEnd: any;
   // always use the 'de-CH' locale to always have the simple tick as thousands separator
-  private integerFormat = new Intl.NumberFormat('de-CH', {
+  private readonly integerFormat = new Intl.NumberFormat('de-CH', {
     maximumFractionDigits: 1
   });
+
+  static readonly styles = css`
+    :host {
+      min-width: 0;
+    }
+      .ngm-nci-height,
+      .ngm-nci-position {
+        display: none;
+      }
+
+    @media (min-width: 1200px) {
+      :host .ngm-nci-value {
+        font-weight: 600;
+        min-width: 75px;
+      }
+
+      .ngm-nci-position {
+        display: unset;
+        width: 83px;
+        margin-right: 20px;
+      }
+
+      .ngm-nci-height {
+        display: flex;
+        flex-direction: column;
+        white-space: nowrap;
+        margin-right: 10px;
+      }
+      :host {
+        flex-wrap: wrap;
+        align-self: center;
+        color: #212529;
+        text-align: left;
+        font: normal normal normal 14px/20px Inter, sans-serif;
+        letter-spacing: 0;
+        min-width: 255px;
+        padding-right:48px
+      }
+    }
+  `;
 
   updated() {
     if (this.viewer) {
@@ -89,7 +129,7 @@ export class NgmCursorInformation extends LitElementI18n {
       `;
   }
 
-  createRenderRoot() {
-    return this;
-  }
+  // createRenderRoot() {
+  //   return this;
+  // }
 }

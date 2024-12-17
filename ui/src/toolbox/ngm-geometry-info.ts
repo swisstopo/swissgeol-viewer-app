@@ -142,7 +142,7 @@ export class NgmGeometryInfo extends LitElementI18n {
       <div class="ngm-geom-info-content">
         <div class="ngm-geom-description">
           <div class="ngm-geom-info-label">${i18next.t('obj_info_description_label')}</div>
-          <div class="ngm-geom-info-value">${geom.description || ''}</div>
+          <div class="ngm-geom-info-value">${geom.description ?? ''}</div>
         </div>
         <div class="ngm-geom-img">
           <div class="ngm-geom-info-label">${i18next.t('obj_info_image_label')}</div>
@@ -157,7 +157,7 @@ export class NgmGeometryInfo extends LitElementI18n {
         <div ?hidden=${!geom.volumeShowed} class="ngm-geom-limits">
           <div ?hidden=${geom.type === 'point'}>
             <div class="ngm-geom-info-label">${i18next.t('tbx_volume_lower_limit_label')}</div>
-            <div class="ngm-geom-info-value">${geom.volumeHeightLimits?.lowerLimit.toFixed(1) || '-'} m</div>
+            <div class="ngm-geom-info-value">${geom.volumeHeightLimits?.lowerLimit.toFixed(1) ?? '-'} m</div>
           </div>
           <div>
             <div class="ngm-geom-info-label">${i18next.t('tbx_volume_height_label')}</div>
@@ -165,28 +165,28 @@ export class NgmGeometryInfo extends LitElementI18n {
           </div>
           <div ?hidden=${geom.type !== 'point'}>
             <div class="ngm-geom-info-label">${i18next.t('tbx_point_depth_label')}</div>
-            <div class="ngm-geom-info-value">${geom.depth?.toFixed(1) || '-'} m</div>
+            <div class="ngm-geom-info-value">${geom.depth?.toFixed(1) ?? '-'} m</div>
           </div>
         </div>
         <div ?hidden=${!geom.volumeShowed} class="ngm-geom-limits">
           <div ?hidden=${geom.type !== 'point'}>
             <div class="ngm-geom-info-label">${i18next.t('tbx_point_diameter_label')}</div>
-            <div class="ngm-geom-info-value">${geom.diameter?.toFixed(1) || '-'} m</div>
+            <div class="ngm-geom-info-value">${geom.diameter?.toFixed(1) ?? '-'} m</div>
           </div>
         </div>
         <div ?hidden=${geom.type === 'point' || geom.type === 'line'}>
           <div class="ngm-geom-info-label">${i18next.t('obj_info_area_label')}</div>
-          <div class="ngm-geom-info-value">${geom.area || '-'} km²</div>
+          <div class="ngm-geom-info-value">${geom.area ?? '-'} km²</div>
         </div>
         <div ?hidden=${geom.type === 'point'}>
           <div class="ngm-geom-info-label">
             ${geom.type === 'line' ? i18next.t('obj_info_length_label') : i18next.t('obj_info_perimeter_label')}
           </div>
-          <div class="ngm-geom-info-value">${geom.perimeter || '-'} km</div>
+          <div class="ngm-geom-info-value">${geom.perimeter ?? '-'} km</div>
         </div>
         <div ?hidden=${geom.type === 'point'}>
           <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
-          <div class="ngm-geom-info-value">${geom.numberOfSegments || ''}</div>
+          <div class="ngm-geom-info-value">${geom.numberOfSegments ?? ''}</div>
         </div>
         <div>
           ${geom.pointSymbol ?

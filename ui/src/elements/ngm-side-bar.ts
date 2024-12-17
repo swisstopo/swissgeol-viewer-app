@@ -5,6 +5,8 @@ import '../layers/ngm-layers';
 import '../layers/ngm-layers-sort';
 import './dashboard/ngm-dashboard';
 import '../components/navigation/navigation-layer-panel';
+import './sidebar/ngm-menu-item';
+import './shared/ngm-icon';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
 import defaultLayerTree, {LayerConfig} from '../layertree';
@@ -92,7 +94,7 @@ export class SideBar extends LitElementI18n {
   private zoomedToPosition = false;
   private accordionInited = false;
   private shareListenerAdded = false;
-  private shareDownListener = evt => {
+  private readonly shareDownListener = evt => {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
   private viewer: Viewer | null = null;
@@ -171,8 +173,14 @@ export class SideBar extends LitElementI18n {
     });
 
     const sliceOptions = getSliceParam();
-    if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints)
+    if (sliceOptions?.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
+  }
+  private createMenuItem(icon: string, title: string, panel: string) {
+    return html`
+      <ngm-menu-item icon=${icon} title=${title} ?isActive=${this.activePanel === panel}
+                               ?isMobile=${this.mobileView} @click=${() => this.togglePanel(panel)}
+      ></ngm-menu-item>`;
   }
 
   render() {
@@ -183,16 +191,13 @@ export class SideBar extends LitElementI18n {
     this.queryManager.activeLayers = this.activeLayers
       .filter(config => config.visible && !config.noQuery);
 
-    const shareBtn = html`
-      <div class="ngm-share ${classMap({'ngm-active-section': this.activePanel === 'share'})}"
-           @click=${() => this.togglePanel('share')}>
-        <div class="ngm-share-icon"></div>
-      </div>`;
-    const settingsBtn = html`
-      <div class="ngm-settings ${classMap({'ngm-active-section': this.activePanel === 'settings'})}"
-           @click=${() => this.togglePanel('settings')}>
-        <div class="ngm-settings-icon"></div>
-      </div>`;
+
+    const layerBtn = this.createMenuItem('layer', 'menu_layers', 'data');
+    const toolsBtn = this.createMenuItem('tools', 'menu_tools', 'tools');
+    const projectsBtn = this.createMenuItem('projects', 'menu_projects', 'dashboard');
+    const shareBtn = this.createMenuItem('share', 'menu_share', 'share');
+    const settingsBtn = this.createMenuItem('config', 'menu_settings', 'settings');
+    const mobileExpandBtn = html`<ngm-menu-item icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}" @click=${() => this.mobileShowAll = !this.mobileShowAll}></ngm-menu-item>`;
 
     return html`
       <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
@@ -202,31 +207,15 @@ export class SideBar extends LitElementI18n {
         <div></div>
         <div></div>
       </div>
-      <div class="ngm-menu">
-        <div class="ngm-menu-1">
-          <div class="ngm-dashboard ${classMap({'ngm-active-section': this.activePanel === 'dashboard'})}"
-               @click=${() => this.togglePanel('dashboard')}>
-            <div class="ngm-dashboard-icon"></div>
-          </div>
-          <div class="ngm-data ${classMap({'ngm-active-section': this.activePanel === 'data'})}"
-               @click=${() => this.togglePanel('data')}>
-            <div class="ngm-data-icon"></div>
-          </div>
-          <div class="ngm-tools ${classMap({'ngm-active-section': this.activePanel === 'tools'})}"
-               @click=${() => this.togglePanel('tools', false)}>
-            <div class="ngm-tools-icon"></div>
-          </div>
+      <div class="ngm-menu" >
+        <div class="ngm-menu-top">
+          ${layerBtn}
+          ${toolsBtn}
           ${!this.mobileView ? shareBtn : ''}
-          <div .hidden=${!this.mobileView}
-               class="ngm-mob-menu-toggle"
-               @click=${() => this.mobileShowAll = !this.mobileShowAll}>
-            <div class="${classMap({
-      'ngm-view-all-icon': !this.mobileShowAll,
-      'ngm-view-less-icon': this.mobileShowAll
-    })}"></div>
-          </div>
+          ${projectsBtn}
+          ${this.mobileView ? mobileExpandBtn : ''}
         </div>
-        <div .hidden=${this.mobileView} class="ngm-menu-2">
+        <div ?hidden="${this.mobileView}" class="ngm-menu-top">
           ${settingsBtn}
         </div>
       </div>
@@ -327,7 +316,7 @@ export class SideBar extends LitElementI18n {
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
-      layer.wmtsCurrentTime = urlLayer.timestamp || layer.wmtsCurrentTime;
+      layer.wmtsCurrentTime = urlLayer.timestamp ?? layer.wmtsCurrentTime;
       layer.setOpacity && layer.setOpacity(layer.opacity);
       layer.displayed = true;
       layer.setVisibility && layer.setVisibility(layer.visible);
@@ -344,7 +333,7 @@ export class SideBar extends LitElementI18n {
           type: LayerType.tiles3d,
           assetId: Number(assetId),
           ionToken: ionToken,
-          label: ionAsset?.name || assetId,
+          label: ionAsset?.name ?? assetId,
           layer: assetId,
           visible: true,
           displayed: true,
@@ -407,7 +396,7 @@ export class SideBar extends LitElementI18n {
         if (panelElement) {
           for (let i = 0; i < panelElement.childElementCount; i++) {
             const element = panelElement.children.item(i);
-            if (element && element.classList.contains('accordion')) {
+            if (element?.classList.contains('accordion')) {
               $(element).accordion({duration: 150});
             }
           }
@@ -519,12 +508,12 @@ export class SideBar extends LitElementI18n {
       config = searchLayer;
       config.visible = true;
       config.origin = 'layer';
-      config.label = searchLayer.title || searchLayer.label;
+      config.label = searchLayer.title ?? searchLayer.label;
       config.legend = config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
     } else {
       config = {
         type: LayerType.swisstopoWMTS,
-        label: searchLayer.title || searchLayer.label,
+        label: searchLayer.title ?? searchLayer.label,
         layer: searchLayer.layer,
         visible: true,
         displayed: true,
@@ -549,7 +538,7 @@ export class SideBar extends LitElementI18n {
     if (zoomToPosition) {
       let altitude = 0, cartesianPosition: Cartesian3 | undefined, windowPosition: Cartesian2 | undefined;
       const updateValues = () => {
-        altitude = this.viewer!.scene.globe.getHeight(this.viewer!.scene.camera.positionCartographic) || 0;
+        altitude = this.viewer!.scene.globe.getHeight(this.viewer!.scene.camera.positionCartographic) ?? 0;
         cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height + altitude);
         windowPosition = this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
       };

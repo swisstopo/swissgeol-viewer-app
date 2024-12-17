@@ -31,7 +31,7 @@ export class NgmMapConfiguration extends LitElementI18n {
   accessor baseMapId = 'ch.swisstopo.pixelkarte-grau';
   @query('ngm-map-chooser')
   accessor mapChooserElement;
-  private debouncedOpacityUpdate = debounce((evt: Event) => this.updateOpacity(Number((<HTMLInputElement>evt.target).value)), 250);
+  private readonly debouncedOpacityUpdate = debounce((evt: Event) => this.updateOpacity(Number((<HTMLInputElement>evt.target).value)), 250);
   private prevExaggeration: number = 1;
 
   constructor() {

@@ -1,4 +1,4 @@
-import type {
+  import type {
   CognitoIdentityCredentialProvider,
   CognitoIdentityCredentials
 } from '@aws-sdk/credential-provider-cognito-identity';
@@ -47,11 +47,11 @@ export default class AuthService {
       if (params.has('access_token') && params.has('id_token') &&
         params.get('token_type') === 'Bearer' && params.get('state') === this.state()) {
         localStorage.setItem('rawCognitoResponse', response);
-        const token = params.get('access_token') || '';
+        const token = params.get('access_token') ?? '';
         const payload = atob(token.split('.')[1]);
         const claims = JSON.parse(payload);
         this.setUser(claims);
-        this.setAccessToken(params.get('id_token') || '');
+        this.setAccessToken(params.get('id_token') ?? '');
       }
     } else if (this.getUser()) {
       // this strange line sets up observable and autologout

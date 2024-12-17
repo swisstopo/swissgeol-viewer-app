@@ -13,6 +13,8 @@
 
     --color-action: #a83526;
     --color-action--light: #FF0000;
+    --color-main: #295969;
+    --color-active: #607D52;
 
     --font: 'Inter', sans-serif;
     font-family: var(--font);
