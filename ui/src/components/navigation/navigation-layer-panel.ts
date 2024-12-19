@@ -6,6 +6,7 @@ import {LayerConfig} from '../../layertree';
 import './navigation-panel';
 import './navigation-panel-header';
 import '../layers/layers-catalog';
+import '../data-display/tab-display';
 import '../layers/layers-display';
 import {LayerEvent, LayersUpdateEvent} from '../layers/layers-display';
 
@@ -33,27 +34,17 @@ export class NavigationLayerPanel extends LitElementI18n {
     <ngm-navigation-panel>
       <section>
         <ngm-navigation-panel-header closeable @close="${this.close}">
-          ${i18next.t('lyr_geocatalog_label')}
-        </ngm-navigation-panel-header>
-        ${this.renderCatalog()}
-      </section>
-      <section>
-        <ngm-navigation-panel-header>
           ${i18next.t('dtd_displayed_data_label')}
         </ngm-navigation-panel-header>
-        ${this.renderDisplay()}
+        ${this.renderLayers()}
+      </section>
+      <section>
+        <ngm-tab-display .layers=${this.layers}> </ngm-tab-display>
       </section>
     </ngm-navigation-panel>
   `;
 
-  private readonly renderCatalog = () => html`
-    <ngm-layers-catalog
-      class="ui accordion ngm-panel-content"
-      .layers=${this.layers}
-    ></ngm-layers-catalog>
-  `;
-
-  private readonly renderDisplay = () => html`
+  private readonly renderLayers = () => html`
     <ngm-layers-display
       .layers=${this.displayLayers}
       @layers-update="${this.handleDisplayLayersUpdate}"

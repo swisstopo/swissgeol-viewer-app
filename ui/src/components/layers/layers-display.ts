@@ -13,6 +13,7 @@ import {Subscription} from 'rxjs';
 import {classMap} from 'lit/directives/class-map.js';
 import {query} from 'lit/decorators.js';
 import {parseKml, renderWithDelay} from '../../cesiumutils';
+import './upload/data-upload';
 
 @customElement('ngm-layers-display')
 export class NgmLayersDisplay extends LitElementI18n {
@@ -75,17 +76,6 @@ export class NgmLayersDisplay extends LitElementI18n {
         ${this.isReordering
           ? this.renderSortableLayers()
           : this.renderLayers()}
-        <h5 class="ui header">${i18next.t('dtd_user_content_label')}</h5>
-        <ngm-layers-upload
-          .toastPlaceholder=${this.toastPlaceholder}
-          .onKmlUpload=${this.handleKmlUpload}>
-        </ngm-layers-upload>
-        <button
-          class="ui button ngm-ion-add-content-btn ngm-action-btn"
-          @click=${this.openIonModal}
-        >
-          ${i18next.t('dtd_add_ion_token')}
-        </button>
         <h5 class="ui header ngm-background-label">
           ${i18next.t('dtd_background_map_label')}
           <div class="ui ${this.globeQueueLength > 0 ? 'active' : ''} inline mini loader">
@@ -217,13 +207,6 @@ export class NgmLayersDisplay extends LitElementI18n {
         layer,
       },
     }) satisfies LayerEvent);
-  }
-
-  private openIonModal(): void {
-    this.dispatchEvent(new CustomEvent('openIonModal', {
-      bubbles: true,
-      composed: true,
-    }));
   }
 
   // TODO Make all children of this component use the Shadow DOM so we can remove this.
