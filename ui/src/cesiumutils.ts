@@ -564,7 +564,8 @@ export async function parseKml(viewer: Viewer, data: File | string, dataSource: 
   }
   dataSource.entities.resumeEvents();
 
-  return name;
+  // TODO: remove this and fix data upload
+  return name ?? 'untitled';
 }
 
 // workaround to rerender map after dataSources update in requestRenderMode
