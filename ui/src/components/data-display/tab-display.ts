@@ -19,6 +19,9 @@ export class DataUpload extends  LitElementI18n {
   accessor onKmlUpload!: (file: File, clampToGround: boolean) => Promise<void> | void;
 
   @state()
+  private accessor activeTab: Tab = Tab.Catalog
+
+  @state()
   private accessor viewer: Viewer | null = null
 
   private readonly subscription = new Subscription();
@@ -39,15 +42,21 @@ export class DataUpload extends  LitElementI18n {
   accessor toastPlaceholder;
   readonly render =() => html`
     <div>
-      <span>Katalog</span>
-      <span>Upload</span>
-      <span>Einstellungen</span>
-      ${this.renderCatalog()}
-      <ngm-data-upload
-        .toastPlaceholder=${this.toastPlaceholder}
-        .onKmlUpload=${this.handleKmlUpload}
-      ></ngm-data-upload>
-      <ngm-exaggeration-slider></ngm-exaggeration-slider>
+      <button @click="${() => this.activeTab = Tab.Catalog}">Katalog</button>
+      <button @click="${() => this.activeTab = Tab.Upload}">Upload</button>
+      <button @click="${() => this.activeTab = Tab.Exaggeration}">Einstellungen</button>
+      <div ?hidden="${this.activeTab !== Tab.Catalog}">
+        ${this.renderCatalog()}
+      </div>
+      <div ?hidden="${this.activeTab !== Tab.Upload}">
+        <ngm-data-upload
+          .toastPlaceholder=${this.toastPlaceholder}
+          .onKmlUpload=${this.handleKmlUpload}
+        ></ngm-data-upload>
+      </div>
+      <div ?hidden="${this.activeTab !== Tab.Exaggeration}">
+        <ngm-exaggeration-slider></ngm-exaggeration-slider>
+      </div>
     </div>
   `
 
@@ -101,7 +110,8 @@ export class DataUpload extends  LitElementI18n {
   }
 }
 
-// enum Tab {
-//   Catalog,
-//   Data,
-// }
+enum Tab {
+  Catalog,
+  Upload,
+  Exaggeration
+}
