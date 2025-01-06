@@ -9,7 +9,7 @@
     "start": "npm run build:static && npm run webpack:serve",
     "build": "npm run build:clean && npm run build:static && npm run build:js",
     "build:clean": "rimraf dist/",
-    "build:static": "concurrently \"npm run build:static:environment\" \"npm run build:static:manuals\" \"npm run build:static:legal\" \"npm run build:static:versions\"",
+    "build:static": "npm run build:static:environment && npm run build:static:manuals && npm run build:static:legal && npm run build:static:versions",
     "build:static:environment": "node scripts/environment.js",
     "build:static:manuals": "node scripts/generate_manuals.js",
     "build:static:legal": "node scripts/legal_md_to_html.js",

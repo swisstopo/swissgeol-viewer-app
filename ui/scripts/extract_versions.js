@@ -3,6 +3,8 @@ import * as path from 'node:path';
 
 import * as util from 'node:util';
 import {exec as execSync} from 'node:child_process';
+import {mkdirSync} from 'fs';
+import {dirname} from 'path';
 const exec = util.promisify(execSync);
 
 const cesiumPackagePath = path.resolve(import.meta.dirname, '../node_modules/cesium/package.json');
@@ -23,6 +25,7 @@ const date = new Intl.DateTimeFormat('en-CA', {
 }).format(now).replace(', ', 'T').replace(' GMT', '');
 
 const versionsFilePath = path.resolve(import.meta.dirname, '../dist/versions.json');
+mkdirSync(dirname(versionsFilePath), {recursive: true});
 writeFileSync(versionsFilePath, JSON.stringify({
   build: date,
   commit_hash: commitHash,
