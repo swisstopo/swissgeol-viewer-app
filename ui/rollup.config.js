@@ -16,18 +16,6 @@ const cesiumSource = 'node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
 const extensions = ['.ts', '.js'];
 
-const postcssPlugins = [
-  inlinesvg(),
-  cssimport({
-    plugins: [
-      postcssurl([
-        {filter: '**/*.+(woff|woff2)', url: (asset) => `fonts/${path.basename(asset.url)}`},
-      ])
-    ]
-  }),
-  autoprefixer()
-];
-
 const config = {
   input: 'src/index.ts',
   output: [{
@@ -39,14 +27,18 @@ const config = {
     postcss({
       minimize: true,
       inject: false,
-      extract: false,
-      plugins: postcssPlugins,
-    }),
-    postcss({
-      minimize: true,
-      inject: false,
-      extract: '**/style/index.css',
-      plugins: postcssPlugins,
+      extract: 'index.css',
+      plugins: [
+        inlinesvg(),
+        cssimport({
+          plugins: [
+            postcssurl([
+              {filter: '**/*.+(woff|woff2)', url: (asset) => `fonts/${path.basename(asset.url)}`},
+            ])
+          ]
+        }),
+        autoprefixer()
+      ]
     }),
     json(),
     resolve({
@@ -72,12 +64,12 @@ const config = {
         ],
         [
           '@babel/preset-env', {
-            //debug: true, // disable to get debug information
-            modules: false,
+          //debug: true, // disable to get debug information
+          modules: false,
 
-            useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
-            corejs: {version: 3, proposals: false},
-          }
+          useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
+          corejs: {version: 3, proposals: false},
+        }
         ]
       ],
       // exclude: 'node_modules/**'
