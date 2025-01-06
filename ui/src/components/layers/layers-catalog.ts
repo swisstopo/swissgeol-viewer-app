@@ -121,7 +121,7 @@ export class NgmLayersCatalog extends LitElementI18n {
     }
 
     .category > .title:hover > label,
-    .category > .title:hover > ngm-core-icon{
+    .category > .title:hover > ngm-core-icon {
       color: var(--color-action--light);
     }
 
@@ -140,8 +140,8 @@ export class NgmLayersCatalog extends LitElementI18n {
       margin-left: 10px;
     }
 
-    .category > .title.active > ngm-core-icon {
-      transform: rotate(90deg);
+    .category > .title:not(.active) > ngm-core-icon {
+      transform: rotate(-90deg);
     }
 
     .ngm-checkbox {

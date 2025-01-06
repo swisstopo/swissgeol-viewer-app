@@ -11,6 +11,9 @@ export class CoreIcon extends LitElement {
   accessor isInteractive: boolean = false
 
   static readonly styles = css`
+    :host {
+      color: currentColor;
+    }
 
     :host([interactive]:hover) {
       cursor: pointer;

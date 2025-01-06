@@ -89,7 +89,7 @@ export class SideBar extends LitElementI18n {
 
   // TODO change this back to `null`
   @state()
-  accessor activePanel: string | null = null;
+  accessor activePanel: string | null = 'data';
   @state()
   accessor showHeader = false;
   @state()

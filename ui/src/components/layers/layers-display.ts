@@ -1,19 +1,17 @@
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../../i18n.js';
 import {css, html} from 'lit';
 import i18next from 'i18next';
-import {CustomDataSource, Viewer} from 'cesium';
+import {Viewer} from 'cesium';
 import {PropertyValues} from '@lit/reactive-element';
 import LayersActions from '../../layers/LayersActions';
-import {DEFAULT_LAYER_OPACITY, LayerConfig, LayerTreeNode} from '../../layertree';
+import {LayerConfig, LayerTreeNode} from '../../layertree';
 import '../../layers/ngm-layers';
 import '../../layers/ngm-layers-sort';
 import MainStore from '../../store/main';
 import {Subscription} from 'rxjs';
 import {classMap} from 'lit/directives/class-map.js';
-import {query} from 'lit/decorators.js';
-import {parseKml, renderWithDelay} from '../../cesiumutils';
-import './upload/data-upload';
+import './upload/layers-upload';
 
 @customElement('ngm-layers-display')
 export class NgmLayersDisplay extends LitElementI18n {
@@ -49,7 +47,6 @@ export class NgmLayersDisplay extends LitElementI18n {
     this.handleReordering = this.handleReordering.bind(this);
     this.toggleReordering = this.toggleReordering.bind(this);
     this.handleLayerUpdate = this.handleLayerUpdate.bind(this);
-    this.handleKmlUpload = this.handleKmlUpload.bind(this);
   }
 
   private initializeViewer(): void {
@@ -141,40 +138,6 @@ export class NgmLayersDisplay extends LitElementI18n {
     this.updateLayer(e.detail);
   }
 
-  // TODO Cleanup/Refactor this function.
-  // As of now, this function remains unchanged to before the navigation-catalog refactoring.
-  private async handleKmlUpload(file: File, clampToGround: boolean): Promise<void> {
-    if (this.viewer == null) {
-      return;
-    }
-
-    const dataSource = new CustomDataSource();
-    const name = await parseKml(this.viewer, file, dataSource, clampToGround);
-    const layer = `${name.replace(' ', '_')}_${Date.now()}`;
-
-    // name used as id for datasource
-    dataSource.name = layer;
-    MainStore.addUploadedKmlName(dataSource.name);
-    await this.viewer.dataSources.add(dataSource);
-    await renderWithDelay(this.viewer);
-
-    // done like this to have correct rerender of component
-    const dataSourcePromise = Promise.resolve(dataSource);
-    const config: LayerConfig = {
-      load() { return dataSourcePromise; },
-      label: name,
-      layer,
-      promise: dataSourcePromise,
-      opacity: DEFAULT_LAYER_OPACITY,
-      notSaveToPermalink: true,
-      ownKml: true,
-      opacityDisabled: true
-    };
-    this.clickLayer(config);
-    await this.viewer.zoomTo(dataSource);
-    this.requestUpdate();
-  }
-
   private updateLayers(layers: LayerTreeNode[]): void {
     this.dispatchEvent(new CustomEvent('layers-update', {
       detail: {
@@ -193,16 +156,6 @@ export class NgmLayersDisplay extends LitElementI18n {
 
   private removeLayer(layer: LayerConfig): void {
     this.dispatchEvent(new CustomEvent('layer-removal', {
-      detail: {
-        layer,
-      },
-    }) satisfies LayerEvent);
-  }
-
-  private clickLayer(layer: LayerConfig): void {
-    this.dispatchEvent(new CustomEvent('layer-click', {
-      bubbles: true,
-      composed: true,
       detail: {
         layer,
       },
@@ -231,9 +184,10 @@ export type LayersUpdateEvent = CustomEvent<{
   layers: LayerTreeNode[]
 }>
 
-export type LayerEvent = CustomEvent<{
+export type LayerEvent = CustomEvent<LayerEventDetails>
+export interface LayerEventDetails {
   layer: LayerConfig | LayerTreeNode
-}>
+}
 
 type LayerRemovalEvent = CustomEvent<{
   idx: number

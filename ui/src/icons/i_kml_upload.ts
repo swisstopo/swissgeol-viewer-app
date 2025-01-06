@@ -1,0 +1,10 @@
+import {html} from 'lit';
+
+export const kmlUploadIcon = html`
+  <svg id="i_kml_gpx_hochladen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <path id="icon_kml_upload"
+          d="M431.524,166.321a2,2,0,0,0-2,2v16a2,2,0,0,0,2,2h8.124l-.587-.586-1.413-1.414h-6.124v-16h7v5h5v5h2v-6l-6-6Zm9.245,8.293-3.293,3.293-2-2-2.707,2.707,1.414,1.414,1.293-1.293,2,2,4.707-4.707Zm4.707,13.707v-4h3l-4-4-4,4h3v4Z"
+          transform="translate(-426.524 -165.321)" fill="currentColor"/>
+    <rect id="Rechteck_1971" data-name="Rechteck 1971" width="24" height="24" fill="none"/>
+  </svg>
+`;
