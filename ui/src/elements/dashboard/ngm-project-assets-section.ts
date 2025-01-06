@@ -6,7 +6,7 @@ import {classMap} from 'lit/directives/class-map.js';
 import {Asset} from './ngm-dashboard';
 import '../../layers/ngm-layers-upload';
 import {PROJECT_ASSET_MAX_SIZE} from '../../constants';
-import {KmlUploadEvent} from '../../components/layers/upload/layers-upload-kml';
+import {KmlUploadEvent} from '../../components/layers/upload/layer-upload-kml';
 
 @customElement('ngm-project-assets-section')
 export class NgmProjectAssetsSection extends LitElementI18n {
@@ -60,11 +60,11 @@ export class NgmProjectAssetsSection extends LitElementI18n {
                 </div>
                 <div class="project-edit-fields">
                     ${this.viewMode ? '' : html`
-                        <ngm-layers-upload-kml
+                        <ngm-layer-upload-kml
                           .toastPlaceholder=${this.toastPlaceholder}
                           .maxFileSize=${PROJECT_ASSET_MAX_SIZE}
                           @upload=${this.handleKmlUpload}
-                        ></ngm-layers-upload-kml>
+                        ></ngm-layer-upload-kml>
                     `}
                     ${this.assets?.map((kml, index) => {
                         return html`

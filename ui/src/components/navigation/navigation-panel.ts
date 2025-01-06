@@ -16,12 +16,12 @@ export class NavigationPanel extends LitElementI18n {
       max-width: 100vw;
       height: var(--panel-height);
       max-height: var(--panel-height);
-      max-width: calc(100vw);
-      padding: 0 var(--panel-padding);
+      padding: 0;
 
       display: flex;
       flex-direction: column;
-      overflow-y: auto;
+      align-content: flex-start;
+      overflow-y: hidden;
       box-shadow: 4px 0 4px #00000029;
       z-index: 5;
 

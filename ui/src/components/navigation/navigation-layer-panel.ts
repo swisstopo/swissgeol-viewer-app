@@ -5,10 +5,10 @@ import {customElement, property} from 'lit/decorators.js';
 import {LayerConfig} from '../../layertree';
 import './navigation-panel';
 import './navigation-panel-header';
-import '../layers/layers-catalog';
-import '../data-display/tab-display';
-import '../layers/layers-display';
-import {LayerEvent, LayersUpdateEvent} from '../layers/layers-display';
+import '../layer/layer-catalog';
+import '../layer/layer-display';
+import '../layer/layer-tabs';
+import type {LayerEvent, LayersUpdateEvent} from '../layer/layer-display';
 
 
 @customElement('ngm-navigation-layer-panel')
@@ -39,19 +39,19 @@ export class NavigationLayerPanel extends LitElementI18n {
         ${this.renderLayers()}
       </section>
       <section>
-        <ngm-tab-display .layers=${this.layers}> </ngm-tab-display>
+        <ngm-layer-tabs .layers=${this.layers}></ngm-layer-tabs>
       </section>
     </ngm-navigation-panel>
   `;
 
   private readonly renderLayers = () => html`
-    <ngm-layers-display
+    <ngm-layer-display
       .layers=${this.displayLayers}
       @layers-update="${this.handleDisplayLayersUpdate}"
       @layer-update="${this.handleDisplayLayerUpdate}"
       @layer-removal="${this.handleDisplayLayerRemoval}"
       @layer-click="${this.handleDisplayLayerClick}"
-    ></ngm-layers-display>
+    ></ngm-layer-display>
   `;
 
   connectedCallback(): void {
@@ -93,41 +93,24 @@ export class NavigationLayerPanel extends LitElementI18n {
   }
 
   static readonly styles = css`
-    ngm-navigation-layer-panel * {
+    ngm-navigation-layer-panel, ngm-navigation-layer-panel * {
       box-sizing: border-box;
     }
 
-    ngm-navigation-layer-panel ngm-navigation-panel {
-      --display-height: 500px;
-      --catalog-height: calc(var(--panel-height) - var(--display-height) - 34px);
-
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: repeat(2, 1fr);
-      max-height: calc(100vh - var(--ngm-header-height));
-      padding: 0;
-    }
-
     ngm-navigation-layer-panel ngm-navigation-panel > section {
-      --section-height: calc(var(--panel-height) / 2);
-
       position: relative;
-      max-height: var(--section-height);
       background-color: var(--color-bg--dark);
-    }
 
+      overflow-y: auto;
+    }
 
     ngm-navigation-layer-panel ngm-navigation-panel > section > * {
       max-width: calc(100vw);
-      padding: 0 var(--panel-padding);
     }
 
-    ngm-navigation-layer-panel ngm-layers-catalog,
-    ngm-navigation-layer-panel ngm-layers-display {
+    ngm-navigation-layer-panel ngm-layer-catalog,
+    ngm-navigation-layer-panel ngm-layer-display {
       display: block;
-      height: calc(var(--section-height) - 34px);
-      max-height: calc(var(--section-height) - 34px);
-      overflow-y: auto;
     }
   `;
 }

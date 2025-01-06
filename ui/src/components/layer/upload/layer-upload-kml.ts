@@ -9,8 +9,8 @@ import fomanticButtonCss from 'fomantic-ui-css/components/button.css';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css';
 import '../../core';
 
-@customElement('ngm-layers-upload-kml')
-export default class LayersUploadKml extends LitElementI18n {
+@customElement('ngm-layer-upload-kml')
+export default class NgmLayerUploadKml extends LitElementI18n {
   @property({type: Object})
   accessor toastPlaceholder!: HTMLElement;
 
@@ -89,7 +89,7 @@ export default class LayersUploadKml extends LitElementI18n {
       @change=${async (e: InputEvent) => {
         const file = (e.target as HTMLInputElement | null)?.files?.[0];
         if (file != null) {
-          await this.uploadKml(file);
+          this.uploadKml(file);
         }
       }}
     />

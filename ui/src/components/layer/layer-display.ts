@@ -11,10 +11,10 @@ import '../../layers/ngm-layers-sort';
 import MainStore from '../../store/main';
 import {Subscription} from 'rxjs';
 import {classMap} from 'lit/directives/class-map.js';
-import './upload/layers-upload';
+import './upload/layer-upload';
 
-@customElement('ngm-layers-display')
-export class NgmLayersDisplay extends LitElementI18n {
+@customElement('ngm-layer-display')
+export class NgmLayerDisplay extends LitElementI18n {
   @property({type: Array})
   accessor layers: LayerTreeNode[] = []
 
@@ -58,52 +58,8 @@ export class NgmLayersDisplay extends LitElementI18n {
     }));
   }
 
-  readonly render = () => html`
-    <div class="ngm-data-panel">
-      <style>
-        ${NgmLayersDisplay.styles.cssText}
-      </style>
-      <div class="ngm-panel-content">
-        <div
-          class="ngm-label-btn ${classMap({active: this.isReordering})}"
-          @click=${this.toggleReordering}
-        >
-          ${this.isReordering ? i18next.t('dtd_finish_ordering_label') : i18next.t('dtd_change_order_label')}
-        </div>
-        ${this.isReordering
-          ? this.renderSortableLayers()
-          : this.renderLayers()}
-        <h5 class="ui header ngm-background-label">
-          ${i18next.t('dtd_background_map_label')}
-          <div class="ui ${this.globeQueueLength > 0 ? 'active' : ''} inline mini loader">
-            <span class="ngm-load-counter">${this.globeQueueLength}</span>
-          </div>
-        </h5>
-        <ngm-map-configuration></ngm-map-configuration>
-        <div class="ui divider"></div>
-      </div>
-    </div>
-  `;
-
-  private readonly renderLayers = () => html`
-    <ngm-layers
-      .layers=${this.layers}
-      .actions=${this.actions}
-      @removeDisplayedLayer=${this.handleLayerRemoval}
-      @layerChanged=${this.handleLayerUpdate}>
-    </ngm-layers>
-  `;
-
-  private readonly renderSortableLayers = () => html`
-    <ngm-layers-sort
-      .layers=${this.layers}
-      .actions=${this.actions}
-      @orderChanged=${this.handleReordering}>
-    </ngm-layers-sort>
-  `;
-
   updated(changedProperties: PropertyValues<this>): void {
-    if (changedProperties.has('viewer' as keyof NgmLayersDisplay)) {
+    if (changedProperties.has('viewer' as keyof NgmLayerDisplay)) {
       this.actions = this.viewer == null ? null : new LayersActions(this.viewer);
     }
   }
@@ -167,15 +123,64 @@ export class NgmLayersDisplay extends LitElementI18n {
     return this;
   }
 
+  readonly render = () => html`
+    <div class="ngm-data-panel">
+      <style>
+        ${NgmLayerDisplay.styles.cssText}
+      </style>
+      <div class="ngm-panel-content">
+        <div
+          class="ngm-label-btn ${classMap({active: this.isReordering})}"
+          @click=${this.toggleReordering}
+        >
+          ${this.isReordering ? i18next.t('dtd_finish_ordering_label') : i18next.t('dtd_change_order_label')}
+        </div>
+        ${this.isReordering
+    ? this.renderSortableLayers()
+    : this.renderLayers()}
+        <h5 class="ui header ngm-background-label">
+          ${i18next.t('dtd_background_map_label')}
+          <div class="ui ${this.globeQueueLength > 0 ? 'active' : ''} inline mini loader">
+            <span class="ngm-load-counter">${this.globeQueueLength}</span>
+          </div>
+        </h5>
+        <ngm-map-configuration></ngm-map-configuration>
+      </div>
+    </div>
+  `;
+
+  private readonly renderLayers = () => html`
+    <ngm-layers
+      .layers=${this.layers}
+      .actions=${this.actions}
+      @removeDisplayedLayer=${this.handleLayerRemoval}
+      @layerChanged=${this.handleLayerUpdate}>
+    </ngm-layers>
+  `;
+
+  private readonly renderSortableLayers = () => html`
+    <ngm-layers-sort
+      .layers=${this.layers}
+      .actions=${this.actions}
+      @orderChanged=${this.handleReordering}>
+    </ngm-layers-sort>
+  `;
+
   static readonly styles = css`
-    ngm-layers-display .actions {
+
+    ngm-layer-display, ngm-layer-display * {
+      box-sizing: border-box;
+    }
+
+    ngm-layer-display {
+      display: block;
+      padding-inline: 16px;
+    }
+
+    ngm-layer-display .actions {
       display: flex;
       justify-content: flex-end;
       padding-top: 9px;
-    }
-
-    ngm-layers-display * {
-      box-sizing: border-box;
     }
   `;
 }

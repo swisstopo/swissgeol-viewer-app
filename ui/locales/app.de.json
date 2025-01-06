@@ -94,6 +94,11 @@
   "dtd_topic_kml_tag": "Themen-Objekt",
   "dtd_voxel_filter": "Filter öffnen",
   "dtd_zoom_to": "Heranzoomen",
+  "dtd_tab_labels": {
+    "catalog": "Datenkatalog",
+    "upload": "Upload",
+    "options": "Einstellungen"
+  },
   "duplicate_to_project": "Zu Projekt duplizieren",
   "edit_project": "Projekt bearbeiten",
   "header_search_placeholder": "Suche nach...",

@@ -1,19 +1,21 @@
 import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../../../i18n';
-import {html} from 'lit';
+import {css, html, unsafeCSS} from 'lit';
 import i18next from 'i18next';
-import './layers-upload-kml';
+import './layer-upload-kml';
+import type {KmlUploadEvent} from './layer-upload-kml';
 import {CustomDataSource, Viewer} from 'cesium';
 import {parseKml, renderWithDelay} from '../../../cesiumutils';
 import MainStore from '../../../store/main';
 import {DEFAULT_LAYER_OPACITY, LayerConfig} from '../../../layertree';
-import {LayerEventDetails} from '../layers-display';
+import {LayerEventDetails} from '../layer-display';
 import {Subscription} from 'rxjs';
-import {KmlUploadEvent} from './layers-upload-kml';
+import fomanticButtonCss from 'fomantic-ui-css/components/button.css';
+import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css';
 
 
-@customElement('ngm-layers-upload')
-export class NgmLayersUpload extends LitElementI18n {
+@customElement('ngm-layer-upload')
+export class NgmLayerUpload extends LitElementI18n {
   @property({type: Object})
   accessor toastPlaceholder!: HTMLElement
 
@@ -88,15 +90,34 @@ export class NgmLayersUpload extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <ngm-layers-upload-kml
+    <ngm-layer-upload-kml
       .toastPlaceholder=${this.toastPlaceholder}
       @upload=${this.handleKmlUpload}>
-    </ngm-layers-upload-kml>
+    </ngm-layer-upload-kml>
     <button
-      class="ui button ngm-ion-add-content-btn ngm-action-btn"
+      class="ui button"
       @click=${this.emitIonModalOpening}
     >
       ${i18next.t('dtd_add_ion_token')}
     </button>
+  `;
+
+  static readonly styles = css`
+    ${unsafeCSS(fomanticButtonCss)}
+    ${unsafeCSS(fomanticLoaderCss)}
+
+    button.ui.button {
+      display: flex;
+      justify-content: center;
+      overflow-wrap: break-word;
+      align-items: center;
+      width: 325px;
+      height: 36px;
+      min-height: 36px;
+      letter-spacing: 0.25px;
+      box-shadow: 0 1px 3px #00000033;
+      background-color: #357183;
+      color: white;
+    }
   `;
 }

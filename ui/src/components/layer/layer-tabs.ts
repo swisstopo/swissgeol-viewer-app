@@ -2,15 +2,16 @@ import {customElement, property, query, state} from 'lit/decorators.js';
 import {css, html} from 'lit';
 import {LitElementI18n} from '../../i18n';
 import {LayerConfig} from '../../layertree';
-import '../layers/layers-catalog';
+import './layer-catalog';
 import {Viewer} from 'cesium';
 import MainStore from '../../store/main';
 import {Subscription} from 'rxjs';
-import './tabs/exaggeration-slider';
+import './options/layer-options';
 import {classMap} from 'lit/directives/class-map.js';
+import i18next from 'i18next';
 
-@customElement('ngm-tab-display')
-export class DataUpload extends LitElementI18n {
+@customElement('ngm-layer-tabs')
+export class NgmLayerTabs extends LitElementI18n {
   @property()
   public accessor layers: LayerConfig[] | null = null
 
@@ -37,43 +38,53 @@ export class DataUpload extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <div class="container">
-      <div class="tabs">
-        <button @click="${() => this.activeTab = Tab.Catalog}"
-                class="${classMap({'active': this.activeTab === Tab.Catalog})}">Katalog
-        </button>
-        <div class="${classMap({'hide-border': this.activeTab !== Tab.Exaggeration})}"></div>
-        <button @click="${() => this.activeTab = Tab.Upload}"
-                class="${classMap({'active': this.activeTab === Tab.Upload})} center">Upload
-        </button>
-        <div class="${classMap({'hide-border': this.activeTab !== Tab.Catalog})}"></div>
-        <button @click="${() => this.activeTab = Tab.Exaggeration}"
-                class="${classMap({'active': this.activeTab === Tab.Exaggeration})}">Einstellungen
-        </button>
-      </div>
-      <div ?hidden="${this.activeTab !== Tab.Catalog}">
-        ${this.renderCatalog()}
-      </div>
-      <div ?hidden="${this.activeTab !== Tab.Upload}">
-        <ngm-layers-upload
-          .toastPlaceholder=${this.toastPlaceholder}
-        ></ngm-layers-upload>
-      </div>
-      <div ?hidden="${this.activeTab !== Tab.Exaggeration}">
-        <ngm-exaggeration-slider></ngm-exaggeration-slider>
-      </div>
+    <div class="tabs">
+      ${this.renderTabButton(Tab.Catalog)}
+      ${this.renderTabSeparator(Tab.Catalog, Tab.Upload)}
+      ${this.renderTabButton(Tab.Upload)}
+      ${this.renderTabSeparator(Tab.Upload, Tab.Options)}
+      ${this.renderTabButton(Tab.Options)}
+    </div>
+    <div ?hidden="${this.activeTab !== Tab.Catalog}">
+      ${this.renderCatalog()}
+    </div>
+    <div ?hidden="${this.activeTab !== Tab.Upload}">
+      <ngm-layer-upload
+        .toastPlaceholder=${this.toastPlaceholder}
+      ></ngm-layer-upload>
+    </div>
+    <div ?hidden="${this.activeTab !== Tab.Options}">
+      <ngm-layer-options></ngm-layer-options>
     </div>
   `;
 
+  readonly renderTabButton = (tab: Tab) => html`
+    <button
+      @click="${() => this.activeTab = tab}"
+      class="${classMap({'is-active': this.activeTab === tab})}"
+    >
+      ${i18next.t(`dtd_tab_labels.${tab}`)}
+    </button>
+  `;
+
+  readonly renderTabSeparator = (a: Tab, b: Tab) => html`
+    <div class="separator ${classMap({'is-active': this.activeTab !== a && this.activeTab !== b})}"></div>
+  `;
+
   private readonly renderCatalog = () => html`
-    <ngm-layers-catalog
+    <ngm-layer-catalog
       .layers=${this.layers}
-    ></ngm-layers-catalog>
+    ></ngm-layer-catalog>
   `;
 
   static readonly styles = css`
-    .container {
-      padding: 16px
+    :host, :host * {
+      box-sizing: border-box;
+    }
+
+    :host {
+      display: block;
+      padding: 16px;
     }
 
     .tabs {
@@ -81,9 +92,9 @@ export class DataUpload extends LitElementI18n {
       justify-content: space-evenly;
       align-items: center;
       background-color: white;
-      height: 52px;
+      min-height: 52px;
       border-radius: 4px;
-      padding: 0 6px;
+      padding: 6px;
     }
 
     .tabs > button {
@@ -92,7 +103,6 @@ export class DataUpload extends LitElementI18n {
       padding: 8px;
       cursor: pointer;
       border-radius: 4px;
-      height: 40px;
       flex: 1;
       color: var(--color-main);
       font-family: var(--font);
@@ -101,24 +111,24 @@ export class DataUpload extends LitElementI18n {
       line-height: 20px;
     }
 
-    .tabs > button.active {
+    .tabs > button.is-active {
       background-color: var(--color-rest-active);
       color: var(--color-medium-emphasis);
     }
 
-    .tabs > div {
+    .tabs > .separator {
       border: 1px solid #E0E1E4;
       height: 18px;
     }
 
-    .tabs > div.hide-border {
-      border-color: transparent;
+    .tabs > .separator:not(.is-active) {
+      display: none;
     }
   `;
 }
 
 enum Tab {
-  Catalog,
-  Upload,
-  Exaggeration
+  Catalog = 'catalog',
+  Upload = 'upload',
+  Options = 'options',
 }

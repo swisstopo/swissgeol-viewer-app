@@ -81,7 +81,7 @@ export class NgmAuth extends LitElementI18n {
       cursor: pointer;
     }
 
-    ngm-icon {
+    ngm-core-icon {
       width: 20px;
       height: 20px;
     }
