@@ -207,16 +207,11 @@ export class SideBar extends LitElementI18n {
     const projectsBtn = this.createMenuItem('projects', 'menu_projects', 'dashboard');
     const shareBtn = this.createMenuItem('share', 'menu_share', 'share');
     const settingsBtn = this.createMenuItem('config', 'menu_settings', 'settings');
-    const mobileExpandBtn = html`<ngm-menu-item icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}" @click=${() => this.mobileShowAll = !this.mobileShowAll}></ngm-menu-item>`;
-    const dataMobileHeader = html`
-      <div @click=${() => this.hideDataDisplayed = true}
-           class="ngm-data-catalog-label ${classMap({active: this.hideDataDisplayed})}">
-        ${i18next.t('lyr_geocatalog_label')}
-      </div>
-      <div @click=${() => this.hideDataDisplayed = false}
-           class="ngm-data-catalog-label ${classMap({active: !this.hideDataDisplayed})}">
-        ${i18next.t('dtd_displayed_data_label')}
-      </div>`;
+    const mobileExpandBtn = html`
+      <ngm-menu-item
+        icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
+        @click=${() => this.mobileShowAll = !this.mobileShowAll}
+      ></ngm-menu-item>`;
 
     return html`
       <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
