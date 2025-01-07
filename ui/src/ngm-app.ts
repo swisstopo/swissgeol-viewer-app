@@ -20,7 +20,8 @@ import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
 import './components/search/search-input';
 import 'fomantic-ui-css/components/dropdown';
-
+import 'fomantic-ui-css/components/dropdown.js';
+import './elements/shared/ngm-icon';
 import '@geoblocks/cesium-view-cube';
 
 import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
@@ -59,6 +60,7 @@ import $ from 'jquery';
 import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
+import {styleMap} from 'lit/directives/style-map.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -248,6 +250,8 @@ export class NgmApp extends LitElementI18n {
   }
 
   async firstUpdated() {
+    this.querySelectorAll('.menu').forEach((it) => $(it).dropdown());
+
     setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
     rewriteParams();
@@ -411,25 +415,32 @@ export class NgmApp extends LitElementI18n {
   render() {
     return html`
       <header>
-        <a id="ngm-home-link" href="">
-          <img class="hidden-mobile" src="src/images/swissgeol_viewer.svg">
-          <img class="visible-mobile" src="src/images/swissgeol_favicon_viewer.svg">
-          <div class="logo-text visible-mobile">swissgeol</div>
-        </a>
-        <ngm-search-input
-          .viewer="${this.viewer}"
-          .sidebar="${this.sidebar}"
-        ></ngm-search-input>
+        <div class="left">
+          <a id="ngm-home-link" href="">
+            <img class="hidden-mobile" src="src/images/swissgeol_viewer.svg" height="36">
+            <img class="visible-mobile" src="src/images/swissgeol_favicon_viewer.svg">
+            <div class="logo-text visible-mobile">swissgeol</div>
+          </a>
+          <ngm-search-input
+            .viewer="${this.viewer}"
+            .sidebar="${this.sidebar}"
+          ></ngm-search-input>
+        </div>
         <div class="ngm-header-suffix">
           <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
           <div class="ui dropdown ngm-lang-dropdown">
           <div class="ngm-lang-title">
             ${i18next.language?.toUpperCase()}
-            <div class="ngm-dropdown-icon"></div>
+            <ngm-icon icon="dropdown" />
           </div>
           <div class="menu">
             ${SUPPORTED_LANGUAGES.map(lang => html`
-              <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
+              <div class="item" @click="${() => i18next.changeLanguage(lang)}" style="padding: 0">
+                <div class="ngm-lang-item">
+                  <ngm-icon style="${styleMap({'visibility': i18next.language?.toUpperCase() === lang?.toUpperCase() ? 'visible' : 'hidden'})}" icon="checkmark"></ngm-icon>
+                  <span>${lang.toUpperCase()}</span>
+                </div>
+                </div>
             `)}
           </div>
         </div>

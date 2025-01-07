@@ -4,6 +4,8 @@ import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
 import '../layers/ngm-layers-sort';
 import './dashboard/ngm-dashboard';
+import './sidebar/ngm-menu-item';
+import './shared/ngm-icon';
 import '../components/navigation/navigation-layer-panel';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
@@ -181,9 +183,19 @@ export class SideBar extends LitElementI18n {
     });
 
     const sliceOptions = getSliceParam();
-    if (sliceOptions && sliceOptions.type && sliceOptions.slicePoints)
+    if (sliceOptions?.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
   }
+
+  private readonly renderMenuItem = (icon: string, title: string, panel: string) => html`
+    <ngm-menu-item
+      .icon=${icon}
+      .title=${title}
+      ?isActive=${this.activePanel === panel}
+      ?isMobile=${this.mobileView}
+      @click=${() => this.togglePanel(panel)}
+    ></ngm-menu-item>
+  `;
 
   render() {
     if (!this.queryManager) {
@@ -193,16 +205,17 @@ export class SideBar extends LitElementI18n {
     this.queryManager.activeLayers = this.activeLayers
       .filter(config => config.visible && !config.noQuery);
 
-    const shareBtn = html`
-      <div class="ngm-share ${classMap({'ngm-active-section': this.activePanel === 'share'})}"
-           @click=${() => this.togglePanel('share')}>
-        <div class="ngm-share-icon"></div>
-      </div>`;
-    const settingsBtn = html`
-      <div class="ngm-settings ${classMap({'ngm-active-section': this.activePanel === 'settings'})}"
-           @click=${() => this.togglePanel('settings')}>
-        <div class="ngm-settings-icon"></div>
-      </div>`;
+
+    const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
+    const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
+    const projectsBtn = this.renderMenuItem('projects', 'menu_projects', 'dashboard');
+    const shareBtn = this.renderMenuItem('share', 'menu_share', 'share');
+    const settingsBtn = this.renderMenuItem('config', 'menu_settings', 'settings');
+    const mobileExpandBtn = html`
+      <ngm-menu-item
+        icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
+        @click=${() => this.mobileShowAll = !this.mobileShowAll}
+      ></ngm-menu-item>`;
 
     return html`
       <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
@@ -212,31 +225,15 @@ export class SideBar extends LitElementI18n {
         <div></div>
         <div></div>
       </div>
-      <div class="ngm-menu">
-        <div class="ngm-menu-1">
-          <div class="ngm-dashboard ${classMap({'ngm-active-section': this.activePanel === 'dashboard'})}"
-               @click=${() => this.togglePanel('dashboard')}>
-            <div class="ngm-dashboard-icon"></div>
-          </div>
-          <div class="ngm-data ${classMap({'ngm-active-section': this.activePanel === 'data'})}"
-               @click=${() => this.togglePanel('data')}>
-            <div class="ngm-data-icon"></div>
-          </div>
-          <div class="ngm-tools ${classMap({'ngm-active-section': this.activePanel === 'tools'})}"
-               @click=${() => this.togglePanel('tools', false)}>
-            <div class="ngm-tools-icon"></div>
-          </div>
+      <div class="ngm-menu" >
+        <div class="ngm-menu-top">
+          ${layerBtn}
+          ${toolsBtn}
           ${!this.mobileView ? shareBtn : ''}
-          <div .hidden=${!this.mobileView}
-               class="ngm-mob-menu-toggle"
-               @click=${() => this.mobileShowAll = !this.mobileShowAll}>
-            <div class="${classMap({
-      'ngm-view-all-icon': !this.mobileShowAll,
-      'ngm-view-less-icon': this.mobileShowAll
-    })}"></div>
-          </div>
+          ${projectsBtn}
+          ${this.mobileView ? mobileExpandBtn : ''}
         </div>
-        <div .hidden=${this.mobileView} class="ngm-menu-2">
+        <div ?hidden="${this.mobileView}" class="ngm-menu-top">
           ${settingsBtn}
         </div>
       </div>
@@ -300,7 +297,6 @@ export class SideBar extends LitElementI18n {
       return;
     }
     this.activePanel = panelName;
-    // if (this.activePanel === 'data' && !this.mobileView) this.hideDataDisplayed = false;
   }
 
   async syncActiveLayers() {
@@ -417,7 +413,7 @@ export class SideBar extends LitElementI18n {
         if (panelElement) {
           for (let i = 0; i < panelElement.childElementCount; i++) {
             const element = panelElement.children.item(i);
-            if (element && element.classList.contains('accordion')) {
+            if (element?.classList.contains('accordion')) {
               $(element).accordion({duration: 150});
             }
           }
@@ -559,7 +555,7 @@ export class SideBar extends LitElementI18n {
     if (zoomToPosition) {
       let altitude = 0, cartesianPosition: Cartesian3 | undefined, windowPosition: Cartesian2 | undefined;
       const updateValues = () => {
-        altitude = this.viewer!.scene.globe.getHeight(this.viewer!.scene.camera.positionCartographic) || 0;
+        altitude = this.viewer!.scene.globe.getHeight(this.viewer!.scene.camera.positionCartographic) ?? 0;
         cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height + altitude);
         windowPosition = this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
       };

@@ -1,7 +1,7 @@
 header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  padding: 0 16px;
   height: var(--ngm-header-height);
   box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -9,8 +9,6 @@ header {
 
   --header-padding-l: 56px;
   --header-padding-r: 16px;
-  --header-padding-v: 10px;
-  padding: var(--header-padding-v) var(--header-padding-r) var(--header-padding-v) var(--header-padding-l);
 
   --content-width: calc(100vw - var(--header-padding-l) - var(--header-padding-r));
   --suffix-width: 90px;
@@ -18,7 +16,6 @@ header {
 
 @media (min-width: 700px) {
   header {
-    --header-padding-v: 16px;
     justify-content: flex-start;
   }
 }
@@ -27,12 +24,19 @@ header > * {
   display: flex;
 }
 
-header > a {
+header > .left {
+  display: inline-flex;
+  align-items: center;
+  gap: 160px;
+}
+
+header a#ngm-home-link {
   display: flex;
   align-items: center;
   font-size: 16px;
   color: #212529;
   z-index: 1;
+  height: fit-content;
 }
 
 @media (min-width: 700px) {
@@ -76,6 +80,7 @@ header .ngm-header-suffix {
   max-width: var(--suffix-width);
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 @media (min-width: 700px) {

@@ -36,7 +36,6 @@
 @import 'keyboard-navigation.css';
 @import 'layers.css';
 @import 'ngm-map-configuration.css';
-@import 'ngm-cursor-information.css';
 @import 'ngm-point-edit.css';
 @import 'ngm-position-edit.css';
 @import 'ngm-map-chooser.css';
@@ -63,6 +62,7 @@
 @import 'ngm-coordinate-popup.css';
 @import 'ngm-ion-modal.css';
 @import 'ngm-info-table.css';
+@import '../styles/index.css';
 
 @import '../styles/index.css';
 
@@ -204,18 +204,48 @@ cesium-view-cube {
 }
 
 .ngm-lang-dropdown {
-  background-color: #F1F3F5;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  margin-right: 20px;
+  gap: 6px;
+  width: 69px;
+
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: var(--color-main);
+}
+
+.ngm-lang-dropdown:hover {
+  background-color: var(--color-hovered);
+  color: var(--color-main--dark);
+}
+
+.ngm-lang-dropdown.active ngm-icon[icon="dropdown"] {
+  transform: rotate(180deg);
 }
 
 .ngm-lang-title {
-  padding: 5px 5px 5px 10px;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 6px;
+}
+
+.ngm-lang-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 12px;
+  width: 85px;
+  font-size: 14px;
+  font-family: var(--font);
+  line-height: 20px;
+  letter-spacing: calc(14px * 0.0025);
+}
+
+.ngm-lang-item:hover {
+  background-color: var(--color-pressed);
 }
 
 .ngm-lang-title .ngm-dropdown-icon {
@@ -223,12 +253,18 @@ cesium-view-cube {
   transform: rotate(90deg);
 }
 
-.ngm-lang-dropdown.active .ngm-lang-title .ngm-dropdown-icon {
-  transform: rotate(-90deg);
+.ui.dropdown .menu {
+  box-shadow:
+    0 2px 4px -1px #0000000F,
+    0 4px 10px -1px #00000014;
 }
 
-:lang(de) .lang-de, :lang(fr) .lang-fr, :lang(it) .lang-it, :lang(en) .lang-en {
-  color: #A83526 !important;
+.ui.dropdown .menu .ngm-lang-dropdown.active.item {
+  font-weight: 500;
+}
+
+.ngm-lang-dropdown.active .ngm-lang-title .ngm-dropdown-icon {
+  transform: rotate(-90deg);
 }
 
 .ui.checkbox label {
@@ -242,42 +278,6 @@ cesium-view-cube {
 #divinspector {
   position: absolute;
   z-index: 10;
-}
-
-ngm-auth {
-  cursor: pointer;
-}
-
-ngm-auth > .ngm-user {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-ngm-auth > a {
-  cursor: pointer;
-}
-
-ngm-auth .ngm-user-icon {
-  margin-bottom: 5px;
-  background-color: #030303;
-}
-
-ngm-auth:hover .ngm-user-icon {
-  background-color: var(--ngm-interaction-hover);
-}
-
-ngm-auth:hover {
-  color: var(--ngm-interaction-hover);
-}
-
-ngm-auth .ngm-active-section > div:nth-child(1) {
-  background-color: var(--ngm-interaction-active);
-}
-
-ngm-auth .ngm-active-section {
-  color: var(--ngm-interaction-active);
 }
 
 ngm-gst-interaction > .ui.tiny.icon.buttons {
@@ -612,6 +612,7 @@ body:after { /* Beta label */
   color: #fff;
   line-height: 27px;
   transform: rotate(-45deg);
+  z-index: 6;
 }
 
 .cursor-preloader,

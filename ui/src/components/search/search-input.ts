@@ -79,8 +79,8 @@ export class SearchInput extends LitElementI18n {
       <ul ${ref(this.resultsRef)} @mouseover="${this.handleResultsHovered}"></ul>
     </ga-search>
 
-    <span class="icon is-close" @click="${this.clear}"></span>
-    <span class="icon is-search" @click="${this.toggleActive}"></span>
+    <ngm-icon icon="search" @click="${this.toggleActive}"></ngm-icon>
+    <ngm-icon icon="close" @click="${this.clear}"></ngm-icon>
   `;
 
   protected updated(changedProperties: PropertyValues<this>): void {
@@ -394,9 +394,9 @@ export class SearchInput extends LitElementI18n {
       align-self: center;
       flex: 2;
 
-      --padding-h: 1rem;
-      --padding-v: 1rem;
-      --icon-size: 24px;
+      --padding-h: 12px;
+      --padding-v: 6px;
+      --icon-size: 20px;
     }
 
     :host {
@@ -410,9 +410,9 @@ export class SearchInput extends LitElementI18n {
     @media (width >= 700px) {
       :host {
         position: relative;
-        height: calc(var(--ngm-header-height) - var(--header-padding-v) * 2);
-        min-width: 260px;
-        max-width: 496px;
+        height: 56px;
+        width: 500px;
+        max-width: 500px;
       }
     }
 
@@ -432,10 +432,9 @@ export class SearchInput extends LitElementI18n {
     @media (min-width: 700px) {
       ga-search, :host(:not(.is-active)) ga-search {
         display: flex;
-        min-width: 260px;
-        max-width: 496px;
+        width: 500px;
+        max-width: 500px;
         z-index: auto;
-        margin-left: 100px;
       }
     }
 
@@ -448,38 +447,21 @@ export class SearchInput extends LitElementI18n {
 
       font-family: var(--font);
       font-size: 1rem;
+      line-height: 24px;
+      letter-spacing: calc(1rem * 0.001);
 
       flex: 1;
       width: 100%;
       height: 100%;
-      padding: var(--padding-v) calc(var(--padding-v) * 2 + var(--icon-size)) var(--padding-v) var(--padding-h);
+      padding: var(--padding-v) var(--padding-h) var(--padding-v) calc(var(--padding-h) * 2 + var(--icon-size));
 
-      border: 2px solid transparent;
-      border-radius: 4px;
-    }
-
-    input:hover {
-      background-color: var(--color-bg);
-    }
-
-    input:focus {
-      background-color: var(--color-highlight);
-    }
-
-    input:focus, input:hover {
-      border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0;
-      border-color: transparent;
-      border-bottom-color: var(--color-highlight--dark);
+      border: none;
+      border-bottom: 2px solid var(--color-main);
+      border-radius: 6px;
     }
 
     input::placeholder {
       color: var(--color-bg-contrast);
-    }
-
-    input:focus::placeholder {
-      color: var(--color-bg-contrast--lighter);
-      opacity: 1;
     }
 
     input::-webkit-search-decoration,
@@ -504,8 +486,8 @@ export class SearchInput extends LitElementI18n {
       text-align: left;
       font-family: var(--font);
       font-size: 1rem;
-      line-height: 1.5rem;
-      letter-spacing: 0.16px;
+      line-height: 24px;
+      letter-spacing: calc(1rem * 0.001);
     }
 
     ul > li {
@@ -545,45 +527,37 @@ export class SearchInput extends LitElementI18n {
     }
 
     /* icon */
-
-    .icon {
+    ngm-icon {
       width: var(--icon-size);
       height: var(--icon-size);
-      mask: var(--icon, none) no-repeat center;
-      -webkit-mask: var(--icon, none) no-repeat center;
 
-      background-color: var(--color-highlight--darker);
+      color: var(--color-bg-contrast);
       position: absolute;
-      right: var(--padding-h);
+      left: var(--padding-h);
       top: 0;
       bottom: 0;
       margin: auto;
       cursor: pointer;
     }
 
-    .icon.is-close {
-      --icon: url('./images/i_close.svg');
+    ngm-icon[icon="close"] {
       right: calc(var(--padding-h) + 54px)
     }
 
-    .icon.is-search {
-      --icon: url('./images/icon_search.svg');
-    }
-
-    :host(.is-active) .icon.is-search {
+    :host(.is-active) ngm-icon[icon="search"] {
       color: var(--color-highlight);
     }
 
-    ga-search:has(input:placeholder-shown) ~ .icon.is-close {
+    ga-search:has(input:placeholder-shown) ~ ngm-icon[icon="close"] {
       display: none;
     }
 
     @media (min-width: 700px) {
-      .icon.is-close {
-        right: var(--padding-h);
+      ngm-icon[icon="close"] {
+        display: none;
       }
 
-      ga-search:has(input:not(:placeholder-shown)) ~ .icon.is-search {
+      ga-search:has(input:not(:placeholder-shown)) ~ ngm-icon[icon="search"] {
         display: none;
       }
     }

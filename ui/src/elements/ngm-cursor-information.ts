@@ -1,4 +1,4 @@
-import {html} from 'lit';
+import {css, html} from 'lit';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
 import type {Viewer} from 'cesium';
@@ -73,23 +73,62 @@ export class NgmCursorInformation extends LitElementI18n {
   render() {
     if (!this.coordinates || this.height === undefined) return '';
     return html`
-        <div class="ngm-nci-position">
-          <label>${i18next.t('camera_position_coordinates_label')}</label>
-          <label class="ngm-nci-value">${this.coordinates[0]}</label>
-          <label class="ngm-nci-value">${this.coordinates[1]}</label>
+      <div class="ngm-nci-position">
+        <label>${i18next.t('camera_position_coordinates_label')}</label>
+        <label class="ngm-nci-value">${this.coordinates[0]}</label>
+        <label class="ngm-nci-value">${this.coordinates[1]}</label>
+      </div>
+      <div class="ngm-nci-height">
+        <div>
+          ${this.showTerrainHeight ? i18next.t('nav_terrain_height_label') : i18next.t('nav_object_height_label')}
         </div>
-        <div class="ngm-nci-height">
-          <div>
-            ${this.showTerrainHeight ? i18next.t('nav_terrain_height_label') : i18next.t('nav_object_height_label')}
-          </div>
-          <div .hidden=${this.height === undefined} class="ngm-nci-value">
-            ${this.height !== undefined && this.integerFormat.format(this.height)} m
-          </div>
+        <div .hidden=${this.height === undefined} class="ngm-nci-value">
+          ${this.height !== undefined && this.integerFormat.format(this.height)} m
         </div>
-      `;
+      </div>
+    `;
   }
 
-  createRenderRoot() {
-    return this;
-  }
+
+  static readonly styles = css`
+    :host {
+      min-width: 0;
+    }
+
+    .ngm-nci-height,
+    .ngm-nci-position {
+      display: none;
+    }
+
+    @media (min-width: 1200px) {
+      :host .ngm-nci-value {
+        font-weight: 600;
+        min-width: 75px;
+      }
+
+      .ngm-nci-position {
+        display: unset;
+        width: 83px;
+        margin-right: 20px;
+      }
+
+      .ngm-nci-height {
+        display: flex;
+        flex-direction: column;
+        white-space: nowrap;
+        margin-right: 10px;
+      }
+
+      :host {
+        flex-wrap: wrap;
+        align-self: center;
+        color: #212529;
+        text-align: left;
+        font: normal normal normal 14px/20px Inter, sans-serif;
+        letter-spacing: 0;
+        min-width: 255px;
+        padding-right:48px
+      }
+    }
+  `;
 }

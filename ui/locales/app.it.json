@@ -1,4 +1,9 @@
 {
+  "menu_layers": "Dati Visualizzati",
+  "menu_tools": "Strumenti",
+  "menu_share": "Condividi",
+  "menu_projects": "Progetti",
+  "menu_settings": "Impostazioni",
   "app_cancel_btn_label": "Cancellare",
   "by": "di",
   "cam_configuration_header": "Configurazione della camera",
@@ -92,7 +97,7 @@
   "dtd_zoom_to": "Zoom su",
   "duplicate_to_project": "Duplicare nei progetti",
   "edit_project": "Editare progetto",
-  "header_search_placeholder": "Ricercare...",
+  "header_search_placeholder": "Ricercare per...",
   "lsb_cesium_toolbar_label": "Cesium Toolbar",
   "lsb_debug_tools": "Debug tools",
   "lsb_settings": "Impostazioni",
