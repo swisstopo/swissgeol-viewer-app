@@ -186,12 +186,16 @@ export class SideBar extends LitElementI18n {
     if (sliceOptions?.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
   }
-  private createMenuItem(icon: string, title: string, panel: string) {
-    return html`
-      <ngm-menu-item icon=${icon} title=${title} ?isActive=${this.activePanel === panel}
-                               ?isMobile=${this.mobileView} @click=${() => this.togglePanel(panel)}
-      ></ngm-menu-item>`;
-  }
+
+  private readonly renderMenuItem = (icon: string, title: string, panel: string) => html`
+    <ngm-menu-item
+      .icon=${icon}
+      .title=${title}
+      ?isActive=${this.activePanel === panel}
+      ?isMobile=${this.mobileView}
+      @click=${() => this.togglePanel(panel)}
+    ></ngm-menu-item>
+  `;
 
   render() {
     if (!this.queryManager) {
@@ -202,11 +206,11 @@ export class SideBar extends LitElementI18n {
       .filter(config => config.visible && !config.noQuery);
 
 
-    const layerBtn = this.createMenuItem('layer', 'menu_layers', 'data');
-    const toolsBtn = this.createMenuItem('tools', 'menu_tools', 'tools');
-    const projectsBtn = this.createMenuItem('projects', 'menu_projects', 'dashboard');
-    const shareBtn = this.createMenuItem('share', 'menu_share', 'share');
-    const settingsBtn = this.createMenuItem('config', 'menu_settings', 'settings');
+    const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
+    const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
+    const projectsBtn = this.renderMenuItem('projects', 'menu_projects', 'dashboard');
+    const shareBtn = this.renderMenuItem('share', 'menu_share', 'share');
+    const settingsBtn = this.renderMenuItem('config', 'menu_settings', 'settings');
     const mobileExpandBtn = html`
       <ngm-menu-item
         icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
