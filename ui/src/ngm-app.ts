@@ -1,5 +1,5 @@
 import {LitElementI18n} from './i18n';
-import {html, PropertyValues} from 'lit';
+import {css, html, PropertyValues} from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
@@ -413,15 +413,17 @@ export class NgmApp extends LitElementI18n {
   render() {
     return html`
       <header>
-        <a id="ngm-home-link" href="">
-          <img class="hidden-mobile" src="src/images/swissgeol_viewer.svg">
-          <img class="visible-mobile" src="src/images/swissgeol_favicon_viewer.svg">
-          <div class="logo-text visible-mobile">swissgeol</div>
-        </a>
-        <ngm-search-input
-          .viewer="${this.viewer}"
-          .sidebar="${this.sidebar}"
-        ></ngm-search-input>
+        <div class="left">
+          <a id="ngm-home-link" href="">
+            <img class="hidden-mobile" src="src/images/swissgeol_viewer.svg" height="36">
+            <img class="visible-mobile" src="src/images/swissgeol_favicon_viewer.svg">
+            <div class="logo-text visible-mobile">swissgeol</div>
+          </a>
+          <ngm-search-input
+            .viewer="${this.viewer}"
+            .sidebar="${this.sidebar}"
+          ></ngm-search-input>
+        </div>
         <div class="ngm-header-suffix">
           <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
           <div class="ui dropdown ngm-lang-dropdown">

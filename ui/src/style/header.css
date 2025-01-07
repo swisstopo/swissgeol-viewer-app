@@ -9,7 +9,6 @@ header {
 
   --header-padding-l: 56px;
   --header-padding-r: 16px;
-  --header-padding-v: 10px;
 
   --content-width: calc(100vw - var(--header-padding-l) - var(--header-padding-r));
   --suffix-width: 90px;
@@ -17,7 +16,6 @@ header {
 
 @media (min-width: 700px) {
   header {
-    --header-padding-v: 16px;
     justify-content: flex-start;
   }
 }
@@ -26,12 +24,19 @@ header > * {
   display: flex;
 }
 
-header > a {
+header > .left {
+  display: inline-flex;
+  align-items: center;
+  gap: 160px;
+}
+
+header a#ngm-home-link {
   display: flex;
   align-items: center;
   font-size: 16px;
   color: #212529;
   z-index: 1;
+  height: fit-content;
 }
 
 @media (min-width: 700px) {

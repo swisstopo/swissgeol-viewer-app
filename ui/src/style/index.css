@@ -582,6 +582,7 @@ body:after { /* Beta label */
   color: #fff;
   line-height: 27px;
   transform: rotate(-45deg);
+  z-index: 6;
 }
 
 .cursor-preloader,
