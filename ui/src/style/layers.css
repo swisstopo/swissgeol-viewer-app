@@ -69,20 +69,20 @@ ngm-layers-item .ngm-displayed-menu .ngm-layer-icon.ngm-action-menu-icon {
 }
 
 /* KML upload */
-.ngm-data-panel ngm-layers-upload {
+.ngm-data-panel ngm-layers-upload-action {
   display: flex;
   column-gap: 12px;
 }
 
-ngm-layers-upload .ngm-checkbox label {
+ngm-layers-upload-action .ngm-checkbox label {
   margin-left: 8px;
 }
 
-ngm-layers-upload .ngm-checkbox .ngm-checkbox-icon {
+ngm-layers-upload-action .ngm-checkbox .ngm-checkbox-icon {
   min-width: 19px;
 }
 
-ngm-layers-upload button {
+ngm-layers-upload-action button {
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -97,7 +97,7 @@ ngm-layers-upload button {
   width: 325px;
 }
 
-ngm-layers-upload .ngm-file-upload-icon {
+ngm-layers-upload-action .ngm-file-upload-icon {
   pointer-events: none;
   background-color: var(--ngm-interaction);
   margin-top: 0;
@@ -106,34 +106,34 @@ ngm-layers-upload .ngm-file-upload-icon {
   height: 20px;
 }
 
-ngm-layers-upload .ui.inline.loader {
+ngm-layers-upload-action .ui.inline.loader {
   margin-left: 12px;
 }
 
-ngm-layers-upload button:hover {
+ngm-layers-upload-action button:hover {
   color: var(--ngm-interaction-hover);
   border: 2px dashed var(--ngm-interaction-hover);
 }
 
-ngm-layers-upload button:hover .ngm-file-upload-icon {
+ngm-layers-upload-action button:hover .ngm-file-upload-icon {
   background-color: var(--ngm-interaction-hover);
 }
 
-ngm-layers-upload button.active {
+ngm-layers-upload-action button.active {
   color: var(--ngm-interaction-hover);
   border: 2px dashed var(--ngm-interaction-hover);
 }
 
-ngm-layers-upload button.active .ngm-file-upload-icon {
+ngm-layers-upload-action button.active .ngm-file-upload-icon {
   background-color: var(--ngm-interaction-hover);
 }
 
 /* FIXME: Grey out action menue until further specification */
-ngm-layers-upload .ui.dropdown {
+ngm-layers-upload-action .ui.dropdown {
   pointer-events: none;
 }
 
-ngm-layers-upload .ngm-action-menu-icon {
+ngm-layers-upload-action .ngm-action-menu-icon {
   background-color: gray;
 }
 
@@ -153,7 +153,7 @@ ngm-layers-item .ui.dropdown .menu .item:hover {
 }
 
 @media (min-width: 600px) {
-  ngm-layers-upload button {
+  ngm-layers-upload-action button {
     min-width: 325px;
   }
 }

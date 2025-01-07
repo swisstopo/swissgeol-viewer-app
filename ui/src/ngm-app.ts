@@ -21,8 +21,8 @@ import './elements/ngm-wmts-date-picker';
 import './components/search/search-input';
 import 'fomantic-ui-css/components/dropdown';
 import 'fomantic-ui-css/components/dropdown.js';
-import './elements/shared/ngm-icon';
 import '@geoblocks/cesium-view-cube';
+import './components/core';
 
 import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
 
@@ -431,13 +431,13 @@ export class NgmApp extends LitElementI18n {
           <div class="ui dropdown ngm-lang-dropdown">
           <div class="ngm-lang-title">
             ${i18next.language?.toUpperCase()}
-            <ngm-icon icon="dropdown" />
+            <ngm-core-icon icon="dropdown" />
           </div>
           <div class="menu">
             ${SUPPORTED_LANGUAGES.map(lang => html`
               <div class="item" @click="${() => i18next.changeLanguage(lang)}" style="padding: 0">
                 <div class="ngm-lang-item">
-                  <ngm-icon style="${styleMap({'visibility': i18next.language?.toUpperCase() === lang?.toUpperCase() ? 'visible' : 'hidden'})}" icon="checkmark"></ngm-icon>
+                  <ngm-core-icon style="${styleMap({'visibility': i18next.language?.toUpperCase() === lang?.toUpperCase() ? 'visible' : 'hidden'})}" icon="checkmark"></ngm-core-icon>
                   <span>${lang.toUpperCase()}</span>
                 </div>
                 </div>

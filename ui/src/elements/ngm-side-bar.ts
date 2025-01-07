@@ -5,7 +5,7 @@ import '../layers/ngm-layers';
 import '../layers/ngm-layers-sort';
 import './dashboard/ngm-dashboard';
 import './sidebar/ngm-menu-item';
-import './shared/ngm-icon';
+import '../components/core';
 import '../components/navigation/navigation-layer-panel';
 import LayersActions from '../layers/LayersActions';
 import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
@@ -48,7 +48,7 @@ import type QueryManager from '../query/QueryManager';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
-import {LayerEvent, LayersUpdateEvent} from '../components/layers/layers-display';
+import {LayerEvent, LayersUpdateEvent} from '../components/layer/layer-display';
 
 export type SearchLayer =
   | SearchLayerWithLayer
@@ -89,7 +89,7 @@ export class SideBar extends LitElementI18n {
 
   // TODO change this back to `null`
   @state()
-  accessor activePanel: string | null = null;
+  accessor activePanel: string | null = 'data';
   @state()
   accessor showHeader = false;
   @state()

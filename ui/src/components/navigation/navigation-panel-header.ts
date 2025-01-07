@@ -43,7 +43,7 @@ export class NavigationPanelHeader extends LitElementI18n {
       align-items: center;
       font-weight: 700;
       height: 34px;
-      padding: 4px 0 2px 0;
+      padding: 4px 16px 2px 16px;
       color: var(--color-bg-contrast--light);
     }
   `;

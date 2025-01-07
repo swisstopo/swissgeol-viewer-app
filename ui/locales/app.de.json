@@ -92,9 +92,13 @@
   "dtd_slice_arrows_hidden": "Um die Slicing-Box zu ändern, schalten Sie die Überhöhung aus",
   "dtd_time_journey": "Zeitreise",
   "dtd_topic_kml_tag": "Themen-Objekt",
-  "dtd_user_content_label": "Eigenen Inhalt hinzufügen",
   "dtd_voxel_filter": "Filter öffnen",
   "dtd_zoom_to": "Heranzoomen",
+  "dtd_tab_labels": {
+    "catalog": "Datenkatalog",
+    "upload": "Upload",
+    "options": "Einstellungen"
+  },
   "duplicate_to_project": "Zu Projekt duplizieren",
   "edit_project": "Projekt bearbeiten",
   "header_search_placeholder": "Suche nach...",

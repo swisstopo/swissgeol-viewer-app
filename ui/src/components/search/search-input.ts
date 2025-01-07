@@ -79,8 +79,8 @@ export class SearchInput extends LitElementI18n {
       <ul ${ref(this.resultsRef)} @mouseover="${this.handleResultsHovered}"></ul>
     </ga-search>
 
-    <ngm-icon icon="search" @click="${this.toggleActive}"></ngm-icon>
-    <ngm-icon icon="close" @click="${this.clear}"></ngm-icon>
+    <ngm-core-icon icon="search" @click="${this.toggleActive}"></ngm-core-icon>
+    <ngm-core-icon icon="close" @click="${this.clear}"></ngm-core-icon>
   `;
 
   protected updated(changedProperties: PropertyValues<this>): void {
@@ -527,7 +527,7 @@ export class SearchInput extends LitElementI18n {
     }
 
     /* icon */
-    ngm-icon {
+    ngm-core-icon {
       width: var(--icon-size);
       height: var(--icon-size);
 
@@ -540,24 +540,24 @@ export class SearchInput extends LitElementI18n {
       cursor: pointer;
     }
 
-    ngm-icon[icon="close"] {
+    ngm-core-icon[icon="close"] {
       right: calc(var(--padding-h) + 54px)
     }
 
-    :host(.is-active) ngm-icon[icon="search"] {
+    :host(.is-active) ngm-core-icon[icon="search"] {
       color: var(--color-highlight);
     }
 
-    ga-search:has(input:placeholder-shown) ~ ngm-icon[icon="close"] {
+    ga-search:has(input:placeholder-shown) ~ ngm-core-icon[icon="close"] {
       display: none;
     }
 
     @media (min-width: 700px) {
-      ngm-icon[icon="close"] {
+      ngm-core-icon[icon="close"] {
         display: none;
       }
 
-      ga-search:has(input:not(:placeholder-shown)) ~ ngm-icon[icon="search"] {
+      ga-search:has(input:not(:placeholder-shown)) ~ ngm-core-icon[icon="search"] {
         display: none;
       }
     }

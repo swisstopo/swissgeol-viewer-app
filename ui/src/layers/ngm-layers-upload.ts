@@ -6,7 +6,7 @@ import {showBannerError, showSnackbarInfo} from '../notifications';
 import $ from 'jquery';
 import {classMap} from 'lit-html/directives/class-map.js';
 
-@customElement('ngm-layers-upload')
+@customElement('ngm-layers-upload-action')
 export default class LayersUpload extends LitElementI18n {
   @property({type: Object})
   accessor toastPlaceholder!: HTMLElement;

@@ -92,9 +92,13 @@
   "dtd_slice_arrows_hidden": "Pour modifier la boîte de découpage, désactivez l'exagération",
   "dtd_time_journey": "Voyage dans le temps",
   "dtd_topic_kml_tag": "Objet du thème",
-  "dtd_user_content_label": "Ajouter propre contenu",
   "dtd_voxel_filter": "Ouvrir le filtre",
   "dtd_zoom_to": "Zoom sur",
+  "dtd_tab_labels": {
+    "catalog": "Catalogue de données",
+    "upload": "Upload",
+    "options": "Réglages"
+  },
   "duplicate_to_project": "Dupliquer comme projet",
   "edit_project": "Editer projet",
   "header_search_placeholder": "Recherche par...",

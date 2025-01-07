@@ -17,9 +17,11 @@
     --color-pressed: #DFE4E9;
 
     --color-active: #607D52;
+    --color-rest-active: #B2D2A2;
 
     --color-action: #a83526;
     --color-action--light: #FF0000;
+    --color-medium-emphasis: #2F4356;
 
     --panel-padding: 10px;
 

@@ -36,6 +36,7 @@ export class CoreButton extends LitElement {
     :host([variant='text']) button:hover {
       color: var(--color-action--light);
     }
+
   `;
 }
 

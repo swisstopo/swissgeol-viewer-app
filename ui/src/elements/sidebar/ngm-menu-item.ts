@@ -4,8 +4,7 @@ import {css, html} from 'lit';
 import {classMap} from 'lit/directives/class-map.js';
 import {IconKey} from '../../icons/icons';
 import i18next from 'i18next';
-import '../shared/ngm-icon';
-
+import '../../components/core';
 
 @customElement('ngm-menu-item')
 export class MenuItem extends LitElementI18n {
@@ -107,7 +106,7 @@ export class MenuItem extends LitElementI18n {
       <div class="container">
         <div class="box ${classMap({'isActive': this.isActive})}">
           <div class="icon">
-            <ngm-icon icon=${this.icon}></ngm-icon>
+            <ngm-core-icon icon=${this.icon}></ngm-core-icon>
           </div>
           <div class="title" ?hidden="${this.isMobile}">
             ${i18next.t(this.title)}

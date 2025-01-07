@@ -5,16 +5,16 @@ import i18next from 'i18next';
 import auth from '../../store/auth';
 import type {LayerTreeNode} from '../../layertree';
 import $ from 'jquery';
-
+import '../core';
 
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css';
 import fomanticAccordionCss from 'fomantic-ui-css/components/accordion.css';
 import 'fomantic-ui-css/components/transition.js';
-import {LayerEvent} from './layers-display';
+import {LayerEvent} from './layer-display';
 
 
-@customElement('ngm-layers-catalog')
-export class NgmLayersCatalog extends LitElementI18n {
+@customElement('ngm-layer-catalog')
+export class NgmLayerCatalog extends LitElementI18n {
   @property({type: Array})
   accessor layers: LayerTreeNode[] = [];
 
@@ -115,21 +115,24 @@ export class NgmLayersCatalog extends LitElementI18n {
       cursor: pointer;
     }
 
-    .category > .title.active > label {
+    label {
+      font-family: var(--font);
+    }
+
+    .category > .title.active > label,
+    .category > .title.active > ngm-core-icon {
       color: var(--color-action);
     }
 
-    .category > .title:hover > label {
+    .category > .title:hover > label,
+    .category > .title:hover > ngm-core-icon {
       color: var(--color-action--light);
     }
 
     .category > .title > ngm-core-icon {
-      background-color: var(--color-highlight--darker);
+      color: var(--color-highlight--darker);
     }
 
-    .category > .title:hover > ngm-core-icon {
-      background-color: var(--color-action--light);
-    }
 
     .category > .title.first-level {
       font-weight: 700;
@@ -141,14 +144,14 @@ export class NgmLayersCatalog extends LitElementI18n {
       margin-left: 10px;
     }
 
-    .category > .title.active > ngm-core-icon {
-      transform: rotate(90deg);
+    .category > .title:not(.active) > ngm-core-icon {
+      transform: rotate(-90deg);
     }
 
     .ngm-checkbox {
       display: flex;
       align-items: center;
-      margin-bottom: 12px;
+      margin: 0 0 12px 5px;
       cursor: pointer;
     }
 
