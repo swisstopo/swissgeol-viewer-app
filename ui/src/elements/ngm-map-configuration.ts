@@ -83,7 +83,6 @@ export class NgmMapConfiguration extends LitElementI18n {
   }
 
 
-
   render() {
     return html`
       <div class="base-map-labels">

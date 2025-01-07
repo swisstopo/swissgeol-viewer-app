@@ -4,7 +4,7 @@ import {css, html} from 'lit';
 import {classMap} from 'lit/directives/class-map.js';
 import {IconKey} from '../../icons/icons';
 import i18next from 'i18next';
-import '../../components/core'
+import '../../components/core';
 
 @customElement('ngm-menu-item')
 export class MenuItem extends LitElementI18n {

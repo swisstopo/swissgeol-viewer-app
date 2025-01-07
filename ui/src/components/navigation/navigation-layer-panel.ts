@@ -100,8 +100,11 @@ export class NavigationLayerPanel extends LitElementI18n {
     ngm-navigation-layer-panel ngm-navigation-panel > section {
       position: relative;
       background-color: var(--color-bg--dark);
-
       overflow-y: auto;
+
+      &:not(:last-child) {
+        max-height: 50%;
+      }
     }
 
     ngm-navigation-layer-panel ngm-navigation-panel > section > * {

@@ -6,7 +6,7 @@ import {classMap} from 'lit/directives/class-map.js';
 import {Asset} from './ngm-dashboard';
 import '../../layers/ngm-layers-upload';
 import {PROJECT_ASSET_MAX_SIZE} from '../../constants';
-import {KmlUploadEvent} from '../../components/layers/upload/layer-upload-kml';
+import type {KmlUploadEvent} from '../../components/layer/upload/layer-upload-kml';
 
 @customElement('ngm-project-assets-section')
 export class NgmProjectAssetsSection extends LitElementI18n {
