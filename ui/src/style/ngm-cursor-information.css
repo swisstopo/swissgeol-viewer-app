@@ -1,4 +1,5 @@
 ngm-cursor-information {
+  display: flex;
   flex-wrap: wrap;
   align-self: center;
   color: #212529;

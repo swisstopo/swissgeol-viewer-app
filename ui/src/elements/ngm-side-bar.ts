@@ -48,12 +48,22 @@ import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
 import {LayerEvent, LayersUpdateEvent} from '../components/layers/layers-display';
 
-type SearchLayer = {
-  layer: string
+export type SearchLayer =
+  | SearchLayerWithLayer
+  | SearchLayerWithSource
+
+interface BaseSearchLayer {
   label: string
-  type?: LayerType
   title?: string
-  dataSourceName?: string
+}
+
+export interface SearchLayerWithLayer extends BaseSearchLayer {
+  layer: string
+}
+
+export interface SearchLayerWithSource extends BaseSearchLayer {
+  type?: LayerType
+  dataSourceName: string
 }
 
 interface LayerClickEvent {
@@ -487,7 +497,7 @@ export class SideBar extends LitElementI18n {
   // adds layer from search to 'Displayed Layers'
   async addLayerFromSearch(searchLayer: SearchLayer) {
     let layer;
-    if (searchLayer.dataSourceName) {
+    if ('dataSourceName' in searchLayer) {
       layer = this.activeLayers.find(l => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
     } else {
       layer = this.activeLayers.find(l => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
@@ -515,7 +525,7 @@ export class SideBar extends LitElementI18n {
 
   createSearchLayer(searchLayer: SearchLayer) {
     let config: LayerConfig;
-    if (searchLayer.type) {
+    if ('dataSourceName' in searchLayer) {
       config = searchLayer;
       config.visible = true;
       config.origin = 'layer';

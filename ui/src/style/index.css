@@ -470,7 +470,7 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   }
 }
 
-@media (max-height: 629px), (max-width: 599px)  {
+@media (max-width: 599px)  {
   .visible-mobile {
     display: initial;
   }
@@ -481,14 +481,6 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
 
   header {
     height: var(--ngm-header-height-mobile);
-  }
-  ga-search {
-    height: var(--ngm-header-height-mobile);
-    max-width: initial;
-    display: none !important;
-  }
-  ga-search.active {
-    display: flex !important;
   }
   .map {
     margin-bottom: var(--ngm-bottom-menu-height);
