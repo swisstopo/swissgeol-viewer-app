@@ -1,5 +1,7 @@
 ngm-side-bar {
   display: flex;
+  z-index: 5;
+  max-width: 100vw;
 }
 
 .ngm-menu,
@@ -65,15 +67,19 @@ ngm-side-bar {
   width: 250px;
   height: calc(100vh - var(--ngm-header-height));
   max-width: 1028px;
-  background-color: #F1F3F5;
+  background-color: var(--color-bg--dark);
   box-shadow: 4px 0 4px #00000029;
-  padding: 10px;
+  padding: var(--panel-padding);
   position: absolute;
   margin-left: var(--ngm-left-side-bar-width);
   z-index: 5;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+ngm-navigation-catalog .ngm-side-bar-panel {
+  margin-left: 0;
 }
 
 .inner-toolbar-settings {

@@ -73,9 +73,19 @@ const config = {
         type: 'asset',
       },
       {
-        test: /\.css$/i,
+        test: /\/style\/index.css$/i,
         //use: [isDev ? "style-loader" : MiniCssExtractPlugin.loader, 'css-loader'],
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
+        test: /\.css$/i,
+        exclude: /\/style\/index.css$/i,
+        use: [{
+          loader: 'css-loader',
+          options: {
+            exportType: 'string',
+          }
+        }],
       },
       {
         test: /\.ts$/,

@@ -64,12 +64,12 @@ const config = {
         ],
         [
           '@babel/preset-env', {
-            //debug: true, // disable to get debug information
-            modules: false,
+          //debug: true, // disable to get debug information
+          modules: false,
 
-            useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
-            corejs: {version: 3, proposals: false},
-          }
+          useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
+          corejs: {version: 3, proposals: false},
+        }
         ]
       ],
       // exclude: 'node_modules/**'
