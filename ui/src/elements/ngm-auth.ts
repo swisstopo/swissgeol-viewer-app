@@ -62,14 +62,13 @@ export class NgmAuth extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <div
-       @click=${this.user ? this.logout : this.login}>
+    <div @click=${this.user ? this.logout : this.login}>
       <ngm-icon icon="user"></ngm-icon>
     </div>
   `;
 
   static readonly styles = css`
-    ngm-icon {
+    div {
       color: var(--color-bg);
       background-color: var(--color-main);
       width: 36px;
@@ -79,6 +78,11 @@ export class NgmAuth extends LitElementI18n {
       justify-content: center;
       align-items: center;
       cursor: pointer;
+    }
+
+    ngm-icon {
+      width: 20px;
+      height: 20px;
     }
   `;
 }

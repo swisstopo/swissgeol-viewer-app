@@ -11,6 +11,11 @@
     --color-highlight--darker: #0B7285;
 
     --color-main: #337083;
+    --color-main--dark: #2F4356;
+
+    --color-hovered: #D6E2E6;
+    --color-pressed: #DFE4E9;
+
     --color-active: #607D52;
 
     --color-action: #a83526;

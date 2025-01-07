@@ -1,5 +1,5 @@
 import {LitElementI18n} from './i18n';
-import {css, html, PropertyValues} from 'lit';
+import {html, PropertyValues} from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
@@ -250,6 +250,8 @@ export class NgmApp extends LitElementI18n {
   }
 
   async firstUpdated() {
+    this.querySelectorAll('.menu').forEach((it) => $(it).dropdown());
+
     setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
     rewriteParams();
@@ -429,7 +431,7 @@ export class NgmApp extends LitElementI18n {
           <div class="ui dropdown ngm-lang-dropdown">
           <div class="ngm-lang-title">
             ${i18next.language?.toUpperCase()}
-            <div class="ngm-dropdown-icon"></div>
+            <ngm-icon icon="dropdown" />
           </div>
           <div class="menu">
             ${SUPPORTED_LANGUAGES.map(lang => html`

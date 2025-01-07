@@ -80,6 +80,7 @@ header .ngm-header-suffix {
   max-width: var(--suffix-width);
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 @media (min-width: 700px) {

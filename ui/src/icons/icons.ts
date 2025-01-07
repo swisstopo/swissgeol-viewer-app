@@ -9,11 +9,13 @@ import {userIcon} from './i_user';
 import {checkmarkIcon} from './i_checkmark';
 import {searchIcon} from './i_search';
 import {closeIcon} from './i_close';
+import {dropdownIcon} from './i_dropdown';
 
 export const icons = {
   checkmark: checkmarkIcon,
   close: closeIcon,
   config: configIcon,
+  dropdown: dropdownIcon,
   layer: layerIcon,
   projects: projectsIcon,
   search: searchIcon,
