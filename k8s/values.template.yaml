@@ -1,3 +1,5 @@
+host:
+
 docker:
   api_image:
   ui_image:

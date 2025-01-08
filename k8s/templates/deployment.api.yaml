@@ -17,6 +17,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-api
     spec:
+      serviceAccountName: api
       containers:
       - name: {{ .Release.Name }}-api
         image: {{ .Values.docker.api_image }}
@@ -26,11 +27,11 @@ spec:
         livenessProbe:
           httpGet:
             path: /api/health_check
-            port: http
+            port: 3000
         readinessProbe:
           httpGet:
             path: /api/health_check
-            port: http
+            port: 3000
         env:
           - name: APP_PORT
             value: '3000'
@@ -39,13 +40,15 @@ spec:
 
           # Database
           - name: PGHOST
-            value: {{ .Values.database.host }}
+            value: "{{ .Values.database.host }}"
           - name: PGPORT
-            value: {{ .Values.database.port }}
+            value: "{{ .Values.database.port }}"
           - name: PGDATABASE
-            value: {{ .Values.database.name }}
+            value: "{{ .Values.database.name }}"
           - name: PGUSER
-            value: {{ .Values.database.user }}
+            value: "{{ .Values.database.user }}"
+          - name: PG_SSL_MODE
+            value: 'require'
           - name: PGPASSWORD
             valueFrom:
               secretKeyRef:
@@ -53,38 +56,26 @@ spec:
                 key: database_password
 
           # S3
-          - name: S3_ENDPOINT
-            value: {{ .Values.s3.endpoint }}
           - name: S3_AWS_REGION
-            value: {{ .Values.s3.region }}
+            value: "{{ .Values.s3.region }}"
           - name: S3_BUCKET
-            value: {{ .Values.s3.bucket }}
+            value: "{{ .Values.s3.bucket }}"
           - name: PROJECTS_S3_BUCKET
-            value: {{ .Values.s3.project_bucket }}
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Release.Name }}-secrets
-                key: s3_access_key
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Release.Name }}-secrets
-                key: s3_secret_key
+            value: "{{ .Values.s3.projects_bucket }}"
 
           # Cognito
           - name: COGNITO_AWS_REGION
-            value: {{ .Values.cognito.region }}
+            value: "{{ .Values.cognito.region }}"
           - name: COGNITO_CLIENT_ID
-            value: {{ .Values.cognito.client_id }}
+            value: "{{ .Values.cognito.client_id }}"
           - name: COGNITO_POOL_ID
-            value: {{ .Values.cognito.pool_id }}
+            value: "{{ .Values.cognito.pool_id }}"
           - name: COGNITO_IDENTITY_POOL_ID
-            value: {{ .Values.cognito.identity_pool_id }}
+            value: "{{ .Values.cognito.identity_pool_id }}"
 
           # ION
           - name: ION_DEFAULT_ACCESS_TOKEN
-            value: {{ .Values.ion.default_access_token }}
+            value: "{{ .Values.ion.default_access_token }}"
 
       imagePullSecrets:
       - name: {{ .Release.Namespace }}-registry
