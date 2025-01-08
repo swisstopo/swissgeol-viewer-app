@@ -1,45 +1,158 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+import {applyEffect, applyTransition, applyTypography} from '../../styles/theme';
+
 
 @customElement('ngm-core-button')
 export class CoreButton extends LitElement {
   @property({reflect: true})
-  accessor variant: Variant = 'default';
+  accessor variant: Variant = 'primary'
+
+  @property({reflect: true})
+  accessor shape: Shape = 'default'
+
+  @property({type: Boolean, attribute: 'disabled', reflect: true})
+  accessor isDisabled: boolean = false
 
   @property({type: Boolean, attribute: 'active', reflect: true})
-  accessor isActive: boolean = false;
+  accessor isActive: boolean = false
 
   readonly render = () => html`
-    <button>
+    <button ?disabled="${this.isDisabled}">
       <slot></slot>
     </button>
   `;
 
   static readonly styles = css`
     button {
-      font-family: var(--font);
-      font-size: 14px;
-    }
+      ${applyTypography('button')};
 
-    :host([variant='text']) button {
-      color: var(--color-highlight--darker);
-
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
       border: none;
-      background-color: transparent;
+      border-radius: 4px;
       cursor: pointer;
+
+      ${applyTransition('fade')};
+      transition-property: color, background-color, border-color;
     }
 
-    :host([variant='text'][active]) button {
-      color: var(--color-action);
+    ::slotted(ngm-core-icon) {
+      width: 20px;
+      height: 20px;
     }
 
-    :host([variant='text']) button:hover {
-      color: var(--color-action--light);
+    /* primary */
+
+    :host([variant="primary"]) button {
+      color: var(--color-text--invert);
+      background-color: var(--color-primary);
+
+      &:hover, &:focus {
+        background-color: var(--color-primary--hovered);
+      }
+
+      &:focus {
+        ${applyEffect('focus')};
+      }
+
+      &:active {
+        background-color: var(--color-primary--pressed);
+      }
+
+      &[disabled] {
+        background-color: var(--color-primary--disabled);
+      }
     }
 
+    :host([variant="primary"][active]) button:not([disabled]) {
+      color: var(--color-text--invert);
+      background-color: var(--color-primary--active);
+    }
+
+    /* secondary */
+
+    :host([variant="secondary"]) button {
+      color: var(--color-primary);
+      background-color: var(--color-secondary);
+      border: 1px solid var(--color-primary);
+
+      &:hover, &:focus {
+        color: var(--color-text--emphasis--medium);
+        background-color: var(--color-secondary--hovered);
+        border-color: var(--color-text--emphasis--medium);
+      }
+
+      &:focus {
+        ${applyEffect('focus')};
+      }
+
+      &:active {
+        color: var(--color-text--emphasis--medium);
+        background-color: var(--color-secondary--pressed);
+        border-color: var(--color-secondary--pressed);
+      }
+
+      &[disabled] {
+        color: var(--color-bg--disabled);
+        background-color: var(--color-secondary--disabled);
+        border-color: var(--color-bg--disabled);
+      }
+    }
+
+    :host([variant="secondary"][active]) button:not([disabled]) {
+      background-color: var(--color-secondary--active);
+      border-color: var(--color-secondary--active);
+    }
+
+
+    /* tertiary */
+
+    :host([variant="tertiary"]) button {
+      color: var(--color-primary);
+      background-color: var(--color-bg--white);
+
+      &:hover, &:focus {
+        color: var(--color-text--emphasis--medium);
+        background-color: var(--color-secondary--hovered);
+      }
+
+      &:focus {
+        ${applyEffect('focus')};
+      }
+
+      &:active {
+        color: var(--color-text--emphasis--medium);
+        background-color: var(--color-secondary--pressed);
+      }
+
+      &[disabled] {
+        color: var(--color-bg--disabled);
+        background-color: var(--color-secondary--disabled);
+      }
+    }
+
+    :host([variant="tertiary"][active]) button:not([disabled]) {
+      background-color: var(--color-secondary--active);
+    }
+
+    /* icon shape */
+
+    :host([shape="icon"]) button,
+    :host([shape="icon-round"]) button {
+      padding: 8px;
+    }
   `;
 }
 
 export type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+
+export type Shape =
   | 'default'
-  | 'text'
+  | 'icon'
+  | 'icon-round'
