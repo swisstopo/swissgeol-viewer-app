@@ -1,4 +1,53 @@
-import {css, CSSResult} from 'lit';
+import {css, CSSResult, unsafeCSS} from 'lit';
+
+type Typography =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'title'
+  | 'subtitle-1'
+  | 'subtitle-2'
+  | 'button'
+  | 'caption'
+  | 'overline'
+  | 'table-header'
+  | 'footer'
+  | 'body-1'
+  | 'body-1-bold'
+  | 'body-2'
+  | 'body-2-bold'
+
+export const applyTypography = (typo: Typography): CSSResult => {
+  const v = (suffix: string): CSSResult => unsafeCSS(`var(--typo-${typo}--${suffix})`);
+  return css`
+    font-family: ${v('family')};
+    font-weight: ${v('weight')};
+    font-size: ${v('size')};
+    line-height: ${v('line-height')};
+    letter-spacing: ${v('letter-spacing')};
+  `;
+};
+
+type Effect =
+  | 'focus'
+  | 'overlay-shadow'
+  | 'top-shadow'
+  | 'bottom-shadow'
+
+export const applyEffect = (effect: Effect): CSSResult => css`
+  box-shadow: var(--effect-${unsafeCSS(effect)});
+`;
+
+type Animation =
+  | 'fade'
+
+
+export const applyTransition = (animation: Animation): CSSResult => css`
+  transition-timing-function: var(--animate-${unsafeCSS(animation)}--timing);
+  transition-duration: var(--animate-${unsafeCSS(animation)}--duration);
+`;
 
 type Breakpoint =
   | 'xs'
@@ -24,3 +73,11 @@ export const upFrom = (breakpoint: Breakpoint): CSSResult => {
   }
   return css`@media (min-width: ${min}px)`;
 };
+
+
+export const hostStyles = css`
+    :host, :host * {
+      ${applyTypography('body-1')};
+      box-sizing: border-box;
+    }
+`;

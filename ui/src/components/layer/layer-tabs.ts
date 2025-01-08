@@ -9,6 +9,7 @@ import {Subscription} from 'rxjs';
 import './options/layer-options';
 import {classMap} from 'lit/directives/class-map.js';
 import i18next from 'i18next';
+import {applyTypography, hostStyles} from '../../styles/theme';
 
 @customElement('ngm-layer-tabs')
 export class NgmLayerTabs extends LitElementI18n {
@@ -78,9 +79,7 @@ export class NgmLayerTabs extends LitElementI18n {
   `;
 
   static readonly styles = css`
-    :host, :host * {
-      box-sizing: border-box;
-    }
+    ${hostStyles}
 
     :host {
       display: block;
@@ -98,17 +97,15 @@ export class NgmLayerTabs extends LitElementI18n {
     }
 
     .tabs > button {
+
+      ${applyTypography('button')};
+
       background-color: transparent;
       border: none;
       padding: 8px;
       cursor: pointer;
       border-radius: 4px;
       flex: 1;
-      color: var(--color-main);
-      font-family: var(--font);
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 20px;
     }
 
     .tabs > button.is-active {
