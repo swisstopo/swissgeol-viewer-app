@@ -19,12 +19,11 @@ import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
 import './components/search/search-input';
-import 'fomantic-ui-css/components/dropdown';
-import 'fomantic-ui-css/components/dropdown.js';
 import '@geoblocks/cesium-view-cube';
 import './components/core';
+import './components/language-selector/ngm-language-selector';
 
-import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
+import {COGNITO_VARIABLES, DEFAULT_VIEW} from './constants';
 
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 
@@ -60,7 +59,6 @@ import $ from 'jquery';
 import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
-import {styleMap} from 'lit/directives/style-map.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -250,7 +248,6 @@ export class NgmApp extends LitElementI18n {
   }
 
   async firstUpdated() {
-    this.querySelectorAll('.menu').forEach((it) => $(it).dropdown());
 
     setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
@@ -358,10 +355,6 @@ export class NgmApp extends LitElementI18n {
         this.resolutionScaleRemoveCallback = undefined;
       }
     }
-
-    this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown({
-      direction: 'downward'
-    }));
     super.updated(changedProperties);
   }
 
@@ -428,22 +421,7 @@ export class NgmApp extends LitElementI18n {
         </div>
         <div class="ngm-header-suffix">
           <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
-          <div class="ui dropdown ngm-lang-dropdown">
-          <div class="ngm-lang-title">
-            ${i18next.language?.toUpperCase()}
-            <ngm-core-icon icon="dropdown" />
-          </div>
-          <div class="menu">
-            ${SUPPORTED_LANGUAGES.map(lang => html`
-              <div class="item" @click="${() => i18next.changeLanguage(lang)}" style="padding: 0">
-                <div class="ngm-lang-item">
-                  <ngm-core-icon style="${styleMap({'visibility': i18next.language?.toUpperCase() === lang?.toUpperCase() ? 'visible' : 'hidden'})}" icon="checkmark"></ngm-core-icon>
-                  <span>${lang.toUpperCase()}</span>
-                </div>
-                </div>
-            `)}
-          </div>
-        </div>
+          <ngm-language-selector></ngm-language-selector>
         <ngm-auth
           class="ngm-user"
           endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'

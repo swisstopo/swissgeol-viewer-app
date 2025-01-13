@@ -4,14 +4,16 @@ import i18next from 'i18next';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {customElement, query, state} from "lit/decorators.js";
 import '../components/core/core-button';
+import '../components/core/core-checkbox';
 import {applyTypography} from "../styles/theme";
+import '../components/language-selector/ngm-language-selector';
 
 @customElement('ngm-tracking-consent')
 export class NgmTrackingConsent extends LitElementI18n {
   @state()
-  accessor allowed: boolean  = true;
+  accessor isAllowed: boolean = true;
   @state()
-  accessor accepted: boolean  = false;
+  accessor isAccepted: boolean = false;
 
   @query('#disclaimer')
   accessor dialog!: HTMLDialogElement
@@ -20,15 +22,15 @@ export class NgmTrackingConsent extends LitElementI18n {
     super();
   }
 
-  updated(changedProperties) {
-    if (!this.dialog.open) {
+  firstUpdated() {
+    if (!this.dialog.open && !this.isAccepted) {
       this.dialog.showModal()
     }
   }
 
   static readonly styles = css`
   dialog {
-    width: 900px;
+    width: 909px;
     padding: 0;
     border: none;
     border-radius: 4px;
@@ -50,7 +52,12 @@ export class NgmTrackingConsent extends LitElementI18n {
       font-weight: 700;
       font-size: 16px;
       line-height: 24px;
+    }
 
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .main {
@@ -67,27 +74,6 @@ export class NgmTrackingConsent extends LitElementI18n {
       }
     }
 
-    .checkbox {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    input[type="checkbox"] {
-      height: 20px;
-      width: 20px;
-      margin: 0;
-    }
-
-    input[type="checkbox"]:checked {
-      accent-color: #607D52;
-      border-color: #607D52;
-    }
-
-    label {
-      ${applyTypography('body-2')};
-    }
-
     .footer {
       display: flex;
       justify-content: flex-end;
@@ -99,18 +85,14 @@ export class NgmTrackingConsent extends LitElementI18n {
         <dialog id="disclaimer">
           <div class="header">
             <h1>${i18next.t('tracking_header')}</h1>
+            <ngm-language-selector></ngm-language-selector>
           </div>
           <div class="main">
             <h2>${i18next.t('tracking_limitations_of_liability_header')}</h2>
             <p>${unsafeHTML(i18next.t('tracking_limitations_of_liability_text'))}</p>
             <h2>${i18next.t('tracking_data_acquisition_header')}</h2>
             <p>${unsafeHTML(i18next.t('tracking_data_acquisition_text'))}</p>
-            <div class="checkbox">
-              <input type="checkbox" checked="${this.allowed}" @change="${(e) => this.saveResponse(e.target.checked)}"
-                     id="tracking-consent"/>
-              <label for="tracking-consent">${i18next.t('tracking_agree_label')}</label>
-          </div>
-
+              <ngm-core-checkbox .isActive="${this.isAllowed}" .label="${i18next.t('tracking_agree_label')}" @update="${() => this.isAllowed = !this.isAllowed}"></ngm-core-checkbox>
           </div>
           <div class="footer">
             <ngm-core-button @click="${() => this.accept()}">
@@ -121,14 +103,10 @@ export class NgmTrackingConsent extends LitElementI18n {
       `;
   }
 
-  saveResponse(allowed) {
-    this.allowed = allowed;
-  }
-
   private accept() {
     this.dispatchEvent(new CustomEvent('change', {
       detail: {
-        allowed: this.allowed
+        allowed: this.isAllowed
       }
     }));
     this.dialog.close()
