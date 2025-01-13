@@ -1,19 +1,17 @@
 import {css, html, unsafeCSS} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import i18next from 'i18next';
-import $ from 'jquery';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {LitElementI18n} from '../../../i18n';
-import {showBannerError, showSnackbarInfo} from '../../../notifications';
-import fomanticButtonCss from 'fomantic-ui-css/components/button.css';
+import {showSnackbarError, showSnackbarInfo} from '../../../notifications';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css';
 import '../../core';
+import './layer-upload-kml-modal';
+import {applyTransition, applyTypography} from '../../../styles/theme';
+import {CoreModal} from '../../core/core-modal';
 
 @customElement('ngm-layer-upload-kml')
 export default class NgmLayerUploadKml extends LitElementI18n {
-  @property({type: Object})
-  accessor toastPlaceholder!: HTMLElement;
-
   @property({type: Number})
   accessor maxFileSize: number | null = null;
 
@@ -21,44 +19,113 @@ export default class NgmLayerUploadKml extends LitElementI18n {
   private accessor isLoading = false;
 
   @state()
-  private accessor isClampingToGround = true;
+  private accessor violation: string | null = null;
 
-  @query('.ngm-upload-kml')
-  private accessor uploadKmlInput!: HTMLInputElement;
+  @query('button.upload')
+  private accessor uploadButton!: HTMLButtonElement;
+
+  @query('input')
+  private accessor fileInput!: HTMLInputElement;
+
+  private modal: CoreModal | null = null;
+
+  constructor() {
+    super();
+
+    this.handleUpload = this.handleUpload.bind(this);
+  }
+
+  firstUpdated() {
+    this.initializeDropZone();
+  }
+
+  disconnectedCallback(): void {
+    this.modal?.close();
+  }
+
+  private initializeDropZone(): void {
+    let dragCounter = 0;
+    const handleDragStart = (_e: DragEvent) => {
+      if (dragCounter === 0) {
+        this.uploadButton.classList.add('is-active');
+      }
+      dragCounter += 1;
+    };
+    const handleDragEnd = (e: DragEvent) => {
+      e.preventDefault();
+      dragCounter -= 1;
+      if (dragCounter === 0) {
+        this.uploadButton.classList.remove('is-active');
+      }
+    };
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+    };
+    const handleDrop = (e: DragEvent) => {
+      dragCounter = 0;
+      this.handleDrop(e);
+    };
+    this.uploadButton.addEventListener('dragenter', handleDragStart);
+    this.uploadButton.addEventListener('dragleave', handleDragEnd);
+    this.uploadButton.addEventListener('dragend', handleDragEnd);
+    this.uploadButton.addEventListener('dragover', handleDragOver);
+    this.uploadButton.addEventListener('drop', handleDrop);
+  }
 
   private handleDrop(event: DragEvent): void {
     event.preventDefault();
-    (event.target as HTMLElement).classList.remove('active');
+    (event.target as HTMLElement).classList.remove('is-active');
     for (const file of event.dataTransfer!.files) {
-      this.uploadKml(file);
+      this.uploadFile(file);
     }
   }
 
-  private uploadKml(file: File): void {
-    if (!file) {
-      showSnackbarInfo(i18next.t('dtd_no_file_to_upload_warn'));
+  private handleFileSelection(e: InputEvent): void {
+    const file = (e.target as HTMLInputElement | null)?.files?.[0];
+    this.uploadFile(file ?? null);
+  }
+
+  private uploadFile(file: File | null): void {
+    if (!this.validateFile(file)) {
       return;
     }
-    if (!file.name.toLowerCase().endsWith('kml')) {
-      showBannerError(this.toastPlaceholder, i18next.t('dtd_file_not_kml'));
-      return;
+    this.modal = CoreModal.open({size: 'small'}, html`
+      <ngm-layer-upload-kml-modal
+        .file="${file}"
+        @confirm="${this.handleUpload}"
+        @cancel="${() => this.modal?.close()}"
+      ></ngm-layer-upload-kml-modal>
+    `);
+  }
+
+  private validateFile(file: File | null): boolean {
+    if (file == null) {
+      showSnackbarInfo(i18next.t('dtd_no_file_to_upload_warn'));
+      return false;
+    }
+    if (!file.name.toLowerCase().endsWith('.kml')) {
+      this.violation = i18next.t('dtd_file_not_kml');
+      return false;
     }
     if (this.isFileTooLarge(file)) {
-      showBannerError(this.toastPlaceholder, `${i18next.t('dtd_max_size_exceeded_warn')} ${this.maxFileSize}MB`);
-      return;
+      this.violation = `${i18next.t('dtd_max_size_exceeded_warn')} ${this.maxFileSize}MB`;
+      return false;
     }
+    this.violation = null;
+    return true;
+  }
+
+  private handleUpload(e: KmlUploadEvent): void {
     this.isLoading = true;
     try {
-      this.dispatchEvent(new CustomEvent<KmlUploadEventDetails>('upload', {
-        detail: {
-          file,
-          isClampingToGround: this.isClampingToGround,
-        }
+      this.dispatchEvent(new CustomEvent<KmlUploadEventDetail>('upload', {
+        detail: e.detail
       }));
-      this.uploadKmlInput.value = '';
+      this.modal?.close();
+      this.fileInput.value = '';
     } catch (e) {
       console.error(e);
-      showBannerError(this.toastPlaceholder, i18next.t('dtd_cant_upload_kml_error'));
+      showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
     } finally {
       this.isLoading = false;
     }
@@ -71,89 +138,86 @@ export default class NgmLayerUploadKml extends LitElementI18n {
   readonly render = () => html`
     <button
       class="upload"
-      @click="${() => this.uploadKmlInput.click()}"
-      @drop="${this.handleDrop}"
-      @dragenter=${(e: DragEvent) => $(e.target!).addClass('active')}
-      @dragover="${(e: DragEvent) => e.preventDefault()}"
-      @dragleave=${(e: DragEvent) => $(e.target!).removeClass('active')}
+      @click="${() => this.fileInput.click()}"
     >
-      ${i18next.t('dtd_add_own_kml')}
-      <ngm-core-icon icon="kmlUpload" ?hidden=${this.isLoading}></ngm-core-icon>
-      <div class="ui inline mini loader ${classMap({active: this.isLoading})}"></div>
+      <span class="title">
+        <ngm-core-icon icon="upload" ?hidden=${this.isLoading}></ngm-core-icon>
+        <div class="ui inline mini loader ${classMap({active: this.isLoading})}"></div>
+        ${i18next.t('dtd_kml_upload_button_title')}
+      </span>
+      <span class="subtitle">
+        ${i18next.t('dtd_kml_upload_button_subtitle')}
+      </span>
     </button>
     <input
-      class="ngm-upload-kml"
       type="file"
       accept=".kml,.KML"
       hidden
-      @change=${async (e: InputEvent) => {
-        const file = (e.target as HTMLInputElement | null)?.files?.[0];
-        if (file != null) {
-          this.uploadKml(file);
-        }
-      }}
+      @change=${this.handleFileSelection}
     />
-    <ngm-core-checkbox
-      .label="${i18next.t('dtd_clamp_to_ground')}"
-      .isActive="${this.isClampingToGround}"
-      @update=${() => this.isClampingToGround = !this.isClampingToGround}
-    ></ngm-core-checkbox>
+    ${this.violation == null ? '' : html`
+        <span class="violation">${this.violation}</span>
+    `}
   `;
 
   static readonly styles = css`
-    ${unsafeCSS(fomanticButtonCss)}
     ${unsafeCSS(fomanticLoaderCss)}
 
     :host, :host * {
       box-sizing: border-box;
     }
 
-    :host {
-      display: flex;
-      justify-content: space-between;
+    /* upload button */
+    button.upload {
+      ${applyTypography('button')}
 
-      font-family: var(--font);
-      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 180px;
+      gap: 6px;
+      padding: 12px 16px;
+
+      background-color: var(--color-bg--white);
+      border: 2px dashed var(--color-primary);
+      border-radius: 4px;
+
+      cursor: pointer;
     }
 
-    button.upload {
-      font-family: var(--font);
-      cursor: pointer;
+    button.upload:hover, button.upload.is-active {
+      ${applyTransition('fade')};
+
+      color: var(--color-text--emphasis--medium);
+      background-color: var(--color-secondary--hovered);
+      border-color: var(--color-text--emphasis--medium);
+    }
+
+    button.upload > .title {
       display: flex;
       align-items: center;
-      letter-spacing: 0.25px;
-      font-weight: bold;
-      color: var(--ngm-interaction);
-      background-color: #F1F3F5;
-      border: 2px dashed var(--ngm-interaction);
-      margin: 9px 0 16px 0;
-      padding-left: 10px;
-      height: 46px;
-      width: 325px;
+      gap: 12px;
+      color: var(--color-primary);
     }
 
-    button.upload:hover {
-      color: var(--color-action--light);
-      border: 2px dashed var(--color-action--light);
+    button.upload > .subtitle {
+      color: var(--color-text--disabled);
     }
 
-    button.upload > ngm-core-icon {
-      pointer-events: none;
-      color: var(--color-highlight--darker);
-      margin-top: 0;
-      margin-left: 12px;
-      width: 20px;
-      height: 20px;
-    }
+    /* violation message */
+    span.violation {
+      ${applyTypography('body-2')}
 
-    button.upload:hover > ngm-core-icon {
-      color: var(--color-action--light);
+      color: var(--color-bg--error);
+      margin-top: 2px;
     }
   `;
 }
 
-export type KmlUploadEvent = CustomEvent<KmlUploadEventDetails>
-export interface KmlUploadEventDetails {
+export type KmlUploadEvent = CustomEvent<KmlUploadEventDetail>
+export interface KmlUploadEventDetail {
   file: File
-  isClampingToGround: boolean
+  isClampEnabled: boolean
 }

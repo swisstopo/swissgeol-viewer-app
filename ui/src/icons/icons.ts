@@ -7,16 +7,18 @@ import {viewAllIcon} from './i_view_all';
 import {viewLessIcon} from './i_view_less';
 import {userIcon} from './i_user';
 import {checkmarkIcon} from './i_checkmark';
-import {kmlUploadIcon} from './i_kml_upload';
 import {searchIcon} from './i_search';
 import {closeIcon} from './i_close';
 import {dropdownIcon} from './i_dropdown';
+import {uploadIcon} from './i_upload';
+import {cesiumIcon} from './i_cesium';
 
 export const icons = {
+  cesium: cesiumIcon,
   checkmark: checkmarkIcon,
   close: closeIcon,
   config: configIcon,
-  kmlUpload: kmlUploadIcon,
+  upload: uploadIcon,
   dropdown: dropdownIcon,
   layer: layerIcon,
   projects: projectsIcon,
