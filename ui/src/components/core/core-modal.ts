@@ -81,7 +81,7 @@ export class CoreModal extends LitElement {
   }
 
   readonly render = () => html`
-    <dialog @click="${this.handleClick}" autofocus="${false}">
+    <dialog @click="${this.handleClick}">
       <div>
         <slot></slot>
       </div>
