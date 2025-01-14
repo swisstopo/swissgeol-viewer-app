@@ -58,7 +58,7 @@ import {LayerConfig} from './layertree';
 import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
-import {CoreModal} from "./components/core/core-modal";
+import {CoreModal} from './components/core/core-modal';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -129,7 +129,7 @@ export class NgmApp extends LitElementI18n {
   constructor() {
     super();
 
-    this.disclaimer = CoreModal.open({isPersistent: true, size: "large", hasNoPadding: true}, html`<ngm-tracking-consent @confirm="${(event) => this.onTrackingAllowedChanged(event)}"></ngm-tracking-consent>`);
+    this.disclaimer = CoreModal.open({isPersistent: true, size: 'large', hasNoPadding: true}, html`<ngm-tracking-consent @confirm="${(event) => this.onTrackingAllowedChanged(event)}"></ngm-tracking-consent>`);
 
     const boundingRect = document.body.getBoundingClientRect();
     this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;

@@ -1,11 +1,11 @@
 import {css, html} from 'lit';
 import i18next from 'i18next';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
-import {customElement, state} from "lit/decorators.js";
+import {customElement, state} from 'lit/decorators.js';
 import '../core';
 import '../language-selector/ngm-language-selector';
-import {LitElementI18n} from "../../i18n";
-import {applyTypography} from "../../styles/theme";
+import {LitElementI18n} from '../../i18n';
+import {applyTypography} from '../../styles/theme';
 
 @customElement('ngm-tracking-consent')
 export class NgmTrackingConsent extends LitElementI18n {

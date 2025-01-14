@@ -1,14 +1,14 @@
 import {css, html, unsafeCSS} from 'lit';
 import i18next from 'i18next';
-import {SUPPORTED_LANGUAGES} from "../../constants";
-import {customElement} from "lit/decorators.js";
-import {LitElementI18n} from "../../i18n";
-import {styleMap} from "lit/directives/style-map.js";
+import {SUPPORTED_LANGUAGES} from '../../constants';
+import {customElement} from 'lit/decorators.js';
+import {LitElementI18n} from '../../i18n';
+import {styleMap} from 'lit/directives/style-map.js';
 import 'fomantic-ui-css/components/dropdown';
 import $ from 'jquery';
 import '../core/core-icon';
-import fomanticTransitionCss from "fomantic-ui-css/components/transition.css";
-import fomanticDropdownCss from "fomantic-ui-css/components/dropdown.css";
+import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css';
+import fomanticDropdownCss from 'fomantic-ui-css/components/dropdown.css';
 
 @customElement('ngm-language-selector')
 export class NgmLanguageSelector extends LitElementI18n {
