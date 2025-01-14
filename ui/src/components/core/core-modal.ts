@@ -8,6 +8,7 @@ interface CoreModalProps {
    * Makes the modal persistent, which disables closing it by clicking outside of it.
    */
   isPersistent?: boolean
+  hasNoPadding?: boolean
   onClose?: () => void
 }
 
@@ -31,6 +32,7 @@ export class CoreModal extends LitElement {
         @close="${close}"
         .isPersistent="${props.isPersistent}"
         .size="${props.size ?? 'auto'}"
+        .hasNoPadding="${props.hasNoPadding}"
       >${content}</ngm-core-modal>`,
       container,
     );
@@ -50,6 +52,9 @@ export class CoreModal extends LitElement {
 
   @property({type: Boolean})
   accessor isPersistent = true;
+
+  @property(({type: Boolean, reflect: true}))
+  accessor hasNoPadding = false;
 
   private dialog: HTMLDialogElement | null = null;
 
@@ -76,7 +81,7 @@ export class CoreModal extends LitElement {
   }
 
   readonly render = () => html`
-    <dialog @click="${this.handleClick}">
+    <dialog @click="${this.handleClick}" autofocus="${false}">
       <div>
         <slot></slot>
       </div>
@@ -108,6 +113,14 @@ export class CoreModal extends LitElement {
     dialog::backdrop {
       background-color: #111827B2;
       opacity: 0.7;
+    }
+
+    dialog > div {
+      padding: 24px;
+    }
+
+    :host([hasNoPadding]) > dialog > div {
+      padding: 0;
     }
   `;
 }

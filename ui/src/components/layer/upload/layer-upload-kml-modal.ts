@@ -61,7 +61,6 @@ export class LayerUploadKmlModal extends LitElementI18n {
       display: flex;
       flex-direction: column;
       gap: 16px;
-      padding: 24px;
     }
 
     hr {

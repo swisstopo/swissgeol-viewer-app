@@ -1,4 +1,4 @@
-import {css, html, PropertyValues, unsafeCSS} from 'lit';
+import {css, html, unsafeCSS} from 'lit';
 import i18next from 'i18next';
 import {SUPPORTED_LANGUAGES} from "../../constants";
 import {customElement} from "lit/decorators.js";

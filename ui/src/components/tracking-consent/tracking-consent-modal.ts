@@ -29,11 +29,9 @@ export class NgmTrackingConsent extends LitElementI18n {
     }
 
     h2 {
-      margin: 0;
-      font-weight: 700;
+      ${applyTypography('modal-title')}
       font-size: 16px;
-      line-height: 24px;
-      margin-bottom: 16px;
+      margin: 0 0 16px;
 
     }
 
