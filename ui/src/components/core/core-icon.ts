@@ -12,12 +12,21 @@ export class CoreIcon extends LitElement {
 
   static readonly styles = css`
     :host {
+      display: inline-flex;
       color: currentColor;
+      width: 24px;
+      height: 24px;
     }
 
     :host([interactive]:hover) {
       cursor: pointer;
       color: var(--color-action);
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
   `;
 
