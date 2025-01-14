@@ -129,7 +129,7 @@ export class NgmApp extends LitElementI18n {
   constructor() {
     super();
 
-    this.disclaimer = CoreModal.open({isPersistent: true}, html`<ngm-tracking-consent @confirm="${(event) => this.onTrackingAllowedChanged(event)}"></ngm-tracking-consent>`);
+    this.disclaimer = CoreModal.open({isPersistent: true, size: "large"}, html`<ngm-tracking-consent @confirm="${(event) => this.onTrackingAllowedChanged(event)}"></ngm-tracking-consent>`);
 
     const boundingRect = document.body.getBoundingClientRect();
     this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;

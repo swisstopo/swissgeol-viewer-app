@@ -101,6 +101,10 @@ export class CoreModal extends LitElement {
       width: 326px;
     }
 
+    :host([size="large"]) dialog {
+      width: 909px;
+    }
+
     dialog::backdrop {
       background-color: #111827B2;
       opacity: 0.7;
@@ -111,3 +115,4 @@ export class CoreModal extends LitElement {
 type Size =
   | 'auto'
   | 'small'
+  | 'large';
