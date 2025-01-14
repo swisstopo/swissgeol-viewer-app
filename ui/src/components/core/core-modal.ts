@@ -105,10 +105,6 @@ export class CoreModal extends LitElement {
       background-color: #111827B2;
       opacity: 0.7;
     }
-
-    dialog > div {
-      padding: 24px;
-    }
   `;
 }
 
