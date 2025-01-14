@@ -8,13 +8,8 @@ import {debounce} from '../../../utils';
 import {setExaggeration} from '../../../permalink';
 import NavToolsStore from '../../../store/navTools';
 import {updateExaggerationForKmlDataSource} from '../../../cesiumutils';
-import {classMap} from 'lit/directives/class-map.js';
-
-
-import iconsCss from '../../../style/icons.css';
-import layersCss from '../../../style/layers.css';
-import sliderCss from '../../../style/ngm-slider.css';
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css';
+import '../../core'
 
 @customElement('ngm-layer-options')
 export class NgmLayerOptions extends LitElementI18n {
@@ -54,12 +49,12 @@ export class NgmLayerOptions extends LitElementI18n {
     this.viewer?.scene.requestRender();
   }
 
-  private updateExaggeration(evt: InputEvent) {
+  private updateExaggeration(evt: CustomEvent) {
     if (this.viewer == null) {
       return;
     }
     this.hideExaggeration = false;
-    this.exaggeration = Number((<HTMLInputElement>evt.target).value);
+    this.exaggeration = evt.detail.value;
     this.viewer.scene.verticalExaggeration = this.exaggeration;
     // workaround for billboards positioning
     setTimeout(() => this.viewer!.scene.requestRender(), 500);
@@ -68,45 +63,65 @@ export class NgmLayerOptions extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <div class="ngm-base-layer">
-      <div
-        title=${!this.hideExaggeration ? i18next.t('dtd_hide_exaggeration') : i18next.t('dtd_show_exaggeration')}
-        class="ngm-layer-icon ${classMap({
-          'ngm-visible-icon': !this.hideExaggeration,
-          'ngm-invisible-icon': this.hideExaggeration,
-        })}"
-        @click=${() => {
-          if (!this.viewer) return;
-          this.hideExaggeration = !this.hideExaggeration;
-          const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
-          this.viewer.scene.verticalExaggeration = exaggeration;
-          this.updateExaggerationForKmls();
-          NavToolsStore.exaggerationChanged.next(exaggeration);
-          this.viewer.scene.requestRender();
-        }}>HIDE
+    <div class="ngm-base-layer-2">
+      <div class="group">
+        <ngm-core-icon
+          icon="${this.hideExaggeration ? 'invisible' : 'visible'}"
+          title=${!this.hideExaggeration ? i18next.t('dtd_hide_exaggeration') : i18next.t('dtd_show_exaggeration')}
+          @click=${() => {
+            if (!this.viewer) return;
+            this.hideExaggeration = !this.hideExaggeration;
+            const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+            this.viewer.scene.verticalExaggeration = exaggeration;
+            this.updateExaggerationForKmls();
+            NavToolsStore.exaggerationChanged.next(exaggeration);
+            this.viewer.scene.requestRender();
+          }}
+        ></ngm-core-icon>
+        <label>${i18next.t('dtd_exaggeration_map')}</label>
       </div>
-      <div class="ngm-displayed-slider ngm-layer-options">
+      <div class="group">
+        <ngm-core-slider
+          .min="${1}"
+          .max="${20}"
+          .step="${1}"
+          .value="${this.exaggeration}"
+          @change=${(evt: CustomEvent) => this.updateExaggeration(evt)}
+          @pointerup="${debounce(() => this.updateExaggerationForKmls(), 300)}"
+        ></ngm-core-slider>
         <div>
-          <label>${i18next.t('dtd_exaggeration_map')}</label>
           <label>${(this.exaggeration).toFixed()}x</label>
         </div>
-        <input
-          type="range"
-          class="ngm-slider"
-          style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.exaggeration * 5}%, white ${this.exaggeration * 5}%)"
-          min=1 max=20 step=1
-          .value=${!isNaN(this.exaggeration) ? this.exaggeration : 1}
-          @input=${(evt: InputEvent) => this.updateExaggeration(evt)}
-          @pointerup=${debounce(() => this.updateExaggerationForKmls(), 300)}
-        >
       </div>
     </div>
   `;
 
   static readonly styles = css`
     ${unsafeCSS(fomanticTransitionCss)}
-    ${unsafeCSS(iconsCss)}
-    ${unsafeCSS(layersCss.replaceAll('ngm-layers-item', ':host'))}
-    ${unsafeCSS(sliderCss)}
+
+    .ngm-base-layer-2 {
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      gap: 12px;
+      justify-content: center;
+      background-color: white;
+      border-radius: 4px;
+    }
+
+    .group {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 12px;
+
+      ngm-core-slider {
+        flex-grow: 1;
+      }
+    }
+
+    ngm-core-icon {
+      color: var(--color-primary);
+    }
   `;
 }

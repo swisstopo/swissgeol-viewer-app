@@ -46,8 +46,8 @@ ngm-layers-item .ngm-checkbox {
 
 ngm-layers-item, .ngm-base-layer {
   display: flex;
-  align-items: end;
-  flex-direction: row;
+  flex-direction: column;
+  width: 100%;
 }
 
 .ngm-base-layer > div:first-child {

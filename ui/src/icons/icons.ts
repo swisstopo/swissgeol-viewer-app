@@ -12,6 +12,8 @@ import {closeIcon} from './i_close';
 import {dropdownIcon} from './i_dropdown';
 import {uploadIcon} from './i_upload';
 import {cesiumIcon} from './i_cesium';
+import {visibleIcon} from "./i_visible";
+import {invisibleIcon} from "./i_invisible";
 
 export const icons = {
   cesium: cesiumIcon,
@@ -28,6 +30,8 @@ export const icons = {
   user: userIcon,
   viewAll: viewAllIcon,
   viewLess: viewLessIcon,
+  visible: visibleIcon,
+  invisible: invisibleIcon
 };
 
 export type IconKey = keyof typeof icons;
