@@ -23,12 +23,12 @@ export class NgmTrackingConsent extends LitElementI18n {
       padding: 24px;
     }
 
-    h1 {
+    h2 {
       ${applyTypography('modal-title')}
       margin: 0;
     }
 
-    h2 {
+    h3 {
       ${applyTypography('modal-title')}
       font-size: 16px;
       margin: 0 0 16px;
@@ -64,13 +64,13 @@ export class NgmTrackingConsent extends LitElementI18n {
   render() {
     return html`
           <div class="header">
-            <h1>${i18next.t('tracking_header')}</h1>
+            <h2>${i18next.t('tracking_header')}</h2>
             <ngm-language-selector></ngm-language-selector>
           </div>
           <div class="main">
-            <h2>${i18next.t('tracking_limitations_of_liability_header')}</h2>
+            <h3>${i18next.t('tracking_limitations_of_liability_header')}</h3>
             <p>${unsafeHTML(i18next.t('tracking_limitations_of_liability_text'))}</p>
-            <h2>${i18next.t('tracking_data_acquisition_header')}</h2>
+            <h3>${i18next.t('tracking_data_acquisition_header')}</h3>
             <p>${unsafeHTML(i18next.t('tracking_data_acquisition_text'))}</p>
               <ngm-core-checkbox .isActive="${this.isAllowed}"  @update="${() => this.isAllowed = !this.isAllowed}">${i18next.t('tracking_agree_label')}</ngm-core-checkbox>
           </div>
