@@ -47,6 +47,11 @@ export class CoreCheckbox extends LitElement {
   `;
 
   static readonly styles = css`
+    :host {
+      --slider-thumb-size: 24px;
+      --slider-track-height: 4px;
+    }
+
    /*  ${unsafeCSS(sliderCss)} */
 
     input {
@@ -59,7 +64,41 @@ export class CoreCheckbox extends LitElement {
       appearance: none;
       background: transparent;
       cursor: pointer;
-      width: 15rem;
+      width: 100%;
+      margin: 0;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      border-radius: 4px;
+      height: var(--slider-track-height);
+    }
+
+    input[type="range"]::-moz-range-track {
+      border-radius: 4px;
+      height: var(--slider-track-height);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: var(--slider-thumb-size);
+      height: var(--slider-thumb-size);
+      background: var(--color-bg--white) 0 0 no-repeat padding-box;
+      box-shadow: 0 2px 2px #00000029;
+      border: 3px solid var(--color-primary);
+      border-radius: 50%;
+      cursor: pointer;
+      margin-top: calc((var(--slider-track-height) / 2) - (var(--slider-thumb-size) / 2));
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: var(--slider-thumb-size);
+      height: var(--slider-thumb-size);
+      background: var(--color-bg--white) 0 0 no-repeat padding-box;
+      box-shadow: 0 2px 2px #00000029;
+      border: 3px solid var(--color-primary);
+      border-radius: 50%;
+      cursor: pointer;
     }
   `;
 }
