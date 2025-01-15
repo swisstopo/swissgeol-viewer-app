@@ -39,7 +39,6 @@
 @import 'ngm-point-edit.css';
 @import 'ngm-position-edit.css';
 @import 'ngm-map-chooser.css';
-@import 'ngm-tracking-consent.css';
 @import 'ngm-layer-legend.css';
 @import 'icons.css';
 @import 'ngm-side-bar.css';
@@ -62,8 +61,6 @@
 @import 'ngm-coordinate-popup.css';
 @import 'ngm-ion-modal.css';
 @import 'ngm-info-table.css';
-@import '../styles/index.css';
-
 @import '../styles/index.css';
 
 * {
