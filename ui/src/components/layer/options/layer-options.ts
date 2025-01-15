@@ -63,7 +63,7 @@ export class NgmLayerOptions extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <div class="ngm-base-layer-2">
+    <div class="container">
       <div class="group">
         <ngm-core-icon
           icon="${this.hideExaggeration ? 'invisible' : 'visible'}"
@@ -80,6 +80,7 @@ export class NgmLayerOptions extends LitElementI18n {
         ></ngm-core-icon>
         <label>${i18next.t('dtd_exaggeration_map')}</label>
       </div>
+      <hr>
       <div class="group">
         <ngm-core-slider
           .min="${1}"
@@ -89,38 +90,55 @@ export class NgmLayerOptions extends LitElementI18n {
           @change=${(evt: CustomEvent) => this.updateExaggeration(evt)}
           @pointerup="${debounce(() => this.updateExaggerationForKmls(), 300)}"
         ></ngm-core-slider>
-        <div>
-          <label>${(this.exaggeration).toFixed()}x</label>
+        <div class="chip-container">
+          <ngm-core-chip >${(this.exaggeration).toFixed()}x</ngm-core-chip>
         </div>
       </div>
     </div>
   `;
 
   static readonly styles = css`
-    ${unsafeCSS(fomanticTransitionCss)}
 
-    .ngm-base-layer-2 {
+    .container {
       display: flex;
       flex-direction: column;
-      padding: 12px;
-      gap: 12px;
       justify-content: center;
       background-color: white;
+      box-sizing: border-box;
+      border: 1px solid var(--color-border--default);
       border-radius: 4px;
     }
 
     .group {
       display: flex;
       justify-content: flex-start;
+      gap: 6px;
       align-items: center;
-      gap: 12px;
+      margin: 10px;
 
       ngm-core-slider {
         flex-grow: 1;
+        display: flex;
+        align-items: center;
       }
     }
 
+    .chip-container {
+      min-width: 48px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    hr {
+      margin: 0 10px;
+      height: 1px;
+      border-width: 0;
+      color: var(--color-border--default);
+      background-color: var(--color-border--default);
+    }
+
     ngm-core-icon {
+      padding: 6px;
       color: var(--color-primary);
     }
   `;
