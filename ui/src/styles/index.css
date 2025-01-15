@@ -42,7 +42,6 @@
 /* ## Colors ## */
 :root {
     --color-brand: #607D52;
-    --color-bg-grey: #F1F3F5;
     --color-textfield-grey: #F8F9FA;
     --color-green-disabled: #C6D3DA;
     --color-light-blue: #F1F3F5;
@@ -69,8 +68,12 @@
     --color-secondary--disabled: #FFFFFF;
     --color-secondary--active: #B2D2A2;
 
+    --color-border--default: #DFE4E9;
+
     --color-bg--white: #FFFFFF;
+    --color-bg--grey: #F1F3F5;
     --color-bg--disabled: #828E9A;
+    --color-bg--error: #D8232A;
 }
 
 /* ### Typography ### */
@@ -83,7 +86,7 @@
      - Light   => 300
      - Regular => 400
      - Medium  => 500
-       
+
    Underlined Variants
      We do not create separate typographies for underlined variants,
      as they are just their base variant with `text-decoration: underline`.
@@ -146,6 +149,12 @@
     --typo-subtitle-2--size: 14px;
     --typo-subtitle-2--line-height: 20px;
     --typo-subtitle-2--letter-spacing: 0.0015em;
+
+    --typo-modal-title--family: var(--font-family), var(--font-family--fallback);
+    --typo-modal-title--weight: 700;
+    --typo-modal-title--size: 20px;
+    --typo-modal-title--line-height: 24.2px;
+    --typo-modal-title--letter-spacing: 0.001em;
 
     --typo-button--family: var(--font-family), var(--font-family--fallback);
     --typo-button--weight: 500;

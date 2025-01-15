@@ -1,14 +1,24 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import './core-icon';
+import {applyTransition, applyTypography} from '../../styles/theme';
 
 @customElement('ngm-core-checkbox')
 export class CoreCheckbox extends LitElement {
-  @property({type: String})
-  accessor label: string | null = null;
-
-  @property({type: Boolean, attribute: 'is-active', reflect: true})
+  @property({type: Boolean})
   accessor isActive: boolean = false;
+
+  firstUpdated() {
+    const slot = this.shadowRoot?.querySelector('slot');
+    slot?.addEventListener('slotchange', () => {
+      this.requestUpdate();
+    });
+  }
+
+  private get hasSlot(): boolean {
+    const slot = this.shadowRoot?.querySelector('slot');
+    return slot != null && slot.assignedNodes().length > 0;
+  }
 
   private handleClick(e: Event) {
     e.stopPropagation();
@@ -19,10 +29,17 @@ export class CoreCheckbox extends LitElement {
   readonly render = () => html`
     <label @click="${this.handleClick}">
       <input type="checkbox" ?checked="${this.isActive}">
-      <div class="icon"></div>
-      ${this.label == null
-        ? ''
-        : html`<span class="label">${this.label}</span>`}
+      <div class="icon">
+        <svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M11.2585 0.990983C11.4929 1.22539 11.6245 1.54328 11.6245 1.87473C11.6245 2.20619 11.4929 2.52407 11.2585 2.75848L5.00853 9.00848C4.77412 9.24282 4.45623 9.37447 4.12478 9.37447C3.79332 9.37447 3.47544 9.24282 3.24103 9.00848L0.741026 6.50848C0.513329 6.27273 0.387336 5.95698 0.390184 5.62923C0.393032 5.30149 0.524493 4.98797 0.756253 4.75621C0.988014 4.52445 1.30153 4.39299 1.62927 4.39014C1.95702 4.38729 2.27277 4.51329 2.50853 4.74098L4.12478 6.35723L9.49103 0.990983C9.72544 0.756644 10.0433 0.625 10.3748 0.625C10.7062 0.625 11.0241 0.756644 11.2585 0.990983Z"
+            fill="currentColor"
+          />
+        </svg>
+      </div>
+      ${this.hasSlot
+        ? html`<span class="label"><slot></slot></span>`
+        : html`<slot></slot>`}
     </label>
   `;
 
@@ -32,71 +49,78 @@ export class CoreCheckbox extends LitElement {
     }
 
     :host {
-      color: var(--color-highlight--darker);
-
       display: flex;
       align-items: center;
-    }
-
-    :host([is-active]) {
-      color: var(--color-action);
     }
 
     label {
       display: flex;
       align-items: center;
       cursor: pointer;
-      gap: 10px;
-    }
-
-    label:hover {
-      color: var(--color-action--light);
-    }
-
-    :host([is-active]) > label:not(:hover) {
-      color: var(--color-action);
+      gap: 12px;
     }
 
     input {
       display: none;
     }
 
+    /* icon */
     .icon {
-      width: 19px;
-      height: 18px;
-      display: block;
+      ${applyTransition('fade')}
+
       position: relative;
-      border-radius: 2px;
-      border: 2px solid var(--color-highlight--darker);
-      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 20px;
+      height: 20px;
+      border-radius: 1px;
+      border: 2px solid var(--color-primary);
+
+      ${applyTransition('fade')};
+      transition-property: background-color, border-color;
     }
 
-    label:hover > .icon {
-      border-color: var(--color-action--light);
-      background-color: var(--color-action--light);
+    label:has(input[checked]) .icon {
+      border-color: var(--color-primary--active);
+      background-color: var(--color-primary--active);
     }
 
-    :host([is-active]) > label:not(:hover) > .icon {
-      border-color: var(--color-action);
-      background-color: var(--color-action);
-    }
-
+    /* checkbox highlight */
     .icon::before {
-      content: "";
-      top: -2px;
-      left: 3px;
-      width: 7px;
-      height: 12px;
-      display: none;
       position: absolute;
-      transform: rotate(45deg);
-      transition: all 0.2s ease;
-      border-right: 2px solid #fff;
-      border-bottom: 2px solid #fff;
+      content: ' ';
+      width: 45px;
+      height: 45px;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: auto;
+      background-color: #828E9A26;
+      border-radius: 50%;
+
+      ${applyTransition('fade')};
+      transition-property: opacity;
     }
 
-    input:checked + .icon::before {
-      display: block;
+    label:not(:hover) .icon::before {
+      opacity: 0;
+    }
+
+    /* checkmark */
+    svg {
+      color: transparent;
+    }
+
+    label:has(input[checked]) svg {
+      color: var(--color-bg--white);
+    }
+
+    /* label */
+    .label {
+      ${applyTypography('body-2')}
     }
   `;
 }

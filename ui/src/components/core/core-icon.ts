@@ -10,6 +10,10 @@ export class CoreIcon extends LitElement {
   @property({type: Boolean, attribute: 'interactive'})
   accessor isInteractive: boolean = false
 
+  readonly render = () => {
+    return html`${icons[this.icon]}`;
+  };
+
   static readonly styles = css`
     :host {
       display: inline-flex;
@@ -29,8 +33,4 @@ export class CoreIcon extends LitElement {
       object-fit: contain;
     }
   `;
-
-  readonly render = () => {
-    return html`${icons[this.icon]}`;
-  };
 }

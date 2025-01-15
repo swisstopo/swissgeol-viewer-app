@@ -28,7 +28,7 @@ export class NgmLayerTabs extends LitElementI18n {
   private readonly subscription = new Subscription();
 
   //TODO: where is this from exactly?
-  @query('.ngm-side-bar-panel > .ngm-toast-placeholder')
+  @query('.ngm-toast-placeholder')
   accessor toastPlaceholder!: HTMLElement
 
   connectedCallback() {
@@ -82,7 +82,9 @@ export class NgmLayerTabs extends LitElementI18n {
     ${hostStyles}
 
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
       padding: 16px;
     }
 
@@ -97,9 +99,9 @@ export class NgmLayerTabs extends LitElementI18n {
     }
 
     .tabs > button {
-
       ${applyTypography('button')};
 
+      color: var(--color-primary);
       background-color: transparent;
       border: none;
       padding: 8px;

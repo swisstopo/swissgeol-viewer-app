@@ -44,7 +44,7 @@ export class NgmLayerUpload extends LitElementI18n {
     }
 
     const dataSource = new CustomDataSource();
-    const name = await parseKml(this.viewer, e.detail.file, dataSource, e.detail.isClampingToGround);
+    const name = await parseKml(this.viewer, e.detail.file, dataSource, e.detail.isClampEnabled);
     const layer = `${name.replace(' ', '_')}_${Date.now()}`;
 
     // name used as id for datasource
@@ -94,30 +94,29 @@ export class NgmLayerUpload extends LitElementI18n {
       .toastPlaceholder=${this.toastPlaceholder}
       @upload=${this.handleKmlUpload}>
     </ngm-layer-upload-kml>
-    <button
-      class="ui button"
+    <ngm-core-button
+      variant="tertiary"
+      shape="large"
       @click=${this.emitIonModalOpening}
     >
+      <ngm-core-icon icon="cesium"></ngm-core-icon>
       ${i18next.t('dtd_add_ion_token')}
-    </button>
+    </ngm-core-button>
   `;
 
   static readonly styles = css`
     ${unsafeCSS(fomanticButtonCss)}
     ${unsafeCSS(fomanticLoaderCss)}
 
-    button.ui.button {
+    :host, :host * {
+      box-sizing: border-box;
+    }
+
+    :host {
       display: flex;
-      justify-content: center;
-      overflow-wrap: break-word;
-      align-items: center;
-      width: 325px;
-      height: 36px;
-      min-height: 36px;
-      letter-spacing: 0.25px;
-      box-shadow: 0 1px 3px #00000033;
-      background-color: #357183;
-      color: white;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
     }
   `;
 }

@@ -9,6 +9,7 @@ type Typography =
   | 'title'
   | 'subtitle-1'
   | 'subtitle-2'
+  | 'modal-title'
   | 'button'
   | 'caption'
   | 'overline'
