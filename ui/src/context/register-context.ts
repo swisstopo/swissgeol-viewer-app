@@ -1,10 +1,10 @@
 import {LitElement} from 'lit';
 import {Context, ContextProvider} from '@lit/context';
 import {ClientConfig} from '../api/client-config';
-import { apiClientContext, authServiceContext, clientConfigContext, gstServiceContext } from './client-config.context'
+import {apiClientContext, authServiceContext, clientConfigContext, gstServiceContext} from './client-config.context';
 import {ApiClient} from '../api/api-client';
 import AuthService from '../authService';
-import { GstService } from '../gst.service'
+import {GstService} from '../gst.service';
 
 
 export const registerAppContext: (element: LitElement, clientConfig: ClientConfig) => ContextProvider<Context<unknown, unknown>, LitElement>[]

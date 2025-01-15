@@ -18,6 +18,7 @@ import {pointInPolygon} from '../cesiumutils';
 import {gstServiceContext} from '../context';
 import {consume} from '@lit/context';
 import {GstService} from '../gst.service';
+import $ from 'jquery';
 
 export type OutputFormat = 'pdf' | 'png' | 'svg';
 

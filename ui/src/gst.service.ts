@@ -100,7 +100,6 @@ export class GstService {
 
     const params = new URLSearchParams({
       boxWidth: String(magnitude),
-      colorMapId: '',
       csRootElement: '0',
       csRootScale: '-1',
       depth: String(depth),
