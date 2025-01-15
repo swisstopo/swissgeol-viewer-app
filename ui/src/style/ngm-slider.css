@@ -2,28 +2,28 @@
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 2px;
+  height: 4px;
   background: #FFFFFF;
 }
 
 .ngm-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
-  background: #DEE2E6 0 0 no-repeat padding-box;
+  width: 24px;
+  height: 24px;
+  background: var(--color-bg--white) 0 0 no-repeat padding-box;
   box-shadow: 0 2px 2px #00000029;
-  border: 2px solid #52A8BC;
+  border: 3px solid var(--color-primary);
   border-radius: 50%;
   cursor: pointer;
 }
 
 .ngm-slider::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
-  background: #DEE2E6 0 0 no-repeat padding-box;
+  width: 24px;
+  height: 24px;
+  background: var(--color-bg--white) 0 0 no-repeat padding-box;
   box-shadow: 0 2px 2px #00000029;
-  border: 2px solid #52A8BC;
+  border: 3px solid var(--color-primary);
   border-radius: 50%;
   cursor: pointer;
 }
