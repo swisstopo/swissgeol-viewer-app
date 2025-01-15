@@ -2,13 +2,12 @@ import {customElement, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../../../i18n';
 import {CustomDataSource, DataSource, DataSourceCollection, Viewer} from 'cesium';
 import MainStore from '../../../store/main';
-import {css, html, unsafeCSS} from 'lit';
+import {css, html} from 'lit';
 import i18next from 'i18next';
 import {debounce} from '../../../utils';
 import {setExaggeration} from '../../../permalink';
 import NavToolsStore from '../../../store/navTools';
 import {updateExaggerationForKmlDataSource} from '../../../cesiumutils';
-import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css';
 import '../../core'
 
 @customElement('ngm-layer-options')
@@ -39,6 +38,16 @@ export class NgmLayerOptions extends LitElementI18n {
     });
   }
 
+  private toggleExaggerationVisibility() {
+    if (!this.viewer) return;
+    this.hideExaggeration = !this.hideExaggeration;
+    const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+    this.viewer.scene.verticalExaggeration = exaggeration;
+    this.updateExaggerationForKmls();
+    NavToolsStore.exaggerationChanged.next(exaggeration);
+    this.viewer.scene.requestRender();
+  }
+
   private updateExaggerationForKmls() {
     const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
     MainStore.uploadedKmlNames.forEach(name => {
@@ -63,20 +72,11 @@ export class NgmLayerOptions extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <div class="container">
       <div class="group">
         <ngm-core-icon
           icon="${this.hideExaggeration ? 'invisible' : 'visible'}"
           title=${!this.hideExaggeration ? i18next.t('dtd_hide_exaggeration') : i18next.t('dtd_show_exaggeration')}
-          @click=${() => {
-            if (!this.viewer) return;
-            this.hideExaggeration = !this.hideExaggeration;
-            const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
-            this.viewer.scene.verticalExaggeration = exaggeration;
-            this.updateExaggerationForKmls();
-            NavToolsStore.exaggerationChanged.next(exaggeration);
-            this.viewer.scene.requestRender();
-          }}
+          @click=${this.toggleExaggerationVisibility}
         ></ngm-core-icon>
         <label>${i18next.t('dtd_exaggeration_map')}</label>
       </div>
@@ -94,39 +94,22 @@ export class NgmLayerOptions extends LitElementI18n {
           <ngm-core-chip >${(this.exaggeration).toFixed()}x</ngm-core-chip>
         </div>
       </div>
-    </div>
   `;
 
   static readonly styles = css`
-
-    .container {
+    :host {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      background-color: white;
+      background-color: var(--color-bg--white);
       box-sizing: border-box;
       border: 1px solid var(--color-border--default);
       border-radius: 4px;
     }
 
-    .group {
-      display: flex;
-      justify-content: flex-start;
-      gap: 6px;
-      align-items: center;
-      margin: 10px;
-
-      ngm-core-slider {
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
-      }
-    }
-
-    .chip-container {
-      min-width: 48px;
-      display: flex;
-      justify-content: flex-end;
+    ngm-core-icon {
+      padding: 6px;
+      color: var(--color-primary);
     }
 
     hr {
@@ -137,9 +120,23 @@ export class NgmLayerOptions extends LitElementI18n {
       background-color: var(--color-border--default);
     }
 
-    ngm-core-icon {
-      padding: 6px;
-      color: var(--color-primary);
+    .group {
+      display: flex;
+      justify-content: flex-start;
+      gap: 6px;
+      align-items: center;
+      margin: 10px;
+    }
+
+    ngm-core-slider {
+      flex-grow: 1;
+      display: flex;
+    }
+
+    .chip-container {
+      min-width: 48px;
+      display: flex;
+      justify-content: flex-end;
     }
   `;
 }
