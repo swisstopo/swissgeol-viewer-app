@@ -4,7 +4,7 @@ import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
 import './elements/ngm-auth';
-import './components/tracking-consent/tracking-consent-modal';
+import './components/layout/tracking-consent-modal';
 import './elements/ngm-cursor-information';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
@@ -21,7 +21,7 @@ import './elements/ngm-wmts-date-picker';
 import './components/search/search-input';
 import '@geoblocks/cesium-view-cube';
 import './components/core';
-import './components/language-selector/ngm-language-selector';
+import './components/layout';
 
 import {COGNITO_VARIABLES, DEFAULT_VIEW} from './constants';
 
@@ -59,6 +59,8 @@ import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
 import {CoreModal} from './components/core/core-modal';
+import  './components/layout';
+import {TrackingConsentModalEvent} from "./components/layout/tracking-consent-modal";
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -121,7 +123,7 @@ export class NgmApp extends LitElementI18n {
   private queryManager: QueryManager | undefined;
   private waitForViewLoading = false;
   private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
-  private readonly disclaimer: CoreModal | null = null;
+  private disclaimer: CoreModal | null = null;
 
   @consume({context: clientConfigContext})
   accessor clientConfig!: ClientConfig;
@@ -129,7 +131,13 @@ export class NgmApp extends LitElementI18n {
   constructor() {
     super();
 
-    this.disclaimer = CoreModal.open({isPersistent: true, size: 'large', hasNoPadding: true}, html`<ngm-tracking-consent @confirm="${(event) => this.onTrackingAllowedChanged(event)}"></ngm-tracking-consent>`);
+    this.handleTrackingAllowedChanged = this.handleTrackingAllowedChanged.bind(this);
+
+    this.disclaimer = CoreModal.open({isPersistent: true, size: 'large', hasNoPadding: true}, html`
+      <ngm-tracking-consent-modal
+        @confirm="${this.handleTrackingAllowedChanged}"
+      ></ngm-tracking-consent-modal>
+    `);
 
     const boundingRect = document.body.getBoundingClientRect();
     this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
@@ -386,8 +394,9 @@ export class NgmApp extends LitElementI18n {
     });
   }
 
-  onTrackingAllowedChanged(event) {
+  handleTrackingAllowedChanged(event: TrackingConsentModalEvent) {
     this.disclaimer?.close();
+    this.disclaimer = null;
     this.showNavigationHint();
     initAnalytics(event.detail.allowed);
   }

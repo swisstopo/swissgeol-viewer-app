@@ -68,6 +68,8 @@
     --color-secondary--disabled: #FFFFFF;
     --color-secondary--active: #B2D2A2;
 
+    --color-tertiary--hovered: #DFE4E9;
+
     --color-border--default: #DFE4E9;
 
     --color-bg--white: #FFFFFF;
@@ -150,11 +152,17 @@
     --typo-subtitle-2--line-height: 20px;
     --typo-subtitle-2--letter-spacing: 0.0015em;
 
-    --typo-modal-title--family: var(--font-family), var(--font-family--fallback);
-    --typo-modal-title--weight: 700;
-    --typo-modal-title--size: 20px;
-    --typo-modal-title--line-height: 24.2px;
-    --typo-modal-title--letter-spacing: 0.001em;
+    --typo-modal-title-1--family: var(--font-family), var(--font-family--fallback);
+    --typo-modal-title-1--weight: 700;
+    --typo-modal-title-1--size: 20px;
+    --typo-modal-title-1--line-height: 24.2px;
+    --typo-modal-title-1--letter-spacing: 0.001em;
+
+    --typo-modal-title-2--family: var(--font-family), var(--font-family--fallback);
+    --typo-modal-title-2--weight: 700;
+    --typo-modal-title-2--size: 16px;
+    --typo-modal-title-2--line-height: 24.2px;
+    --typo-modal-title-2--letter-spacing: 0.001em;
 
     --typo-button--family: var(--font-family), var(--font-family--fallback);
     --typo-button--weight: 500;
@@ -251,4 +259,9 @@
 :root {
     --animate-fade--timing: ease-out;
     --animate-fade--duration: 250ms;
+}
+
+/* ### Padding ### */
+:root {
+    --modal-padding: 24px;
 }

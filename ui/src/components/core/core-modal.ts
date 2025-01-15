@@ -53,7 +53,7 @@ export class CoreModal extends LitElement {
   @property({type: Boolean})
   accessor isPersistent = true;
 
-  @property(({type: Boolean, reflect: true}))
+  @property(({type: Boolean, attribute: 'no-padding',  reflect: true}))
   accessor hasNoPadding = false;
 
   private dialog: HTMLDialogElement | null = null;
@@ -115,12 +115,8 @@ export class CoreModal extends LitElement {
       opacity: 0.7;
     }
 
-    dialog > div {
+    :host(:not([no-padding])) dialog > div {
       padding: 24px;
-    }
-
-    :host([hasNoPadding]) > dialog > div {
-      padding: 0;
     }
   `;
 }
