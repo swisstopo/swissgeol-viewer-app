@@ -1,8 +1,8 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import './core-icon';
-import {applyTypography} from "../../styles/theme";
-import {Variant} from "./core-button";
+import {applyTypography} from '../../styles/theme';
+import {Variant} from './core-button';
 
 @customElement('ngm-core-chip')
 export class CoreChip extends LitElement {

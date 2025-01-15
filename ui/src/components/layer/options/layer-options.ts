@@ -8,8 +8,8 @@ import {debounce} from '../../../utils';
 import {setExaggeration} from '../../../permalink';
 import NavToolsStore from '../../../store/navTools';
 import {updateExaggerationForKmlDataSource} from '../../../cesiumutils';
-import '../../core'
-import {SliderValueChangeEvent} from "../../core/core-slider";
+import '../../core';
+import {SliderValueChangeEvent} from '../../core/core-slider';
 
 @customElement('ngm-layer-options')
 export class NgmLayerOptions extends LitElementI18n {
@@ -41,7 +41,7 @@ export class NgmLayerOptions extends LitElementI18n {
 
   private toggleExaggerationVisibility() {
     if (!this.viewer) {
-      return
+      return;
     }
     this.hideExaggeration = !this.hideExaggeration;
     const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
