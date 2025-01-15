@@ -53,7 +53,7 @@ export class CoreModal extends LitElement {
   @property({type: Boolean})
   accessor isPersistent = true;
 
-  @property(({type: Boolean, attribute: 'no-padding',  reflect: true}))
+  @property(({type: Boolean, attribute: 'no-padding', reflect: true}))
   accessor hasNoPadding = false;
 
   private dialog: HTMLDialogElement | null = null;

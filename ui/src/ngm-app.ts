@@ -4,7 +4,6 @@ import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
 import './elements/ngm-auth';
-import './components/layout/tracking-consent-modal';
 import './elements/ngm-cursor-information';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
@@ -59,8 +58,7 @@ import {clientConfigContext} from './context';
 import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
 import {CoreModal} from './components/core/core-modal';
-import  './components/layout';
-import {TrackingConsentModalEvent} from "./components/layout/tracking-consent-modal";
+import {TrackingConsentModalEvent} from './components/layout/tracking-consent-modal';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 

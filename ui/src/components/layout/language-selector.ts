@@ -3,13 +3,13 @@ import i18next from 'i18next';
 import {SUPPORTED_LANGUAGES} from '../../constants';
 import {customElement} from 'lit/decorators.js';
 import {LitElementI18n} from '../../i18n';
-import {styleMap} from 'lit/directives/style-map.js';
 import 'fomantic-ui-css/components/dropdown';
 import $ from 'jquery';
 import '../core/core-icon';
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css';
 import fomanticDropdownCss from 'fomantic-ui-css/components/dropdown.css';
-import {applyTypography} from "../../styles/theme";
+import {applyTypography} from '../../styles/theme';
+import {classMap} from 'lit/directives/class-map.js';
 
 @customElement('ngm-language-selector')
 export class NgmLanguageSelector extends LitElementI18n {
@@ -34,7 +34,7 @@ export class NgmLanguageSelector extends LitElementI18n {
             ${SUPPORTED_LANGUAGES.map(lang => html`
               <div class="item no-padding" @click="${() => i18next.changeLanguage(lang)}">
                 <div class="item">
-                  <ngm-core-icon style="${styleMap({'visibility': i18next.language?.toUpperCase() === lang?.toUpperCase() ? 'visible' : 'hidden'})}" icon="checkmark"></ngm-core-icon>
+                  <ngm-core-icon class="${classMap({'hidden': i18next.language?.toUpperCase() !== lang?.toUpperCase() })}" icon="checkmark"></ngm-core-icon>
                   <span>${lang.toUpperCase()}</span>
                 </div>
                 </div>
@@ -67,6 +67,10 @@ export class NgmLanguageSelector extends LitElementI18n {
 
     .container.active ngm-core-icon[icon="dropdown"] {
       transform: rotate(180deg);
+    }
+
+    ngm-core-icon.hidden {
+      visibility: hidden;
     }
 
     .title {
