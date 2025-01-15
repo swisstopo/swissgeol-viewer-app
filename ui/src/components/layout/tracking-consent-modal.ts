@@ -17,7 +17,7 @@ export class NgmTrackingConsentModal extends LitElementI18n {
   private accept() {
     this.dispatchEvent(new CustomEvent<TrackingConsentModalEventDetail>('confirm', {
       detail: {
-        allowed: this.isAllowed
+        isAllowed: this.isAllowed
       }
     }));
   }
@@ -87,5 +87,5 @@ export class NgmTrackingConsentModal extends LitElementI18n {
 export type TrackingConsentModalEvent = CustomEvent<TrackingConsentModalEventDetail>;
 
 export interface TrackingConsentModalEventDetail {
-  allowed: boolean;
+  isAllowed: boolean;
 }

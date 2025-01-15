@@ -112,7 +112,7 @@ export class NgmLayerTabs extends LitElementI18n {
 
     .tabs > button.is-active {
       background-color: var(--color-rest-active);
-      color: var(--color-medium-emphasis);
+      color: var(--color-text--emphasis--medium);
     }
 
     .tabs > .separator {

@@ -34,7 +34,7 @@ export class NgmLanguageSelector extends LitElementI18n {
             ${SUPPORTED_LANGUAGES.map(lang => html`
               <div class="item no-padding" @click="${() => i18next.changeLanguage(lang)}">
                 <div class="item">
-                  <ngm-core-icon class="${classMap({'hidden': i18next.language?.toUpperCase() !== lang?.toUpperCase() })}" icon="checkmark"></ngm-core-icon>
+                  <ngm-core-icon class="${classMap({'hidden': i18next.language?.toUpperCase() !== lang?.toUpperCase()})}" icon="checkmark"></ngm-core-icon>
                   <span>${lang.toUpperCase()}</span>
                 </div>
                 </div>
@@ -62,7 +62,7 @@ export class NgmLanguageSelector extends LitElementI18n {
 
     .container:hover {
       background-color: var(--color-secondary--hovered);
-      color: var(--color-medium-emphasis);
+      color: var(--color-text--emphasis--medium);
     }
 
     .container.active ngm-core-icon[icon="dropdown"] {

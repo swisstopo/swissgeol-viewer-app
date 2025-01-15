@@ -396,7 +396,7 @@ export class NgmApp extends LitElementI18n {
     this.disclaimer?.close();
     this.disclaimer = null;
     this.showNavigationHint();
-    initAnalytics(event.detail.allowed);
+    initAnalytics(event.detail.isAllowed);
   }
 
   showNavigationHint() {
