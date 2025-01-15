@@ -5,13 +5,13 @@ import {applyTypography} from "../../styles/theme";
 import {Variant} from "./core-button";
 
 @customElement('ngm-core-chip')
-export class CoreCheckbox extends LitElement {
+export class CoreChip extends LitElement {
   @property({reflect: true})
   accessor variant: Variant = 'primary'
 
   readonly render = () => html`
     <span>
-            <slot></slot>
+      <slot></slot>
     </span>
 
   `;

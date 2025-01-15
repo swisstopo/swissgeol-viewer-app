@@ -1,10 +1,9 @@
-import {css, html, LitElement, unsafeCSS} from 'lit';
+import {css, html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import './core-icon';
-import sliderCss from '../../style/ngm-slider.css';
 
 @customElement('ngm-core-slider')
-export class CoreCheckbox extends LitElement {
+export class CoreSlider extends LitElement {
   @property({type: Boolean})
   accessor isActive: boolean = false;
 
@@ -20,17 +19,16 @@ export class CoreCheckbox extends LitElement {
   @property({type: Number})
   accessor value: number = 0;
 
-  onInputChange(evt: InputEvent) {
-    this.value = parseInt((<HTMLInputElement>evt.target).value);
-    console.log('onInputChange', (<HTMLInputElement>evt.target).value);
-    this.dispatchEvent(new CustomEvent('change', {
+  handleInputChange(event: InputEvent) {
+    this.value = parseInt((event.target as HTMLInputElement).value);
+    this.dispatchEvent(new CustomEvent<SliderValueChangeEventDetail>('change', {
       detail: {
-        value: parseInt((<HTMLInputElement>evt.target).value)
+        value: this.value
       }
     }));
   }
 
-  onPointerUp() {
+  handlePointerUp() {
     this.dispatchEvent(new CustomEvent('pointerup'));
   }
 
@@ -38,11 +36,11 @@ export class CoreCheckbox extends LitElement {
             <input
           type="range"
           class="ngm-slider"
-          style="background-image: linear-gradient(to right, var(--color-primary--active), var(--color-primary--active) ${this.value * 5}%, var(--color-border--default) ${this.value * 5}%)"
+          style="--value: ${this.value};"
           .min=${this.min} .max=${this.max} .step=${this.step}
-          .value=${!isNaN(this.value) ? this.value : 1}
-          @input=${(evt: InputEvent) => this.onInputChange(evt)}
-          @pointerup=${this.onPointerUp}
+          .value=${isNaN(this.value) ? 1 : this.value}
+          @input=${this.handleInputChange}
+          @pointerup=${this.handlePointerUp}
         >
   `;
 
@@ -50,9 +48,10 @@ export class CoreCheckbox extends LitElement {
     :host {
       --slider-thumb-size: 24px;
       --slider-track-height: 4px;
-    }
 
-   /*  ${unsafeCSS(sliderCss)} */
+      display: flex;
+      width: 100%;
+    }
 
     input {
       height: 4px;
@@ -60,9 +59,8 @@ export class CoreCheckbox extends LitElement {
     }
 
     input[type="range"] {
-      -webkit-appearance: none;
       appearance: none;
-      background: transparent;
+      background-image: linear-gradient(to right, var(--color-primary--active), var(--color-primary--active) calc(var(--value) * 5%), var(--color-border--default) calc(var(--value) * 5%));
       cursor: pointer;
       width: 100%;
       margin: 0;
@@ -79,7 +77,6 @@ export class CoreCheckbox extends LitElement {
     }
 
     input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
       appearance: none;
       width: var(--slider-thumb-size);
       height: var(--slider-thumb-size);
@@ -101,4 +98,10 @@ export class CoreCheckbox extends LitElement {
       cursor: pointer;
     }
   `;
+}
+
+export type SliderValueChangeEvent = CustomEvent<SliderValueChangeEventDetail>
+
+export interface SliderValueChangeEventDetail {
+  value: number;
 }
