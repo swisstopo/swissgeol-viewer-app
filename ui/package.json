@@ -6,7 +6,7 @@
     "lint": "eslint",
     "extract-from-assets": "node scripts/get_assets_properties.js src/assets_properties.js",
     "extract-i18n": "i18next -c i18next-parser.config.cjs",
-    "start": "npm run build:static && npm run webpack:serve",
+    "start": "npm run build:static && vite serve",
     "build": "npm run build:clean && npm run build:static && npm run build:js",
     "build:clean": "rimraf dist/",
     "build:static": "npm run build:static:environment && npm run build:static:manuals && npm run build:static:legal && npm run build:static:versions",
@@ -53,7 +53,11 @@
     "loc-i18next": "0.1.6",
     "papaparse": "5.4.1",
     "proj4": "2.14.0",
-    "rxjs": "7.8.1"
+    "rxjs": "7.8.1",
+    "vite": "^6.0.7",
+    "vite-plugin-commonjs": "^0.10.4",
+    "vite-plugin-css-modules": "^0.0.1",
+    "vite-string-plugin": "^1.4.2"
   },
   "devDependencies": {
     "@babel/core": "7.26.0",
@@ -112,6 +116,10 @@
     "ts-loader": "9.5.1",
     "ts-node": "10.9.2",
     "typescript": "5.6.3",
+    "vite-plugin-html-purgecss": "^0.1.1",
+    "vite-plugin-purgecss": "^0.2.12",
+    "vite-plugin-static-copy": "^2.2.0",
+    "vite-plugin-string": "^1.2.3",
     "webpack": "5.96.1",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "5.1.4",
