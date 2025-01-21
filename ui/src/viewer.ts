@@ -35,7 +35,7 @@ import {getExaggeration} from './permalink';
 import {pickPositionOrVoxel} from './cesiumutils';
 
 
-window['CESIUM_BASE_URL'] = '.';
+window['CESIUM_BASE_URL'] = './cesium';
 
 Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 

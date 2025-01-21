@@ -1,41 +1,17 @@
-import {defineConfig, normalizePath, PluginOption} from 'vite';
+import {defineConfig, normalizePath} from 'vite';
 import {dirname, resolve} from 'path';
 import {fileURLToPath} from 'url';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
-import * as fs from "node:fs";
-import litCss from "rollup-plugin-lit-css";
-import * as postcss from "postcss";
-import babel from "@rollup/plugin-babel";
-import copy from "rollup-plugin-copy";
+import babel from '@rollup/plugin-babel';
 import inlinesvg from 'postcss-inline-svg';
 import cssimport from 'postcss-import';
 import postcssurl from 'postcss-url';
 
 
+// @ts-ignore
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const cesiumBuild = resolve(__dirname, './node_modules/cesium/Build/Cesium');
-const cesiumSource = 'node_modules/cesium/Source';
-const cesiumWorkers = '../Build/Cesium/Workers';
 const extensions = ['.ts', '.js'];
-
-
-function cssAsStringPlugin(): PluginOption {
-  return {
-    enforce: 'pre', // Ensure this runs before other plugins
-    name: 'css-as-string',
-    transform(src: string, id: string) {
-      if (id.endsWith('.css')) {
-        console.log(`Processing CSS file in custom plugin: ${id}`);
-      }
-      if (id.includes('fomantic-ui-css') && id.endsWith('.css')) {
-        console.log(`Transforming Fomantic CSS: ${id}`);
-        const cssContent = fs.readFileSync(id, 'utf8');
-        return `export default ${JSON.stringify(cssContent)};`;
-      }
-      return null;
-    },
-  };
-}
 
 export default defineConfig({
   resolve: {
@@ -47,15 +23,21 @@ export default defineConfig({
       './images': normalizePath(resolve(__dirname, 'src/images')),
       './@fontsource/inter': normalizePath(resolve(__dirname, 'node_modules/@fontsource/inter')),
     },
-    extensions: ['.ts', '.js'],
+    extensions,
   },
   build: {
     outDir: 'dist',
-    minify: "terser",
+    emptyOutDir: false,
+    minify: 'terser',
     sourcemap: true,
     cssCodeSplit: true,
     rollupOptions: {
-      input: 'src/index.ts',
+      input: 'index.html',
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js', // Ensure JavaScript output is configured
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
+      },
       plugins: [
         babel({
           babelHelpers: 'bundled',
@@ -92,30 +74,11 @@ export default defineConfig({
             'node_modules/**' // yes, this is eXtreme excluding (includes aws-sdk)
           ],
         }),
-        copy({
-          targets: [
-            {src: 'index.html', dest: 'dist/'},
-            {src: 'src', dest: 'dist/'},
-            {src: 'locales', dest: 'dist/'},
-            {src: 'robots.txt', dest: 'dist/'},
-            {src: 'robots_prod.txt', dest: 'dist/'},
-            {src: 'security.txt', dest: 'dist/.well-known/'},
-            {src: cesiumSource + '/' + cesiumWorkers, dest: 'dist/'},
-            {src: cesiumSource + '/Assets', dest: 'dist/'},
-            {src: cesiumSource + '/Widgets', dest: 'dist/'},
-            {src: cesiumSource + '/ThirdParty/', dest: 'dist/'},
-            {src: 'src/images', dest: 'dist/'},
-            {src: 'node_modules/@fontsource/inter/files/*', dest: 'dist/fonts/'},
-            {src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', dest: 'dist/fonts/'},
-            {src: 'manuals/dist/*', dest: 'dist/manuals/'},
-            {src: 'manuals/images/', dest: 'dist/manuals/'},
-            {src: 'manuals/style.css', dest: 'dist/manuals/'},
-          ]
-        }),
         ],
     },
   },
   server: {
+    host: '0.0.0.0',
     port: 8000,
     open: true,
     proxy: {
@@ -133,30 +96,23 @@ export default defineConfig({
     },
   },
   plugins: [
-    // vitePluginString({
-    //   include: ['**/*.css'], // Enable string imports for CSS files
-    // }),
-    // stringPlugin(),
-    // cssAsStringPlugin(),
-    // litCss({}),
-    // viteStaticCopy({
-    //   targets: [
-    //     {src: normalizePath(resolve(cesiumBuild, 'Workers')), dest: './Workers',},
-    //     {src: normalizePath(resolve(cesiumBuild, 'ThirdParty')), dest: '/.ThirdParty',},
-    //     {src: normalizePath(resolve(cesiumBuild, 'Assets')), dest: './Assets',},
-    //     {src: normalizePath(resolve(cesiumBuild, 'Widgets')), dest: './Widgets',},
-    //     {src: 'index.html', dest: './'},
-    //     {src: 'src/', dest: 'src/'},
-    //     {src: 'locales/', dest: './locales/'},
-    //     {src: 'src/images/', dest: './images/'},
-    //     {src: 'node_modules/@fontsource/inter/files/*', dest: 'fonts/[name][ext]'},
-    //     {src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', dest: 'fonts/[name][ext]'},
-    //     {src: 'manuals/dist/', dest: './manuals/'},
-    //     {src: 'manuals/style.css', dest: './manuals/'},
-    //     {src: 'manuals/images', dest: './manuals/images/'},
-    //   ],
-    //   hook: 'buildEnd',
-    // }),
+    viteStaticCopy({
+      targets: [
+        {src: normalizePath(resolve(cesiumBuild, 'Workers/**/*')), dest: './cesium/Workers',},
+        {src: normalizePath(resolve(cesiumBuild, 'ThirdParty/**/*')), dest: './cesium/ThirdParty',},
+        {src: normalizePath(resolve(cesiumBuild, 'Assets/**/*')), dest: './cesium/Assets',},
+        {src: normalizePath(resolve(cesiumBuild, 'Widgets/**/*')), dest: './cesium/Widgets',},
+        {src: 'locales/**/*', dest: './locales'},
+        {src: 'src/images/**/*', dest: './images'},
+        {src: 'node_modules/@fontsource/inter/files/**/*', dest: 'fonts'},
+        {src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/**/*', dest: 'fonts'},
+        {src: 'manuals/dist/**/*', dest: './manuals'},
+        {src: 'manuals/style.css', dest: './manuals'},
+        {src: 'manuals/images/**/*', dest: './manuals/images'},
+      ],
+      watch: {reloadPageOnChange: true},
+      hook: 'buildStart',
+    }),
   ],
   css: {
     postcss: {
@@ -175,7 +131,4 @@ export default defineConfig({
       ],
     },
   },
-  // optimizeDeps: {
-  //   exclude: ['fomantic-ui-css'],
-  // },
 });

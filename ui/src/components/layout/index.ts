@@ -1,2 +1,2 @@
-import './language-selector';
-import './tracking-consent-modal';
+import './language-selector.ts';
+import './tracking-consent-modal.ts';

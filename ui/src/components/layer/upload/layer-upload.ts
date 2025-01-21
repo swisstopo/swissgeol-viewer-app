@@ -10,8 +10,8 @@ import MainStore from '../../../store/main';
 import {DEFAULT_LAYER_OPACITY, LayerConfig} from '../../../layertree';
 import {LayerEventDetails} from '../layer-display';
 import {Subscription} from 'rxjs';
-import fomanticButtonCss from 'fomantic-ui-css/components/button.css';
-import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css';
+import fomanticButtonCss from 'fomantic-ui-css/components/button.css?raw';
+import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
 
 
 @customElement('ngm-layer-upload')
