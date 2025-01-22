@@ -101,16 +101,16 @@ export const COLORS_WITH_BLACK_TICK = ['white', 'yellow', 'orange'];
 export const POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
 
 export const SLICE_BOX_ARROWS_INSIDE = [
-  {side: 'left', oppositeSide: 'right', uri: './images/arrowV.glb'},
-  {side: 'right', oppositeSide: 'left', uri: './images/arrowV.glb'},
-  {side: 'back', oppositeSide: 'front', uri: './images/arrowH.glb'},
-  {side: 'front', oppositeSide: 'back', uri: './images/arrowH.glb'},
+  {side: 'left', oppositeSide: 'right', uri: '/images/arrowV.glb'},
+  {side: 'right', oppositeSide: 'left', uri: '/images/arrowV.glb'},
+  {side: 'back', oppositeSide: 'front', uri: '/images/arrowH.glb'},
+  {side: 'front', oppositeSide: 'back', uri: '/images/arrowH.glb'},
 ];
 
 export const SLICE_BOX_ARROWS_OUTSIDE = [
   ...SLICE_BOX_ARROWS_INSIDE,
-  {side: 'down', oppositeSide: 'up', uri: './images/arrowA.glb'},
-  {side: 'up', oppositeSide: 'down', uri: './images/arrowA.glb'}
+  {side: 'down', oppositeSide: 'up', uri: '/images/arrowA.glb'},
+  {side: 'up', oppositeSide: 'down', uri: '/images/arrowA.glb'}
 ];
 
 export const SLICING_BOX_HEIGHT = DEFAULT_VOLUME_HEIGHT_LIMITS.height;

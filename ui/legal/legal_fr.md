@@ -1,4 +1,4 @@
-﻿![logo](../src/images/swissgeol_viewer.svg)
+﻿![logo](../public/images/swissgeol_viewer.svg)
 
 Informations juridiques
 ===========

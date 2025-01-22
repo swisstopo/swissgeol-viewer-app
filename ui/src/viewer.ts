@@ -366,7 +366,7 @@ export function setupBaseLayers(viewer: Viewer) {
         {
             id: arealLayer,
             labelKey: t('dtd_aerial_map_label'),
-            backgroundImgSrc: 'src/images/arealimage.png',
+            backgroundImgSrc: '/images/arealimage.png',
             layers: [
                 addSwisstopoLayer(viewer, arealLayer, 'jpeg', 20)
             ]
@@ -375,7 +375,7 @@ export function setupBaseLayers(viewer: Viewer) {
             id: greyLayer,
             default: true,
             labelKey: t('dtd_grey_map_label'),
-            backgroundImgSrc: 'src/images/grey.png',
+            backgroundImgSrc: '/images/grey.png',
             layers: [
                 addSwisstopoLayer(viewer, greyLayer, 'jpeg', 18)
             ]
@@ -383,7 +383,7 @@ export function setupBaseLayers(viewer: Viewer) {
         {
             id: 'lakes_rivers_map',
             labelKey: t('dtd_lakes_rivers_map_label'),
-            backgroundImgSrc: 'src/images/lakes_rivers.png',
+            backgroundImgSrc: '/images/lakes_rivers.png',
             hasAlphaChannel: true,
             layers: [
                 addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', 18),
@@ -393,7 +393,7 @@ export function setupBaseLayers(viewer: Viewer) {
         {
             id: 'empty_map',
             labelKey: t('dtd_empty_map_label'),
-            backgroundImgSrc: 'src/images/empty.png',
+            backgroundImgSrc: '/images/empty.png',
             layers: [
                 emptyLayer
             ]

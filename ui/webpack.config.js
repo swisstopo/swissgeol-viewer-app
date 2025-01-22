@@ -46,7 +46,7 @@ const config = {
       './cesium': resolve(__dirname, 'node_modules/cesium/Source'),
 
       './fomantic-ui-css': resolve(__dirname, 'node_modules/fomantic-ui-css'),
-      './images': resolve(__dirname, 'src/images'),
+      '/images': resolve(__dirname, 'src/images'),
       './@fontsource/inter': resolve(__dirname, 'node_modules@fontsource/inter'),
     },
   },
@@ -147,7 +147,7 @@ const config = {
         {from: 'index.html', to: './'},
         {from: 'src/', to: 'src/'},
         {from: 'locales/', to: './locales/'},
-        {from: 'src/images/', to: './images/'},
+        {from: 'src/images/', to: 'public/images/'},
         {from: 'node_modules/@fontsource/inter/files/*', to: 'fonts/[name][ext]'},
         {from: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/*', to: 'fonts/[name][ext]'},
         {from: 'manuals/dist/', to: './manuals/'},

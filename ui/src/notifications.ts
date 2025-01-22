@@ -19,7 +19,7 @@ export function showSnackbarError(message: string): HTMLElement {
 
 export function showBannerError(element: HTMLElement, message: string): HTMLElement {
   return showBanner(element, {
-    showImage: 'src/images/i_error.svg',
+    showImage: '/images/i_error.svg',
     closeIcon: true,
     className: {toast: 'snackbar error'},
     message: message
@@ -28,7 +28,7 @@ export function showBannerError(element: HTMLElement, message: string): HTMLElem
 
 export function showBannerWarning(element: HTMLElement, message: string): HTMLElement {
   return showBanner(element, {
-    showImage: 'src/images/I_warning.svg',
+    showImage: '/images/I_warning.svg',
     closeIcon: true,
     className: {toast: 'snackbar warning'},
     message: message
@@ -37,7 +37,7 @@ export function showBannerWarning(element: HTMLElement, message: string): HTMLEl
 
 export function showBannerSuccess(element: HTMLElement, message: string): HTMLElement {
   return showBanner(element, {
-    showImage: 'src/images/i_success.svg',
+    showImage: '/images/i_success.svg',
     closeIcon: true,
     className: {toast: 'snackbar success'},
     message: message

@@ -134,7 +134,7 @@ export class NgmMinimap extends LitElementI18n {
   render() {
     return html`
       <div class="ngm-minimap-container">
-        <img src="./images/overview.svg" class="ngm-map-overview">
+        <img src="/images/overview.svg" class="ngm-map-overview">
         <div class="ngm-cam ${classMap({'ngm-cam-icon': !this.nadirViewActive, 'ngm-cam-behind-icon': this.nadirViewActive})}" style=${styleMap(this.markerStyle)}
              @mousedown="${(evt) => this.onIconPress(evt)}">
         </div>

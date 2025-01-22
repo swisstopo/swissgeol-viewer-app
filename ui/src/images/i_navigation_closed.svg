@@ -1,6 +1,0 @@
-<svg id="i_navigation_closed" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <path id="icons8-close_pane" d="M5,3A2.015,2.015,0,0,0,3,5V19a2.015,2.015,0,0,0,2,2H19a2.015,2.015,0,0,0,2-2V5a2.015,2.015,0,0,0-2-2ZM5,5h9V19H5Zm9,7L10,8v3H7v2h3v3Zm2-7h3V19H16Z" transform="translate(24 24) rotate(180)" fill="#030303"/>
-  <g id="icon_navigation_tree_closed">
-    <rect id="icon_navigation_tree_closed-2" data-name="icon_navigation_tree_closed" width="24" height="24" fill="none"/>
-  </g>
-</svg>

@@ -484,7 +484,7 @@ export class GeometryController {
         entityAttrs.position = Cartographic.toCartesian(cartPosition);
       }
       entityAttrs.billboard = {
-        image: attributes.pointSymbol ?? `./images/${POINT_SYMBOLS[0]}`,
+        image: attributes.pointSymbol ?? `/images/${POINT_SYMBOLS[0]}`,
         color: color ? new Color(color.red, color.green, color.blue) : DEFAULT_AOI_COLOR,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,

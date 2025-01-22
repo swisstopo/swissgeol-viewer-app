@@ -418,8 +418,8 @@ export class NgmApp extends LitElementI18n {
       <header>
         <div class="left">
           <a id="ngm-home-link" href="">
-            <img class="hidden-mobile" src="src/images/swissgeol_viewer.svg" height="36">
-            <img class="visible-mobile" src="src/images/swissgeol_favicon_viewer.svg">
+            <img class="hidden-mobile" src="/images/swissgeol_viewer.svg" height="36">
+            <img class="visible-mobile" src="/images/swissgeol_favicon_viewer.svg">
             <div class="logo-text visible-mobile">swissgeol</div>
           </a>
           <ngm-search-input
