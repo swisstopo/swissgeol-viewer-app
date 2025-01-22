@@ -8,6 +8,7 @@ RUN apk add --no-cache git
 WORKDIR /app
 COPY . .
 
+WORKDIR /app/ui
 RUN npm install --ignore-scripts \
  && npm run build --omit=dev
 
@@ -15,7 +16,7 @@ RUN npm install --ignore-scripts \
 FROM nginx:alpine
 
 WORKDIR /usr/share/nginx/html
-COPY --from=build /app/dist/ /usr/share/nginx/html
+COPY --from=build /app/ui/dist/ /usr/share/nginx/html
 
 EXPOSE 80
 

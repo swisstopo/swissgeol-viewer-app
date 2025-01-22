@@ -99,7 +99,7 @@ jobs:
           VERSION: ${{ needs.determine_version.outputs.version }}
           DOCKERFILE: ./ui/Dockerfile
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONTEXT: ./ui
+          CONTEXT: .
 
   tag_commit:
     name: "tag commit"
