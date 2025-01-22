@@ -6,19 +6,18 @@
   <title>swissgeol</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="shortcut icon" type="image/png" href="src/images/swissgeol_favicon_viewer_small.png">
+  <link rel="shortcut icon" type="image/png" href="/images/swissgeol_favicon_viewer_small.png">
 
   <meta name="description" content="swissgeol.ch is the 3D subsurface viewer of the Swiss Confederation. Geoscientific information below the terrain of Switzerland can be combined with geographic information above terrain.">
   <title>swissgeol</title>
 
-  <link href="index.css" rel="stylesheet">
   <script>window.activeEnvironment="default_active_env"</script>
 </head>
 
 <body>
   <div id="outdated-browser" style="display: none;">
     <header>
-      <img alt="logo" src="src/images/swissgeol_viewer.svg">
+      <img alt="logo" src="/images/swissgeol_viewer.svg">
     </header>
 
     <div class="ui large negative icon floating message">
@@ -36,7 +35,7 @@
     document.querySelector('#outdated-browser').style.display = '';
     document.querySelector('#loader').style.display = 'none';
   </script>
-  <script type="module" id="app-script" crossorigin="use-credentials" src="index.js"></script>
+  <script type="module" id="app-script" crossorigin="use-credentials" src="./src/index.ts"></script>
 </body>
 
 </html>

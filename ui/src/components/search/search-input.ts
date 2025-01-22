@@ -140,7 +140,7 @@ export class SearchInput extends LitElementI18n {
   private renderItem(item: SearchItem, label: string): string {
     const categorizedItem = categorizeSearchItem(item);
     const icon = getIconForCategory(categorizedItem.category);
-    return `<img src='./images/${icon}.svg' alt=""/><b>${label}</b>`;
+    return `<img src='/images/${icon}.svg' alt=""/><b>${label}</b>`;
   }
 
   private searchAdditionalItems(query: string): Promise<AdditionalItem[]> {

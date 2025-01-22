@@ -63,7 +63,7 @@ export class NgmNavTools extends LitElementI18n {
     position: Cartesian3.ZERO,
     show: false,
     billboard: {
-      image: './images/i_cam_tp.svg',
+      image: '/images/i_cam_tp.svg',
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
       width: 40,
       height: 40,

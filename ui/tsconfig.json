@@ -24,7 +24,10 @@
     "types": [
       "geojson"
     ],
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"],
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.js", "node_modules/fomantic-ui-css/types/**/*.d.ts"],
   "exclude": ["src/test/**/*"]

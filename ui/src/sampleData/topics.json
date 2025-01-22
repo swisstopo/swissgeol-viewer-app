@@ -15,7 +15,7 @@
     },
     "created": "2021-01-11",
     "modified": "2021-01-11",
-    "image": "./images/spashing_water.png",
+    "image": "/images/spashing_water.png",
     "color": "#B9271A",
     "views": [
       {
@@ -64,7 +64,7 @@
       "it": "Le infrastrutture della linea di transito del Gottardo sono ben visibili sulla superficie terrestre, ma cosa si nasconde in realtà sotto la superficie? Clicca sulle diverse viste per vedere la situazione intorno alla chiesa di Wassen lungo la via di transito del Gottardo.",
       "en": "Infrastructure at the Gotthard transit route can be well seen on the earth surface, but what is actually hidden below the surface? Click on the different views to see the situation around the church of Wassen along the Gotthard transit route."
     },
-    "image": "./images/wassen.png",
+    "image": "/images/wassen.png",
     "created": "2021-09-12",
     "modified": "2021-09-12",
     "color": "#B9271A",
@@ -117,7 +117,7 @@
     },
     "created": "2022-01-10",
     "modified": "2022-01-10",
-    "image": "./images/watertower_rivers.jpg",
+    "image": "/images/watertower_rivers.jpg",
     "color": "#B9271A",
     "views": [
       {
@@ -186,7 +186,7 @@
     },
     "created": "2022-01-10",
     "modified": "2022-01-10",
-    "image": "./images/GeoMol2.jpg",
+    "image": "/images/GeoMol2.jpg",
     "color": "#B9271A",
     "views": [
       {
@@ -237,7 +237,7 @@
     },
     "created": "2022-04-27",
     "modified": "2022-04-27",
-    "image": "./images/GeoQuat2.jpg",
+    "image": "/images/GeoQuat2.jpg",
     "color": "#B9271A",
     "views": [
       {
@@ -298,7 +298,7 @@
     },
     "created": "2022-04-27",
     "modified": "2022-04-27",
-    "image": "./images/TopFels.png",
+    "image": "/images/TopFels.png",
     "color": "#B9271A",
     "views": [
       {
@@ -349,7 +349,7 @@
     },
     "created": "2022-03-29",
     "modified": "2022-03-29",
-    "image": "./images/geowege.jpg",
+    "image": "/images/geowege.jpg",
     "color": "#B9271A",
     "views": [
         {
@@ -395,7 +395,7 @@
                    "it": "",
 	               "en": "This multi-day hiking tour passes the Dent de Morcles with his famous sedimentation, folding and erosion history. The prominent fold consists in Mesozoic sediments."
 				},
-				"image": "./images/Etappe_Champex_d_Alesse.png",
+				"image": "/images/Etappe_Champex_d_Alesse.png",
 				"name": "Dent de Morcles",
 				"color": "#FFFFFF"
             },
@@ -413,7 +413,7 @@
             "properties": {
                 "website": "https://www.parcobreggia.ch/it/",
 				"description" : "Strolling through 190 Million years: Reddish radiolariths, conglomerates, limestones and flysch deposits make the hearts of geology enthusiasts beat faster. It's also a great spot for some canyoning.",
-				"image": "./images/Breggia.jpg", 
+				"image": "/images/Breggia.jpg",
 				"name": "Gole di Breggia",
 				"color": "#32cd32"
             },
@@ -431,7 +431,7 @@
             "properties": {
                 "website": "https://unesco-sardona.ch/en/be-amazed",
 				"description" : "84km of geotrails in the UNESCO World Heritage Tectonic Area Sardona: Along the line visible from afar, the Glarus Thrust, 250-300 million years old rocks were pushed onto much younger, 35-50 million year old rock.",
-				"image": "./images/Sardona.jpg", 
+				"image": "/images/Sardona.jpg",
 				"name": "Glarner Deckenüberschiebung",
 				"color": "#32cd32"
             },
@@ -461,7 +461,7 @@
     },
     "created": "2022-03-29",
     "modified": "2022-03-29",
-    "image": "./images/geothermie.jpg",
+    "image": "/images/geothermie.jpg",
     "color": "#B9271A",
     "views": [
         {

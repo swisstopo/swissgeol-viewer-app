@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {customElement, state} from 'lit/decorators.js';
 import '../core';
-import '../layout';
+import '../layout/language-selector';
 import {LitElementI18n} from '../../i18n';
 import {applyTypography} from '../../styles/theme';
 

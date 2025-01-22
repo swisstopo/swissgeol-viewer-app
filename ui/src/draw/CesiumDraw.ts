@@ -191,7 +191,7 @@ export class CesiumDraw extends EventTarget {
             return Cartesian3.midpoint(positions[0], positions[1], new Cartesian3());
           }, false),
           billboard: {
-            image: './images/rotate-icon.svg',
+            image: '/images/rotate-icon.svg',
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
             heightReference: HeightReference.CLAMP_TO_GROUND
           },

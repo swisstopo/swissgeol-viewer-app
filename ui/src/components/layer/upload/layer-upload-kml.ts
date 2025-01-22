@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {LitElementI18n} from '../../../i18n';
 import {showSnackbarError, showSnackbarInfo} from '../../../notifications';
-import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css';
+import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
 import '../../core';
 import './layer-upload-kml-modal';
 import {applyTransition, applyTypography} from '../../../styles/theme';

@@ -233,7 +233,7 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   onSymbolChange(image) {
     if (!this.editingEntity || !this.editingEntity.billboard) return;
-    this.selectedSymbol = `./images/${image}`;
+    this.selectedSymbol = `/images/${image}`;
     this.editingEntity.billboard.image = <any> this.selectedSymbol;
     this.viewer!.scene.requestRender();
   }
@@ -307,7 +307,7 @@ export class NgmGeometryEdit extends LitElementI18n {
       </div>
       <div class="ngm-geom-symbolpicker" ?hidden=${!this.editingEntity.billboard}>
         ${POINT_SYMBOLS.map(image => {
-          const imgSrc = `./images/${image}`;
+          const imgSrc = `/images/${image}`;
           return html`
             <div
               class="ngm-geom-symbol ${classMap({active: this.selectedSymbol === imgSrc})}"
