@@ -8,7 +8,7 @@ import $ from 'jquery';
 import '../core/core-icon';
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css?raw';
 import fomanticDropdownCss from 'fomantic-ui-css/components/dropdown.css?raw';
-import {applyTypography} from '../../styles/theme';
+import {applyTypography} from 'src/styles/theme';
 import {classMap} from 'lit/directives/class-map.js';
 
 

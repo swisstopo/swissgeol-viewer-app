@@ -8,7 +8,7 @@ import cssimport from 'postcss-import';
 import postcssurl from 'postcss-url';
 
 
-// @ts-ignore
+// @ts-expect-error
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const cesiumBuild = resolve(__dirname, './node_modules/cesium/Build/Cesium');
 const extensions = ['.ts', '.js'];
@@ -21,6 +21,7 @@ export default defineConfig({
       './cesium': normalizePath(resolve(__dirname, 'node_modules/cesium/Source')),
       './fomantic-ui-css': normalizePath(resolve(__dirname, 'node_modules/fomantic-ui-css')),
       './@fontsource/inter': normalizePath(resolve(__dirname, 'node_modules/@fontsource/inter')),
+      'src': normalizePath(resolve(__dirname, 'src')),
     },
     extensions,
   },
@@ -33,7 +34,7 @@ export default defineConfig({
     rollupOptions: {
       input: 'index.html',
       output: {
-        entryFileNames: 'assets/[name]-[hash].js', // Ensure JavaScript output is configured
+        entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash][extname]',
       },
@@ -67,9 +68,6 @@ export default defineConfig({
           // exclude: 'node_modules/**'
           extensions: extensions,
           exclude: [
-            'node_modules/cesium/**',
-            'node_modules/core-js/**',
-            'node_modules/@babel/**',
             'node_modules/**' // yes, this is eXtreme excluding (includes aws-sdk)
           ],
         }),

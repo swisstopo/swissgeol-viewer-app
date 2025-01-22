@@ -1,4 +1,4 @@
-import {LitElementI18n} from './i18n';
+import {LitElementI18n} from 'src/i18n';
 import {html, PropertyValues} from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';

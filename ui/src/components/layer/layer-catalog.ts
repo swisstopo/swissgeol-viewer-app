@@ -3,10 +3,9 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {LitElementI18n} from '../../i18n.js';
 import i18next from 'i18next';
 import auth from '../../store/auth';
-import type {LayerTreeNode} from '../../layertree';
+import type {LayerTreeNode} from 'src/layertree';
 import $ from 'jquery';
 import '../core';
-
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css?raw';
 import fomanticAccordionCss from 'fomantic-ui-css/components/accordion.css?raw';
 import 'fomantic-ui-css/components/transition.js';

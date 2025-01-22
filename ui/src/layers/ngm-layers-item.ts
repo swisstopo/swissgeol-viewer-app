@@ -11,11 +11,9 @@ import {Sortable} from 'sortablejs';
 import type LayersAction from './LayersActions';
 import {debounce} from '../utils';
 import {PropertyValues} from '@lit/reactive-element';
-
 import iconsCss from '../style/icons.css?raw';
 import layersCss from '../style/layers.css?raw';
 import sliderCss from '../style/ngm-slider.css?raw';
-
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css?raw';
 import fomanticDropdownCss from 'fomantic-ui-css/components/dropdown.css?raw';
 import 'fomantic-ui-css/components/transition.js';
