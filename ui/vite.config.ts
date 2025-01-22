@@ -77,9 +77,15 @@ export default defineConfig({
     },
   },
   server: {
+    hmr: {
+      host: 'localhost',
+    },
+    watch: {
+      usePolling: true
+    },
     host: '0.0.0.0',
     port: 8000,
-    open: true,
+    open: false,
     proxy: {
       '/api': {
         target: 'http://api:3000',
