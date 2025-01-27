@@ -40,12 +40,6 @@ export class SearchInput extends LitElementI18n {
   @state()
   private accessor isActive = false;
 
-  private accessor searchRef = createRef<HTMLElement>();
-  private accessor inputRef = createRef<HTMLInputElement>();
-  private accessor resultsRef = createRef<HTMLUListElement>();
-
-  private layerConfigs: SwisstopoImageryLayersConfig | null = null;
-
   constructor() {
     super();
     this.initialize();
@@ -60,6 +54,11 @@ export class SearchInput extends LitElementI18n {
     this.searchAdditionalItems = this.searchAdditionalItems.bind(this);
     this.toggleActive = this.toggleActive.bind(this);
   }
+  private accessor searchRef = createRef<HTMLElement>();
+  private accessor inputRef = createRef<HTMLInputElement>();
+  private accessor resultsRef = createRef<HTMLUListElement>();
+
+  private layerConfigs: SwisstopoImageryLayersConfig | null = null;
 
   private initialize(): void {
     getLayersConfig().then((layersConfig) => {

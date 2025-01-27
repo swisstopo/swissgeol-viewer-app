@@ -26,6 +26,34 @@ export class NavigationLayerPanel extends LitElementI18n {
     this.handleDisplayLayerRemoval = this.handleDisplayLayerRemoval.bind(this);
   }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.setAttribute('role', 'complementary');
+  }
+  private close(): void {
+    this.dispatchEvent(new CustomEvent('close'));
+  }
+  private handleDisplayLayersUpdate(e: LayersUpdateEvent): void {
+    this.dispatchEvent(
+      new CustomEvent('display-layers-update', {
+        detail: e.detail,
+      }) satisfies LayersUpdateEvent,
+    );
+  }
+  private handleDisplayLayerUpdate(e: LayerEvent): void {
+    this.dispatchEvent(
+      new CustomEvent('display-layer-update', {
+        detail: e.detail,
+      }) satisfies LayerEvent,
+    );
+  }
+  private handleDisplayLayerRemoval(e: LayerEvent): void {
+    this.dispatchEvent(
+      new CustomEvent('display-layer-removal', {
+        detail: e.detail,
+      }) satisfies LayerEvent,
+    );
+  }
   readonly render = () => html`
     <style>
       ${unsafeCSS(NavigationLayerPanel.styles.cssText)}
@@ -52,39 +80,6 @@ export class NavigationLayerPanel extends LitElementI18n {
       @layer-click="${this.handleDisplayLayerClick}"
     ></ngm-layer-display>
   `;
-
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.setAttribute('role', 'complementary');
-  }
-
-  private close(): void {
-    this.dispatchEvent(new CustomEvent('close'));
-  }
-
-  private handleDisplayLayersUpdate(e: LayersUpdateEvent): void {
-    this.dispatchEvent(
-      new CustomEvent('display-layers-update', {
-        detail: e.detail,
-      }) satisfies LayersUpdateEvent,
-    );
-  }
-
-  private handleDisplayLayerUpdate(e: LayerEvent): void {
-    this.dispatchEvent(
-      new CustomEvent('display-layer-update', {
-        detail: e.detail,
-      }) satisfies LayerEvent,
-    );
-  }
-
-  private handleDisplayLayerRemoval(e: LayerEvent): void {
-    this.dispatchEvent(
-      new CustomEvent('display-layer-removal', {
-        detail: e.detail,
-      }) satisfies LayerEvent,
-    );
-  }
 
   private handleDisplayLayerClick(e: LayerEvent): void {
     this.dispatchEvent(

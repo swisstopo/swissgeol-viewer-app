@@ -17,6 +17,20 @@ export class MenuItem extends LitElementI18n {
   @property({ type: Boolean })
   accessor isMobile: boolean = false;
 
+  render() {
+    return html`
+      <div class="container">
+        <div class="box ${classMap({ isActive: this.isActive })}">
+          <div class="icon">
+            <ngm-core-icon icon=${this.icon}></ngm-core-icon>
+          </div>
+          <div class="title" ?hidden="${this.isMobile}">
+            ${i18next.t(this.title)}
+          </div>
+        </div>
+      </div>
+    `;
+  }
   static readonly styles = css`
     :host {
       position: relative;
@@ -100,19 +114,4 @@ export class MenuItem extends LitElementI18n {
       color: var(--color-bg);
     }
   `;
-
-  render() {
-    return html`
-      <div class="container">
-        <div class="box ${classMap({ isActive: this.isActive })}">
-          <div class="icon">
-            <ngm-core-icon icon=${this.icon}></ngm-core-icon>
-          </div>
-          <div class="title" ?hidden="${this.isMobile}">
-            ${i18next.t(this.title)}
-          </div>
-        </div>
-      </div>
-    `;
-  }
 }

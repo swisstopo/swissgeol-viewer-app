@@ -19,14 +19,14 @@ export class NgmVoxelFilter extends LitElementI18n {
   @property({ type: Object })
   accessor viewer!: Viewer;
 
-  @queryAll('.lithology-checkbox input[type="checkbox"]')
-  accessor lithologyCheckbox!: NodeListOf<HTMLInputElement>;
   @query('.min-conductivity')
   accessor minConductivityInput!: HTMLInputElement;
   @query('.max-conductivity')
   accessor maxConductivityInput!: HTMLInputElement;
   @query('.vox_filter_include_undefined')
   accessor includeUndefinedConductivity!: HTMLInputElement;
+  @queryAll('.lithology-checkbox input[type="checkbox"]')
+  accessor lithologyCheckbox!: NodeListOf<HTMLInputElement>;
 
   private minConductivity = NaN;
   private maxConductivity = NaN;

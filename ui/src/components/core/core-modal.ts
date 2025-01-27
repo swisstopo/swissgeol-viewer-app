@@ -14,6 +14,18 @@ interface CoreModalProps {
 
 @customElement('ngm-core-modal')
 export class CoreModal extends LitElement {
+  @property({ type: String, reflect: true })
+  accessor size: Size = 'auto';
+  @property({ type: Boolean })
+  accessor isPersistent = true;
+  @property({ type: Boolean, attribute: 'no-padding', reflect: true })
+  accessor hasNoPadding = false;
+  constructor() {
+    super();
+
+    this.close = this.close.bind(this);
+  }
+
   static open(props: CoreModalProps, content: TemplateResult): CoreModal {
     const container = document.createElement('div');
     container.classList.add('ngm-core-modal-container');
@@ -41,21 +53,6 @@ export class CoreModal extends LitElement {
     const modal = container.querySelector('ngm-core-modal')!;
     return modal as CoreModal;
   }
-
-  constructor() {
-    super();
-
-    this.close = this.close.bind(this);
-  }
-
-  @property({ type: String, reflect: true })
-  accessor size: Size = 'auto';
-
-  @property({ type: Boolean })
-  accessor isPersistent = true;
-
-  @property({ type: Boolean, attribute: 'no-padding', reflect: true })
-  accessor hasNoPadding = false;
 
   private dialog: HTMLDialogElement | null = null;
 

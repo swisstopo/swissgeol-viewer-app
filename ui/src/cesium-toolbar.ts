@@ -155,26 +155,6 @@ export class CesiumToolbar extends LitElement {
     super.updated(changedProperties);
   }
 
-  static readonly styles = css`
-    :host {
-      position: absolute;
-      background-color: #0000005c;
-      color: white;
-      margin-left: 5px;
-      padding: 5px;
-    }
-
-    input[type='number'] {
-      width: 80px;
-    }
-
-    .divider {
-      width: 100%;
-      border: 1px solid #e0e3e6;
-      margin: 5px 0;
-    }
-  `;
-
   render() {
     return html` <div>
         Ambient Occlusion
@@ -525,4 +505,23 @@ export class CesiumToolbar extends LitElement {
         </select>
       </div>`;
   }
+  static readonly styles = css`
+    :host {
+      position: absolute;
+      background-color: #0000005c;
+      color: white;
+      margin-left: 5px;
+      padding: 5px;
+    }
+
+    input[type='number'] {
+      width: 80px;
+    }
+
+    .divider {
+      width: 100%;
+      border: 1px solid #e0e3e6;
+      margin: 5px 0;
+    }
+  `;
 }

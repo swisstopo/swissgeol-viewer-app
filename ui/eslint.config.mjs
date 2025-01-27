@@ -22,6 +22,7 @@ const sharedConfig = {
     parser: tsParser,
     parserOptions: {
       projectService: true,
+      project: './tsconfig.json',
       tsconfigRootDir: __dirname,
     },
   },
@@ -121,6 +122,7 @@ export default [
       },
       parserOptions: {
         project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
       },
     },
     // plugins: { 'sort-class-members': sortClassMembers },
@@ -132,19 +134,23 @@ export default [
         {
           selector: [
             'variable',
-            'classProperty',
             // 'autoAccessor', // This currently applies to all accessors, not just boolean ones
-            'classicAccessor',
           ],
           types: ['boolean'],
-          format: ['camelCase', 'PascalCase'],
+          format: ['PascalCase'],
           prefix: ['is', 'has'],
         },
       ],
       'sort-class-members/sort-class-members': [
         'error',
         {
-          order: ['[decoratedProperties]', 'constructor', '[methods]', '[render]', '[styles]'],
+          order: [
+            '[decoratedProperties]',
+            'constructor',
+            '[methods]',
+            '[render]',
+            '[styles]',
+          ],
           groups: {
             decoratedProperties: [
               {

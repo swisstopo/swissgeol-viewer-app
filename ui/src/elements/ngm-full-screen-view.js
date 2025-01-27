@@ -3,12 +3,6 @@ import i18next from 'i18next';
 import { html } from 'lit';
 
 class NgmFullScreenView extends LitElementI18n {
-  static get properties() {
-    return {
-      fullScreenActive: { type: Boolean },
-    };
-  }
-
   constructor() {
     super();
 
@@ -20,6 +14,11 @@ class NgmFullScreenView extends LitElementI18n {
       document
         .querySelectorAll('[data-fs="no"]')
         .forEach((n) => (n.hidden = this.fullScreenActive));
+    };
+  }
+  static get properties() {
+    return {
+      fullScreenActive: { type: Boolean },
     };
   }
 

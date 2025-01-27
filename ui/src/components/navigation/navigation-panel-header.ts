@@ -14,6 +14,13 @@ export class NavigationPanelHeader extends LitElementI18n {
     this.close = this.close.bind(this);
   }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.setAttribute('role', 'heading');
+  }
+  private close(): void {
+    this.dispatchEvent(new CustomEvent('close'));
+  }
   readonly render = () => html`
     <slot></slot>
     ${this.isCloseable
@@ -26,15 +33,6 @@ export class NavigationPanelHeader extends LitElementI18n {
         `
       : nothing}
   `;
-
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.setAttribute('role', 'heading');
-  }
-
-  private close(): void {
-    this.dispatchEvent(new CustomEvent('close'));
-  }
 
   static readonly styles = css`
     :host {
