@@ -1,41 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>swissgeol</title>
 
-<head>
-  <meta charset="UTF-8">
-  <title>swissgeol</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="/images/swissgeol_favicon_viewer_small.png"
+    />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="shortcut icon" type="image/png" href="/images/swissgeol_favicon_viewer_small.png">
+    <meta
+      name="description"
+      content="swissgeol.ch is the 3D subsurface viewer of the Swiss Confederation. Geoscientific information below the terrain of Switzerland can be combined with geographic information above terrain."
+    />
+    <title>swissgeol</title>
 
-  <meta name="description" content="swissgeol.ch is the 3D subsurface viewer of the Swiss Confederation. Geoscientific information below the terrain of Switzerland can be combined with geographic information above terrain.">
-  <title>swissgeol</title>
+    <script>
+      window.activeEnvironment = "default_active_env";
+    </script>
+  </head>
 
-  <script>window.activeEnvironment="default_active_env"</script>
-</head>
+  <body>
+    <div id="outdated-browser" style="display: none">
+      <header>
+        <img alt="logo" src="/images/swissgeol_viewer.svg" />
+      </header>
 
-<body>
-  <div id="outdated-browser" style="display: none;">
-    <header>
-      <img alt="logo" src="/images/swissgeol_viewer.svg">
-    </header>
-
-    <div class="ui large negative icon floating message">
-      <i class="exclamation triangle icon"></i>
-      <div class="content">
-        <div class="header">Your browser has difficulties displaying this page</div>
-        <p>Please try with the latest version of Chrome, Firefox, Safari or Edge</p>
+      <div class="ui large negative icon floating message">
+        <i class="exclamation triangle icon"></i>
+        <div class="content">
+          <div class="header">
+            Your browser has difficulties displaying this page
+          </div>
+          <p>
+            Please try with the latest version of Chrome, Firefox, Safari or
+            Edge
+          </p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <ngm-app-boot></ngm-app-boot>
+    <ngm-app-boot></ngm-app-boot>
 
-  <script nomodule>
-    document.querySelector('#outdated-browser').style.display = '';
-    document.querySelector('#loader').style.display = 'none';
-  </script>
-  <script type="module" id="app-script" crossorigin="use-credentials" src="./src/index.ts"></script>
-</body>
-
+    <script nomodule>
+      document.querySelector("#outdated-browser").style.display = "";
+      document.querySelector("#loader").style.display = "none";
+    </script>
+    <script
+      type="module"
+      id="app-script"
+      crossorigin="use-credentials"
+      src="./src/index.ts"
+    ></script>
+  </body>
 </html>

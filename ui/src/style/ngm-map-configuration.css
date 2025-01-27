@@ -8,7 +8,7 @@ ngm-map-configuration .ngm-map-preview {
   height: 80px;
   padding: 0;
   border: none;
-  background-color: #F1F3F5;
+  background-color: #f1f3f5;
   margin-right: 49px;
 }
 
@@ -17,7 +17,7 @@ ngm-map-configuration .base-map-labels {
   margin-bottom: 5px;
 }
 
-ngm-map-configuration .base-map-labels label{
+ngm-map-configuration .base-map-labels label {
   width: 125px;
   display: inline-block;
   overflow: hidden;
@@ -34,9 +34,11 @@ ngm-map-configuration img {
 ngm-map-configuration ngm-map-chooser {
   margin-left: 68px;
   display: flex;
-
 }
 
-ngm-map-configuration ngm-map-chooser .ngm-maps-container > div:nth-last-child(-n+2) {
+ngm-map-configuration
+  ngm-map-chooser
+  .ngm-maps-container
+  > div:nth-last-child(-n + 2) {
   display: none;
 }

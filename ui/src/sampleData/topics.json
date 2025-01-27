@@ -150,25 +150,22 @@
         },
         "permalink": "?lon=8.16037&lat=47.42715&elevation=7065&heading=31&pitch=-42&map=empty_map&map_transparency=0.00&layers=water_tunnel%2Cboreholes%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed%2Cfaults_geomol%2Cch.swisstopo.swissnames3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.33&lang=en&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4273725.003467042%2C%22y%22%3A623012.9065260108%2C%22z%22%3A4677638.631077907%7D%2C%7B%22x%22%3A4275949.630435885%2C%22y%22%3A617405.8993783433%2C%22z%22%3A4676357.857397468%7D%2C%7B%22x%22%3A4269092.545138242%2C%22y%22%3A620129.3239353738%2C%22z%22%3A4682218.555868269%7D%2C%7B%22x%22%3A4271317.179821282%2C%22y%22%3A614522.2444183214%2C%22z%22%3A4680937.791495348%7D%5D%2C%22lowerLimit%22%3A-4999.740328461114%2C%22height%22%3A6516.170948680485%2C%22showBox%22%3Atrue%2C%22negate%22%3Afalse%7D"
       }
-   ],
+    ],
     "geometries": [
-        {
-            "type": "Feature",
-            "id": "1",
-            "properties": {
-                "website": "https://http://grande-dixence.ch//",
-				"name": "Grande Dixence",
-				"color": "#FFFFFF"
-	},
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    7.253195960,
-                    46.182663097
-                ]
-            }
-	}
-	]
+      {
+        "type": "Feature",
+        "id": "1",
+        "properties": {
+          "website": "https://http://grande-dixence.ch//",
+          "name": "Grande Dixence",
+          "color": "#FFFFFF"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [7.25319596, 46.182663097]
+        }
+      }
+    ]
   },
   {
     "id": "4",
@@ -221,7 +218,7 @@
       }
     ]
   },
-    {
+  {
     "id": "5",
     "title": {
       "de": "GeoQuat - Lockergestein",
@@ -270,7 +267,7 @@
         },
         "permalink": "?layers=boreholes%2Ccross_section%2Cvoxel_geneva_logk%2Cch.swisstopo.geologie-geocover%2Cch.swisstopo.geologie-geologische_karte&layers_visibility=false%2Cfalse%2Ctrue%2Cfalse%2Cfalse&layers_transparency=0.00%2C0.00%2C0.00%2C0.57%2C0.72&lang=en&lon=6.10142&lat=46.17456&elevation=3073&heading=55&pitch=-46&map_transparency=0.42&map=ch.swisstopo.pixelkarte-grau"
       },
-	  {
+      {
         "id": "4",
         "title": {
           "de": "Klassifizierung der quartären Lockergesteine in Visp",
@@ -282,7 +279,7 @@
       }
     ]
   },
-      {
+  {
     "id": "6",
     "title": {
       "de": "TopFels - die Felsoberfläche",
@@ -339,7 +336,7 @@
       "de": "Geowege - Abenteuer Geologie ",
       "fr": "Geosentiers - Aventure Géologie",
       "it": "Geosentieri - Avventura Geologia",
-	  "en": "Geo trails - Aventure Geology"
+      "en": "Geo trails - Aventure Geology"
     },
     "description": {
       "de": "Geotourismus erschliesst erdgeschichtliche und landschaftliche Besonderheiten. Fachleute und Laien können auf geologischen Wanderwegen (Geowege) erdwissenschaftliche Entwicklungen vor Ort erleben und begreifen. Die Plattform Geowissenschaften der Akademie der Naturwissenschaften Schweiz (SCNAT) und «Erlebnis Geologie» haben die geologischen Wanderwege in der Schweiz zusammengestellt.",
@@ -352,7 +349,7 @@
     "image": "/images/geowege.jpg",
     "color": "#B9271A",
     "views": [
-        {
+      {
         "id": "1",
         "title": {
           "de": "Via Geoalpina Nappe de Morcles",
@@ -362,7 +359,7 @@
         },
         "permalink": "?layers=ch.swisstopo.geologie-geowege%2Cboreholes%2Ccross_section%2Cearthquakes%2Cch.swisstopo.swisstlm3d.3d%2Cch.swisstopo.geologie-geocover&layers_visibility=true%2Cfalse%2Cfalse%2Cfalse%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.70&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.00&lon=7.05196&lat=46.17435&elevation=1602&heading=29&pitch=10"
       },
-	  {
+      {
         "id": "2",
         "title": {
           "de": "Geoweg der Breggia-Schlucht",
@@ -372,7 +369,7 @@
         },
         "permalink": "?layers=boreholes%2Ccross_section%2Cearthquakes%2Cch.swisstopo.geologie-geowege%2Cch.swisstopo.geologie-geocover&layers_visibility=false%2Cfalse%2Cfalse%2Ctrue%2Ctrue&layers_transparency=0.00%2C0.00%2C0.00%2C0.00%2C0.72&lang=de&lon=9.02127&lat=45.86654&elevation=950&heading=204&pitch=-31&map=ch.swisstopo.swissimage&map_transparency=0.00"
       },
-	  {
+      {
         "id": "3",
         "title": {
           "de": "Via Geoalpina Tektonikarena Sardona",
@@ -384,66 +381,57 @@
       }
     ],
     "geometries": [
-        {
-            "type": "Feature",
-            "id": "1",
-            "properties": {
-                "website": "https://erlebnis-geologie.ch/geoweg/via-geoalpina-dents-blanches-les-diablerets/",
-				"description" : {
-                   "de": "",
-                   "fr": "",
-                   "it": "",
-	               "en": "This multi-day hiking tour passes the Dent de Morcles with his famous sedimentation, folding and erosion history. The prominent fold consists in Mesozoic sediments."
-				},
-				"image": "/images/Etappe_Champex_d_Alesse.png",
-				"name": "Dent de Morcles",
-				"color": "#FFFFFF"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    7.0714112303867065,
-                    46.20093433127949
-                ]
-            }
+      {
+        "type": "Feature",
+        "id": "1",
+        "properties": {
+          "website": "https://erlebnis-geologie.ch/geoweg/via-geoalpina-dents-blanches-les-diablerets/",
+          "description": {
+            "de": "",
+            "fr": "",
+            "it": "",
+            "en": "This multi-day hiking tour passes the Dent de Morcles with his famous sedimentation, folding and erosion history. The prominent fold consists in Mesozoic sediments."
+          },
+          "image": "/images/Etappe_Champex_d_Alesse.png",
+          "name": "Dent de Morcles",
+          "color": "#FFFFFF"
         },
-		{
-            "type": "Feature",
-            "id": "2",
-            "properties": {
-                "website": "https://www.parcobreggia.ch/it/",
-				"description" : "Strolling through 190 Million years: Reddish radiolariths, conglomerates, limestones and flysch deposits make the hearts of geology enthusiasts beat faster. It's also a great spot for some canyoning.",
-				"image": "/images/Breggia.jpg",
-				"name": "Gole di Breggia",
-				"color": "#32cd32"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    9.012189838364547,
-                    45.85511916092047
-                ]
-            }
+        "geometry": {
+          "type": "Point",
+          "coordinates": [7.0714112303867065, 46.20093433127949]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "2",
+        "properties": {
+          "website": "https://www.parcobreggia.ch/it/",
+          "description": "Strolling through 190 Million years: Reddish radiolariths, conglomerates, limestones and flysch deposits make the hearts of geology enthusiasts beat faster. It's also a great spot for some canyoning.",
+          "image": "/images/Breggia.jpg",
+          "name": "Gole di Breggia",
+          "color": "#32cd32"
         },
-		{
-            "type": "Feature",
-            "id": "3",
-            "properties": {
-                "website": "https://unesco-sardona.ch/en/be-amazed",
-				"description" : "84km of geotrails in the UNESCO World Heritage Tectonic Area Sardona: Along the line visible from afar, the Glarus Thrust, 250-300 million years old rocks were pushed onto much younger, 35-50 million year old rock.",
-				"image": "/images/Sardona.jpg",
-				"name": "Glarner Deckenüberschiebung",
-				"color": "#32cd32"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    9.24780481230422,
-                    46.91712309525256
-                ]
-            }
-		}
-	]
+        "geometry": {
+          "type": "Point",
+          "coordinates": [9.012189838364547, 45.85511916092047]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "3",
+        "properties": {
+          "website": "https://unesco-sardona.ch/en/be-amazed",
+          "description": "84km of geotrails in the UNESCO World Heritage Tectonic Area Sardona: Along the line visible from afar, the Glarus Thrust, 250-300 million years old rocks were pushed onto much younger, 35-50 million year old rock.",
+          "image": "/images/Sardona.jpg",
+          "name": "Glarner Deckenüberschiebung",
+          "color": "#32cd32"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [9.24780481230422, 46.91712309525256]
+        }
+      }
+    ]
   },
   {
     "id": "8",
@@ -451,7 +439,7 @@
       "de": "Geothermiebohrung St. Gallen",
       "fr": "Forage géothérmique St. Gall",
       "it": "Perforazione geotermica St. Gallo",
-	  "en": "Geothermal drilling St. Gallen"
+      "en": "Geothermal drilling St. Gallen"
     },
     "description": {
       "de": "Als eines der grössten Geothermieprojekte der Schweiz startete die Stadt St. Gallen 2010 ein Pilotprojekt basierend auf einem hydrothermalen System. Dabei wird ein Wasserkreislauf zwischen tiefliegenden heissen Aquiferen, also Wasser führenden Gesteinsschichten, und der Oberfläche gebildet um Wärme zu gewinnen oder Strom zu produzieren. Das Projekt verursachte leider spürbare Erdbeben aufgrund Erdgasvorkommen und wurde 2014 u.a. wegen der zu schwachen Wasserförderrate abgebrochen.",
@@ -464,7 +452,7 @@
     "image": "/images/geothermie.jpg",
     "color": "#B9271A",
     "views": [
-        {
+      {
         "id": "1",
         "title": {
           "de": "Tauchgang auf 4450 Meter unter Meer",
@@ -474,7 +462,7 @@
         },
         "permalink": "?layers=ch.swisstopo.geologie-geocover%2Cboreholes%2Ccross_section%2Cch.swisstopo.swissnames3d.3d&layers_visibility=true%2Ctrue%2Cfalse%2Ctrue&layers_transparency=0.58%2C0.00%2C0.00%2C0.00&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.60&lon=9.31114&lat=47.35848&elevation=4203&heading=12&pitch=-34"
       },
-	  {
+      {
         "id": "2",
         "title": {
           "de": "Von der Molasse bis ins Lias",
@@ -484,7 +472,7 @@
         },
         "permalink": "?layers=ch.swisstopo.geologie-geocover%2Cboreholes%2Ccross_section%2Cfaults_geomol%2Ctop_omm%2Ctop_usm%2Ctop_umm%2Cbase_cenozoic%2Ctop_cretaceous%2Ctop_upper_malm%2Ctop_lower_malm%2Ctop_dogger%2Ctop_lias%2Ctop_keuper%2Ctop_muschelkalk%2Cbase_mesozoic%2Cbase_permocarboniferous%2Cbase_permocarboniferous_supposed&layers_visibility=true%2Ctrue%2Cfalse%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue%2Ctrue&layers_transparency=0.30%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00%2C0.00&lang=de&map=ch.swisstopo.swissimage&map_transparency=0.00&lon=9.36712&lat=47.32853&elevation=-562&heading=342&pitch=-13&slice=%7B%22type%22%3A%22view-box%22%2C%22slicePoints%22%3A%5B%7B%22x%22%3A4265083.854620385%2C%22y%22%3A708155.0318179852%2C%22z%22%3A4673438.88998605%7D%2C%7B%22x%22%3A4268268.503702731%2C%22y%22%3A693368.3952218338%2C%22z%22%3A4672753.187014397%7D%2C%7B%22x%22%3A4257966.554843241%2C%22y%22%3A706310.6995757198%2C%22z%22%3A4680155.6206864705%7D%2C%7B%22x%22%3A4261151.294259519%2C%22y%22%3A691523.70782253%2C%22z%22%3A4679469.8935231%7D%5D%2C%22lowerLimit%22%3A-7965.6029409166%2C%22height%22%3A9378.308342959073%2C%22showBox%22%3Atrue%2C%22negate%22%3Afalse%7D"
       },
-	  {
+      {
         "id": "3",
         "title": {
           "de": "Erdbeben mit Magnitude 3.5 während Bohrarbeiten",

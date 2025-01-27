@@ -1,9 +1,9 @@
-import {LitElementI18n, translated} from '../../i18n';
-import {customElement, property, query, state} from 'lit/decorators.js';
-import {html, PropertyValues} from 'lit';
+import { LitElementI18n, translated } from '../../i18n';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
-import {styleMap} from 'lit/directives/style-map.js';
-import {classMap} from 'lit-html/directives/class-map.js';
+import { styleMap } from 'lit/directives/style-map.js';
+import { classMap } from 'lit-html/directives/class-map.js';
 import MainStore from '../../store/main';
 import ToolboxStore from '../../store/toolbox';
 import {
@@ -12,92 +12,96 @@ import {
   removeProject,
   setPermalink,
   syncStoredView,
-  syncTargetParam
+  syncTargetParam,
 } from '../../permalink';
 import NavToolsStore from '../../store/navTools';
 import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
-import type {Viewer} from 'cesium';
-import {CustomDataSource} from 'cesium';
-import {showSnackbarError} from '../../notifications';
-import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
-import type {NgmGeometry} from '../../toolbox/interfaces';
-import {ApiClient} from '../../api/api-client';
+import type { Viewer } from 'cesium';
+import { CustomDataSource } from 'cesium';
+import { showSnackbarError } from '../../notifications';
+import {
+  DEFAULT_LAYER_OPACITY,
+  DEFAULT_PROJECT_COLOR,
+  PROJECT_ASSET_URL,
+} from '../../constants';
+import type { NgmGeometry } from '../../toolbox/interfaces';
+import { ApiClient } from '../../api/api-client';
 import AuthStore from '../../store/auth';
 import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
-import {isProject, isProjectOwnerOrEditor} from './helpers';
-import {LayerConfig} from '../../layertree';
+import { isProject, isProjectOwnerOrEditor } from './helpers';
+import { LayerConfig } from '../../layertree';
 import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
-import {parseKml, renderWithDelay} from '../../cesiumutils';
-import {consume} from '@lit/context';
-import {apiClientContext} from '../../context';
+import { parseKml, renderWithDelay } from '../../cesiumutils';
+import { consume } from '@lit/context';
+import { apiClientContext } from '../../context';
 
 type TextualAttribute = string | TranslatedText;
 
 export interface TranslatedText {
-  de: string,
-  fr: string,
-  it: string,
-  en: string,
+  de: string;
+  fr: string;
+  it: string;
+  en: string;
 }
 
 export interface View {
-  id: string,
-  title: TextualAttribute,
-  permalink: string,
+  id: string;
+  title: TextualAttribute;
+  permalink: string;
 }
 
 export interface Asset {
-  name: string,
-  key: string,
-  clampToGround?: boolean
+  name: string;
+  key: string;
+  clampToGround?: boolean;
 }
 
 export interface Member {
-  email: string,
-  name: string,
-  surname: string
+  email: string;
+  name: string;
+  surname: string;
 }
 
 export interface Topic {
-  id: string,
-  title: TextualAttribute,
-  description: TextualAttribute,
-  created: string,
-  modified: string,
-  image: string,
-  color: string,
-  views: View[],
-  assets: Asset[],
-  geometries?: NgmGeometry[],
+  id: string;
+  title: TextualAttribute;
+  description: TextualAttribute;
+  created: string;
+  modified: string;
+  image: string;
+  color: string;
+  views: View[];
+  assets: Asset[];
+  geometries?: NgmGeometry[];
 }
 
 export interface CreateProject {
-  title: string,
-  description?: string,
-  image?: string,
-  color: string,
-  views: View[],
-  assets: Asset[],
-  geometries?: NgmGeometry[],
-  owner: Member,
-  editors: Member[],
-  viewers: Member[],
+  title: string;
+  description?: string;
+  image?: string;
+  color: string;
+  views: View[];
+  assets: Asset[];
+  geometries?: NgmGeometry[];
+  owner: Member;
+  editors: Member[];
+  viewers: Member[];
 }
 
 export interface Project extends CreateProject {
-  id: string,
-  created: string,
-  modified: string,
+  id: string;
+  created: string;
+  modified: string;
 }
 
 export type TabTypes = 'topics' | 'overview' | 'projects' | 'shared';
 
 @customElement('ngm-dashboard')
 export class NgmDashboard extends LitElementI18n {
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor hidden = true;
   @state()
   accessor projects: Project[] = [];
@@ -127,14 +131,16 @@ export class NgmDashboard extends LitElementI18n {
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
   private userEmail: string | undefined;
-  private readonly tempKmlDataSource = new CustomDataSource('tempKmlDataSource');
+  private readonly tempKmlDataSource = new CustomDataSource(
+    'tempKmlDataSource',
+  );
 
-  @consume({context: apiClientContext})
+  @consume({ context: apiClientContext })
   accessor apiClient!: ApiClient;
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => {
+    MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       this.viewer?.dataSources.add(this.tempKmlDataSource);
     });
@@ -150,7 +156,7 @@ export class NgmDashboard extends LitElementI18n {
     //      // todo move DashboardStore.topicOrProjectParam.subscribe here
     //   }));
 
-    DashboardStore.topicOrProjectParam.subscribe(async value => {
+    DashboardStore.topicOrProjectParam.subscribe(async (value) => {
       if (!value) return;
       // topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
       // if (value.kind === 'topic') {
@@ -164,7 +170,9 @@ export class NgmDashboard extends LitElementI18n {
         this.selectTopicOrProject(project);
       } else return;
       if (value.param.viewId) {
-        const viewIndex = this.selectedTopicOrProject?.views.findIndex(v => v.id === value.param.viewId);
+        const viewIndex = this.selectedTopicOrProject?.views.findIndex(
+          (v) => v.id === value.param.viewId,
+        );
         if (viewIndex !== -1) DashboardStore.setViewIndex(viewIndex);
       }
       this.hidden = false;
@@ -173,7 +181,7 @@ export class NgmDashboard extends LitElementI18n {
     if (recentlyViewed) {
       this.recentlyViewedIds = JSON.parse(recentlyViewed);
     }
-    DashboardStore.selectedTopicOrProject.subscribe(topicOrProject => {
+    DashboardStore.selectedTopicOrProject.subscribe((topicOrProject) => {
       this.selectedTopicOrProject = topicOrProject;
       if (isProject(topicOrProject)) {
         if (topicOrProject.owner.email === this.userEmail) {
@@ -183,32 +191,40 @@ export class NgmDashboard extends LitElementI18n {
         }
       }
     });
-    DashboardStore.viewIndex.subscribe(async viewIndex => {
+    DashboardStore.viewIndex.subscribe(async (viewIndex) => {
       await this.selectView(viewIndex);
     });
     MainStore.layersRemoved.subscribe(async () => {
       if (this.selectedViewIndx !== undefined && this.assets) {
-        await Promise.all(this.assets.map(async layer => {
-          const data = await layer.promise;
-          if (data && !(data instanceof EarthquakeVisualizer)) data.show = true;
-          this.dispatchEvent(new CustomEvent('layerclick', {
-            detail: {layer}
-          }));
-        }));
+        await Promise.all(
+          this.assets.map(async (layer) => {
+            const data = await layer.promise;
+            if (data && !(data instanceof EarthquakeVisualizer))
+              data.show = true;
+            this.dispatchEvent(
+              new CustomEvent('layerclick', {
+                detail: { layer },
+              }),
+            );
+          }),
+        );
       }
     });
     AuthStore.user.subscribe(() => {
       this.userEmail = AuthStore.userEmail;
     });
-    DashboardStore.geometriesUpdate.subscribe(geometries => {
+    DashboardStore.geometriesUpdate.subscribe((geometries) => {
       if (this.selectedTopicOrProject) {
-        this.selectTopicOrProject({...this.selectedTopicOrProject, geometries});
+        this.selectTopicOrProject({
+          ...this.selectedTopicOrProject,
+          geometries,
+        });
       } else if (this.projectToCreate) {
-        this.projectToCreate = {...this.projectToCreate, geometries};
+        this.projectToCreate = { ...this.projectToCreate, geometries };
       }
     });
 
-    DashboardStore.onSaveOrCancelWarning.subscribe(show => {
+    DashboardStore.onSaveOrCancelWarning.subscribe((show) => {
       if (this.projectTabState !== 'view') {
         this.saveOrCancelWarning = show;
       }
@@ -224,7 +240,9 @@ export class NgmDashboard extends LitElementI18n {
 
   refreshProjects(projects: Project[]) {
     this.projects = projects;
-    const project = this.projects.find(p => p.id === this.selectedTopicOrProject?.id);
+    const project = this.projects.find(
+      (p) => p.id === this.selectedTopicOrProject?.id,
+    );
     if (project) {
       this.selectTopicOrProject(project);
     }
@@ -253,12 +271,17 @@ export class NgmDashboard extends LitElementI18n {
           uploadedLayer.show = true;
         } else {
           uploadedLayer = new CustomDataSource(href);
-          const name = await parseKml(this.viewer, href, uploadedLayer, !!asset.clampToGround);
+          const name = await parseKml(
+            this.viewer,
+            href,
+            uploadedLayer,
+            !!asset.clampToGround,
+          );
           this.assetConfigs[href] = {
             label: name,
             opacity: DEFAULT_LAYER_OPACITY,
             notSaveToPermalink: true,
-            topicKml: true
+            topicKml: true,
           };
           MainStore.addUploadedKmlName(name);
           await this.viewer.dataSources.add(uploadedLayer);
@@ -271,7 +294,7 @@ export class NgmDashboard extends LitElementI18n {
           load() {
             return promise;
           },
-          promise
+          promise,
         });
       } catch (e) {
         console.error(e);
@@ -287,9 +310,14 @@ export class NgmDashboard extends LitElementI18n {
     NavToolsStore.nextTargetPointSync();
     if (this.viewer && this.selectedTopicOrProject && viewIndex !== undefined) {
       if (this.selectedTopicOrProject?.assets)
-        this.assets = await this.fetchAssets(this.selectedTopicOrProject.assets);
-      this.geometries.forEach(geometry => ToolboxStore.setGeometryToCreate({geometry}));
-      if (!LocalStorageController.storedView) LocalStorageController.storeCurrentView();
+        this.assets = await this.fetchAssets(
+          this.selectedTopicOrProject.assets,
+        );
+      this.geometries.forEach((geometry) =>
+        ToolboxStore.setGeometryToCreate({ geometry }),
+      );
+      if (!LocalStorageController.storedView)
+        LocalStorageController.storeCurrentView();
       this.dispatchEvent(new CustomEvent('close'));
       const permalink = this.selectedTopicOrProject.views[viewIndex]?.permalink;
       if (permalink) setPermalink(permalink);
@@ -312,10 +340,11 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   removeGeometries() {
-    this.geometries.forEach(geometry => ToolboxStore.nextGeometryAction({id: geometry.id!, action: 'remove'}));
+    this.geometries.forEach((geometry) =>
+      ToolboxStore.nextGeometryAction({ id: geometry.id!, action: 'remove' }),
+    );
     this.geometries = [];
   }
-
 
   deselectTopicOrProject() {
     this.runIfNotEditCreate(() => {
@@ -328,7 +357,7 @@ export class NgmDashboard extends LitElementI18n {
   async setDataFromPermalink() {
     MainStore.setUrlLayersSubject.next();
     MainStore.nextMapSync();
-    const {destination, orientation} = getCameraView();
+    const { destination, orientation } = getCameraView();
     if (destination && orientation)
       this.viewer!.camera.flyTo({
         destination: destination,
@@ -337,7 +366,7 @@ export class NgmDashboard extends LitElementI18n {
         complete: () => {
           ToolboxStore.nextSliceSync();
           NavToolsStore.nextTargetPointSync();
-        }
+        },
       });
   }
 
@@ -347,7 +376,10 @@ export class NgmDashboard extends LitElementI18n {
     // remove duplicates
     this.recentlyViewedIds = [...new Set(this.recentlyViewedIds)];
 
-    localStorage.setItem('dashboard_recently_viewed', JSON.stringify(this.recentlyViewedIds));
+    localStorage.setItem(
+      'dashboard_recently_viewed',
+      JSON.stringify(this.recentlyViewedIds),
+    );
   }
 
   onProjectDuplicated(project: Project) {
@@ -363,11 +395,13 @@ export class NgmDashboard extends LitElementI18n {
       title: '',
       geometries: [],
       assets: [],
-      views: [{
-        id: '1',
-        title: `${i18next.t('dashboard_project_view')} 1`,
-        permalink: getPermalink()
-      }],
+      views: [
+        {
+          id: '1',
+          title: `${i18next.t('dashboard_project_view')} 1`,
+          permalink: getPermalink(),
+        },
+      ],
       owner: {
         email: this.userEmail,
         name: this.userEmail.split('@')[0],
@@ -403,18 +437,20 @@ export class NgmDashboard extends LitElementI18n {
     if (this.selectedViewIndx !== undefined) {
       DashboardStore.setViewIndex(this.selectedViewIndx);
       if (this.selectedTopicOrProject?.assets) {
-        this.assets = await this.fetchAssets(this.selectedTopicOrProject.assets);
+        this.assets = await this.fetchAssets(
+          this.selectedTopicOrProject.assets,
+        );
       }
     }
     this.projectTabState = 'view';
   }
 
   cancelEditCreate() {
-      this.apiClient.refreshProjects();
-      this.projectTabState = 'view';
-      this.saveOrCancelWarning = false;
-      this.projectToCreate = undefined;
-      this.tempKmlDataSource.entities.removeAll();
+    this.apiClient.refreshProjects();
+    this.projectTabState = 'view';
+    this.saveOrCancelWarning = false;
+    this.projectToCreate = undefined;
+    this.tempKmlDataSource.entities.removeAll();
   }
 
   runIfNotEditCreate(callback: () => void) {
@@ -441,53 +477,81 @@ export class NgmDashboard extends LitElementI18n {
   get projectMode() {
     let mode: 'viewEdit' | 'viewOnly' | undefined = undefined;
     if (this.selectedViewIndx !== undefined && this.selectedTopicOrProject) {
-      mode = isProjectOwnerOrEditor(this.selectedTopicOrProject) ? 'viewEdit' : 'viewOnly';
+      mode = isProjectOwnerOrEditor(this.selectedTopicOrProject)
+        ? 'viewEdit'
+        : 'viewOnly';
     }
     return this.projectTabState !== 'view' ? 'edit' : mode;
   }
 
   previewTemplate(projOrTopic?: Topic | Project) {
     if (!projOrTopic) return '';
-    const backgroundImage = projOrTopic.image?.length ? `url('${projOrTopic.image}')` : 'none';
-    return html`
-      <div class="ngm-proj-preview ${classMap({
-        'cursor-preloader': this.showCursorPreloader
-      })}" @click=${() => this.onProjectPreviewClick(projOrTopic)}>
-        <div class="ngm-proj-preview-img" style=${styleMap({backgroundImage})}></div>
-        <div class="ngm-proj-preview-title" style=${styleMap({backgroundColor: projOrTopic.color})}>
-          <span>${translated(projOrTopic.title)}</span>
-        </div>
-        <div class="ngm-proj-preview-subtitle">
-          <span>${projOrTopic.description ? translated(projOrTopic.description) : ''}</span>
-        </div>
-      </div>`;
+    const backgroundImage = projOrTopic.image?.length
+      ? `url('${projOrTopic.image}')`
+      : 'none';
+    return html` <div
+      class="ngm-proj-preview ${classMap({
+        'cursor-preloader': this.showCursorPreloader,
+      })}"
+      @click=${() => this.onProjectPreviewClick(projOrTopic)}
+    >
+      <div
+        class="ngm-proj-preview-img"
+        style=${styleMap({ backgroundImage })}
+      ></div>
+      <div
+        class="ngm-proj-preview-title"
+        style=${styleMap({ backgroundColor: projOrTopic.color })}
+      >
+        <span>${translated(projOrTopic.title)}</span>
+      </div>
+      <div class="ngm-proj-preview-subtitle">
+        <span
+          >${projOrTopic.description
+            ? translated(projOrTopic.description)
+            : ''}</span
+        >
+      </div>
+    </div>`;
   }
 
   recentlyViewedTemplate() {
-    if (this.isProjectSelected || this.activeTab === 'projects' || this.activeTab === 'shared' ||
-    (this.activeTab === 'overview' && !this.apiClient.token)) return '';
+    if (
+      this.isProjectSelected ||
+      this.activeTab === 'projects' ||
+      this.activeTab === 'shared' ||
+      (this.activeTab === 'overview' && !this.apiClient.token)
+    )
+      return '';
 
-    const topicsOrProjects = this.activeTab === 'topics' ? this.topics : this.projects;
+    const topicsOrProjects =
+      this.activeTab === 'topics' ? this.topics : this.projects;
 
-    const recentlyViewed = this.recentlyViewedIds.map(id => (<any[]> topicsOrProjects)?.find(
-      item => item.id === id)).filter(item => item !== undefined);
+    const recentlyViewed = this.recentlyViewedIds
+      .map((id) => (<any[]>topicsOrProjects)?.find((item) => item.id === id))
+      .filter((item) => item !== undefined);
 
-    return recentlyViewed.length > 0 ? html`
-      <div>
-        <div class="ngm-proj-title">${i18next.t('dashboard_recently_viewed')}</div>
-        <hide-overflow class="ngm-projects-list">
-          ${recentlyViewed.map(data => this.previewTemplate(data))}
-        </hide-overflow>
-      </div>` : html``;
+    return recentlyViewed.length > 0
+      ? html` <div>
+          <div class="ngm-proj-title">
+            ${i18next.t('dashboard_recently_viewed')}
+          </div>
+          <hide-overflow class="ngm-projects-list">
+            ${recentlyViewed.map((data) => this.previewTemplate(data))}
+          </hide-overflow>
+        </div>`
+      : html``;
   }
 
   overviewTemplate() {
     if (this.activeTab === 'overview' && !this.isProjectSelected) {
       if (this.apiClient.token) {
         return html`
-          <div class="ngm-proj-title">${i18next.t('dashboard_my_projects')}</div>
+          <div class="ngm-proj-title">
+            ${i18next.t('dashboard_my_projects')}
+          </div>
           <hide-overflow class="ngm-projects-list">
-            ${this.projects.map(data => this.previewTemplate(data))}
+            ${this.projects.map((data) => this.previewTemplate(data))}
           </hide-overflow>
         `;
       } else {
@@ -504,8 +568,12 @@ export class NgmDashboard extends LitElementI18n {
       DashboardStore.setProjectMode(this.projectMode);
     }
     if (
-        (changed.has('hidden') || changed.has('activeTab') || changed.has('selectedTopicOrProject')) &&
-        this.activeTab !== 'topics' && !this.selectedTopicOrProject && !this.hidden
+      (changed.has('hidden') ||
+        changed.has('activeTab') ||
+        changed.has('selectedTopicOrProject')) &&
+      this.activeTab !== 'topics' &&
+      !this.selectedTopicOrProject &&
+      !this.hidden
     ) {
       this.apiClient.refreshProjects();
     }
@@ -517,101 +585,139 @@ export class NgmDashboard extends LitElementI18n {
       <div class="ngm-panel-header">
         <div class="ngm-dashboard-tabs">
           <!-- topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
-          <div class=${classMap({active: this.activeTab === 'topics'})}
+          <div class=${classMap({ active: this.activeTab === 'topics' })}
                @click=${() => {
-                 this.runIfNotEditCreate(() => {
-                   this.activeTab = 'topics';
-                   this.deselectTopicOrProject();
-                 });
-                }}>
+            this.runIfNotEditCreate(() => {
+              this.activeTab = 'topics';
+              this.deselectTopicOrProject();
+            });
+          }}>
             ${i18next.t('dashboard_topics')}
           </div>
           -->
-          <div class=${classMap({active: this.activeTab === 'overview'})}
-               @click=${() => {
-                 this.runIfNotEditCreate(() => {
-                   this.activeTab = 'overview';
-                   this.deselectTopicOrProject();
-                 });
-                }}>
+          <div
+            class=${classMap({ active: this.activeTab === 'overview' })}
+            @click=${() => {
+              this.runIfNotEditCreate(() => {
+                this.activeTab = 'overview';
+                this.deselectTopicOrProject();
+              });
+            }}
+          >
             ${i18next.t('dashboard_overview')}
           </div>
-          <div class=${classMap({active: this.activeTab === 'projects'})}
-                ?hidden=${!this.apiClient.token}
-               @click=${() => {
-                 this.runIfNotEditCreate(() => {
-                   this.activeTab = 'projects';
-                   this.deselectTopicOrProject();
-                 });
-               }}>${i18next.t('dashboard_my_projects')}
-              (${this.projects.filter(p => p.owner.email === this.userEmail).length})
+          <div
+            class=${classMap({ active: this.activeTab === 'projects' })}
+            ?hidden=${!this.apiClient.token}
+            @click=${() => {
+              this.runIfNotEditCreate(() => {
+                this.activeTab = 'projects';
+                this.deselectTopicOrProject();
+              });
+            }}
+          >
+            ${i18next.t('dashboard_my_projects')}
+            (${this.projects.filter((p) => p.owner.email === this.userEmail)
+              .length})
           </div>
-          <div class=${classMap({active: this.activeTab === 'shared'})}
-               ?hidden=${!this.apiClient.token}
-               @click=${() => {
-                 this.runIfNotEditCreate(() => {
-                   this.activeTab = 'shared';
-                   this.deselectTopicOrProject();
-                 });
-               }}>${i18next.t('dashboard_shared_projects')}
-              (${this.projects.filter(p => p.owner.email !== this.userEmail).length})
+          <div
+            class=${classMap({ active: this.activeTab === 'shared' })}
+            ?hidden=${!this.apiClient.token}
+            @click=${() => {
+              this.runIfNotEditCreate(() => {
+                this.activeTab = 'shared';
+                this.deselectTopicOrProject();
+              });
+            }}
+          >
+            ${i18next.t('dashboard_shared_projects')}
+            (${this.projects.filter((p) => p.owner.email !== this.userEmail)
+              .length})
           </div>
         </div>
-        <div class="ngm-close-icon" @click=${() => {
-          this.runIfNotEditCreate(() => this.dispatchEvent(new CustomEvent('close')));
-        }}></div>
+        <div
+          class="ngm-close-icon"
+          @click=${() => {
+            this.runIfNotEditCreate(() =>
+              this.dispatchEvent(new CustomEvent('close')),
+            );
+          }}
+        ></div>
       </div>
       <div class="ngm-panel-content">
         <div class="ngm-toast-placeholder"></div>
         ${this.recentlyViewedTemplate()}
         <div ?hidden=${this.activeTab !== 'topics' || this.isProjectSelected}>
-          <div class="ngm-proj-title">${i18next.t('dashboard_recent_swisstopo')}</div>
+          <div class="ngm-proj-title">
+            ${i18next.t('dashboard_recent_swisstopo')}
+          </div>
           <div class="ngm-projects-list">
-            ${this.topics?.map(data => this.previewTemplate(data))}
+            ${this.topics?.map((data) => this.previewTemplate(data))}
           </div>
         </div>
         <div>
-          <div class="ngm-toast-placeholder" id="overview-toast" ?hidden=${!!this.apiClient.token}></div>
+          <div
+            class="ngm-toast-placeholder"
+            id="overview-toast"
+            ?hidden=${!!this.apiClient.token}
+          ></div>
           ${this.overviewTemplate()}
         </div>
         <div ?hidden=${this.activeTab !== 'projects' || this.isProjectSelected}>
-          <div class="ngm-proj-title">${i18next.t('dashboard_my_projects')}</div>
+          <div class="ngm-proj-title">
+            ${i18next.t('dashboard_my_projects')}
+          </div>
           <div class="ngm-projects-list">
-            ${this.projects.filter(p => p.owner.email === this.userEmail).map(data => this.previewTemplate(data))}
-            <div class="ngm-proj-preview ngm-proj-create" @click=${() => this.onProjectCreate()}>
+            ${this.projects
+              .filter((p) => p.owner.email === this.userEmail)
+              .map((data) => this.previewTemplate(data))}
+            <div
+              class="ngm-proj-preview ngm-proj-create"
+              @click=${() => this.onProjectCreate()}
+            >
               <div class="ngm-zoom-p-icon"></div>
               <div>${i18next.t('dashboard_project_create_btn')}</div>
             </div>
           </div>
         </div>
         <div ?hidden=${this.activeTab !== 'shared' || this.isProjectSelected}>
-          <div class="ngm-proj-title">${i18next.t('dashboard_shared_projects')}</div>
+          <div class="ngm-proj-title">
+            ${i18next.t('dashboard_shared_projects')}
+          </div>
           <div class="ngm-projects-list">
-            ${this.projects.filter(p => p.owner.email !== this.userEmail).map(data => this.previewTemplate(data))}
+            ${this.projects
+              .filter((p) => p.owner.email !== this.userEmail)
+              .map((data) => this.previewTemplate(data))}
           </div>
         </div>
         <div ?hidden=${!this.isProjectSelected}>
-          ${this.projectTabState !== 'view' ?
-              html`<ngm-project-edit
-                     .project="${this.projectTabState === 'create' ? this.projectToCreate : this.selectedTopicOrProject}"
-                     .saveOrCancelWarning="${this.saveOrCancelWarning}"
-                     .createMode="${this.projectTabState === 'create'}"
-                     .userEmail="${this.userEmail}"
-                     .tempKmlDataSource="${this.tempKmlDataSource}"
-                     @onBack=${this.deselectTopicOrProject}
-                     @onSave="${async (evt: {detail: {project: Project}}) => this.onProjectSave(evt.detail.project)}"
-                     @onCancel="${this.cancelEditCreate}"></ngm-project-edit>` :
-              html`<ngm-project-topic-overview
-                     .topicOrProject="${this.selectedTopicOrProject}"
-                     .toastPlaceholder="${this.toastPlaceholder}"
-                     .activeTab="${this.activeTab}"
-                     .selectedViewIndx="${this.selectedViewIndx}"
-                     .userEmail="${this.userEmail}"
-                     @onDeselect="${this.deselectTopicOrProject}"
-                     @onEdit="${this.onProjectEdit}"
-                     @onProjectDuplicated="${(evt: {detail: {project: Project}}) => this.onProjectDuplicated(evt.detail.project)}"
-                     @onModalConfirmation="${() => this.deselectTopicOrProject()}"
-                    ></ngm-project-topic-overview>`}
+          ${this.projectTabState !== 'view'
+            ? html`<ngm-project-edit
+                .project="${this.projectTabState === 'create'
+                  ? this.projectToCreate
+                  : this.selectedTopicOrProject}"
+                .saveOrCancelWarning="${this.saveOrCancelWarning}"
+                .createMode="${this.projectTabState === 'create'}"
+                .userEmail="${this.userEmail}"
+                .tempKmlDataSource="${this.tempKmlDataSource}"
+                @onBack=${this.deselectTopicOrProject}
+                @onSave="${async (evt: { detail: { project: Project } }) =>
+                  this.onProjectSave(evt.detail.project)}"
+                @onCancel="${this.cancelEditCreate}"
+              ></ngm-project-edit>`
+            : html`<ngm-project-topic-overview
+                .topicOrProject="${this.selectedTopicOrProject}"
+                .toastPlaceholder="${this.toastPlaceholder}"
+                .activeTab="${this.activeTab}"
+                .selectedViewIndx="${this.selectedViewIndx}"
+                .userEmail="${this.userEmail}"
+                @onDeselect="${this.deselectTopicOrProject}"
+                @onEdit="${this.onProjectEdit}"
+                @onProjectDuplicated="${(evt: {
+                  detail: { project: Project };
+                }) => this.onProjectDuplicated(evt.detail.project)}"
+                @onModalConfirmation="${() => this.deselectTopicOrProject()}"
+              ></ngm-project-topic-overview>`}
         </div>
       </div>
     `;

@@ -4,11 +4,12 @@
     "transpileOnly": true
   },
   "compilerOptions": {
-    "types": [
-      "geojson",
-      "mocha"
-    ]
+    "types": ["geojson", "mocha"]
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "node_modules/fomantic-ui-css/types/**/*.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js",
+    "node_modules/fomantic-ui-css/types/**/*.d.ts"
+  ],
   "exclude": []
 }

@@ -1,35 +1,48 @@
-import {customElement, property, state} from 'lit/decorators.js';
-import {LitElementI18n} from '../../i18n';
-import {css, html, PropertyValues} from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { LitElementI18n } from '../../i18n';
+import { css, html, PropertyValues } from 'lit';
 import i18next from 'i18next';
-import {BBox, Feature, GeoJsonProperties} from 'geojson';
+import { BBox, Feature, GeoJsonProperties } from 'geojson';
 
 import '@geoblocks/ga-search';
-import {getLayersConfig, SwisstopoImageryLayersConfig} from '../../swisstopoImagery';
-import {Cartographic, Entity as CesiumEntity, Math as CesiumMath, Rectangle, Viewer as CesiumViewer} from 'cesium';
-import {lv95ToDegrees} from '../../projection';
-import {escapeRegExp} from '../../utils';
-import {extractEntitiesAttributes} from '../../query/objectInformation';
+import {
+  getLayersConfig,
+  SwisstopoImageryLayersConfig,
+} from 'src/swisstopoImagery';
+import {
+  Cartographic,
+  Entity as CesiumEntity,
+  Math as CesiumMath,
+  Rectangle,
+  Viewer as CesiumViewer,
+} from 'cesium';
+import { lv95ToDegrees } from 'src/projection';
+import { escapeRegExp } from 'src/utils';
+import { extractEntitiesAttributes } from 'src/query/objectInformation';
 import auth from '../../store/auth';
-import defaultLayerTree, {LayerTreeNode} from '../../layertree';
+import defaultLayerTree, { LayerTreeNode } from '../../layertree';
 import NavToolsStore from '../../store/navTools';
-import {SearchLayer, SearchLayerWithLayer, SideBar} from '../../elements/ngm-side-bar'; // <ga-search> component
-import {createRef, ref} from 'lit/directives/ref.js';
+import {
+  SearchLayer,
+  SearchLayerWithLayer,
+  SideBar,
+} from '../../elements/ngm-side-bar'; // <ga-search> component
+import { createRef, ref } from 'lit/directives/ref.js';
 
 @customElement('ngm-search-input')
 export class SearchInput extends LitElementI18n {
   @property()
-  private accessor viewer: CesiumViewer | null = null
+  private accessor viewer: CesiumViewer | null = null;
 
   @property()
-  private accessor sidebar: SideBar | null = null
+  private accessor sidebar: SideBar | null = null;
 
   @state()
-  private accessor isActive = false
+  private accessor isActive = false;
 
-  private accessor searchRef = createRef<HTMLElement>()
-  private accessor inputRef = createRef<HTMLInputElement>()
-  private accessor resultsRef = createRef<HTMLUListElement>()
+  private accessor searchRef = createRef<HTMLElement>();
+  private accessor inputRef = createRef<HTMLInputElement>();
+  private accessor resultsRef = createRef<HTMLUListElement>();
 
   private layerConfigs: SwisstopoImageryLayersConfig | null = null;
 
@@ -75,8 +88,11 @@ export class SearchInput extends LitElementI18n {
         @input="${freezeEventTarget}"
         @click="${captureEvent}"
         @keydown="${this.handleInputKeyPress}"
-      >
-      <ul ${ref(this.resultsRef)} @mouseover="${this.handleResultsHovered}"></ul>
+      />
+      <ul
+        ${ref(this.resultsRef)}
+        @mouseover="${this.handleResultsHovered}"
+      ></ul>
     </ga-search>
 
     <ngm-core-icon icon="search" @click="${this.toggleActive}"></ngm-core-icon>
@@ -95,7 +111,7 @@ export class SearchInput extends LitElementI18n {
   }
 
   private clear(): void {
-    const {value: input} = this.inputRef;
+    const { value: input } = this.inputRef;
     if (input == null) {
       return;
     }
@@ -105,7 +121,7 @@ export class SearchInput extends LitElementI18n {
   private toggleActive(): void {
     this.isActive = !this.isActive;
     setTimeout(() => {
-      const {value: input} = this.inputRef;
+      const { value: input } = this.inputRef;
       if (input == null) {
         return;
       }
@@ -123,12 +139,18 @@ export class SearchInput extends LitElementI18n {
    * @private
    */
   private matchFeature(feature: Feature): boolean {
-    if (this.layerConfigs == null || feature.properties == null || feature.properties.origin !== 'layer') {
+    if (
+      this.layerConfigs == null ||
+      feature.properties == null ||
+      feature.properties.origin !== 'layer'
+    ) {
       return true;
     }
     const layerName: string = feature.properties.layer;
     const layerConfig = layerName != null && this.layerConfigs[layerName];
-    return layerConfig && (layerConfig.type === 'wmts' || layerConfig.type === 'wms');
+    return (
+      layerConfig && (layerConfig.type === 'wmts' || layerConfig.type === 'wms')
+    );
   }
 
   /**
@@ -169,11 +191,13 @@ export class SearchInput extends LitElementI18n {
     coordinates.sort((a, b) => a - b);
     coordinates.reverse();
     const bbox = [...lv95ToDegrees(coordinates), ...lv95ToDegrees(coordinates)];
-    return [{
-      label: `Recenter to ${coordinates.map((coord) => coordinateFormat.format(coord)).join(' ')}`,
-      bbox: bbox as BBox,
-      origin: 'coordinates',
-    }];
+    return [
+      {
+        label: `Recenter to ${coordinates.map((coord) => coordinateFormat.format(coord)).join(' ')}`,
+        bbox: bbox as BBox,
+        origin: 'coordinates',
+      },
+    ];
   }
 
   private searchAdditionalItemsByRegex(query: RegExp): AdditionalItem[] {
@@ -184,7 +208,7 @@ export class SearchInput extends LitElementI18n {
     const dataSources = this.viewer.dataSources;
     for (let i = 0, ii = dataSources.length; i < ii; i++) {
       const dataSource = dataSources.get(i);
-      dataSource.entities.values.forEach(entity => {
+      dataSource.entities.values.forEach((entity) => {
         const attributes = extractEntitiesAttributes(entity);
         if (attributes && query.test(attributes.EventLocationName)) {
           results.push({
@@ -202,15 +226,23 @@ export class SearchInput extends LitElementI18n {
     return this.searchAdditionalItemsByLayerTree(query, defaultLayerTree);
   }
 
-  private searchAdditionalItemsByLayerTree(query: RegExp, layerTree: LayerTreeNode[]): AdditionalItem[] {
+  private searchAdditionalItemsByLayerTree(
+    query: RegExp,
+    layerTree: LayerTreeNode[],
+  ): AdditionalItem[] {
     const results: AdditionalItem[] = [];
     const user = auth.user.getValue();
     for (const layer of layerTree) {
       if (layer.children) {
-        results.push(...this.searchAdditionalItemsByLayerTree(query, layer.children));
+        results.push(
+          ...this.searchAdditionalItemsByLayerTree(query, layer.children),
+        );
       } else if (query.test(layer.label)) {
         layer.label = `${i18next.t(layer.label)}`;
-        if (!layer.restricted?.length || layer.restricted.some(g => user?.['cognito:groups'].includes(g))) {
+        if (
+          !layer.restricted?.length ||
+          layer.restricted.some((g) => user?.['cognito:groups'].includes(g))
+        ) {
           results.push(layer);
         }
       }
@@ -225,15 +257,18 @@ export class SearchInput extends LitElementI18n {
     }
     const item = this.resultItems[i];
     if (item != null) {
-      this.selectItem(item, {keepFocus: true});
+      this.selectItem(item, { keepFocus: true });
     }
   }
 
   private handleItemSelected(event: SearchEvent): void {
-    this.selectItem(event.detail.result, {allowLayerChanges: true});
+    this.selectItem(event.detail.result, { allowLayerChanges: true });
   }
 
-  private selectItem(item: SearchItem, options: { keepFocus?: boolean, allowLayerChanges?: boolean } = {}): void {
+  private selectItem(
+    item: SearchItem,
+    options: { keepFocus?: boolean; allowLayerChanges?: boolean } = {},
+  ): void {
     const categorized = categorizeSearchItem(item);
     switch (categorized.category) {
       case SearchItemCategory.Location:
@@ -269,7 +304,7 @@ export class SearchInput extends LitElementI18n {
       return;
     }
     NavToolsStore.hideTargetPoint();
-    const layer = isEntityItem(item) ? item : item as SearchLayerWithLayer;
+    const layer = isEntityItem(item) ? item : (item as SearchLayerWithLayer);
     this.sidebar.addLayerFromSearch(layer).then();
     if (this.viewer != null && isEntityItem(item)) {
       this.viewer.zoomTo(item.entity).then();
@@ -282,7 +317,10 @@ export class SearchInput extends LitElementI18n {
     }
     NavToolsStore.hideTargetPoint();
     const rectangle = Rectangle.fromDegrees(...bbox);
-    if (rectangle.width < CesiumMath.EPSILON3 || rectangle.height < CesiumMath.EPSILON3) {
+    if (
+      rectangle.width < CesiumMath.EPSILON3 ||
+      rectangle.height < CesiumMath.EPSILON3
+    ) {
       // rectangle is too small
       const center = Rectangle.center(rectangle);
       center.height = 5000;
@@ -323,7 +361,7 @@ export class SearchInput extends LitElementI18n {
           const target = this.findActiveResult();
           if (target != null) {
             const [item, _element] = target;
-            this.selectItem(item, {keepFocus: true});
+            this.selectItem(item, { keepFocus: true });
           }
         });
         break;
@@ -334,8 +372,8 @@ export class SearchInput extends LitElementI18n {
   }
 
   private findEnterTarget(): [SearchItem, HTMLLIElement] | null {
-    const {value: search} = this.searchRef;
-    const {value: results} = this.resultsRef;
+    const { value: search } = this.searchRef;
+    const { value: results } = this.resultsRef;
     if (search == null || results == null) {
       return null;
     }
@@ -355,7 +393,7 @@ export class SearchInput extends LitElementI18n {
   }
 
   private findActiveResult(): [SearchItem, HTMLLIElement] | null {
-    const {value: results} = this.resultsRef;
+    const { value: results } = this.resultsRef;
     if (results == null) {
       return null;
     }
@@ -371,14 +409,17 @@ export class SearchInput extends LitElementI18n {
   }
 
   private get resultItems(): SearchItem[] {
-    const {value: search} = this.searchRef;
+    const { value: search } = this.searchRef;
     if (search == null) {
       return [];
     }
-    const items = (search as any).autocomplete.core.results as Array<Feature | {
-      type: 'additionalSource',
-      result: SearchItem
-    }>;
+    const items = (search as any).autocomplete.core.results as Array<
+      | Feature
+      | {
+          type: 'additionalSource';
+          result: SearchItem;
+        }
+    >;
     return items.map((item) => {
       if ('type' in item && item.type === 'additionalSource') {
         return item.result;
@@ -404,7 +445,9 @@ export class SearchInput extends LitElementI18n {
       left: 0;
       top: 0;
       height: var(--ngm-header-height-mobile);
-      width: calc(var(--content-width) - var(--suffix-width) + var(--header-padding-l));
+      width: calc(
+        var(--content-width) - var(--suffix-width) + var(--header-padding-l)
+      );
     }
 
     @media (width >= 700px) {
@@ -430,7 +473,8 @@ export class SearchInput extends LitElementI18n {
     }
 
     @media (min-width: 700px) {
-      ga-search, :host(:not(.is-active)) ga-search {
+      ga-search,
+      :host(:not(.is-active)) ga-search {
         display: flex;
         width: 500px;
         max-width: 500px;
@@ -453,7 +497,8 @@ export class SearchInput extends LitElementI18n {
       flex: 1;
       width: 100%;
       height: 100%;
-      padding: var(--padding-v) var(--padding-h) var(--padding-v) calc(var(--padding-h) * 2 + var(--icon-size));
+      padding: var(--padding-v) var(--padding-h) var(--padding-v)
+        calc(var(--padding-h) * 2 + var(--icon-size));
 
       border: none;
       border-bottom: 2px solid var(--color-main);
@@ -497,7 +542,7 @@ export class SearchInput extends LitElementI18n {
       text-overflow: ellipsis;
     }
 
-    ul > li[aria-selected=true],
+    ul > li[aria-selected='true'],
     ul > li:hover {
       cursor: pointer;
       background-color: var(--color-highlight);
@@ -510,7 +555,7 @@ export class SearchInput extends LitElementI18n {
     ul > li img {
       width: 20px;
       vertical-align: middle;
-      color: #868E96;
+      color: #868e96;
     }
 
     ul > li i {
@@ -540,24 +585,25 @@ export class SearchInput extends LitElementI18n {
       cursor: pointer;
     }
 
-    ngm-core-icon[icon="close"] {
-      right: calc(var(--padding-h) + 54px)
+    ngm-core-icon[icon='close'] {
+      right: calc(var(--padding-h) + 54px);
     }
 
-    :host(.is-active) ngm-core-icon[icon="search"] {
+    :host(.is-active) ngm-core-icon[icon='search'] {
       color: var(--color-highlight);
     }
 
-    ga-search:has(input:placeholder-shown) ~ ngm-core-icon[icon="close"] {
+    ga-search:has(input:placeholder-shown) ~ ngm-core-icon[icon='close'] {
       display: none;
     }
 
     @media (min-width: 700px) {
-      ngm-core-icon[icon="close"] {
+      ngm-core-icon[icon='close'] {
         display: none;
       }
 
-      ga-search:has(input:not(:placeholder-shown)) ~ ngm-core-icon[icon="search"] {
+      ga-search:has(input:not(:placeholder-shown))
+        ~ ngm-core-icon[icon='search'] {
         display: none;
       }
     }
@@ -595,45 +641,38 @@ const freezeEventTarget = (event: Event): void => {
   });
 };
 
-
-type SearchItem =
-  | Feature
-  | AdditionalItem
+type SearchItem = Feature | AdditionalItem;
 
 interface FeatureWithLocation extends Feature {
-  bbox: BBox
+  bbox: BBox;
   properties: GeoJsonProperties & {
-    origin: 'layer'
-  }
+    origin: 'layer';
+  };
 }
 
 /**
  * `AdditionalItem` represents custom objects
  * that are added to the default search results.
  */
-type AdditionalItem =
-  | LayerTreeNode
-  | CoordinateItem
-  | EntityItem
+type AdditionalItem = LayerTreeNode | CoordinateItem | EntityItem;
 
 interface CoordinateItem {
-  label: string
-  bbox: BBox
-  origin: 'coordinates'
+  label: string;
+  bbox: BBox;
+  origin: 'coordinates';
 }
 
 interface EntityItem {
-  label: string
-  entity: CesiumEntity
-  dataSourceName: string
+  label: string;
+  entity: CesiumEntity;
+  dataSourceName: string;
 }
 
 interface SearchEvent extends SubmitEvent {
   detail: {
-    result: SearchItem
-  }
+    result: SearchItem;
+  };
 }
-
 
 enum SearchItemCategory {
   Location,
@@ -641,37 +680,33 @@ enum SearchItemCategory {
   NgmLayer,
 }
 
-
 type CategorizedSearchItem =
   | {
-  category: SearchItemCategory.Location
-  item: FeatureWithLocation | CoordinateItem
-}
+      category: SearchItemCategory.Location;
+      item: FeatureWithLocation | CoordinateItem;
+    }
   | {
-  category: SearchItemCategory.GeoAdminLayer,
-  item: Feature,
-}
+      category: SearchItemCategory.GeoAdminLayer;
+      item: Feature;
+    }
   | {
-  category: SearchItemCategory.NgmLayer,
-  item: EntityItem | LayerTreeNode
-}
+      category: SearchItemCategory.NgmLayer;
+      item: EntityItem | LayerTreeNode;
+    };
 
+const isFeature = (item: SearchItem): item is Feature =>
+  'type' in item && item.type === 'Feature';
 
-const isFeature = (item: SearchItem): item is Feature => (
-  'type' in item && item.type === 'Feature'
-);
+const isFeatureWithLocation = (item: Feature): item is FeatureWithLocation =>
+  item.bbox != null &&
+  item.properties != null &&
+  item.properties.origin !== 'layer';
 
-const isFeatureWithLocation = (item: Feature): item is FeatureWithLocation => (
-  item.bbox != null && (item.properties != null && item.properties.origin !== 'layer')
-);
+const isCoordinateItem = (item: SearchItem): item is CoordinateItem =>
+  'origin' in item && item.origin === 'coordinates';
 
-const isCoordinateItem = (item: SearchItem): item is CoordinateItem => (
-  'origin' in item && item.origin === 'coordinates'
-);
-
-const isEntityItem = (item: SearchItem): item is EntityItem => (
-  'entity' in item && item.entity instanceof CesiumEntity
-);
+const isEntityItem = (item: SearchItem): item is EntityItem =>
+  'entity' in item && item.entity instanceof CesiumEntity;
 
 /**
  * The format used for individual coordinate values.
@@ -683,14 +718,14 @@ const coordinateFormat = new Intl.NumberFormat('de-CH', {
 const categorizeSearchItem = (item: SearchItem): CategorizedSearchItem => {
   if (isFeature(item)) {
     if (isFeatureWithLocation(item)) {
-      return {category: SearchItemCategory.Location, item};
+      return { category: SearchItemCategory.Location, item };
     }
-    return {category: SearchItemCategory.GeoAdminLayer, item};
+    return { category: SearchItemCategory.GeoAdminLayer, item };
   }
   if (isCoordinateItem(item)) {
-    return {category: SearchItemCategory.Location, item};
+    return { category: SearchItemCategory.Location, item };
   }
-  return {category: SearchItemCategory.NgmLayer, item};
+  return { category: SearchItemCategory.NgmLayer, item };
 };
 
 const getIconForCategory = (category: SearchItemCategory): string => {

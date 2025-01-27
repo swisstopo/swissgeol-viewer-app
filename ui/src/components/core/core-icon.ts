@@ -1,14 +1,14 @@
-import {css, html, LitElement} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
-import {IconKey, icons} from '../../icons/icons';
+import { css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { IconKey, icons } from '../../icons/icons';
 
 @customElement('ngm-core-icon')
 export class CoreIcon extends LitElement {
   @property()
-  accessor icon: IconKey = 'config'
+  accessor icon: IconKey = 'config';
 
-  @property({type: Boolean, attribute: 'interactive'})
-  accessor isInteractive: boolean = false
+  @property({ type: Boolean, attribute: 'interactive' })
+  accessor isInteractive: boolean = false;
 
   readonly render = () => {
     return html`${icons[this.icon]}`;

@@ -1,10 +1,9 @@
 import i18next from 'i18next';
 import locI18next from 'loc-i18next';
 import Backend from 'i18next-http-backend';
-import {LitElement} from 'lit';
-import {SUPPORTED_LANGUAGES} from './constants';
-import {getURLSearchParams, setURLSearchParams} from './utils';
-
+import { LitElement } from 'lit';
+import { SUPPORTED_LANGUAGES } from './constants';
+import { getURLSearchParams, setURLSearchParams } from './utils';
 
 class LanguageDetector {
   constructor() {
@@ -51,19 +50,22 @@ class LanguageDetector {
 LanguageDetector.type = 'languageDetector';
 
 export function setupI18n() {
-  const promise = i18next.use(Backend).use(LanguageDetector).init({
-    ns: ['app', 'assets'],
-    defaultNS: 'app',
-    supportedLngs: SUPPORTED_LANGUAGES,
-    nonExplicitWhitelist: true,
-    returnEmptyString: false,
-    fallbackLng: 'en',
-    //load: 'languageOnly',
-    debug: false,
-    backend: {
-      loadPath: 'locales/{{ns}}.{{lng}}.json'
-    }
-  });
+  const promise = i18next
+    .use(Backend)
+    .use(LanguageDetector)
+    .init({
+      ns: ['app', 'assets'],
+      defaultNS: 'app',
+      supportedLngs: SUPPORTED_LANGUAGES,
+      nonExplicitWhitelist: true,
+      returnEmptyString: false,
+      fallbackLng: 'en',
+      //load: 'languageOnly',
+      debug: false,
+      backend: {
+        loadPath: 'locales/{{ns}}.{{lng}}.json',
+      },
+    });
 
   const localize = locI18next.init(i18next);
 
@@ -78,7 +80,6 @@ export function setupI18n() {
  * @param {import('lit-element').LitElement} Base
  */
 export class LitElementI18n extends LitElement {
-
   connectedCallback() {
     this.i18nLanguageChangedCallback_ = () => this.requestUpdate();
     i18next.on('languageChanged', this.i18nLanguageChangedCallback_);
@@ -99,10 +100,11 @@ export function toLocaleDateString(dateString) {
   const date = new Date(dateString);
 
   return date.toLocaleDateString(`${i18next.language}-CH`, {
-    year: 'numeric', month: 'long', day: 'numeric'
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 }
-
 
 /**
  * @param {any} property

@@ -1,5 +1,5 @@
 import CSVParser from 'papaparse';
-import type {Viewer} from 'cesium';
+import type { Viewer } from 'cesium';
 
 export function getURLSearchParams(): URLSearchParams {
   return new URLSearchParams(location.search);
@@ -17,14 +17,16 @@ export function escapeRegExp(string: string) {
   return string ? string.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&') : string;
 }
 
-export function executeForAllPrimitives(viewer: Viewer, functionToExecute: (primitive: any) => void) {
+export function executeForAllPrimitives(
+  viewer: Viewer,
+  functionToExecute: (primitive: any) => void,
+) {
   const primitives = viewer.scene.primitives;
   for (let i = 0, ii = primitives.length; i < ii; i++) {
     const primitive = primitives.get(i);
     if (primitive.ready || !primitive.readyPromise)
       functionToExecute(primitive);
-    else
-      primitive.readyPromise.then(() => functionToExecute(primitive));
+    else primitive.readyPromise.then(() => functionToExecute(primitive));
   }
 }
 
@@ -68,7 +70,7 @@ export function containsXY(extent: number[], x: number, y: number): boolean {
 export function filterCsvString(str: string, bbox4326: number[]): string {
   const csv = CSVParser.parse(str, {
     header: true,
-    skipEmptyLines: 'greedy'
+    skipEmptyLines: 'greedy',
   });
 
   // find the x and y keys
@@ -82,16 +84,21 @@ export function filterCsvString(str: string, bbox4326: number[]): string {
     return containsXY(bbox4326, x4326, y4326);
   });
 
-  return CSVParser.unparse({
-    fields: csv.meta.fields,
-    data: lines
-  }, {
-    delimiter: csv.meta.delimiter,
-    newline: csv.meta.linebreak
-  });
+  return CSVParser.unparse(
+    {
+      fields: csv.meta.fields,
+      data: lines,
+    },
+    {
+      delimiter: csv.meta.delimiter,
+      newline: csv.meta.linebreak,
+    },
+  );
 }
 
-export function parseJson(string: string | null): Record<string, any> | undefined {
+export function parseJson(
+  string: string | null,
+): Record<string, any> | undefined {
   if (!string) return undefined;
   try {
     return JSON.parse(string);
@@ -100,14 +107,18 @@ export function parseJson(string: string | null): Record<string, any> | undefine
   }
 }
 
-export function interpolateBetweenNumbers(min: number, max: number, percent: number): number {
+export function interpolateBetweenNumbers(
+  min: number,
+  max: number,
+  percent: number,
+): number {
   const diff = max - min;
-  return min + ((percent / 100) * diff);
+  return min + (percent / 100) * diff;
 }
 
 export function getPercent(min: number, max: number, value: number): number {
   const diff = max - min;
-  return value / diff * 100;
+  return (value / diff) * 100;
 }
 
 export function debounce(f, ms, skipFirst = false) {
@@ -132,13 +143,12 @@ export function debounce(f, ms, skipFirst = false) {
   };
 }
 
-
 export function setBit(num: number, pos: number): number {
   return num | (1 << pos);
 }
 
 export function getBit(num: number, pos: number): number {
-  return (num & (1 << pos));
+  return num & (1 << pos);
 }
 
 export function isEmail(email: string | undefined) {

@@ -1,11 +1,11 @@
-import {LitElementI18n} from '../../i18n';
-import {css, html, nothing} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import { LitElementI18n } from '../../i18n';
+import { css, html, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import '../core';
 
 @customElement('ngm-navigation-panel-header')
 export class NavigationPanelHeader extends LitElementI18n {
-  @property({type: Boolean, attribute: 'closeable'})
+  @property({ type: Boolean, attribute: 'closeable' })
   accessor isCloseable: boolean = false;
 
   constructor() {
@@ -16,13 +16,15 @@ export class NavigationPanelHeader extends LitElementI18n {
 
   readonly render = () => html`
     <slot></slot>
-    ${this.isCloseable ? html`
-      <ngm-core-icon
-        icon="close"
-        interactive
-        @click=${this.close}
-      ></ngm-core-icon>
-    ` : nothing}
+    ${this.isCloseable
+      ? html`
+          <ngm-core-icon
+            icon="close"
+            interactive
+            @click=${this.close}
+          ></ngm-core-icon>
+        `
+      : nothing}
   `;
 
   connectedCallback(): void {
@@ -37,7 +39,7 @@ export class NavigationPanelHeader extends LitElementI18n {
   static readonly styles = css`
     :host {
       box-sizing: border-box;
-      border-bottom: 2px solid #DFE2E6;
+      border-bottom: 2px solid #dfe2e6;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -48,4 +50,3 @@ export class NavigationPanelHeader extends LitElementI18n {
     }
   `;
 }
-

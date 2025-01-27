@@ -1,60 +1,60 @@
 ngm-ion-modal.ngm-floating-window {
-    z-index: 10 !important;
-    width: 528px;
-    max-width: 100%;
-    max-height: 100%;
-    border: 1px solid #00000029;
-    top: 25%;
-    left: calc(50% - 264px)
+  z-index: 10 !important;
+  width: 528px;
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px solid #00000029;
+  top: 25%;
+  left: calc(50% - 264px);
 }
 
 ngm-ion-modal .content-container {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .ngm-ion-assets {
-    overflow-y: auto;
-    overflow-x: hidden;
-    max-height: 350px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 350px;
 }
 
 .ngm-ion-load-container {
-    display: flex;
-    column-gap: 12px;
-    margin-bottom: 6px;
+  display: flex;
+  column-gap: 12px;
+  margin-bottom: 6px;
 }
 
 .ngm-load-ion-btn.ngm-action-btn.ui.button {
-    margin-top: 9px;
-    width: 320px;
+  margin-top: 9px;
+  width: 320px;
 }
 
-.ngm-load-ion-btn .ui.loader{
-    display: block;
-    position: relative;
-    background-color: white;
-    margin-top: 8px;
+.ngm-load-ion-btn .ui.loader {
+  display: block;
+  position: relative;
+  background-color: white;
+  margin-top: 8px;
 }
 
 .ngm-add-ion-btn.ngm-action-btn.ui.button {
-    width: 75px;
+  width: 75px;
 }
 
 ngm-ion-modal .ui.basic.table {
-    margin-top: 6px;
-    margin-bottom: 12px;
+  margin-top: 6px;
+  margin-bottom: 12px;
 }
 
 ngm-ion-modal .ui.basic.table td {
-    font-weight: bold;
-    user-select: text;
+  font-weight: bold;
+  user-select: text;
 }
 
 ngm-ion-modal .ngm-divider {
-    margin-top: 18px;
+  margin-top: 18px;
 }
 
 .ngm-ion-error {
-    color: var(--ngm-warning);
-    margin-left: 16px;
+  color: var(--ngm-warning);
+  margin-left: 16px;
 }

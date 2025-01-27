@@ -1,5 +1,5 @@
-import {html} from 'lit';
-import {LitElementI18n} from '../i18n.js';
+import { html } from 'lit';
+import { LitElementI18n } from '../i18n.js';
 import '../toolbox/ngm-toolbox';
 import '../layers/ngm-layers';
 import '../layers/ngm-layers-sort';
@@ -8,8 +8,8 @@ import './sidebar/ngm-menu-item';
 import '../components/core';
 import '../components/navigation/navigation-layer-panel';
 import LayersActions from '../layers/LayersActions';
-import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
-import defaultLayerTree, {LayerConfig} from '../layertree';
+import { DEFAULT_LAYER_OPACITY, LayerType } from '../constants';
+import defaultLayerTree, { LayerConfig } from '../layertree';
 import {
   addAssetId,
   getAssetIds,
@@ -21,11 +21,11 @@ import {
   setCesiumToolbarParam,
   syncLayersParam,
 } from '../permalink';
-import {createCesiumObject} from '../layers/helpers';
+import { createCesiumObject } from '../layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import './ngm-map-configuration';
-import type {Cartesian2, Viewer} from 'cesium';
+import type { Cartesian2, Viewer } from 'cesium';
 import {
   BoundingSphere,
   Cartesian3,
@@ -36,51 +36,52 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
 } from 'cesium';
-import {showSnackbarError, showSnackbarInfo} from '../notifications';
+import { showSnackbarError, showSnackbarInfo } from '../notifications';
 import auth from '../store/auth';
 import './ngm-share-link';
 import '../layers/ngm-layers-upload';
 import MainStore from '../store/main';
-import {classMap} from 'lit/directives/class-map.js';
+import { classMap } from 'lit/directives/class-map.js';
 import $ from 'jquery';
-import {customElement, property, query, state} from 'lit/decorators.js';
+import { customElement, property, query, state } from 'lit/decorators.js';
 import type QueryManager from '../query/QueryManager';
 
 import DashboardStore from '../store/dashboard';
-import {getAssets} from '../api-ion';
-import {LayerEvent, LayersUpdateEvent} from '../components/layer/layer-display';
+import { getAssets } from '../api-ion';
+import {
+  LayerEvent,
+  LayersUpdateEvent,
+} from '../components/layer/layer-display';
 
-export type SearchLayer =
-  | SearchLayerWithLayer
-  | SearchLayerWithSource
+export type SearchLayer = SearchLayerWithLayer | SearchLayerWithSource;
 
 interface BaseSearchLayer {
-  label: string
-  title?: string
+  label: string;
+  title?: string;
 }
 
 export interface SearchLayerWithLayer extends BaseSearchLayer {
-  layer: string
+  layer: string;
 }
 
 export interface SearchLayerWithSource extends BaseSearchLayer {
-  type?: LayerType
-  dataSourceName: string
+  type?: LayerType;
+  dataSourceName: string;
 }
 
 interface LayerClickEvent {
   detail: {
-    layer: string
-  }
+    layer: string;
+  };
 }
 
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
-  @property({type: Object})
+  @property({ type: Object })
   accessor queryManager: QueryManager | null = null;
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor mobileView = false;
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor displayUndergroundHint = true;
   @state()
   accessor catalogLayers: LayerConfig[] | undefined;
@@ -104,7 +105,7 @@ export class SideBar extends LitElementI18n {
   private zoomedToPosition = false;
   private accordionInited = false;
   private shareListenerAdded = false;
-  private readonly shareDownListener = evt => {
+  private readonly shareDownListener = (evt) => {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
   private viewer: Viewer | null = null;
@@ -123,8 +124,10 @@ export class SideBar extends LitElementI18n {
     auth.user.subscribe((user) => {
       if (!user && this.activeLayers) {
         // user logged out, remove restricted layers.
-        const restricted = this.activeLayers.filter(config => config.restricted?.length);
-        restricted.forEach(config => {
+        const restricted = this.activeLayers.filter(
+          (config) => config.restricted?.length,
+        );
+        restricted.forEach((config) => {
           const idx = this.activeLayers.indexOf(config);
           this.activeLayers.splice(idx, 1);
           this.removeLayer(config);
@@ -133,7 +136,9 @@ export class SideBar extends LitElementI18n {
     });
     MainStore.setUrlLayersSubject.subscribe(async () => {
       if (this.activeLayers) {
-        this.activeLayers.forEach(layer => this.removeLayerWithoutSync(layer));
+        this.activeLayers.forEach((layer) =>
+          this.removeLayerWithoutSync(layer),
+        );
       }
       await this.syncActiveLayers();
       this.requestUpdate();
@@ -144,7 +149,7 @@ export class SideBar extends LitElementI18n {
       syncLayersParam(this.activeLayers);
     });
 
-    MainStore.onIonAssetAdd.subscribe(asset => {
+    MainStore.onIonAssetAdd.subscribe((asset) => {
       const assetIds = getAssetIds();
       if (!asset.id || assetIds.includes(asset.id.toString())) {
         showSnackbarInfo(i18next.t('dtd_asset_exists_info'));
@@ -173,7 +178,7 @@ export class SideBar extends LitElementI18n {
     });
 
     MainStore.onRemoveIonAssets.subscribe(async () => {
-      const assets = this.activeLayers.filter(l => !!l.assetId);
+      const assets = this.activeLayers.filter((l) => !!l.assetId);
       for (const asset of assets) {
         await this.removeLayerWithoutSync(asset);
       }
@@ -187,7 +192,11 @@ export class SideBar extends LitElementI18n {
       this.activePanel = 'tools';
   }
 
-  private readonly renderMenuItem = (icon: string, title: string, panel: string) => html`
+  private readonly renderMenuItem = (
+    icon: string,
+    title: string,
+    panel: string,
+  ) => html`
     <ngm-menu-item
       .icon=${icon}
       .title=${title}
@@ -202,86 +211,132 @@ export class SideBar extends LitElementI18n {
       return '';
     }
 
-    this.queryManager.activeLayers = this.activeLayers
-      .filter(config => config.visible && !config.noQuery);
-
+    this.queryManager.activeLayers = this.activeLayers.filter(
+      (config) => config.visible && !config.noQuery,
+    );
 
     const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
     const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
-    const projectsBtn = this.renderMenuItem('projects', 'menu_projects', 'dashboard');
+    const projectsBtn = this.renderMenuItem(
+      'projects',
+      'menu_projects',
+      'dashboard',
+    );
     const shareBtn = this.renderMenuItem('share', 'menu_share', 'share');
-    const settingsBtn = this.renderMenuItem('config', 'menu_settings', 'settings');
-    const mobileExpandBtn = html`
-      <ngm-menu-item
-        icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
-        @click=${() => this.mobileShowAll = !this.mobileShowAll}
-      ></ngm-menu-item>`;
+    const settingsBtn = this.renderMenuItem(
+      'config',
+      'menu_settings',
+      'settings',
+    );
+    const mobileExpandBtn = html` <ngm-menu-item
+      icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
+      @click=${() => (this.mobileShowAll = !this.mobileShowAll)}
+    ></ngm-menu-item>`;
 
     return html`
-      <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
-        ${shareBtn}
-        ${settingsBtn}
+      <div
+        .hidden=${!this.mobileView || !this.mobileShowAll}
+        class="ngm-menu-mobile"
+      >
+        ${shareBtn} ${settingsBtn}
         <!-- required for correct positioning -->
         <div></div>
         <div></div>
       </div>
-      <div class="ngm-menu" >
+      <div class="ngm-menu">
         <div class="ngm-menu-top">
-          ${layerBtn}
-          ${toolsBtn}
-          ${!this.mobileView ? shareBtn : ''}
-          ${projectsBtn}
-          ${this.mobileView ? mobileExpandBtn : ''}
+          ${layerBtn} ${toolsBtn} ${!this.mobileView ? shareBtn : ''}
+          ${projectsBtn} ${this.mobileView ? mobileExpandBtn : ''}
         </div>
         <div ?hidden="${this.mobileView}" class="ngm-menu-top">
           ${settingsBtn}
         </div>
       </div>
-      <ngm-dashboard class="ngm-side-bar-panel ngm-large-panel"
+      <ngm-dashboard
+        class="ngm-side-bar-panel ngm-large-panel"
         ?hidden=${this.activePanel !== 'dashboard'}
-        @close=${() => this.activePanel = null}
-        @layerclick=${(e: LayerClickEvent) => this.onCatalogLayerClicked(e.detail.layer)}
+        @close=${() => (this.activePanel = null)}
+        @layerclick=${(e: LayerClickEvent) =>
+          this.onCatalogLayerClicked(e.detail.layer)}
       ></ngm-dashboard>
       <ngm-navigation-layer-panel
         ?hidden="${this.activePanel !== 'data'}"
         .layers="${this.catalogLayers}"
         .displayLayers="${this.activeLayers}"
-        @close="${() => this.activePanel = null}"
-        @layer-click=${(e: LayerClickEvent) => this.onCatalogLayerClicked(e.detail.layer)}
+        @close="${() => (this.activePanel = null)}"
+        @layer-click=${(e: LayerClickEvent) =>
+          this.onCatalogLayerClicked(e.detail.layer)}
         @display-layers-update="${this.handleDisplayLayersUpdate}"
         @display-layer-update="${this.handleDisplayLayerUpdate}"
         @display-layer-removal="${this.handleDisplayLayerRemoval}"
       ></ngm-navigation-layer-panel>
       <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
-        <ngm-tools .toolsHidden=${this.activePanel !== 'tools'}
-                   @open=${() => this.activePanel = 'tools'}
-                   @close=${() => this.activePanel = null}></ngm-tools>
+        <ngm-tools
+          .toolsHidden=${this.activePanel !== 'tools'}
+          @open=${() => (this.activePanel = 'tools')}
+          @close=${() => (this.activePanel = null)}
+        ></ngm-tools>
       </div>
-      <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel ngm-share-panel">
-        <div class="ngm-panel-header">${i18next.t('lsb_share')}
-          <div class="ngm-close-icon" @click=${() => this.activePanel = null}></div>
+      <div
+        .hidden=${this.activePanel !== 'share'}
+        class="ngm-side-bar-panel ngm-share-panel"
+      >
+        <div class="ngm-panel-header">
+          ${i18next.t('lsb_share')}
+          <div
+            class="ngm-close-icon"
+            @click=${() => (this.activePanel = null)}
+          ></div>
         </div>
-        ${this.activePanel !== 'share' ? '' : html`
-          <ngm-share-link></ngm-share-link>`}
+        ${this.activePanel !== 'share'
+          ? ''
+          : html` <ngm-share-link></ngm-share-link>`}
       </div>
-      <div .hidden=${this.activePanel !== 'settings'} class="ngm-side-bar-panel">
-        <div class="ngm-panel-header">${i18next.t('lsb_settings')}
-          <div class="ngm-close-icon" @click=${() => this.activePanel = null}></div>
+      <div
+        .hidden=${this.activePanel !== 'settings'}
+        class="ngm-side-bar-panel"
+      >
+        <div class="ngm-panel-header">
+          ${i18next.t('lsb_settings')}
+          <div
+            class="ngm-close-icon"
+            @click=${() => (this.activePanel = null)}
+          ></div>
         </div>
         <div class="toolbar-settings">
-            <div class="inner-toolbar-settings">
-              <label>${i18next.t('lsb_debug_tools')}</label>
-              <div class="ngm-checkbox ngm-debug-tools-toggle ${classMap({active: this.debugToolsActive})}" @click=${() => (<HTMLInputElement> this.querySelector('.ngm-debug-tools-toggle > input')).click()}>
-                <input type="checkbox" ?checked=${this.debugToolsActive} @change="${this.toggleDebugTools}">
-                <span class="ngm-checkbox-icon"></span>
-                <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
-              </div>
-              <a class="contact-mailto-link" target="_blank"
-               href="mailto:swissgeol@swisstopo.ch">${i18next.t('contact_mailto_text')}</a>
-            <a class="disclaimer-link" target="_blank"
-               href="${i18next.t('disclaimer_href')}">${i18next.t('disclaimer_text')}</a>
+          <div class="inner-toolbar-settings">
+            <label>${i18next.t('lsb_debug_tools')}</label>
+            <div
+              class="ngm-checkbox ngm-debug-tools-toggle ${classMap({
+                active: this.debugToolsActive,
+              })}"
+              @click=${() =>
+                (<HTMLInputElement>(
+                  this.querySelector('.ngm-debug-tools-toggle > input')
+                )).click()}
+            >
+              <input
+                type="checkbox"
+                ?checked=${this.debugToolsActive}
+                @change="${this.toggleDebugTools}"
+              />
+              <span class="ngm-checkbox-icon"></span>
+              <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
             </div>
+            <a
+              class="contact-mailto-link"
+              target="_blank"
+              href="mailto:swissgeol@swisstopo.ch"
+              >${i18next.t('contact_mailto_text')}</a
+            >
+            <a
+              class="disclaimer-link"
+              target="_blank"
+              href="${i18next.t('disclaimer_href')}"
+              >${i18next.t('disclaimer_text')}</a
+            >
           </div>
+        </div>
       </div>
     `;
   }
@@ -301,32 +356,38 @@ export class SideBar extends LitElementI18n {
 
   async syncActiveLayers() {
     const attributeParams = getAttribute();
-    const callback = attributeParams ?
-      this.getTileLoadCallback(attributeParams.attributeKey, attributeParams.attributeValue) :
-      undefined;
+    const callback = attributeParams
+      ? this.getTileLoadCallback(
+          attributeParams.attributeKey,
+          attributeParams.attributeValue,
+        )
+      : undefined;
     const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
     const ionToken = MainStore.ionToken.value;
 
     if (!urlLayers.length && !assetIds.length) {
-      this.activeLayers = flatLayers.filter(l => l.displayed);
+      this.activeLayers = flatLayers.filter((l) => l.displayed);
       syncLayersParam(this.activeLayers);
       return;
     }
 
     // First - make everything hidden
-    flatLayers.forEach(l => {
+    flatLayers.forEach((l) => {
       l.visible = false;
       l.displayed = false;
     });
 
     const activeLayers: LayerConfig[] = [];
     for (const urlLayer of urlLayers) {
-      let layer = flatLayers.find(fl => fl.layer === urlLayer.layer);
+      let layer = flatLayers.find((fl) => fl.layer === urlLayer.layer);
       if (!layer) {
         // Layers from the search are not present in the flat layers.
-        layer = this.createSearchLayer({layer: urlLayer.layer, label: urlLayer.layer}); // the proper label will be taken from getCapabilities
+        layer = this.createSearchLayer({
+          layer: urlLayer.layer,
+          label: urlLayer.layer,
+        }); // the proper label will be taken from getCapabilities
       } else {
         await (layer.promise || this.addLayer(layer));
         layer.add && layer.add();
@@ -344,8 +405,10 @@ export class SideBar extends LitElementI18n {
       const ionAssetsRes = await getAssets(ionToken);
       const ionAssets = ionAssetsRes?.items || [];
 
-      assetIds.forEach(assetId => {
-        const ionAsset = ionAssets.find(asset => asset.id === Number(assetId));
+      assetIds.forEach((assetId) => {
+        const ionAsset = ionAssets.find(
+          (asset) => asset.id === Number(assetId),
+        );
         const layer: LayerConfig = {
           type: LayerType.tiles3d,
           assetId: Number(assetId),
@@ -356,7 +419,7 @@ export class SideBar extends LitElementI18n {
           displayed: true,
           opacityDisabled: true,
           pickable: true,
-          customAsset: true
+          customAsset: true,
         };
         layer.load = () => this.addLayer(layer);
         activeLayers.push(layer);
@@ -414,7 +477,7 @@ export class SideBar extends LitElementI18n {
           for (let i = 0; i < panelElement.childElementCount; i++) {
             const element = panelElement.children.item(i);
             if (element?.classList.contains('accordion')) {
-              $(element).accordion({duration: 150});
+              $(element).accordion({ duration: 150 });
             }
           }
           this.accordionInited = true;
@@ -435,7 +498,7 @@ export class SideBar extends LitElementI18n {
         layer.displayed = false;
         layer.visible = false;
         layer.remove && layer.remove();
-        const idx = this.activeLayers.findIndex(l => l.label === layer.label);
+        const idx = this.activeLayers.findIndex((l) => l.label === layer.label);
         this.activeLayers.splice(idx, 1);
       } else {
         layer.visible = true;
@@ -458,11 +521,15 @@ export class SideBar extends LitElementI18n {
   }
 
   maybeShowVisibilityHint(config: LayerConfig) {
-    if (this.displayUndergroundHint
-      && config.visible
-      && [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!)
-      && !this.viewer?.scene.cameraUnderground) {
-      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {displayTime: 20000});
+    if (
+      this.displayUndergroundHint &&
+      config.visible &&
+      [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!) &&
+      !this.viewer?.scene.cameraUnderground
+    ) {
+      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {
+        displayTime: 20000,
+      });
       this.displayUndergroundHint = false;
     }
   }
@@ -494,12 +561,15 @@ export class SideBar extends LitElementI18n {
   async addLayerFromSearch(searchLayer: SearchLayer) {
     let layer;
     if ('dataSourceName' in searchLayer) {
-      layer = this.activeLayers.find(l => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
+      layer = this.activeLayers.find(
+        (l) => l.type === searchLayer.dataSourceName,
+      ); // check for layers like earthquakes
     } else {
-      layer = this.activeLayers.find(l => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
+      layer = this.activeLayers.find((l) => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
     }
 
-    if (layer) { // for layers added before
+    if (layer) {
+      // for layers added before
       if (layer.type === LayerType.swisstopoWMTS) {
         const index = this.activeLayers.indexOf(layer);
         this.activeLayers.splice(index, 1);
@@ -511,7 +581,8 @@ export class SideBar extends LitElementI18n {
       layer.visible = true;
       layer.displayed = true;
       this.viewer!.scene.requestRender();
-    } else { // for new layers
+    } else {
+      // for new layers
       this.activeLayers.push(this.createSearchLayer(searchLayer));
     }
     this.activeLayers = [...this.activeLayers];
@@ -526,7 +597,8 @@ export class SideBar extends LitElementI18n {
       config.visible = true;
       config.origin = 'layer';
       config.label = searchLayer.title ?? searchLayer.label;
-      config.legend = config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
+      config.legend =
+        config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
     } else {
       config = {
         type: LayerType.swisstopoWMTS,
@@ -536,7 +608,7 @@ export class SideBar extends LitElementI18n {
         displayed: true,
         opacity: DEFAULT_LAYER_OPACITY,
         queryType: 'geoadmin',
-        legend: searchLayer.layer
+        legend: searchLayer.layer,
       };
     }
     config.load = async () => {
@@ -553,11 +625,21 @@ export class SideBar extends LitElementI18n {
     this.zoomedToPosition = true;
     const zoomToPosition = getZoomToPosition();
     if (zoomToPosition) {
-      let altitude = 0, cartesianPosition: Cartesian3 | undefined, windowPosition: Cartesian2 | undefined;
+      let altitude = 0,
+        cartesianPosition: Cartesian3 | undefined,
+        windowPosition: Cartesian2 | undefined;
       const updateValues = () => {
-        altitude = this.viewer!.scene.globe.getHeight(this.viewer!.scene.camera.positionCartographic) ?? 0;
-        cartesianPosition = Cartesian3.fromDegrees(zoomToPosition.longitude, zoomToPosition.latitude, zoomToPosition.height + altitude);
-        windowPosition = this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
+        altitude =
+          this.viewer!.scene.globe.getHeight(
+            this.viewer!.scene.camera.positionCartographic,
+          ) ?? 0;
+        cartesianPosition = Cartesian3.fromDegrees(
+          zoomToPosition.longitude,
+          zoomToPosition.latitude,
+          zoomToPosition.height + altitude,
+        );
+        windowPosition =
+          this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
       };
       updateValues();
       const completeCallback = () => {
@@ -565,25 +647,33 @@ export class SideBar extends LitElementI18n {
           let maxTries = 25;
           let triesCounter = 0;
           const eventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
-          eventHandler.setInputAction(() => maxTries = 0, ScreenSpaceEventType.LEFT_DOWN);
+          eventHandler.setInputAction(
+            () => (maxTries = 0),
+            ScreenSpaceEventType.LEFT_DOWN,
+          );
           // Waits while will be possible to select an object
-          const tryToSelect = () => setTimeout(() => {
-            updateValues();
-            this.zoomToObjectCoordinates(cartesianPosition);
-            windowPosition && this.queryManager!.pickObject(windowPosition);
-            triesCounter += 1;
-            if (!this.queryManager!.objectSelector.selectedObj && triesCounter <= maxTries) {
-              tryToSelect();
-            } else {
-              eventHandler.destroy();
-              if (triesCounter > maxTries) {
-                showSnackbarError(i18next.t('dtd_object_on_coordinates_not_found_warning'));
+          const tryToSelect = () =>
+            setTimeout(() => {
+              updateValues();
+              this.zoomToObjectCoordinates(cartesianPosition);
+              windowPosition && this.queryManager!.pickObject(windowPosition);
+              triesCounter += 1;
+              if (
+                !this.queryManager!.objectSelector.selectedObj &&
+                triesCounter <= maxTries
+              ) {
+                tryToSelect();
+              } else {
+                eventHandler.destroy();
+                if (triesCounter > maxTries) {
+                  showSnackbarError(
+                    i18next.t('dtd_object_on_coordinates_not_found_warning'),
+                  );
+                }
               }
-            }
-          }, 500);
+            }, 500);
           tryToSelect();
         }
-
       };
       this.zoomToObjectCoordinates(cartesianPosition, completeCallback);
     }
@@ -594,21 +684,24 @@ export class SideBar extends LitElementI18n {
     const zoomHeadingPitchRange = new HeadingPitchRange(
       0,
       -CMath.toRadians(45),
-      boundingSphere.radius);
+      boundingSphere.radius,
+    );
     this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
       duration: 0,
       offset: zoomHeadingPitchRange,
-      complete: complete
+      complete: complete,
     });
   }
 
   addLayer(layer: LayerConfig) {
     layer.promise = createCesiumObject(this.viewer!, layer);
-    this.dispatchEvent(new CustomEvent('layeradded', {
-      detail: {
-        layer
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('layeradded', {
+        detail: {
+          layer,
+        },
+      }),
+    );
     return layer.promise;
   }
 
@@ -652,7 +745,9 @@ export class SideBar extends LitElementI18n {
     const active = event.target.checked;
     this.debugToolsActive = active;
     setCesiumToolbarParam(active);
-    this.dispatchEvent(new CustomEvent('toggleDebugTools', {detail: {active}}));
+    this.dispatchEvent(
+      new CustomEvent('toggleDebugTools', { detail: { active } }),
+    );
   }
 
   createRenderRoot() {

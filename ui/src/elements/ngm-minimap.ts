@@ -1,13 +1,13 @@
-import {html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {Rectangle, Math as CesiumMath, Cartesian3} from 'cesium';
-import {styleMap} from 'lit/directives/style-map.js';
-import {MINIMAP_EXTENT} from '../constants';
-import {LitElementI18n} from '../i18n';
+import { html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { Rectangle, Math as CesiumMath, Cartesian3 } from 'cesium';
+import { styleMap } from 'lit/directives/style-map.js';
+import { MINIMAP_EXTENT } from '../constants';
+import { LitElementI18n } from '../i18n';
 import NavToolsStore from '../store/navTools';
-import type {Interactable} from '@interactjs/types';
-import type {Event, Viewer} from 'cesium';
-import {classMap} from 'lit/directives/class-map.js';
+import type { Interactable } from '@interactjs/types';
+import type { Event, Viewer } from 'cesium';
+import { classMap } from 'lit/directives/class-map.js';
 
 const west = CesiumMath.toRadians(MINIMAP_EXTENT[0]);
 const south = CesiumMath.toRadians(MINIMAP_EXTENT[1]);
@@ -16,7 +16,7 @@ const north = CesiumMath.toRadians(MINIMAP_EXTENT[3]);
 
 @customElement('ngm-minimap')
 export class NgmMinimap extends LitElementI18n {
-  @property({type: Object})
+  @property({ type: Object })
   accessor viewer: Viewer | null = null;
   @state()
   accessor interaction: Interactable | null = null;
@@ -35,25 +35,35 @@ export class NgmMinimap extends LitElementI18n {
   constructor() {
     super();
     this.addEventListener('mousemove', (evt: MouseEvent) => {
-      if (this.moveMarker && evt.target && (evt.target as Element).classList.contains('ngm-cam')) {
+      if (
+        this.moveMarker &&
+        evt.target &&
+        (evt.target as Element).classList.contains('ngm-cam')
+      ) {
         this.moveCamera(evt.x, evt.y, 'mousemove');
       }
     });
     this.addEventListener('click', (evt: MouseEvent) => {
-      if (!this.moveMarker && evt.target && (evt.target as Element).classList.contains('ngm-map-overview')) {
+      if (
+        !this.moveMarker &&
+        evt.target &&
+        (evt.target as Element).classList.contains('ngm-map-overview')
+      ) {
         NavToolsStore.hideTargetPoint();
         this.moveCamera(evt.x, evt.y, 'click');
       }
     });
-    this.addEventListener('mouseup', () => this.moveMarker = false);
-    this.addEventListener('mouseout', () => this.moveMarker = false);
+    this.addEventListener('mouseup', () => (this.moveMarker = false));
+    this.addEventListener('mouseout', () => (this.moveMarker = false));
   }
 
   updated() {
     if (this.viewer && !this.unlistenPostRender) {
-      this.unlistenPostRender = this.viewer.scene.postRender.addEventListener(() => {
-        this.updateFromCamera();
-      });
+      this.unlistenPostRender = this.viewer.scene.postRender.addEventListener(
+        () => {
+          this.updateFromCamera();
+        },
+      );
     }
   }
 
@@ -89,13 +99,23 @@ export class NgmMinimap extends LitElementI18n {
     const position = this.viewer.scene.camera.positionCartographic;
     const lon = CesiumMath.toDegrees(position.longitude);
     const lat = CesiumMath.toDegrees(position.latitude);
-    this.left = (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
-    this.bottom = (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
+    this.left =
+      (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
+    this.bottom =
+      (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
     this.heading = this.viewer.scene.camera.heading - 1.57;
 
     const nadirView =
-        CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1) ||
-        CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1);
+      CesiumMath.equalsEpsilon(
+        this.viewer.scene.camera.pitch,
+        -CesiumMath.PI_OVER_TWO,
+        CesiumMath.EPSILON1,
+      ) ||
+      CesiumMath.equalsEpsilon(
+        this.viewer.scene.camera.pitch,
+        CesiumMath.PI_OVER_TWO,
+        CesiumMath.EPSILON1,
+      );
     if (this.nadirViewActive !== !nadirView) {
       this.toggleNadirStatus();
     }
@@ -104,25 +124,40 @@ export class NgmMinimap extends LitElementI18n {
   moveCamera(evtX: number, evtY: number, evtType: string) {
     if (!this.viewer) return;
     const camera = this.viewer.scene.camera;
-    const cameraRect = camera.computeViewRectangle(this.viewer.scene.globe.ellipsoid, new Rectangle());
+    const cameraRect = camera.computeViewRectangle(
+      this.viewer.scene.globe.ellipsoid,
+      new Rectangle(),
+    );
     let pinchScaleW = 1;
     let pinchScaleH = 1;
     if (cameraRect) {
       const position = camera.positionCartographic;
-      pinchScaleW = cameraRect.west > position.longitude ? position.longitude / cameraRect.west : 1;
-      pinchScaleH = cameraRect.south > position.latitude ? position.latitude / cameraRect.south : 1;
+      pinchScaleW =
+        cameraRect.west > position.longitude
+          ? position.longitude / cameraRect.west
+          : 1;
+      pinchScaleH =
+        cameraRect.south > position.latitude
+          ? position.latitude / cameraRect.south
+          : 1;
     }
     // calculate left, bottom percentage from event
     const boundingRect = this.getBoundingClientRect();
     const x = evtType === 'mousemove' ? evtX + Math.sin(camera.heading) : evtX;
     const y = evtType === 'mousemove' ? evtY - Math.cos(camera.heading) : evtY;
-    const left = (x - boundingRect.left) / (boundingRect.right - boundingRect.left);
-    const bottom = (y - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
+    const left =
+      (x - boundingRect.left) / (boundingRect.right - boundingRect.left);
+    const bottom =
+      (y - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
 
     // get distance to point in radians
     const lon = (west + (east - west) * left) * pinchScaleW;
     const lat = (south + (north - south) * bottom) * pinchScaleH;
-    camera.position = Cartesian3.fromRadians(lon, lat, camera.positionCartographic.height);
+    camera.position = Cartesian3.fromRadians(
+      lon,
+      lat,
+      camera.positionCartographic.height,
+    );
   }
 
   onIconPress(evt) {
@@ -134,10 +169,15 @@ export class NgmMinimap extends LitElementI18n {
   render() {
     return html`
       <div class="ngm-minimap-container">
-        <img src="/images/overview.svg" class="ngm-map-overview">
-        <div class="ngm-cam ${classMap({'ngm-cam-icon': !this.nadirViewActive, 'ngm-cam-behind-icon': this.nadirViewActive})}" style=${styleMap(this.markerStyle)}
-             @mousedown="${(evt) => this.onIconPress(evt)}">
-        </div>
+        <img src="/images/overview.svg" class="ngm-map-overview" />
+        <div
+          class="ngm-cam ${classMap({
+            'ngm-cam-icon': !this.nadirViewActive,
+            'ngm-cam-behind-icon': this.nadirViewActive,
+          })}"
+          style=${styleMap(this.markerStyle)}
+          @mousedown="${(evt) => this.onIconPress(evt)}"
+        ></div>
       </div>
     `;
   }
@@ -146,5 +186,4 @@ export class NgmMinimap extends LitElementI18n {
     // no shadow dom
     return this;
   }
-
 }

@@ -1,4 +1,4 @@
-import type {Primitive, Viewer} from 'cesium';
+import type { Primitive, Viewer } from 'cesium';
 
 /**
  * Base class for slicing tools.

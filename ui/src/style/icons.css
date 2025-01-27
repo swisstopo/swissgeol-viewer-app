@@ -5,315 +5,315 @@
 }
 
 .ngm-search-icon {
-  mask: url('/images/icon_search.svg') no-repeat center;
-  -webkit-mask: url('/images/icon_search.svg') no-repeat center;
+  mask: url("/images/icon_search.svg") no-repeat center;
+  -webkit-mask: url("/images/icon_search.svg") no-repeat center;
 }
 
 .ngm-close-icon {
-  mask: url('/images/i_close.svg') no-repeat center;
-  -webkit-mask: url('/images/i_close.svg') no-repeat center;
+  mask: url("/images/i_close.svg") no-repeat center;
+  -webkit-mask: url("/images/i_close.svg") no-repeat center;
 }
 
 .ngm-zoom-p-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_zoom_plus.svg') no-repeat center;
-  -webkit-mask: url('/images/i_zoom_plus.svg') no-repeat center;
+  mask: url("/images/i_zoom_plus.svg") no-repeat center;
+  -webkit-mask: url("/images/i_zoom_plus.svg") no-repeat center;
 }
 
 .ngm-zoom-o-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_zoom_origin.svg') no-repeat center;
-  -webkit-mask: url('/images/i_zoom_origin.svg') no-repeat center;
+  mask: url("/images/i_zoom_origin.svg") no-repeat center;
+  -webkit-mask: url("/images/i_zoom_origin.svg") no-repeat center;
 }
 
 .ngm-zoom-m-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_zoom_minus.svg') no-repeat center;
-  -webkit-mask: url('/images/i_zoom_minus.svg') no-repeat center;
+  mask: url("/images/i_zoom_minus.svg") no-repeat center;
+  -webkit-mask: url("/images/i_zoom_minus.svg") no-repeat center;
 }
 
 .ngm-map-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_switzerland.svg') no-repeat center;
-  -webkit-mask: url('/images/i_switzerland.svg') no-repeat center;
+  mask: url("/images/i_switzerland.svg") no-repeat center;
+  -webkit-mask: url("/images/i_switzerland.svg") no-repeat center;
 }
 
 .ngm-cam-icon {
   width: 24px;
   height: 14px;
-  mask: url('/images/i_cam.svg') no-repeat center;
-  -webkit-mask: url('/images/i_cam.svg') no-repeat center;
+  mask: url("/images/i_cam.svg") no-repeat center;
+  -webkit-mask: url("/images/i_cam.svg") no-repeat center;
 }
 
 .ngm-cam-behind-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_cam_behind.svg') no-repeat center;
-  -webkit-mask: url('/images/i_cam_behind.svg') no-repeat center;
+  mask: url("/images/i_cam_behind.svg") no-repeat center;
+  -webkit-mask: url("/images/i_cam_behind.svg") no-repeat center;
 }
 
 .ngm-cam-h-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_cam_height.svg') no-repeat center;
-  -webkit-mask: url('/images/i_cam_height.svg') no-repeat center;
+  mask: url("/images/i_cam_height.svg") no-repeat center;
+  -webkit-mask: url("/images/i_cam_height.svg") no-repeat center;
 }
 
 .ngm-cam-d-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_cam_angle.svg') no-repeat center;
-  -webkit-mask: url('/images/i_cam_angle.svg') no-repeat center;
+  mask: url("/images/i_cam_angle.svg") no-repeat center;
+  -webkit-mask: url("/images/i_cam_angle.svg") no-repeat center;
 }
 
 .ngm-cam-t-icon {
   width: 24px;
   height: 22px;
-  mask: url('/images/i_cam_tilt.svg') no-repeat center;
-  -webkit-mask: url('/images/i_cam_tilt.svg') no-repeat center;
+  mask: url("/images/i_cam_tilt.svg") no-repeat center;
+  -webkit-mask: url("/images/i_cam_tilt.svg") no-repeat center;
 }
 
 .ngm-dropdown-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_menu-1.svg') no-repeat center;
-  -webkit-mask: url('/images/i_menu-1.svg') no-repeat center;
+  mask: url("/images/i_menu-1.svg") no-repeat center;
+  -webkit-mask: url("/images/i_menu-1.svg") no-repeat center;
 }
 
 .ngm-visible-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_visible.svg') no-repeat center;
-  -webkit-mask: url('/images/i_visible.svg') no-repeat center;
+  mask: url("/images/i_visible.svg") no-repeat center;
+  -webkit-mask: url("/images/i_visible.svg") no-repeat center;
 }
 
 .ngm-invisible-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_invisible.svg') no-repeat center;
-  -webkit-mask: url('/images/i_invisible.svg') no-repeat center;
+  mask: url("/images/i_invisible.svg") no-repeat center;
+  -webkit-mask: url("/images/i_invisible.svg") no-repeat center;
 }
 
 .ngm-zoom-plus-icon {
   width: 20px;
   height: 20px;
-  mask: url('/images/i_heranzoomen.svg') no-repeat center;
-  -webkit-mask: url('/images/i_heranzoomen.svg') no-repeat center;
+  mask: url("/images/i_heranzoomen.svg") no-repeat center;
+  -webkit-mask: url("/images/i_heranzoomen.svg") no-repeat center;
 }
 
 .ngm-delete-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_delete.svg') no-repeat center;
-  -webkit-mask: url('/images/i_delete.svg') no-repeat center;
+  mask: url("/images/i_delete.svg") no-repeat center;
+  -webkit-mask: url("/images/i_delete.svg") no-repeat center;
 }
 
 .ngm-coords-icon {
   width: 22px;
   height: 24px;
-  mask: url('/images/i_coordinates.svg') no-repeat center;
-  -webkit-mask: url('/images/i_coordinates.svg') no-repeat center;
+  mask: url("/images/i_coordinates.svg") no-repeat center;
+  -webkit-mask: url("/images/i_coordinates.svg") no-repeat center;
 }
 
 .ngm-vector-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_vector.svg') no-repeat center;
-  -webkit-mask: url('/images/i_vector.svg') no-repeat center;
+  mask: url("/images/i_vector.svg") no-repeat center;
+  -webkit-mask: url("/images/i_vector.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-line-draw-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_line_draw.svg') no-repeat center;
-  -webkit-mask: url('/images/i_line_draw.svg') no-repeat center;
+  mask: url("/images/i_line_draw.svg") no-repeat center;
+  -webkit-mask: url("/images/i_line_draw.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-polygon-draw-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_polygon_draw.svg') no-repeat center;
-  -webkit-mask: url('/images/i_polygon_draw.svg') no-repeat center;
+  mask: url("/images/i_polygon_draw.svg") no-repeat center;
+  -webkit-mask: url("/images/i_polygon_draw.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-point-draw-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_point_draw.svg') no-repeat center;
-  -webkit-mask: url('/images/i_point_draw.svg') no-repeat center;
+  mask: url("/images/i_point_draw.svg") no-repeat center;
+  -webkit-mask: url("/images/i_point_draw.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-rectangle-draw-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_rectangle_draw.svg') no-repeat center;
-  -webkit-mask: url('/images/i_rectangle_draw.svg') no-repeat center;
+  mask: url("/images/i_rectangle_draw.svg") no-repeat center;
+  -webkit-mask: url("/images/i_rectangle_draw.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-file-upload-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_kml_gpx_upload.svg') no-repeat center;
-  -webkit-mask: url('/images/i_kml_gpx_upload.svg') no-repeat center;
+  mask: url("/images/i_kml_gpx_upload.svg") no-repeat center;
+  -webkit-mask: url("/images/i_kml_gpx_upload.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-file-download-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_download_kml.svg') no-repeat center;
-  -webkit-mask: url('/images/i_download_kml.svg') no-repeat center;
+  mask: url("/images/i_download_kml.svg") no-repeat center;
+  -webkit-mask: url("/images/i_download_kml.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-action-menu-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_action_menu.svg') no-repeat center;
-  -webkit-mask: url('/images/i_action_menu.svg') no-repeat center;
+  mask: url("/images/i_action_menu.svg") no-repeat center;
+  -webkit-mask: url("/images/i_action_menu.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-slicing-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_slicing.svg') no-repeat center;
-  -webkit-mask: url('/images/i_slicing.svg') no-repeat center;
+  mask: url("/images/i_slicing.svg") no-repeat center;
+  -webkit-mask: url("/images/i_slicing.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-in-box-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_box_inside.svg') no-repeat center;
-  -webkit-mask: url('/images/i_box_inside.svg') no-repeat center;
+  mask: url("/images/i_box_inside.svg") no-repeat center;
+  -webkit-mask: url("/images/i_box_inside.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-out-box-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_box_outside.svg') no-repeat center;
-  -webkit-mask: url('/images/i_box_outside.svg') no-repeat center;
+  mask: url("/images/i_box_outside.svg") no-repeat center;
+  -webkit-mask: url("/images/i_box_outside.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-back-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_back.svg') no-repeat center;
-  -webkit-mask: url('/images/i_back.svg') no-repeat center;
+  mask: url("/images/i_back.svg") no-repeat center;
+  -webkit-mask: url("/images/i_back.svg") no-repeat center;
   background-color: #000000;
 }
 
 .ngm-slice-left-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_slice_left.svg') no-repeat center;
-  -webkit-mask: url('/images/i_slice_left.svg') no-repeat center;
+  mask: url("/images/i_slice_left.svg") no-repeat center;
+  -webkit-mask: url("/images/i_slice_left.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-slice-right-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_slice_right.svg') no-repeat center;
-  -webkit-mask: url('/images/i_slice_right.svg') no-repeat center;
+  mask: url("/images/i_slice_right.svg") no-repeat center;
+  -webkit-mask: url("/images/i_slice_right.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-upload-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_upload.svg') no-repeat center;
-  -webkit-mask: url('/images/i_upload.svg') no-repeat center;
+  mask: url("/images/i_upload.svg") no-repeat center;
+  -webkit-mask: url("/images/i_upload.svg") no-repeat center;
 }
 
 .ngm-extrusion-icon {
   width: 20px;
   height: 24px;
-  mask: url('/images/i_extrusion.svg') no-repeat center;
-  -webkit-mask: url('/images/i_extrusion.svg') no-repeat center;
+  mask: url("/images/i_extrusion.svg") no-repeat center;
+  -webkit-mask: url("/images/i_extrusion.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-edit-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_edit.svg') no-repeat center;
-  -webkit-mask: url('/images/i_edit.svg') no-repeat center;
+  mask: url("/images/i_edit.svg") no-repeat center;
+  -webkit-mask: url("/images/i_edit.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-download-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_download.svg') no-repeat center;
-  -webkit-mask: url('/images/i_download.svg') no-repeat center;
+  mask: url("/images/i_download.svg") no-repeat center;
+  -webkit-mask: url("/images/i_download.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-screenshot-icon {
   width: 18px;
   height: 18px;
-  mask: url('/images/i_screenshot.svg') no-repeat center;
-  -webkit-mask: url('/images/i_screenshot.svg') no-repeat center;
+  mask: url("/images/i_screenshot.svg") no-repeat center;
+  -webkit-mask: url("/images/i_screenshot.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-gst-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_query_3d_models.svg') no-repeat center;
-  -webkit-mask: url('/images/i_query_3d_models.svg') no-repeat center;
+  mask: url("/images/i_query_3d_models.svg") no-repeat center;
+  -webkit-mask: url("/images/i_query_3d_models.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-play-last-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_play_the_last.svg') no-repeat center;
-  -webkit-mask: url('/images/i_play_the_last.svg') no-repeat center;
+  mask: url("/images/i_play_the_last.svg") no-repeat center;
+  -webkit-mask: url("/images/i_play_the_last.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-play-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_play.svg') no-repeat center;
-  -webkit-mask: url('/images/i_play.svg') no-repeat center;
+  mask: url("/images/i_play.svg") no-repeat center;
+  -webkit-mask: url("/images/i_play.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-profile-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_terrain.svg') no-repeat center;
-  -webkit-mask: url('/images/i_terrain.svg') no-repeat center;
+  mask: url("/images/i_terrain.svg") no-repeat center;
+  -webkit-mask: url("/images/i_terrain.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-save-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_save.svg') no-repeat center;
-  -webkit-mask: url('/images/i_save.svg') no-repeat center;
+  mask: url("/images/i_save.svg") no-repeat center;
+  -webkit-mask: url("/images/i_save.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }
 
 .ngm-copy-icon {
   width: 24px;
   height: 24px;
-  mask: url('/images/i_copy.svg') no-repeat center;
-  -webkit-mask: url('/images/i_copy.svg') no-repeat center;
+  mask: url("/images/i_copy.svg") no-repeat center;
+  -webkit-mask: url("/images/i_copy.svg") no-repeat center;
   background-color: var(--ngm-interaction);
 }

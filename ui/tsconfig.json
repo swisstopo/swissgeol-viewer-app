@@ -21,14 +21,16 @@
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": false,
     "experimentalDecorators": false,
-    "types": [
-      "geojson"
-    ],
+    "types": ["geojson"],
     "baseUrl": ".",
     "paths": {
-      "src/*": ["src/*"],
+      "src/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "node_modules/fomantic-ui-css/types/**/*.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js",
+    "node_modules/fomantic-ui-css/types/**/*.d.ts"
+  ],
   "exclude": ["src/test/**/*"]
 }

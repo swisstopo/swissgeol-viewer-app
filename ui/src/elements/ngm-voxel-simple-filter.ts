@@ -1,18 +1,18 @@
 import i18next from 'i18next';
-import {html} from 'lit';
-import {customElement, property, query} from 'lit/decorators.js';
-import {LitElementI18n} from '../i18n';
+import { html } from 'lit';
+import { customElement, property, query } from 'lit/decorators.js';
+import { LitElementI18n } from '../i18n';
 import draggable from './draggable';
-import {dragArea} from './helperElements';
-import {getVoxelShader} from '../layers/voxels-helper';
-import type {Viewer} from 'cesium';
-import {LayerConfig} from '../layertree';
+import { dragArea } from './helperElements';
+import { getVoxelShader } from '../layers/voxels-helper';
+import type { Viewer } from 'cesium';
+import { LayerConfig } from '../layertree';
 
 @customElement('ngm-voxel-simple-filter')
 export class NgmVoxelSimpleFilter extends LitElementI18n {
-  @property({type: Object})
+  @property({ type: Object })
   accessor config: LayerConfig | undefined;
-  @property({type: Object})
+  @property({ type: Object })
   accessor viewer!: Viewer;
 
   @query('.min-conductivity')
@@ -52,11 +52,27 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
           <div class="two fields">
             <div class="field">
               <label>${i18next.t('vox_filter_min')}</label>
-              <input required class="min-conductivity" type="number" value="${this.minValue}" min="${this.minInitialValue}" max="${this.maxValue}" @input="${evt => this.minValueChanged(evt)}"/>
+              <input
+                required
+                class="min-conductivity"
+                type="number"
+                value="${this.minValue}"
+                min="${this.minInitialValue}"
+                max="${this.maxValue}"
+                @input="${(evt) => this.minValueChanged(evt)}"
+              />
             </div>
             <div class="field">
               <label>${i18next.t('vox_filter_max')}</label>
-              <input required class="max-conductivity" type="number" value="${this.maxValue}" min="${this.minValue}" max="${this.maxInitialValue}" @input="${evt => this.maxValueChanged(evt)}"/>
+              <input
+                required
+                class="max-conductivity"
+                type="number"
+                value="${this.maxValue}"
+                min="${this.minValue}"
+                max="${this.maxInitialValue}"
+                @input="${(evt) => this.maxValueChanged(evt)}"
+              />
             </div>
           </div>
         </form>
@@ -74,7 +90,6 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
     this.minValue = parseFloat(evt.target.value);
     this.maxValueInput.min = this.minValue.toString();
   }
-
 
   maxValueChanged(evt) {
     this.maxValue = parseFloat(evt.target.value);
@@ -105,12 +120,14 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
   }
 
   resetForm() {
-    this.querySelectorAll<HTMLFormElement>('.content-container form').forEach(form => form.reset());
+    this.querySelectorAll<HTMLFormElement>('.content-container form').forEach(
+      (form) => form.reset(),
+    );
   }
 
   firstUpdated() {
     draggable(this, {
-      allowFrom: '.drag-handle'
+      allowFrom: '.drag-handle',
     });
   }
 

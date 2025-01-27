@@ -4,12 +4,13 @@ ngm-dashboard .ngm-panel-header,
   margin-bottom: 12px;
 }
 
-
 .ngm-proj-title-icon,
 .ngm-proj-title {
   display: flex;
   color: #212529;
-  font: normal normal bold 14px/20px Inter, sans-serif;
+  font:
+    normal normal bold 14px/20px Inter,
+    sans-serif;
   align-items: center;
 }
 
@@ -37,7 +38,8 @@ ngm-dashboard .ngm-panel-header,
   display: flex;
 }
 
-.ngm-dashboard-tabs > div:hover, .edit-project:hover {
+.ngm-dashboard-tabs > div:hover,
+.edit-project:hover {
   color: var(--ngm-interaction-hover);
   cursor: pointer;
 }
@@ -79,10 +81,12 @@ hide-overflow.ngm-projects-list {
   gap: 9px;
   background-color: transparent;
   box-shadow: none;
-  border: 2px dashed #DFE2E6;
-  font: normal normal normal 12px/15px Inter, sans-serif;
+  border: 2px dashed #dfe2e6;
+  font:
+    normal normal normal 12px/15px Inter,
+    sans-serif;
   letter-spacing: 0;
-  color: #0B7285;
+  color: #0b7285;
   cursor: pointer;
 }
 
@@ -100,7 +104,7 @@ hide-overflow.ngm-projects-list {
 .ngm-proj-preview-img {
   width: 240px;
   height: 132px;
-  background-color: #F8F9FA;
+  background-color: #f8f9fa;
   background-size: cover;
   background-repeat: no-repeat;
   border-top-right-radius: 8px;
@@ -113,7 +117,9 @@ hide-overflow.ngm-projects-list {
   width: 240px;
   height: 32px;
   color: white;
-  font: normal normal bold 14px/28px Inter, sans-serif;
+  font:
+    normal normal bold 14px/28px Inter,
+    sans-serif;
 }
 
 .project-color-picker {
@@ -127,7 +133,9 @@ hide-overflow.ngm-projects-list {
 .ngm-proj-preview-subtitle {
   width: 100%;
   height: calc(100% - 164px);
-  font: normal normal 500 14px/20px Inter, sans-serif;
+  font:
+    normal normal 500 14px/20px Inter,
+    sans-serif;
   color: #212529;
 }
 
@@ -161,20 +169,26 @@ ngm-dashboard .ngm-divider {
 
 .ngm-proj-description {
   margin-left: 28px;
-  font: normal normal 500 16px/24px Inter, sans-serif;
+  font:
+    normal normal 500 16px/24px Inter,
+    sans-serif;
   letter-spacing: 0.16px;
-  color: #4A5056;
+  color: #4a5056;
   width: 450px;
 }
 
 .ngm-proj-data {
   margin-bottom: 16px;
-  font: normal normal 500 14px/20px Inter, sans-serif;
+  font:
+    normal normal 500 14px/20px Inter,
+    sans-serif;
   color: #212529;
 }
 
 .ngm-proj-description-title {
-  font: normal normal 500 12px/15px Inter, sans-serif;
+  font:
+    normal normal 500 12px/15px Inter,
+    sans-serif;
   letter-spacing: 0.41px;
 }
 
@@ -243,7 +257,10 @@ ngm-dashboard .ngm-label-btn:hover .ngm-back-icon {
 }
 
 ngm-dashboard .ngm-delete-icon:hover,
-.ngm-view-icon:hover, .ngm-view-icon:focus, .ngm-edit-icon:hover, .edit-project:hover > .ngm-edit-icon {
+.ngm-view-icon:hover,
+.ngm-view-icon:focus,
+.ngm-edit-icon:hover,
+.edit-project:hover > .ngm-edit-icon {
   background-color: var(--ngm-interaction-hover);
 }
 
@@ -261,12 +278,12 @@ ngm-dashboard .ngm-delete-icon:hover,
   cursor: unset;
 }
 
-.edit-project > .ngm-edit-icon  {
+.edit-project > .ngm-edit-icon {
   margin: 0 10px;
 }
 
 .edit-project.active > .ngm-edit-icon,
-.ngm-edit-icon.active  {
+.ngm-edit-icon.active {
   background-color: var(--ngm-interaction-active);
 }
 
@@ -278,7 +295,9 @@ ngm-dashboard .ngm-delete-icon:hover,
   max-width: 364px;
 }
 
-.ngm-input, .ngm-input input, .ngm-input textarea {
+.ngm-input,
+.ngm-input input,
+.ngm-input textarea {
   width: 100%;
 }
 
@@ -309,14 +328,14 @@ ngm-dashboard .ngm-delete-icon:hover,
 ngm-add-member-form .ngm-cancel-btn.ui.button,
 .project-edit-buttons .ngm-cancel-btn.ui.button {
   background-color: rgba(0, 0, 0, 0);
-  color: #0C7285;
+  color: #0c7285;
   box-shadow: none;
 }
 
 .ngm-proj-edit-assets {
   display: flex;
   width: 100%;
-  gap: 22px
+  gap: 22px;
 }
 
 ngm-project-assets-section,
@@ -355,16 +374,20 @@ ngm-project-edit .ngm-action-list-item .ngm-input input {
   min-width: 40px;
   width: 40px;
   height: 40px;
-  background-color: #DEE2E6;
+  background-color: #dee2e6;
   border-radius: 20px;
-  font: normal normal bold 14px/20px Inter, sans-serif;
+  font:
+    normal normal bold 14px/20px Inter,
+    sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .ngm-member-email {
-  font: normal normal 500 12px/15px Inter, sans-serif;
+  font:
+    normal normal 500 12px/15px Inter,
+    sans-serif;
   color: var(--ngm-interaction);
 }
 
@@ -390,7 +413,7 @@ ngm-project-members-section .ngm-label-btn {
 
 .ngm-member-add-form {
   width: 324px;
-  background-color: #DEE2E6;
+  background-color: #dee2e6;
   display: flex;
   flex-direction: column;
   row-gap: 30px;
@@ -454,7 +477,7 @@ ngm-add-member-form .ngm-cancel-btn.ui.button {
   background-color: var(--ngm-interaction-hover);
 }
 
-@media (max-width: 819px)  {
+@media (max-width: 819px) {
   .ngm-members-list {
     display: flex;
     flex-direction: column;

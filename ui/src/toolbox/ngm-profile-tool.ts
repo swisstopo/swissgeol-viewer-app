@@ -1,27 +1,27 @@
-import {LitElementI18n} from '../i18n';
-import {customElement, property, state} from 'lit/decorators.js';
-import {html} from 'lit';
-import type {NgmGeometry} from './interfaces';
+import { LitElementI18n } from '../i18n';
+import { customElement, property, state } from 'lit/decorators.js';
+import { html } from 'lit';
+import type { NgmGeometry } from './interfaces';
 import ToolboxStore from '../store/toolbox';
 
 @customElement('ngm-profile-tool')
 export class NgmProfileTool extends LitElementI18n {
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor hidden = true;
   @state()
   accessor selectedGeomId = '';
 
   constructor() {
     super();
-    ToolboxStore.geometryAction.subscribe(options => {
+    ToolboxStore.geometryAction.subscribe((options) => {
       if (options.action === 'profile') {
         this.selectedGeomId = options.id || '';
-        if (!options.id) ToolboxStore.nextGeometryAction({action: 'pick'});
+        if (!options.id) ToolboxStore.nextGeometryAction({ action: 'pick' });
       }
     });
-    ToolboxStore.openedGeometryOptions.subscribe(options => {
+    ToolboxStore.openedGeometryOptions.subscribe((options) => {
       if (options?.editing) {
-        ToolboxStore.nextGeometryAction({action: 'profile'});
+        ToolboxStore.nextGeometryAction({ action: 'profile' });
       }
     });
   }
@@ -29,13 +29,13 @@ export class NgmProfileTool extends LitElementI18n {
   onGeomClick(id) {
     if (this.selectedGeomId === id) {
       this.selectedGeomId = '';
-      ToolboxStore.nextGeometryAction({action: 'pick'});
-      ToolboxStore.nextGeometryAction({action: 'profile'});
+      ToolboxStore.nextGeometryAction({ action: 'pick' });
+      ToolboxStore.nextGeometryAction({ action: 'profile' });
       return;
     }
     this.selectedGeomId = id;
-    ToolboxStore.nextGeometryAction({id: id, action: 'profile'});
-    ToolboxStore.nextGeometryAction({id: id, action: 'zoom'});
+    ToolboxStore.nextGeometryAction({ id: id, action: 'profile' });
+    ToolboxStore.nextGeometryAction({ id: id, action: 'zoom' });
   }
 
   onGeometryAdded(newGeometries) {
@@ -46,14 +46,20 @@ export class NgmProfileTool extends LitElementI18n {
   }
 
   render() {
-    return html`
-      <ngm-draw-section ?hidden=${this.hidden} .enabledTypes=${['line']} .showUpload=${false}></ngm-draw-section>
+    return html` <ngm-draw-section
+        ?hidden=${this.hidden}
+        .enabledTypes=${['line']}
+        .showUpload=${false}
+      ></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
         .selectedId=${this.selectedGeomId}
         .disabledTypes=${['polygon', 'rectangle', 'point']}
-        @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.onGeomClick(evt.detail.id)}
-        @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}>
+        @geomclick=${(evt: CustomEvent<NgmGeometry>) =>
+          this.onGeomClick(evt.detail.id)}
+        @geometriesadded=${(evt) =>
+          this.onGeometryAdded(evt.detail.newGeometries)}
+      >
       </ngm-geometries-list>`;
   }
 

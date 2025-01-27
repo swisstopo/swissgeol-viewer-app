@@ -1,18 +1,21 @@
-import {CustomShader, PixelFormat, TextureUniform, UniformType} from 'cesium';
-import {OBJECT_HIGHLIGHT_NORMALIZED_RGB} from '../constants';
+import { CustomShader, PixelFormat, TextureUniform, UniformType } from 'cesium';
+import { OBJECT_HIGHLIGHT_NORMALIZED_RGB } from '../constants';
 
 type ColorConfig = {
-  image: Uint8Array,
-  width: number,
-  height: number,
-}
+  image: Uint8Array;
+  width: number;
+  height: number;
+};
 
 function createCustomShader(config): CustomShader {
   const lithology = config.voxelFilter.lithology;
   const colors = config.voxelColors;
 
   console.assert(config.noData === undefined, 'No data value must be defined');
-  console.assert(config.undefinedData === undefined, 'Undefined data value must be defined');
+  console.assert(
+    config.undefinedData === undefined,
+    'Undefined data value must be defined',
+  );
 
   const fragmentShaderText = `
     void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material)
@@ -88,9 +91,14 @@ function createCustomShader(config): CustomShader {
 
   const useColorIndex = config.voxelDataName === 'Index';
   if (useColorIndex) {
-    console.assert(colors.colors.length === lithology.length, 'Color index mode requires the same number of colors as lithology types');
+    console.assert(
+      colors.colors.length === lithology.length,
+      'Color index mode requires the same number of colors as lithology types',
+    );
   }
-  const colorRamp = useColorIndex ? createColorIndex(colors.colors) : createColorGradient(colors.colors);
+  const colorRamp = useColorIndex
+    ? createColorIndex(colors.colors)
+    : createColorGradient(colors.colors);
 
   return new CustomShader({
     fragmentShaderText: fragmentShaderText,
@@ -142,7 +150,7 @@ function createCustomShader(config): CustomShader {
       },
       u_filter_selected_lithology: {
         type: UniformType.SAMPLER_2D,
-        value: createLithologyIncludeUniform(Array(lithology.length).fill(1))
+        value: createLithologyIncludeUniform(Array(lithology.length).fill(1)),
       },
       u_selectedTile: {
         type: UniformType.INT,
@@ -178,7 +186,6 @@ function createSimpleCustomShader(config): CustomShader {
         }
     }
   `;
-
 
   const colors = config.voxelColors;
   const colorRamp = createColorGradient(colors.colors);
@@ -275,11 +282,12 @@ const shaders: Record<string, CustomShader> = {};
 export function getVoxelShader(config): CustomShader {
   let shader = shaders[config.layer];
   if (!shader) {
-    shader = shaders[config.layer] = config.voxelFilter ? createCustomShader(config) : createSimpleCustomShader(config);
+    shader = shaders[config.layer] = config.voxelFilter
+      ? createCustomShader(config)
+      : createSimpleCustomShader(config);
   }
   return shader;
 }
-
 
 export function createLithologyIncludeUniform(arr: number[]): TextureUniform {
   return new TextureUniform({

@@ -1,6 +1,6 @@
-import {LitElementI18n} from '../../i18n';
-import {css, html} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import { LitElementI18n } from '../../i18n';
+import { css, html } from 'lit';
+import { customElement } from 'lit/decorators.js';
 import '../core';
 
 @customElement('ngm-navigation-panel')
@@ -29,4 +29,3 @@ export class NavigationPanel extends LitElementI18n {
     }
   `;
 }
-

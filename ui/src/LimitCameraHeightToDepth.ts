@@ -1,6 +1,5 @@
 import NavToolsStore from './store/navTools';
-import type {Scene} from 'cesium';
-
+import type { Scene } from 'cesium';
 
 export default class LimitCameraHeightToDepth {
   private readonly scene: Scene;

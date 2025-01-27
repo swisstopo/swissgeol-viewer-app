@@ -1,31 +1,53 @@
-import {BehaviorSubject, Subject} from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import type Slicer from '../slicer/Slicer';
-import type {GeometryTypes, NgmGeometry} from '../toolbox/interfaces';
+import type { GeometryTypes, NgmGeometry } from '../toolbox/interfaces';
 
 export interface OpenedGeometryOptions {
-  id: string,
-  editing?: boolean
+  id: string;
+  editing?: boolean;
 }
 
 export interface GeometryAction {
-  id?: string,
-  type?: GeometryTypes,
-  file?: File,
-  newName?: string,
-  noEditGeometries?: boolean,
-  action: 'remove' | 'zoom' | 'hide' | 'show' | 'copy' | 'showAll' | 'hideAll' | 'pick' | 'downloadAll' | 'profile' |
-      'add' | 'upload' | 'changeName' | 'removeAll',
+  id?: string;
+  type?: GeometryTypes;
+  file?: File;
+  newName?: string;
+  noEditGeometries?: boolean;
+  action:
+    | 'remove'
+    | 'zoom'
+    | 'hide'
+    | 'show'
+    | 'copy'
+    | 'showAll'
+    | 'hideAll'
+    | 'pick'
+    | 'downloadAll'
+    | 'profile'
+    | 'add'
+    | 'upload'
+    | 'changeName'
+    | 'removeAll';
 }
 
-export type GeometryCreateOptions = {geometry: NgmGeometry, slice?: boolean};
+export type GeometryCreateOptions = { geometry: NgmGeometry; slice?: boolean };
 
 export default class ToolboxStore {
-  private static readonly slicerSubject = new BehaviorSubject<Slicer | null>(null);
+  private static readonly slicerSubject = new BehaviorSubject<Slicer | null>(
+    null,
+  );
   private static readonly rtcSubject = new Subject<GeometryCreateOptions>();
-  private static readonly geometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
-  private static readonly noEditGeometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
-  private static readonly openedGeometryOptionsSubject = new BehaviorSubject<OpenedGeometryOptions | null>(null);
-  private static readonly sliceGeometrySubject = new BehaviorSubject<NgmGeometry | null | undefined>(null);
+  private static readonly geometriesSubject = new BehaviorSubject<
+    NgmGeometry[]
+  >([]);
+  private static readonly noEditGeometriesSubject = new BehaviorSubject<
+    NgmGeometry[]
+  >([]);
+  private static readonly openedGeometryOptionsSubject =
+    new BehaviorSubject<OpenedGeometryOptions | null>(null);
+  private static readonly sliceGeometrySubject = new BehaviorSubject<
+    NgmGeometry | null | undefined
+  >(null);
   private static readonly geomActionSubject = new Subject<GeometryAction>();
   private static readonly syncSliceSubject = new Subject<void>();
 
@@ -83,19 +105,18 @@ export default class ToolboxStore {
 
   static get openedGeometry(): NgmGeometry | undefined {
     let geom = this.geometriesSubject
-        .getValue()
-        .find(geom => geom.id === this.openedGeometryOptionsValue?.id);
+      .getValue()
+      .find((geom) => geom.id === this.openedGeometryOptionsValue?.id);
     if (!geom) {
       geom = this.noEditGeometriesSubject
-          .getValue()
-          .find(geom => geom.id === this.openedGeometryOptionsValue?.id);
+        .getValue()
+        .find((geom) => geom.id === this.openedGeometryOptionsValue?.id);
     }
     return geom;
   }
 
   static setSliceGeometry(value: NgmGeometry | null | undefined): void {
-    if (value && value.id === this.sliceGeometry.getValue()?.id)
-      value = null;
+    if (value && value.id === this.sliceGeometry.getValue()?.id) value = null;
     this.sliceGeometrySubject.next(value);
   }
 

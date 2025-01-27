@@ -10,7 +10,7 @@ ngm-geometry-info > .ngm-drag-area {
 }
 
 .ngm-geom-actions {
-  background-color: #F1F3F5;
+  background-color: #f1f3f5;
   box-shadow: 0 1px 3px #00000033;
   border-radius: 8px;
   display: flex;
@@ -42,7 +42,7 @@ ngm-geometry-info .ngm-action-btn.ui.button {
 .ngm-download-obj-btn.ngm-action-btn.ui.button,
 .ngm-download-obj-btn.ngm-action-btn.ui.button:active,
 .ngm-download-obj-btn.ngm-action-btn.ui.button:focus {
-  background-color: #DEE2E6;
+  background-color: #dee2e6;
   color: #495057;
 }
 
@@ -61,9 +61,11 @@ ngm-line-info:not(:first-child),
 }
 
 .ngm-geom-info-label {
-  color: #4A5056;
+  color: #4a5056;
   text-align: left;
-  font: normal normal 500 12px/15px Inter, sans-serif;
+  font:
+    normal normal 500 12px/15px Inter,
+    sans-serif;
   letter-spacing: 0.41px;
   margin-bottom: 5px;
 }
@@ -138,7 +140,7 @@ ngm-geometry-edit .ngm-action-btn.ui.button {
 
 ngm-geometry-edit .ngm-cancel-btn.ui.button {
   background-color: rgba(0, 0, 0, 0);
-  color: #0C7285;
+  color: #0c7285;
   box-shadow: none;
 }
 
@@ -166,17 +168,16 @@ ngm-geometry-edit .ngm-cancel-btn.ui.button {
   margin-right: 5px;
 }
 
-
 .ngm-geom-colorpicker .ngm-geom-color:hover,
 .ngm-geom-colorpicker .ngm-geom-color.active {
-  background-image: url('/images/i_colorpicker_check.svg');
+  background-image: url("/images/i_colorpicker_check.svg");
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .ngm-geom-colorpicker .ngm-geom-color.black-tick:hover,
-.ngm-geom-colorpicker .ngm-geom-color.active.black-tick  {
-  background-image: url('/images/i_colorpicker_check_black.svg');
+.ngm-geom-colorpicker .ngm-geom-color.active.black-tick {
+  background-image: url("/images/i_colorpicker_check_black.svg");
 }
 
 .ngm-geom-symbolpicker .ngm-geom-symbol:hover,
@@ -195,16 +196,14 @@ ngm-geometry-edit .ngm-cancel-btn.ui.button {
 
 .geom-styles-title {
   margin-bottom: 12px;
-  font: normal normal 500 14px/20px Inter, sans-serif;
+  font:
+    normal normal 500 14px/20px Inter,
+    sans-serif;
   color: #212529;
 }
-
 
 @media (max-height: 630px) {
   ngm-geometry-info {
     max-height: calc(100vh - 165px);
   }
 }
-
-
-

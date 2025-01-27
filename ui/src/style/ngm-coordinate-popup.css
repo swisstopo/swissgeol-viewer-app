@@ -1,41 +1,41 @@
 ngm-coordinate-popup {
-    margin-left: -40px;
+  margin-left: -40px;
 }
 
 ngm-coordinate-popup.ngm-floating-window {
-    position: absolute;
-    z-index: 50;
-    width: auto;
-    right: auto;
+  position: absolute;
+  z-index: 50;
+  width: auto;
+  right: auto;
 }
 
 ngm-coordinate-popup .ui.small.table {
-    font-size: unset;
-    font-weight: bold;
-    user-select: text;
+  font-size: unset;
+  font-weight: bold;
+  user-select: text;
 }
 
 ngm-coordinate-popup .ui.basic.table {
-    background-color: #F8F9FA;
-    border-spacing: 4px;
-    border-collapse: collapse;
+  background-color: #f8f9fa;
+  border-spacing: 4px;
+  border-collapse: collapse;
 }
 
 ngm-coordinate-popup .ui.basic.table tbody tr {
-    border-bottom-width: 4px;
-    border-bottom-color: #F1F3F5;
+  border-bottom-width: 4px;
+  border-bottom-color: #f1f3f5;
 }
 
 ngm-coordinate-popup .ui.table .key {
-    padding-left: 8px !important;
+  padding-left: 8px !important;
 }
 
 ngm-coordinate-popup .ui.table .value {
-    padding-right: 8px !important;
+  padding-right: 8px !important;
 }
 
-@media (max-height: 629px), (max-width: 599px)  {
-    ngm-coordinate-popup {
-        margin-left: 0;
-    }
+@media (max-height: 629px), (max-width: 599px) {
+  ngm-coordinate-popup {
+    margin-left: 0;
+  }
 }

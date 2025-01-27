@@ -2,7 +2,6 @@ const LOCALSTORAGE_AOI_KEY = 'aoi';
 const LOCALSTORAGE_VIEW_KEY = 'view';
 
 export default class LocalStorageController {
-
   static getStoredAoi() {
     const storedAoi = localStorage.getItem(LOCALSTORAGE_AOI_KEY);
     if (storedAoi) {

@@ -1,17 +1,17 @@
-import {css, html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {applyTypography} from '../../../styles/theme';
-import {KmlUploadEventDetail} from './layer-upload-kml';
+import { css, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { applyTypography } from '../../../styles/theme';
+import { KmlUploadEventDetail } from './layer-upload-kml';
 import i18next from 'i18next';
-import {LitElementI18n} from '../../../i18n';
+import { LitElementI18n } from '../../../i18n';
 
 @customElement('ngm-layer-upload-kml-modal')
 export class LayerUploadKmlModal extends LitElementI18n {
-  @property({type: File})
+  @property({ type: File })
   accessor file: File | null = null;
 
   @state()
-  accessor isClampEnabled = false
+  accessor isClampEnabled = false;
 
   private cancel(): void {
     this.dispatchEvent(new CustomEvent('cancel'));
@@ -19,29 +19,27 @@ export class LayerUploadKmlModal extends LitElementI18n {
 
   private confirm(): void {
     if (this.file == null) {
-      throw new Error('Can\'t upload, no file selected.');
+      throw new Error("Can't upload, no file selected.");
     }
-    this.dispatchEvent(new CustomEvent<KmlUploadEventDetail>('confirm', {
-      detail: {
-        file: this.file,
-        isClampEnabled: this.isClampEnabled,
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent<KmlUploadEventDetail>('confirm', {
+        detail: {
+          file: this.file,
+          isClampEnabled: this.isClampEnabled,
+        },
+      }),
+    );
   }
 
   render = () => html`
-    <h2>
-      ${i18next.t('dtd_upload_modal_title')}
-    </h2>
-    <hr>
-    <div class="file">
-      ${this.file!.name}
-    </div>
-    <hr>
+    <h2>${i18next.t('dtd_upload_modal_title')}</h2>
+    <hr />
+    <div class="file">${this.file!.name}</div>
+    <hr />
     <div class="options">
       <ngm-core-checkbox
         .isActive="${this.isClampEnabled}"
-        @update=${() => this.isClampEnabled = !this.isClampEnabled}
+        @update=${() => (this.isClampEnabled = !this.isClampEnabled)}
       >
         ${i18next.t('dtd_clamp_to_ground')}
       </ngm-core-checkbox>

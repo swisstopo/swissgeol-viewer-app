@@ -1,12 +1,16 @@
 .ngm-point-edit-dropdown .dropdown.active,
 .ngm-point-edit-dropdown .dropdown {
   background-color: transparent;
-  font: normal normal bold 15px/24px Inter, sans-serif;
+  font:
+    normal normal bold 15px/24px Inter,
+    sans-serif;
   padding: 0;
 }
 
 .ngm-point-edit-dropdown .ngm-coords {
-  font: normal normal bold 15px/24px Inter, sans-serif;
+  font:
+    normal normal bold 15px/24px Inter,
+    sans-serif;
   letter-spacing: 0.16px;
   color: #222529;
 }

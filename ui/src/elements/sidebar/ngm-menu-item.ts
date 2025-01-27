@@ -1,20 +1,20 @@
-import {customElement, property} from 'lit/decorators.js';
-import {LitElementI18n} from '../../i18n.js';
-import {css, html} from 'lit';
-import {classMap} from 'lit/directives/class-map.js';
-import {IconKey} from '../../icons/icons';
+import { customElement, property } from 'lit/decorators.js';
+import { LitElementI18n } from '../../i18n.js';
+import { css, html } from 'lit';
+import { classMap } from 'lit/directives/class-map.js';
+import { IconKey } from '../../icons/icons';
 import i18next from 'i18next';
 import '../../components/core';
 
 @customElement('ngm-menu-item')
 export class MenuItem extends LitElementI18n {
-  @property({type: String})
+  @property({ type: String })
   accessor title: string = '';
   @property()
   accessor icon: IconKey = 'config';
-  @property({type: Boolean, attribute: 'isactive', reflect: true})
+  @property({ type: Boolean, attribute: 'isactive', reflect: true })
   accessor isActive: boolean = false;
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor isMobile: boolean = false;
 
   static readonly styles = css`
@@ -104,7 +104,7 @@ export class MenuItem extends LitElementI18n {
   render() {
     return html`
       <div class="container">
-        <div class="box ${classMap({'isActive': this.isActive})}">
+        <div class="box ${classMap({ isActive: this.isActive })}">
           <div class="icon">
             <ngm-core-icon icon=${this.icon}></ngm-core-icon>
           </div>

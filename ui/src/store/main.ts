@@ -1,16 +1,23 @@
-import {BehaviorSubject, Subject} from 'rxjs';
-import {Viewer} from 'cesium';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { Viewer } from 'cesium';
 import type MapChooser from '../MapChooser';
-import {getIonToken, setIonToken} from '../permalink';
-import {IonAsset} from '../api-ion';
+import { getIonToken, setIonToken } from '../permalink';
+import { IonAsset } from '../api-ion';
 
 export default class MainStore {
-  private static readonly viewerSubject = new BehaviorSubject<Viewer | null>(null);
-  private static readonly mapChooserSubject = new BehaviorSubject<MapChooser | null>(null);
+  private static readonly viewerSubject = new BehaviorSubject<Viewer | null>(
+    null,
+  );
+  private static readonly mapChooserSubject =
+    new BehaviorSubject<MapChooser | null>(null);
   private static readonly layersRemovedSubject = new Subject<void>();
   private static readonly syncMapSubject = new Subject<void>();
-  private static readonly voxelLayerCountSubject = new BehaviorSubject<string[]>([]);
-  private static readonly ionTokenSubject = new BehaviorSubject<string | null>(getIonToken());
+  private static readonly voxelLayerCountSubject = new BehaviorSubject<
+    string[]
+  >([]);
+  private static readonly ionTokenSubject = new BehaviorSubject<string | null>(
+    getIonToken(),
+  );
   private static readonly ionAssetSubject = new Subject<IonAsset>();
   private static readonly removeIonAssetsSubject = new Subject<void>();
   static readonly setUrlLayersSubject = new Subject<void>();
@@ -19,7 +26,9 @@ export default class MainStore {
    * List of uploaded KML dataSource names. Required to get list of uploaded layers and update properties in batch (e.g. exaggeration)
    * @private
    */
-  private static readonly uploadedKmlListSubject = new BehaviorSubject<string[]>([]);
+  private static readonly uploadedKmlListSubject = new BehaviorSubject<
+    string[]
+  >([]);
 
   static get viewer(): BehaviorSubject<Viewer | null> {
     return this.viewerSubject;
@@ -70,7 +79,7 @@ export default class MainStore {
   }
 
   static removeVisibleVoxelLayer(layer) {
-    const voxelLayers = this.visibleVoxelLayers.filter(l => l !== layer);
+    const voxelLayers = this.visibleVoxelLayers.filter((l) => l !== layer);
     this.voxelLayerCountSubject.next(voxelLayers);
   }
 
@@ -114,5 +123,4 @@ export default class MainStore {
     names.push(name);
     this.uploadedKmlListSubject.next(names);
   }
-
 }

@@ -1,43 +1,43 @@
 ngm-object-information .ui.small.table,
 .ngm-info-table.ui.small.table {
-    font-size: unset;
+  font-size: unset;
 }
 
 ngm-object-information .ui.basic.table,
 .ngm-info-table.ui.basic.table {
-    background-color: #F8F9FA;
-    border-spacing: 4px;
-    border-collapse: collapse;
+  background-color: #f8f9fa;
+  border-spacing: 4px;
+  border-collapse: collapse;
 }
 
-ngm-object-information  .ui.basic.table tbody tr,
+ngm-object-information .ui.basic.table tbody tr,
 .ngm-info-table.ui.basic.table tbody tr {
-    border-bottom-width: 4px;
-    border-bottom-color: #F1F3F5;
+  border-bottom-width: 4px;
+  border-bottom-color: #f1f3f5;
 }
 
 ngm-object-information .ui.table .key,
 .ngm-info-table.ui.table .key {
-    padding-left: 8px !important;
-    vertical-align: top;
+  padding-left: 8px !important;
+  vertical-align: top;
 }
 
 ngm-object-information .ui.table .value,
 .ngm-info-table.ui.table .value {
-    min-width: 160px;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: bold;
-    padding-right: 8px !important;
+  min-width: 160px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  padding-right: 8px !important;
 }
 
 ngm-object-information .ui.table .value a,
 .ngm-info-table.ui.table .value a {
-    color: #357183;
+  color: #357183;
 }
 
 ngm-object-information .ui.table .value img,
 .ngm-info-table.ui.table .value img {
-    max-width: 200px;
+  max-width: 200px;
 }

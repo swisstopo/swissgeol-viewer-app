@@ -1,12 +1,11 @@
-import {LitElementI18n} from '../i18n';
+import { LitElementI18n } from '../i18n';
 import i18next from 'i18next';
-import {html} from 'lit';
+import { html } from 'lit';
 
 class NgmFullScreenView extends LitElementI18n {
-
   static get properties() {
     return {
-      fullScreenActive: {type: Boolean}
+      fullScreenActive: { type: Boolean },
     };
   }
 
@@ -18,7 +17,9 @@ class NgmFullScreenView extends LitElementI18n {
       this.fullScreenActive = !this.fullScreenActive;
       this.classList.toggle('full-active');
       document.querySelector('#cesium').classList.toggle('full-active');
-      document.querySelectorAll('[data-fs="no"]').forEach(n => n.hidden = this.fullScreenActive);
+      document
+        .querySelectorAll('[data-fs="no"]')
+        .forEach((n) => (n.hidden = this.fullScreenActive));
     };
   }
 
@@ -40,22 +41,22 @@ class NgmFullScreenView extends LitElementI18n {
 
   render() {
     return html`
-        <button
-          data-tooltip=${this.tooltip}
-          data-position="left center"
-          data-variation="mini"
-          class="ui compact mini icon button"
-          @click="${this.toggleView}">
-            <i class="${this.fullScreenActive ? 'compress' : 'expand'} icon"></i>
-        </button>
-      `;
+      <button
+        data-tooltip=${this.tooltip}
+        data-position="left center"
+        data-variation="mini"
+        class="ui compact mini icon button"
+        @click="${this.toggleView}"
+      >
+        <i class="${this.fullScreenActive ? 'compress' : 'expand'} icon"></i>
+      </button>
+    `;
   }
 
   createRenderRoot() {
     // no shadow dom
     return this;
   }
-
 }
 
 customElements.define('ngm-full-screen-view', NgmFullScreenView);

@@ -1,4 +1,4 @@
-import {verticalDirectionRotate} from './cesiumutils.ts';
+import { verticalDirectionRotate } from './cesiumutils.ts';
 import NavToolsStore from './store/navTools';
 
 /**
@@ -23,22 +23,26 @@ import NavToolsStore from './store/navTools';
  * @property {Array<string>} [cancelKeys=['escape']]
  */
 
-
 export default class KeyboardNavigation {
-
   /**
    * @param {import('cesium/Source/Scene/Scene').default} scene
    * @param {Options} [options]
    */
   constructor(scene, options = {}) {
-
     this.scene_ = scene;
 
-    this.moveAmount_ = options.moveAmount !== undefined ? options.moveAmount : 50;
-    this.rotateAmount_ = options.rotateAmount !== undefined ? options.rotateAmount : Math.PI / 400;
-    this.boostFactor_ = options.boostFactor !== undefined ? options.boostFactor : 4;
-    this.slowFactor_ = options.slowFactor !== undefined ? options.slowFactor : 0.15;
-    this.accelerationFactor_ = options.accelerationFactor !== undefined ? options.accelerationFactor : 1.2;
+    this.moveAmount_ =
+      options.moveAmount !== undefined ? options.moveAmount : 50;
+    this.rotateAmount_ =
+      options.rotateAmount !== undefined ? options.rotateAmount : Math.PI / 400;
+    this.boostFactor_ =
+      options.boostFactor !== undefined ? options.boostFactor : 4;
+    this.slowFactor_ =
+      options.slowFactor !== undefined ? options.slowFactor : 0.15;
+    this.accelerationFactor_ =
+      options.accelerationFactor !== undefined
+        ? options.accelerationFactor
+        : 1.2;
 
     this.moveUpKeys_ = options.moveUpKeys || ['q', ' ', '+'];
     this.moveDownKeys_ = options.moveDownKeys || ['e', '-'];
@@ -67,7 +71,7 @@ export default class KeyboardNavigation {
       lookLeft: false,
       lookRight: false,
       zoomIn: false,
-      zoomOut: false
+      zoomOut: false,
     };
 
     /**
@@ -112,7 +116,7 @@ export default class KeyboardNavigation {
       }
       // make sure we still have at least one pressed key
       this.pressedKeys_[event.code] = pressed;
-      if (!Object.values(this.pressedKeys_).some(pressed => pressed)) {
+      if (!Object.values(this.pressedKeys_).some((pressed) => pressed)) {
         this.cancel_();
       }
 
@@ -163,10 +167,8 @@ export default class KeyboardNavigation {
 
       if (this.hasKeyDown_()) {
         this.flags_.acceleration *= this.accelerationFactor_;
-        if (this.flags_.acceleration > 1)
-          this.flags_.acceleration = 1;
-        if (event.shiftKey)
-          this.flags_.acceleration = this.boostFactor_;
+        if (this.flags_.acceleration > 1) this.flags_.acceleration = 1;
+        if (event.shiftKey) this.flags_.acceleration = this.boostFactor_;
       }
       this.scene_.requestRender();
     }
@@ -183,10 +185,14 @@ export default class KeyboardNavigation {
     let pitch;
 
     if (this.flags_.moveUp) {
-      NavToolsStore.setCameraHeight(camera.positionCartographic.height + moveAmount);
+      NavToolsStore.setCameraHeight(
+        camera.positionCartographic.height + moveAmount,
+      );
     }
     if (this.flags_.moveDown) {
-      NavToolsStore.setCameraHeight(camera.positionCartographic.height - moveAmount);
+      NavToolsStore.setCameraHeight(
+        camera.positionCartographic.height - moveAmount,
+      );
     }
     if (this.flags_.moveForward) {
       verticalDirectionRotate(camera, angle);
@@ -226,13 +232,12 @@ export default class KeyboardNavigation {
       camera.setView({
         orientation: {
           heading: heading,
-          pitch: pitch
-        }
+          pitch: pitch,
+        },
       });
     }
   }
 }
-
 
 const notEditableTypes = ['checkbox', 'range'];
 
@@ -241,5 +246,8 @@ const notEditableTypes = ['checkbox', 'range'];
  * @return {boolean}
  */
 function targetNotEditable(target) {
-  return (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') || notEditableTypes.includes(target.type);
+  return (
+    (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') ||
+    notEditableTypes.includes(target.type)
+  );
 }

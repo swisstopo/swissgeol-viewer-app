@@ -1,10 +1,10 @@
 :root {
-  --ngm-interaction: #0B7285;
-  --ngm-interaction-active: #B9271A;
-  --ngm-interaction-hover: #FF0000;
-  --ngm-action-hover: #A83526;
-  --ngm-hover: #C5F6FA;
-  --ngm-warning: #C92A2A;
+  --ngm-interaction: #0b7285;
+  --ngm-interaction-active: #b9271a;
+  --ngm-interaction-hover: #ff0000;
+  --ngm-action-hover: #a83526;
+  --ngm-hover: #c5f6fa;
+  --ngm-warning: #c92a2a;
   --ngm-header-height: 88px;
   --ngm-header-height-mobile: 48px;
   --ngm-bottom-menu-height: 56px;

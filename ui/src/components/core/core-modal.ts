@@ -1,15 +1,15 @@
-import {css, html, LitElement, render, TemplateResult} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import { css, html, LitElement, render, TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 interface CoreModalProps {
-  size?: Size
+  size?: Size;
 
   /**
    * Makes the modal persistent, which disables closing it by clicking outside of it.
    */
-  isPersistent?: boolean
-  hasNoPadding?: boolean
-  onClose?: () => void
+  isPersistent?: boolean;
+  hasNoPadding?: boolean;
+  onClose?: () => void;
 }
 
 @customElement('ngm-core-modal')
@@ -33,7 +33,8 @@ export class CoreModal extends LitElement {
         .isPersistent="${props.isPersistent}"
         .size="${props.size ?? 'auto'}"
         .hasNoPadding="${props.hasNoPadding}"
-      >${content}</ngm-core-modal>`,
+        >${content}</ngm-core-modal
+      >`,
       container,
     );
 
@@ -47,13 +48,13 @@ export class CoreModal extends LitElement {
     this.close = this.close.bind(this);
   }
 
-  @property({type: String, reflect: true})
+  @property({ type: String, reflect: true })
   accessor size: Size = 'auto';
 
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor isPersistent = true;
 
-  @property(({type: Boolean, attribute: 'no-padding', reflect: true}))
+  @property({ type: Boolean, attribute: 'no-padding', reflect: true })
   accessor hasNoPadding = false;
 
   private dialog: HTMLDialogElement | null = null;
@@ -89,7 +90,8 @@ export class CoreModal extends LitElement {
   `;
 
   static readonly styles = css`
-    :host, :host * {
+    :host,
+    :host * {
       box-sizing: border-box;
     }
 
@@ -102,16 +104,16 @@ export class CoreModal extends LitElement {
       max-height: 80vh;
     }
 
-    :host([size="small"]) dialog {
+    :host([size='small']) dialog {
       width: 326px;
     }
 
-    :host([size="large"]) dialog {
+    :host([size='large']) dialog {
       width: 909px;
     }
 
     dialog::backdrop {
-      background-color: #111827B2;
+      background-color: #111827b2;
       opacity: 0.7;
     }
 
@@ -121,7 +123,4 @@ export class CoreModal extends LitElement {
   `;
 }
 
-type Size =
-  | 'auto'
-  | 'small'
-  | 'large';
+type Size = 'auto' | 'small' | 'large';

@@ -1,10 +1,10 @@
-import {LitElementI18n, translated} from '../i18n';
-import {customElement, state} from 'lit/decorators.js';
-import {html} from 'lit';
-import {dragArea} from './helperElements';
+import { LitElementI18n, translated } from '../i18n';
+import { customElement, state } from 'lit/decorators.js';
+import { html } from 'lit';
+import { dragArea } from './helperElements';
 import draggable from './draggable';
 import DashboardStore from '../store/dashboard';
-import type {Project, Topic} from './dashboard/ngm-dashboard';
+import type { Project, Topic } from './dashboard/ngm-dashboard';
 
 @customElement('ngm-project-popup')
 export class NgmProjectPopup extends LitElementI18n {
@@ -15,11 +15,11 @@ export class NgmProjectPopup extends LitElementI18n {
 
   constructor() {
     super();
-    DashboardStore.selectedTopicOrProject.subscribe(selectedProj => {
+    DashboardStore.selectedTopicOrProject.subscribe((selectedProj) => {
       this.selectedTopic = selectedProj;
       if (!selectedProj) this.hidden = true;
     });
-    DashboardStore.viewIndex.subscribe(index => {
+    DashboardStore.viewIndex.subscribe((index) => {
       this.viewIndex = index;
       this.hidden = index === undefined;
     });
@@ -28,7 +28,7 @@ export class NgmProjectPopup extends LitElementI18n {
   connectedCallback() {
     this.hidden = true;
     draggable(this, {
-      allowFrom: '.drag-handle'
+      allowFrom: '.drag-handle',
     });
     super.connectedCallback();
   }
@@ -50,14 +50,20 @@ export class NgmProjectPopup extends LitElementI18n {
 
   render() {
     if (!this.selectedTopic || this.viewIndex === undefined) return '';
-    return html`
-      <div class="ngm-floating-window-header drag-handle">
-        <div class="ngm-floating-window-header-title">${translated(this.selectedTopic.title)}</div>
+    return html` <div class="ngm-floating-window-header drag-handle">
+        <div class="ngm-floating-window-header-title">
+          ${translated(this.selectedTopic.title)}
+        </div>
         <div class="ngm-close-icon" @click=${this.onClose}></div>
       </div>
       <div class="ngm-project-popup-content">
-        <div class="ngm-play-last-icon" @click=${() => this.changeView(-1)}></div>
-        <div class="ngm-project-view-title">${translated(this.selectedTopic.views[this.viewIndex].title)}</div>
+        <div
+          class="ngm-play-last-icon"
+          @click=${() => this.changeView(-1)}
+        ></div>
+        <div class="ngm-project-view-title">
+          ${translated(this.selectedTopic.views[this.viewIndex].title)}
+        </div>
         <div class="ngm-play-icon" @click=${() => this.changeView(1)}></div>
       </div>
       ${dragArea}`;

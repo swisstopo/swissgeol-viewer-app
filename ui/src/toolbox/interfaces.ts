@@ -1,4 +1,4 @@
-import type {Cartesian3, Color} from 'cesium';
+import type { Cartesian3, Color } from 'cesium';
 
 export interface SwissforagesModalOptions {
   name: string | undefined;
@@ -6,7 +6,7 @@ export interface SwissforagesModalOptions {
   position: undefined;
   onLoggedIn: void | undefined;
   onSwissforagesBoreholeCreated: void | undefined;
-  show: boolean
+  show: boolean;
 }
 
 export interface AreasCounter {
@@ -16,7 +16,7 @@ export interface AreasCounter {
   polygon: number;
 }
 
-export type GeometryTypes = 'point' | 'line' | 'rectangle' | 'polygon'
+export type GeometryTypes = 'point' | 'line' | 'rectangle' | 'polygon';
 
 export interface NgmGeometry {
   type: GeometryTypes;
@@ -36,7 +36,7 @@ export interface NgmGeometry {
   clampPoint?: boolean;
   showSlicingBox?: boolean;
   volumeShowed?: boolean;
-  volumeHeightLimits?: { lowerLimit: number, height: number };
+  volumeHeightLimits?: { lowerLimit: number; height: number };
   swissforagesId?: string;
   depth?: number;
   diameter?: number;

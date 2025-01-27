@@ -1,27 +1,34 @@
-import {css, html, LitElement} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
-import {applyEffect, applyTransition, applyTypography} from '../../styles/theme';
+import { css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import {
+  applyEffect,
+  applyTransition,
+  applyTypography,
+} from 'src/styles/theme';
 
+const some: boolean = true;
 
 @customElement('ngm-core-button')
 export class CoreButton extends LitElement {
-  @property({reflect: true})
-  accessor variant: Variant = 'primary'
+  @property({ reflect: true })
+  accessor variant: Variant = 'primary';
 
-  @property({reflect: true})
-  accessor shape: Shape = 'default'
+  @property({ reflect: true })
+  accessor shape: Shape = 'default';
 
-  @property({type: Boolean, attribute: 'disabled', reflect: true})
-  accessor isDisabled: boolean = false
+  @property({ type: Boolean, attribute: 'disabled', reflect: true })
+  accessor isDisabled: boolean = false;
 
-  @property({type: Boolean, attribute: 'active', reflect: true})
-  accessor isActive: boolean = false
+  @property({ type: Boolean, attribute: 'active', reflect: true })
+  accessor isActive: boolean = false;
 
-  readonly render = () => html`
-    <button ?disabled="${this.isDisabled}">
-      <slot></slot>
-    </button>
-  `;
+  set test(bool) {
+    this.shape = bool;
+  }
+
+  get test() {
+    return this.shape;
+  }
 
   static readonly styles = css`
     button {
@@ -46,22 +53,23 @@ export class CoreButton extends LitElement {
     }
 
     /** large */
-    :host([shape="large"]) button {
+    :host([shape='large']) button {
       padding: 12px 16px;
     }
 
-    :host([shape="large"]) ::slotted(ngm-core-icon) {
+    :host([shape='large']) ::slotted(ngm-core-icon) {
       width: 24px;
       height: 24px;
     }
 
     /* primary */
-    :host([variant="primary"]) button {
+    :host([variant='primary']) button {
       color: var(--color-text--invert);
       background-color: var(--color-primary);
       border-color: var(--color-primary);
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         background-color: var(--color-primary--hovered);
         border-color: var(--color-primary--hovered);
       }
@@ -81,19 +89,20 @@ export class CoreButton extends LitElement {
       }
     }
 
-    :host([variant="primary"][active]) button:not([disabled]) {
+    :host([variant='primary'][active]) button:not([disabled]) {
       color: var(--color-text--invert);
       background-color: var(--color-primary--active);
       border-color: var(--color-primary--active);
     }
 
     /* secondary */
-    :host([variant="secondary"]) button {
+    :host([variant='secondary']) button {
       color: var(--color-primary);
       background-color: var(--color-secondary);
       border-color: var(--color-primary);
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         color: var(--color-text--emphasis--medium);
         background-color: var(--color-secondary--hovered);
         border-color: var(--color-text--emphasis--medium);
@@ -116,19 +125,19 @@ export class CoreButton extends LitElement {
       }
     }
 
-    :host([variant="secondary"][active]) button:not([disabled]) {
+    :host([variant='secondary'][active]) button:not([disabled]) {
       background-color: var(--color-secondary--active);
       border-color: var(--color-secondary--active);
     }
 
-
     /* tertiary */
-    :host([variant="tertiary"]) button {
+    :host([variant='tertiary']) button {
       color: var(--color-primary);
       background-color: var(--color-bg--white);
       border-color: var(--color-bg--white);
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         color: var(--color-text--emphasis--medium);
         background-color: var(--color-secondary--hovered);
         border-color: var(--color-secondary--hovered);
@@ -151,26 +160,25 @@ export class CoreButton extends LitElement {
       }
     }
 
-    :host([variant="tertiary"][active]) button:not([disabled]) {
+    :host([variant='tertiary'][active]) button:not([disabled]) {
       background-color: var(--color-secondary--active);
       border-color: var(--color-secondary--active);
     }
 
     /* icon shape */
-    :host([shape="icon"]) button,
-    :host([shape="icon-round"]) button {
+    :host([shape='icon']) button,
+    :host([shape='icon-round']) button {
       padding: 8px;
     }
   `;
+
+  readonly render = () => html`
+    <button ?disabled="${this.isDisabled}">
+      <slot></slot>
+    </button>
+  `;
 }
 
-export type Variant =
-  | 'primary'
-  | 'secondary'
-  | 'tertiary'
+export type Variant = 'primary' | 'secondary' | 'tertiary';
 
-export type Shape =
-  | 'default'
-  | 'large'
-  | 'icon'
-  | 'icon-round'
+export type Shape = 'default' | 'large' | 'icon' | 'icon-round';

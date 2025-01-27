@@ -1,15 +1,12 @@
 {
-    "compilerOptions": {
-      "checkJs": true,
-      "moduleResolution": "node",
-      "baseUrl": ".",
-      "target": "es6"
-    },
-    "include": [
-        "src/**/*",
-        "node_modules/cesium/Source/Cesium.d.ts"
-    ],
-    "typeAcquisition": {
-      "exclude": ["cesium"]
-    }
+  "compilerOptions": {
+    "checkJs": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "target": "es6"
+  },
+  "include": ["src/**/*", "node_modules/cesium/Source/Cesium.d.ts"],
+  "typeAcquisition": {
+    "exclude": ["cesium"]
   }
+}

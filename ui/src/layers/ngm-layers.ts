@@ -1,24 +1,24 @@
-import {html, PropertyValues} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
-import {LitElementI18n} from '../i18n.js';
+import { html, PropertyValues } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { LitElementI18n } from '../i18n.js';
 import './ngm-layers-item';
 import DashboardStore from '../store/dashboard';
-import {LayerConfig} from '../layertree';
+import { LayerConfig } from '../layertree';
 import type LayersAction from './LayersActions';
 
 @customElement('ngm-layers')
 export default class NgmLayers extends LitElementI18n {
-  @property({type: Array})
+  @property({ type: Array })
   accessor layers: LayerConfig[] = [];
-  @property({type: Object})
+  @property({ type: Object })
   accessor actions: LayersAction | null = null;
 
   updated(changedProperties: PropertyValues) {
     if (changedProperties.has('layers')) {
       // Don't show KML assets in project view mode
-      const hasKmlAssets = this.layers.some(layer => layer.topicKml);
+      const hasKmlAssets = this.layers.some((layer) => layer.topicKml);
       if (hasKmlAssets && DashboardStore.projectMode.value) {
-        this.layers = this.layers.filter(layer => !layer.topicKml);
+        this.layers = this.layers.filter((layer) => !layer.topicKml);
       }
     }
   }
@@ -31,7 +31,7 @@ export default class NgmLayers extends LitElementI18n {
 
     const detail = {
       config,
-      idx
+      idx,
     };
 
     return html`
@@ -40,9 +40,14 @@ export default class NgmLayers extends LitElementI18n {
         .config=${config}
         .changeOrderActive=${false}
         @removeDisplayedLayer=${() => {
-          this.dispatchEvent(new CustomEvent('removeDisplayedLayer', {detail}));
+          this.dispatchEvent(
+            new CustomEvent('removeDisplayedLayer', { detail }),
+          );
         }}
-        @layerChanged=${() => this.dispatchEvent(new CustomEvent('layerChanged', {detail: config}))}
+        @layerChanged=${() =>
+          this.dispatchEvent(
+            new CustomEvent('layerChanged', { detail: config }),
+          )}
       >
       </ngm-layers-item>
     `;
@@ -51,6 +56,8 @@ export default class NgmLayers extends LitElementI18n {
   render() {
     const len = this.layers ? this.layers.length : 0;
     const reverse = [...this.layers].reverse();
-    return html`${reverse.map((c, idx) => this.createLayerTemplate(c, idx, len))}`;
+    return html`${reverse.map((c, idx) =>
+      this.createLayerTemplate(c, idx, len),
+    )}`;
   }
 }

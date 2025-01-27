@@ -1,8 +1,18 @@
-import {Cartesian2, Cartesian3, HeightReference, HorizontalOrigin, LabelStyle, VerticalOrigin,} from 'cesium';
+import {
+  Cartesian2,
+  Cartesian3,
+  HeightReference,
+  HorizontalOrigin,
+  LabelStyle,
+  VerticalOrigin,
+} from 'cesium';
 import i18next from 'i18next';
-import type {GeometryTypes} from '../toolbox/interfaces';
+import type { GeometryTypes } from '../toolbox/interfaces';
 
-export function getDimensionLabelText(type: GeometryTypes, distances: number[]) {
+export function getDimensionLabelText(
+  type: GeometryTypes,
+  distances: number[],
+) {
   let text;
   if (type === 'rectangle') {
     text = `${Number(distances[0]).toFixed(3)}km x ${Number(distances[1]).toFixed(3)}km`;
@@ -23,10 +33,9 @@ export function getDimensionLabel(type: GeometryTypes, distances: number[]) {
     verticalOrigin: VerticalOrigin.BOTTOM,
     horizontalOrigin: HorizontalOrigin.RIGHT,
     pixelOffset: new Cartesian2(-5, -5),
-    disableDepthTestDistance: Number.POSITIVE_INFINITY
+    disableDepthTestDistance: Number.POSITIVE_INFINITY,
   };
 }
-
 
 const scratchAB = new Cartesian3();
 const scratchAC = new Cartesian3();

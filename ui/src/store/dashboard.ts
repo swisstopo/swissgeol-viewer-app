@@ -1,37 +1,46 @@
-import {BehaviorSubject, Subject} from 'rxjs';
-import type {Project, Topic} from '../elements/dashboard/ngm-dashboard';
-import {NgmGeometry} from '../toolbox/interfaces';
-import {isProjectOwnerOrEditor} from '../elements/dashboard/helpers';
+import { BehaviorSubject, Subject } from 'rxjs';
+import type { Project, Topic } from '../elements/dashboard/ngm-dashboard';
+import { NgmGeometry } from '../toolbox/interfaces';
+import { isProjectOwnerOrEditor } from '../elements/dashboard/helpers';
 
-export type TopicParam = { topicId: string, viewId?: string | null }
-export type ProjectParam = { projectId: string, viewId?: string | null }
+export type TopicParam = { topicId: string; viewId?: string | null };
+export type ProjectParam = { projectId: string; viewId?: string | null };
 
 export type TopicParamSubject = {
-  kind: 'topic',
-  param: TopicParam
-}
+  kind: 'topic';
+  param: TopicParam;
+};
 
 export type ProjectParamSubject = {
-  kind: 'project',
-  param: ProjectParam
-}
+  kind: 'project';
+  param: ProjectParam;
+};
 
 /**
  * 'edit' - edit from dashboard (create / edit project)
  * 'viewEdit' - view selected and geometries can be edited in the toolbox
  * 'viewOnly' - user has no rights to edit the project
  */
-export type ProjectMode = 'edit' | 'viewEdit' | 'viewOnly' | undefined
+export type ProjectMode = 'edit' | 'viewEdit' | 'viewOnly' | undefined;
 
 export default class DashboardStore {
-  private static readonly selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
+  private static readonly selectedTopicOrProjectSubject = new BehaviorSubject<
+    Topic | Project | undefined
+  >(undefined);
   private static readonly viewIndexSubject = new Subject<number | undefined>();
-  private static readonly topicOrProjectParamSubject = new BehaviorSubject<TopicParamSubject | ProjectParamSubject | undefined>(undefined);
-  private static readonly projectModeSubject = new BehaviorSubject<ProjectMode>(undefined);
+  private static readonly topicOrProjectParamSubject = new BehaviorSubject<
+    TopicParamSubject | ProjectParamSubject | undefined
+  >(undefined);
+  private static readonly projectModeSubject = new BehaviorSubject<ProjectMode>(
+    undefined,
+  );
   private static readonly geometriesSubject = new Subject<NgmGeometry[]>();
-  private static readonly showSaveOrCancelWarningSubject = new Subject<boolean>();
+  private static readonly showSaveOrCancelWarningSubject =
+    new Subject<boolean>();
 
-  static get selectedTopicOrProject(): BehaviorSubject<Topic | Project | undefined> {
+  static get selectedTopicOrProject(): BehaviorSubject<
+    Topic | Project | undefined
+  > {
     return this.selectedTopicOrProjectSubject;
   }
 
@@ -43,7 +52,9 @@ export default class DashboardStore {
   static setViewIndex(value: number | undefined): void {
     const projectOrTopic = this.selectedTopicOrProjectSubject.value;
     if (value !== undefined && projectOrTopic) {
-      const mode = isProjectOwnerOrEditor(projectOrTopic) ? 'viewEdit' : 'viewOnly';
+      const mode = isProjectOwnerOrEditor(projectOrTopic)
+        ? 'viewEdit'
+        : 'viewOnly';
       if (this.projectMode.value !== mode) this.setProjectMode(mode);
     } else {
       this.setProjectMode(undefined);
@@ -55,11 +66,15 @@ export default class DashboardStore {
     return this.viewIndexSubject;
   }
 
-  static setTopicOrProjectParam(value: TopicParamSubject | ProjectParamSubject) {
+  static setTopicOrProjectParam(
+    value: TopicParamSubject | ProjectParamSubject,
+  ) {
     this.topicOrProjectParamSubject.next(value);
   }
 
-  static get topicOrProjectParam(): BehaviorSubject<TopicParamSubject | ProjectParamSubject | undefined> {
+  static get topicOrProjectParam(): BehaviorSubject<
+    TopicParamSubject | ProjectParamSubject | undefined
+  > {
     return this.topicOrProjectParamSubject;
   }
 

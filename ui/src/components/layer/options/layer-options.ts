@@ -1,41 +1,51 @@
-import {customElement, state} from 'lit/decorators.js';
-import {LitElementI18n} from '../../../i18n';
-import {CustomDataSource, DataSource, DataSourceCollection, Viewer} from 'cesium';
+import { customElement, state } from 'lit/decorators.js';
+import { LitElementI18n } from '../../../i18n';
+import {
+  CustomDataSource,
+  DataSource,
+  DataSourceCollection,
+  Viewer,
+} from 'cesium';
 import MainStore from '../../../store/main';
-import {css, html} from 'lit';
+import { css, html } from 'lit';
 import i18next from 'i18next';
-import {debounce} from '../../../utils';
-import {setExaggeration} from '../../../permalink';
+import { debounce } from '../../../utils';
+import { setExaggeration } from '../../../permalink';
 import NavToolsStore from '../../../store/navTools';
-import {updateExaggerationForKmlDataSource} from '../../../cesiumutils';
+import { updateExaggerationForKmlDataSource } from '../../../cesiumutils';
 import '../../core';
-import {SliderValueChangeEvent} from '../../core/core-slider';
+import { SliderValueChangeEvent } from '../../core/core-slider';
 
 @customElement('ngm-layer-options')
 export class NgmLayerOptions extends LitElementI18n {
   @state()
-  private accessor viewer: Viewer | null | undefined
+  private accessor viewer: Viewer | null | undefined;
 
   @state()
-  private accessor exaggeration: number = 1
+  private accessor exaggeration: number = 1;
 
   @state()
-  private accessor hideExaggeration = false
+  private accessor hideExaggeration = false;
 
   private prevExaggeration: number = 1;
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => {
+    MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       this.exaggeration = this.viewer?.scene.verticalExaggeration ?? 1;
       this.prevExaggeration = this.exaggeration;
-      this.viewer?.dataSources.dataSourceAdded.addEventListener((_collection: DataSourceCollection, dataSource: DataSource | CustomDataSource) => {
-        if (MainStore.uploadedKmlNames.includes(dataSource.name)) {
-          const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
-          updateExaggerationForKmlDataSource(dataSource, exaggeration, 1);
-        }
-      });
+      this.viewer?.dataSources.dataSourceAdded.addEventListener(
+        (
+          _collection: DataSourceCollection,
+          dataSource: DataSource | CustomDataSource,
+        ) => {
+          if (MainStore.uploadedKmlNames.includes(dataSource.name)) {
+            const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+            updateExaggerationForKmlDataSource(dataSource, exaggeration, 1);
+          }
+        },
+      );
     });
   }
 
@@ -53,9 +63,13 @@ export class NgmLayerOptions extends LitElementI18n {
 
   private updateExaggerationForKmls() {
     const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
-    MainStore.uploadedKmlNames.forEach(name => {
+    MainStore.uploadedKmlNames.forEach((name) => {
       const dataSource = this.viewer?.dataSources.getByName(name)[0];
-      updateExaggerationForKmlDataSource(dataSource, exaggeration, this.prevExaggeration);
+      updateExaggerationForKmlDataSource(
+        dataSource,
+        exaggeration,
+        this.prevExaggeration,
+      );
     });
     this.prevExaggeration = exaggeration;
     this.viewer?.scene.requestRender();
@@ -75,28 +89,30 @@ export class NgmLayerOptions extends LitElementI18n {
   }
 
   readonly render = () => html`
-      <div class="group">
-        <ngm-core-icon
-          icon="${this.hideExaggeration ? 'invisible' : 'visible'}"
-          title=${this.hideExaggeration ? i18next.t('dtd_show_exaggeration') : i18next.t('dtd_hide_exaggeration')}
-          @click=${this.toggleExaggerationVisibility}
-        ></ngm-core-icon>
-        <label>${i18next.t('dtd_exaggeration_map')}</label>
+    <div class="group">
+      <ngm-core-icon
+        icon="${this.hideExaggeration ? 'invisible' : 'visible'}"
+        title=${this.hideExaggeration
+          ? i18next.t('dtd_show_exaggeration')
+          : i18next.t('dtd_hide_exaggeration')}
+        @click=${this.toggleExaggerationVisibility}
+      ></ngm-core-icon>
+      <label>${i18next.t('dtd_exaggeration_map')}</label>
+    </div>
+    <hr />
+    <div class="group">
+      <ngm-core-slider
+        .min="${1}"
+        .max="${20}"
+        .step="${1}"
+        .value="${this.exaggeration}"
+        @change=${this.updateExaggeration}
+        @pointerup="${debounce(() => this.updateExaggerationForKmls(), 300)}"
+      ></ngm-core-slider>
+      <div class="chip-container">
+        <ngm-core-chip>${this.exaggeration.toFixed()}x</ngm-core-chip>
       </div>
-      <hr>
-      <div class="group">
-        <ngm-core-slider
-          .min="${1}"
-          .max="${20}"
-          .step="${1}"
-          .value="${this.exaggeration}"
-          @change=${this.updateExaggeration}
-          @pointerup="${debounce(() => this.updateExaggerationForKmls(), 300)}"
-        ></ngm-core-slider>
-        <div class="chip-container">
-          <ngm-core-chip>${this.exaggeration.toFixed()}x</ngm-core-chip>
-        </div>
-      </div>
+    </div>
   `;
 
   static readonly styles = css`

@@ -1,24 +1,23 @@
-import {LitElementI18n} from '../../i18n';
-import {css, html, unsafeCSS} from 'lit';
+import { LitElementI18n } from '../../i18n';
+import { css, html, unsafeCSS } from 'lit';
 import i18next from 'i18next';
-import {customElement, property} from 'lit/decorators.js';
-import {LayerConfig} from '../../layertree';
+import { customElement, property } from 'lit/decorators.js';
+import { LayerConfig } from '../../layertree';
 import './navigation-panel';
 import './navigation-panel-header';
 import '../layer/layer-catalog';
 import '../layer/layer-display';
 import '../layer/layer-tabs';
-import type {LayerEvent, LayersUpdateEvent} from '../layer/layer-display';
-
+import type { LayerEvent, LayersUpdateEvent } from '../layer/layer-display';
 
 @customElement('ngm-navigation-layer-panel')
 export class NavigationLayerPanel extends LitElementI18n {
   @property()
-  public accessor layers: LayerConfig[] | null = null
+  public accessor layers: LayerConfig[] | null = null;
 
   @property()
-  public accessor displayLayers: LayerConfig[] | null = null
-    constructor() {
+  public accessor displayLayers: LayerConfig[] | null = null;
+  constructor() {
     super();
 
     this.close = this.close.bind(this);
@@ -64,27 +63,35 @@ export class NavigationLayerPanel extends LitElementI18n {
   }
 
   private handleDisplayLayersUpdate(e: LayersUpdateEvent): void {
-    this.dispatchEvent(new CustomEvent('display-layers-update', {
-      detail: e.detail,
-    }) satisfies LayersUpdateEvent);
+    this.dispatchEvent(
+      new CustomEvent('display-layers-update', {
+        detail: e.detail,
+      }) satisfies LayersUpdateEvent,
+    );
   }
 
   private handleDisplayLayerUpdate(e: LayerEvent): void {
-    this.dispatchEvent(new CustomEvent('display-layer-update', {
-      detail: e.detail,
-    }) satisfies LayerEvent);
+    this.dispatchEvent(
+      new CustomEvent('display-layer-update', {
+        detail: e.detail,
+      }) satisfies LayerEvent,
+    );
   }
 
   private handleDisplayLayerRemoval(e: LayerEvent): void {
-    this.dispatchEvent(new CustomEvent('display-layer-removal', {
-      detail: e.detail,
-    }) satisfies LayerEvent);
+    this.dispatchEvent(
+      new CustomEvent('display-layer-removal', {
+        detail: e.detail,
+      }) satisfies LayerEvent,
+    );
   }
 
   private handleDisplayLayerClick(e: LayerEvent): void {
-    this.dispatchEvent(new CustomEvent('display-layer-click', {
-      detail: e.detail,
-    }) satisfies LayerEvent);
+    this.dispatchEvent(
+      new CustomEvent('display-layer-click', {
+        detail: e.detail,
+      }) satisfies LayerEvent,
+    );
   }
 
   // TODO Make all children of this component use the Shadow DOM so we can remove this.
@@ -93,7 +100,8 @@ export class NavigationLayerPanel extends LitElementI18n {
   }
 
   static readonly styles = css`
-    ngm-navigation-layer-panel, ngm-navigation-layer-panel * {
+    ngm-navigation-layer-panel,
+    ngm-navigation-layer-panel * {
       box-sizing: border-box;
     }
 

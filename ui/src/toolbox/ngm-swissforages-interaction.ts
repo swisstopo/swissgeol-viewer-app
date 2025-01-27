@@ -1,41 +1,41 @@
-import {LitElementI18n} from '../i18n';
-import {html} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import { LitElementI18n } from '../i18n';
+import { html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import i18next from 'i18next';
-import {Cartographic, JulianDate} from 'cesium';
-import {updateBoreholeHeights} from './helpers';
-import {SWISSFORAGES_EDITOR_URL, SWISSFORAGES_VIEWER_URL} from '../constants';
-import {lv95ToDegrees} from '../projection';
+import { Cartographic, JulianDate } from 'cesium';
+import { updateBoreholeHeights } from './helpers';
+import { SWISSFORAGES_EDITOR_URL, SWISSFORAGES_VIEWER_URL } from '../constants';
+import { lv95ToDegrees } from '../projection';
 import $ from 'jquery';
 import MainStore from '../store/main';
-import type {Viewer, CustomDataSource} from 'cesium';
-import type {SwissforagesService} from './SwissforagesService';
-import type {NgmGeometry} from './interfaces';
-import {showSnackbarInfo} from '../notifications';
+import type { Viewer, CustomDataSource } from 'cesium';
+import type { SwissforagesService } from './SwissforagesService';
+import type { NgmGeometry } from './interfaces';
+import { showSnackbarInfo } from '../notifications';
 
 @customElement('ngm-swissforages-interaction')
 export class NgmSwissforagesInteraction extends LitElementI18n {
-  @property({type: Object})
+  @property({ type: Object })
   accessor item: NgmGeometry | undefined;
-  @property({type: Object})
+  @property({ type: Object })
   accessor service: SwissforagesService | undefined;
-  @property({type: Object})
+  @property({ type: Object })
   accessor dataSource: CustomDataSource | undefined;
-  @property({type: Object})
+  @property({ type: Object })
   accessor updateModalOptions: CallableFunction | undefined;
   private julianDate: JulianDate = new JulianDate();
   private viewer: Viewer | null = null;
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => this.viewer = viewer);
+    MainStore.viewer.subscribe((viewer) => (this.viewer = viewer));
   }
 
   firstUpdated() {
     $(this.querySelector('.ngm-tools-btn')!).popup({
       popup: $(this.querySelector('.ngm-swissforages-config-popup')!).html(),
       on: 'click',
-      position: 'right center'
+      position: 'right center',
     });
   }
 
@@ -43,10 +43,15 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
     if (!this.item) return;
     if (this.item.swissforagesId) {
       // show
-      window.open(`${SWISSFORAGES_EDITOR_URL}${this.item.swissforagesId}`, '_blank');
+      window.open(
+        `${SWISSFORAGES_EDITOR_URL}${this.item.swissforagesId}`,
+        '_blank',
+      );
     } else {
       // create
-      const cartographicPosition = Cartographic.fromCartesian(this.item.positions[0]);
+      const cartographicPosition = Cartographic.fromCartesian(
+        this.item.positions[0],
+      );
       this.updateModalOptions!({
         id: this.item.id,
         name: this.item.name,
@@ -54,7 +59,8 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
         depth: this.item.depth,
         swissforagesId: this.item.swissforagesId,
         show: true,
-        onSwissforagesBoreholeCreated: (pointId, boreholeId, depth) => this.onSwissforagesBoreholeCreated(pointId, boreholeId, depth)
+        onSwissforagesBoreholeCreated: (pointId, boreholeId, depth) =>
+          this.onSwissforagesBoreholeCreated(pointId, boreholeId, depth),
       });
     }
   }
@@ -75,7 +81,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
     this.viewer!.scene.requestRender();
     window.open(`${SWISSFORAGES_EDITOR_URL}${boreholeId}`, '_blank');
     this.updateModalOptions!({
-      show: false
+      show: false,
     });
   }
 
@@ -83,7 +89,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
     if (!this.service!.userToken) {
       this.updateModalOptions!({
         onLoggedIn: () => this.syncPointWithSwissforages(id, swissforagesId),
-        show: true
+        show: true,
       });
       return;
     }
@@ -93,11 +99,18 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
       const entity = this.dataSource!.entities.getById(id);
       if (!entity || !entity.properties) return;
       if (boreholeData) {
-        entity.properties.depth = boreholeData.length || entity.properties.depth;
+        entity.properties.depth =
+          boreholeData.length || entity.properties.depth;
         if (boreholeData.location_x && boreholeData.location_y) {
           const height = boreholeData.elevation_z || 0;
-          const positionlv95 = lv95ToDegrees([boreholeData.location_x, boreholeData.location_y]);
-          const cartographicPosition = Cartographic.fromDegrees(positionlv95[0], positionlv95[1]);
+          const positionlv95 = lv95ToDegrees([
+            boreholeData.location_x,
+            boreholeData.location_y,
+          ]);
+          const cartographicPosition = Cartographic.fromDegrees(
+            positionlv95[0],
+            positionlv95[1],
+          );
           cartographicPosition.height = height;
           entity.position = <any>Cartographic.toCartesian(cartographicPosition);
           updateBoreholeHeights(entity, this.julianDate);
@@ -107,7 +120,9 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
           entity.name = boreholeData.custom.public_name;
         }
       } else {
-        showSnackbarInfo(i18next.t('tbx_swissforages_borehole_not_exists_warning'));
+        showSnackbarInfo(
+          i18next.t('tbx_swissforages_borehole_not_exists_warning'),
+        );
         entity.ellipse!.show = <any>false;
         entity.properties.swissforagesId = undefined;
       }
@@ -138,15 +153,20 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
         <div class="ui tiny buttons">
           <button
             class="ui button"
-            @click=${() => this.showSwissforagesModal()}>
-            ${this.item.swissforagesId ?
-              i18next.t('tbx_swissforages_show_btn_label') :
-              i18next.t('tbx_swissforages_create_btn_label')}
+            @click=${() => this.showSwissforagesModal()}
+          >
+            ${this.item.swissforagesId
+              ? i18next.t('tbx_swissforages_show_btn_label')
+              : i18next.t('tbx_swissforages_create_btn_label')}
           </button>
-          ${this.item.swissforagesId ? html`
-              <button
+          ${this.item.swissforagesId
+            ? html` <button
                 class="ui button ngm-swissforages-sync"
-                @click=${this.syncPointWithSwissforages.bind(this, this.item.id, this.item.swissforagesId)}
+                @click=${this.syncPointWithSwissforages.bind(
+                  this,
+                  this.item.id,
+                  this.item.swissforagesId,
+                )}
                 data-tooltip=${i18next.t('tbx_swissforages_sync_hint')}
                 data-position="top right"
                 data-variation="tiny"
@@ -155,9 +175,10 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
                   <div class="ui tiny loader"></div>
                 </div>
                 <i class="sync icon"></i>
-              </button>` :
-            html`
-              <button class="ui icon button ngm-tools-btn"><i class="tools icon"></i></button>`}
+              </button>`
+            : html` <button class="ui icon button ngm-tools-btn">
+                <i class="tools icon"></i>
+              </button>`}
         </div>
       </div>
       <div class="ui mini popup ngm-swissforages-config-popup">
@@ -167,7 +188,8 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
             type="number"
             .value="${this.item.depth}"
             @change="${this.onDepthChange}"
-            step="100">
+            step="100"
+          />
         </div>
       </div>
     `;

@@ -1,4 +1,5 @@
-.ngm-coord-input, .ngm-angle-height-input {
+.ngm-coord-input,
+.ngm-angle-height-input {
   display: flex;
 }
 
@@ -23,6 +24,7 @@ input.ngm-height-input {
   width: 80px;
 }
 
-input.ngm-angle-input, input.ngm-tilt-input {
+input.ngm-angle-input,
+input.ngm-tilt-input {
   width: 60px;
 }

@@ -1,8 +1,8 @@
-import {getMapParam, syncMapParam} from './permalink';
+import { getMapParam, syncMapParam } from './permalink';
 import i18next from 'i18next';
-import type {Viewer} from 'cesium';
-import type {NgmMapChooser} from './elements/ngm-map-chooser';
-import type {BaseLayerConfig} from './viewer';
+import type { Viewer } from 'cesium';
+import type { NgmMapChooser } from './elements/ngm-map-chooser';
+import type { BaseLayerConfig } from './viewer';
 import MainStore from './store/main';
 
 export default class MapChooser {
@@ -17,7 +17,7 @@ export default class MapChooser {
     this.selectedMap = this.getInitialMap();
 
     i18next.on('languageChanged', () => {
-      this.elements.forEach(el => el.choices = this.choices);
+      this.elements.forEach((el) => (el.choices = this.choices));
     });
     MainStore.syncMap.subscribe(() => {
       const id = getMapParam();
@@ -29,25 +29,29 @@ export default class MapChooser {
     this.elements.push(element);
     element.choices = this.choices;
     element.active = this.selectedMap;
-    element.addEventListener('change', (event) => this.selectMap((<CustomEvent>event).detail.active.id));
+    element.addEventListener('change', (event) =>
+      this.selectMap((<CustomEvent>event).detail.active.id),
+    );
   }
 
   getInitialMap(): BaseLayerConfig {
     const mapId = getMapParam();
-    const mapConfig = this.config.find(map => map.id === mapId);
+    const mapConfig = this.config.find((map) => map.id === mapId);
     if (mapConfig) {
       return mapConfig;
     } else {
-      return this.config.find(map => map.default === true) || this.config[0];
+      return this.config.find((map) => map.default === true) || this.config[0];
     }
   }
 
   selectMap(activeId: string) {
-    const mapConfig = this.config.find(map => map.id === activeId);
+    const mapConfig = this.config.find((map) => map.id === activeId);
     if (mapConfig) {
-      this.elements.forEach(el => el.active = mapConfig);
-      this.selectedMap.layers && this.selectedMap.layers.forEach(layer => layer.show = false);
-      mapConfig.layers && mapConfig.layers.forEach(layer => layer.show = true);
+      this.elements.forEach((el) => (el.active = mapConfig));
+      this.selectedMap.layers &&
+        this.selectedMap.layers.forEach((layer) => (layer.show = false));
+      mapConfig.layers &&
+        mapConfig.layers.forEach((layer) => (layer.show = true));
       this.selectedMap = mapConfig;
       this.viewer.scene.requestRender();
       syncMapParam(mapConfig.id);
@@ -55,8 +59,8 @@ export default class MapChooser {
   }
 
   get choices(): BaseLayerConfig[] {
-    return this.config.map(map => {
-      const choice = {...map, labelKey: i18next.t(map.labelKey)};
+    return this.config.map((map) => {
+      const choice = { ...map, labelKey: i18next.t(map.labelKey) };
       delete choice.layers;
       return choice;
     });

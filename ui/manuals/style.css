@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.9rem;
   font-weight: 400;
   display: flex;
@@ -14,7 +14,9 @@ header {
   text-align: center;
 }
 
-h2,h3,h4 {
+h2,
+h3,
+h4 {
   margin-bottom: 0.5rem;
   font-family: inherit;
   line-height: 1.1;
@@ -26,13 +28,14 @@ h3 {
   font-size: 1.3rem;
 }
 
-header, .ngm-help-main {
+header,
+.ngm-help-main {
   max-width: 1100px;
 }
 
 .ngm-help-header {
   display: flex;
-  background-image: url('images/header-geologieportal.png');
+  background-image: url("images/header-geologieportal.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: right;
