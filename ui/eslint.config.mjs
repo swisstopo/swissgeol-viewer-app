@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
 import { FlatCompat } from '@eslint/eslintrc';
+import sortClassMembers from 'eslint-plugin-sort-class-members';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,6 +92,7 @@ const baseConfigs = compat
     },
   }));
 export default [
+  sortClassMembers.configs['flat/recommended'],
   {
     ignores: ['dist/**'],
   },
@@ -139,18 +141,29 @@ export default [
           prefix: ['is', 'has'],
         },
       ],
-      // 'sort-class-members/sort-class-members': [
-      //   'error',
-      //   {
-      //     order: [
-      //       { name: '/.*/', kind: 'property', static: false }, // Properties
-      //       { name: '/.*/', kind: 'method', static: false }, // Methods
-      //       { name: 'render', kind: 'method', static: false }, // Render
-      //       { name: 'styles', kind: 'getter', static: true }, // CSS
-      //     ],
-      //     accessorPairPositioning: 'getThenSet',
-      //   },
-      // ],
+      'sort-class-members/sort-class-members': [
+        'error',
+        {
+          order: ['[decoratedProperties]', 'constructor', '[methods]', '[render]', '[styles]'],
+          groups: {
+            decoratedProperties: [
+              {
+                type: 'method',
+                groupByDecorator: '/^(property|state|query|consume)$/',
+              },
+            ],
+            render: [
+              {
+                type: 'property',
+                propertyType: 'ArrowFunctionExpression',
+                name: 'render',
+                readonly: true,
+              },
+            ],
+            styles: [{ name: 'styles', static: true, readonly: true }],
+          },
+        },
+      ],
     },
   })),
   ...baseConfigs.map((config) => ({

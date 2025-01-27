@@ -6,29 +6,22 @@ import {
   applyTypography,
 } from 'src/styles/theme';
 
-const some: boolean = true;
-
 @customElement('ngm-core-button')
 export class CoreButton extends LitElement {
   @property({ reflect: true })
-  accessor variant: Variant = 'primary';
-
-  @property({ reflect: true })
   accessor shape: Shape = 'default';
-
+  @property({ type: Boolean, attribute: 'active', reflect: true })
+  accessor isActive: boolean = false;
+  @property({ reflect: true })
+  accessor variant: Variant = 'primary';
   @property({ type: Boolean, attribute: 'disabled', reflect: true })
   accessor isDisabled: boolean = false;
 
-  @property({ type: Boolean, attribute: 'active', reflect: true })
-  accessor isActive: boolean = false;
-
-  set test(bool) {
-    this.shape = bool;
-  }
-
-  get test() {
-    return this.shape;
-  }
+  readonly render = () => html`
+    <button ?disabled="${this.isDisabled}">
+      <slot></slot>
+    </button>
+  `;
 
   static readonly styles = css`
     button {
@@ -170,12 +163,6 @@ export class CoreButton extends LitElement {
     :host([shape='icon-round']) button {
       padding: 8px;
     }
-  `;
-
-  readonly render = () => html`
-    <button ?disabled="${this.isDisabled}">
-      <slot></slot>
-    </button>
   `;
 }
 
