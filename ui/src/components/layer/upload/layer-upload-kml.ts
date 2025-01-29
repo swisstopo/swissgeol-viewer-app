@@ -190,9 +190,9 @@ export default class NgmLayerUploadKml extends LitElementI18n {
     button.upload:hover, button.upload.is-active {
       ${applyTransition('fade')};
 
-      color: var(--color-text--emphasis--medium);
+      color: var(--color-text--emphasis-medium);
       background-color: var(--color-secondary--hovered);
-      border-color: var(--color-text--emphasis--medium);
+      border-color: var(--color-text--emphasis-medium);
     }
 
     button.upload > .title {

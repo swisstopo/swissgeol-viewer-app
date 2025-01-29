@@ -13,7 +13,8 @@ import {dropdownIcon} from './i_dropdown';
 import {uploadIcon} from './i_upload';
 import {cesiumIcon} from './i_cesium';
 import {visibleIcon} from './i_visible';
-import {invisibleIcon} from './i_invisible';
+import {hiddenIcon} from './i_hidden';
+import {menuIcon} from 'src/icons/i_menu';
 
 export const icons = {
   cesium: cesiumIcon,
@@ -22,7 +23,9 @@ export const icons = {
   config: configIcon,
   upload: uploadIcon,
   dropdown: dropdownIcon,
+  hidden: hiddenIcon,
   layer: layerIcon,
+  menu: menuIcon,
   projects: projectsIcon,
   search: searchIcon,
   share: shareIcon,
@@ -31,7 +34,6 @@ export const icons = {
   viewAll: viewAllIcon,
   viewLess: viewLessIcon,
   visible: visibleIcon,
-  invisible: invisibleIcon
 };
 
 export type IconKey = keyof typeof icons;

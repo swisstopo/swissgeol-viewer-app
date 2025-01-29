@@ -6,9 +6,9 @@ import {LayerConfig} from '../../layertree';
 import './navigation-panel';
 import './navigation-panel-header';
 import '../layer/layer-catalog';
-import '../layer/layer-display';
+import '../layer/display/layer-display';
 import '../layer/layer-tabs';
-import type {LayerEvent, LayersUpdateEvent} from '../layer/layer-display';
+import type {LayerEvent, LayersUpdateEvent} from '../layer/display/layer-display';
 
 
 @customElement('ngm-navigation-layer-panel')

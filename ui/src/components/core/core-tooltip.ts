@@ -39,7 +39,6 @@ export class CoreTooltip extends LitElement {
     if (target == null) {
       return;
     }
-    console.log(target);
     CoreTooltip.ENTER_EVENTS.forEach((event) => target.addEventListener(event, this.show));
     CoreTooltip.LEAVE_EVENTS.forEach((event) => target.addEventListener(event, this.hide));
   }

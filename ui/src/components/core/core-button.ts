@@ -1,6 +1,6 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {applyEffect, applyTransition, applyTypography} from '../../styles/theme';
+import {applyEffect, applyTransition, applyTypography} from 'src/styles/theme';
 
 
 @customElement('ngm-core-button')
@@ -11,11 +11,17 @@ export class CoreButton extends LitElement {
   @property({reflect: true})
   accessor shape: Shape = 'default'
 
+  @property({reflect: true})
+  accessor justify: Justify = 'center'
+
   @property({type: Boolean, attribute: 'disabled', reflect: true})
   accessor isDisabled: boolean = false
 
   @property({type: Boolean, attribute: 'active', reflect: true})
   accessor isActive: boolean = false
+
+  @property({type: Boolean, attribute: 'transparent', reflect: true})
+  accessor isTransparent: boolean = false
 
   readonly render = () => html`
     <button ?disabled="${this.isDisabled}">
@@ -24,13 +30,30 @@ export class CoreButton extends LitElement {
   `;
 
   static readonly styles = css`
+    :host, :host * {
+      box-sizing: border-box;
+    }
+
+    :host {
+      width: fit-content;
+      height: fit-content;
+    }
+
+    /*
+       SIZING - PADDINGS AND BORDER
+       ============================
+
+       Every variant and shape defined here has a border of exactly 1px.
+       Due to this, paddings are 1px less then they are defined as in the Figma.
+     */
+
     button {
       ${applyTypography('button')};
 
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 12px;
+      padding: 7px 11px;
       border: 1px solid;
       border-radius: 4px;
       cursor: pointer;
@@ -46,8 +69,9 @@ export class CoreButton extends LitElement {
     }
 
     /** large */
+
     :host([shape="large"]) button {
-      padding: 12px 16px;
+      padding: 11px 15px;
     }
 
     :host([shape="large"]) ::slotted(ngm-core-icon) {
@@ -56,6 +80,7 @@ export class CoreButton extends LitElement {
     }
 
     /* primary */
+
     :host([variant="primary"]) button {
       color: var(--color-text--invert);
       background-color: var(--color-primary);
@@ -88,15 +113,16 @@ export class CoreButton extends LitElement {
     }
 
     /* secondary */
+
     :host([variant="secondary"]) button {
       color: var(--color-primary);
       background-color: var(--color-secondary);
       border-color: var(--color-primary);
 
       &:hover, &:focus {
-        color: var(--color-text--emphasis--medium);
+        color: var(--color-text--emphasis-medium);
         background-color: var(--color-secondary--hovered);
-        border-color: var(--color-text--emphasis--medium);
+        border-color: var(--color-text--emphasis-medium);
       }
 
       &:focus {
@@ -104,7 +130,7 @@ export class CoreButton extends LitElement {
       }
 
       &:active {
-        color: var(--color-text--emphasis--medium);
+        color: var(--color-text--emphasis-medium);
         background-color: var(--color-secondary--pressed);
         border-color: var(--color-secondary--pressed);
       }
@@ -117,6 +143,7 @@ export class CoreButton extends LitElement {
     }
 
     :host([variant="secondary"][active]) button:not([disabled]) {
+      color: var(--color-text--emphasis-medium);
       background-color: var(--color-secondary--active);
       border-color: var(--color-secondary--active);
     }
@@ -129,7 +156,7 @@ export class CoreButton extends LitElement {
       border-color: var(--color-bg--white);
 
       &:hover, &:focus {
-        color: var(--color-text--emphasis--medium);
+        color: var(--color-text--emphasis-medium);
         background-color: var(--color-secondary--hovered);
         border-color: var(--color-secondary--hovered);
       }
@@ -139,7 +166,7 @@ export class CoreButton extends LitElement {
       }
 
       &:active {
-        color: var(--color-text--emphasis--medium);
+        color: var(--color-text--emphasis-medium);
         background-color: var(--color-secondary--pressed);
         border-color: var(--color-secondary--pressed);
       }
@@ -156,10 +183,34 @@ export class CoreButton extends LitElement {
       border-color: var(--color-secondary--active);
     }
 
+    /* transparent */
+    :host([transparent]) button {
+      background-color: transparent;
+    }
+
     /* icon shape */
     :host([shape="icon"]) button,
     :host([shape="icon-round"]) button {
-      padding: 8px;
+      padding: 7px;
+    }
+
+    /* chip shape */
+    :host([shape="chip"]) button {
+      border-radius: 60px;
+      padding-block: 2.5px;
+    }
+
+    /* justify */
+    :host([justify="center"]) button {
+      justify-content: center;
+    }
+
+    :host([justify="start"]) button {
+      justify-content: flex-start;
+    }
+
+    :host([justify="end"]) button {
+      justify-content: flex-end;
     }
   `;
 }
@@ -174,3 +225,9 @@ export type Shape =
   | 'large'
   | 'icon'
   | 'icon-round'
+  | 'chip'
+
+export type Justify =
+  | 'center'
+  | 'start'
+  | 'end'

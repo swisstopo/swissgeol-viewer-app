@@ -1,17 +1,23 @@
 import {customElement, property, query, state} from 'lit/decorators.js';
-import {LitElementI18n} from '../../i18n.js';
+import {LitElementI18n} from 'src/i18n';
 import {css, html} from 'lit';
 import i18next from 'i18next';
 import {Viewer} from 'cesium';
 import {PropertyValues} from '@lit/reactive-element';
-import LayersActions from '../../layers/LayersActions';
-import {LayerConfig, LayerTreeNode} from '../../layertree';
-import '../../layers/ngm-layers';
-import '../../layers/ngm-layers-sort';
-import MainStore from '../../store/main';
+import LayersActions from 'src/layers/LayersActions';
+import {LayerConfig, LayerTreeNode} from 'src/layertree';
+import 'src/layers/ngm-layers';
+import 'src/layers/ngm-layers-sort';
+import MainStore from '../../../store/main';
 import {Subscription} from 'rxjs';
 import {classMap} from 'lit/directives/class-map.js';
-import './upload/layer-upload';
+import '../upload/layer-upload';
+import './layer-display-list';
+import 'src/components/layer/display/layer-display-list-item';
+import {OpacityChangedEvent, VisibilityChangedEvent} from 'src/components/layer/display/layer-display-list-item';
+import type MapChooser from 'src/MapChooser';
+import {getMapOpacityParam, syncMapOpacityParam} from 'src/permalink';
+import {NodeJSAndCommonJS} from 'eslint/rules/node-commonjs';
 
 @customElement('ngm-layer-display')
 export class NgmLayerDisplay extends LitElementI18n {
@@ -35,12 +41,24 @@ export class NgmLayerDisplay extends LitElementI18n {
   @state()
   private accessor globeQueueLength = 0
 
+  accessor baseMapId = 'ch.swisstopo.pixelkarte-grau';
+
+  accessor baseMapOpacity = Math.min(Math.max(getMapOpacityParam(), 0), 1)
+
+  private mapChooser: MapChooser | null = null;
+
+  private publishTimeout: number | null = null;
+
   constructor() {
     super();
 
     this.subscription.add(MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       this.initializeViewer();
+    }));
+
+    this.subscription.add(MainStore.mapChooser.subscribe(chooser => {
+        this.mapChooser = chooser;
     }));
 
     this.handleLayerRemoval = this.handleLayerRemoval.bind(this);
@@ -123,6 +141,70 @@ export class NgmLayerDisplay extends LitElementI18n {
     return this;
   }
 
+  private handleBaseMapVisibilityChange(event: VisibilityChangedEvent): void {
+    this.updateBaseMapVisibility(event.detail.isVisible);
+  }
+
+  private updateBaseMapVisibility(isVisible: boolean): void {
+    if (this.baseMapOpacity === 0 && isVisible) {
+      return;
+    }
+    if (isVisible === this.isBaseMapVisible) {
+      return;
+    }
+    if (isVisible) {
+      this.mapChooser!.selectMap(this.baseMapId);
+      this.updateBaseMapTranslucency(this.baseMapOpacity);
+    } else {
+      this.baseMapId = this.activeBaseMapId;
+      this.mapChooser!.selectMap('empty_map');
+      this.updateBaseMapTranslucency(0);
+    }
+    this.publishState();
+  }
+
+  handleBaseMapOpacityChange(event: OpacityChangedEvent) {
+    const {opacity} = event.detail;
+    this.baseMapOpacity = opacity;
+    this.updateBaseMapVisibility(opacity > 0);
+    this.updateBaseMapTranslucency(opacity);
+  }
+
+  private updateBaseMapTranslucency(opacity: number): void {
+    const {translucency} = this.viewer!.scene.globe;
+    translucency.frontFaceAlpha = opacity;
+    if (opacity === 1) {
+        translucency.enabled = !!this.mapChooser!.selectedMap.hasAlphaChannel;
+        translucency.backFaceAlpha = 1;
+    } else {
+      translucency.backFaceAlpha = 0;
+      translucency.enabled = true;
+    }
+    this.publishState();
+  }
+
+  private get activeBaseMapId(): string {
+    return this.mapChooser!.selectedMap.id;
+  }
+
+  private get isBaseMapVisible(): boolean {
+    return this.activeBaseMapId !== 'empty_map';
+  }
+
+  private publishState(): void {
+    if (this.publishTimeout !== null) {
+      clearTimeout(this.publishTimeout);
+    }
+    this.publishTimeout = setTimeout(() => {
+      this.publishTimeout = null;
+      syncMapOpacityParam(this.baseMapOpacity);
+    }, 50) as unknown as number;
+    setTimeout(() => {
+      this.viewer!.scene.requestRender();
+    });
+    this.requestUpdate();
+  }
+
   readonly render = () => html`
     <div class="ngm-data-panel">
       <style>
@@ -145,6 +227,15 @@ export class NgmLayerDisplay extends LitElementI18n {
           </div>
         </h5>
         <ngm-map-configuration></ngm-map-configuration>
+
+        <ngm-layer-display-list-item
+          title="Karte Grau"
+          label="Hintergrund"
+          ?visible="${this.isBaseMapVisible}"
+          @visibility-changed="${this.handleBaseMapVisibilityChange}"
+          .opacity="${this.baseMapOpacity}"
+          @opacity-changed="${this.handleBaseMapOpacityChange}"
+        ></ngm-layer-display-list-item>
       </div>
     </div>
   `;

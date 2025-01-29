@@ -38,7 +38,7 @@ export class CoreTooltipBox extends LitElement {
       border-radius: 4px;
       z-index: 10;
 
-      background-color: var(--color-text--emphasis--high);
+      background-color: var(--color-text--emphasis-high);
       color: var(--color-text--invert);
 
       ${applyEffect('overlay-shadow')};

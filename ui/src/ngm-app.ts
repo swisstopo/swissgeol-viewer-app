@@ -129,13 +129,11 @@ export class NgmApp extends LitElementI18n {
   constructor() {
     super();
 
-    this.handleTrackingAllowedChanged = this.handleTrackingAllowedChanged.bind(this);
+    if (process.env.NODE_ENV !== 'development') {
+      this.openDisclaimer();
+    }
 
-    this.disclaimer = CoreModal.open({isPersistent: true, size: 'large', hasNoPadding: true}, html`
-      <ngm-tracking-consent-modal
-        @confirm="${this.handleTrackingAllowedChanged}"
-      ></ngm-tracking-consent-modal>
-    `);
+    this.handleTrackingAllowedChanged = this.handleTrackingAllowedChanged.bind(this);
 
     const boundingRect = document.body.getBoundingClientRect();
     this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
@@ -143,6 +141,14 @@ export class NgmApp extends LitElementI18n {
       const boundingRect = document.body.getBoundingClientRect();
       this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
     });
+  }
+
+  private openDisclaimer(): void {
+    this.disclaimer = CoreModal.open({isPersistent: true, size: 'large', hasNoPadding: true}, html`
+      <ngm-tracking-consent-modal
+        @confirm="${this.handleTrackingAllowedChanged}"
+      ></ngm-tracking-consent-modal>
+    `);
   }
 
   /**

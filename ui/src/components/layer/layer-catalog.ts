@@ -9,7 +9,7 @@ import '../core';
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css?raw';
 import fomanticAccordionCss from 'fomantic-ui-css/components/accordion.css?raw';
 import 'fomantic-ui-css/components/transition.js';
-import {LayerEvent} from './layer-display';
+import {LayerEvent} from './display/layer-display';
 
 
 @customElement('ngm-layer-catalog')

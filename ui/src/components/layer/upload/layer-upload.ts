@@ -8,7 +8,7 @@ import {CustomDataSource, Viewer} from 'cesium';
 import {parseKml, renderWithDelay} from '../../../cesiumutils';
 import MainStore from '../../../store/main';
 import {DEFAULT_LAYER_OPACITY, LayerConfig} from '../../../layertree';
-import {LayerEventDetails} from '../layer-display';
+import {LayerEventDetails} from '../display/layer-display';
 import {Subscription} from 'rxjs';
 import fomanticButtonCss from 'fomantic-ui-css/components/button.css?raw';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';

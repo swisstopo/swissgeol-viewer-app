@@ -48,7 +48,7 @@ import type QueryManager from '../query/QueryManager';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
-import {LayerEvent, LayersUpdateEvent} from '../components/layer/layer-display';
+import {LayerEvent, LayersUpdateEvent} from '../components/layer/display/layer-display';
 
 export type SearchLayer =
   | SearchLayerWithLayer
