@@ -265,8 +265,8 @@ export default class SlicingBox extends SlicingToolBase {
     if (!shouldNegate) {
       this.zPlanes!.forEach((plane) => {
         const p: Plane = Plane.clone(plane);
-        // @ts-ignore clippingPlanesOriginMatrix is private?
         const toLocalMatrix = Matrix4.inverse(
+          // @ts-ignore clippingPlanesOriginMatrix is private?
           primitive.clippingPlanesOriginMatrix,
           new Matrix4(),
         );
