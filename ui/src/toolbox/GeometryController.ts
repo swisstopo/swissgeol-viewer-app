@@ -1,30 +1,25 @@
 import MainStore from '../store/main';
-import {
+import ToolboxStore, {
   GeometryAction,
   GeometryCreateOptions,
   OpenedGeometryOptions,
 } from '../store/toolbox';
-import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
 import { showBannerError, showSnackbarInfo } from '../notifications';
 import i18next from 'i18next';
 import { CesiumDraw, DrawEndDetails } from '../draw/CesiumDraw';
 import {
   Cartesian2,
-  ClassificationType,
-  Event,
-  exportKmlResultKml,
-  Viewer,
-} from 'cesium';
-
-import {
   Cartographic,
+  ClassificationType,
   Color,
   CornerType,
   CustomDataSource,
   Entity,
   EntityCollection,
+  Event,
   exportKml,
+  exportKmlResultKml,
   GpxDataSource,
   HeightReference,
   JulianDate,
@@ -33,6 +28,7 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   VerticalOrigin,
+  Viewer,
 } from 'cesium';
 import type { AreasCounter, GeometryTypes, NgmGeometry } from './interfaces';
 import {
@@ -307,14 +303,14 @@ export class GeometryController {
       );
       entities = entities.slice(0, 10);
     }
-    let atLeastOneValid = false;
+    let isAtLeastOneValid = false;
     const addedEntities: Entity[] = [];
     entities.forEach((ent) => {
       const exists = this.geometriesDataSource!.entities.getById(ent.id);
       if (!exists) {
-        atLeastOneValid = this.addUploadedGeometry(ent, kmlDataSource.name);
+        isAtLeastOneValid = this.addUploadedGeometry(ent, kmlDataSource.name);
       } else {
-        atLeastOneValid = true;
+        isAtLeastOneValid = true;
         showBannerError(
           this.toastPlaceholder,
           i18next.t('tbx_kml_area_existing_warning'),
@@ -326,7 +322,7 @@ export class GeometryController {
     });
     await renderWithDelay(this.viewer!);
 
-    if (!atLeastOneValid) {
+    if (!isAtLeastOneValid) {
       showBannerError(
         this.toastPlaceholder,
         i18next.t('tbx_unsupported_kml_warning'),
@@ -337,7 +333,7 @@ export class GeometryController {
   }
 
   async uploadGpx(file) {
-    const gpxDataSource: CustomDataSource = <any> await GpxDataSource.load(
+    const gpxDataSource: CustomDataSource = <any>await GpxDataSource.load(
       file,
       {
         clampToGround: true,

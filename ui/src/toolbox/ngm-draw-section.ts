@@ -90,14 +90,17 @@ export class NgmDrawSection extends LitElementI18n {
   }
 
   render() {
-    const disabled = !!(this.draw!.active && this.draw!.entityForEdit);
+    const isDisabled = !!(this.draw!.active && this.draw!.entityForEdit);
     return html`
       <div class="ngm-draw-list">
         ${this.shownDrawTypes.map((it) => {
-          const active =
-            !disabled && this.draw!.active && it.type === this.draw!.type;
+          const isActive =
+            !isDisabled && this.draw!.active && it.type === this.draw!.type;
           return html` <div
-            class="ngm-action-list-item ${classMap({ active, disabled })}"
+            class="ngm-action-list-item ${classMap({
+              active: isActive,
+              disabled: isDisabled,
+            })}"
             @click=${() =>
               ToolboxStore.nextGeometryAction({
                 type: <GeometryTypes>it.type,
@@ -108,11 +111,11 @@ export class NgmDrawSection extends LitElementI18n {
               <div class=${it.icon}></div>
               <div>${it.label()}</div>
             </div>
-            <div ?hidden=${!active} class="ngm-hint">
+            <div ?hidden=${!isActive} class="ngm-hint">
               ${i18next.t('tbx_area_of_interest_add_hint')}
             </div>
             <ngm-line-info
-              .hidden="${!active || it.type !== 'line'}"
+              .hidden="${!isActive || it.type !== 'line'}"
               .lineInfo=${this.lineInfo}
             >
             </ngm-line-info>
@@ -120,7 +123,7 @@ export class NgmDrawSection extends LitElementI18n {
         })}
         <div
           .hidden=${!this.showUpload}
-          class="ngm-action-list-item ${classMap({ disabled })}"
+          class="ngm-action-list-item ${classMap({ disabled: isDisabled })}"
           @click=${() => clickOnElement(fileUploadInputId)}
         >
           <div class="ngm-action-list-item-header">

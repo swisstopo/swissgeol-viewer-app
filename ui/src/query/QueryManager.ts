@@ -1,13 +1,16 @@
 import ObjectSelector from './ObjectSelector';
 import SwisstopoIdentify from './SwisstopoIdentify';
-import { Cartesian2, CustomDataSource, Scene, Viewer } from 'cesium';
 import {
+  Cartesian2,
   Cartesian3,
   Cartographic,
   Color,
+  CustomDataSource,
   Entity,
   HeightReference,
+  Scene,
   ScreenSpaceEventType,
+  Viewer,
 } from 'cesium';
 import i18next from 'i18next';
 import {
@@ -132,11 +135,11 @@ export default class QueryManager {
       pickedPosition,
       object,
     );
-    const attributesEmpty =
+    const isAttributesEmpty =
       !attributes || !Object.getOwnPropertyNames(attributes).length;
 
     // we only search the remote Swisstopo service when there was no result for the local search.
-    if (attributesEmpty && pickedPosition) {
+    if (isAttributesEmpty && pickedPosition) {
       if (object) {
         // the clicked object was not pickable, stop here
         return;

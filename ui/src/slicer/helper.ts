@@ -1,12 +1,13 @@
+import type { Cesium3DTileset, Quaternion } from 'cesium';
 import {
-  Cartographic,
-  Matrix4,
   Cartesian3,
-  Rectangle,
+  Cartographic,
   ClippingPlane,
   ClippingPlaneCollection,
   HeadingPitchRoll,
+  Matrix4,
   Plane,
+  Rectangle,
   Transforms,
 } from 'cesium';
 import {
@@ -20,7 +21,6 @@ import {
   SLICING_BOX_MIN_SIZE,
 } from '../constants';
 import { getPercent, interpolateBetweenNumbers } from '../utils';
-import type { Quaternion, Cesium3DTileset } from 'cesium';
 import { rectanglify } from '../draw/helpers';
 
 export interface BBox {
@@ -368,7 +368,7 @@ export function moveSlicingBoxCorners(
   oppositePlane: Plane,
   moveVector: Cartesian3,
 ): boolean {
-  let bothSideMove = false;
+  let shouldBothSidesMove = false;
   Cartesian3.add(position1, moveVector, position1);
   Cartesian3.add(position2, moveVector, position2);
   const newDistance = Cartesian3.distance(position1, oppositePosition1);
@@ -376,9 +376,9 @@ export function moveSlicingBoxCorners(
   if (direction < 0 || newDistance < SLICING_BOX_MIN_SIZE) {
     Cartesian3.add(oppositePosition1, moveVector, oppositePosition1);
     Cartesian3.add(oppositePosition2, moveVector, oppositePosition2);
-    bothSideMove = true;
+    shouldBothSidesMove = true;
   }
-  return bothSideMove;
+  return shouldBothSidesMove;
 }
 
 export function calculateBoxHeight(height, lowerLimit, area, altitude?) {

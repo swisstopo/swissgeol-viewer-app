@@ -64,13 +64,13 @@ function checkForOverlap(target): DOMRect[] {
     .forEach((elem) => {
       if (!elem.hidden && elem !== target) {
         const checkRect = elem.getBoundingClientRect();
-        const overlapH = !(
+        const doesOverlapH = !(
           targetRect.right < checkRect.left || targetRect.left > checkRect.right
         );
-        const overlapV = !(
+        const doesOverlapV = !(
           targetRect.bottom < checkRect.top || targetRect.top > checkRect.bottom
         );
-        if (overlapH && overlapV) overlapList.push(checkRect);
+        if (doesOverlapH && doesOverlapV) overlapList.push(checkRect);
       }
     });
   return overlapList;
@@ -158,15 +158,15 @@ function repositionOnOpen(target) {
       const parentRect = target.parentElement!.getBoundingClientRect();
       const targetRect = target.getBoundingClientRect();
       // starts moving the window to the left if enough space or to the right otherwise
-      const moveLeft =
+      const shouldMoveLeft =
         targetRect.left - parentRect.left >
         targetRect.width + MARGIN_BETWEEN_WINDOWS;
       // moves in the first side
-      moveWindow(target, moveLeft);
+      moveWindow(target, shouldMoveLeft);
       overlapList = checkForOverlap(target);
       if (!overlapList.length) return;
       // moves in another side if still overlap
-      moveWindow(target, !moveLeft);
+      moveWindow(target, !shouldMoveLeft);
     }
   });
   observer.observe(target, { attributes: true });

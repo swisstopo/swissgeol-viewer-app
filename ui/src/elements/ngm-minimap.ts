@@ -1,12 +1,12 @@
 import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { Rectangle, Math as CesiumMath, Cartesian3 } from 'cesium';
+import type { Event, Viewer } from 'cesium';
+import { Cartesian3, Math as CesiumMath, Rectangle } from 'cesium';
 import { styleMap } from 'lit/directives/style-map.js';
 import { MINIMAP_EXTENT } from '../constants';
 import { LitElementI18n } from '../i18n';
 import NavToolsStore from '../store/navTools';
 import type { Interactable } from '@interactjs/types';
-import type { Event, Viewer } from 'cesium';
 import { classMap } from 'lit/directives/class-map.js';
 
 const west = CesiumMath.toRadians(MINIMAP_EXTENT[0]);
@@ -105,7 +105,7 @@ export class NgmMinimap extends LitElementI18n {
       (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
     this.heading = this.viewer.scene.camera.heading - 1.57;
 
-    const nadirView =
+    const isNadirView =
       CesiumMath.equalsEpsilon(
         this.viewer.scene.camera.pitch,
         -CesiumMath.PI_OVER_TWO,
@@ -116,7 +116,7 @@ export class NgmMinimap extends LitElementI18n {
         CesiumMath.PI_OVER_TWO,
         CesiumMath.EPSILON1,
       );
-    if (this.nadirViewActive !== !nadirView) {
+    if (this.nadirViewActive !== !isNadirView) {
       this.toggleNadirStatus();
     }
   }

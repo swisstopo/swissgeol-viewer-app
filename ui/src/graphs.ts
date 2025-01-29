@@ -81,19 +81,19 @@ export function plotProfile(
     const textN = g
       .append('text')
       .text(`N: ${integerFormat.format(val.position[1])}`);
-    const lastPoint = indx === extremePoints.length - 1;
-    if (lastPoint) {
+    const isLastPoint = indx === extremePoints.length - 1;
+    if (isLastPoint) {
       textE.attr('text-anchor', 'end');
       textN.attr('text-anchor', 'end');
     }
     const textLeftMrg = 2;
     textE.attr(
       'transform',
-      `translate(${lastPoint ? -textLeftMrg : textLeftMrg}, 2)`,
+      `translate(${isLastPoint ? -textLeftMrg : textLeftMrg}, 2)`,
     );
     textN.attr(
       'transform',
-      `translate(${lastPoint ? -textLeftMrg : textLeftMrg}, 17)`,
+      `translate(${isLastPoint ? -textLeftMrg : textLeftMrg}, 17)`,
     );
   });
 

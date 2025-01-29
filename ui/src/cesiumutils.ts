@@ -479,7 +479,7 @@ export function pointInPolygon(
   point: Cartographic,
   polygonPositions: Cartographic[],
 ): boolean {
-  let inside = false;
+  let isInside = false;
   for (
     let i = 0, j = polygonPositions.length - 1;
     i < polygonPositions.length;
@@ -490,13 +490,13 @@ export function pointInPolygon(
     const xj = polygonPositions[j].longitude,
       yj = polygonPositions[j].latitude;
 
-    const intersect =
+    const isIntersecting =
       yi > point.latitude !== yj > point.latitude &&
       point.longitude < ((xj - xi) * (point.latitude - yi)) / (yj - yi) + xi;
-    if (intersect) inside = !inside;
+    if (isIntersecting) isInside = !isInside;
   }
 
-  return inside;
+  return isInside;
 }
 
 /**

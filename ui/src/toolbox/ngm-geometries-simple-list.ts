@@ -1,7 +1,7 @@
 import { LitElementI18n } from '../i18n';
 import type { PropertyValues, TemplateResult } from 'lit';
 import { html } from 'lit';
-import { customElement, property, state, query } from 'lit/decorators.js';
+import { customElement, property, query, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import ToolboxStore from '../store/toolbox';
 import { classMap } from 'lit-html/directives/class-map.js';
@@ -298,22 +298,22 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
             </div>
             <div class="ngm-geom-list">
                 ${geometries.map((geom, index) => {
-                  const disabled =
+                  const isDisabled =
                     (this.disabledCallback && this.disabledCallback(geom)) ||
                     this.disabledTypes.includes(geom.type) ||
                     this.editingEnabled;
-                  const active = !disabled && this.selectedId === geom.id;
-                  const hidden =
-                    !disabled &&
-                    !active &&
+                  const isActive = !isDisabled && this.selectedId === geom.id;
+                  const isHidden =
+                    !isDisabled &&
+                    !isActive &&
                     !geom.show &&
                     geom.id !== ToolboxStore.sliceGeomId;
                   return html`
                     <div
                       class="ngm-action-list-item ngm-geom-item ${classMap({
-                        active,
-                        disabled,
-                        hidden,
+                        active: isActive,
+                        disabled: isDisabled,
+                        hidden: isHidden,
                       })}"
                     >
                       <div
@@ -321,7 +321,7 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                           view: this.viewMode,
                         })}"
                       >
-                        ${this.geometryNameTemplate(geom, index, disabled)}
+                        ${this.geometryNameTemplate(geom, index, isDisabled)}
                         ${this.viewMode
                           ? ''
                           : html` <div
@@ -332,7 +332,7 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                             </div>`}
                       </div>
                       ${this.optionsTemplate
-                        ? this.optionsTemplate(geom, active)
+                        ? this.optionsTemplate(geom, isActive)
                         : ''}
                     </div>
                   `;

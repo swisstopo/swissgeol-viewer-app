@@ -98,12 +98,12 @@ export class NgmSlicer extends LitElementI18n {
 
   toggleSlicer(type?, info?, force?) {
     if (!this.slicer) return;
-    const active = this.slicer.active;
-    const sliceOptionChanged = this.slicingType !== type;
+    const isActive = this.slicer.active;
+    const hasSliceOptionChanged = this.slicingType !== type;
     this.slicer.active = false;
     ToolboxStore.setSliceGeometry(null);
     if (!type) return;
-    if (force || !active || sliceOptionChanged) {
+    if (force || !isActive || hasSliceOptionChanged) {
       this.slicer.sliceOptions = {
         type: type,
         showBox: this.showBox,
@@ -135,8 +135,8 @@ export class NgmSlicer extends LitElementI18n {
 
   toggleGeomSlicer(geom: NgmGeometry | null | undefined) {
     if (!this.slicer) return;
-    const active = this.slicer.active;
-    if (geom && (!active || (active && this.sliceGeomId !== geom.id))) {
+    const isActive = this.slicer.active;
+    if (geom && (!isActive || (isActive && this.sliceGeomId !== geom.id))) {
       this.slicer.active = false;
       if (geom.type === 'line') {
         this.slicer.sliceOptions = {

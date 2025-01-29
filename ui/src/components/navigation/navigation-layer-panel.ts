@@ -54,6 +54,17 @@ export class NavigationLayerPanel extends LitElementI18n {
       }) satisfies LayerEvent,
     );
   }
+  private handleDisplayLayerClick(e: LayerEvent): void {
+    this.dispatchEvent(
+      new CustomEvent('display-layer-click', {
+        detail: e.detail,
+      }) satisfies LayerEvent,
+    );
+  }
+  // TODO Make all children of this component use the Shadow DOM so we can remove this.
+  createRenderRoot() {
+    return this;
+  }
   readonly render = () => html`
     <style>
       ${unsafeCSS(NavigationLayerPanel.styles.cssText)}
@@ -80,19 +91,6 @@ export class NavigationLayerPanel extends LitElementI18n {
       @layer-click="${this.handleDisplayLayerClick}"
     ></ngm-layer-display>
   `;
-
-  private handleDisplayLayerClick(e: LayerEvent): void {
-    this.dispatchEvent(
-      new CustomEvent('display-layer-click', {
-        detail: e.detail,
-      }) satisfies LayerEvent,
-    );
-  }
-
-  // TODO Make all children of this component use the Shadow DOM so we can remove this.
-  createRenderRoot() {
-    return this;
-  }
 
   static readonly styles = css`
     ngm-navigation-layer-panel,

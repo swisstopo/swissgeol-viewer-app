@@ -88,14 +88,14 @@ export default class KeyboardNavigation {
   }
 
   hasKeyDown_() {
-    let pressed = false;
+    let isPressed = false;
     for (const key in this.flags_) {
       const flag = this.flags_[key];
       if (typeof flag === 'boolean') {
-        pressed |= flag;
+        isPressed |= flag;
       }
     }
-    return pressed;
+    return isPressed;
   }
 
   cancel_() {
@@ -109,13 +109,13 @@ export default class KeyboardNavigation {
    */
   onKey_(event) {
     if (targetNotEditable(event.target)) {
-      const pressed = event.type === 'keydown';
-      if (pressed && event.ctrlKey) {
+      const isPressed = event.type === 'keydown';
+      if (isPressed && event.ctrlKey) {
         // don't mess with the browser keyboard shortcut
         return;
       }
       // make sure we still have at least one pressed key
-      this.pressedKeys_[event.code] = pressed;
+      this.pressedKeys_[event.code] = isPressed;
       if (!Object.values(this.pressedKeys_).some((pressed) => pressed)) {
         this.cancel_();
       }
@@ -128,37 +128,37 @@ export default class KeyboardNavigation {
         this.flags_.acceleration = this.slowFactor_;
       }
       if (this.moveUpKeys_.includes(key)) {
-        this.flags_.moveUp = pressed;
+        this.flags_.moveUp = isPressed;
       } else if (this.moveDownKeys_.includes(key)) {
-        this.flags_.moveDown = pressed;
+        this.flags_.moveDown = isPressed;
       } else if (this.moveForwardKeys_.includes(key)) {
-        this.flags_.moveForward = pressed;
-        hideTargetPoint = pressed;
+        this.flags_.moveForward = isPressed;
+        hideTargetPoint = isPressed;
       } else if (this.moveBackwardKeys_.includes(key)) {
-        this.flags_.moveBackward = pressed;
-        hideTargetPoint = pressed;
+        this.flags_.moveBackward = isPressed;
+        hideTargetPoint = isPressed;
       } else if (this.moveLeftKeys_.includes(key)) {
-        this.flags_.moveLeft = pressed;
-        hideTargetPoint = pressed;
+        this.flags_.moveLeft = isPressed;
+        hideTargetPoint = isPressed;
       } else if (this.moveRightKeys_.includes(key)) {
-        this.flags_.moveRight = pressed;
-        hideTargetPoint = pressed;
+        this.flags_.moveRight = isPressed;
+        hideTargetPoint = isPressed;
       } else if (this.lookUpKeys_.includes(key)) {
-        this.flags_.lookUp = pressed;
-        hideTargetPoint = pressed;
+        this.flags_.lookUp = isPressed;
+        hideTargetPoint = isPressed;
       } else if (this.lookDownKeys_.includes(key)) {
-        this.flags_.lookDown = pressed;
-        hideTargetPoint = pressed;
+        this.flags_.lookDown = isPressed;
+        hideTargetPoint = isPressed;
       } else if (this.lookLeftKeys_.includes(key)) {
-        this.flags_.lookLeft = pressed;
-        hideTargetPoint = pressed;
+        this.flags_.lookLeft = isPressed;
+        hideTargetPoint = isPressed;
       } else if (this.lookRightKeys_.includes(key)) {
-        this.flags_.lookRight = pressed;
-        hideTargetPoint = pressed;
+        this.flags_.lookRight = isPressed;
+        hideTargetPoint = isPressed;
       } else if (this.zoomInKeys_.includes(key)) {
-        this.flags_.zoomIn = pressed;
+        this.flags_.zoomIn = isPressed;
       } else if (this.zoomOutKeys_.includes(key)) {
-        this.flags_.zoomOut = pressed;
+        this.flags_.zoomOut = isPressed;
       } else if (this.cancelKeys_.includes(key)) {
         this.cancel_();
       }

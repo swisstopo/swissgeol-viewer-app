@@ -226,7 +226,7 @@ export class CesiumDraw extends EventTarget {
     );
     const position = this.entityForEdit.position?.getValue(this.julianDate);
     let positions: Cartesian3[] = [];
-    let createVirtualSPs = false;
+    let shouldCreateVirtualSPs = false;
     switch (this.type) {
       case 'point':
         this.entityForEdit.position = <any>(
@@ -241,7 +241,7 @@ export class CesiumDraw extends EventTarget {
           () => this.activePoints_,
           false,
         );
-        createVirtualSPs = true;
+        shouldCreateVirtualSPs = true;
         break;
       case 'polygon':
         positions = [
@@ -252,7 +252,7 @@ export class CesiumDraw extends EventTarget {
           () => new PolygonHierarchy(this.activePoints_),
           false,
         );
-        createVirtualSPs = true;
+        shouldCreateVirtualSPs = true;
         break;
       case 'rectangle':
         positions = [
@@ -264,7 +264,7 @@ export class CesiumDraw extends EventTarget {
           false,
         );
         this.drawingDataSource.entities.add({
-          position: <any> new CallbackProperty(() => {
+          position: <any>new CallbackProperty(() => {
             positions = this.activePoints_.length
               ? this.activePoints_
               : positions;
@@ -296,7 +296,7 @@ export class CesiumDraw extends EventTarget {
       });
       sketchPoint.properties!.index = idx;
       this.sketchPoints_.push(sketchPoint);
-      if (createVirtualSPs && idx + 1 < positions.length) {
+      if (shouldCreateVirtualSPs && idx + 1 < positions.length) {
         const p2 = this.halfwayPosition_(p, positions[idx + 1]);
         const virtualSketchPoint = this.createSketchPoint_(p2, {
           edit: true,
@@ -533,17 +533,17 @@ export class CesiumDraw extends EventTarget {
         const b = positions[1]; //according to rectanglify
         const bp = positions[2];
         distance = Cartesian3.distance(b, bp);
-        (<ConstantPositionProperty> this.sketchPoint_.position).setValue(bp);
+        (<ConstantPositionProperty>this.sketchPoint_.position).setValue(bp);
       } else {
         const lastPoint = positions[pointsLength - 1];
         distance = Cartesian3.distance(positions[pointsLength - 2], lastPoint);
-        (<ConstantPositionProperty> this.sketchPoint_.position).setValue(
+        (<ConstantPositionProperty>this.sketchPoint_.position).setValue(
           lastPoint,
         );
       }
       this.activeDistance_ = distance / 1000;
       const value = `${this.activeDistance_.toFixed(3)}km`;
-      (<ConstantProperty> this.sketchPoint_.label!.text).setValue(value);
+      (<ConstantProperty>this.sketchPoint_.label!.text).setValue(value);
       this.dispatchEvent(
         new CustomEvent<DrawInfo>('drawinfo', {
           detail: {
@@ -560,7 +560,7 @@ export class CesiumDraw extends EventTarget {
       );
       return;
     }
-    (<ConstantProperty> this.sketchPoint_.label!.text).setValue('0km');
+    (<ConstantProperty>this.sketchPoint_.label!.text).setValue('0km');
     this.dispatchEvent(
       new CustomEvent<DrawInfo>('drawinfo', {
         detail: {
@@ -597,13 +597,13 @@ export class CesiumDraw extends EventTarget {
       }
       this.activePoints_.push(Cartesian3.clone(this.activePoint_!));
       this.segmentsInfo = this.getSegmentsInfo();
-      const forceFinish =
+      const shouldForceFinish =
         this.minPointsStop &&
         ((this.type === 'polygon' && this.activePoints_.length === 3) ||
           (this.type === 'line' && this.activePoints_.length === 2));
       if (
         (this.type === 'rectangle' && this.activePoints_.length === 3) ||
-        forceFinish
+        shouldForceFinish
       ) {
         this.finishDrawing();
       } else if (this.type === 'line') {
@@ -1041,11 +1041,11 @@ export class CesiumDraw extends EventTarget {
         const pressedIdx = this.sketchPoint_.properties!.index;
         const pressedIdx2 = pressedIdx * 2;
         const isLine = this.type === 'line';
-        const firstPointClicked = isLine && pressedIdx === 0;
-        const lastPointClicked =
+        const wasFirstPointClicked = isLine && pressedIdx === 0;
+        const wasLastPointClicked =
           isLine && pressedIdx2 === this.sketchPoints_.length - 1;
 
-        if (!firstPointClicked && !lastPointClicked) {
+        if (!wasFirstPointClicked && !wasLastPointClicked) {
           // Move previous virtual SP in the middle of preRealSP and nextRealSP
           const prevRealSPIndex2 =
             (this.sketchPoints_.length + pressedIdx2 - 2) %
@@ -1060,7 +1060,7 @@ export class CesiumDraw extends EventTarget {
         }
 
         let removedSPs;
-        if (lastPointClicked) {
+        if (wasLastPointClicked) {
           // remove 2 SPs backward
           removedSPs = this.sketchPoints_.splice(pressedIdx2 - 1, 2);
         } else {

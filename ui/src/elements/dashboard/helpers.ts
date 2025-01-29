@@ -11,11 +11,11 @@ export function isProject(
 export function isProjectOwnerOrEditor(
   projectOrTopic: Project | Topic,
 ): boolean {
-  const owner =
+  const isOwner =
     isProject(projectOrTopic) &&
     projectOrTopic.owner.email === AuthStore.userEmail;
-  const editor =
+  const isEditor =
     isProject(projectOrTopic) &&
     !!projectOrTopic.editors?.find((e) => e.email === AuthStore.userEmail);
-  return owner || editor;
+  return isOwner || isEditor;
 }

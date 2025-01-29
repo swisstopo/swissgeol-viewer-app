@@ -67,7 +67,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       ? `url('${this.topicOrProject.image}')`
       : 'none';
     const editorEmails = project?.editors?.map((m) => m.email) || [];
-    const projectModerator = [ownerEmail, ...editorEmails].includes(
+    const isProjectModerator = [ownerEmail, ...editorEmails].includes(
       this.userEmail,
     );
 
@@ -87,7 +87,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
           <div class="project-menu">
             <div
               class="edit-project"
-              ?hidden=${this.activeTab === 'topics' || !projectModerator}
+              ?hidden=${this.activeTab === 'topics' || !isProjectModerator}
               @click=${() => this.dispatchEvent(new CustomEvent('onEdit'))}
             >
               ${i18next.t('edit_project')}
@@ -314,14 +314,14 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     };
     if (typeof this.selectedViewIndx !== 'number') {
       project.views.push(view);
-      const success = await this.apiClient.updateProject(project);
-      if (success) {
+      const isSuccess = await this.apiClient.updateProject(project);
+      if (isSuccess) {
         DashboardStore.setViewIndex(project?.views.length - 1);
       }
     } else {
       project.views.splice(this.selectedViewIndx + 1, 0, view);
-      const success = await this.apiClient.updateProject(project);
-      if (success) {
+      const isSuccess = await this.apiClient.updateProject(project);
+      if (isSuccess) {
         DashboardStore.setViewIndex(this.selectedViewIndx + 1);
       }
     }

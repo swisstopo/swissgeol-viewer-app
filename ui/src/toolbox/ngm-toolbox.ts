@@ -178,11 +178,11 @@ export class NgmToolbox extends LitElementI18n {
         if (!this.geometryController || !this.geometryControllerNoEdit) return;
         const geometries =
           DashboardStore.selectedTopicOrProject.value?.geometries || [];
-        const currentModeEdit =
+        const isCurrentModeEdit =
           currentMode === 'edit' || currentMode === 'viewEdit';
-        const prevModeEdit =
+        const isPreviousModeEdit =
           previousMode === 'edit' || previousMode === 'viewEdit';
-        if (currentModeEdit) {
+        if (isCurrentModeEdit) {
           this.geometryController!.setGeometries(geometries);
           this.geometryControllerNoEdit.setGeometries([]);
         } else if (currentMode === 'viewOnly') {
@@ -190,7 +190,7 @@ export class NgmToolbox extends LitElementI18n {
         } else {
           this.geometryControllerNoEdit.setGeometries([]);
         }
-        if (!currentModeEdit && prevModeEdit) {
+        if (!isCurrentModeEdit && isPreviousModeEdit) {
           this.geometryController.setGeometries(
             LocalStorageController.getStoredAoi(),
           );

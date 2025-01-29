@@ -80,7 +80,7 @@ export default class NgmGeometriesList extends LitElementI18n {
 
   render() {
     const projectMode = DashboardStore.projectMode.value;
-    const projectEditMode =
+    const isProjectEditMode =
       projectMode === 'viewEdit' || projectMode === 'edit';
     const selectedProject = DashboardStore.selectedTopicOrProject.value;
     return html` <ngm-geometries-simple-list
@@ -101,7 +101,7 @@ export default class NgmGeometriesList extends LitElementI18n {
       <ngm-geometries-simple-list
         .geometries=${this.geometries}
         .selectedId=${this.selectedId}
-        .listTitle="${projectEditMode
+        .listTitle="${isProjectEditMode
           ? `${selectedProject?.title} ${i18next.t('tbx_project_geometries')}`
           : i18next.t('tbx_my_geometries')}"
         .optionsTemplate=${this.optionsTemplate}

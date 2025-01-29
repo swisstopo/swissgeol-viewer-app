@@ -3,11 +3,11 @@ import { customElement, property, query, state } from 'lit/decorators.js';
 import { html } from 'lit';
 import type { ConstantProperty, Event, Viewer } from 'cesium';
 import {
-  Entity,
-  PropertyBag,
-  Math as CesiumMath,
-  JulianDate,
   CustomDataSource,
+  Entity,
+  JulianDate,
+  Math as CesiumMath,
+  PropertyBag,
 } from 'cesium';
 import i18next from 'i18next';
 import MainStore from '../store/main';
@@ -178,8 +178,8 @@ export class NgmGeometryEdit extends LitElementI18n {
   lowerLimitInputValidation() {
     const lowerLimit =
       this.editingEntity!.properties!.volumeHeightLimits.getValue().lowerLimit;
-    const validationTest = /^-?(0|[1-9]\d*)(\.\d+)?$/.test(lowerLimit);
-    this.validLowerLimit = validationTest;
+    const isValid = /^-?(0|[1-9]\d*)(\.\d+)?$/.test(lowerLimit);
+    this.validLowerLimit = isValid;
   }
 
   onPropChange(evt, propName) {
@@ -212,13 +212,13 @@ export class NgmGeometryEdit extends LitElementI18n {
         const positions = this.editingEntity.polyline!.positions?.getValue(
           this.julianDate,
         );
-        (<ConstantProperty> this.entity.polyline.positions).setValue(positions);
+        (<ConstantProperty>this.entity.polyline.positions).setValue(positions);
         this.entity.polyline.material = this.editingEntity.polyline!.material;
       } else if (this.entity.polygon) {
         const hierarchy = this.editingEntity.polygon!.hierarchy?.getValue(
           this.julianDate,
         );
-        (<ConstantProperty> this.entity.polygon.hierarchy).setValue(hierarchy);
+        (<ConstantProperty>this.entity.polygon.hierarchy).setValue(hierarchy);
         this.entity.polygon.material = this.editingEntity.polygon!.material;
       }
       if (
@@ -287,7 +287,7 @@ export class NgmGeometryEdit extends LitElementI18n {
   onSymbolChange(image) {
     if (!this.editingEntity || !this.editingEntity.billboard) return;
     this.selectedSymbol = `/images/${image}`;
-    this.editingEntity.billboard.image = <any> this.selectedSymbol;
+    this.editingEntity.billboard.image = <any>this.selectedSymbol;
     this.viewer!.scene.requestRender();
   }
 

@@ -1,12 +1,13 @@
+import type { Cesium3DTileset, DataSource, Entity, Viewer } from 'cesium';
 import {
+  CallbackProperty,
   Cartesian2,
   Cartesian3,
   Cartographic,
+  CornerType,
+  JulianDate,
   Matrix4,
   Plane,
-  JulianDate,
-  CallbackProperty,
-  CornerType,
   VoxelPrimitive,
 } from 'cesium';
 import { executeForAllPrimitives } from '../utils';
@@ -33,7 +34,6 @@ import {
   updateHeightForCartesianPositions,
 } from '../cesiumutils';
 import SlicingToolBase from './SlicingToolBase';
-import type { Entity, Viewer, DataSource, Cesium3DTileset } from 'cesium';
 
 export interface SlicingBoxOptions {
   type: 'box' | 'view-box' | undefined;
@@ -245,7 +245,7 @@ export default class SlicingBox extends SlicingToolBase {
     const clippingPlanes = primitive.clippingPlanes;
     if (!clippingPlanes || !primitive.root) return;
     clippingPlanes.removeAll();
-    const negate = this.options!.negate;
+    const shouldNegate = this.options!.negate;
     let modelMatrix: Matrix4;
     if (Matrix4.equals(primitive.root.transform, Matrix4.IDENTITY)) {
       modelMatrix = createCPCModelMatrixFromSphere(primitive);
@@ -256,13 +256,13 @@ export default class SlicingBox extends SlicingToolBase {
       const plane = planeFromTwoPoints(positions[0], positions[1], false);
       const p: Plane = Plane.clone(plane);
       Plane.transform(p, modelMatrix, p);
-      if (negate) {
+      if (shouldNegate) {
         Cartesian3.negate(p.normal, p.normal);
         p.distance *= -1;
       }
       clippingPlanes.add(p);
     });
-    if (!negate) {
+    if (!shouldNegate) {
       this.zPlanes!.forEach((plane) => {
         const p: Plane = Plane.clone(plane);
         // @ts-ignore clippingPlanesOriginMatrix is private?
@@ -282,11 +282,11 @@ export default class SlicingBox extends SlicingToolBase {
 
   onPlaneMove(side, moveAmount, moveVector) {
     const bbox = this.bbox!;
-    let bothSideMove = false;
+    let shouldBothSidesMove = false;
     const corners = bbox!.corners;
     switch (side) {
       case 'left': {
-        bothSideMove = moveSlicingBoxCorners(
+        shouldBothSidesMove = moveSlicingBoxCorners(
           corners.topLeft,
           corners.bottomLeft,
           corners.topRight,
@@ -297,7 +297,7 @@ export default class SlicingBox extends SlicingToolBase {
         break;
       }
       case 'right': {
-        bothSideMove = moveSlicingBoxCorners(
+        shouldBothSidesMove = moveSlicingBoxCorners(
           corners.topRight,
           corners.bottomRight,
           corners.topLeft,
@@ -308,7 +308,7 @@ export default class SlicingBox extends SlicingToolBase {
         break;
       }
       case 'front': {
-        bothSideMove = moveSlicingBoxCorners(
+        shouldBothSidesMove = moveSlicingBoxCorners(
           corners.topLeft,
           corners.topRight,
           corners.bottomLeft,
@@ -319,7 +319,7 @@ export default class SlicingBox extends SlicingToolBase {
         break;
       }
       case 'back': {
-        bothSideMove = moveSlicingBoxCorners(
+        shouldBothSidesMove = moveSlicingBoxCorners(
           corners.bottomLeft,
           corners.bottomRight,
           corners.topLeft,
@@ -337,7 +337,7 @@ export default class SlicingBox extends SlicingToolBase {
           side === 'down'
             ? (this.upPlane!.distance -= moveAmount)
             : (this.downPlane!.distance += moveAmount);
-          bothSideMove = true;
+          shouldBothSidesMove = true;
         }
         bbox.height =
           boxHeight < SLICING_BOX_MIN_SIZE ? SLICING_BOX_MIN_SIZE : boxHeight;
@@ -357,7 +357,7 @@ export default class SlicingBox extends SlicingToolBase {
     );
     bbox.width = Cartesian3.distance(corners.topLeft, corners.bottomLeft);
     bbox.length = Cartesian3.distance(corners.bottomRight, corners.bottomLeft);
-    if (!bothSideMove) {
+    if (!shouldBothSidesMove) {
       Cartesian3.divideByScalar(moveVector, 2, moveVector);
     }
     Cartesian3.add(this.boxCenter!, moveVector, this.boxCenter!);

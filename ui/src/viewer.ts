@@ -6,7 +6,6 @@ import KeyboardNavigation from './KeyboardNavigation.js';
 import MapChooser from './MapChooser';
 import { addSwisstopoLayer } from './swisstopoImagery';
 
-import { ImageryLayer, WebGLOptions } from 'cesium';
 import {
   CameraEventType,
   Cartesian3,
@@ -16,6 +15,7 @@ import {
   Color,
   DirectionalLight,
   Ellipsoid,
+  ImageryLayer,
   Ion,
   IonResource,
   JulianDate,
@@ -29,6 +29,7 @@ import {
   SunLight,
   Transforms,
   Viewer,
+  WebGLOptions,
 } from 'cesium';
 import MainStore from './store/main';
 import { getExaggeration } from './permalink';
@@ -48,7 +49,7 @@ Object.assign(RequestScheduler.requestsByServer, {
   'vectortiles0.geo.admin.ch:443': 18,
 });
 
-let noLimit = false;
+let hasNoLimit = false;
 
 const FOG_FRAGMENT_SHADER_SOURCE = `
   float getDistance(sampler2D depthTexture, vec2 texCoords) {
@@ -104,7 +105,7 @@ export async function setupViewer(
 
   const zExaggeration = getExaggeration();
   if (searchParams.get('noLimit') === 'true') {
-    noLimit = true;
+    hasNoLimit = true;
   }
 
   let terrainUrl;
@@ -126,7 +127,7 @@ export async function setupViewer(
       terrainUrl = 'https://3d.geo.admin.ch/ch.swisstopo.terrain.3d/v1/';
   }
 
-  const requestRenderMode = !searchParams.has('norequestrendermode');
+  const shouldRequestRenderMode = !searchParams.has('norequestrendermode');
   const terrainProvider = searchParams.has('noterrain')
     ? undefined
     : await CesiumTerrainProvider.fromUrl(terrainUrl);
@@ -157,7 +158,7 @@ export async function setupViewer(
     baseLayer: false,
     useBrowserRecommendedResolution: true,
     terrainProvider: terrainProvider,
-    requestRenderMode: requestRenderMode,
+    requestRenderMode: shouldRequestRenderMode,
     // maximumRenderTimeChange: 10,
   });
 
@@ -222,7 +223,7 @@ export async function setupViewer(
   }
 
   // Limit the volume inside which the user can navigate
-  if (!noLimit) {
+  if (!hasNoLimit) {
     new NavigableVolumeLimiter(scene, SWITZERLAND_RECTANGLE, 193, (height) =>
       height > 3000 ? 9 : 3,
     );
@@ -257,14 +258,14 @@ export async function setupViewer(
     fog.enabled = scene.cameraUnderground;
   });
 
-  const enableWireframe = searchParams.has('inspector_wireframe');
-  if (searchParams.has('inspector') || enableWireframe) {
+  const shouldEnableWireframe = searchParams.has('inspector_wireframe');
+  if (searchParams.has('inspector') || shouldEnableWireframe) {
     const div = document.createElement('div');
     div.id = 'divinspector';
     document.body.appendChild(div);
     const inspector = new CesiumInspector('divinspector', scene);
     window['cesiumInspector'] = inspector;
-    if (enableWireframe) {
+    if (shouldEnableWireframe) {
       inspector.viewModel.wireframe = true;
     }
   }
@@ -338,7 +339,7 @@ export function addMantelEllipsoid(viewer: Viewer) {
     },
   });
 
-  if (!noLimit) {
+  if (!hasNoLimit) {
     new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
   }
 
@@ -350,27 +351,27 @@ export function addMantelEllipsoid(viewer: Viewer) {
   mantelRadiiAboveTerrain.y -= mantelDepthAboveTerrain;
   mantelRadiiAboveTerrain.z -= mantelDepthAboveTerrain;
 
-  let usedUndergroundValue = !viewer.scene.cameraUnderground;
+  let hasUsedUndergroundValue = !viewer.scene.cameraUnderground;
   viewer.scene.postRender.addEventListener((scene) => {
     if (!entity.ellipsoid) return;
-    const voxelVisible = MainStore.visibleVoxelLayers.length > 0;
+    const isVoxelVisible = MainStore.visibleVoxelLayers.length > 0;
     const exaggeration = getExaggeration();
-    if ((exaggeration > 1 || voxelVisible) && entity.isShowing) {
+    if ((exaggeration > 1 || isVoxelVisible) && entity.isShowing) {
       entity.show = false;
       viewer.scene.requestRender();
-    } else if (exaggeration === 1 && !voxelVisible && !entity.isShowing) {
+    } else if (exaggeration === 1 && !isVoxelVisible && !entity.isShowing) {
       entity.show = true;
       viewer.scene.requestRender();
     }
-    if (scene.cameraUnderground && !usedUndergroundValue) {
+    if (scene.cameraUnderground && !hasUsedUndergroundValue) {
       (<any>entity.ellipsoid.radii) = mantelRadii;
-      usedUndergroundValue = true;
+      hasUsedUndergroundValue = true;
       if (!Color.equals(scene.backgroundColor, Color.TRANSPARENT))
         scene.backgroundColor = Color.TRANSPARENT;
-    } else if (!scene.cameraUnderground && usedUndergroundValue) {
+    } else if (!scene.cameraUnderground && hasUsedUndergroundValue) {
       (<any>entity.ellipsoid.radii) = mantelRadiiAboveTerrain;
-      usedUndergroundValue = false;
-      if (voxelVisible && !Color.equals(scene.backgroundColor, MANTEL_COLOR))
+      hasUsedUndergroundValue = false;
+      if (isVoxelVisible && !Color.equals(scene.backgroundColor, MANTEL_COLOR))
         scene.backgroundColor = MANTEL_COLOR;
     }
   });

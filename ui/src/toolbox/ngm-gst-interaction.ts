@@ -5,19 +5,19 @@ import { borehole, horizontalCrossSection, verticalCrossSection } from '../gst';
 import { showSnackbarError, showSnackbarInfo } from '../notifications';
 import i18next from 'i18next';
 import { LitElementI18n } from '../i18n.js';
+import type { Viewer } from 'cesium';
 import {
-  IonResource,
-  Color,
-  KmlDataSource,
   Cartographic,
+  Color,
+  IonResource,
   JulianDate,
+  KmlDataSource,
 } from 'cesium';
 import './ngm-gst-modal';
 import '../elements/ngm-i18n-content.js';
 import $ from 'jquery';
 import 'fomantic-ui-css/components/popup.js';
 import MainStore from '../store/main';
-import type { Viewer } from 'cesium';
 import type { NgmToolbox } from './ngm-toolbox';
 import { classMap } from 'lit-html/directives/class-map.js';
 import ToolboxStore from '../store/toolbox';
@@ -134,7 +134,7 @@ export class NgmGstInteraction extends LitElementI18n {
           if (json.error) {
             showSnackbarError(json.error);
           } else {
-            (<NgmToolbox> this.parentElement).showSectionModal(json.imageUrl);
+            (<NgmToolbox>this.parentElement).showSectionModal(json.imageUrl);
           }
         })
         .catch((err) => {
@@ -196,27 +196,27 @@ export class NgmGstInteraction extends LitElementI18n {
 
   geometryOutsideExtent(geom) {
     const points = geom.positions.map((p) => Cartographic.fromCartesian(p));
-    let inside = false;
+    let isInside = false;
     for (let i = 0; i < points.length; i++) {
-      inside = pointInPolygon(points[i], this.extentPositions);
-      if (inside) break;
+      isInside = pointInPolygon(points[i], this.extentPositions);
+      if (isInside) break;
     }
-    return !inside;
+    return !isInside;
   }
 
   onGeometryAdded(newGeometries: NgmGeometry[]) {
     if (this.hidden) return;
-    let valid = false;
+    let isValid = false;
     for (const geom of newGeometries) {
       if (geom.type !== 'polygon') {
-        valid = !this.geometryOutsideExtent(geom);
-        if (valid) {
+        isValid = !this.geometryOutsideExtent(geom);
+        if (isValid) {
           this.onGeomClick(geom);
           break;
         }
       }
     }
-    if (!valid) {
+    if (!isValid) {
       showSnackbarError(i18next.t('tbx_gst_no_models_in_region_error'));
     }
   }
