@@ -31,7 +31,6 @@ const sharedConfig = {
     'comma-spacing': 'error',
     eqeqeq: ['error', 'always', { null: 'ignore' }],
     'key-spacing': 'error',
-    'keyword-spacing': 'error',
     'no-duplicate-imports': 'off',
     'no-multi-spaces': 'error',
     'no-multiple-empty-lines': 'error',

@@ -222,7 +222,7 @@ export class NgmApp extends LitElementI18n {
 
   removeLoading() {
     this.loading = false;
-    (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display =
+    (<NgmSlowLoading>this.querySelector('ngm-slow-loading')).style.display =
       'none';
   }
 
@@ -280,7 +280,7 @@ export class NgmApp extends LitElementI18n {
     if (topicOrProjectParam) {
       this.waitForViewLoading = !!topicOrProjectParam.param.viewId;
       !this.waitForViewLoading &&
-        (<SideBar> this.querySelector('ngm-side-bar')).togglePanel('dashboard');
+        (<SideBar>this.querySelector('ngm-side-bar')).togglePanel('dashboard');
       DashboardStore.setTopicOrProjectParam(topicOrProjectParam);
     } else {
       const storedView = LocalStorageController.storedView;
@@ -315,10 +315,10 @@ export class NgmApp extends LitElementI18n {
 
     const origin = window.location.origin;
     const pathname = window.location.pathname;
-    (<any> this.querySelector('#ngm-home-link')).href = `${origin}${pathname}`;
+    (<any>this.querySelector('#ngm-home-link')).href = `${origin}${pathname}`;
 
     window.addEventListener('resize', () => {
-      (<any> this.querySelectorAll('.ngm-floating-window')).forEach((flWin) => {
+      (<any>this.querySelectorAll('.ngm-floating-window')).forEach((flWin) => {
         if (flWin.interaction) {
           flWin.interaction.reflow({ name: 'drag', axis: 'xy' });
         }
@@ -383,7 +383,7 @@ export class NgmApp extends LitElementI18n {
   showSlowLoadingWindow() {
     const timeout = 10000;
     if (this.loading && performance.now() > timeout) {
-      (<NgmSlowLoading> this.querySelector('ngm-slow-loading'))!.style.display =
+      (<NgmSlowLoading>this.querySelector('ngm-slow-loading'))!.style.display =
         'block';
     } else {
       setTimeout(() => {

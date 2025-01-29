@@ -581,20 +581,22 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   render() {
+    // const topics = html` <!-- topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171 -->
+    //   <div
+    //     class=${classMap({ active: this.activeTab === 'topics' })}
+    //     @click=${() => {
+    //       this.runIfNotEditCreate(() => {
+    //         this.activeTab = 'topics';
+    //         this.deselectTopicOrProject();
+    //       });
+    //     }}
+    //   >
+    //     ${i18next.t('dashboard_topics')}
+    //   </div>`;
+
     return html`
       <div class="ngm-panel-header">
         <div class="ngm-dashboard-tabs">
-          <!-- topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
-          <div class=${classMap({ active: this.activeTab === 'topics' })}
-               @click=${() => {
-            this.runIfNotEditCreate(() => {
-              this.activeTab = 'topics';
-              this.deselectTopicOrProject();
-            });
-          }}>
-            ${i18next.t('dashboard_topics')}
-          </div>
-          -->
           <div
             class=${classMap({ active: this.activeTab === 'overview' })}
             @click=${() => {

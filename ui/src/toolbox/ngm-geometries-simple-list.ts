@@ -261,97 +261,110 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
     if (!geometries.length && !this.selectedFilter) {
       return '';
     }
-    return html`
-            <div .hidden="${!this.listTitle}" class="ngm-geom-label">${this.listTitle}</div>
-            <div class="ngm-action-list-item ngm-geom-filter">
-                <div class="ngm-action-list-item-header">
-                    <div class=${classMap({ active: !this.selectedFilter })} @click=${() => this.selectFilter()}>
-                        ${i18next.t('tbx_all_label')}
-                    </div>
-                    <div class="ngm-point-draw-icon ${classMap({ active: this.selectedFilter === 'point' })}"
-                         title=${i18next.t('tbx_filter_point')}
-                         @click=${() => this.selectFilter('point')}>
-                    </div>
-                    <div class="ngm-line-draw-icon ${classMap({ active: this.selectedFilter === 'line' })}"
-                         title=${i18next.t('tbx_filter_line')}
-                         @click=${() => this.selectFilter('line')}>
-                    </div>
-                    <div class="ngm-polygon-draw-icon ${classMap({ active: this.selectedFilter === 'polygon' })}"
-                         title=${i18next.t('tbx_filter_polygon')}
-                         @click=${() => this.selectFilter('polygon')}>
-                    </div>
-                    <div class="ngm-rectangle-draw-icon ${classMap({ active: this.selectedFilter === 'rectangle' })}"
-                         title=${i18next.t('tbx_filter_rectangle')}
-                         @click=${() => this.selectFilter('rectangle')}>
-                    </div>
-                    ${
-                      this.viewMode
-                        ? ''
-                        : html` <div
-                            class="ui dropdown right pointing ngm-action-menu"
-                          >
-                            <div class="ngm-action-menu-icon"></div>
-                            ${this.filterMenuTemplate()}
-                          </div>`
-                    }
-                </div>
-            </div>
-            <div class="ngm-geom-list">
-                ${geometries.map((geom, index) => {
-                  const isDisabled =
-                    (this.disabledCallback && this.disabledCallback(geom)) ||
-                    this.disabledTypes.includes(geom.type) ||
-                    this.editingEnabled;
-                  const isActive = !isDisabled && this.selectedId === geom.id;
-                  const isHidden =
-                    !isDisabled &&
-                    !isActive &&
-                    !geom.show &&
-                    geom.id !== ToolboxStore.sliceGeomId;
-                  return html`
-                    <div
-                      class="ngm-action-list-item ngm-geom-item ${classMap({
-                        active: isActive,
-                        disabled: isDisabled,
-                        hidden: isHidden,
-                      })}"
+    return html` <div .hidden="${!this.listTitle}" class="ngm-geom-label">
+        ${this.listTitle}
+      </div>
+      <div class="ngm-action-list-item ngm-geom-filter">
+        <div class="ngm-action-list-item-header">
+          <div
+            class=${classMap({ active: !this.selectedFilter })}
+            @click=${() => this.selectFilter()}
+          >
+            ${i18next.t('tbx_all_label')}
+          </div>
+          <div
+            class="ngm-point-draw-icon ${classMap({
+              active: this.selectedFilter === 'point',
+            })}"
+            title=${i18next.t('tbx_filter_point')}
+            @click=${() => this.selectFilter('point')}
+          ></div>
+          <div
+            class="ngm-line-draw-icon ${classMap({
+              active: this.selectedFilter === 'line',
+            })}"
+            title=${i18next.t('tbx_filter_line')}
+            @click=${() => this.selectFilter('line')}
+          ></div>
+          <div
+            class="ngm-polygon-draw-icon ${classMap({
+              active: this.selectedFilter === 'polygon',
+            })}"
+            title=${i18next.t('tbx_filter_polygon')}
+            @click=${() => this.selectFilter('polygon')}
+          ></div>
+          <div
+            class="ngm-rectangle-draw-icon ${classMap({
+              active: this.selectedFilter === 'rectangle',
+            })}"
+            title=${i18next.t('tbx_filter_rectangle')}
+            @click=${() => this.selectFilter('rectangle')}
+          ></div>
+          ${this.viewMode
+            ? ''
+            : html` <div class="ui dropdown right pointing ngm-action-menu">
+                <div class="ngm-action-menu-icon"></div>
+                ${this.filterMenuTemplate()}
+              </div>`}
+        </div>
+      </div>
+      <div class="ngm-geom-list">
+        ${geometries.map((geom, index) => {
+          const isDisabled =
+            (this.disabledCallback && this.disabledCallback(geom)) ||
+            this.disabledTypes.includes(geom.type) ||
+            this.editingEnabled;
+          const isActive = !isDisabled && this.selectedId === geom.id;
+          const isHidden =
+            !isDisabled &&
+            !isActive &&
+            !geom.show &&
+            geom.id !== ToolboxStore.sliceGeomId;
+          return html`
+            <div
+              class="ngm-action-list-item ngm-geom-item ${classMap({
+                active: isActive,
+                disabled: isDisabled,
+                hidden: isHidden,
+              })}"
+            >
+              <div
+                class="ngm-action-list-item-header ${classMap({
+                  view: this.viewMode,
+                })}"
+              >
+                ${this.geometryNameTemplate(geom, index, isDisabled)}
+                ${this.viewMode
+                  ? ''
+                  : html` <div
+                      class="ui dropdown right pointing ngm-action-menu"
                     >
-                      <div
-                        class="ngm-action-list-item-header ${classMap({
-                          view: this.viewMode,
-                        })}"
-                      >
-                        ${this.geometryNameTemplate(geom, index, isDisabled)}
-                        ${this.viewMode
-                          ? ''
-                          : html` <div
-                              class="ui dropdown right pointing ngm-action-menu"
-                            >
-                              <div class="ngm-action-menu-icon"></div>
-                              ${this.actionMenuTemplate(geom)}
-                            </div>`}
-                      </div>
-                      ${this.optionsTemplate
-                        ? this.optionsTemplate(geom, isActive)
-                        : ''}
-                    </div>
-                  `;
-                })}
+                      <div class="ngm-action-menu-icon"></div>
+                      ${this.actionMenuTemplate(geom)}
+                    </div>`}
+              </div>
+              ${this.optionsTemplate
+                ? this.optionsTemplate(geom, isActive)
+                : ''}
             </div>
-            <ngm-confirmation-modal
-                    @onModalConfirmation="${() =>
-                      ToolboxStore.nextGeometryAction({
-                        type: this.selectedFilter,
-                        action: 'removeAll',
-                        noEditGeometries: this.noEditMode,
-                      })}"
-                    .text="${{
-                      title: i18next.t('tbx_remove_all_warn_title'),
-                      description: i18next.t('tbx_remove_all_warn_description'),
-                      cancelBtn: i18next.t('cancel'),
-                      confirmBtn: i18next.t('tbx_remove_all_btn'),
-                    }}"
-            > </ngm-confirmation-modal`;
+          `;
+        })}
+      </div>
+      <ngm-confirmation-modal
+        @onModalConfirmation="${() =>
+          ToolboxStore.nextGeometryAction({
+            type: this.selectedFilter,
+            action: 'removeAll',
+            noEditGeometries: this.noEditMode,
+          })}"
+        .text="${{
+          title: i18next.t('tbx_remove_all_warn_title'),
+          description: i18next.t('tbx_remove_all_warn_description'),
+          cancelBtn: i18next.t('cancel'),
+          confirmBtn: i18next.t('tbx_remove_all_btn'),
+        }}"
+      >
+      </ngm-confirmation-modal>`;
   }
 
   createRenderRoot() {

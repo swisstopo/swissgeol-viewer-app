@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "eslint",
+    "lint": "npx prettier --check . && npx eslint",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "npx prettier . --write",
     "extract-from-assets": "node scripts/get_assets_properties.js src/assets_properties.js",
     "extract-i18n": "i18next -c i18next-parser.config.cjs",
     "start": "npm run build:static && vite serve",

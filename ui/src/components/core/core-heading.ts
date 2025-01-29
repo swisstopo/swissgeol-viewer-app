@@ -20,6 +20,7 @@ export class CoreHeading extends LitElement {
 
   render() {
     const tag = unsafeStatic(`h${this.level}`);
+    // eslint-disable-next-line lit/binding-positions,lit/no-invalid-html
     return html`<${tag}><slot></slot></${tag}>`;
   }
 

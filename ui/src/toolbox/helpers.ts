@@ -160,7 +160,7 @@ export async function downloadGeometry(entity) {
   const geometries = new EntityCollection();
   const name = entity.name.replace(' ', '_');
   geometries.add(entity);
-  const exportResult: exportKmlResultKml = <exportKmlResultKml> await exportKml({
+  const exportResult: exportKmlResultKml = <exportKmlResultKml>await exportKml({
     entities: geometries,
     time: julianDate,
   });

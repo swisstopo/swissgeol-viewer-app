@@ -2,13 +2,13 @@ import { LitElementI18n } from '../i18n';
 import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import i18next from 'i18next';
+import type { CustomDataSource, Viewer } from 'cesium';
 import { Cartographic, JulianDate } from 'cesium';
 import { updateBoreholeHeights } from './helpers';
 import { SWISSFORAGES_EDITOR_URL, SWISSFORAGES_VIEWER_URL } from '../constants';
 import { lv95ToDegrees } from '../projection';
 import $ from 'jquery';
 import MainStore from '../store/main';
-import type { Viewer, CustomDataSource } from 'cesium';
 import type { SwissforagesService } from './SwissforagesService';
 import type { NgmGeometry } from './interfaces';
 import { showSnackbarInfo } from '../notifications';
@@ -141,7 +141,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
   }
 
   onDepthChange(event) {
-    const entity = this.dataSource!.entities.getById(<string> this.item!.id);
+    const entity = this.dataSource!.entities.getById(<string>this.item!.id);
     if (!entity || !entity.properties) return;
     entity.properties.depth = Number(event.target.value);
   }

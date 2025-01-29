@@ -27,7 +27,7 @@ export class NgmLanguageSelector extends LitElementI18n {
       <div class="ui dropdown container">
         <div class="title">
           ${i18next.language?.toUpperCase()}
-          <ngm-core-icon icon="dropdown" />
+          <ngm-core-icon icon="dropdown"></ngm-core-icon>
         </div>
         <div class="menu">
           ${SUPPORTED_LANGUAGES.map(
