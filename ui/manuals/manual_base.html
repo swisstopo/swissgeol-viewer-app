@@ -1,182 +1,278 @@
 <!-- Add localetag prefix before locale tags -->
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="localetag_document_lang">
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" type="text/css" href="style.css">
-  <title>swissgeol</title>
-</head>
-<body>
-<header>
-  <div class="ngm-help-header">
-    <img src="/images/swissgeol_viewer.svg"/>
-    <div class="ngm-lang-selector">
-      <a id="ngm-en-link" href="manual_en.html">EN</a>
-      <a id="ngm-de-link" href="manual_de.html">DE</a>
-    </div>
-  </div>
-  <h2>localetag_welcome_label</h2>
-  <h4>localetag_welcome_subtitle</h4>
-</header>
-<div class="ngm-help-main">
-  <div class="ngm-help-titles">
-    <p class="ngm-main-label">localetag_table_of_contents</p>
-    <label for="ngm-sbv-topic" class="ngm-selected-label">localetag_supported_browser_versions</label>
-    <label for="ngm-gs-topic">localetag_getting_started</label>
-    <label for="ngm-cal-topic">localetag_change_application_language</label>
-    <label for="ngm-nav-topic">localetag_navigation_topic</label>
-    <label for="ngm-bsv-topic">localetag_reset_topic</label>
-    <label for="ngm-cho-topic">localetag_camera_height_orientation</label>
-    <label for="ngm-sp-topic">localetag_search_topic</label>
-    <label for="ngm-avd-topic">localetag_3d_data_topic</label>
-    <label for="ngm-cmb-topic">localetag_changing_background</label>
-    <label for="ngm-ctds-topic">localetag_changing_transparency</label>
-    <label for="ngm-cods-topic">localetag_changing_order</label>
-    <label for="ngm-rds-topic">localetag_removing_datasets</label>
-    <label for="ngm-die-topic">localetag_detailed_information</label>
-    <label for="ngm-sscv-topic">localetag_saving_sending</label>
-    <label for="ngm-aoi-topic">localetag_area_of_interest</label>
-    <label for="ngm-cs-topic">localetag_creates_sections</label>
-    <label for="ngm-sf-topic">localetag_swissforages_topic</label>
-    <label for="ngm-tlv-topic">localetag_technical_legal_info</label>
-  </div>
-  <div class="ngm-help-content">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <title>swissgeol</title>
+  </head>
+  <body>
+    <header>
+      <div class="ngm-help-header">
+        <img src="/images/swissgeol_viewer.svg" />
+        <div class="ngm-lang-selector">
+          <a id="ngm-en-link" href="manual_en.html">EN</a>
+          <a id="ngm-de-link" href="manual_de.html">DE</a>
+        </div>
+      </div>
+      <h2>localetag_welcome_label</h2>
+      <h4>localetag_welcome_subtitle</h4>
+    </header>
+    <div class="ngm-help-main">
+      <div class="ngm-help-titles">
+        <p class="ngm-main-label">localetag_table_of_contents</p>
+        <label for="ngm-sbv-topic" class="ngm-selected-label"
+          >localetag_supported_browser_versions</label
+        >
+        <label for="ngm-gs-topic">localetag_getting_started</label>
+        <label for="ngm-cal-topic">localetag_change_application_language</label>
+        <label for="ngm-nav-topic">localetag_navigation_topic</label>
+        <label for="ngm-bsv-topic">localetag_reset_topic</label>
+        <label for="ngm-cho-topic">localetag_camera_height_orientation</label>
+        <label for="ngm-sp-topic">localetag_search_topic</label>
+        <label for="ngm-avd-topic">localetag_3d_data_topic</label>
+        <label for="ngm-cmb-topic">localetag_changing_background</label>
+        <label for="ngm-ctds-topic">localetag_changing_transparency</label>
+        <label for="ngm-cods-topic">localetag_changing_order</label>
+        <label for="ngm-rds-topic">localetag_removing_datasets</label>
+        <label for="ngm-die-topic">localetag_detailed_information</label>
+        <label for="ngm-sscv-topic">localetag_saving_sending</label>
+        <label for="ngm-aoi-topic">localetag_area_of_interest</label>
+        <label for="ngm-cs-topic">localetag_creates_sections</label>
+        <label for="ngm-sf-topic">localetag_swissforages_topic</label>
+        <label for="ngm-tlv-topic">localetag_technical_legal_info</label>
+      </div>
+      <div class="ngm-help-content">
+        <input
+          id="ngm-sbv-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+          checked
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_supported_browser_versions</h3>
+          <div>
+            <p>localetag_supported_browser_versions_text</p>
+            <ul>
+              <li>Edge (localetag_latest_stable_version)</li>
+              <li>Chrome (localetag_latest_stable_version)</li>
+              <li>Safari (localetag_latest_stable_version)</li>
+              <li>Firefox (localetag_latest_stable_version)</li>
+            </ul>
+          </div>
+        </div>
 
-    <input id="ngm-sbv-topic" type="radio" name="topic" onclick="selectedChanged()" checked>
-    <div class="ngm-help-topic">
-      <h3>localetag_supported_browser_versions</h3>
-      <div>
-        <p>localetag_supported_browser_versions_text</p>
-        <ul>
-          <li>Edge (localetag_latest_stable_version)</li>
-          <li>Chrome (localetag_latest_stable_version)</li>
-          <li>Safari (localetag_latest_stable_version)</li>
-          <li>Firefox (localetag_latest_stable_version)</li>
-        </ul>
+        <input
+          id="ngm-gs-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_getting_started</h3>
+          localetag_getting_started_text
+        </div>
+
+        <input
+          id="ngm-cal-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_change_application_language</h3>
+          <p>localetag_change_application_language_text</p>
+        </div>
+
+        <input
+          id="ngm-nav-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_navigation_topic</h3>
+          localetag_navigation_topic_text
+        </div>
+
+        <input
+          id="ngm-bsv-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_reset_topic</h3>
+          <p>localetag_reset_topic_text</p>
+        </div>
+
+        <input
+          id="ngm-cho-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_camera_height_orientation</h3>
+          <p>localetag_camera_height_orientation_text</p>
+        </div>
+
+        <input
+          id="ngm-sp-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_search_topic</h3>
+          <p>localetag_search_topic_text</p>
+        </div>
+
+        <input
+          id="ngm-avd-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_3d_data_topic</h3>
+          <p>localetag_3d_data_topic_text</p>
+        </div>
+
+        <input
+          id="ngm-cmb-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_changing_background</h3>
+          <p>localetag_changing_background_text</p>
+        </div>
+
+        <input
+          id="ngm-ctds-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_changing_transparency</h3>
+          <p>localetag_changing_transparency_text</p>
+        </div>
+
+        <input
+          id="ngm-cods-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_changing_order</h3>
+          <p>localetag_changing_order_text</p>
+        </div>
+
+        <input
+          id="ngm-rds-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_removing_datasets</h3>
+          <p>localetag_removing_datasets_text</p>
+        </div>
+
+        <input
+          id="ngm-die-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_detailed_information</h3>
+          <p>localetag_detailed_information_text</p>
+        </div>
+
+        <input
+          id="ngm-sscv-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_saving_sending</h3>
+          <p>localetag_saving_sending_text</p>
+        </div>
+
+        <input
+          id="ngm-aoi-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_area_of_interest</h3>
+          <p>localetag_area_of_interest_text</p>
+        </div>
+
+        <input
+          id="ngm-cs-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_creates_sections</h3>
+          <p>localetag_creates_sections_text</p>
+        </div>
+
+        <input
+          id="ngm-sf-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_swissforages_topic</h3>
+          <p>localetag_swissforages_topic_text</p>
+        </div>
+
+        <input
+          id="ngm-tlv-topic"
+          type="radio"
+          name="topic"
+          onclick="selectedChanged()"
+        />
+        <div class="ngm-help-topic">
+          <h3>localetag_technical_legal_info</h3>
+          localetag_technical_legal_info_text
+        </div>
       </div>
     </div>
 
-    <input id="ngm-gs-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_getting_started</h3>
-      localetag_getting_started_text
-    </div>
+    <script>
+      function selectedChanged() {
+        var selectedLabel = document.querySelector(".ngm-selected-label");
+        if (selectedLabel) {
+          selectedLabel.classList.remove("ngm-selected-label");
+        }
+        var checkedId = document.querySelector(
+          'input[type="radio"]:checked',
+        ).id;
+        document
+          .querySelector('label[for="' + checkedId + '"]')
+          .classList.add("ngm-selected-label");
+      }
 
-    <input id="ngm-cal-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_change_application_language</h3>
-      <p>localetag_change_application_language_text</p>
-    </div>
-
-    <input id="ngm-nav-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_navigation_topic</h3>
-      localetag_navigation_topic_text
-    </div>
-
-    <input id="ngm-bsv-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_reset_topic</h3>
-      <p>localetag_reset_topic_text</p>
-    </div>
-
-    <input id="ngm-cho-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_camera_height_orientation</h3>
-      <p>localetag_camera_height_orientation_text</p>
-    </div>
-
-    <input id="ngm-sp-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_search_topic</h3>
-      <p>localetag_search_topic_text</p>
-    </div>
-
-    <input id="ngm-avd-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_3d_data_topic</h3>
-      <p>localetag_3d_data_topic_text</p>
-    </div>
-
-    <input id="ngm-cmb-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_changing_background</h3>
-      <p>localetag_changing_background_text</p>
-    </div>
-
-    <input id="ngm-ctds-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_changing_transparency</h3>
-      <p>localetag_changing_transparency_text</p>
-    </div>
-
-    <input id="ngm-cods-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_changing_order</h3>
-      <p>localetag_changing_order_text</p>
-    </div>
-
-    <input id="ngm-rds-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_removing_datasets</h3>
-      <p>localetag_removing_datasets_text</p>
-    </div>
-
-    <input id="ngm-die-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_detailed_information</h3>
-      <p>localetag_detailed_information_text</p>
-    </div>
-
-    <input id="ngm-sscv-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_saving_sending</h3>
-      <p>localetag_saving_sending_text</p>
-    </div>
-
-    <input id="ngm-aoi-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_area_of_interest</h3>
-      <p>localetag_area_of_interest_text</p>
-    </div>
-
-    <input id="ngm-cs-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_creates_sections</h3>
-      <p>localetag_creates_sections_text</p>
-    </div>
-
-    <input id="ngm-sf-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_swissforages_topic</h3>
-      <p>localetag_swissforages_topic_text</p>
-    </div>
-
-    <input id="ngm-tlv-topic" type="radio" name="topic" onclick="selectedChanged()">
-    <div class="ngm-help-topic">
-      <h3>localetag_technical_legal_info</h3>
-      localetag_technical_legal_info_text
-    </div>
-  </div>
-</div>
-
-<script>
-  function selectedChanged() {
-    var selectedLabel = document.querySelector('.ngm-selected-label');
-    if (selectedLabel) {
-      selectedLabel.classList.remove('ngm-selected-label');
-    }
-    var checkedId = document.querySelector('input[type="radio"]:checked').id;
-    document.querySelector('label[for="' + checkedId + '"]').classList.add('ngm-selected-label');
-  }
-
-  var lang = document.querySelector('html').lang;
-  var elem = document.querySelector('#ngm-en-link');
-  if(lang === 'de') {
-    elem = document.querySelector('#ngm-de-link');
-  }
-  elem.style['font-weight'] = 'bold';
-</script>
-</body>
+      var lang = document.querySelector("html").lang;
+      var elem = document.querySelector("#ngm-en-link");
+      if (lang === "de") {
+        elem = document.querySelector("#ngm-de-link");
+      }
+      elem.style["font-weight"] = "bold";
+    </script>
+  </body>
 </html>

@@ -1,6 +1,8 @@
 .ngm-checkbox {
   text-align: left;
-  font: normal normal 500 14px/20px Inter, sans-serif;
+  font:
+    normal normal 500 14px/20px Inter,
+    sans-serif;
   color: #357183;
   display: flex;
   align-items: center;
@@ -9,11 +11,11 @@
 }
 
 .ngm-checkbox.active {
-  color: var(--ngm-action-hover)
+  color: var(--ngm-action-hover);
 }
 
 .ngm-checkbox:hover {
-  color: var(--ngm-interaction-hover)
+  color: var(--ngm-interaction-hover);
 }
 
 .ngm-checkbox > label {

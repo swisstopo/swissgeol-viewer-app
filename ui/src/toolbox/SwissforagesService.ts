@@ -1,13 +1,13 @@
-import {SWISSFORAGES_API_URL} from '../constants';
-import {radiansToLv95} from '../projection';
+import { SWISSFORAGES_API_URL } from '../constants';
+import { radiansToLv95 } from '../projection';
 import i18next from 'i18next';
-import {showSnackbarInfo} from '../notifications';
+import { showSnackbarInfo } from '../notifications';
 
 interface SwissforagesResponse {
   success: boolean;
   data: {
-    cid: string
-    mid: string
+    cid: string;
+    mid: string;
   };
 }
 
@@ -17,13 +17,13 @@ export class SwissforagesService {
   headers = new Headers({
     'bdms-authorization': 'bdms-v1',
     'Content-Type': 'application/json;charset=UTF-8',
-    'Authorization': '',
+    Authorization: '',
   });
 
   get requestOptions() {
     return {
       method: 'POST',
-      headers: this.headers
+      headers: this.headers,
     };
   }
 
@@ -35,17 +35,19 @@ export class SwissforagesService {
    */
   async login(username, password) {
     const token = `Basic ${btoa(`${username}:${password}`)}`;
-    const data = JSON.stringify({action: 'GET'});
+    const data = JSON.stringify({ action: 'GET' });
 
     this.headers.set('Authorization', token);
     const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/user`, {
       ...this.requestOptions,
-      body: data
+      body: data,
     });
     const response = await fetchResult.json();
 
     if (response && response.success) {
-      const workgroups = response.data.workgroups.filter(group => group.roles.includes('EDIT'));
+      const workgroups = response.data.workgroups.filter((group) =>
+        group.roles.includes('EDIT'),
+      );
       if (workgroups.length) {
         this.userToken = token;
         return workgroups;
@@ -59,14 +61,17 @@ export class SwissforagesService {
 
   async createBorehole(cartographicPosition, depth, name) {
     if (!this.workGroupId) return;
-    const lv95Position = radiansToLv95([cartographicPosition.longitude, cartographicPosition.latitude]);
+    const lv95Position = radiansToLv95([
+      cartographicPosition.longitude,
+      cartographicPosition.latitude,
+    ]);
     const location = await this.getLocation(lv95Position);
     location[4] = cartographicPosition.height;
 
     let boreholeId = 0;
     const createResult = await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
       ...this.requestOptions,
-      body: JSON.stringify({'action': 'CREATE', 'id': this.workGroupId}),
+      body: JSON.stringify({ action: 'CREATE', id: this.workGroupId }),
     });
     const response = await createResult.json();
 
@@ -81,10 +86,10 @@ export class SwissforagesService {
         await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
           ...this.requestOptions,
           body: JSON.stringify({
-            'action': 'PATCH',
-            'id': boreholeId,
-            'field': 'location',
-            'value': location
+            action: 'PATCH',
+            id: boreholeId,
+            field: 'location',
+            value: location,
           }),
         });
       } catch (e) {
@@ -98,10 +103,10 @@ export class SwissforagesService {
         await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
           ...this.requestOptions,
           body: JSON.stringify({
-            'action': 'PATCH',
-            'id': boreholeId,
-            'field': 'length',
-            'value': depth
+            action: 'PATCH',
+            id: boreholeId,
+            field: 'length',
+            value: depth,
           }),
         });
       } catch (e) {
@@ -115,10 +120,10 @@ export class SwissforagesService {
         await fetch(`${SWISSFORAGES_API_URL}/borehole/edit`, {
           ...this.requestOptions,
           body: JSON.stringify({
-            'action': 'PATCH',
-            'id': boreholeId,
-            'field': 'custom.public_name',
-            'value': name
+            action: 'PATCH',
+            id: boreholeId,
+            field: 'custom.public_name',
+            value: name,
           }),
         });
       } catch (e) {
@@ -132,14 +137,17 @@ export class SwissforagesService {
   async getLocation(position) {
     let response: SwissforagesResponse | undefined;
     try {
-      const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/geoapi/location`, {
-        ...this.requestOptions,
-        body: JSON.stringify({
-          action: 'LOCATION',
-          easting: position[0],
-          northing: position[1]
-        }),
-      });
+      const fetchResult = await fetch(
+        `${SWISSFORAGES_API_URL}/geoapi/location`,
+        {
+          ...this.requestOptions,
+          body: JSON.stringify({
+            action: 'LOCATION',
+            easting: position[0],
+            northing: position[1],
+          }),
+        },
+      );
       response = await fetchResult.json();
     } catch (e) {
       console.error(e);
@@ -160,7 +168,7 @@ export class SwissforagesService {
       ...this.requestOptions,
       body: JSON.stringify({
         action: 'GET',
-        id: boreholeId
+        id: boreholeId,
       }),
     });
     const response = await fetchResult.json();

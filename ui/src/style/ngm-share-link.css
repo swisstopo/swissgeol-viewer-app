@@ -10,7 +10,9 @@ ngm-share-link > div {
 .ngm-share-label {
   margin-top: 12px;
   color: #212529;
-  font: normal normal bold 14px/20px Inter, sans-serif;
+  font:
+    normal normal bold 14px/20px Inter,
+    sans-serif;
   letter-spacing: 0;
 }
 
@@ -51,7 +53,7 @@ ngm-share-link .ngm-input input {
   padding: 20px 30px;
 }
 
-@media (max-height: 629px), (max-width: 599px)  {
+@media (max-height: 629px), (max-width: 599px) {
   ngm-share-link .ngm-input,
   ngm-share-link .ngm-input input {
     width: 100%;

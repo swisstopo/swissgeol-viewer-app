@@ -3,10 +3,12 @@
   flex-direction: column;
   align-items: start;
   justify-content: center;
-  background-color: #F8F9FA;
+  background-color: #f8f9fa;
   color: var(--ngm-interaction);
   height: 36px;
-  font: normal normal bold 14px/20px Inter, sans-serif;
+  font:
+    normal normal bold 14px/20px Inter,
+    sans-serif;
   padding: 10px 8px;
   margin-bottom: 4px;
   width: 100%;
@@ -33,15 +35,25 @@ ngm-measure .ngm-action-list-item .ngm-action-list-item-header {
   column-gap: 5px;
 }
 
-.ngm-geom-list .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1) > div {
+.ngm-geom-list
+  .ngm-action-list-item
+  .ngm-action-list-item-header
+  > div:nth-child(1)
+  > div {
   white-space: nowrap;
   max-width: 155px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-ngm-draw-section .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1),
-ngm-measure .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1) {
+ngm-draw-section
+  .ngm-action-list-item
+  .ngm-action-list-item-header
+  > div:nth-child(1),
+ngm-measure
+  .ngm-action-list-item
+  .ngm-action-list-item-header
+  > div:nth-child(1) {
   width: 24px;
 }
 
@@ -66,22 +78,22 @@ ngm-measure .ngm-action-list-item .ngm-action-list-item-header > div:nth-child(1
 }
 
 .ngm-action-list-item.disabled {
-  background-color: #F8F9FA;
+  background-color: #f8f9fa;
 }
 
 .ngm-action-list-item.disabled .ngm-action-menu-icon {
-  background-color: #868E96 !important;
+  background-color: #868e96 !important;
 }
 
 .ngm-action-list-item.hidden .ngm-geom-name,
 .ngm-action-list-item.disabled {
   cursor: default;
   pointer-events: none;
-  color: #868E96 !important;
+  color: #868e96 !important;
 }
 
 .ngm-action-list-item.disabled .ngm-layer-icon {
-  background-color: #868E96 !important;
+  background-color: #868e96 !important;
 }
 
 .ngm-action-list-item.hidden .ngm-action-menu {

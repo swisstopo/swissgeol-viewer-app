@@ -1,4 +1,5 @@
-.ui.toast-container.bottom.center .toast-box.floating, .ui.toast-container.bottom.center {
+.ui.toast-container.bottom.center .toast-box.floating,
+.ui.toast-container.bottom.center {
   border: none;
   box-shadow: none;
 }
@@ -33,17 +34,17 @@
 
 .snackbar.success {
   color: #212529;
-  background-color: #8CE99A;
+  background-color: #8ce99a;
 }
 
 .snackbar.error {
   color: #212529;
-  background-color: #FFA8A8;
+  background-color: #ffa8a8;
 }
 
 .snackbar.warning {
   color: #212529;
-  background-color: #FFC078;
+  background-color: #ffc078;
 }
 
 .actions .ui.button.ngm-action-btn {
@@ -51,7 +52,7 @@
 }
 
 .actions .ui.button.ngm-cancel-btn {
-  background-color: #DEE2E6;
+  background-color: #dee2e6;
   color: #495057;
 }
 
@@ -80,5 +81,3 @@
 .ngm-toast-placeholder div.snackbar > i {
   margin-left: auto;
 }
-
-

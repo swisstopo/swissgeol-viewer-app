@@ -1,67 +1,67 @@
-@import 'variables.css';
+@import "variables.css";
 
-@import 'cesium/Build/Cesium/Widgets/widgets.css';
+@import "cesium/Build/Cesium/Widgets/widgets.css";
 
-@import '@fontsource/inter/index.css';
+@import "@fontsource/inter/index.css";
 
-@import 'fomantic-ui-css/components/reset.css';
-@import 'fomantic-ui-css/components/message.css';
-@import 'fomantic-ui-css/components/list.css';
-@import 'fomantic-ui-css/components/item.css';
-@import 'fomantic-ui-css/components/icon.css';
-@import 'fomantic-ui-css/components/input.css';
-@import 'fomantic-ui-css/components/button.css';
-@import 'fomantic-ui-css/components/segment.css';
-@import 'fomantic-ui-css/components/checkbox.css';
-@import 'fomantic-ui-css/components/table.css';
-@import 'fomantic-ui-css/components/dimmer.css';
-@import 'fomantic-ui-css/components/loader.css';
-@import 'fomantic-ui-css/components/accordion.css';
-@import 'fomantic-ui-css/components/popup.css';
-@import 'fomantic-ui-css/components/transition.css';
-@import 'fomantic-ui-css/components/toast.css';
-@import 'fomantic-ui-css/components/divider.css';
-@import 'fomantic-ui-css/components/grid.css';
-@import 'fomantic-ui-css/components/modal.css';
-@import 'fomantic-ui-css/components/form.css';
-@import 'fomantic-ui-css/components/slider.css';
-@import 'fomantic-ui-css/components/dropdown.css';
-@import 'fomantic-ui-css/components/label.css';
-@import 'fomantic-ui-css/components/header.css';
-@import 'fomantic-ui-css/components/card.css';
+@import "fomantic-ui-css/components/reset.css";
+@import "fomantic-ui-css/components/message.css";
+@import "fomantic-ui-css/components/list.css";
+@import "fomantic-ui-css/components/item.css";
+@import "fomantic-ui-css/components/icon.css";
+@import "fomantic-ui-css/components/input.css";
+@import "fomantic-ui-css/components/button.css";
+@import "fomantic-ui-css/components/segment.css";
+@import "fomantic-ui-css/components/checkbox.css";
+@import "fomantic-ui-css/components/table.css";
+@import "fomantic-ui-css/components/dimmer.css";
+@import "fomantic-ui-css/components/loader.css";
+@import "fomantic-ui-css/components/accordion.css";
+@import "fomantic-ui-css/components/popup.css";
+@import "fomantic-ui-css/components/transition.css";
+@import "fomantic-ui-css/components/toast.css";
+@import "fomantic-ui-css/components/divider.css";
+@import "fomantic-ui-css/components/grid.css";
+@import "fomantic-ui-css/components/modal.css";
+@import "fomantic-ui-css/components/form.css";
+@import "fomantic-ui-css/components/slider.css";
+@import "fomantic-ui-css/components/dropdown.css";
+@import "fomantic-ui-css/components/label.css";
+@import "fomantic-ui-css/components/header.css";
+@import "fomantic-ui-css/components/card.css";
 
-@import 'search.css';
-@import 'ngm-object-information.css';
-@import 'ngm-modal.css';
-@import 'keyboard-navigation.css';
-@import 'layers.css';
-@import 'ngm-map-configuration.css';
-@import 'ngm-point-edit.css';
-@import 'ngm-position-edit.css';
-@import 'ngm-map-chooser.css';
-@import 'ngm-layer-legend.css';
-@import 'icons.css';
-@import 'ngm-side-bar.css';
-@import 'ngm-nav-tools.css';
-@import 'ngm-minimap.css';
-@import 'header.css';
-@import 'ngm-cam-configuration.css';
-@import 'ngm-slider.css';
-@import 'notifications.css';
-@import 'ngm-toolbox.css';
-@import 'ngm-checkbox.css';
-@import 'ngm-geometry-info.css';
-@import 'ngm-input.css';
-@import 'ngm-share-link.css';
-@import 'ngm-dashboard.css';
-@import 'ngm-action-list-item.css';
-@import 'topographic-profile.css';
-@import 'ngm-voxel-filter.css';
-@import 'ngm-voxel-simple-filter.css';
-@import 'ngm-coordinate-popup.css';
-@import 'ngm-ion-modal.css';
-@import 'ngm-info-table.css';
-@import '../styles/index.css';
+@import "search.css";
+@import "ngm-object-information.css";
+@import "ngm-modal.css";
+@import "keyboard-navigation.css";
+@import "layers.css";
+@import "ngm-map-configuration.css";
+@import "ngm-point-edit.css";
+@import "ngm-position-edit.css";
+@import "ngm-map-chooser.css";
+@import "ngm-layer-legend.css";
+@import "icons.css";
+@import "ngm-side-bar.css";
+@import "ngm-nav-tools.css";
+@import "ngm-minimap.css";
+@import "header.css";
+@import "ngm-cam-configuration.css";
+@import "ngm-slider.css";
+@import "notifications.css";
+@import "ngm-toolbox.css";
+@import "ngm-checkbox.css";
+@import "ngm-geometry-info.css";
+@import "ngm-input.css";
+@import "ngm-share-link.css";
+@import "ngm-dashboard.css";
+@import "ngm-action-list-item.css";
+@import "topographic-profile.css";
+@import "ngm-voxel-filter.css";
+@import "ngm-voxel-simple-filter.css";
+@import "ngm-coordinate-popup.css";
+@import "ngm-ion-modal.css";
+@import "ngm-info-table.css";
+@import "../styles/index.css";
 
 * {
   scrollbar-color: light;
@@ -74,7 +74,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.0);
+  background: rgba(0, 0, 0, 0);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -86,7 +86,8 @@
   display: none !important;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   font-size: 14px;
 }
@@ -98,15 +99,20 @@ body {
 }
 
 /* FIXME: create a fomantic-ui build with the correct font */
-body, .ui.button, .ui.accordion .title:not(.ui), .ui.input > input, .ui.header {
-  font-family: 'Inter', sans-serif;
+body,
+.ui.button,
+.ui.accordion .title:not(.ui),
+.ui.input > input,
+.ui.header {
+  font-family: "Inter", sans-serif;
 }
 
 a {
   text-decoration: none;
 }
 
-div, img {
+div,
+img {
   user-select: none;
 }
 
@@ -114,7 +120,7 @@ div, img {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: url('/images/outdated-background.png');
+  background-image: url("/images/outdated-background.png");
   background-repeat: no-repeat;
   background-position: center;
   background-color: #fafafb;
@@ -132,7 +138,8 @@ main {
   overflow: hidden;
 }
 
-ngm-app, ngm-app-boot {
+ngm-app,
+ngm-app-boot {
   flex: auto;
   display: flex;
   flex-direction: column;
@@ -252,7 +259,7 @@ cesium-view-cube {
 
 .ui.dropdown .menu {
   box-shadow:
-    0 2px 4px -1px #0000000F,
+    0 2px 4px -1px #0000000f,
     0 4px 10px -1px #00000014;
 }
 
@@ -281,7 +288,8 @@ ngm-gst-interaction > .ui.tiny.icon.buttons {
   display: flex;
 }
 
-[data-tooltip]:before, [data-tooltip]:after {
+[data-tooltip]:before,
+[data-tooltip]:after {
   transition: none;
 }
 
@@ -325,7 +333,7 @@ ngm-full-screen-view.full-active {
 }
 
 .ngm-floating-window {
-  background: #F1F3F5;
+  background: #f1f3f5;
   box-shadow: 4px 4px 2px #00000029;
   border-radius: 8px;
   position: absolute;
@@ -340,16 +348,18 @@ ngm-full-screen-view.full-active {
 }
 
 .ngm-floating-window .ngm-drag-area > div {
-  border: 1px solid #DFE2E6;
+  border: 1px solid #dfe2e6;
   margin-top: 2px;
 }
 
 .ngm-floating-window-header {
   height: 32px;
-  border-bottom: 2px solid #DFE2E6;
+  border-bottom: 2px solid #dfe2e6;
   display: flex;
   align-items: center;
-  font: normal normal bold 14px/24px Inter, sans-serif;
+  font:
+    normal normal bold 14px/24px Inter,
+    sans-serif;
   letter-spacing: 0.14px;
   color: #212529;
   margin-bottom: 8px;
@@ -373,7 +383,7 @@ ngm-full-screen-view.full-active {
 
 .ngm-divider {
   width: 100%;
-  border: 1px solid #E0E3E6;
+  border: 1px solid #e0e3e6;
 }
 
 .ngm-disabled {
@@ -388,7 +398,9 @@ ngm-full-screen-view.full-active {
   border: 0;
   border-radius: 0;
   box-shadow: 6px 6px 8px #00000029;
-  font: normal normal 500 14px/20px Inter, sans-serif;
+  font:
+    normal normal 500 14px/20px Inter,
+    sans-serif;
   color: #212529;
   right: 11px;
 }
@@ -399,13 +411,12 @@ ngm-full-screen-view.full-active {
 }
 
 .ngm-action-menu.ui.dropdown .menu .item:hover {
-  background-color: #C5F6FA;
+  background-color: #c5f6fa;
 }
 
 .ngm-action-menu.ui.dropdown .menu .active.item {
   font-weight: normal;
 }
-
 
 .ngm-action-menu.ui.dropdown.pointing .menu::after {
   display: none;
@@ -467,7 +478,7 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   }
 }
 
-@media (max-width: 599px)  {
+@media (max-width: 599px) {
   .visible-mobile {
     display: initial;
   }
@@ -498,7 +509,8 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   display: none !important;
 }
 
-.contact-mailto-link, .disclaimer-link {
+.contact-mailto-link,
+.disclaimer-link {
   position: absolute;
   z-index: 2;
   left: 5px;
@@ -512,7 +524,8 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   bottom: 20px;
 }
 
-.contact-mailto-link:hover, .disclaimer-link:hover {
+.contact-mailto-link:hover,
+.disclaimer-link:hover {
   color: var(--ngm-interaction-hover);
   text-shadow: none;
 }
@@ -527,8 +540,8 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
 }
 
 .ui.loader {
-  mask: url('/images/swisstopo_spinner.svg') center no-repeat;
-  -webkit-mask: url('/images/swisstopo_spinner.svg') center no-repeat;
+  mask: url("/images/swisstopo_spinner.svg") center no-repeat;
+  -webkit-mask: url("/images/swisstopo_spinner.svg") center no-repeat;
   background-color: var(--ngm-interaction);
   border-radius: 0 !important;
   color: rgba(0, 0, 0, 0) !important;
@@ -537,8 +550,9 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
 }
 
 .ui.loader.determinate {
-  mask: url('/images/swisstopo_spinner_determinate.svg') center no-repeat;
-  -webkit-mask: url('/images/swisstopo_spinner_determinate.svg') center no-repeat;
+  mask: url("/images/swisstopo_spinner_determinate.svg") center no-repeat;
+  -webkit-mask: url("/images/swisstopo_spinner_determinate.svg") center
+    no-repeat;
 }
 
 .ui.loader:before {
@@ -553,11 +567,13 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   color: var(--ngm-interaction);
   position: fixed;
   margin-left: 9px;
-  font: normal normal bold 12px/15px Inter, sans-serif;
+  font:
+    normal normal bold 12px/15px Inter,
+    sans-serif;
 }
 
 .ui.dimmer.ngm-main-load-dimmer {
-  background: hsla(0, 0%, 100%, .85);
+  background: hsla(0, 0%, 100%, 0.85);
 }
 
 .cesium-performanceDisplay-defaultContainer {
@@ -589,11 +605,12 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   border-top-width: 0;
   position: absolute;
   border-style: solid;
-  border-color: transparent transparent #F1F3F5 transparent;
+  border-color: transparent transparent #f1f3f5 transparent;
 }
 
 #cesium.full-active:after,
-body:after { /* Beta label */
+body:after {
+  /* Beta label */
   content: "beta";
   position: fixed;
   width: 80px;

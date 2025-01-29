@@ -1,9 +1,9 @@
-import {LitElementI18n} from '../i18n';
-import {customElement, property, state} from 'lit/decorators.js';
-import {html} from 'lit';
+import { LitElementI18n } from '../i18n';
+import { customElement, property, state } from 'lit/decorators.js';
+import { html } from 'lit';
 import draggable from './draggable';
-import {DEFAULT_VIEW} from '../constants';
-import {ConstantPositionProperty, Event, Scene, Viewer} from 'cesium';
+import { DEFAULT_VIEW } from '../constants';
+import { ConstantPositionProperty, Event, Scene, Viewer } from 'cesium';
 import {
   ArcType,
   CallbackProperty,
@@ -18,33 +18,34 @@ import {
   PolylineCollection,
   Transforms,
   ScreenSpaceEventHandler,
-  ScreenSpaceEventType
+  ScreenSpaceEventType,
 } from 'cesium';
-import type {Interactable} from '@interactjs/types';
-import {classMap} from 'lit/directives/class-map.js';
+import type { Interactable } from '@interactjs/types';
+import { classMap } from 'lit/directives/class-map.js';
 import {
-  lookAtPoint, pickCenter,
-  pickCenterOnMapOrObject, pickPositionOrVoxel,
+  lookAtPoint,
+  pickCenter,
+  pickCenterOnMapOrObject,
+  pickPositionOrVoxel,
   positionFromPxDistance,
 } from '../cesiumutils';
-import {showSnackbarError} from '../notifications';
+import { showSnackbarError } from '../notifications';
 import i18next from 'i18next';
-import {debounce} from '../utils';
-import {getTargetParam, syncTargetParam} from '../permalink';
+import { debounce } from '../utils';
+import { getTargetParam, syncTargetParam } from '../permalink';
 import NavToolsStore from '../store/navTools';
-import {dragArea} from './helperElements';
-import type {LockType} from './ngm-cam-configuration';
+import { dragArea } from './helperElements';
+import type { LockType } from './ngm-cam-configuration';
 import MainStore from '../store/main';
-
 
 const AXIS_WIDTH = 5;
 const AXIS_LENGTH = 120;
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends LitElementI18n {
-  @property({type: Object})
+  @property({ type: Object })
   accessor viewer: Viewer | null = null;
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor showCamConfig = false;
   @state()
   accessor moveAmount = 200;
@@ -67,42 +68,69 @@ export class NgmNavTools extends LitElementI18n {
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
       width: 40,
       height: 40,
-    }
+    },
   });
   private moveRef = false;
   private readonly julianDate = new JulianDate();
   private axisDataSource: CustomDataSource | undefined;
   private axisCenter: Cartesian3 | undefined;
   private readonly oldPolylineUpdate: any = PolylineCollection.prototype.update;
-  private readonly xyAxisCalculation = (axis, side) => [this.axisCenter, positionFromPxDistance(this.viewer!.scene, this.axisCenter!, AXIS_LENGTH, axis, side)];
-  private readonly xAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('x', -1), false);
-  private readonly yAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('y', 1), false);
-  private readonly zAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('z', -1), false);
+  private readonly xyAxisCalculation = (axis, side) => [
+    this.axisCenter,
+    positionFromPxDistance(
+      this.viewer!.scene,
+      this.axisCenter!,
+      AXIS_LENGTH,
+      axis,
+      side,
+    ),
+  ];
+  private readonly xAxisCallback = new CallbackProperty(
+    () => this.xyAxisCalculation('x', -1),
+    false,
+  );
+  private readonly yAxisCallback = new CallbackProperty(
+    () => this.xyAxisCalculation('y', 1),
+    false,
+  );
+  private readonly zAxisCallback = new CallbackProperty(
+    () => this.xyAxisCalculation('z', -1),
+    false,
+  );
   private exaggeration = 1;
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(async v => {
+    MainStore.viewer.subscribe(async (v) => {
       this.viewer = v;
       if (!this.viewer) return;
-      this.axisDataSource = await this.viewer!.dataSources.add(new CustomDataSource('navigationAxes'));
+      this.axisDataSource = await this.viewer!.dataSources.add(
+        new CustomDataSource('navigationAxes'),
+      );
       this.toggleAxis(this.axisCenter);
       this.exaggeration = this.viewer.scene.verticalExaggeration;
     });
     NavToolsStore.syncTargetPoint.subscribe(() => this.syncPoint());
-    NavToolsStore.hideTargetPointListener.subscribe(() => this.removeTargetPoint());
-    NavToolsStore.cameraHeightUpdate.subscribe(async height => {
+    NavToolsStore.hideTargetPointListener.subscribe(() =>
+      this.removeTargetPoint(),
+    );
+    NavToolsStore.cameraHeightUpdate.subscribe(async (height) => {
       if (!this.viewer) return;
       this.showTargetPoint && this.stopTracking();
       const pc = this.viewer.camera.positionCartographic;
-      this.viewer.camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, height);
+      this.viewer.camera.position = Cartesian3.fromRadians(
+        pc.longitude,
+        pc.latitude,
+        height,
+      );
       this.showTargetPoint && this.startTracking();
     });
-    NavToolsStore.navLockType.subscribe(type => {
-      if (type !== '' && type !== 'elevation' && this.showTargetPoint) this.removeTargetPoint();
+    NavToolsStore.navLockType.subscribe((type) => {
+      if (type !== '' && type !== 'elevation' && this.showTargetPoint)
+        this.removeTargetPoint();
       this.lockType = type;
     });
-    NavToolsStore.exaggerationChanged.subscribe(exaggeration => {
+    NavToolsStore.exaggerationChanged.subscribe((exaggeration) => {
       if (!this.viewer) return;
       this.showTargetPoint && this.stopTracking();
       const exaggerationScale = exaggeration / this.exaggeration;
@@ -112,12 +140,20 @@ export class NgmNavTools extends LitElementI18n {
         const cartographic = Cartographic.fromCartesian(centerOfView);
         const height = cartographic.height;
         const offset = height * exaggerationScale - height;
-        this.viewer.camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, pc.height + offset);
+        this.viewer.camera.position = Cartesian3.fromRadians(
+          pc.longitude,
+          pc.latitude,
+          pc.height + offset,
+        );
       }
       if (this.showTargetPoint) {
-        const iconPos = Cartographic.fromCartesian(this.refIcon.position!.getValue(this.julianDate)!);
+        const iconPos = Cartographic.fromCartesian(
+          this.refIcon.position!.getValue(this.julianDate)!,
+        );
         iconPos.height = iconPos.height * exaggerationScale;
-        this.refIcon.position = new ConstantPositionProperty(Cartographic.toCartesian(iconPos));
+        this.refIcon.position = new ConstantPositionProperty(
+          Cartographic.toCartesian(iconPos),
+        );
         this.startTracking();
         syncTargetParam(iconPos);
       }
@@ -129,7 +165,8 @@ export class NgmNavTools extends LitElementI18n {
     if (this.viewer && !this.unlistenFromPostRender) {
       const scene: Scene = this.viewer.scene;
       this.unlistenFromPostRender = scene.postRender.addEventListener(() => {
-        const amount = Math.abs(scene.camera.positionCartographic.height) / this.moveAmount;
+        const amount =
+          Math.abs(scene.camera.positionCartographic.height) / this.moveAmount;
         if (this.zoomingIn) {
           scene.camera.moveForward(amount);
         } else if (this.zoomingOut) {
@@ -138,10 +175,14 @@ export class NgmNavTools extends LitElementI18n {
       });
       this.refIcon = this.viewer.entities.add(this.refIcon);
       this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-      this.eventHandler.setInputAction(event => {
-        const pickedPosition = pickPositionOrVoxel(scene, event.position);
-        this.toggleAxis(pickedPosition);
-      }, ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.CTRL);
+      this.eventHandler.setInputAction(
+        (event) => {
+          const pickedPosition = pickPositionOrVoxel(scene, event.position);
+          this.toggleAxis(pickedPosition);
+        },
+        ScreenSpaceEventType.LEFT_DOWN,
+        KeyboardEventModifier.CTRL,
+      );
       document.addEventListener('keyup', (evt) => {
         if (evt.key === 'Control') this.toggleAxis(undefined);
       });
@@ -152,7 +193,7 @@ export class NgmNavTools extends LitElementI18n {
   connectedCallback() {
     document.addEventListener('pointerup', this.stopZoomFunction);
     draggable(this, {
-      allowFrom: '.ngm-drag-area'
+      allowFrom: '.ngm-drag-area',
     });
     super.connectedCallback();
   }
@@ -194,7 +235,7 @@ export class NgmNavTools extends LitElementI18n {
     if (!this.viewer) return;
     this.showTargetPoint && this.removeTargetPoint();
     this.viewer.camera.flyTo({
-      ...DEFAULT_VIEW
+      ...DEFAULT_VIEW,
     });
   }
 
@@ -207,9 +248,18 @@ export class NgmNavTools extends LitElementI18n {
       this.eventHandler.removeInputAction(ScreenSpaceEventType.LEFT_UP);
       this.removeTargetPoint();
     } else if (!this.lockType || this.lockType === 'elevation') {
-      this.eventHandler.setInputAction(debounce(event => this.onMouseMove(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
-      this.eventHandler.setInputAction(event => this.onLeftDown(event), ScreenSpaceEventType.LEFT_DOWN);
-      this.eventHandler.setInputAction(() => this.onLeftUp(), ScreenSpaceEventType.LEFT_UP);
+      this.eventHandler.setInputAction(
+        debounce((event) => this.onMouseMove(event), 250),
+        ScreenSpaceEventType.MOUSE_MOVE,
+      );
+      this.eventHandler.setInputAction(
+        (event) => this.onLeftDown(event),
+        ScreenSpaceEventType.LEFT_DOWN,
+      );
+      this.eventHandler.setInputAction(
+        () => this.onLeftUp(),
+        ScreenSpaceEventType.LEFT_UP,
+      );
       position = position || pickCenterOnMapOrObject(this.viewer!.scene);
       if (!position) {
         showSnackbarError(i18next.t('nav_tools_out_glob_warn'));
@@ -249,7 +299,11 @@ export class NgmNavTools extends LitElementI18n {
 
   onLeftDown(event) {
     const pickedObject = this.viewer!.scene.pick(event.position);
-    if (pickedObject && pickedObject.id && pickedObject.id.id === this.refIcon.id) {
+    if (
+      pickedObject &&
+      pickedObject.id &&
+      pickedObject.id.id === this.refIcon.id
+    ) {
       this.stopTracking();
       this.moveRef = true;
     }
@@ -277,20 +331,30 @@ export class NgmNavTools extends LitElementI18n {
 
     this.viewer!.scene.screenSpaceCameraController.enableInputs = true;
     // for better performance
-    this.eventHandler!.setInputAction(debounce(event => this.onMouseMove(event), 250), ScreenSpaceEventType.MOUSE_MOVE);
+    this.eventHandler!.setInputAction(
+      debounce((event) => this.onMouseMove(event), 250),
+      ScreenSpaceEventType.MOUSE_MOVE,
+    );
     this.viewer!.scene.requestRender();
   }
 
   onMouseMove(event) {
     if (this.moveRef) {
-      const position = pickPositionOrVoxel(this.viewer!.scene, event.endPosition);
+      const position = pickPositionOrVoxel(
+        this.viewer!.scene,
+        event.endPosition,
+      );
       if (!position) return;
       this.addTargetPoint(position);
       syncTargetParam(Cartographic.fromCartesian(position));
       this.viewer!.scene.requestRender();
     } else {
       const pickedObject = this.viewer!.scene.pick(event.endPosition);
-      if (pickedObject && pickedObject.id && pickedObject.id.id === this.refIcon.id)
+      if (
+        pickedObject &&
+        pickedObject.id &&
+        pickedObject.id.id === this.refIcon.id
+      )
         this.viewer!.canvas.style.cursor = 'pointer';
       else if (this.viewer!.canvas.style.cursor === 'pointer')
         this.viewer!.canvas.style.cursor = '';
@@ -307,21 +371,21 @@ export class NgmNavTools extends LitElementI18n {
       polyline: {
         positions: this.zAxisCallback,
         material: Color.BLUE,
-        ...template
+        ...template,
       },
     });
     this.axisDataSource.entities.add({
       polyline: {
         positions: this.xAxisCallback,
         material: Color.RED,
-        ...template
+        ...template,
       },
     });
     this.axisDataSource.entities.add({
       polyline: {
         positions: this.yAxisCallback,
         material: Color.GREEN,
-        ...template
+        ...template,
       },
     });
   }
@@ -344,28 +408,47 @@ export class NgmNavTools extends LitElementI18n {
         frameState.morphTime = oldMorphTime;
       };
     }
-    this.dispatchEvent(new CustomEvent('axisstate', {detail: {showAxis: !!this.axisCenter}}));
+    this.dispatchEvent(
+      new CustomEvent('axisstate', { detail: { showAxis: !!this.axisCenter } }),
+    );
   }
 
   render() {
     if (!this.viewer) return '';
     return html`
       <div class="ngm-nav-buttons">
-        <div title="${i18next.t('nav_zoom_in')}" class="ngm-zoom-p-icon" @pointerdown=${e => this.startZoomIn(e)}></div>
-        <div title="${i18next.t('nav_fly_home')}" class="ngm-zoom-o-icon" @click=${() => this.flyToHome()}></div>
-        <div title="${i18next.t('nav_zoom_out')}" class="ngm-zoom-m-icon"
-             @pointerdown=${e => this.startZoomOut(e)}></div>
+        <div
+          title="${i18next.t('nav_zoom_in')}"
+          class="ngm-zoom-p-icon"
+          @pointerdown=${(e) => this.startZoomIn(e)}
+        ></div>
+        <div
+          title="${i18next.t('nav_fly_home')}"
+          class="ngm-zoom-o-icon"
+          @click=${() => this.flyToHome()}
+        ></div>
+        <div
+          title="${i18next.t('nav_zoom_out')}"
+          class="ngm-zoom-m-icon"
+          @pointerdown=${(e) => this.startZoomOut(e)}
+        ></div>
         <div class="ngm-divider"></div>
-        <div title="${i18next.t('cam_configuration_header')}"
-             class="ngm-cam-icon ${classMap({'ngm-active-icon': this.showCamConfig})}"
-             @click=${() => this.dispatchEvent(new CustomEvent('togglecamconfig'))}>
-        </div>
-        <div title="${i18next.t('nav_target_point')}"
-             class="ngm-coords-icon ${classMap({
-               'ngm-active-icon': this.showTargetPoint,
-               'ngm-disabled': this.lockType !== '' && this.lockType !== 'elevation'
-             })}" @click=${() => this.toggleReference()}>
-        </div>
+        <div
+          title="${i18next.t('cam_configuration_header')}"
+          class="ngm-cam-icon ${classMap({
+            'ngm-active-icon': this.showCamConfig,
+          })}"
+          @click=${() => this.dispatchEvent(new CustomEvent('togglecamconfig'))}
+        ></div>
+        <div
+          title="${i18next.t('nav_target_point')}"
+          class="ngm-coords-icon ${classMap({
+            'ngm-active-icon': this.showTargetPoint,
+            'ngm-disabled':
+              this.lockType !== '' && this.lockType !== 'elevation',
+          })}"
+          @click=${() => this.toggleReference()}
+        ></div>
       </div>
       ${dragArea}
     `;

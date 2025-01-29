@@ -1,5 +1,5 @@
-import {ClientConfig} from './client-config';
-import {API_BY_PAGE_HOST} from '../constants';
+import { ClientConfig } from './client-config';
+import { API_BY_PAGE_HOST } from '../constants';
 
 export class ConfigService {
   private readonly apiUrl: string;
@@ -13,7 +13,7 @@ export class ConfigService {
       const response = await fetch(`${this.apiUrl}/client-config`, {
         method: 'GET',
       });
-      return await response.json() as ClientConfig;
+      return (await response.json()) as ClientConfig;
     } catch (e) {
       console.error(`Failed to update project: ${e}`);
       return null;

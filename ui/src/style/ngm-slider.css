@@ -3,7 +3,7 @@
   appearance: none;
   width: 100%;
   height: 4px;
-  background: #FFFFFF;
+  background: #ffffff;
 }
 
 .ngm-slider::-webkit-slider-thumb {
@@ -33,26 +33,26 @@
 }
 
 .ngm-slider:not(.disabled)::-webkit-slider-thumb:hover {
-  box-shadow:0 0 4px 2px #68d9e7;
+  box-shadow: 0 0 4px 2px #68d9e7;
 }
 
 .ngm-slider:not(.disabled)::-moz-range-thumb:active {
-  background-color: #68D9E7;
+  background-color: #68d9e7;
 }
 
 .ngm-slider:not(.disabled)::-webkit-slider-thumb:active {
-  background-color: #68D9E7;
+  background-color: #68d9e7;
 }
 
-.ngm-slider.disabled::-moz-range-thumb{
+.ngm-slider.disabled::-moz-range-thumb {
   cursor: not-allowed;
 }
 
-.ngm-slider.disabled::-webkit-slider-thumb{
+.ngm-slider.disabled::-webkit-slider-thumb {
   cursor: not-allowed;
 }
 
 .ngm-slider.disabled {
-  opacity: .5;
+  opacity: 0.5;
   cursor: not-allowed;
 }

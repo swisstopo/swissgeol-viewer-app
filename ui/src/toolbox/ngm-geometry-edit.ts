@@ -1,8 +1,14 @@
-import {LitElementI18n} from '../i18n';
-import {customElement, property, query, state} from 'lit/decorators.js';
-import {html} from 'lit';
-import type {ConstantProperty, Event, Viewer} from 'cesium';
-import {Entity, PropertyBag, Math as CesiumMath, JulianDate, CustomDataSource} from 'cesium';
+import { LitElementI18n } from '../i18n';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { html } from 'lit';
+import type { ConstantProperty, Event, Viewer } from 'cesium';
+import {
+  CustomDataSource,
+  Entity,
+  JulianDate,
+  Math as CesiumMath,
+  PropertyBag,
+} from 'cesium';
 import i18next from 'i18next';
 import MainStore from '../store/main';
 import {
@@ -10,23 +16,28 @@ import {
   hideVolume,
   pauseGeometryCollectionEvents,
   updateEntityVolume,
-  updateVolumePositions
+  updateVolumePositions,
 } from './helpers';
-import {getEntityColor, getValueOrUndefined} from '../cesiumutils';
+import { getEntityColor, getValueOrUndefined } from '../cesiumutils';
 import ToolboxStore from '../store/toolbox';
 import DrawStore from '../store/draw';
-import type {CesiumDraw} from '../draw/CesiumDraw';
-import {COLORS_WITH_BLACK_TICK, GEOMETRY_COLORS, GEOMETRY_DATASOURCE_NAME, POINT_SYMBOLS} from '../constants';
-import {classMap} from 'lit-html/directives/class-map.js';
-import {styleMap} from 'lit/directives/style-map.js';
+import type { CesiumDraw } from '../draw/CesiumDraw';
+import {
+  COLORS_WITH_BLACK_TICK,
+  GEOMETRY_COLORS,
+  GEOMETRY_DATASOURCE_NAME,
+  POINT_SYMBOLS,
+} from '../constants';
+import { classMap } from 'lit-html/directives/class-map.js';
+import { styleMap } from 'lit/directives/style-map.js';
 import './ngm-point-edit';
-import {skip, take} from 'rxjs';
+import { skip, take } from 'rxjs';
 
 @customElement('ngm-geometry-edit')
 export class NgmGeometryEdit extends LitElementI18n {
-  @property({type: Object})
+  @property({ type: Object })
   accessor entity: Entity | undefined;
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor volumeShowed = false;
   @query('.ngm-lower-limit-input')
   accessor lowerLimitInput;
@@ -53,10 +64,12 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => {
+    MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       if (this.viewer) {
-        this.geometriesDataSource = this.viewer.dataSources.getByName(GEOMETRY_DATASOURCE_NAME)[0];
+        this.geometriesDataSource = this.viewer.dataSources.getByName(
+          GEOMETRY_DATASOURCE_NAME,
+        )[0];
       }
     });
   }
@@ -69,19 +82,25 @@ export class NgmGeometryEdit extends LitElementI18n {
   @pauseGeometryCollectionEvents
   onEntityChange() {
     if (this.entity && !this.editingEntity) {
-      this.editingEntity = new Entity({properties: new PropertyBag()});
+      this.editingEntity = new Entity({ properties: new PropertyBag() });
       // deep clone entity and props
       this.editingEntity.properties!.merge(this.entity.properties);
       this.editingEntity.merge(this.entity);
       this.viewer!.entities.add(this.editingEntity);
       this.editingEntity.show = true;
       this.entity.show = false;
-      this.selectedColor = getEntityColor(this.editingEntity).withAlpha(1).toCssColorString();
-      this.selectedSymbol = getValueOrUndefined(this.editingEntity.billboard?.image);
+      this.selectedColor = getEntityColor(this.editingEntity)
+        .withAlpha(1)
+        .toCssColorString();
+      this.selectedSymbol = getValueOrUndefined(
+        this.editingEntity.billboard?.image,
+      );
       this.name = this.editingEntity.name || '';
       this.draw = DrawStore.drawValue;
-      this.unsubscribeFromChanges = this.entity.properties!.definitionChanged.addEventListener(properties =>
-          this.onEntityPropertyChange(properties));
+      this.unsubscribeFromChanges =
+        this.entity.properties!.definitionChanged.addEventListener(
+          (properties) => this.onEntityPropertyChange(properties),
+        );
       if (this.draw) {
         this.cancelDraw();
         this.draw.entityForEdit = this.editingEntity;
@@ -94,7 +113,10 @@ export class NgmGeometryEdit extends LitElementI18n {
   @pauseGeometryCollectionEvents
   onEntityPropertyChange(properties) {
     const volumeShowed = getValueOrUndefined(properties.volumeShowed);
-    if (volumeShowed !== getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)) {
+    if (
+      volumeShowed !==
+      getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)
+    ) {
       this.editingEntity!.properties!.volumeShowed = volumeShowed;
       if (volumeShowed) {
         updateEntityVolume(this.editingEntity!, this.viewer!.scene.globe);
@@ -107,11 +129,15 @@ export class NgmGeometryEdit extends LitElementI18n {
   }
 
   onHeightLimitChange() {
-    const height = CesiumMath.clamp(Number(this.heightInput.value), this.minVolumeHeight, this.maxVolumeHeight);
+    const height = CesiumMath.clamp(
+      Number(this.heightInput.value),
+      this.minVolumeHeight,
+      this.maxVolumeHeight,
+    );
     this.heightInput.value = height.toString();
 
     const lowerLimit = Number(this.lowerLimitInput.value);
-    this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
+    this.editingEntity!.properties!.volumeHeightLimits = { lowerLimit, height };
 
     this.updateVolumePositions();
   }
@@ -122,28 +148,38 @@ export class NgmGeometryEdit extends LitElementI18n {
     if (this.lowerLimitInput.value === '') {
       lowerLimit = this.lowerLimitInput.value;
     } else {
-      lowerLimit = CesiumMath.clamp(Number(this.lowerLimitInput.value), this.minVolumeLowerLimit, this.maxVolumeLowerLimit);
+      lowerLimit = CesiumMath.clamp(
+        Number(this.lowerLimitInput.value),
+        this.minVolumeLowerLimit,
+        this.maxVolumeLowerLimit,
+      );
       this.lowerLimitInput.value = lowerLimit.toString();
     }
 
     const height = Number(this.heightInput.value);
-    this.editingEntity!.properties!.volumeHeightLimits = {lowerLimit, height};
+    this.editingEntity!.properties!.volumeHeightLimits = { lowerLimit, height };
 
     this.lowerLimitInputValidation();
     this.updateVolumePositions();
   }
 
   updateVolumePositions() {
-    const positions = this.editingEntity!.polylineVolume!.positions!.getValue(this.julianDate);
-    updateVolumePositions(this.editingEntity, positions, this.viewer!.scene.globe);
+    const positions = this.editingEntity!.polylineVolume!.positions!.getValue(
+      this.julianDate,
+    );
+    updateVolumePositions(
+      this.editingEntity,
+      positions,
+      this.viewer!.scene.globe,
+    );
     this.viewer!.scene.requestRender();
   }
 
-
   lowerLimitInputValidation() {
-    const lowerLimit = this.editingEntity!.properties!.volumeHeightLimits.getValue().lowerLimit;
-    const validationTest = /^-?(0|[1-9]\d*)(\.\d+)?$/.test(lowerLimit);
-    this.validLowerLimit = validationTest;
+    const lowerLimit =
+      this.editingEntity!.properties!.volumeHeightLimits.getValue().lowerLimit;
+    const isValid = /^-?(0|[1-9]\d*)(\.\d+)?$/.test(lowerLimit);
+    this.validLowerLimit = isValid;
   }
 
   onPropChange(evt, propName) {
@@ -157,27 +193,43 @@ export class NgmGeometryEdit extends LitElementI18n {
   @pauseGeometryCollectionEvents
   save() {
     if (this.entity && this.editingEntity) {
-      this.entity.properties = <any>getAreaProperties(this.editingEntity, this.editingEntity.properties!.type.getValue());
+      this.entity.properties = <any>(
+        getAreaProperties(
+          this.editingEntity,
+          this.editingEntity.properties!.type.getValue(),
+        )
+      );
       if (this.entity.billboard) {
-        this.entity.position = <any> this.editingEntity.position?.getValue(this.julianDate);
+        this.entity.position = <any>(
+          this.editingEntity.position?.getValue(this.julianDate)
+        );
         this.entity.billboard.color = this.editingEntity.billboard!.color;
         this.entity.billboard.image = this.editingEntity.billboard!.image;
         if (getValueOrUndefined(this.editingEntity.properties!.volumeShowed)) {
           updateEntityVolume(this.entity!, this.viewer!.scene.globe);
         }
       } else if (this.entity.polyline) {
-        const positions = this.editingEntity.polyline!.positions?.getValue(this.julianDate);
-        (<ConstantProperty> this.entity.polyline.positions).setValue(positions);
+        const positions = this.editingEntity.polyline!.positions?.getValue(
+          this.julianDate,
+        );
+        (<ConstantProperty>this.entity.polyline.positions).setValue(positions);
         this.entity.polyline.material = this.editingEntity.polyline!.material;
       } else if (this.entity.polygon) {
-        const hierarchy = this.editingEntity.polygon!.hierarchy?.getValue(this.julianDate);
-        (<ConstantProperty> this.entity.polygon.hierarchy).setValue(hierarchy);
+        const hierarchy = this.editingEntity.polygon!.hierarchy?.getValue(
+          this.julianDate,
+        );
+        (<ConstantProperty>this.entity.polygon.hierarchy).setValue(hierarchy);
         this.entity.polygon.material = this.editingEntity.polygon!.material;
       }
-      if (getValueOrUndefined(this.editingEntity.properties!.volumeShowed) && this.entity.polylineVolume) {
+      if (
+        getValueOrUndefined(this.editingEntity.properties!.volumeShowed) &&
+        this.entity.polylineVolume
+      ) {
         updateEntityVolume(this.entity, this.viewer!.scene.globe);
-        this.entity.polylineVolume.outlineColor = this.editingEntity.polylineVolume!.outlineColor;
-        this.entity.polylineVolume.material = this.editingEntity.polylineVolume!.material;
+        this.entity.polylineVolume.outlineColor =
+          this.editingEntity.polylineVolume!.outlineColor;
+        this.entity.polylineVolume.material =
+          this.editingEntity.polylineVolume!.material;
       }
       this.entity.name = this.editingEntity.name;
       this.endEditing();
@@ -188,7 +240,6 @@ export class NgmGeometryEdit extends LitElementI18n {
     if (!this.draw || !this.draw.active) return;
     this.draw.active = false;
     this.draw.clear();
-
   }
 
   removeEditingEntity() {
@@ -207,7 +258,9 @@ export class NgmGeometryEdit extends LitElementI18n {
     ToolboxStore.openedGeometryOptions.pipe(skip(1), take(1)).subscribe(() => {
       this.geometriesDataSource?.entities.resumeEvents();
     });
-    ToolboxStore.setOpenedGeometryOptions(this.entity ? {id: this.entity.id} : null);
+    ToolboxStore.setOpenedGeometryOptions(
+      this.entity ? { id: this.entity.id } : null,
+    );
   }
 
   onColorChange(color) {
@@ -234,7 +287,7 @@ export class NgmGeometryEdit extends LitElementI18n {
   onSymbolChange(image) {
     if (!this.editingEntity || !this.editingEntity.billboard) return;
     this.selectedSymbol = `/images/${image}`;
-    this.editingEntity.billboard.image = <any> this.selectedSymbol;
+    this.editingEntity.billboard.image = <any>this.selectedSymbol;
     this.viewer!.scene.requestRender();
   }
 
@@ -247,84 +300,147 @@ export class NgmGeometryEdit extends LitElementI18n {
     if (!this.editingEntity) return '';
     const type = getValueOrUndefined(this.editingEntity!.properties!.type);
     return html`
-      <div class="ngm-input ${classMap({'ngm-input-warning': !this.name})}">
-        <input type="text" placeholder="required" .value=${this.name}
-               @input=${evt => this.onNameChange(evt)}/>
+      <div class="ngm-input ${classMap({ 'ngm-input-warning': !this.name })}">
+        <input
+          type="text"
+          placeholder="required"
+          .value=${this.name}
+          @input=${(evt) => this.onNameChange(evt)}
+        />
         <span class="ngm-floating-label">${i18next.t('tbx_name_label')}</span>
       </div>
       <div class="ngm-input ngm-textarea">
-        <textarea type="text" placeholder="required"
-                  .value=${getValueOrUndefined(this.editingEntity!.properties!.description) || ''}
-                  @input=${evt => this.onPropChange(evt, 'description')}></textarea>
-        <span class="ngm-floating-label">${i18next.t('tbx_description_label')}</span>
+        <textarea
+          type="text"
+          placeholder="required"
+          .value=${getValueOrUndefined(
+            this.editingEntity!.properties!.description,
+          ) || ''}
+          @input=${(evt) => this.onPropChange(evt, 'description')}
+        ></textarea>
+        <span class="ngm-floating-label"
+          >${i18next.t('tbx_description_label')}</span
+        >
       </div>
       <div class="ngm-input">
-        <input type="text" placeholder="required"
-               .value=${getValueOrUndefined(this.editingEntity!.properties!.image) || ''}
-               @input=${evt => this.onPropChange(evt, 'image')}/>
+        <input
+          type="text"
+          placeholder="required"
+          .value=${getValueOrUndefined(this.editingEntity!.properties!.image) ||
+          ''}
+          @input=${(evt) => this.onPropChange(evt, 'image')}
+        />
         <span class="ngm-floating-label">${i18next.t('tbx_image_label')}</span>
       </div>
       <div class="ngm-input">
-        <input type="text" placeholder="required"
-               .value=${getValueOrUndefined(this.editingEntity!.properties!.website) || ''}
-               @input=${evt => this.onPropChange(evt, 'website')}/>
-        <span class="ngm-floating-label">${i18next.t('tbx_website_label')}</span>
+        <input
+          type="text"
+          placeholder="required"
+          .value=${getValueOrUndefined(
+            this.editingEntity!.properties!.website,
+          ) || ''}
+          @input=${(evt) => this.onPropChange(evt, 'website')}
+        />
+        <span class="ngm-floating-label"
+          >${i18next.t('tbx_website_label')}</span
+        >
       </div>
-      <div class="ngm-geom-edit-double-input"
-           ?hidden=${!this.volumeShowed || type === 'point'}>
-        <div class="ngm-input ${classMap({'ngm-input-warning': !this.validLowerLimit})}">
-          <input type="number" min=${this.minVolumeLowerLimit} max=${this.maxVolumeLowerLimit}
-                 .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.lowerLimit.toFixed(1)}
-                 step="0.1"
-                 @focusout=${this.onLowerLimitChange}
-                 class="ngm-lower-limit-input" placeholder="required"/>
-          <span class="ngm-floating-label">${i18next.t('tbx_volume_lower_limit_label')}</span>
+      <div
+        class="ngm-geom-edit-double-input"
+        ?hidden=${!this.volumeShowed || type === 'point'}
+      >
+        <div
+          class="ngm-input ${classMap({
+            'ngm-input-warning': !this.validLowerLimit,
+          })}"
+        >
+          <input
+            type="number"
+            min=${this.minVolumeLowerLimit}
+            max=${this.maxVolumeLowerLimit}
+            .value=${getValueOrUndefined(
+              this.entity!.properties!.volumeHeightLimits,
+            )?.lowerLimit.toFixed(1)}
+            step="0.1"
+            @focusout=${this.onLowerLimitChange}
+            class="ngm-lower-limit-input"
+            placeholder="required"
+          />
+          <span class="ngm-floating-label"
+            >${i18next.t('tbx_volume_lower_limit_label')}</span
+          >
         </div>
         <div class="ngm-input">
-          <input type="number" min=${this.minVolumeHeight} max=${this.maxVolumeHeight}
-                 .value=${getValueOrUndefined(this.entity!.properties!.volumeHeightLimits)?.height.toFixed(1)}
-                 step="0.1"
-                 @focusout=${this.onHeightLimitChange}
-                 class="ngm-height-input" placeholder="required"/>
-          <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
+          <input
+            type="number"
+            min=${this.minVolumeHeight}
+            max=${this.maxVolumeHeight}
+            .value=${getValueOrUndefined(
+              this.entity!.properties!.volumeHeightLimits,
+            )?.height.toFixed(1)}
+            step="0.1"
+            @focusout=${this.onHeightLimitChange}
+            class="ngm-height-input"
+            placeholder="required"
+          />
+          <span class="ngm-floating-label"
+            >${i18next.t('tbx_volume_height_label')}</span
+          >
         </div>
       </div>
-      <ngm-point-edit ?hidden=${type !== 'point'} .entity=${this.editingEntity} .volumeShowed=${this.volumeShowed}></ngm-point-edit>
+      <ngm-point-edit
+        ?hidden=${type !== 'point'}
+        .entity=${this.editingEntity}
+        .volumeShowed=${this.volumeShowed}
+      ></ngm-point-edit>
       <div>
         <div class="geom-styles-title">${i18next.t('tbx_styles_title')}</div>
         <div class="ngm-geom-colorpicker">
-          ${GEOMETRY_COLORS.map(color => html`
-            <div
-              style="background-color: ${color.color};"
-              @click=${() => this.onColorChange(color.value)}
-              class="ngm-geom-color ${classMap({
-                active: this.selectedColor === color.value.toCssColorString(),
-                'black-tick': COLORS_WITH_BLACK_TICK.includes(color.color)
-              })}">
-            </div>`
+          ${GEOMETRY_COLORS.map(
+            (color) =>
+              html` <div
+                style="background-color: ${color.color};"
+                @click=${() => this.onColorChange(color.value)}
+                class="ngm-geom-color ${classMap({
+                  active: this.selectedColor === color.value.toCssColorString(),
+                  'black-tick': COLORS_WITH_BLACK_TICK.includes(color.color),
+                })}"
+              ></div>`,
           )}
         </div>
       </div>
-      <div class="ngm-geom-symbolpicker" ?hidden=${!this.editingEntity.billboard}>
-        ${POINT_SYMBOLS.map(image => {
+      <div
+        class="ngm-geom-symbolpicker"
+        ?hidden=${!this.editingEntity.billboard}
+      >
+        ${POINT_SYMBOLS.map((image) => {
           const imgSrc = `/images/${image}`;
-          return html`
-            <div
-              class="ngm-geom-symbol ${classMap({active: this.selectedSymbol === imgSrc})}"
-              style=${styleMap({
-                '-webkit-mask-image': `url('${imgSrc}')`,
-                'mask-image': `url('${imgSrc}')`,
-                backgroundColor: this.selectedColor
-              })}
-              @click=${() => this.onSymbolChange(image)}></div>`;
+          return html` <div
+            class="ngm-geom-symbol ${classMap({
+              active: this.selectedSymbol === imgSrc,
+            })}"
+            style=${styleMap({
+              '-webkit-mask-image': `url('${imgSrc}')`,
+              'mask-image': `url('${imgSrc}')`,
+              backgroundColor: this.selectedColor,
+            })}
+            @click=${() => this.onSymbolChange(image)}
+          ></div>`;
         })}
       </div>
       <div class="ngm-geom-edit-actions">
-        <button @click="${this.save}"
-                class="ui button ngm-action-btn ${classMap({'ngm-disabled': !this.name || !this.validLowerLimit})}">
+        <button
+          @click="${this.save}"
+          class="ui button ngm-action-btn ${classMap({
+            'ngm-disabled': !this.name || !this.validLowerLimit,
+          })}"
+        >
           ${i18next.t('tbx_save_editing_btn_label')}
         </button>
-        <button @click="${() => this.endEditing()}" class="ui button ngm-action-btn ngm-cancel-btn">
+        <button
+          @click="${() => this.endEditing()}"
+          class="ui button ngm-action-btn ngm-cancel-btn"
+        >
           ${i18next.t('app_cancel_btn_label')}
         </button>
       </div>

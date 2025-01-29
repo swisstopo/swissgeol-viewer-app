@@ -1,41 +1,46 @@
-import {customElement, property, query, state} from 'lit/decorators.js';
-import {css, html} from 'lit';
-import {LitElementI18n} from '../../i18n';
-import {LayerConfig} from '../../layertree';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { css, html } from 'lit';
+import { LitElementI18n } from '../../i18n';
+import { LayerConfig } from '../../layertree';
 import './layer-catalog';
-import {Viewer} from 'cesium';
+import { Viewer } from 'cesium';
 import MainStore from '../../store/main';
-import {Subscription} from 'rxjs';
+import { Subscription } from 'rxjs';
 import './options/layer-options';
-import {classMap} from 'lit/directives/class-map.js';
+import { classMap } from 'lit/directives/class-map.js';
 import i18next from 'i18next';
-import {applyTypography, hostStyles} from '../../styles/theme';
+import { applyTypography, hostStyles } from '../../styles/theme';
 
 @customElement('ngm-layer-tabs')
 export class NgmLayerTabs extends LitElementI18n {
   @property()
-  public accessor layers: LayerConfig[] | null = null
+  public accessor layers: LayerConfig[] | null = null;
 
-  @property({type: Function})
-  accessor onKmlUpload!: (file: File, clampToGround: boolean) => Promise<void> | void
+  @property({ type: Function })
+  accessor onKmlUpload!: (
+    file: File,
+    clampToGround: boolean,
+  ) => Promise<void> | void;
 
   @state()
-  private accessor activeTab: Tab = Tab.Catalog
+  private accessor activeTab: Tab = Tab.Catalog;
 
   @state()
-  private accessor viewer: Viewer | null = null
+  private accessor viewer: Viewer | null = null;
 
   private readonly subscription = new Subscription();
 
   //TODO: where is this from exactly?
   @query('.ngm-toast-placeholder')
-  accessor toastPlaceholder!: HTMLElement
+  accessor toastPlaceholder!: HTMLElement;
 
   connectedCallback() {
     super.connectedCallback();
-    this.subscription.add(MainStore.viewer.subscribe((viewer) => {
-      this.viewer = viewer;
-    }));
+    this.subscription.add(
+      MainStore.viewer.subscribe((viewer) => {
+        this.viewer = viewer;
+      }),
+    );
   }
 
   readonly render = () => html`
@@ -61,21 +66,23 @@ export class NgmLayerTabs extends LitElementI18n {
 
   readonly renderTabButton = (tab: Tab) => html`
     <button
-      @click="${() => this.activeTab = tab}"
-      class="${classMap({'is-active': this.activeTab === tab})}"
+      @click="${() => (this.activeTab = tab)}"
+      class="${classMap({ 'is-active': this.activeTab === tab })}"
     >
       ${i18next.t(`dtd_tab_labels.${tab}`)}
     </button>
   `;
 
   readonly renderTabSeparator = (a: Tab, b: Tab) => html`
-    <div class="separator ${classMap({'is-active': this.activeTab !== a && this.activeTab !== b})}"></div>
+    <div
+      class="separator ${classMap({
+        'is-active': this.activeTab !== a && this.activeTab !== b,
+      })}"
+    ></div>
   `;
 
   private readonly renderCatalog = () => html`
-    <ngm-layer-catalog
-      .layers=${this.layers}
-    ></ngm-layer-catalog>
+    <ngm-layer-catalog .layers=${this.layers}></ngm-layer-catalog>
   `;
 
   static readonly styles = css`
@@ -116,7 +123,7 @@ export class NgmLayerTabs extends LitElementI18n {
     }
 
     .tabs > .separator {
-      border: 1px solid #E0E1E4;
+      border: 1px solid #e0e1e4;
       height: 18px;
     }
 

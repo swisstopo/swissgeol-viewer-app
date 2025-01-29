@@ -12,14 +12,14 @@ ngm-object-information {
 
 ngm-object-information .htmlpopup-header {
   font-weight: bold;
-  border-bottom: 2px solid #DFE2E6;
+  border-bottom: 2px solid #dfe2e6;
   padding-bottom: 8px;
   margin-bottom: 8px;
 }
 
 ngm-object-information .item-zoom-btn-container {
   font-weight: bold;
-  border-top: 2px solid #DFE2E6;
+  border-top: 2px solid #dfe2e6;
   padding-top: 8px;
   margin-top: 8px;
   margin-bottom: 8px;
@@ -47,6 +47,9 @@ ngm-object-information div.content-container span {
   user-select: text;
 }
 
-ngm-object-information .query-list-item:hover .htmlpopup-content > .ui.basic.table {
-  background-color: #F9DCA8;
+ngm-object-information
+  .query-list-item:hover
+  .htmlpopup-content
+  > .ui.basic.table {
+  background-color: #f9dca8;
 }

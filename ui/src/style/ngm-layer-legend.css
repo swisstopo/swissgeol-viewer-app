@@ -1,4 +1,3 @@
-
 ngm-layer-legend {
   max-height: 100%;
 }
@@ -19,7 +18,7 @@ ngm-layer-legend .content-container.legend-html {
 }
 
 ngm-layer-legend .ngm-legend-container {
-  background-color: #F8F9FA;
+  background-color: #f8f9fa;
   display: flex;
 }
 
@@ -56,5 +55,4 @@ ngm-layer-legend .ui.divider {
 }
 
 ngm-layer-legend .content-container {
-
 }

@@ -8,74 +8,74 @@
     https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/swissgeol?node-id=9583-8200&p=f&t=YqTWCnEDrxPCrmpx-0
 */
 :root {
-    --color-bg: #FFF;
-    --color-bg--dark: #F1F3F5;
+  --color-bg: #fff;
+  --color-bg--dark: #f1f3f5;
 
-    --color-bg-contrast: #000;
-    --color-bg-contrast--light: #212529;
-    --color-bg-contrast--lighter: #656363;
+  --color-bg-contrast: #000;
+  --color-bg-contrast--light: #212529;
+  --color-bg-contrast--lighter: #656363;
 
-    --color-highlight: #C5F6FA;
-    --color-highlight--dark: #66D9E8;
-    --color-highlight--darker: #0B7285;
+  --color-highlight: #c5f6fa;
+  --color-highlight--dark: #66d9e8;
+  --color-highlight--darker: #0b7285;
 
-    --color-main: #337083;
-    --color-main--dark: #2F4356;
+  --color-main: #337083;
+  --color-main--dark: #2f4356;
 
-    --color-hovered: #D6E2E6;
-    --color-pressed: #DFE4E9;
+  --color-hovered: #d6e2e6;
+  --color-pressed: #dfe4e9;
 
-    --color-active: #607D52;
-    --color-rest-active: #B2D2A2;
+  --color-active: #607d52;
+  --color-rest-active: #b2d2a2;
 
-    --color-action: #a83526;
-    --color-action--light: #FF0000;
-    --color-medium-emphasis: #2F4356;
+  --color-action: #a83526;
+  --color-action--light: #ff0000;
+  --color-medium-emphasis: #2f4356;
 
-    --panel-padding: 10px;
+  --panel-padding: 10px;
 
-    --icon-size--normal: 24px;
+  --icon-size--normal: 24px;
 
-    --font: 'Inter', sans-serif;
+  --font: "Inter", sans-serif;
 }
 
 /* ## Colors ## */
 :root {
-    --color-brand: #607D52;
-    --color-textfield-grey: #F8F9FA;
-    --color-green-disabled: #C6D3DA;
-    --color-light-blue: #F1F3F5;
+  --color-brand: #607d52;
+  --color-textfield-grey: #f8f9fa;
+  --color-green-disabled: #c6d3da;
+  --color-light-blue: #f1f3f5;
 
-    --color-focus: #8655F6;
-    --color-active--highlight: #FF0000;
+  --color-focus: #8655f6;
+  --color-active--highlight: #ff0000;
 
-    --color-primary: #337083;
-    --color-primary--light: #4FA7BC;
-    --color-primary--hovered: #295969;
-    --color-primary--pressed: #1F444F;
-    --color-primary--disabled: #C1D3D9;
-    --color-primary--active: #607D52;
+  --color-primary: #337083;
+  --color-primary--light: #4fa7bc;
+  --color-primary--hovered: #295969;
+  --color-primary--pressed: #1f444f;
+  --color-primary--disabled: #c1d3d9;
+  --color-primary--active: #607d52;
 
-    --color-text--invert: #FFFFFF;
-    --color-text--disabled: #828E9A;
-    --color-text--emphasis--medium: #2F4356;
-    --color-text--emphasis--high: #1C2834;
-    --color-text--link: #1D4ED8;
+  --color-text--invert: #ffffff;
+  --color-text--disabled: #828e9a;
+  --color-text--emphasis--medium: #2f4356;
+  --color-text--emphasis--high: #1c2834;
+  --color-text--link: #1d4ed8;
 
-    --color-secondary: #FFFFFF;
-    --color-secondary--hovered: #D6E2E6;
-    --color-secondary--pressed: #ADC6CD;
-    --color-secondary--disabled: #FFFFFF;
-    --color-secondary--active: #B2D2A2;
+  --color-secondary: #ffffff;
+  --color-secondary--hovered: #d6e2e6;
+  --color-secondary--pressed: #adc6cd;
+  --color-secondary--disabled: #ffffff;
+  --color-secondary--active: #b2d2a2;
 
-    --color-tertiary--hovered: #DFE4E9;
+  --color-tertiary--hovered: #dfe4e9;
 
-    --color-border--default: #DFE4E9;
+  --color-border--default: #dfe4e9;
 
-    --color-bg--white: #FFFFFF;
-    --color-bg--grey: #F1F3F5;
-    --color-bg--disabled: #828E9A;
-    --color-bg--error: #D8232A;
+  --color-bg--white: #ffffff;
+  --color-bg--grey: #f1f3f5;
+  --color-bg--disabled: #828e9a;
+  --color-bg--error: #d8232a;
 }
 
 /* ### Typography ### */
@@ -95,128 +95,128 @@
      We can set that attribute manually whenever we need it.
  */
 :root {
-    --font-family: 'Inter';
-    --font-family--fallback: sans-serif;
+  --font-family: "Inter";
+  --font-family--fallback: sans-serif;
 
-    --typo-h1--family: var(--font-family), var(--font-family--fallback);
-    --typo-h1--weight: 400;
-    --typo-h1--size: 48px;
-    --typo-h1--line-height: 60px;
-    --typo-h1--letter-spacing: -0.5px;
+  --typo-h1--family: var(--font-family), var(--font-family--fallback);
+  --typo-h1--weight: 400;
+  --typo-h1--size: 48px;
+  --typo-h1--line-height: 60px;
+  --typo-h1--letter-spacing: -0.5px;
 
-    --typo-h2--family: var(--font-family), var(--font-family--fallback);
-    --typo-h2--weight: 400;
-    --typo-h2--size: 40px;
-    --typo-h2--line-height: 48px;
-    --typo-h2--letter-spacing: -0.5px;
+  --typo-h2--family: var(--font-family), var(--font-family--fallback);
+  --typo-h2--weight: 400;
+  --typo-h2--size: 40px;
+  --typo-h2--line-height: 48px;
+  --typo-h2--letter-spacing: -0.5px;
 
-    --typo-h3--family: var(--font-family), var(--font-family--fallback);
-    --typo-h3--weight: 400;
-    --typo-h3--size: 32px;
-    --typo-h3--line-height: 44px;
-    --typo-h3--letter-spacing: 0.18px;
+  --typo-h3--family: var(--font-family), var(--font-family--fallback);
+  --typo-h3--weight: 400;
+  --typo-h3--size: 32px;
+  --typo-h3--line-height: 44px;
+  --typo-h3--letter-spacing: 0.18px;
 
-    --typo-h4--family: var(--font-family), var(--font-family--fallback);
-    --typo-h4--weight: 400;
-    --typo-h4--size: 28px;
-    --typo-h4--line-height: 36px;
-    --typo-h4--letter-spacing: 0.1px;
+  --typo-h4--family: var(--font-family), var(--font-family--fallback);
+  --typo-h4--weight: 400;
+  --typo-h4--size: 28px;
+  --typo-h4--line-height: 36px;
+  --typo-h4--letter-spacing: 0.1px;
 
-    --typo-h5--family: var(--font-family), var(--font-family--fallback);
-    --typo-h5--weight: 500;
-    --typo-h5--size: 20px;
-    --typo-h5--line-height: 28px;
-    --typo-h5--letter-spacing: 0.2px;
+  --typo-h5--family: var(--font-family), var(--font-family--fallback);
+  --typo-h5--weight: 500;
+  --typo-h5--size: 20px;
+  --typo-h5--line-height: 28px;
+  --typo-h5--letter-spacing: 0.2px;
 
-    --typo-h6--family: var(--font-family), var(--font-family--fallback);
-    --typo-h6--weight: 500;
-    --typo-h6--size: 18px;
-    --typo-h6--line-height: 24px;
-    --typo-h6--letter-spacing: 0.2px;
+  --typo-h6--family: var(--font-family), var(--font-family--fallback);
+  --typo-h6--weight: 500;
+  --typo-h6--size: 18px;
+  --typo-h6--line-height: 24px;
+  --typo-h6--letter-spacing: 0.2px;
 
-    --typo-title--family: var(--font-family), var(--font-family--fallback);
-    --typo-title--weight: 300;
-    --typo-title--size: 26px;
-    --typo-title--line-height: 34px;
-    --typo-title--letter-spacing: 0;
+  --typo-title--family: var(--font-family), var(--font-family--fallback);
+  --typo-title--weight: 300;
+  --typo-title--size: 26px;
+  --typo-title--line-height: 34px;
+  --typo-title--letter-spacing: 0;
 
-    --typo-subtitle-1--family: var(--font-family), var(--font-family--fallback);
-    --typo-subtitle-1--weight: 400;
-    --typo-subtitle-1--size: 16px;
-    --typo-subtitle-1--line-height: 24px;
-    --typo-subtitle-1--letter-spacing: 0.0015em;
+  --typo-subtitle-1--family: var(--font-family), var(--font-family--fallback);
+  --typo-subtitle-1--weight: 400;
+  --typo-subtitle-1--size: 16px;
+  --typo-subtitle-1--line-height: 24px;
+  --typo-subtitle-1--letter-spacing: 0.0015em;
 
-    --typo-subtitle-2--family: var(--font-family), var(--font-family--fallback);
-    --typo-subtitle-2--weight: 500;
-    --typo-subtitle-2--size: 14px;
-    --typo-subtitle-2--line-height: 20px;
-    --typo-subtitle-2--letter-spacing: 0.0015em;
+  --typo-subtitle-2--family: var(--font-family), var(--font-family--fallback);
+  --typo-subtitle-2--weight: 500;
+  --typo-subtitle-2--size: 14px;
+  --typo-subtitle-2--line-height: 20px;
+  --typo-subtitle-2--letter-spacing: 0.0015em;
 
-    --typo-modal-title-1--family: var(--font-family), var(--font-family--fallback);
-    --typo-modal-title-1--weight: 700;
-    --typo-modal-title-1--size: 20px;
-    --typo-modal-title-1--line-height: 24.2px;
-    --typo-modal-title-1--letter-spacing: 0.001em;
+  --typo-modal-title-1--family: var(--font-family), var(--font-family--fallback);
+  --typo-modal-title-1--weight: 700;
+  --typo-modal-title-1--size: 20px;
+  --typo-modal-title-1--line-height: 24.2px;
+  --typo-modal-title-1--letter-spacing: 0.001em;
 
-    --typo-modal-title-2--family: var(--font-family), var(--font-family--fallback);
-    --typo-modal-title-2--weight: 700;
-    --typo-modal-title-2--size: 16px;
-    --typo-modal-title-2--line-height: 24.2px;
-    --typo-modal-title-2--letter-spacing: 0.001em;
+  --typo-modal-title-2--family: var(--font-family), var(--font-family--fallback);
+  --typo-modal-title-2--weight: 700;
+  --typo-modal-title-2--size: 16px;
+  --typo-modal-title-2--line-height: 24.2px;
+  --typo-modal-title-2--letter-spacing: 0.001em;
 
-    --typo-button--family: var(--font-family), var(--font-family--fallback);
-    --typo-button--weight: 500;
-    --typo-button--size: 14px;
-    --typo-button--line-height: 20px;
-    --typo-button--letter-spacing: 0.015em;
+  --typo-button--family: var(--font-family), var(--font-family--fallback);
+  --typo-button--weight: 500;
+  --typo-button--size: 14px;
+  --typo-button--line-height: 20px;
+  --typo-button--letter-spacing: 0.015em;
 
-    --typo-caption--family: var(--font-family), var(--font-family--fallback);
-    --typo-caption--weight: 400;
-    --typo-caption--size: 12px;
-    --typo-caption--line-height: 14px;
-    --typo-caption--letter-spacing: 0.004em;
+  --typo-caption--family: var(--font-family), var(--font-family--fallback);
+  --typo-caption--weight: 400;
+  --typo-caption--size: 12px;
+  --typo-caption--line-height: 14px;
+  --typo-caption--letter-spacing: 0.004em;
 
-    --typo-overline--family: var(--font-family), var(--font-family--fallback);
-    --typo-overline--weight: 500;
-    --typo-overline--size: 12px;
-    --typo-overline--line-height: 16px;
-    --typo-overline--letter-spacing: 0.0125em;
+  --typo-overline--family: var(--font-family), var(--font-family--fallback);
+  --typo-overline--weight: 500;
+  --typo-overline--size: 12px;
+  --typo-overline--line-height: 16px;
+  --typo-overline--letter-spacing: 0.0125em;
 
-    --typo-table-header--family: var(--font-family), var(--font-family--fallback);
-    --typo-table-header--weight: 500;
-    --typo-table-header--size: 16px;
-    --typo-table-header--line-height: 24px;
-    --typo-table-header--letter-spacing: 0.0015em;
+  --typo-table-header--family: var(--font-family), var(--font-family--fallback);
+  --typo-table-header--weight: 500;
+  --typo-table-header--size: 16px;
+  --typo-table-header--line-height: 24px;
+  --typo-table-header--letter-spacing: 0.0015em;
 
-    --typo-footer--family: var(--font-family), var(--font-family--fallback);
-    --typo-footer--weight: 400;
-    --typo-footer--size: 12px;
-    --typo-footer--line-height: 20px;
-    --typo-footer--letter-spacing: 0.0025em;
+  --typo-footer--family: var(--font-family), var(--font-family--fallback);
+  --typo-footer--weight: 400;
+  --typo-footer--size: 12px;
+  --typo-footer--line-height: 20px;
+  --typo-footer--letter-spacing: 0.0025em;
 
-    --typo-body-1--family: var(--font-family), var(--font-family--fallback);
-    --typo-body-1--weight: 400;
-    --typo-body-1--size: 16px;
-    --typo-body-1--line-height: 24px;
-    --typo-body-1--letter-spacing: 0.005em;
+  --typo-body-1--family: var(--font-family), var(--font-family--fallback);
+  --typo-body-1--weight: 400;
+  --typo-body-1--size: 16px;
+  --typo-body-1--line-height: 24px;
+  --typo-body-1--letter-spacing: 0.005em;
 
-    --typo-body-1-bold--family: var(--font-family), var(--font-family--fallback);
-    --typo-body-1-bold--weight: 500;
-    --typo-body-1-bold--size: 16px;
-    --typo-body-1-bold--line-height: 24px;
-    --typo-body-1-bold--letter-spacing: 0.001em;
+  --typo-body-1-bold--family: var(--font-family), var(--font-family--fallback);
+  --typo-body-1-bold--weight: 500;
+  --typo-body-1-bold--size: 16px;
+  --typo-body-1-bold--line-height: 24px;
+  --typo-body-1-bold--letter-spacing: 0.001em;
 
-    --typo-body-2--family: var(--font-family), var(--font-family--fallback);
-    --typo-body-2--weight: 400;
-    --typo-body-2--size: 14px;
-    --typo-body-2--line-height: 20px;
-    --typo-body-2--letter-spacing: 0.0025em;
+  --typo-body-2--family: var(--font-family), var(--font-family--fallback);
+  --typo-body-2--weight: 400;
+  --typo-body-2--size: 14px;
+  --typo-body-2--line-height: 20px;
+  --typo-body-2--letter-spacing: 0.0025em;
 
-    --typo-body-2-bold--family: var(--font-family), var(--font-family--fallback);
-    --typo-body-2-bold--weight: 500;
-    --typo-body-2-bold--size: 14px;
-    --typo-body-2-bold--line-height: 20px;
-    --typo-body-2-bold--letter-spacing: 0.0025em;
+  --typo-body-2-bold--family: var(--font-family), var(--font-family--fallback);
+  --typo-body-2-bold--weight: 500;
+  --typo-body-2-bold--size: 14px;
+  --typo-body-2-bold--line-height: 20px;
+  --typo-body-2-bold--letter-spacing: 0.0025em;
 }
 
 /* ### Root Font Settings ### */
@@ -226,42 +226,36 @@
   these won't affect anything in a Shadow DOM.
 */
 :root {
-    font-family: var(--typo-body-1--family);
-    font-weight: var(--typo-body-1--weight);
-    font-size: var(--typo-body-1--size);
-    line-height: var(--typo-body-1--line-height);
-    letter-spacing: var(--typo-body-1--letter-spacing);
+  font-family: var(--typo-body-1--family);
+  font-weight: var(--typo-body-1--weight);
+  font-size: var(--typo-body-1--size);
+  line-height: var(--typo-body-1--line-height);
+  letter-spacing: var(--typo-body-1--letter-spacing);
 }
 
 /* ### Effect ### */
 /* The effects are defined here: https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/swissgeol?node-id=40-163&p=f&t=YqTWCnEDrxPCrmpx-0. */
 :root {
-    --effect-focus:
-        /* x offset */ 0
-        /* y offset */ 0
-        /*     blur */ 0
-        /*    spear */ 3px
-        /*    color */ var(--color-focus--purple-300);
+  --effect-focus:
+        /* x offset */ 0 /* y offset */ 0 /*     blur */ 0
+    /*    spear */ 3px /*    color */ var(--color-focus--purple-300);
 
-    --effect-overlay-shadow:
-        4px 4px 2px 0px rgba(0, 0, 0, 0.12);
+  --effect-overlay-shadow: 4px 4px 2px 0px rgba(0, 0, 0, 0.12);
 
-    --effect-top-shadow:
-        0 -4px 4px  0   rgba(0, 0, 0, 0.05),
-        0 -2px 4px -1px rgba(0, 0, 0, 0.03);
+  --effect-top-shadow: 0 -4px 4px 0 rgba(0, 0, 0, 0.05),
+    0 -2px 4px -1px rgba(0, 0, 0, 0.03);
 
-    --effect-bottom-shadow:
-            0 4px 10px -1px rgba(0, 0, 0, 0.08),
-            0 2px  4px -1px rgba(0, 0, 0, 0.06);
+  --effect-bottom-shadow: 0 4px 10px -1px rgba(0, 0, 0, 0.08),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* ## Animations ## */
 :root {
-    --animate-fade--timing: ease-out;
-    --animate-fade--duration: 250ms;
+  --animate-fade--timing: ease-out;
+  --animate-fade--duration: 250ms;
 }
 
 /* ### Padding ### */
 :root {
-    --modal-padding: 24px;
+  --modal-padding: 24px;
 }

@@ -38,7 +38,9 @@ ngm-side-bar {
 
 .ngm-side-bar-panel {
   width: 100%;
-  height: calc(100% - (var(--ngm-header-height-mobile) + var(--ngm-bottom-menu-height)));
+  height: calc(
+    100% - (var(--ngm-header-height-mobile) + var(--ngm-bottom-menu-height))
+  );
   max-width: 1028px;
   background-color: var(--color-bg--dark);
   box-shadow: 4px 0 4px #00000029;
@@ -52,7 +54,7 @@ ngm-side-bar {
 }
 
 ngm-navigation-catalog .ngm-side-bar-panel {
-    margin-left: 0;
+  margin-left: 0;
 }
 
 .ngm-side-bar-panel.ngm-large-panel {
@@ -60,7 +62,7 @@ ngm-navigation-catalog .ngm-side-bar-panel {
 }
 
 .ngm-side-bar-panel.ngm-share-panel {
-  width: 100%
+  width: 100%;
 }
 
 .ngm-side-bar-panel.ngm-extension-panel {
@@ -73,15 +75,20 @@ ngm-navigation-catalog .ngm-side-bar-panel {
 }
 
 .ngm-side-bar-panel .ngm-panel-content {
-  max-height: calc(100vh - (var(--ngm-header-height-mobile) + var(--ngm-bottom-menu-height) + 34px));
+  max-height: calc(
+    100vh -
+      (var(--ngm-header-height-mobile) + var(--ngm-bottom-menu-height) + 34px)
+  );
 }
 
 .ngm-panel-header {
   height: var(--ngm-panel-header-height);
-  border-bottom: 2px solid #DFE2E6;
+  border-bottom: 2px solid #dfe2e6;
   display: flex;
   align-items: center;
-  font: normal normal bold 14px/20px Inter, sans-serif;
+  font:
+    normal normal bold 14px/20px Inter,
+    sans-serif;
   color: #212529;
 }
 
@@ -111,7 +118,9 @@ ngm-navigation-catalog .ngm-side-bar-panel {
 
 .ngm-label-btn {
   margin-left: auto;
-  font: normal normal 500 14px/20px Inter, sans-serif;
+  font:
+    normal normal 500 14px/20px Inter,
+    sans-serif;
   letter-spacing: 0;
   color: var(--ngm-interaction);
   opacity: 1;
@@ -202,7 +211,9 @@ ngm-navigation-catalog .ngm-side-bar-panel {
 }
 
 @media (max-height: 629px), (max-width: 599px) {
-  .ngm-side-bar-panel.ngm-large-panel .ngm-proj-information .ngm-proj-description {
+  .ngm-side-bar-panel.ngm-large-panel
+    .ngm-proj-information
+    .ngm-proj-description {
     margin-left: 0;
     margin-top: 12px;
     width: 100%;
@@ -221,7 +232,6 @@ ngm-navigation-catalog .ngm-side-bar-panel {
   .ngm-side-bar-panel.ngm-large-panel {
     overflow: auto;
   }
-
 
   ngm-map-configuration .base-map-labels {
     display: flex;
@@ -244,4 +254,3 @@ ngm-navigation-catalog .ngm-side-bar-panel {
     width: 150px;
   }
 }
-

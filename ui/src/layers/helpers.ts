@@ -1,5 +1,5 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
-import {ImageryLayer, Rectangle, Viewer} from 'cesium';
+import { ImageryLayer, Rectangle, Viewer } from 'cesium';
 import {
   Cartesian3,
   Cartographic,
@@ -15,13 +15,13 @@ import {
   Matrix4,
   VoxelPrimitive,
 } from 'cesium';
-import {getSwisstopoImagery} from '../swisstopoImagery';
-import {LayerType} from '../constants';
-import {isLabelOutlineEnabled} from '../permalink';
+import { getSwisstopoImagery } from '../swisstopoImagery';
+import { LayerType } from '../constants';
+import { isLabelOutlineEnabled } from '../permalink';
 import AmazonS3Resource from '../AmazonS3Resource.js';
-import {getVoxelShader} from './voxels-helper';
+import { getVoxelShader } from './voxels-helper';
 import MainStore from '../store/main';
-import {LayerConfig} from '../layertree';
+import { LayerConfig } from '../layertree';
 
 export interface PickableCesium3DTileset extends Cesium3DTileset {
   pickable?: boolean;
@@ -31,29 +31,36 @@ export interface PickableVoxelPrimitive extends VoxelPrimitive {
   layer?: string;
 }
 
-export async function createEarthquakeFromConfig(viewer: Viewer, config: LayerConfig) {
+export async function createEarthquakeFromConfig(
+  viewer: Viewer,
+  config: LayerConfig,
+) {
   const earthquakeVisualizer = new EarthquakeVisualizer(viewer, config);
   if (config.visible) {
     await earthquakeVisualizer.setVisible(true);
   }
-  config.setVisibility = visible => earthquakeVisualizer.setVisible(visible);
-  config.setOpacity = (opacity: number) => earthquakeVisualizer.setOpacity(opacity);
+  config.setVisibility = (visible) => earthquakeVisualizer.setVisible(visible);
+  config.setOpacity = (opacity: number) =>
+    earthquakeVisualizer.setOpacity(opacity);
   return earthquakeVisualizer;
 }
 
 export function createIonGeoJSONFromConfig(viewer: Viewer, config) {
   return IonResource.fromAssetId(config.assetId)
-    .then(resource => GeoJsonDataSource.load(resource))
-    .then(dataSource => {
+    .then((resource) => GeoJsonDataSource.load(resource))
+    .then((dataSource) => {
       viewer.dataSources.add(dataSource);
       dataSource.show = !!config.visible;
-      config.setVisibility = visible => dataSource.show = !!visible;
+      config.setVisibility = (visible) => (dataSource.show = !!visible);
       return dataSource;
     });
 }
 
-
-export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: LayerConfig, _): Promise<VoxelPrimitive> {
+export async function create3DVoxelsTilesetFromConfig(
+  viewer: Viewer,
+  config: LayerConfig,
+  _,
+): Promise<VoxelPrimitive> {
   const provider = await Cesium3DTilesVoxelProvider.fromUrl(config.url!);
 
   const primitive: PickableVoxelPrimitive = new VoxelPrimitive({
@@ -72,7 +79,7 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: La
 
   viewer.scene.primitives.add(primitive);
 
-  config.setVisibility = visible => {
+  config.setVisibility = (visible) => {
     if (config.type === LayerType.voxels3dtiles) {
       if (visible) MainStore.addVisibleVoxelLayer(config.layer);
       else MainStore.removeVisibleVoxelLayer(config.layer);
@@ -80,13 +87,22 @@ export async function create3DVoxelsTilesetFromConfig(viewer: Viewer, config: La
     primitive.show = !!visible;
   };
 
-  if (config.voxelDataName && !primitive.provider.names.includes(config.voxelDataName)) {
-    throw new Error(`Voxel data name ${config.voxelDataName} not found in the tileset`);
+  if (
+    config.voxelDataName &&
+    !primitive.provider.names.includes(config.voxelDataName)
+  ) {
+    throw new Error(
+      `Voxel data name ${config.voxelDataName} not found in the tileset`,
+    );
   }
   primitive.customShader = getVoxelShader(config);
   return primitive;
 }
-export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerConfig, tileLoadCallback) {
+export async function create3DTilesetFromConfig(
+  viewer: Viewer,
+  config: LayerConfig,
+  tileLoadCallback,
+) {
   let resource: string | IonResource | AmazonS3Resource;
   if (config.aws_s3_bucket && config.aws_s3_key) {
     resource = new AmazonS3Resource({
@@ -101,15 +117,21 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerCon
     });
   }
 
-  const tileset: PickableCesium3DTileset = await Cesium3DTileset.fromUrl(resource, {
-    show: !!config.visible,
-    backFaceCulling: false,
-    maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
-  });
+  const tileset: PickableCesium3DTileset = await Cesium3DTileset.fromUrl(
+    resource,
+    {
+      show: !!config.visible,
+      backFaceCulling: false,
+      maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
+    },
+  );
 
   if (config.style) {
-    if (config.layer === 'ch.swisstopo.swissnames3d.3d') { // for performance testing
-      config.style.labelStyle = isLabelOutlineEnabled() ? LabelStyle.FILL_AND_OUTLINE : LabelStyle.FILL;
+    if (config.layer === 'ch.swisstopo.swissnames3d.3d') {
+      // for performance testing
+      config.style.labelStyle = isLabelOutlineEnabled()
+        ? LabelStyle.FILL_AND_OUTLINE
+        : LabelStyle.FILL;
     }
     tileset.style = new Cesium3DTileStyle(config.style);
   }
@@ -117,36 +139,51 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerCon
   tileset.pickable = config.pickable ?? false;
   viewer.scene.primitives.add(tileset);
 
-  config.setVisibility = visible => {
+  config.setVisibility = (visible) => {
     tileset.show = !!visible;
   };
 
   if (!config.opacityDisabled) {
-    config.setOpacity = opacity => {
+    config.setOpacity = (opacity) => {
       const style = config.style;
       if (style && (style.color || style.labelColor)) {
-        const {propertyName, colorType, colorValue} = styleColorParser(style);
+        const { propertyName, colorType, colorValue } = styleColorParser(style);
         const color = `${colorType}(${colorValue}, ${opacity})`;
-        tileset.style = new Cesium3DTileStyle({...style, [propertyName]: color});
+        tileset.style = new Cesium3DTileStyle({
+          ...style,
+          [propertyName]: color,
+        });
       } else {
         const color = `color("white", ${opacity})`;
-        tileset.style = new Cesium3DTileStyle({...style, color});
+        tileset.style = new Cesium3DTileStyle({ ...style, color });
       }
     };
     config.setOpacity(config.opacity ? config.opacity : 1);
   }
 
   if (tileLoadCallback) {
-    const removeTileLoadListener = tileset.tileLoad.addEventListener(tile => tileLoadCallback(tile, removeTileLoadListener));
+    const removeTileLoadListener = tileset.tileLoad.addEventListener((tile) =>
+      tileLoadCallback(tile, removeTileLoadListener),
+    );
   }
 
   if (config.propsOrder) {
     tileset.properties.propsOrder = config.propsOrder;
   }
   if (config.heightOffset) {
-    const cartographic = Cartographic.fromCartesian(tileset.boundingSphere.center);
-    const surface = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
-    const offset = Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, config.heightOffset);
+    const cartographic = Cartographic.fromCartesian(
+      tileset.boundingSphere.center,
+    );
+    const surface = Cartesian3.fromRadians(
+      cartographic.longitude,
+      cartographic.latitude,
+      0.0,
+    );
+    const offset = Cartesian3.fromRadians(
+      cartographic.longitude,
+      cartographic.latitude,
+      config.heightOffset,
+    );
     const translation = Cartesian3.subtract(offset, surface, new Cartesian3());
     tileset.modelMatrix = Matrix4.fromTranslation(translation);
     viewer.scene.requestRender();
@@ -156,10 +193,13 @@ export async function create3DTilesetFromConfig(viewer: Viewer, config: LayerCon
   return tileset;
 }
 
-export async function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: LayerConfig) {
+export async function createSwisstopoWMTSImageryLayer(
+  viewer: Viewer,
+  config: LayerConfig,
+) {
   const layer: ImageryLayer = await getSwisstopoImagery(config);
-  config.setVisibility = visible => layer.show = !!visible;
-  config.setOpacity = opacity => layer.alpha = opacity;
+  config.setVisibility = (visible) => (layer.show = !!visible);
+  config.setOpacity = (opacity) => (layer.alpha = opacity);
   config.remove = () => viewer.scene.imageryLayers.remove(layer, false);
   config.add = (toIndex) => {
     const layersLength = viewer.scene.imageryLayers.length;
@@ -185,8 +225,11 @@ export async function createSwisstopoWMTSImageryLayer(viewer: Viewer, config: La
   return layer;
 }
 
-
-export function createCesiumObject(viewer: Viewer, config: LayerConfig, tileLoadCallback?) {
+export function createCesiumObject(
+  viewer: Viewer,
+  config: LayerConfig,
+  tileLoadCallback?,
+) {
   const factories = {
     [LayerType.ionGeoJSON]: createIonGeoJSONFromConfig,
     [LayerType.tiles3d]: create3DTilesetFromConfig,
@@ -199,18 +242,36 @@ export function createCesiumObject(viewer: Viewer, config: LayerConfig, tileLoad
 
 function styleColorParser(style: any) {
   const propertyName = style.color ? 'color' : 'labelColor';
-  let colorType = style[propertyName].slice(0, style[propertyName].indexOf('('));
-  const lastIndex = colorType === 'rgba' ? style[propertyName].lastIndexOf(',') : style[propertyName].indexOf(')');
-  const colorValue = style[propertyName].slice(style[propertyName].indexOf('(') + 1, lastIndex);
+  let colorType = style[propertyName].slice(
+    0,
+    style[propertyName].indexOf('('),
+  );
+  const lastIndex =
+    colorType === 'rgba'
+      ? style[propertyName].lastIndexOf(',')
+      : style[propertyName].indexOf(')');
+  const colorValue = style[propertyName].slice(
+    style[propertyName].indexOf('(') + 1,
+    lastIndex,
+  );
   colorType = colorType === 'rgb' ? 'rgba' : colorType;
-  return {propertyName, colorType, colorValue};
+  return { propertyName, colorType, colorValue };
 }
 
-
-export function getBoxFromRectangle(rectangle: Rectangle, height: number, result: Cartesian3 = new Cartesian3()): Cartesian3 {
-  const sw = Cartographic.toCartesian(Rectangle.southwest(rectangle, new Cartographic()));
-  const se = Cartographic.toCartesian(Rectangle.southeast(rectangle, new Cartographic()));
-  const nw = Cartographic.toCartesian(Rectangle.northwest(rectangle, new Cartographic()));
+export function getBoxFromRectangle(
+  rectangle: Rectangle,
+  height: number,
+  result: Cartesian3 = new Cartesian3(),
+): Cartesian3 {
+  const sw = Cartographic.toCartesian(
+    Rectangle.southwest(rectangle, new Cartographic()),
+  );
+  const se = Cartographic.toCartesian(
+    Rectangle.southeast(rectangle, new Cartographic()),
+  );
+  const nw = Cartographic.toCartesian(
+    Rectangle.northwest(rectangle, new Cartographic()),
+  );
   result.x = Cartesian3.distance(sw, se); // gets box width
   result.y = Cartesian3.distance(sw, nw); // gets box length
   result.z = height;
@@ -220,7 +281,12 @@ export function getBoxFromRectangle(rectangle: Rectangle, height: number, result
 /**
  * Returns rectangle from width height and center point
  */
-export function calculateRectangle(width: number, height: number, center: Cartesian3, result: Rectangle = new Rectangle()): Rectangle {
+export function calculateRectangle(
+  width: number,
+  height: number,
+  center: Cartesian3,
+  result: Rectangle = new Rectangle(),
+): Rectangle {
   const w = new Cartesian3(center.x, center.y - width / 2, center.z);
   result.west = Ellipsoid.WGS84.cartesianToCartographic(w).longitude;
   const s = new Cartesian3(center.x + height / 2, center.y, center.z);
@@ -236,7 +302,11 @@ export function calculateRectangle(width: number, height: number, center: Cartes
 /**
  * Calculates box from bounding volume
  */
-export function calculateBox(halfAxes: Matrix3, boundingSphereRadius: number, result: Cartesian3 = new Cartesian3()): Cartesian3 {
+export function calculateBox(
+  halfAxes: Matrix3,
+  boundingSphereRadius: number,
+  result: Cartesian3 = new Cartesian3(),
+): Cartesian3 {
   const absMatrix = Matrix3.abs(halfAxes, new Matrix3());
   for (let i = 0; i < 3; i++) {
     const column = Matrix3.getColumn(absMatrix, i, new Cartesian3());

@@ -1,16 +1,16 @@
 import i18next from 'i18next';
-import {css, html, unsafeCSS} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
-import {LitElementI18n} from '../i18n.js';
-import {classMap} from 'lit-html/directives/class-map.js';
-import {DEFAULT_LAYER_OPACITY, LayerType} from '../constants';
+import { css, html, unsafeCSS } from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { LitElementI18n } from '../i18n.js';
+import { classMap } from 'lit-html/directives/class-map.js';
+import { DEFAULT_LAYER_OPACITY, LayerType } from '../constants';
 import $ from 'jquery';
-import type {LayerConfig} from '../layertree';
-import {styleMap} from 'lit/directives/style-map.js';
-import {Sortable} from 'sortablejs';
+import type { LayerConfig } from '../layertree';
+import { styleMap } from 'lit/directives/style-map.js';
+import { Sortable } from 'sortablejs';
 import type LayersAction from './LayersActions';
-import {debounce} from '../utils';
-import {PropertyValues} from '@lit/reactive-element';
+import { debounce } from '../utils';
+import { PropertyValues } from '@lit/reactive-element';
 import iconsCss from '../style/icons.css?raw';
 import layersCss from '../style/layers.css?raw';
 import sliderCss from '../style/ngm-slider.css?raw';
@@ -19,21 +19,21 @@ import fomanticDropdownCss from 'fomantic-ui-css/components/dropdown.css?raw';
 import 'fomantic-ui-css/components/transition.js';
 
 const GEOCAT_LANG_CODE = {
-  'de': 'ger',
-  'fr': 'fre',
-  'it': 'ita',
-  'en': 'eng',
+  de: 'ger',
+  fr: 'fre',
+  it: 'ita',
+  en: 'eng',
 };
 
 @customElement('ngm-layers-item')
 export class NgmLayersItem extends LitElementI18n {
-  @property({type: Object})
+  @property({ type: Object })
   accessor actions: LayersAction | undefined;
-  @property({type: Object})
+  @property({ type: Object })
   accessor config!: LayerConfig;
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor changeOrderActive = false;
-  @property({type: Boolean})
+  @property({ type: Boolean })
   accessor clone = false;
   @state()
   accessor loading = 0;
@@ -45,8 +45,13 @@ export class NgmLayersItem extends LitElementI18n {
   accessor movable = false;
   @query('.menu')
   accessor actionMenu!: HTMLElement;
-  private readonly toggleItemSelection = () => this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
-  private readonly debouncedOpacityChange = debounce(() => this.changeOpacity(), 250, true);
+  private readonly toggleItemSelection = () =>
+    this.movable ? Sortable.utils.select(this) : Sortable.utils.deselect(this);
+  private readonly debouncedOpacityChange = debounce(
+    () => this.changeOpacity(),
+    250,
+    true,
+  );
 
   firstUpdated(): void {
     if (this.shadowRoot != null) {
@@ -87,7 +92,11 @@ export class NgmLayersItem extends LitElementI18n {
       }
       this.loading = newValue;
     };
-    this.loadProgressRemover_ = this.actions.listenForEvent(this.config, 'loadProgress', callback);
+    this.loadProgressRemover_ = this.actions.listenForEvent(
+      this.config,
+      'loadProgress',
+      callback,
+    );
   }
 
   disconnectedCallback() {
@@ -130,41 +139,45 @@ export class NgmLayersItem extends LitElementI18n {
   }
 
   get sublabel() {
-    if (this.config.ownKml)
-      return `(${i18next.t('dtd_own_kml_tag')})`;
-    else if (this.config.topicKml)
-      return `(${i18next.t('dtd_topic_kml_tag')})`;
+    if (this.config.ownKml) return `(${i18next.t('dtd_own_kml_tag')})`;
+    else if (this.config.topicKml) return `(${i18next.t('dtd_topic_kml_tag')})`;
     else return '';
   }
 
   showLayerLegend(config: LayerConfig) {
-    this.dispatchEvent(new CustomEvent('showLayerLegend', {
-      composed: true,
-      bubbles: true,
-      detail: {
-        config
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('showLayerLegend', {
+        composed: true,
+        bubbles: true,
+        detail: {
+          config,
+        },
+      }),
+    );
   }
 
   showWmtsDatePicker(config: LayerConfig) {
-    this.dispatchEvent(new CustomEvent('showWmtsDatePicker', {
-      composed: true,
-      bubbles: true,
-      detail: {
-        config
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('showWmtsDatePicker', {
+        composed: true,
+        bubbles: true,
+        detail: {
+          config,
+        },
+      }),
+    );
   }
 
   showVoxelFilter(config: LayerConfig) {
-    this.dispatchEvent(new CustomEvent('showVoxelFilter', {
-      composed: true,
-      bubbles: true,
-      detail: {
-        config
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('showVoxelFilter', {
+        composed: true,
+        bubbles: true,
+        detail: {
+          config,
+        },
+      }),
+    );
   }
 
   geocatLink(id: string) {
@@ -175,33 +188,49 @@ export class NgmLayersItem extends LitElementI18n {
   get buttons() {
     return html`
       <div class="menu">
-        ${this.config?.legend ? html`
-          <div class="item"
-               @click=${() => this.showLayerLegend(this.config)}>
-            ${i18next.t('dtd_legend')}
-          </div>` : ''}
-        ${this.config?.geocatId ? html`
-          <a
-            class="item"
-            href="${this.geocatLink(this.config.geocatId)}"
-            target="_blank" rel="noopener">
-            Geocat.ch
-          </a>` : ''}
-        ${this.config?.downloadUrl && this.config?.type !== LayerType.earthquakes ? html`
-          <div class="item"
-               @click=${() => window.open(this.config?.downloadUrl)}>
-            ${i18next.t('dtd_download_hint')}
-          </div>` : ''}
-        ${this.config?.type === LayerType.voxels3dtiles ? html`
-          <div class="item"
-               @click=${() => this.showVoxelFilter(this.config)}>
-            ${i18next.t('dtd_voxel_filter')}
-          </div>` : ''}
-        ${this.config?.wmtsTimes && this.config.wmtsTimes.length > 1 ? html`
-          <div class="item"
-               @click=${() => this.showWmtsDatePicker(this.config)}>
-            ${i18next.t('dtd_time_journey')}
-          </div>` : ''}
+        ${this.config?.legend
+          ? html` <div
+              class="item"
+              @click=${() => this.showLayerLegend(this.config)}
+            >
+              ${i18next.t('dtd_legend')}
+            </div>`
+          : ''}
+        ${this.config?.geocatId
+          ? html` <a
+              class="item"
+              href="${this.geocatLink(this.config.geocatId)}"
+              target="_blank"
+              rel="noopener"
+            >
+              Geocat.ch
+            </a>`
+          : ''}
+        ${this.config?.downloadUrl &&
+        this.config?.type !== LayerType.earthquakes
+          ? html` <div
+              class="item"
+              @click=${() => window.open(this.config?.downloadUrl)}
+            >
+              ${i18next.t('dtd_download_hint')}
+            </div>`
+          : ''}
+        ${this.config?.type === LayerType.voxels3dtiles
+          ? html` <div
+              class="item"
+              @click=${() => this.showVoxelFilter(this.config)}
+            >
+              ${i18next.t('dtd_voxel_filter')}
+            </div>`
+          : ''}
+        ${this.config?.wmtsTimes && this.config.wmtsTimes.length > 1
+          ? html` <div
+              class="item"
+              @click=${() => this.showWmtsDatePicker(this.config)}
+            >
+              ${i18next.t('dtd_time_journey')}
+            </div>`
+          : ''}
       </div>
     `;
   }
@@ -223,12 +252,11 @@ export class NgmLayersItem extends LitElementI18n {
     return this.actionMenu?.children.length > 0;
   }
 
-
   render() {
     if (this.clone) return '';
     return html`
       <div ?hidden=${!this.changeOrderActive || this.loading > 0} class="ngm-checkbox ${this.movable ? 'active' : ''}"
-           @click=${() => this.movable = !this.movable}>
+           @click=${() => (this.movable = !this.movable)}>
         <input type="checkbox" .checked=${this.movable}>
         <span class="ngm-checkbox-icon"></span>
       </div>
@@ -237,12 +265,12 @@ export class NgmLayersItem extends LitElementI18n {
            title=${this.config.visible ? i18next.t('dtd_hide') : i18next.t('dtd_show')}
            class="ngm-layer-icon ${classMap({
              'ngm-visible-icon': !!this.config.visible,
-             'ngm-invisible-icon': !this.config.visible
+             'ngm-invisible-icon': !this.config.visible,
            })}" @click=${this.changeVisibility}>
       </div>
       <div ?hidden=${this.loading === 0} class="ngm-determinate-loader">
         <div
-          class="ui inline mini loader ${classMap({active: this.loading > 0, determinate: this.determinateLoading})}">
+          class="ui inline mini loader ${classMap({ active: this.loading > 0, determinate: this.determinateLoading })}">
         </div>
         <span ?hidden=${!this.determinateLoading} class="ngm-load-counter">${this.loading}</span>
       </div>
@@ -252,35 +280,38 @@ export class NgmLayersItem extends LitElementI18n {
           ${i18next.t(this.config.label)} ${this.sublabel}
         </label>
         <label ?hidden=${this.config.opacityDisabled}>${(this.config.opacity! * 100).toFixed()} %</label>
-        <input type="range" class="ngm-slider ${classMap({disabled: this.changeOrderActive})}" ?hidden=${this.config.opacityDisabled}
+        <input type="range" class="ngm-slider ${classMap({ disabled: this.changeOrderActive })}" ?hidden=${this.config.opacityDisabled}
                style="background-image: linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${this.config.opacity! * 100}%, white ${this.config.opacity! * 100}%)"
                min=0 max=1 step=0.01
                .value=${this.config.opacity?.toString() ?? '1'}
                @input=${this.inputOpacity}
-               @mousedown=${e => this.changeOrderActive && e.preventDefault()}>
+               @mousedown=${(e) => this.changeOrderActive && e.preventDefault()}>
       </div>
       </div>
       <div .hidden=${!this.config.previewColor} class="ngm-displayed-color"
-           style=${styleMap({backgroundColor: this.config.previewColor})}>
+           style=${styleMap({ backgroundColor: this.config.previewColor })}>
       </div>
       <div class="ngm-displayed-menu">
         <div title=${i18next.t('dtd_zoom_to')}
              class="ngm-layer-icon ngm-zoom-plus-icon"
              @mouseenter=${() => {
-               if (this.actions && this.actions.showBoundingBox) this.actions.showBoundingBox(this.config);
+               if (this.actions && this.actions.showBoundingBox)
+                 this.actions.showBoundingBox(this.config);
              }}
              @mouseleave=${() => {
-               if (this.actions && this.actions.hideBoundingBox) this.actions.hideBoundingBox();
+               if (this.actions && this.actions.hideBoundingBox)
+                 this.actions.hideBoundingBox();
              }}
              @click=${() => {
-               if (this.actions && this.actions.zoomToBbox) this.actions.zoomToBbox();
+               if (this.actions && this.actions.zoomToBbox)
+                 this.actions.zoomToBbox();
              }}>
         </div>
         <div title=${i18next.t('dtd_remove')}
-             class="ngm-layer-icon ngm-delete-icon ${classMap({disabled: this.changeOrderActive})}"
+             class="ngm-layer-icon ngm-delete-icon ${classMap({ disabled: this.changeOrderActive })}"
              @click=${this.onRemove}>
         </div>
-        <div class="ui dropdown right pointing ngm-action-menu ${classMap({'ngm-disabled': !this.isMenuNotEmpty()})}">
+        <div class="ui dropdown right pointing ngm-action-menu ${classMap({ 'ngm-disabled': !this.isMenuNotEmpty() })}">
           <div class="ngm-layer-icon ngm-action-menu-icon"></div>
           ${this.buttons}
         </div>

@@ -1,15 +1,20 @@
-import {css, html} from 'lit';
+import { css, html } from 'lit';
 import i18next from 'i18next';
-import {LitElementI18n} from '../i18n.js';
-import type {Viewer} from 'cesium';
-import {Cartographic, ScreenSpaceEventHandler, ScreenSpaceEventType, VoxelPrimitive} from 'cesium';
-import {customElement, property, state} from 'lit/decorators.js';
-import {getValueOrUndefined} from '../cesiumutils';
-import {formatCartographicAs2DLv95} from '../projection';
+import { LitElementI18n } from '../i18n.js';
+import type { Viewer } from 'cesium';
+import {
+  Cartographic,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+  VoxelPrimitive,
+} from 'cesium';
+import { customElement, property, state } from 'lit/decorators.js';
+import { getValueOrUndefined } from '../cesiumutils';
+import { formatCartographicAs2DLv95 } from '../projection';
 
 @customElement('ngm-cursor-information')
 export class NgmCursorInformation extends LitElementI18n {
-  @property({type: Object})
+  @property({ type: Object })
   accessor viewer: Viewer | undefined;
   @state()
   accessor coordinates: string[] = [];
@@ -23,18 +28,25 @@ export class NgmCursorInformation extends LitElementI18n {
   private unlistenMoveEnd: any;
   // always use the 'de-CH' locale to always have the simple tick as thousands separator
   private readonly integerFormat = new Intl.NumberFormat('de-CH', {
-    maximumFractionDigits: 1
+    maximumFractionDigits: 1,
   });
 
   updated() {
     if (this.viewer) {
       if (!this.eventHandler) {
         this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-        this.eventHandler.setInputAction(this.onMouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
+        this.eventHandler.setInputAction(
+          this.onMouseMove.bind(this),
+          ScreenSpaceEventType.MOUSE_MOVE,
+        );
       }
       if (!this.unlistenMoveStart && !this.unlistenMoveEnd) {
-        this.unlistenMoveStart = this.viewer.camera.moveStart.addEventListener(() => this.cameraMoving = true);
-        this.unlistenMoveEnd = this.viewer.camera.moveEnd.addEventListener(() => this.cameraMoving = false);
+        this.unlistenMoveStart = this.viewer.camera.moveStart.addEventListener(
+          () => (this.cameraMoving = true),
+        );
+        this.unlistenMoveEnd = this.viewer.camera.moveEnd.addEventListener(
+          () => (this.cameraMoving = false),
+        );
       }
     }
   }
@@ -58,9 +70,13 @@ export class NgmCursorInformation extends LitElementI18n {
       const feature = this.viewer.scene.pick(movement.endPosition);
       const cartesian = this.viewer.scene.pickPosition(movement.endPosition);
       if (cartesian && !(feature?.primitive instanceof VoxelPrimitive)) {
-        this.coordinates = formatCartographicAs2DLv95(Cartographic.fromCartesian(cartesian));
+        this.coordinates = formatCartographicAs2DLv95(
+          Cartographic.fromCartesian(cartesian),
+        );
         const position = Cartographic.fromCartesian(cartesian);
-        const lineOrPolygon = getValueOrUndefined(feature?.id?.polyline?.show) || getValueOrUndefined(feature?.id?.polygon?.show);
+        const lineOrPolygon =
+          getValueOrUndefined(feature?.id?.polyline?.show) ||
+          getValueOrUndefined(feature?.id?.polygon?.show);
         this.height = position.height / this.viewer.scene.verticalExaggeration;
         this.showTerrainHeight = !(feature && !lineOrPolygon);
         return;
@@ -68,7 +84,6 @@ export class NgmCursorInformation extends LitElementI18n {
     }
     this.height = undefined;
   }
-
 
   render() {
     if (!this.coordinates || this.height === undefined) return '';
@@ -80,15 +95,17 @@ export class NgmCursorInformation extends LitElementI18n {
       </div>
       <div class="ngm-nci-height">
         <div>
-          ${this.showTerrainHeight ? i18next.t('nav_terrain_height_label') : i18next.t('nav_object_height_label')}
+          ${this.showTerrainHeight
+            ? i18next.t('nav_terrain_height_label')
+            : i18next.t('nav_object_height_label')}
         </div>
         <div .hidden=${this.height === undefined} class="ngm-nci-value">
-          ${this.height !== undefined && this.integerFormat.format(this.height)} m
+          ${this.height !== undefined && this.integerFormat.format(this.height)}
+          m
         </div>
       </div>
     `;
   }
-
 
   static readonly styles = css`
     :host {
@@ -124,10 +141,12 @@ export class NgmCursorInformation extends LitElementI18n {
         align-self: center;
         color: #212529;
         text-align: left;
-        font: normal normal normal 14px/20px Inter, sans-serif;
+        font:
+          normal normal normal 14px/20px Inter,
+          sans-serif;
         letter-spacing: 0;
         min-width: 255px;
-        padding-right:48px
+        padding-right: 48px;
       }
     }
   `;

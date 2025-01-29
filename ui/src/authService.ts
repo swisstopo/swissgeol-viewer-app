@@ -1,11 +1,11 @@
-  import type {
+import type {
   CognitoIdentityCredentialProvider,
-  CognitoIdentityCredentials
+  CognitoIdentityCredentials,
 } from '@aws-sdk/credential-provider-cognito-identity';
-import {fromCognitoIdentityPool} from '@aws-sdk/credential-provider-cognito-identity';
-import {CognitoIdentityClient} from '@aws-sdk/client-cognito-identity';
+import { fromCognitoIdentityPool } from '@aws-sdk/credential-provider-cognito-identity';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import auth from './store/auth';
-import {ClientConfig} from './api/client-config';
+import { ClientConfig } from './api/client-config';
 
 const cognitoState = 'cognito_state';
 const cognitoUser = 'cognito_user';
@@ -14,15 +14,15 @@ const cognitoAccessToken = 'cognito_access_token';
 export interface AuthUser {
   username: string;
   'cognito:groups': string[];
-  auth_time: number
-  client_id: string
-  exp: number
-  iat: number
-  iss: string
-  jti: string
-  scope: string
-  sub: string
-  token_use: string
+  auth_time: number;
+  client_id: string;
+  exp: number;
+  iat: number;
+  iss: string;
+  jti: string;
+  scope: string;
+  sub: string;
+  token_use: string;
 }
 
 let authTimeout = 0;
@@ -44,8 +44,12 @@ export default class AuthService {
         throw new Error(`Auth error: ${params.get('error_description')}`);
       }
 
-      if (params.has('access_token') && params.has('id_token') &&
-        params.get('token_type') === 'Bearer' && params.get('state') === this.state()) {
+      if (
+        params.has('access_token') &&
+        params.has('id_token') &&
+        params.get('token_type') === 'Bearer' &&
+        params.get('state') === this.state()
+      ) {
         localStorage.setItem('rawCognitoResponse', response);
         const token = params.get('access_token') ?? '';
         const payload = atob(token.split('.')[1]);
@@ -60,19 +64,17 @@ export default class AuthService {
 
     const accessToken = this.getAccessToken();
     if (accessToken && this._clientConfig) {
-      const {
-        cognito_pool_id,
-        cognito_identity_pool_id,
-        cognito_aws_region
-      } = this._clientConfig.auth;
+      const { cognito_pool_id, cognito_identity_pool_id, cognito_aws_region } =
+        this._clientConfig.auth;
       (window as any)['AWSCred'] = _AWSCredentials = fromCognitoIdentityPool({
         client: new CognitoIdentityClient({
-          region: cognito_aws_region
+          region: cognito_aws_region,
         }),
         identityPoolId: cognito_identity_pool_id,
         logins: {
-          [`cognito-idp.${cognito_aws_region}.amazonaws.com/${cognito_pool_id}`]: accessToken
-        }
+          [`cognito-idp.${cognito_aws_region}.amazonaws.com/${cognito_pool_id}`]:
+            accessToken,
+        },
       });
     }
   }
@@ -89,7 +91,10 @@ export default class AuthService {
       localStorage.setItem(cognitoState, state);
     }
     if (localStorage.getItem(cognitoState) === null) {
-      localStorage.setItem(cognitoState, Math.random().toString(36).substring(2));
+      localStorage.setItem(
+        cognitoState,
+        Math.random().toString(36).substring(2),
+      );
     }
     return localStorage.getItem(cognitoState);
   }

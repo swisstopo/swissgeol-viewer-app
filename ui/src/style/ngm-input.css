@@ -10,8 +10,10 @@
   border: 2px solid transparent;
   width: 236px;
   height: 54px;
-  border-bottom-color: #66D9E8;
-  font: normal normal 500 16px/24px Inter, sans-serif;
+  border-bottom-color: #66d9e8;
+  font:
+    normal normal 500 16px/24px Inter,
+    sans-serif;
   color: #212529;
   outline: none;
   padding-left: 16px;
@@ -35,7 +37,7 @@
   left: 16px;
   padding-top: 17px;
   transition: 0.2s ease all;
-  color: #4A5056;
+  color: #4a5056;
   letter-spacing: 0.16px;
   height: 20px;
   background-color: white;
@@ -70,25 +72,25 @@
   border: none !important;
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
-  border-bottom: 2px solid #52A8BC !important;
+  border-bottom: 2px solid #52a8bc !important;
 }
 
 .ngm-input.ui.selection.active.dropdown .menu {
-  border-top: 2px solid #52A8BC !important;
+  border-top: 2px solid #52a8bc !important;
 }
 
 .ngm-input.ui.dropdown > .dropdown.icon {
   padding-top: 21px !important;
-  color: #52A8BC !important;
+  color: #52a8bc !important;
   opacity: 1 !important;
 }
 
 .ngm-input.ui.active.selection {
-  background-color: #C5F6FA;
+  background-color: #c5f6fa;
 }
 
 .ngm-input.ui.dropdown .menu .item.active.selected {
-  background-color: #F8F9FA;
+  background-color: #f8f9fa;
   font-weight: normal !important;
 }
 

@@ -12,7 +12,7 @@ ngm-topo-profile-modal {
 
 ngm-topo-profile-modal .htmlpopup-header {
   font-weight: bold;
-  border-bottom: 2px solid #DFE2E6;
+  border-bottom: 2px solid #dfe2e6;
   padding-bottom: 8px;
   margin-bottom: 8px;
 }
@@ -32,7 +32,7 @@ ngm-topo-profile-modal .content-container p {
 ngm-topo-profile-modal .content-container a {
   color: var(--ngm-interaction);
   font-weight: bold;
-  background-color: #DEE2E6;
+  background-color: #dee2e6;
   border-radius: 5px;
   padding: 2px 8px;
   margin-left: 4px;
@@ -66,4 +66,3 @@ ngm-topo-profile-modal .content-container a:hover {
   bottom: -10px;
   left: calc(50% - 10px);
 }
-

@@ -1,28 +1,28 @@
 .ngm-search-icon-container {
-    width: 30px;
-    height: 100%;
-    position: absolute;
-    left: 12px;
-    color: #66D9E8;
-    background-color: var(--ngm-interaction);
+  width: 30px;
+  height: 100%;
+  position: absolute;
+  left: 12px;
+  color: #66d9e8;
+  background-color: var(--ngm-interaction);
 }
 
 .ngm-search-icon-container.ngm-close-icon {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .mobile-search-active ga-search .ngm-search-icon {
-    display: none;
+  display: none;
 }
 
 @media (max-width: 690px) {
-    ga-search {
-        min-width: 180px;
-        max-width: 180px;
-    }
+  ga-search {
+    min-width: 180px;
+    max-width: 180px;
+  }
 
-    ga-search > input {
-        padding: 11px 16px !important;
-        width: 150px;
-    }
+  ga-search > input {
+    padding: 11px 16px !important;
+    width: 150px;
+  }
 }

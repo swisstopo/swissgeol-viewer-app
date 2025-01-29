@@ -34,7 +34,9 @@ ngm-geometries-simple-list {
   align-items: center;
   color: #212529;
   text-align: left;
-  font: normal normal bold 14px/20px Inter, sans-serif;
+  font:
+    normal normal bold 14px/20px Inter,
+    sans-serif;
   letter-spacing: 0;
   padding: 14px 0;
 }
@@ -69,20 +71,22 @@ ngm-draw-section .ngm-action-list-item.active {
 }
 
 .ngm-draw-list-item.disabled > div:first-child {
-  background-color: #868E96 !important;
+  background-color: #868e96 !important;
 }
 
 .ngm-slice-types.disabled > .ngm-action-list-item,
 .ngm-draw-list-item.disabled {
   cursor: default;
   pointer-events: none;
-  color: #868E96 !important;
+  color: #868e96 !important;
 }
 
 .ngm-hint {
   background-color: var(--ngm-hover);
   color: #212529;
-  font: normal normal bold 14px/20px Inter, sans-serif;
+  font:
+    normal normal bold 14px/20px Inter,
+    sans-serif;
   letter-spacing: 0;
   padding: 12px;
   border-radius: 8px;
@@ -92,7 +96,9 @@ ngm-draw-section .ngm-action-list-item.active {
 .ngm-geom-label {
   margin-top: 12px;
   margin-bottom: 16px;
-  font: normal normal 500 14px/20px Inter, sans-serif;
+  font:
+    normal normal 500 14px/20px Inter,
+    sans-serif;
   color: #212529;
 }
 
@@ -103,7 +109,9 @@ ngm-draw-section .ngm-action-list-item.active {
 
 .ngm-slice-side {
   display: flex;
-  font: normal normal 500 14px/28px Inter, sans-serif;
+  font:
+    normal normal 500 14px/28px Inter,
+    sans-serif;
   margin-bottom: 20px;
   width: 214px;
 }
@@ -133,7 +141,7 @@ ngm-slicer .ui.button.ngm-transform-btn {
 }
 
 ngm-slicer .ui.button.ngm-transform-btn:hover {
-  background-color: #D0F5F9;
+  background-color: #d0f5f9;
   color: #357183;
 }
 
@@ -150,19 +158,27 @@ ngm-draw-section .ngm-divider {
   background-color: #f1f3f5;
 }
 
-.ngm-geom-filter.ngm-action-list-item .ngm-action-list-item-header > div:first-child {
+.ngm-geom-filter.ngm-action-list-item
+  .ngm-action-list-item-header
+  > div:first-child {
   width: auto;
 }
 
-.ngm-geom-filter.ngm-action-list-item .ngm-action-list-item-header > div:not(:first-child, :last-child):hover {
+.ngm-geom-filter.ngm-action-list-item
+  .ngm-action-list-item-header
+  > div:not(:first-child, :last-child):hover {
   background-color: var(--ngm-interaction-hover);
 }
 
-.ngm-geom-filter.ngm-action-list-item .ngm-action-list-item-header > div:not(:first-child, :last-child).active {
+.ngm-geom-filter.ngm-action-list-item
+  .ngm-action-list-item-header
+  > div:not(:first-child, :last-child).active {
   background-color: var(--ngm-interaction-active);
 }
 
-.ngm-geom-filter.ngm-action-list-item .ngm-action-list-item-header > div:first-child.active {
+.ngm-geom-filter.ngm-action-list-item
+  .ngm-action-list-item-header
+  > div:first-child.active {
   color: var(--ngm-interaction-active);
 }
 
@@ -180,20 +196,26 @@ ngm-draw-section .ngm-divider {
 }
 
 .ngm-section-format-container {
-  font: normal normal bold 15px/24px Inter, sans-serif;
+  font:
+    normal normal bold 15px/24px Inter,
+    sans-serif;
   letter-spacing: 0.16px;
   color: #222529;
 }
 
 .ngm-section-format-container > label {
   color: #495057;
-  font: normal normal 500 14px/20px Inter, sans-serif;
+  font:
+    normal normal 500 14px/20px Inter,
+    sans-serif;
 }
 
 .ngm-section-format-container .dropdown.active,
 .ngm-section-format-container .dropdown {
   background-color: transparent;
-  font: normal normal bold 15px/24px Inter, sans-serif;
+  font:
+    normal normal bold 15px/24px Inter,
+    sans-serif;
   padding: 0;
 }
 

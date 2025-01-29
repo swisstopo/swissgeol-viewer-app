@@ -1,6 +1,6 @@
 #ngm-navigation-info {
   margin-top: 2px;
-  max-width: 525px
+  max-width: 525px;
 }
 
 #ngm-navigation-info .ngm-keyboard-info-content {
@@ -35,4 +35,3 @@
 #ngm-navigation-info-btn {
   pointer-events: all;
 }
-

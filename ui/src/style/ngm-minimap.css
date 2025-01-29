@@ -1,7 +1,7 @@
 ngm-minimap {
   display: flex;
   flex-direction: column;
-  border-bottom: 2px solid #DFE2E6;
+  border-bottom: 2px solid #dfe2e6;
   align-items: center;
   justify-content: center;
 }
@@ -10,12 +10,11 @@ ngm-minimap {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 25px;
   width: 40px;
   height: 40px;
 }
-
 
 .ngm-minimap-container {
   cursor: pointer;
@@ -47,7 +46,7 @@ ngm-minimap {
 .ngm-compass-arrow > div.ngm-compass-arrow-bottom {
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-top: 12px solid #DEE2E6;
+  border-top: 12px solid #dee2e6;
 }
 
 .ngm-floating-window div.ngm-drag-area {

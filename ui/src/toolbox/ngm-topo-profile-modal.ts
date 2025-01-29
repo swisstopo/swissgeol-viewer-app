@@ -1,34 +1,40 @@
-import {LitElementI18n} from '../i18n.js';
-import {html} from 'lit';
-import {customElement, query, state} from 'lit/decorators.js';
+import { LitElementI18n } from '../i18n.js';
+import { html } from 'lit';
+import { customElement, query, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import draggable from '../elements/draggable';
-import type {GeometryAction} from '../store/toolbox';
+import type { GeometryAction } from '../store/toolbox';
 import ToolboxStore from '../store/toolbox';
-import {cartesianToLv95} from '../projection';
-import {plotProfile} from '../graphs';
-import {pointer} from 'd3-selection';
+import { cartesianToLv95 } from '../projection';
+import { plotProfile } from '../graphs';
+import { pointer } from 'd3-selection';
 import MainStore from '../store/main';
-import type {Viewer} from 'cesium';
-import {Color, HeightReference, CallbackProperty, Cartesian3, Entity} from 'cesium';
-import {getPointOnPolylineByRatio} from '../cesiumutils';
-import type {NgmGeometry} from './interfaces';
-import {styleMap} from 'lit/directives/style-map.js';
-import {bisector} from 'd3-array';
+import type { Viewer } from 'cesium';
+import {
+  Color,
+  HeightReference,
+  CallbackProperty,
+  Cartesian3,
+  Entity,
+} from 'cesium';
+import { getPointOnPolylineByRatio } from '../cesiumutils';
+import type { NgmGeometry } from './interfaces';
+import { styleMap } from 'lit/directives/style-map.js';
+import { bisector } from 'd3-array';
 
-type ProfileServiceFormat = 'json' | 'csv'
+type ProfileServiceFormat = 'json' | 'csv';
 
 export type ProfileData = {
   alts: {
-    COMB: number,
-    DTM2: number,
-    DTM25: number
-  },
-  dist: number,
-  domainDist: number,
-  easting: number,
-  northing: number
-}
+    COMB: number;
+    DTM2: number;
+    DTM25: number;
+  };
+  dist: number;
+  domainDist: number;
+  easting: number;
+  northing: number;
+};
 
 @customElement('ngm-topo-profile-modal')
 export class NgmTopoProfileModal extends LitElementI18n {
@@ -36,8 +42,8 @@ export class NgmTopoProfileModal extends LitElementI18n {
   accessor hidden = true;
   @state()
   accessor tooltipData = {
-    position: {left: '0px', top: '0px'},
-    values: {dist: '0 m', elev: '0 m'}
+    position: { left: '0px', top: '0px' },
+    values: { dist: '0 m', elev: '0 m' },
   };
   @state()
   accessor showTooltip = false;
@@ -57,7 +63,9 @@ export class NgmTopoProfileModal extends LitElementI18n {
   private distInKM = false;
   private readonly highlightPointPosition: Cartesian3 = new Cartesian3();
   private readonly highlightPoint = new Entity({
-    position: <any> new CallbackProperty(() => this.highlightPointPosition, false),
+    position: <any>(
+      new CallbackProperty(() => this.highlightPointPosition, false)
+    ),
     point: {
       show: new CallbackProperty(() => this.showTooltip, false),
       color: Color.WHITE,
@@ -65,15 +73,17 @@ export class NgmTopoProfileModal extends LitElementI18n {
       outlineColor: Color.BLACK,
       pixelSize: 9,
       heightReference: HeightReference.CLAMP_TO_GROUND,
-      disableDepthTestDistance: Number.POSITIVE_INFINITY
-    }
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    },
   });
 
   constructor() {
     super();
     super.hidden = this.hidden;
-    ToolboxStore.geometryAction.subscribe(options => this.handleActions(options));
-    MainStore.viewer.subscribe(viewer => {
+    ToolboxStore.geometryAction.subscribe((options) =>
+      this.handleActions(options),
+    );
+    MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       if (viewer) viewer.entities.add(this.highlightPoint);
     });
@@ -81,7 +91,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
 
   connectedCallback() {
     draggable(this, {
-      allowFrom: '.drag-handle'
+      allowFrom: '.drag-handle',
     });
     super.connectedCallback();
   }
@@ -97,30 +107,40 @@ export class NgmTopoProfileModal extends LitElementI18n {
     if (options.action === 'profile') {
       this.hidden = true;
       if (!options.id) return;
-      const geom: NgmGeometry | undefined = ToolboxStore.geometries.getValue().find(geom => geom.id === options.id);
+      const geom: NgmGeometry | undefined = ToolboxStore.geometries
+        .getValue()
+        .find((geom) => geom.id === options.id);
       if (!geom) return;
-      this.linestring = geom.positions.map(c => cartesianToLv95(c));
+      this.linestring = geom.positions.map((c) => cartesianToLv95(c));
       this.name = geom.name;
 
-      this.data = await fetch(this.profileServiceUrl('json')).then(
-        respnse => respnse.json()).then(
-        data => {
+      this.data = await fetch(this.profileServiceUrl('json'))
+        .then((respnse) => respnse.json())
+        .then((data) => {
           this.distInKM = data[data.length - 1].dist >= 10000;
           const denom = this.distInKM ? 1000 : 1;
-          return data.map(record => {
-            return {...record, domainDist: record.dist / denom};
+          return data.map((record) => {
+            return { ...record, domainDist: record.dist / denom };
           });
         });
       const denom = this.distInKM ? 1000 : 1;
       let totalDist = 0;
       const extremPoints = geom.positions.map((pos, indx) => {
-        totalDist += indx === 0 ? 0 : Cartesian3.distance(geom.positions[indx - 1], pos) / denom;
-        return {dist: totalDist, position: this.linestring![indx]};
+        totalDist +=
+          indx === 0
+            ? 0
+            : Cartesian3.distance(geom.positions[indx - 1], pos) / denom;
+        return { dist: totalDist, position: this.linestring![indx] };
       });
 
       this.hidden = false;
       await this.updateComplete;
-      this.profileInfo = plotProfile(this.data, extremPoints, this.profilePlot, this.distInKM);
+      this.profileInfo = plotProfile(
+        this.data,
+        extremPoints,
+        this.profilePlot,
+        this.distInKM,
+      );
       this.domain = this.profileInfo.domain;
 
       this.attachPathListeners(geom);
@@ -129,8 +149,13 @@ export class NgmTopoProfileModal extends LitElementI18n {
   }
 
   profileServiceUrl(format: ProfileServiceFormat) {
-    const url = new URL(`https://api3.geo.admin.ch/rest/services/profile.${format}`);
-    url.searchParams.set('geom', `{"type":"LineString","coordinates":[[${this.linestring!.map(c => c.slice(0, 2).toString()).join('],[')}]]}`);
+    const url = new URL(
+      `https://api3.geo.admin.ch/rest/services/profile.${format}`,
+    );
+    url.searchParams.set(
+      'geom',
+      `{"type":"LineString","coordinates":[[${this.linestring!.map((c) => c.slice(0, 2).toString()).join('],[')}]]}`,
+    );
     url.searchParams.set('sr', '2056');
     url.searchParams.set('nb_points', '1000');
     return url.toString();
@@ -145,10 +170,16 @@ export class NgmTopoProfileModal extends LitElementI18n {
 
     // add name spaces
     if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
-      source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+      source = source.replace(
+        /^<svg/,
+        '<svg xmlns="http://www.w3.org/2000/svg"',
+      );
     }
     if (!source.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
-      source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+      source = source.replace(
+        /^<svg/,
+        '<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
+      );
     }
 
     // add xml declaration
@@ -169,16 +200,20 @@ export class NgmTopoProfileModal extends LitElementI18n {
       const y = this.domain.Y(yCoord);
 
       this.tooltipData = {
-        position: {left: `${x}px`, top: `${y}px`},
+        position: { left: `${x}px`, top: `${y}px` },
         values: {
           dist: `${xCoord.toFixed(2)} ${this.distInKM ? 'km' : 'm'}`,
-          elev: `${yCoord.toFixed(2)} m`
-        }
+          elev: `${yCoord.toFixed(2)} m`,
+        },
       };
       let ratio = xCoord / this.data[this.data.length - 1].domainDist;
       if (ratio < 0) ratio = 0;
       else if (ratio > 1) ratio = 1;
-      getPointOnPolylineByRatio(geometry!.positions, ratio, this.highlightPointPosition);
+      getPointOnPolylineByRatio(
+        geometry!.positions,
+        ratio,
+        this.highlightPointPosition,
+      );
       this.viewer?.scene.requestRender();
     });
     areaChartPath.on('mouseover', () => {
@@ -191,26 +226,43 @@ export class NgmTopoProfileModal extends LitElementI18n {
   }
 
   render() {
-    return this.hidden ? html`` : html`
-      <div class="ngm-floating-window-header drag-handle">
-        ${i18next.t('topographic_profile_header')} (${this.name})
-        <div class="ngm-close-icon" @click=${() => ToolboxStore.nextGeometryAction({action: 'profile'})}></div>
-      </div>
-      <div class="content-container">
-        <p>${i18next.t('topographic_profile_downloads')}:
-          <a href=${this.profileServiceUrl('csv')}>CSV</a>
-          <a class="svg-link" download="${this.name}_profile">SVG</a>
-        </p>
-        <div class="ngm-profile-plot"></div>
-        <div .hidden=${!this.showTooltip} class="ngm-profile-tooltip" style="${styleMap(this.tooltipData.position)}">
-          <div>
-            <div class="ngm-profile-distance">${i18next.t('profile_distance')} ${this.tooltipData.values.dist}</div>
-            <div class="ngm-profile-elevation">${i18next.t('profile_elevation')} ${this.tooltipData.values.elev}</div>
+    return this.hidden
+      ? html``
+      : html`
+          <div class="ngm-floating-window-header drag-handle">
+            ${i18next.t('topographic_profile_header')} (${this.name})
+            <div
+              class="ngm-close-icon"
+              @click=${() =>
+                ToolboxStore.nextGeometryAction({ action: 'profile' })}
+            ></div>
           </div>
-          <div class="ngm-profile-tooltip-arrow"></div>
-        </div>
-      </div>
-    `;
+          <div class="content-container">
+            <p>
+              ${i18next.t('topographic_profile_downloads')}:
+              <a href=${this.profileServiceUrl('csv')}>CSV</a>
+              <a class="svg-link" download="${this.name}_profile">SVG</a>
+            </p>
+            <div class="ngm-profile-plot"></div>
+            <div
+              .hidden=${!this.showTooltip}
+              class="ngm-profile-tooltip"
+              style="${styleMap(this.tooltipData.position)}"
+            >
+              <div>
+                <div class="ngm-profile-distance">
+                  ${i18next.t('profile_distance')}
+                  ${this.tooltipData.values.dist}
+                </div>
+                <div class="ngm-profile-elevation">
+                  ${i18next.t('profile_elevation')}
+                  ${this.tooltipData.values.elev}
+                </div>
+              </div>
+              <div class="ngm-profile-tooltip-arrow"></div>
+            </div>
+          </div>
+        `;
   }
 
   createRenderRoot() {

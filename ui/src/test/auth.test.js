@@ -5,8 +5,10 @@ import jsdom from 'jsdom-global';
 
 // initialize some constants
 const url = 'http://localhost/';
-const user = {name: 'John Doe'};
-const payload = Buffer.from(JSON.stringify(user)).toString('base64').replace(/=/g, '');
+const user = { name: 'John Doe' };
+const payload = Buffer.from(JSON.stringify(user))
+  .toString('base64')
+  .replace(/=/g, '');
 const jwt = `header.${payload}.signature`;
 const token = `#access_token=${jwt}`;
 const idToken = '&id_token=bidon';
@@ -14,14 +16,13 @@ const type = '&token_type=Bearer';
 const state = '&state=test';
 
 // initialize the window, document and localStorage objects
-jsdom('', {url: url + token + type + state + idToken});
+jsdom('', { url: url + token + type + state + idToken });
 global.localStorage = window.localStorage;
 
 // load the component
 import AuthService from '../authService.js';
 
 describe('Auth', () => {
-
   describe('state', () => {
     it('should initialize the state', () => {
       const theState = AuthService.state();

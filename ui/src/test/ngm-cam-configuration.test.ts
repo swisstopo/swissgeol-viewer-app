@@ -1,11 +1,11 @@
 import assert from 'assert';
-import {round} from './utils';
+import { round } from './utils';
 
 import {
   ABSOLUTE_ELEVATION_MAX,
   ABSOLUTE_ELEVATION_MIN,
   heightToValue,
-  valueToHeight
+  valueToHeight,
 } from '../elements/ngm-cam-configuration';
 
 describe('ngm-cam-configuration', () => {

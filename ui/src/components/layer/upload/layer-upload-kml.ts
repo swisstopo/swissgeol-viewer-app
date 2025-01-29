@@ -1,18 +1,18 @@
-import {css, html, unsafeCSS} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
+import { css, html, unsafeCSS } from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
 import i18next from 'i18next';
-import {classMap} from 'lit-html/directives/class-map.js';
-import {LitElementI18n} from '../../../i18n';
-import {showSnackbarError, showSnackbarInfo} from '../../../notifications';
+import { classMap } from 'lit-html/directives/class-map.js';
+import { LitElementI18n } from '../../../i18n';
+import { showSnackbarError, showSnackbarInfo } from '../../../notifications';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
 import '../../core';
 import './layer-upload-kml-modal';
-import {applyTransition, applyTypography} from '../../../styles/theme';
-import {CoreModal} from '../../core/core-modal';
+import { applyTransition, applyTypography } from '../../../styles/theme';
+import { CoreModal } from '../../core/core-modal';
 
 @customElement('ngm-layer-upload-kml')
 export default class NgmLayerUploadKml extends LitElementI18n {
-  @property({type: Number})
+  @property({ type: Number })
   accessor maxFileSize: number | null = null;
 
   @state()
@@ -89,13 +89,16 @@ export default class NgmLayerUploadKml extends LitElementI18n {
     if (!this.validateFile(file)) {
       return;
     }
-    this.modal = CoreModal.open({size: 'small'}, html`
-      <ngm-layer-upload-kml-modal
-        .file="${file}"
-        @confirm="${this.handleUpload}"
-        @cancel="${() => this.modal?.close()}"
-      ></ngm-layer-upload-kml-modal>
-    `);
+    this.modal = CoreModal.open(
+      { size: 'small' },
+      html`
+        <ngm-layer-upload-kml-modal
+          .file="${file}"
+          @confirm="${this.handleUpload}"
+          @cancel="${() => this.modal?.close()}"
+        ></ngm-layer-upload-kml-modal>
+      `,
+    );
   }
 
   private validateFile(file: File | null): boolean {
@@ -118,9 +121,11 @@ export default class NgmLayerUploadKml extends LitElementI18n {
   private handleUpload(e: KmlUploadEvent): void {
     this.isLoading = true;
     try {
-      this.dispatchEvent(new CustomEvent<KmlUploadEventDetail>('upload', {
-        detail: e.detail
-      }));
+      this.dispatchEvent(
+        new CustomEvent<KmlUploadEventDetail>('upload', {
+          detail: e.detail,
+        }),
+      );
       this.modal?.close();
       this.fileInput.value = '';
     } catch (e) {
@@ -132,17 +137,20 @@ export default class NgmLayerUploadKml extends LitElementI18n {
   }
 
   private isFileTooLarge(file: File): boolean {
-    return typeof this.maxFileSize === 'number' && !isNaN(this.maxFileSize) && file.size > this.maxFileSize * 1024 * 1024;
+    return (
+      typeof this.maxFileSize === 'number' &&
+      !isNaN(this.maxFileSize) &&
+      file.size > this.maxFileSize * 1024 * 1024
+    );
   }
 
   readonly render = () => html`
-    <button
-      class="upload"
-      @click="${() => this.fileInput.click()}"
-    >
+    <button class="upload" @click="${() => this.fileInput.click()}">
       <span class="title">
         <ngm-core-icon icon="upload" ?hidden=${this.isLoading}></ngm-core-icon>
-        <div class="ui inline mini loader ${classMap({active: this.isLoading})}"></div>
+        <div
+          class="ui inline mini loader ${classMap({ active: this.isLoading })}"
+        ></div>
         ${i18next.t('dtd_kml_upload_button_title')}
       </span>
       <span class="subtitle">
@@ -155,9 +163,9 @@ export default class NgmLayerUploadKml extends LitElementI18n {
       hidden
       @change=${this.handleFileSelection}
     />
-    ${this.violation == null ? '' : html`
-        <span class="violation">${this.violation}</span>
-    `}
+    ${this.violation == null
+      ? ''
+      : html` <span class="violation">${this.violation}</span> `}
   `;
 
   static readonly styles = css`
@@ -187,7 +195,8 @@ export default class NgmLayerUploadKml extends LitElementI18n {
       cursor: pointer;
     }
 
-    button.upload:hover, button.upload.is-active {
+    button.upload:hover,
+    button.upload.is-active {
       ${applyTransition('fade')};
 
       color: var(--color-text--emphasis--medium);
@@ -216,8 +225,8 @@ export default class NgmLayerUploadKml extends LitElementI18n {
   `;
 }
 
-export type KmlUploadEvent = CustomEvent<KmlUploadEventDetail>
+export type KmlUploadEvent = CustomEvent<KmlUploadEventDetail>;
 export interface KmlUploadEventDetail {
-  file: File
-  isClampEnabled: boolean
+  file: File;
+  isClampEnabled: boolean;
 }
