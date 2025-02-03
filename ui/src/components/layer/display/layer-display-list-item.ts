@@ -4,6 +4,7 @@ import {css, html} from 'lit';
 import 'src/components/core';
 import {applyTransition, applyTypography} from 'src/styles/theme';
 import {SliderChangeEvent} from 'src/components/core/core-slider';
+import {classMap} from 'lit/directives/class-map.js';
 
 @customElement('ngm-layer-display-list-item')
 export class NgmLayerDisplayListItem extends LitElementI18n {
@@ -22,17 +23,16 @@ export class NgmLayerDisplayListItem extends LitElementI18n {
   @state()
   accessor isOpacityActive = false;
 
+  @state()
+  accessor isBackgroundActive = false;
+
   constructor() {
     super();
 
-    this.toggleOpacityActive = this.toggleOpacityActive.bind(this);
     this.toggleVisibility = this.toggleVisibility.bind(this);
+    this.toggleOpacityActive = this.toggleOpacityActive.bind(this);
+    this.toggleBackgroundActive = this.toggleBackgroundActive.bind(this);
     this.handleOpacityChangeEvent = this.handleOpacityChangeEvent.bind(this);
-  }
-
-  private toggleOpacityActive(): void {
-    this.isOpacityActive = !this.isOpacityActive;
-    this.classList.toggle('has-active-opacity', this.isOpacityActive);
   }
 
   private toggleVisibility(): void {
@@ -41,6 +41,17 @@ export class NgmLayerDisplayListItem extends LitElementI18n {
         isVisible: !this.isVisible,
       },
     }));
+  }
+
+  private toggleOpacityActive(): void {
+    this.isBackgroundActive = false;
+    this.isOpacityActive = !this.isOpacityActive;
+    this.classList.toggle('has-active-opacity', this.isOpacityActive);
+  }
+
+  private toggleBackgroundActive(): void {
+    this.isOpacityActive = false;
+    this.isBackgroundActive = !this.isBackgroundActive;
   }
 
   private handleOpacityChangeEvent(event: SliderChangeEvent): void {
@@ -60,7 +71,11 @@ export class NgmLayerDisplayListItem extends LitElementI18n {
       <span class="title">${this.title}</span>
 
       <div class="suffix">
-        <span class="label">${this.label}</span>
+        <span
+          class="label ${classMap({'is-active': this.isBackgroundActive})}"
+          role="button"
+          @click="${this.toggleBackgroundActive}"
+        >${this.label}</span>
 
         <ngm-core-button
           transparent
@@ -81,6 +96,7 @@ export class NgmLayerDisplayListItem extends LitElementI18n {
       </div>
     </div>
     ${this.isOpacityActive ? this.renderOpacity() : ''}
+    ${this.isBackgroundActive ? this.renderBackground() : ''}
   `;
 
   private readonly renderOpacity = () => html`
@@ -94,6 +110,10 @@ export class NgmLayerDisplayListItem extends LitElementI18n {
         @change="${this.handleOpacityChangeEvent}"
       ></ngm-core-slider>
     </div>
+  `;
+
+  private readonly renderBackground = () => html`
+    <hr>
   `;
 
   static readonly styles = css`
@@ -159,6 +179,7 @@ export class NgmLayerDisplayListItem extends LitElementI18n {
     }
 
     /* label */
+    /* TODO this style is improvised, as the Figma interaction for this label has not yet been finalized. */
     .label {
       ${applyTypography('overline')};
 
@@ -166,10 +187,25 @@ export class NgmLayerDisplayListItem extends LitElementI18n {
       align-items: center;
       padding: 10px;
       height: 27px;
+      border-radius: 22px;
+      cursor: pointer;
 
       color: var(--color-text--emphasis-high);
       background-color: var(--color-bg--grey);
-      border-radius: 22px;
+
+
+      ${applyTransition('fade')};
+      transition-property: background-color;
+    }
+
+    .label:hover {
+      background-color: var(--color-green-disabled);
+    }
+
+    .label.is-active {
+      color: var(--color-text--emphasis-medium);
+      background-color: var(--color-secondary--active);
+      border-color: var(--color-secondary--active);
     }
 
     /* opacity */

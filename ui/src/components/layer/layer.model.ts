@@ -1,64 +1,21 @@
-import EarthquakeVisualizer from 'src/earthquakeVisualization/earthquakeVisualizer';
-import {DataSource, ImageryLayer} from 'cesium';
-import {PickableCesium3DTileset, PickableVoxelPrimitive} from 'src/layers/helpers';
+import {TranslationKey} from 'src/models/translation-key.model';
+import {Id} from 'src/models/id.model';
+import {Model} from 'src/models/model.model';
 
-interface BaseLayer {
-  id: LayerId
-  type: LayerType
-  assetId: string
-  ionToken: string
-  label: string,
+interface Layer extends Model {
+  label: TranslationKey
   isVisible: boolean
-  isDisplayed: boolean
-  isOpacityDisabled: boolean
-  isPickable: boolean
-  isCustom: boolean
 }
 
-export interface BackgroundLayer extends BaseLayer {
-  type: LayerType.Background
+export interface BackgroundLayer extends Layer {
+  imagePath: string
+  children: BackgroundSublayer[]
+  opacity: number
 }
 
-export interface GeoJsonLayer extends BaseLayer {
-  type: LayerType.GeoJson
-  dataSource: DataSource
+export interface BackgroundSublayer {
+  id: Id<this>
+  format: 'jpeg' | 'png'
+  maximumLevel: number
+  credit: string
 }
-
-export interface TilesetLayer extends BaseLayer {
-  type: LayerType.Tileset
-  tileset: PickableCesium3DTileset
-}
-
-export interface VoxelLayer extends BaseLayer {
-  type: LayerType.Voxel
-  primitive: PickableVoxelPrimitive
-}
-
-export interface WebMapLayer extends BaseLayer {
-  type: LayerType.WebMap
-  imagery: ImageryLayer
-}
-
-export interface EarthquakeLayer extends BaseLayer {
-  type: LayerType.Earthquake
-  visualizer: EarthquakeVisualizer
-}
-
-export type Layer =
-  | BackgroundLayer
-  | GeoJsonLayer
-  | TilesetLayer
-  | VoxelLayer
-  | WebMapLayer
-  | EarthquakeLayer
-
-enum LayerType {
-  Background = 'Background',
-  GeoJson = 'GeoJson',
-  Earthquake = 'Earthquake',
-  Tileset = 'Tileset',
-  Voxel = 'Voxel',
-  WebMap = 'WebMap',
-}
-
-export type LayerId = string;

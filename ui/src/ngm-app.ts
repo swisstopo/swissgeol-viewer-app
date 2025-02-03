@@ -24,15 +24,15 @@ import './components/layout';
 
 import {COGNITO_VARIABLES, DEFAULT_VIEW} from './constants';
 
-import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
+import {addMantelEllipsoid, setupViewer} from './viewer';
 
 import {
   getCameraView,
-  getCesiumToolbarParam,
+  getCesiumToolbarParam, getMapParam,
   getTopicOrProject,
   getZoomToPosition,
   rewriteParams,
-  syncCamera,
+  syncCamera, syncMapOpacityParam, syncMapParam,
   syncStoredView,
 } from './permalink';
 import i18next from 'i18next';
@@ -47,9 +47,8 @@ import ToolboxStore from './store/toolbox';
 import {classMap} from 'lit/directives/class-map.js';
 import {customElement, query, state} from 'lit/decorators.js';
 import {showSnackbarInfo} from './notifications';
-import type MapChooser from './MapChooser';
 import type {NgmSlowLoading} from './elements/ngm-slow-loading';
-import {Event, FrameRateMonitor, Globe, Viewer} from 'cesium';
+import {Event, FrameRateMonitor, Globe, ImageryLayer, Viewer} from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type {SideBar} from './elements/ngm-side-bar';
@@ -59,6 +58,11 @@ import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
 import {CoreModal} from './components/core/core-modal';
 import {TrackingConsentModalEvent} from './components/layout/tracking-consent-modal';
+import {BackgroundLayerService} from 'src/components/layer/background-layer.service';
+import {Id, makeId} from 'src/models/id.model';
+import {BackgroundLayer} from 'src/components/layer/layer.model';
+import {distinctUntilChanged, distinctUntilKeyChanged, map} from 'rxjs';
+import {addSwisstopoLayer} from 'src/swisstopoImagery';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -82,8 +86,6 @@ const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
  */
 @customElement('ngm-app')
 export class NgmApp extends LitElementI18n {
-  @state()
-  accessor mapChooser: MapChooser | undefined;
   @state()
   accessor slicer_: Slicer | undefined;
   @state()
@@ -126,6 +128,9 @@ export class NgmApp extends LitElementI18n {
   @consume({context: clientConfigContext})
   accessor clientConfig!: ClientConfig;
 
+  @consume({context: BackgroundLayerService.context()})
+  accessor backgroundLayerService!: BackgroundLayerService;
+
   constructor() {
     super();
 
@@ -143,6 +148,18 @@ export class NgmApp extends LitElementI18n {
     });
   }
 
+  private updateBaseMapTranslucency(opacity: number): void {
+    const {translucency} = this.viewer!.scene.globe;
+    translucency.frontFaceAlpha = opacity;
+    if (opacity === 1) {
+      translucency.enabled = false; // TODO might need to be true
+      translucency.backFaceAlpha = 1;
+    } else {
+      translucency.backFaceAlpha = 0;
+      translucency.enabled = true;
+    }
+  }
+
   private openDisclaimer(): void {
     this.disclaimer = CoreModal.open({isPersistent: true, size: 'large', hasNoPadding: true}, html`
       <ngm-tracking-consent-modal
@@ -156,9 +173,10 @@ export class NgmApp extends LitElementI18n {
    */
   onLayerAdded(evt) {
     const layer = evt.detail.layer;
-    if (layer.backgroundId !== undefined && this.mapChooser!.elements) {
-      this.mapChooser!.selectMap(layer.backgroundId);
-    }
+    // TODO check if this is relevant
+    // if (layer.backgroundId !== undefined && this.mapChooser!.elements) {
+    //   this.mapChooser!.selectMap(layer.backgroundId);
+    // }
     if (this.slicer_ && this.slicer_!.active) {
       if (layer && layer.promise) {
         this.slicer_!.applyClippingPlanesToTileset(layer.promise);
@@ -211,10 +229,21 @@ export class NgmApp extends LitElementI18n {
     this.slicer_ = new Slicer(viewer);
     ToolboxStore.setSlicer(this.slicer_);
 
+
+    MainStore.syncMap.subscribe(() => {
+      const id = makeId<BackgroundLayer>(getMapParam());
+      if (id != null) {
+        this.backgroundLayerService.setBackground(id);
+      }
+    });
+
+
     // setup web components
-    this.mapChooser = setupBaseLayers(viewer);
-    this.mapChooser.addMapChooser(this.querySelector('.ngm-bg-chooser-map')!);
-    MainStore.setMapChooser(this.mapChooser);
+    // this.mapChooser = setupBaseLayers(viewer);
+    // this.mapChooser.addMapChooser(this.querySelector('.ngm-bg-chooser-map')!);
+    // MainStore.setMapChooser(this.mapChooser);
+    //
+
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(viewer);
 
@@ -260,7 +289,6 @@ export class NgmApp extends LitElementI18n {
   }
 
   async firstUpdated() {
-
     setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
     rewriteParams();
@@ -320,6 +348,65 @@ export class NgmApp extends LitElementI18n {
         }
       });
     });
+
+    this.initializeBackgroundLayers();
+  }
+
+  private initializeBackgroundLayers(): void {
+    const layersByBackground = new Map<Id<BackgroundLayer>, ImageryLayer[]>;
+    for (const layer of this.backgroundLayerService.layers) {
+      layersByBackground.set(layer.id, layer.children.map((sublayer) => addSwisstopoLayer(
+        this.viewer!,
+        sublayer.id as string,
+        sublayer.format,
+        sublayer.maximumLevel,
+      )));
+    }
+
+    this.backgroundLayerService.background$
+      .pipe(
+        distinctUntilKeyChanged('children')
+      )
+      .subscribe((background) => {
+        for (const imageries of layersByBackground.values()) {
+          imageries.forEach((it) => it.show = false);
+        }
+        layersByBackground.get(background.id)!.forEach((it) => it.show = true);
+        syncMapParam(background.id);
+      });
+
+    let opacityTimeout: number | null = null;
+    this.backgroundLayerService.background$
+      .pipe(
+        map((it) => it.opacity),
+        distinctUntilChanged(),
+      )
+      .subscribe((opacity) => {
+        if (opacityTimeout !== null) {
+          clearTimeout(opacityTimeout);
+        }
+        opacityTimeout = setTimeout(() => {
+          opacityTimeout = null;
+          syncMapOpacityParam(opacity);
+        }, 50) as unknown as number;
+
+        this.updateBaseMapTranslucency(opacity);
+        setTimeout(() => this.viewer!.scene.requestRender());
+      });
+
+    this.backgroundLayerService.background$
+      .pipe(
+        distinctUntilKeyChanged('isVisible'),
+      )
+      .subscribe((background) => {
+        if (background.isVisible) {
+
+          this.updateBaseMapTranslucency(background.opacity);
+        } else {
+          this.updateBaseMapTranslucency(0);
+        }
+        setTimeout(() => this.viewer!.scene.requestRender());
+      });
   }
 
   protected updated(changedProperties: PropertyValues) {

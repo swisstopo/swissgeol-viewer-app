@@ -24,7 +24,6 @@ import {
 import {createCesiumObject} from '../layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
-import './ngm-map-configuration';
 import type {Cartesian2, Viewer} from 'cesium';
 import {
   BoundingSphere,

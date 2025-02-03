@@ -15,20 +15,26 @@ import '../upload/layer-upload';
 import './layer-display-list';
 import 'src/components/layer/display/layer-display-list-item';
 import {OpacityChangedEvent, VisibilityChangedEvent} from 'src/components/layer/display/layer-display-list-item';
-import type MapChooser from 'src/MapChooser';
-import {getMapOpacityParam, syncMapOpacityParam} from 'src/permalink';
-import {NodeJSAndCommonJS} from 'eslint/rules/node-commonjs';
+import {consume} from '@lit/context';
+import {BackgroundLayerService} from 'src/components/layer/background-layer.service';
+import {BackgroundLayer} from 'src/components/layer/layer.model';
 
 @customElement('ngm-layer-display')
 export class NgmLayerDisplay extends LitElementI18n {
   @property({type: Array})
   accessor layers: LayerTreeNode[] = []
 
+  @consume({context: BackgroundLayerService.context()})
+  accessor backgroundLayerService!: BackgroundLayerService;
+
   @state()
-  private accessor isReordering = false
+  private accessor background!: BackgroundLayer
 
   @state()
   private accessor viewer: Viewer | null = null
+
+  @state()
+  private accessor isReordering = false
 
   @state()
   private accessor actions: LayersActions | null = null;
@@ -41,13 +47,6 @@ export class NgmLayerDisplay extends LitElementI18n {
   @state()
   private accessor globeQueueLength = 0
 
-  accessor baseMapId = 'ch.swisstopo.pixelkarte-grau';
-
-  accessor baseMapOpacity = Math.min(Math.max(getMapOpacityParam(), 0), 1)
-
-  private mapChooser: MapChooser | null = null;
-
-  private publishTimeout: number | null = null;
 
   constructor() {
     super();
@@ -57,22 +56,21 @@ export class NgmLayerDisplay extends LitElementI18n {
       this.initializeViewer();
     }));
 
-    this.subscription.add(MainStore.mapChooser.subscribe(chooser => {
-        this.mapChooser = chooser;
-    }));
-
     this.handleLayerRemoval = this.handleLayerRemoval.bind(this);
     this.handleReordering = this.handleReordering.bind(this);
     this.toggleReordering = this.toggleReordering.bind(this);
     this.handleLayerUpdate = this.handleLayerUpdate.bind(this);
   }
 
-  private initializeViewer(): void {
-    if (this.viewer == null) {
-      return;
+  willUpdate(): void {
+    if (!this.hasUpdated) {
+      this.willFirstUpdate();
     }
-    this.subscription.add(this.viewer.scene.globe.tileLoadProgressEvent.addEventListener((queueLength) => {
-      this.globeQueueLength = queueLength;
+  }
+
+  willFirstUpdate(): void {
+    this.subscription.add(this.backgroundLayerService.background$.subscribe((background) => {
+      this.background = background;
     }));
   }
 
@@ -84,6 +82,15 @@ export class NgmLayerDisplay extends LitElementI18n {
 
   disconnectedCallback(): void {
     this.subscription.unsubscribe();
+  }
+
+  private initializeViewer(): void {
+    if (this.viewer == null) {
+      return;
+    }
+    this.subscription.add(this.viewer.scene.globe.tileLoadProgressEvent.addEventListener((queueLength) => {
+      this.globeQueueLength = queueLength;
+    }));
   }
 
   private toggleReordering(): void {
@@ -141,68 +148,25 @@ export class NgmLayerDisplay extends LitElementI18n {
     return this;
   }
 
-  private handleBaseMapVisibilityChange(event: VisibilityChangedEvent): void {
-    this.updateBaseMapVisibility(event.detail.isVisible);
+  private handleBackgroundVisibilityChange(event: VisibilityChangedEvent): void {
+    this.updateBackgroundVisibility(event.detail.isVisible);
   }
 
-  private updateBaseMapVisibility(isVisible: boolean): void {
-    if (this.baseMapOpacity === 0 && isVisible) {
+  private updateBackgroundVisibility(isVisible: boolean): void {
+    if (this.background.opacity === 0 && isVisible) {
+      // If the opacity is set to zero, we force the background to remain hidden.
       return;
     }
-    if (isVisible === this.isBaseMapVisible) {
+    if (this.background.isVisible === isVisible) {
       return;
     }
-    if (isVisible) {
-      this.mapChooser!.selectMap(this.baseMapId);
-      this.updateBaseMapTranslucency(this.baseMapOpacity);
-    } else {
-      this.baseMapId = this.activeBaseMapId;
-      this.mapChooser!.selectMap('empty_map');
-      this.updateBaseMapTranslucency(0);
-    }
-    this.publishState();
+    this.backgroundLayerService.update({isVisible});
   }
 
-  handleBaseMapOpacityChange(event: OpacityChangedEvent) {
+  private handleBackgroundOpacityChange(event: OpacityChangedEvent) {
     const {opacity} = event.detail;
-    this.baseMapOpacity = opacity;
-    this.updateBaseMapVisibility(opacity > 0);
-    this.updateBaseMapTranslucency(opacity);
-  }
-
-  private updateBaseMapTranslucency(opacity: number): void {
-    const {translucency} = this.viewer!.scene.globe;
-    translucency.frontFaceAlpha = opacity;
-    if (opacity === 1) {
-        translucency.enabled = !!this.mapChooser!.selectedMap.hasAlphaChannel;
-        translucency.backFaceAlpha = 1;
-    } else {
-      translucency.backFaceAlpha = 0;
-      translucency.enabled = true;
-    }
-    this.publishState();
-  }
-
-  private get activeBaseMapId(): string {
-    return this.mapChooser!.selectedMap.id;
-  }
-
-  private get isBaseMapVisible(): boolean {
-    return this.activeBaseMapId !== 'empty_map';
-  }
-
-  private publishState(): void {
-    if (this.publishTimeout !== null) {
-      clearTimeout(this.publishTimeout);
-    }
-    this.publishTimeout = setTimeout(() => {
-      this.publishTimeout = null;
-      syncMapOpacityParam(this.baseMapOpacity);
-    }, 50) as unknown as number;
-    setTimeout(() => {
-      this.viewer!.scene.requestRender();
-    });
-    this.requestUpdate();
+    this.updateBackgroundVisibility(opacity > 0);
+    this.backgroundLayerService.update({opacity});
   }
 
   readonly render = () => html`
@@ -229,12 +193,12 @@ export class NgmLayerDisplay extends LitElementI18n {
         <ngm-map-configuration></ngm-map-configuration>
 
         <ngm-layer-display-list-item
-          title="Karte Grau"
+          title="${i18next.t(this.background.label)}"
           label="Hintergrund"
-          ?visible="${this.isBaseMapVisible}"
-          @visibility-changed="${this.handleBaseMapVisibilityChange}"
-          .opacity="${this.baseMapOpacity}"
-          @opacity-changed="${this.handleBaseMapOpacityChange}"
+          ?visible="${this.background.isVisible}"
+          .opacity="${this.background.opacity}"
+          @visibility-changed="${this.handleBackgroundVisibilityChange}"
+          @opacity-changed="${this.handleBackgroundOpacityChange}"
         ></ngm-layer-display-list-item>
       </div>
     </div>
