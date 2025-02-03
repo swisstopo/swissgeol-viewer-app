@@ -222,6 +222,10 @@ export class LayerDisplayListItem extends CoreElement {
       gap: 6px;
     }
 
+    /* background select */
+    ngm-background-layer-select {
+      padding: 0 9px;
+    }
   `;
 }
 

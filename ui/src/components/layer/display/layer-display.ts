@@ -70,10 +70,6 @@ export class NgmLayerDisplay extends CoreElement {
     }
   }
 
-  disconnectedCallback(): void {
-    this.subscription.unsubscribe();
-  }
-
   private initializeViewer(): void {
     if (this.viewer == null) {
       return;

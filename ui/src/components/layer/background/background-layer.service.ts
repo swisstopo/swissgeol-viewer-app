@@ -2,14 +2,18 @@ import {BaseService} from 'src/utils/base.service';
 import {BackgroundLayer} from 'src/components/layer/layer.model';
 import {makeTranslationKey} from 'src/models/translation-key.model';
 import {Id, makeId} from 'src/models/id.model';
-import {BehaviorSubject, combineLatest, map, Observable, shareReplay} from 'rxjs';
+import {BehaviorSubject, map, Observable, shareReplay} from 'rxjs';
 import {makeModelMapping} from 'src/models/model.model';
 import {getMapOpacityParam} from 'src/permalink';
+import {createContext} from '@lit/context';
 
 export class BackgroundLayerService extends BaseService {
+  static backgroundContext = createContext<BackgroundLayer>('BackgroundLayerService.background');
+
+  private activeId: Id<BackgroundLayer> = GREY_BACKGROUND.id;
+
   private readonly layers$ = new BehaviorSubject(LAYER_MAPPING);
-  private readonly activeId$ = new BehaviorSubject<Id<BackgroundLayer>>(GREY_BACKGROUND.id);
-  private readonly activeLayer$ = combineLatest([this.layers$, this.activeId$]).pipe(
+  private readonly activeLayer$ = this.layers$.pipe(
     map(() => this.background),
     shareReplay(1),
   );
@@ -31,7 +35,7 @@ export class BackgroundLayerService extends BaseService {
   }
 
   get background(): BackgroundLayer {
-    return this.layers$.value.get(this.activeId$.value)!;
+    return this.layers$.value.get(this.activeId)!;
   }
 
   get background$(): Observable<BackgroundLayer> {
@@ -39,7 +43,7 @@ export class BackgroundLayerService extends BaseService {
   }
 
   setBackground(id: Id<BackgroundLayer>): void {
-    const oldId = this.activeId$.value;
+    const oldId = this.activeId;
     const oldLayer = this.layers$.value.get(oldId)!;
 
     const layers = new Map(LAYER_MAPPING);
@@ -52,12 +56,12 @@ export class BackgroundLayerService extends BaseService {
       opacity: oldLayer.opacity,
       isVisible: oldLayer.isVisible,
     });
-    this.activeId$.next(id);
+    this.activeId = id;
     this.layers$.next(layers);
   }
 
   update(value: Partial<BackgroundLayer>): void {
-    const activeId = this.activeId$.value;
+    const {activeId} = this;
     if (value.id != null && activeId !== value.id) {
       throw new Error('non-active background layers can\'t be updated.');
     }
@@ -70,11 +74,12 @@ export class BackgroundLayerService extends BaseService {
 const BACKGROUND_BASE = {
   opacity: 1,
   isVisible: true,
+  hasAlphaChannel: false,
 } satisfies Partial<BackgroundLayer>;
 
 const SATELLITE_BACKGROUND: BackgroundLayer = {
   ...BACKGROUND_BASE,
-  id: makeId('satellite'),
+  id: makeId('ch.swisstopo.swissimage'),
   label: makeTranslationKey('dtd_aerial_map_label'),
   imagePath: '/images/arealimage.png',
   children: [
@@ -89,10 +94,9 @@ const SATELLITE_BACKGROUND: BackgroundLayer = {
 
 const GREY_BACKGROUND: BackgroundLayer = {
   ...BACKGROUND_BASE,
-  id: makeId('grey'),
+  id: makeId('ch.swisstopo.pixelkarte-grau'),
   label: makeTranslationKey('dtd_grey_map_label'),
   imagePath: '/images/grey.png',
-  opacity: 1,
   children: [
     {
       id: makeId('ch.swisstopo.pixelkarte-grau'),
@@ -103,12 +107,12 @@ const GREY_BACKGROUND: BackgroundLayer = {
   ],
 };
 
-const TOPOGRAPHY_BACKGROUND: BackgroundLayer = {
+const WATERS_BACKGROUND: BackgroundLayer = {
   ...BACKGROUND_BASE,
-  id: makeId('topography'),
+  id: makeId('lakes_rivers_map'),
   label: makeTranslationKey('dtd_lakes_rivers_map_label'),
   imagePath: '/images/lakes_rivers.png',
-  opacity: 1,
+  hasAlphaChannel: true,
   children: [
     {
       id: makeId('ch.bafu.vec25-seen'),
@@ -128,7 +132,7 @@ const TOPOGRAPHY_BACKGROUND: BackgroundLayer = {
 const LAYERS = [
   SATELLITE_BACKGROUND,
   GREY_BACKGROUND,
-  TOPOGRAPHY_BACKGROUND,
+  WATERS_BACKGROUND,
 ].map(Object.freeze) as BackgroundLayer[];
 
 const LAYER_MAPPING = Object.freeze(makeModelMapping(LAYERS));

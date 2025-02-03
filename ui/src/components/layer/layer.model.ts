@@ -11,6 +11,7 @@ export interface BackgroundLayer extends Layer {
   imagePath: string
   children: BackgroundSublayer[]
   opacity: number
+  hasAlphaChannel: boolean
 }
 
 export interface BackgroundSublayer {
