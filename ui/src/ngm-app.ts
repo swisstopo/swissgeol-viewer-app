@@ -58,7 +58,7 @@ import {consume} from '@lit/context';
 import {ClientConfig} from './api/client-config';
 import {CoreModal} from './components/core/core-modal';
 import {TrackingConsentModalEvent} from './components/layout/tracking-consent-modal';
-import {BackgroundLayerService} from 'src/components/layer/background-layer.service';
+import {BackgroundLayerService} from 'src/components/layer/background/background-layer.service';
 import {Id, makeId} from 'src/models/id.model';
 import {BackgroundLayer} from 'src/components/layer/layer.model';
 import {distinctUntilChanged, distinctUntilKeyChanged, map} from 'rxjs';

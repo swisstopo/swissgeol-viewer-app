@@ -1,13 +1,14 @@
 import {customElement, property, state} from 'lit/decorators.js';
-import {LitElementI18n} from 'src/i18n';
 import {css, html} from 'lit';
 import 'src/components/core';
 import {applyTransition, applyTypography} from 'src/styles/theme';
 import {SliderChangeEvent} from 'src/components/core/core-slider';
 import {classMap} from 'lit/directives/class-map.js';
+import {CoreElement} from 'src/components/core';
+import 'src/components/layer/background/background-layer-select.component';
 
 @customElement('ngm-layer-display-list-item')
-export class NgmLayerDisplayListItem extends LitElementI18n {
+export class LayerDisplayListItem extends CoreElement {
   @property({type: String})
   accessor title = '';
 
@@ -114,6 +115,7 @@ export class NgmLayerDisplayListItem extends LitElementI18n {
 
   private readonly renderBackground = () => html`
     <hr>
+    <ngm-background-layer-select></ngm-background-layer-select>
   `;
 
   static readonly styles = css`

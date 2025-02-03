@@ -5,7 +5,7 @@ import {apiClientContext, authServiceContext, clientConfigContext} from './clien
 import {ApiClient} from '../api/api-client';
 import AuthService from '../authService';
 import {AnyBaseServiceType, BaseService, ServiceContext} from 'src/utils/base.service';
-import {BackgroundLayerService} from 'src/components/layer/background-layer.service';
+import {BackgroundLayerService} from 'src/components/layer/background/background-layer.service';
 
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>

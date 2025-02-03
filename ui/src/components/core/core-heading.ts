@@ -1,7 +1,7 @@
 import {css, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {html, unsafeStatic} from 'lit/static-html.js';
-import {applyTypography} from '../../styles/theme';
+import {applyTypography} from 'src/styles/theme';
 
 type Level = 1 | 2 | 3 | 4 | 5
 

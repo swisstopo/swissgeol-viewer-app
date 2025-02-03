@@ -1,5 +1,4 @@
 import {customElement, property, query, state} from 'lit/decorators.js';
-import {LitElementI18n} from 'src/i18n';
 import {css, html} from 'lit';
 import i18next from 'i18next';
 import {Viewer} from 'cesium';
@@ -9,18 +8,18 @@ import {LayerConfig, LayerTreeNode} from 'src/layertree';
 import 'src/layers/ngm-layers';
 import 'src/layers/ngm-layers-sort';
 import MainStore from '../../../store/main';
-import {Subscription} from 'rxjs';
 import {classMap} from 'lit/directives/class-map.js';
 import '../upload/layer-upload';
 import './layer-display-list';
 import 'src/components/layer/display/layer-display-list-item';
 import {OpacityChangedEvent, VisibilityChangedEvent} from 'src/components/layer/display/layer-display-list-item';
 import {consume} from '@lit/context';
-import {BackgroundLayerService} from 'src/components/layer/background-layer.service';
+import {BackgroundLayerService} from 'src/components/layer/background/background-layer.service';
 import {BackgroundLayer} from 'src/components/layer/layer.model';
+import {CoreElement} from 'src/components/core';
 
 @customElement('ngm-layer-display')
-export class NgmLayerDisplay extends LitElementI18n {
+export class NgmLayerDisplay extends CoreElement {
   @property({type: Array})
   accessor layers: LayerTreeNode[] = []
 
@@ -39,19 +38,16 @@ export class NgmLayerDisplay extends LitElementI18n {
   @state()
   private accessor actions: LayersActions | null = null;
 
-  private readonly subscription = new Subscription();
-
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder')
   accessor toastPlaceholder;
 
   @state()
   private accessor globeQueueLength = 0
 
-
   constructor() {
     super();
 
-    this.subscription.add(MainStore.viewer.subscribe((viewer) => {
+    this.register(MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       this.initializeViewer();
     }));
@@ -62,14 +58,8 @@ export class NgmLayerDisplay extends LitElementI18n {
     this.handleLayerUpdate = this.handleLayerUpdate.bind(this);
   }
 
-  willUpdate(): void {
-    if (!this.hasUpdated) {
-      this.willFirstUpdate();
-    }
-  }
-
   willFirstUpdate(): void {
-    this.subscription.add(this.backgroundLayerService.background$.subscribe((background) => {
+    this.register(this.backgroundLayerService.background$.subscribe((background) => {
       this.background = background;
     }));
   }
@@ -88,7 +78,7 @@ export class NgmLayerDisplay extends LitElementI18n {
     if (this.viewer == null) {
       return;
     }
-    this.subscription.add(this.viewer.scene.globe.tileLoadProgressEvent.addEventListener((queueLength) => {
+    this.register(this.viewer.scene.globe.tileLoadProgressEvent.addEventListener((queueLength) => {
       this.globeQueueLength = queueLength;
     }));
   }

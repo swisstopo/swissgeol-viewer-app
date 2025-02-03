@@ -6,3 +6,5 @@ import './core-icon';
 import './core-modal';
 import './core-slider';
 import './core-tooltip';
+
+export * from 'src/components/core/core-element';
