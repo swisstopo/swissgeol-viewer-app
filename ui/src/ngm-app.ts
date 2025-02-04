@@ -62,12 +62,11 @@ import {consume, provide} from '@lit/context';
 import {ClientConfig} from './api/client-config';
 import {CoreModal} from './components/core/core-modal';
 import {TrackingConsentModalEvent} from './components/layout/tracking-consent-modal';
-import {BackgroundLayerService} from 'src/components/layer/background/background-layer.service';
 import {makeId} from 'src/models/id.model';
 import {BackgroundLayer} from 'src/components/layer/layer.model';
 import {distinctUntilKeyChanged} from 'rxjs';
 import {addSwisstopoLayer} from 'src/swisstopoImagery';
-import {LayerService} from 'src/components/layer/layer.service';
+import {BackgroundLayerService} from 'src/components/layer/background/background-layer.service';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -138,18 +137,6 @@ export class NgmApp extends LitElementI18n {
 
   @provide({context: BackgroundLayerService.backgroundContext})
   accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
-
-  @consume({context: LayerService.context()})
-  accessor layerService!: LayerService;
-
-  @provide({context: LayerService.layersContext})
-  accessor layers: LayerConfig[] = [];
-
-  @provide({context: LayerService.displayLayersContext})
-  accessor displayLayers: LayerConfig[] = [];
-
-  @provide({context: LayerService.treeContext})
-  accessor layerTree: LayerConfig[] = [];
 
   private viewerRenderTimeout: number | null = null;
 
@@ -359,20 +346,7 @@ export class NgmApp extends LitElementI18n {
       });
     });
 
-    this.initializeLayers();
     this.initializeBackgroundLayers();
-  }
-
-  private initializeLayers(): void {
-    this.layerService.layers$.subscribe((layers) => {
-      this.layers = layers;
-    });
-    this.layerService.displayLayers$.subscribe((displayLayers) => {
-      this.displayLayers = displayLayers;
-    });
-    this.layerService.tree$.subscribe((layerTree) => {
-      this.layerTree = layerTree;
-    });
   }
 
   private initializeBackgroundLayers(): void {
@@ -405,6 +379,7 @@ export class NgmApp extends LitElementI18n {
           activeLayers.push(layer);
         }
         this.updateBaseMapTranslucency(background.opacity, background.hasAlphaChannel);
+        console.log(background);
         syncMapParam(background.id);
         Promise.all(readyPromises).then(() => this.requestViewerRender());
       });
@@ -434,8 +409,10 @@ export class NgmApp extends LitElementI18n {
       .subscribe((background) => {
         if (background.isVisible) {
           this.updateBaseMapTranslucency(background.opacity, background.hasAlphaChannel);
+          syncMapParam(background.id);
         } else {
           this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
+          syncMapParam('empty_map');
         }
         this.requestViewerRender();
       });

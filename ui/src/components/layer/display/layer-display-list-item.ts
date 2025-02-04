@@ -10,25 +10,29 @@ import 'src/components/layer/background/background-layer-select.component';
 @customElement('ngm-layer-display-list-item')
 export class LayerDisplayListItem extends CoreElement {
   @property({type: String})
-  accessor title = '';
+  accessor title = ''
 
   @property({type: String})
-  accessor label: string | null = null;
+  accessor label: string | null = null
 
   @property({type: Boolean, attribute: 'visible', reflect: true})
   accessor isVisible = false
+
+  @property({type: Boolean, attribute: 'draggable', reflect: true})
+  accessor isDraggable = false
 
   @property({type: Number})
   accessor opacity = 1
 
   @state()
-  accessor isOpacityActive = false;
+  accessor isOpacityActive = false
 
   @state()
-  accessor isBackgroundActive = false;
+  accessor isBackgroundActive = false
 
   constructor() {
     super();
+    this.attachShadow({mode: 'open'});
 
     this.toggleVisibility = this.toggleVisibility.bind(this);
     this.toggleOpacityActive = this.toggleOpacityActive.bind(this);
@@ -37,7 +41,7 @@ export class LayerDisplayListItem extends CoreElement {
   }
 
   private toggleVisibility(): void {
-    this.dispatchEvent(new CustomEvent<VisibilityChangedEventDetail>('visibility-changed', {
+    this.dispatchEvent(new CustomEvent<VisibilityChangeEventDetail>('visibility-changed', {
       detail: {
         isVisible: !this.isVisible,
       },
@@ -56,7 +60,7 @@ export class LayerDisplayListItem extends CoreElement {
   }
 
   private handleOpacityChangeEvent(event: SliderChangeEvent): void {
-    this.dispatchEvent(new CustomEvent<OpacityChangedEventDetail>('opacity-changed', {
+    this.dispatchEvent(new CustomEvent<OpacityChangeEventDetail>('opacity-changed', {
       detail: {
         opacity: event.detail.value,
       },
@@ -64,11 +68,7 @@ export class LayerDisplayListItem extends CoreElement {
   }
 
   readonly render = () => html`
-    <div class="handle">
-      <ngm-core-button variant="tertiary" shape="icon">
-        <ngm-core-icon icon="grab"></ngm-core-icon>
-      </ngm-core-button>
-    </div>
+    ${this.isDraggable ? this.renderDragHandle() : ''}
 
     <div class="main">
       <ngm-core-button transparent variant="tertiary" shape="icon" @click="${this.toggleVisibility}">
@@ -107,6 +107,14 @@ export class LayerDisplayListItem extends CoreElement {
     ${this.isBackgroundActive ? this.renderBackground() : ''}
   `;
 
+  readonly renderDragHandle = () => html`
+    <div class="handle">
+      <ngm-core-button variant="tertiary" shape="icon">
+        <ngm-core-icon icon="grab"></ngm-core-icon>
+      </ngm-core-button>
+    </div>
+  `;
+
   private readonly renderOpacity = () => html`
     <hr>
     <div class="opacity">
@@ -142,7 +150,7 @@ export class LayerDisplayListItem extends CoreElement {
       border: 1px solid var(--color-bg--white);
     }
 
-    :host(:hover), :host(.has-active-opacity) {
+    :host(:hover:not(.is-in-drag)), :host(.has-active-opacity), :host(.is-dragged) {
       background-color: var(--color-bg--white--hovered);
       border-color: var(--color-hovered);
     }
@@ -159,6 +167,7 @@ export class LayerDisplayListItem extends CoreElement {
 
 
     /* main */
+
     :host > .main {
       display: flex;
       align-items: center;
@@ -167,6 +176,7 @@ export class LayerDisplayListItem extends CoreElement {
     }
 
     /* main suffix */
+
     :host > .main > .suffix {
       display: flex;
       align-items: center;
@@ -174,11 +184,13 @@ export class LayerDisplayListItem extends CoreElement {
     }
 
     /* visibility */
+
     .visible > ngm-core-icon {
       color: var(--color-primary);
     }
 
     /* title */
+
     .title {
       ${applyTypography('body-2')};
 
@@ -187,6 +199,7 @@ export class LayerDisplayListItem extends CoreElement {
 
     /* label */
     /* TODO this style is improvised, as the Figma interaction for this label has not yet been finalized. */
+
     .label {
       ${applyTypography('overline')};
 
@@ -216,6 +229,7 @@ export class LayerDisplayListItem extends CoreElement {
     }
 
     /* opacity */
+
     ngm-core-button.opacity-toggle {
       width: 61px;
     }
@@ -228,11 +242,13 @@ export class LayerDisplayListItem extends CoreElement {
     }
 
     /* background select */
+
     ngm-background-layer-select {
       padding: 0 9px;
     }
 
     /* grab handle */
+
     .handle {
       position: absolute;
       left: -11px;
@@ -260,13 +276,15 @@ export class LayerDisplayListItem extends CoreElement {
   `;
 }
 
-export type VisibilityChangedEvent = CustomEvent<VisibilityChangedEventDetail>
-export interface VisibilityChangedEventDetail {
+export type VisibilityChangeEvent = CustomEvent<VisibilityChangeEventDetail>
+
+export interface VisibilityChangeEventDetail {
   isVisible: boolean
 }
 
-export type OpacityChangedEvent = CustomEvent<OpacityChangedEventDetail>
-export interface OpacityChangedEventDetail {
+export type OpacityChangeEvent = CustomEvent<OpacityChangeEventDetail>
+
+export interface OpacityChangeEventDetail {
   opacity: number
 }
 

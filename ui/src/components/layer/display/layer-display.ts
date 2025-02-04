@@ -4,13 +4,12 @@ import {Viewer} from 'cesium';
 import {PropertyValues} from '@lit/reactive-element';
 import LayersActions from 'src/layers/LayersActions';
 import {LayerConfig, LayerTreeNode} from 'src/layertree';
-import 'src/layers/ngm-layers';
-import 'src/layers/ngm-layers-sort';
 import MainStore from '../../../store/main';
 import '../upload/layer-upload';
 import './layer-display-list';
 import 'src/components/layer/display/layer-display-list-item';
 import {CoreElement} from 'src/components/core';
+import {LayerReorderEvent} from 'src/components/layer/display/layer-display-list';
 
 @customElement('ngm-layer-display')
 export class NgmLayerDisplay extends CoreElement {
@@ -39,6 +38,7 @@ export class NgmLayerDisplay extends CoreElement {
 
     this.handleLayerRemoval = this.handleLayerRemoval.bind(this);
     this.handleLayerUpdate = this.handleLayerUpdate.bind(this);
+    this.handleLayerReordering = this.handleLayerReordering.bind(this);
   }
 
   updated(changedProperties: PropertyValues<this>): void {
@@ -56,15 +56,22 @@ export class NgmLayerDisplay extends CoreElement {
     }));
   }
 
-  private async handleLayerRemoval(e: LayerRemovalEvent): Promise<void> {
+  private async handleLayerRemoval(event: LayerRemovalEvent): Promise<void> {
     const newLayers = [...this.layers];
-    newLayers.splice(e.detail.idx, 1);
+    newLayers.splice(event.detail.idx, 1);
     this.updateLayers(newLayers);
-    this.removeLayer(e.detail.config);
+    this.removeLayer(event.detail.config);
   }
 
-  private async handleLayerUpdate(e: LayerChangeEvent): Promise<void> {
-    this.updateLayer(e.detail);
+  private async handleLayerUpdate(event: LayerChangeEvent): Promise<void> {
+    this.updateLayer(event.detail);
+  }
+
+  private handleLayerReordering(event: LayerReorderEvent): void {
+    const newLayers = [...this.layers];
+    newLayers.splice(event.detail.oldIndex, 1);
+    newLayers.splice(event.detail.newIndex, 0, event.detail.layer);
+    this.updateLayers(newLayers);
   }
 
   private updateLayers(layers: LayerTreeNode[]): void {
@@ -92,11 +99,18 @@ export class NgmLayerDisplay extends CoreElement {
   }
 
   readonly render = () => html`
-    <ngm-layer-display-list .layers="${this.layers}"></ngm-layer-display-list>
+    <ngm-layer-display-list
+      .layers="${this.layers}"
+      @reorder="${this.handleLayerReordering}"
+    ></ngm-layer-display-list>
   `;
   static readonly styles = css`
     :host, :host * {
       box-sizing: border-box;
+    }
+
+    :host {
+      padding: 16px;
     }
   `;
 }

@@ -52,7 +52,7 @@ export type LayerPromise = Promise<GeoJsonDataSource> |
     Promise<LayerInstances>;
 
 export interface LayerConfig extends LayerTreeNode {
-  add?: ((value: number) => void) | (() => void);
+  add?: (value: number) => void
   remove?: () => void;
   setTime?: (time: string) => void;
   heightOffset?: number;

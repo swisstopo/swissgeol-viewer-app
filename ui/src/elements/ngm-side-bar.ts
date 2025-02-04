@@ -1,8 +1,6 @@
 import {html} from 'lit';
 import {LitElementI18n} from '../i18n.js';
 import '../toolbox/ngm-toolbox';
-import '../layers/ngm-layers';
-import '../layers/ngm-layers-sort';
 import './dashboard/ngm-dashboard';
 import './sidebar/ngm-menu-item';
 import '../components/core';
@@ -38,7 +36,6 @@ import {
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import auth from '../store/auth';
 import './ngm-share-link';
-import '../layers/ngm-layers-upload';
 import MainStore from '../store/main';
 import {classMap} from 'lit/directives/class-map.js';
 import $ from 'jquery';
@@ -48,8 +45,6 @@ import type QueryManager from '../query/QueryManager';
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
 import {LayerEvent, LayersUpdateEvent} from '../components/layer/display/layer-display';
-import {consume} from '@lit/context';
-import {getLayerId, LayerService} from 'src/components/layer/layer.service';
 
 export type SearchLayer =
   | SearchLayerWithLayer
@@ -109,9 +104,6 @@ export class SideBar extends LitElementI18n {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
   private viewer: Viewer | null = null;
-
-  @consume({context: LayerService.context()})
-  accessor layerService!: LayerService;
 
   constructor() {
     super();
@@ -191,18 +183,6 @@ export class SideBar extends LitElementI18n {
       this.activePanel = 'tools';
   }
 
-  firstUpdated(): void {
-    this.initializeLayerEffects();
-  }
-
-  private initializeLayerEffects(): void {
-    this.layerService.layerChange$.subscribe(async ([old, layer]) => {
-      if (old.displayed !== layer.displayed) {
-        await this.applyLayerVisibility({...layer});
-      }
-    });
-  }
-
   private readonly renderMenuItem = (icon: string, title: string, panel: string) => html`
     <ngm-menu-item
       .icon=${icon}
@@ -263,6 +243,7 @@ export class SideBar extends LitElementI18n {
         .layers="${this.catalogLayers}"
         .displayLayers="${this.activeLayers}"
         @close="${() => this.activePanel = null}"
+        @layer-click=${(e: LayerClickEvent) => this.onCatalogLayerClicked(e.detail.layer)}
         @display-layers-update="${this.handleDisplayLayersUpdate}"
         @display-layer-update="${this.handleDisplayLayerUpdate}"
         @display-layer-removal="${this.handleDisplayLayerRemoval}"
@@ -453,7 +434,7 @@ export class SideBar extends LitElementI18n {
   private async applyLayerVisibility(layer: LayerConfig): Promise<void> {
     if (layer.displayed) {
       await (layer.promise || this.addLayer(layer));
-      layer.add && layer.add();
+      layer.add && (layer.add as (() => void))();
       layer.visible = true;
       layer.displayed = true;
       this.activeLayers.push(layer);
@@ -470,7 +451,6 @@ export class SideBar extends LitElementI18n {
       }
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
-    this.layerService.update(getLayerId(layer), layer);
     syncLayersParam(this.activeLayers);
     const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
     this.catalogLayers = [...catalogLayers];

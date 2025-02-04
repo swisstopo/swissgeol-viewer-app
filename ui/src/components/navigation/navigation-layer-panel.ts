@@ -1,8 +1,8 @@
-import {LitElementI18n} from '../../i18n';
+import {LitElementI18n} from 'src/i18n';
 import {css, html, unsafeCSS} from 'lit';
 import i18next from 'i18next';
 import {customElement, property} from 'lit/decorators.js';
-import {LayerConfig} from '../../layertree';
+import {LayerConfig} from 'src/layertree';
 import './navigation-panel';
 import './navigation-panel-header';
 import '../layer/layer-catalog';

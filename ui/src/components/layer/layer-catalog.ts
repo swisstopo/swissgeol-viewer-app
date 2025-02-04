@@ -1,5 +1,5 @@
 import {css, html, TemplateResult, unsafeCSS} from 'lit';
-import {customElement, state} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import i18next from 'i18next';
 import auth from '../../store/auth';
 import type {LayerConfig, LayerTreeNode} from 'src/layertree';
@@ -8,17 +8,13 @@ import '../core';
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css?raw';
 import fomanticAccordionCss from 'fomantic-ui-css/components/accordion.css?raw';
 import 'fomantic-ui-css/components/transition.js';
-import {getLayerId, LayerService} from 'src/components/layer/layer.service';
-import {consume} from '@lit/context';
 import {CoreElement} from 'src/components/core';
+import {LayerEvent} from 'src/components/layer/display/layer-display';
 
 
 @customElement('ngm-layer-catalog')
 export class NgmLayerCatalog extends CoreElement {
-  @consume({context: LayerService.context()})
-  accessor layerService!: LayerService;
-
-  @consume({context: LayerService.treeContext, subscribe: true})
+  @property()
   accessor layers!: LayerConfig[];
 
   @state()
@@ -70,7 +66,13 @@ export class NgmLayerCatalog extends CoreElement {
   }
 
   private toggleLayer(layer: LayerConfig): void {
-    this.layerService.update(getLayerId(layer), {displayed: !layer.displayed});
+    this.dispatchEvent(new CustomEvent('layer-click', {
+      composed: true,
+      bubbles: true,
+      detail: {
+        layer
+      }
+    }) satisfies LayerEvent);
   }
 
   getLayerTemplate(layer: LayerConfig): TemplateResult {

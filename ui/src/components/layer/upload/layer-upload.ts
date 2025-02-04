@@ -11,17 +11,12 @@ import {DEFAULT_LAYER_OPACITY, LayerConfig} from 'src/layertree';
 import {Subscription} from 'rxjs';
 import fomanticButtonCss from 'fomantic-ui-css/components/button.css?raw';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
-import {consume} from '@lit/context';
-import {LayerService} from 'src/components/layer/layer.service';
-
+import {LayerEventDetails} from 'src/components/layer/display/layer-display';
 
 @customElement('ngm-layer-upload')
 export class NgmLayerUpload extends LitElementI18n {
   @property({type: Object})
   accessor toastPlaceholder!: HTMLElement
-
-  @consume({context: LayerService.context()})
-  accessor layerService!: LayerService
 
   @state()
   private accessor viewer: Viewer | null = null
@@ -38,6 +33,16 @@ export class NgmLayerUpload extends LitElementI18n {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.subscription.unsubscribe();
+  }
+
+  private emitLayerClick(layer: LayerConfig): void {
+    this.dispatchEvent(new CustomEvent<LayerEventDetails>('layer-click', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        layer,
+      },
+    }));
   }
 
   // TODO Cleanup/Refactor this function.
@@ -71,7 +76,7 @@ export class NgmLayerUpload extends LitElementI18n {
       ownKml: true,
       opacityDisabled: true,
     };
-    this.layerService.add(config);
+    this.emitLayerClick(config);
     await this.viewer.zoomTo(dataSource);
     this.requestUpdate();
   }

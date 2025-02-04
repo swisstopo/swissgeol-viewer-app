@@ -4,7 +4,7 @@ import {makeTranslationKey} from 'src/models/translation-key.model';
 import {Id, makeId} from 'src/models/id.model';
 import {BehaviorSubject, map, Observable, shareReplay} from 'rxjs';
 import {makeModelMapping} from 'src/models/model.model';
-import {getMapOpacityParam} from 'src/permalink';
+import {getMapOpacityParam, getMapParam} from 'src/permalink';
 import {createContext} from '@lit/context';
 
 export class BackgroundLayerService extends BaseService {
@@ -27,10 +27,14 @@ export class BackgroundLayerService extends BaseService {
 
     const opacity = getMapOpacityParam();
     if (opacity != null && opacity !== 1) {
-      this.update({
-        ...this.background,
-        opacity,
-      });
+      this.update({opacity});
+    }
+
+    const id = getMapParam();
+    if (id === 'empty_map') {
+      this.update({isVisible: false});
+    } else if (id != null) {
+      this.setBackground(makeId(id));
     }
   }
 
