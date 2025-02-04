@@ -48,6 +48,8 @@ import type QueryManager from '../query/QueryManager';
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
 import {LayerEvent, LayersUpdateEvent} from '../components/layer/display/layer-display';
+import {consume} from '@lit/context';
+import {getLayerId, LayerService} from 'src/components/layer/layer.service';
 
 export type SearchLayer =
   | SearchLayerWithLayer
@@ -107,6 +109,9 @@ export class SideBar extends LitElementI18n {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
   private viewer: Viewer | null = null;
+
+  @consume({context: LayerService.context()})
+  accessor layerService!: LayerService;
 
   constructor() {
     super();
@@ -186,6 +191,18 @@ export class SideBar extends LitElementI18n {
       this.activePanel = 'tools';
   }
 
+  firstUpdated(): void {
+    this.initializeLayerEffects();
+  }
+
+  private initializeLayerEffects(): void {
+    this.layerService.layerChange$.subscribe(async ([old, layer]) => {
+      if (old.displayed !== layer.displayed) {
+        await this.applyLayerVisibility({...layer});
+      }
+    });
+  }
+
   private readonly renderMenuItem = (icon: string, title: string, panel: string) => html`
     <ngm-menu-item
       .icon=${icon}
@@ -246,7 +263,6 @@ export class SideBar extends LitElementI18n {
         .layers="${this.catalogLayers}"
         .displayLayers="${this.activeLayers}"
         @close="${() => this.activePanel = null}"
-        @layer-click=${(e: LayerClickEvent) => this.onCatalogLayerClicked(e.detail.layer)}
         @display-layers-update="${this.handleDisplayLayersUpdate}"
         @display-layer-update="${this.handleDisplayLayerUpdate}"
         @display-layer-removal="${this.handleDisplayLayerRemoval}"
@@ -429,7 +445,20 @@ export class SideBar extends LitElementI18n {
 
   async onCatalogLayerClicked(layer) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
+    layer = {...layer};
+    layer.displayed = !layer.displayed;
+    await this.applyLayerVisibility(layer);
+  }
+
+  private async applyLayerVisibility(layer: LayerConfig): Promise<void> {
     if (layer.displayed) {
+      await (layer.promise || this.addLayer(layer));
+      layer.add && layer.add();
+      layer.visible = true;
+      layer.displayed = true;
+      this.activeLayers.push(layer);
+      this.maybeShowVisibilityHint(layer);
+    } else {
       if (layer.visible) {
         layer.displayed = false;
         layer.visible = false;
@@ -439,16 +468,9 @@ export class SideBar extends LitElementI18n {
       } else {
         layer.visible = true;
       }
-    } else {
-      await (layer.promise || this.addLayer(layer));
-      layer.add && layer.add();
-      layer.visible = true;
-      layer.displayed = true;
-      this.activeLayers.push(layer);
-      this.maybeShowVisibilityHint(layer);
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
-
+    this.layerService.update(getLayerId(layer), layer);
     syncLayersParam(this.activeLayers);
     const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
     this.catalogLayers = [...catalogLayers];

@@ -10,6 +10,10 @@ import {createContext} from '@lit/context';
 export class BackgroundLayerService extends BaseService {
   static backgroundContext = createContext<BackgroundLayer>('BackgroundLayerService.background');
 
+  static get default(): BackgroundLayer {
+    return GREY_BACKGROUND;
+  }
+
   private activeId: Id<BackgroundLayer> = GREY_BACKGROUND.id;
 
   private readonly layers$ = new BehaviorSubject(LAYER_MAPPING);

@@ -1,8 +1,7 @@
 import {LitElement} from 'lit';
 import {state} from 'lit/decorators.js';
 import i18next from 'i18next';
-import {Subscription} from 'rxjs';
-import {TeardownLogic} from 'rxjs/src/internal/types';
+import {Subscription, TeardownLogic} from 'rxjs';
 
 export class CoreElement extends LitElement {
   @state()

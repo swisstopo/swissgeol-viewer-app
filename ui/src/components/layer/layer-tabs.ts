@@ -1,7 +1,7 @@
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {css, html} from 'lit';
-import {LitElementI18n} from '../../i18n';
-import {LayerConfig} from '../../layertree';
+import {LitElementI18n} from 'src/i18n';
+import {LayerConfig} from 'src/layertree';
 import './layer-catalog';
 import {Viewer} from 'cesium';
 import MainStore from '../../store/main';
@@ -9,7 +9,7 @@ import {Subscription} from 'rxjs';
 import './options/layer-options';
 import {classMap} from 'lit/directives/class-map.js';
 import i18next from 'i18next';
-import {applyTypography, hostStyles} from '../../styles/theme';
+import {applyTypography, hostStyles} from 'src/styles/theme';
 
 @customElement('ngm-layer-tabs')
 export class NgmLayerTabs extends LitElementI18n {

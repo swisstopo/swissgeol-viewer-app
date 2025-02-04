@@ -13,7 +13,7 @@ export class LayerDisplayListItem extends CoreElement {
   accessor title = '';
 
   @property({type: String})
-  accessor label = '';
+  accessor label: string | null = null;
 
   @property({type: Boolean, attribute: 'visible', reflect: true})
   accessor isVisible = false
@@ -64,6 +64,12 @@ export class LayerDisplayListItem extends CoreElement {
   }
 
   readonly render = () => html`
+    <div class="handle">
+      <ngm-core-button variant="tertiary" shape="icon">
+        <ngm-core-icon icon="grab"></ngm-core-icon>
+      </ngm-core-button>
+    </div>
+
     <div class="main">
       <ngm-core-button transparent variant="tertiary" shape="icon" @click="${this.toggleVisibility}">
         <ngm-core-icon icon="${this.isVisible ? 'visible' : 'hidden'}"></ngm-core-icon>
@@ -72,17 +78,18 @@ export class LayerDisplayListItem extends CoreElement {
       <span class="title">${this.title}</span>
 
       <div class="suffix">
-        <span
-          class="label ${classMap({'is-active': this.isBackgroundActive})}"
-          role="button"
-          @click="${this.toggleBackgroundActive}"
-        >${this.label}</span>
+        ${this.label == null ? '' : html`
+          <span
+            class="label ${classMap({'is-active': this.isBackgroundActive})}"
+            role="button"
+            @click="${this.toggleBackgroundActive}"
+          >${this.label}</span>
+        `}
 
         <ngm-core-button
           transparent
           variant="secondary"
           shape="chip"
-          justify="end"
           class="opacity-toggle"
           ?active="${this.isOpacityActive}"
           @click="${this.toggleOpacityActive}"
@@ -124,6 +131,7 @@ export class LayerDisplayListItem extends CoreElement {
     }
 
     :host {
+      position: relative;
       display: flex;
       flex-direction: column;
       padding: 9px;
@@ -132,9 +140,6 @@ export class LayerDisplayListItem extends CoreElement {
       border-radius: 4px;
       background-color: var(--color-bg--white);
       border: 1px solid var(--color-bg--white);
-
-      ${applyTransition('fade')};
-      transition-property: background-color, border-color;
     }
 
     :host(:hover), :host(.has-active-opacity) {
@@ -225,6 +230,32 @@ export class LayerDisplayListItem extends CoreElement {
     /* background select */
     ngm-background-layer-select {
       padding: 0 9px;
+    }
+
+    /* grab handle */
+    .handle {
+      position: absolute;
+      left: -11px;
+      top: 0;
+      bottom: 0;
+      margin: auto 0;
+
+      width: fit-content;
+      height: fit-content;
+    }
+
+    .handle ngm-core-button {
+      --button-padding: 0;
+      --button-border: var(--color-border--default);
+      --button-cursor: grab;
+      --button-cursor--pressed: grabbing;
+
+      --button-icon-width: 16px;
+      --button-icon-height: 22px;
+    }
+
+    :host(:not(:hover)) .handle {
+      display: none;
     }
   `;
 }

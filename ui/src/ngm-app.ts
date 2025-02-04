@@ -67,6 +67,7 @@ import {makeId} from 'src/models/id.model';
 import {BackgroundLayer} from 'src/components/layer/layer.model';
 import {distinctUntilKeyChanged} from 'rxjs';
 import {addSwisstopoLayer} from 'src/swisstopoImagery';
+import {LayerService} from 'src/components/layer/layer.service';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -137,6 +138,18 @@ export class NgmApp extends LitElementI18n {
 
   @provide({context: BackgroundLayerService.backgroundContext})
   accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
+
+  @consume({context: LayerService.context()})
+  accessor layerService!: LayerService;
+
+  @provide({context: LayerService.layersContext})
+  accessor layers: LayerConfig[] = [];
+
+  @provide({context: LayerService.displayLayersContext})
+  accessor displayLayers: LayerConfig[] = [];
+
+  @provide({context: LayerService.treeContext})
+  accessor layerTree: LayerConfig[] = [];
 
   private viewerRenderTimeout: number | null = null;
 
@@ -346,7 +359,20 @@ export class NgmApp extends LitElementI18n {
       });
     });
 
+    this.initializeLayers();
     this.initializeBackgroundLayers();
+  }
+
+  private initializeLayers(): void {
+    this.layerService.layers$.subscribe((layers) => {
+      this.layers = layers;
+    });
+    this.layerService.displayLayers$.subscribe((displayLayers) => {
+      this.displayLayers = displayLayers;
+    });
+    this.layerService.tree$.subscribe((layerTree) => {
+      this.layerTree = layerTree;
+    });
   }
 
   private initializeBackgroundLayers(): void {

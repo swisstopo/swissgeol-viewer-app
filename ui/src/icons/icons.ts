@@ -15,14 +15,15 @@ import {cesiumIcon} from './i_cesium';
 import {visibleIcon} from './i_visible';
 import {hiddenIcon} from './i_hidden';
 import {menuIcon} from 'src/icons/i_menu';
+import {grabIcon} from 'src/icons/i_grab';
 
 export const icons = {
   cesium: cesiumIcon,
   checkmark: checkmarkIcon,
   close: closeIcon,
   config: configIcon,
-  upload: uploadIcon,
   dropdown: dropdownIcon,
+  grab: grabIcon,
   hidden: hiddenIcon,
   layer: layerIcon,
   menu: menuIcon,
@@ -30,6 +31,7 @@ export const icons = {
   search: searchIcon,
   share: shareIcon,
   tools: toolsIcon,
+  upload: uploadIcon,
   user: userIcon,
   viewAll: viewAllIcon,
   viewLess: viewLessIcon,

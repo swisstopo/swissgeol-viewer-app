@@ -1,5 +1,4 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
-import {ImageryLayer, Rectangle, Viewer} from 'cesium';
 import {
   Cartesian3,
   Cartographic,
@@ -9,10 +8,13 @@ import {
   Cesium3DTilesVoxelProvider,
   Ellipsoid,
   GeoJsonDataSource,
+  ImageryLayer,
   IonResource,
   LabelStyle,
   Matrix3,
   Matrix4,
+  Rectangle,
+  Viewer,
   VoxelPrimitive,
 } from 'cesium';
 import {getSwisstopoImagery} from '../swisstopoImagery';
