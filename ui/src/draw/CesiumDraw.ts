@@ -61,10 +61,10 @@ export type DrawEndDetails = {
 }
 
 export class CesiumDraw extends EventTarget {
-  private viewer_: Viewer;
-  private strokeColor_: Color;
-  private strokeWidth_: number;
-  private fillColor_: Color;
+  private readonly viewer_: Viewer;
+  private readonly strokeColor_: Color;
+  private readonly strokeWidth_: number;
+  private readonly fillColor_: Color;
   private eventHandler_: ScreenSpaceEventHandler | undefined;
   private activePoints_: Cartesian3[] = [];
   private activePoint_: Cartesian3 | undefined;
@@ -74,7 +74,7 @@ export class CesiumDraw extends EventTarget {
   private leftPressedPixel_: Cartesian2 | undefined;
   private sketchPoints_: Entity[] = [];
   private isDoubleClick = false;
-  private singleClickTimer;
+  private singleClickTimer: NodeJS.Timeout | null = null;
   private segmentsInfo: SegmentInfo[] = [];
   type: GeometryTypes | undefined;
   julianDate = new JulianDate();
@@ -191,7 +191,7 @@ export class CesiumDraw extends EventTarget {
             return Cartesian3.midpoint(positions[0], positions[1], new Cartesian3());
           }, false),
           billboard: {
-            image: './images/rotate-icon.svg',
+            image: '/images/rotate-icon.svg',
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
             heightReference: HeightReference.CLAMP_TO_GROUND
           },
@@ -462,11 +462,17 @@ export class CesiumDraw extends EventTarget {
         this.finishDrawing();
       } else if (this.type === 'line') {
         if (!this.isDoubleClick) {
-          this.singleClickTimer = setTimeout(() => {
-            this.isDoubleClick = false;
-            const prevPoint = Cartesian3.clone(this.activePoints_[this.activePoints_.length - 1]);
-            this.sketchPoints_.push(this.createSketchPoint_(prevPoint));
-          }, 250);
+          if (this.singleClickTimer) {
+            clearTimeout(this.singleClickTimer);
+            this.singleClickTimer = null;
+          } else {
+            this.singleClickTimer = setTimeout(() => {
+              this.isDoubleClick = false;
+              const prevPoint = Cartesian3.clone(this.activePoints_[this.activePoints_.length - 1]);
+              this.sketchPoints_.push(this.createSketchPoint_(prevPoint));
+              this.singleClickTimer = null;
+            }, 250);
+          }
         }
       }
     }
@@ -616,7 +622,9 @@ export class CesiumDraw extends EventTarget {
 
   onDoubleClick_() {
     this.isDoubleClick = true;
-    clearTimeout(this.singleClickTimer);
+    if (this.singleClickTimer) {
+      clearTimeout(this.singleClickTimer);
+    }
     if (!this.activeDistances_.includes(this.activeDistance_)) {
       this.activeDistances_.push(this.activeDistance_);
     }

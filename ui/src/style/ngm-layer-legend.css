@@ -6,6 +6,11 @@ ngm-layer-legend {
 ngm-layer-legend .content-container {
   max-width: 504px;
   font-size: 14px;
+  margin-bottom: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 505px;
+  user-select: text;
 }
 
 ngm-layer-legend .content-container.legend-html {
@@ -51,9 +56,5 @@ ngm-layer-legend .ui.divider {
 }
 
 ngm-layer-legend .content-container {
-  margin-bottom: 10px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: 505px;
-  user-select: text;
+
 }

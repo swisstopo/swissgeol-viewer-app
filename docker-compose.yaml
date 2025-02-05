@@ -1,68 +1,57 @@
 services:
   api:
-    init: true # handle kill signals for rust
-    image: ghcr.io/swisstopo/swissgeol-viewer-app-local_api:latest
-    platform: linux/amd64
+    image: swissgeol-viewer-app/api:local
+    build:
+      context: ./api
+      dockerfile: DockerfileDev
+    init: true
     ports:
-      - 8480:3000
-    environment:
-      # S3
-      S3_AWS_REGION: &minio_region eu-west-1
-      AWS_ACCESS_KEY_ID: &minio_user minio
-      AWS_SECRET_ACCESS_KEY: &minio_pass minio123
-      S3_BUCKET: ngmpub-userdata-local
-      PROJECTS_S3_BUCKET: ngmpub-project-files-local
-      S3_ENDPOINT: http://minio:9000
-      # Cognito
-      COGNITO_CLIENT_ID: 10h1tga4i933buv25lelalmtrn
-      COGNITO_POOL_ID: eu-west-1_dbfEb2FuH
-      # Postgres
-      PGUSER: &db_user www-data
-      PGPASSWORD: &db_pass www-data
-      PGDATABASE: &db_name swissgeol-local
-      PGHOST: db
-      PGPORT: "5432"
-      # Api
-      APP_PORT: "3000"
-      SQLX_OFFLINE: "true"
-      DATABASE_URL: "postgres://www-data:www-data@db:5432/swissgeol-local"
-    command: ["cargo", "watch", "--poll", "--shell", "cargo run --offline --target x86_64-unknown-linux-musl"]
+      - "8480:3000"
     volumes:
-      - ./api/src:/app/src:ro
-      - ./api/migrations:/app/migrations:ro
-      - ./api/.sqlx:/app/.sqlx:ro
-      - ./api/Cargo.toml:/app/Cargo.toml:ro
-    links:
+      - ./api:/app
+      - api.cargo:/usr/local/cargo
+      - api.target:/app/target
+    depends_on:
       - db
+      - minio
+    env_file:
+      - ./api/.env
+      - .env
 
   ui:
-    image: node:lts
+    image: swissgeol-viewer-app/ui:local
+    build:
+      context: ./ui
+      dockerfile: DockerfileDev
+    init: true
     ports:
-      - 8000:8000
-    environment:
-      ENVIRONMENT_NAME: local-dev
-    working_dir: /app
-    command: ['node_modules/.bin/webpack', 'serve']
-    links:
+      - "8000:8000"
+    depends_on:
       - api
       - abbreviator
     volumes:
-      - "./ui:/app:ro"
+      - ./:/app
+      - ui.node_modules:/app/ui/node_modules
+    tmpfs:
+      - /app/ui/dist
 
   minio:
-    init: true # handle kill signals
     image: minio/minio:latest
     command: server /data --console-address :9001
+    init: true
     volumes:
-      - miniodata:/data
+      - minio:/data
     ports:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_BROWSER: 'on'
-      MINIO_SITE_REGION: *minio_region
-      MINIO_ROOT_USER: *minio_user
-      MINIO_ROOT_PASSWORD: *minio_pass
+      MINIO_BROWSER: "on"
+      MINIO_SITE_REGION: ${S3_AWS_REGION}
+      MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+    env_file:
+      - ./api/.env
+      - .env
 
   abbreviator:
     image: ghcr.io/swisstopo/swissgeol-viewer-app-abbreviator:main
@@ -77,13 +66,23 @@ services:
   db:
     image: camptocamp/postgres:14-postgis-3
     platform: linux/amd64
-    environment:
-      POSTGRES_USER: *db_user
-      POSTGRES_PASSWORD: *db_pass
-      POSTGRES_DB: *db_name
     ports:
-      - 15432:5432
-    # command: postgres -c log_statement=all for debugging
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  miniodata:
+  minio:
+  db:
+  api.cargo:
+  api.target:
+  ui.node_modules:

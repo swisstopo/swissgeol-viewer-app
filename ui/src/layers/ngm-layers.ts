@@ -4,13 +4,14 @@ import {LitElementI18n} from '../i18n.js';
 import './ngm-layers-item';
 import DashboardStore from '../store/dashboard';
 import {LayerConfig} from '../layertree';
+import type LayersAction from './LayersActions';
 
 @customElement('ngm-layers')
 export default class NgmLayers extends LitElementI18n {
   @property({type: Array})
   accessor layers: LayerConfig[] = [];
   @property({type: Object})
-  accessor actions: any;
+  accessor actions: LayersAction | null = null;
 
   updated(changedProperties: PropertyValues) {
     if (changedProperties.has('layers')) {
@@ -51,9 +52,5 @@ export default class NgmLayers extends LitElementI18n {
     const len = this.layers ? this.layers.length : 0;
     const reverse = [...this.layers].reverse();
     return html`${reverse.map((c, idx) => this.createLayerTemplate(c, idx, len))}`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

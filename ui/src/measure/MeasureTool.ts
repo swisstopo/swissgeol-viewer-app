@@ -28,7 +28,7 @@ export default class MeasureTool {
     private readonly measureDataSource = new CustomDataSource('measure');
     private readonly measureOptions: MeasureOptions;
     private measureToolActive = false;
-    private screenSpaceEventHandler: ScreenSpaceEventHandler | undefined;
+    private readonly screenSpaceEventHandler: ScreenSpaceEventHandler | undefined;
     private measurePositions: Cartesian3[] = [];
     private highlightEntity: Entity | undefined;
     private points: Entity[] = [];

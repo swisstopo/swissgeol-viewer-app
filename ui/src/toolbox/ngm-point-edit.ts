@@ -11,7 +11,7 @@ import type {Entity, Viewer} from 'cesium';
 import {cartesianToDegrees, cartesianToLv95, lv95ToDegrees} from '../projection';
 import 'fomantic-ui-css/components/transition.js';
 import 'fomantic-ui-css/components/dropdown.js';
-import $ from '../jquery.js';
+import $ from 'jquery';
 import {styleMap} from 'lit/directives/style-map.js';
 
 @customElement('ngm-point-edit')
@@ -29,7 +29,7 @@ export class NgmPointEdit extends LitElementI18n {
   maxHeight = 30000;
   minDepth = -30000;
   maxDepth = 30000;
-  private julianDate: JulianDate = new JulianDate();
+  private readonly julianDate: JulianDate = new JulianDate();
   private viewer: Viewer | null = null;
 
   @query('.dropdown')

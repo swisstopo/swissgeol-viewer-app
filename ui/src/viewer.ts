@@ -35,7 +35,7 @@ import {getExaggeration} from './permalink';
 import {pickPositionOrVoxel} from './cesiumutils';
 
 
-window['CESIUM_BASE_URL'] = '.';
+window['CESIUM_BASE_URL'] = './cesium';
 
 Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY';
 
@@ -179,7 +179,7 @@ export async function setupViewer(container: Element, rethrowRenderErrors: boole
     // Position the sun the that shadows look nice
     let sunDate = new Date('2018-06-21T10:00:00.000Z');
     if (searchParams.has('date')) {
-        const betterDate = new Date(searchParams.get('date') || '');
+        const betterDate = new Date(searchParams.get('date') ?? '');
         if (Number.isNaN(betterDate.getDate())) {
             console.error(`Provided date is wrong: ${searchParams.get('date')}`);
         } else {
@@ -366,7 +366,7 @@ export function setupBaseLayers(viewer: Viewer) {
         {
             id: arealLayer,
             labelKey: t('dtd_aerial_map_label'),
-            backgroundImgSrc: 'src/images/arealimage.png',
+            backgroundImgSrc: '/images/arealimage.png',
             layers: [
                 addSwisstopoLayer(viewer, arealLayer, 'jpeg', 20)
             ]
@@ -375,7 +375,7 @@ export function setupBaseLayers(viewer: Viewer) {
             id: greyLayer,
             default: true,
             labelKey: t('dtd_grey_map_label'),
-            backgroundImgSrc: 'src/images/grey.png',
+            backgroundImgSrc: '/images/grey.png',
             layers: [
                 addSwisstopoLayer(viewer, greyLayer, 'jpeg', 18)
             ]
@@ -383,7 +383,7 @@ export function setupBaseLayers(viewer: Viewer) {
         {
             id: 'lakes_rivers_map',
             labelKey: t('dtd_lakes_rivers_map_label'),
-            backgroundImgSrc: 'src/images/lakes_rivers.png',
+            backgroundImgSrc: '/images/lakes_rivers.png',
             hasAlphaChannel: true,
             layers: [
                 addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', 18),
@@ -393,7 +393,7 @@ export function setupBaseLayers(viewer: Viewer) {
         {
             id: 'empty_map',
             labelKey: t('dtd_empty_map_label'),
-            backgroundImgSrc: 'src/images/empty.png',
+            backgroundImgSrc: '/images/empty.png',
             layers: [
                 emptyLayer
             ]

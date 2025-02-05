@@ -1,24 +1,16 @@
 # local dev and dev/int/prod images are separate because they
 # are built using a different and incompatible mode (default vs release)
 
-FROM rust:1.73
-
-RUN rustup target add x86_64-unknown-linux-musl
-RUN apt update && apt install -y gnupg2 wget lsb-release
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-RUN apt update && apt install -y musl-tools musl-dev postgresql-client-13
-RUN curl -L https://github.com/watchexec/cargo-watch/releases/download/v8.1.2/cargo-watch-v8.1.2-x86_64-unknown-linux-gnu.tar.xz -o cargo-watch.tar.xz
-RUN tar xvf cargo-watch.tar.xz
-RUN cp cargo-watch-v8.1.2-x86_64-unknown-linux-gnu/cargo-watch /usr/bin
+FROM rust:1.82
 
 WORKDIR /app
 
-# First we handle fetching and building our dependencies
-# We need a stub entry point for that
-COPY Cargo.toml Cargo.lock ./
-RUN mkdir src; echo "fn main() {}" > src/main.rs
-RUN cargo build --target x86_64-unknown-linux-musl
+RUN cargo install cargo-watch && \
+    rustup component add rustfmt && \
+    rustup component add clippy
+COPY . .
 
-# Now we copy all files, building will be handled on run
-COPY ./ .
+RUN chmod +x start.sh
+
+# Make sure the start.sh script has LF line endings!
+CMD ["./start.sh"]

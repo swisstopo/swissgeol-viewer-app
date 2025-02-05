@@ -228,7 +228,7 @@ export default class QueryManager {
     const coords = lv95ToDegrees([x, y]);
     const cartographicCoords = Cartographic.fromDegrees(coords[0], coords[1], z);
     const position = Cartographic.toCartesian(cartographicCoords);
-    const attributes = this.objectSelector.pickAttributes(null, position, feature);
+    const attributes = this.objectSelector.pickAttributes(Cartesian2.ZERO, position, feature);
 
     this.showObjectInformation(attributes);
     if (attributes?.zoom) attributes.zoom();

@@ -58,26 +58,26 @@ export class NgmNavTools extends LitElementI18n {
   private zoomingOut = false;
   private unlistenFromPostRender: Event.RemoveCallback | null = null;
   private eventHandler: ScreenSpaceEventHandler | undefined;
-  private stopZoomFunction: () => void = () => this.stopZoom();
+  private readonly stopZoomFunction: () => void = () => this.stopZoom();
   private refIcon: Entity = new Entity({
     position: Cartesian3.ZERO,
     show: false,
     billboard: {
-      image: './images/i_cam_tp.svg',
+      image: '/images/i_cam_tp.svg',
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
       width: 40,
       height: 40,
     }
   });
   private moveRef = false;
-  private julianDate = new JulianDate();
+  private readonly julianDate = new JulianDate();
   private axisDataSource: CustomDataSource | undefined;
   private axisCenter: Cartesian3 | undefined;
-  private oldPolylineUpdate: any = PolylineCollection.prototype.update;
-  private xyAxisCalculation = (axis, side) => [this.axisCenter, positionFromPxDistance(this.viewer!.scene, this.axisCenter!, AXIS_LENGTH, axis, side)];
-  private xAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('x', -1), false);
-  private yAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('y', 1), false);
-  private zAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('z', -1), false);
+  private readonly oldPolylineUpdate: any = PolylineCollection.prototype.update;
+  private readonly xyAxisCalculation = (axis, side) => [this.axisCenter, positionFromPxDistance(this.viewer!.scene, this.axisCenter!, AXIS_LENGTH, axis, side)];
+  private readonly xAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('x', -1), false);
+  private readonly yAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('y', 1), false);
+  private readonly zAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('z', -1), false);
   private exaggeration = 1;
 
   constructor() {

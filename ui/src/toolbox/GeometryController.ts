@@ -47,11 +47,11 @@ import {saveAs} from 'file-saver';
 
 export class GeometryController {
   private draw: CesiumDraw | undefined;
-  private toastPlaceholder: HTMLElement;
+  private readonly toastPlaceholder: HTMLElement;
   private viewer: Viewer | null = null;
-  private unlistenEditPostRender: Event.RemoveCallback | undefined;
-  private geometriesDataSource: CustomDataSource;
-  private julianDate = new JulianDate();
+  private readonly unlistenEditPostRender: Event.RemoveCallback | undefined;
+  private readonly geometriesDataSource: CustomDataSource;
+  private readonly julianDate = new JulianDate();
   private selectedArea: Entity | undefined;
   private screenSpaceEventHandler: ScreenSpaceEventHandler | undefined;
   private geometriesCounter: AreasCounter = {
@@ -60,7 +60,7 @@ export class GeometryController {
     rectangle: 0,
     polygon: 0
   };
-  private noEdit: boolean;
+  private readonly noEdit: boolean;
 
   constructor(geometriesDataSource: CustomDataSource, toastPlaceholder: HTMLElement, noEdit = false) {
     this.geometriesDataSource = geometriesDataSource;
@@ -457,8 +457,8 @@ export class GeometryController {
     const type = attributes.type;
     const name = type.charAt(0).toUpperCase() + type.slice(1);
     const entityAttrs: Entity.ConstructorOptions = {
-      id: attributes.id || undefined,
-      name: attributes.name || `${name} ${this.geometriesCounter[type]}`,
+      id: attributes.id ?? undefined,
+      name: attributes.name ?? `${name} ${this.geometriesCounter[type]}`,
       show: attributes.show,
       properties: {
         area: attributes.area,
@@ -468,11 +468,11 @@ export class GeometryController {
         type: type,
         volumeShowed: !!attributes.volumeShowed,
         volumeHeightLimits: attributes.volumeHeightLimits || null,
-        description: attributes.description || '',
-        image: attributes.image || '',
-        website: attributes.website || '',
-        editable: attributes.editable === undefined ? true : attributes.editable,
-        copyable: attributes.copyable === undefined ? true : attributes.copyable,
+        description: attributes.description ?? '',
+        image: attributes.image ?? '',
+        website: attributes.website ?? '',
+        editable: attributes.editable ?? attributes.editable,
+        copyable: attributes.copyable ?? attributes.copyable,
       }
     };
     const color = attributes.color;
@@ -484,7 +484,7 @@ export class GeometryController {
         entityAttrs.position = Cartographic.toCartesian(cartPosition);
       }
       entityAttrs.billboard = {
-        image: attributes.pointSymbol || `./images/${POINT_SYMBOLS[0]}`,
+        image: attributes.pointSymbol ?? `/images/${POINT_SYMBOLS[0]}`,
         color: color ? new Color(color.red, color.green, color.blue) : DEFAULT_AOI_COLOR,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
@@ -492,9 +492,9 @@ export class GeometryController {
         heightReference: HeightReference.RELATIVE_TO_GROUND
       };
       entityAttrs.properties!.swissforagesId = attributes.swissforagesId;
-      attributes.depth = attributes.depth || 400;
+      attributes.depth = attributes.depth ?? 400;
       entityAttrs.properties!.depth = attributes.depth;
-      attributes.diameter = attributes.diameter || 40;
+      attributes.diameter = attributes.diameter ?? 40;
       entityAttrs.properties!.diameter = attributes.diameter;
       const height = Cartographic.fromCartesian(entityAttrs.position).height;
       entityAttrs.ellipse = {

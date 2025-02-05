@@ -1,4 +1,4 @@
-import $ from './jquery.js';
+import $ from 'jquery';
 import 'fomantic-ui-css/components/transition.js';
 import 'fomantic-ui-css/components/toast.js';
 import i18next from 'i18next';
@@ -19,7 +19,7 @@ export function showSnackbarError(message: string): HTMLElement {
 
 export function showBannerError(element: HTMLElement, message: string): HTMLElement {
   return showBanner(element, {
-    showImage: 'src/images/i_error.svg',
+    showImage: '/images/i_error.svg',
     closeIcon: true,
     className: {toast: 'snackbar error'},
     message: message
@@ -28,7 +28,7 @@ export function showBannerError(element: HTMLElement, message: string): HTMLElem
 
 export function showBannerWarning(element: HTMLElement, message: string): HTMLElement {
   return showBanner(element, {
-    showImage: 'src/images/I_warning.svg',
+    showImage: '/images/I_warning.svg',
     closeIcon: true,
     className: {toast: 'snackbar warning'},
     message: message
@@ -37,7 +37,7 @@ export function showBannerWarning(element: HTMLElement, message: string): HTMLEl
 
 export function showBannerSuccess(element: HTMLElement, message: string): HTMLElement {
   return showBanner(element, {
-    showImage: 'src/images/i_success.svg',
+    showImage: '/images/i_success.svg',
     closeIcon: true,
     className: {toast: 'snackbar success'},
     message: message
@@ -73,18 +73,19 @@ function showSnackbarMessage(message: string, className: string, options = {}): 
   });
 }
 
-export function showMessage(message: string, options: any = {}): HTMLElement {
+function showMessage(message: string, options: any = {}): HTMLElement {
   // hide same toasts
   if (options.class) (<HTMLElement>document.querySelector(`.${options.class}`))?.parentElement?.remove();
-  return $('body').toast(Object.assign({
+  return $('body').toast({
+    ...options,
     message: message,
-  }, options));
+  })[0];
 }
 
 export function showBanner(element: HTMLElement, options) {
   return $(element).toast({position: 'attached', context: $(element), displayTime: 20000, ...options})[0];
 }
 
-export function isBannerShown(element: HTMLElement) {
-  return element.firstChild?.hasChildNodes();
+export function isBannerShown(element: HTMLElement): boolean {
+  return element.firstChild?.hasChildNodes() ?? false;
 }

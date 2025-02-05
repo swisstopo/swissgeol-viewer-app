@@ -1,0 +1,198 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      base:
+        type: string
+        description: |
+          The tag of the commit that will be released.
+          Make sure that you also select that tag as the workflow's run location.
+        required: false
+        default: "release-candidate"
+      is-edge:
+        type: boolean
+        description: |
+          Assign the `edge` tag to this release.
+        default: true
+      is-release-candidate:
+        type: boolean
+        description: |
+          Assign the `release-candidate` tag to this release.
+        default: true
+
+permissions: write-all
+
+env:
+  BASE: ${{ github.event.inputs.base || 'release-candidate' }}
+  IS_EDGE: ${{ github.event.inputs.is-edge == 'true' }}
+  IS_RC: ${{ github.event.inputs.is-release-candidate == 'true' }}
+
+jobs:
+  determine_version:
+    name: "determine version"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.find_version.outputs.result }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Get tags of base commit
+        id: get_base_tags
+        run: |
+          git fetch --tags
+          BASE_COMMIT=$(git rev-list -n 1 release-candidate)
+          BASE_TAGS=$(printf "%s," $(git tag --contains $BASE_COMMIT))
+          BASE_TAGS=${BASE_TAGS%,}
+          echo "base_tags=$BASE_TAGS" >> "$GITHUB_OUTPUT"
+      - name: Find next version
+        id: find_version
+        uses: actions/github-script@v7
+        env:
+          BASE_TAGS: ${{ steps.get_base_tags.outputs.base_tags }}
+        with:
+          result-encoding: string
+          script: |
+            const { findMostRecentVersion, makeVersionTag } = require('./.github/scripts/find-version.js');
+            const tags = process.env.BASE_TAGS.split(',');
+            const version = findMostRecentVersion(tags);
+            version.preRelease = null;
+            return makeVersionTag(version);
+
+  build_and_push_api:
+    name: "build and push api"
+    needs:
+      - determine_version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create image
+        uses: ./.github/actions/create-image
+        with:
+          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-api
+          TAG: latest
+          OTHER_TAGS: |
+            type=raw,value=${{ env.IS_EDGE == 'true' && 'edge' || '' }}
+            type=raw,value=${{ env.IS_RC == 'true' && 'release-candidate' || '' }}
+          VERSION: ${{ needs.determine_version.outputs.version }}
+          DOCKERFILE: ./api/Dockerfile
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTEXT: ./api
+
+  build_and_push_ui:
+    name: "build and push ui"
+    needs:
+      - determine_version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create image
+        uses: ./.github/actions/create-image
+        with:
+          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-ui
+          TAG: latest
+          OTHER_TAGS: |
+            type=raw,value=${{ env.IS_EDGE == 'true' && 'edge' || '' }}
+            type=raw,value=${{ env.IS_RC == 'true' && 'release-candidate' || '' }}
+          VERSION: ${{ needs.determine_version.outputs.version }}
+          DOCKERFILE: ./ui/Dockerfile
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTEXT: .
+
+  tag_commit:
+    name: "tag commit"
+    needs:
+      - determine_version
+      - build_and_push_api
+      - build_and_push_ui
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: tag latest
+        uses: ./.github/actions/tag-commit
+        with:
+          TAG_NAME: latest
+          SHA: ${{ github.sha }}
+      - name: Tag release-candidate
+        if: ${{ env.IS_RC == 'true' }}
+        uses: ./.github/actions/tag-commit
+        with:
+          TAG_NAME: release-candidate
+          SHA: ${{ github.sha }}
+      - name: Tag edge
+        if: ${{ env.IS_EDGE == 'true' }}
+        uses: ./.github/actions/tag-commit
+        with:
+          TAG_NAME: edge
+          SHA: ${{ github.sha }}
+      - name: Tag version
+        uses: ./.github/actions/tag-commit
+        with:
+          TAG_NAME: ${{ needs.determine_version.outputs.version }}
+          SHA: ${{ github.sha }}
+
+  create_release:
+    name: "create release"
+    needs:
+      - determine_version
+      - build_and_push_api
+      - build_and_push_ui
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "${{ needs.determine_version.outputs.version }}"
+          name: "swissgeol-viewer v${{ needs.determine_version.outputs.version }}"
+          generate_release_notes: true
+          make_latest: true
+
+  cleanup:
+    name: "cleanup"
+    needs:
+      - determine_version
+      - create_release
+      - tag_commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        run: |
+          npm install @octokit/rest
+      - name: Get tags
+        id: get_tags
+        run: |
+          git fetch --tags
+          TAGS=$(printf "%s," $(git tag))
+          TAGS=${TAGS%,}
+          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+      - name: Remove outdated versions
+        uses: actions/github-script@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}
+          CURRENT_VERSION: ${{ needs.determine_version.outputs.version }}
+          TAGS: ${{ steps.get_tags.outputs.tags }}
+        with:
+          script: |
+            const { findOutdatedVersions, makeVersionTag } = require('./.github/scripts/find-version.js');
+            const { removePackageVersions } = require('./.github/scripts/remove-packages.js');
+
+            const tags = process.env.TAGS.split(',');
+            const outdatedVersions = findOutdatedVersions(tags, process.env.CURRENT_VERSION).map(makeVersionTag);
+            for (const version of outdatedVersions) {
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${version}`,
+              });
+            }
+
+            await removePackageVersions(`${process.env.BASE_IMAGE_NAME}-api`, outdatedVersions);
+            await removePackageVersions(`${process.env.BASE_IMAGE_NAME}-ui`, outdatedVersions);

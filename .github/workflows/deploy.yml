@@ -1,0 +1,65 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: The environment to which the Kubernetes config is deployed.
+        options:
+          - dev
+          - int
+          - prod
+
+env:
+  APP_ENV: ${{ github.event.inputs.env }}
+
+jobs:
+  publish-helm:
+    name: "publish helm"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: "Load secrets"
+        id: load-secrets
+        uses: hashicorp/vault-action@v3
+        with:
+          url: https://swisstopo-vault-public-vault-d680830d.382257a9.z1.hashicorp.cloud:8200
+          caCertificate: ${{ secrets.VAULT_CA_CERT }}
+          method: jwt
+          role: ${{ secrets.VAULT_ROLE }}
+          namespace: admin/igi/igi-cloud/swisstopo-ngm
+          secrets: |
+            kv/data/${{ env.APP_ENV }}/k8s kubeconfig   | KUBECONFIG;
+            kv/data/${{ env.APP_ENV }}/k8s helm_values  | HELM_VALUES;
+            kv/data/${{ env.APP_ENV }}/k8s helm_secrets | HELM_SECRETS;
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - name: "Setup kubectl"
+        uses: azure/setup-kubectl@v4
+      - name: "Install helm"
+        uses: azure/setup-helm@v4
+      - name: "Configure AWS credentials from AWS account"
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHub-OIDC
+          retry-max-attempts: 3
+      - name: "Write kubeconfig file"
+        run: |
+          echo "${{ env.HELM_VALUES }}" > ./k8s/values.yaml
+          echo "${{ env.HELM_SECRETS }}" > ./k8s/secrets.yaml
+          echo "${{ env.KUBECONFIG }}" > kubeconfig.yaml
+      - name: "Deploy helm charts"
+        env:
+          KUBECONFIG: ./kubeconfig.yaml
+        run: |
+          helm upgrade --install swissgeol-viewer ./k8s \
+            --values ./k8s/values.yaml \
+            --values ./k8s/secrets.yaml \
+            --kubeconfig $(pwd)/kubeconfig.yaml \
+            --namespace ngm
+

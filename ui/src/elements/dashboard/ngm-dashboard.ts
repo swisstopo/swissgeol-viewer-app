@@ -22,7 +22,7 @@ import {CustomDataSource} from 'cesium';
 import {showSnackbarError} from '../../notifications';
 import {DEFAULT_LAYER_OPACITY, DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL} from '../../constants';
 import type {NgmGeometry} from '../../toolbox/interfaces';
-import {apiClient} from '../../api-client';
+import {ApiClient} from '../../api/api-client';
 import AuthStore from '../../store/auth';
 import '../hide-overflow';
 import './ngm-project-edit';
@@ -31,6 +31,8 @@ import {isProject, isProjectOwnerOrEditor} from './helpers';
 import {LayerConfig} from '../../layertree';
 import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
 import {parseKml, renderWithDelay} from '../../cesiumutils';
+import {consume} from '@lit/context';
+import {apiClientContext} from '../../context';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -125,7 +127,10 @@ export class NgmDashboard extends LitElementI18n {
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
   private userEmail: string | undefined;
-  private tempKmlDataSource = new CustomDataSource('tempKmlDataSource');
+  private readonly tempKmlDataSource = new CustomDataSource('tempKmlDataSource');
+
+  @consume({context: apiClientContext})
+  accessor apiClient!: ApiClient;
 
   constructor() {
     super();
@@ -153,9 +158,9 @@ export class NgmDashboard extends LitElementI18n {
       //   const topic = this.topics?.find(p => p.id === value.param.topicId);
       //   this.selectTopicOrProject(topic);
       // } else
-        if (value.kind === 'project') {
+      if (value.kind === 'project') {
         removeProject();
-        const project = await apiClient.getProject(value.param.projectId);
+        const project = await this.apiClient.getProject(value.param.projectId);
         this.selectTopicOrProject(project);
       } else return;
       if (value.param.viewId) {
@@ -195,9 +200,6 @@ export class NgmDashboard extends LitElementI18n {
     AuthStore.user.subscribe(() => {
       this.userEmail = AuthStore.userEmail;
     });
-    apiClient.projectsChange.subscribe((projects) => {
-      this.refreshProjects(projects);
-    });
     DashboardStore.geometriesUpdate.subscribe(geometries => {
       if (this.selectedTopicOrProject) {
         this.selectTopicOrProject({...this.selectedTopicOrProject, geometries});
@@ -205,12 +207,18 @@ export class NgmDashboard extends LitElementI18n {
         this.projectToCreate = {...this.projectToCreate, geometries};
       }
     });
-    apiClient.refreshProjects();
 
     DashboardStore.onSaveOrCancelWarning.subscribe(show => {
       if (this.projectTabState !== 'view') {
         this.saveOrCancelWarning = show;
       }
+    });
+  }
+
+  firstUpdated() {
+    this.apiClient.refreshProjects();
+    this.apiClient.projectsChange.subscribe((projects) => {
+      this.refreshProjects(projects);
     });
   }
 
@@ -377,12 +385,12 @@ export class NgmDashboard extends LitElementI18n {
 
   async onProjectSave(project: Project | CreateProject) {
     if (this.projectTabState === 'edit' && isProject(project)) {
-      await apiClient.updateProject(project);
+      await this.apiClient.updateProject(project);
     } else if (this.projectTabState === 'create' && this.projectToCreate) {
       try {
-        const response = await apiClient.createProject(project);
+        const response = await this.apiClient.createProject(project);
         const id = await response.json();
-        const createdProject = await apiClient.getProject(id);
+        const createdProject = await this.apiClient.getProject(id);
         this.selectTopicOrProject(createdProject);
       } catch (e) {
         console.error(e);
@@ -402,7 +410,7 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   cancelEditCreate() {
-      apiClient.refreshProjects();
+      this.apiClient.refreshProjects();
       this.projectTabState = 'view';
       this.saveOrCancelWarning = false;
       this.projectToCreate = undefined;
@@ -420,7 +428,7 @@ export class NgmDashboard extends LitElementI18n {
   async onProjectPreviewClick(projOrTopic: Topic | Project) {
     if (isProject(projOrTopic)) {
       this.showCursorPreloader = true;
-      projOrTopic = await apiClient.getProject(projOrTopic.id);
+      projOrTopic = await this.apiClient.getProject(projOrTopic.id);
       this.showCursorPreloader = false;
     }
     this.selectTopicOrProject(projOrTopic);
@@ -457,7 +465,7 @@ export class NgmDashboard extends LitElementI18n {
 
   recentlyViewedTemplate() {
     if (this.isProjectSelected || this.activeTab === 'projects' || this.activeTab === 'shared' ||
-    (this.activeTab === 'overview' && !apiClient.token)) return '';
+    (this.activeTab === 'overview' && !this.apiClient.token)) return '';
 
     const topicsOrProjects = this.activeTab === 'topics' ? this.topics : this.projects;
 
@@ -475,7 +483,7 @@ export class NgmDashboard extends LitElementI18n {
 
   overviewTemplate() {
     if (this.activeTab === 'overview' && !this.isProjectSelected) {
-      if (apiClient.token) {
+      if (this.apiClient.token) {
         return html`
           <div class="ngm-proj-title">${i18next.t('dashboard_my_projects')}</div>
           <hide-overflow class="ngm-projects-list">
@@ -499,7 +507,7 @@ export class NgmDashboard extends LitElementI18n {
         (changed.has('hidden') || changed.has('activeTab') || changed.has('selectedTopicOrProject')) &&
         this.activeTab !== 'topics' && !this.selectedTopicOrProject && !this.hidden
     ) {
-      apiClient.refreshProjects();
+      this.apiClient.refreshProjects();
     }
     super.updated(changed);
   }
@@ -529,7 +537,7 @@ export class NgmDashboard extends LitElementI18n {
             ${i18next.t('dashboard_overview')}
           </div>
           <div class=${classMap({active: this.activeTab === 'projects'})}
-                ?hidden=${!apiClient.token}
+                ?hidden=${!this.apiClient.token}
                @click=${() => {
                  this.runIfNotEditCreate(() => {
                    this.activeTab = 'projects';
@@ -539,7 +547,7 @@ export class NgmDashboard extends LitElementI18n {
               (${this.projects.filter(p => p.owner.email === this.userEmail).length})
           </div>
           <div class=${classMap({active: this.activeTab === 'shared'})}
-               ?hidden=${!apiClient.token}
+               ?hidden=${!this.apiClient.token}
                @click=${() => {
                  this.runIfNotEditCreate(() => {
                    this.activeTab = 'shared';
@@ -563,7 +571,7 @@ export class NgmDashboard extends LitElementI18n {
           </div>
         </div>
         <div>
-          <div class="ngm-toast-placeholder" id="overview-toast" ?hidden=${!!apiClient.token}></div>
+          <div class="ngm-toast-placeholder" id="overview-toast" ?hidden=${!!this.apiClient.token}></div>
           ${this.overviewTemplate()}
         </div>
         <div ?hidden=${this.activeTab !== 'projects' || this.isProjectSelected}>
@@ -584,8 +592,8 @@ export class NgmDashboard extends LitElementI18n {
         </div>
         <div ?hidden=${!this.isProjectSelected}>
           ${this.projectTabState !== 'view' ?
-              html`<ngm-project-edit 
-                     .project="${this.projectTabState === 'create' ? this.projectToCreate : this.selectedTopicOrProject}" 
+              html`<ngm-project-edit
+                     .project="${this.projectTabState === 'create' ? this.projectToCreate : this.selectedTopicOrProject}"
                      .saveOrCancelWarning="${this.saveOrCancelWarning}"
                      .createMode="${this.projectTabState === 'create'}"
                      .userEmail="${this.userEmail}"

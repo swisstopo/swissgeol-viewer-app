@@ -1,6 +1,6 @@
 import {html, PropertyValues} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import $ from '../jquery.js';
+import $ from 'jquery';
 import {LitElementI18n} from '../i18n.js';
 
 import 'fomantic-ui-css/components/dimmer.js';
@@ -12,10 +12,10 @@ export class NgmConfirmationModal extends LitElementI18n {
   accessor show = false;
   @property({type: Object})
   accessor text: {title: string, description: string, cancelBtn: string, confirmBtn: string} | undefined;
-  element: HTMLElement & {modal: (key: string) => void} | undefined;
+  element: JQuery<Element> | undefined;
 
   firstUpdated(_changedProperties: PropertyValues) {
-    this.element = $(this.querySelector('.ngm-confirmation-modal.ui.modal')).modal({
+    this.element = $(this.querySelector('.ngm-confirmation-modal.ui.modal')!).modal({
       centered: true,
       onHidden: () => this.show = false,
       onApprove: () => this.dispatchEvent(new CustomEvent('onModalConfirmation', {bubbles: true}))

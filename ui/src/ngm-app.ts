@@ -1,11 +1,9 @@
-import {LitElementI18n} from './i18n';
-import type {PropertyValues} from 'lit';
-import {html} from 'lit';
+import {LitElementI18n} from 'src/i18n';
+import {html, PropertyValues} from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
 import './elements/ngm-auth';
-import './elements/ngm-tracking-consent';
 import './elements/ngm-cursor-information';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
@@ -19,13 +17,13 @@ import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
-import 'fomantic-ui-css/components/dropdown.js';
-
+import './components/search/search-input';
 import '@geoblocks/cesium-view-cube';
+import './components/core';
+import './components/layout';
 
-import {COGNITO_VARIABLES, DEFAULT_VIEW, SUPPORTED_LANGUAGES} from './constants';
+import {COGNITO_VARIABLES, DEFAULT_VIEW} from './constants';
 
-import {setupSearch} from './search.js';
 import {addMantelEllipsoid, setupBaseLayers, setupViewer} from './viewer';
 
 import {
@@ -35,7 +33,7 @@ import {
   getZoomToPosition,
   rewriteParams,
   syncCamera,
-  syncStoredView
+  syncStoredView,
 } from './permalink';
 import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
@@ -56,7 +54,11 @@ import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type {SideBar} from './elements/ngm-side-bar';
 import {LayerConfig} from './layertree';
-import $ from './jquery';
+import {clientConfigContext} from './context';
+import {consume} from '@lit/context';
+import {ClientConfig} from './api/client-config';
+import {CoreModal} from './components/core/core-modal';
+import {TrackingConsentModalEvent} from './components/layout/tracking-consent-modal';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -87,17 +89,13 @@ export class NgmApp extends LitElementI18n {
   @state()
   accessor showCamConfig = false;
   @state()
-  accessor showMobileSearch = false;
-  @state()
-  accessor loading = true;
+  accessor loading = false;
   @state()
   accessor determinateLoading = false;
   @state()
   accessor queueLength = 0;
   @state()
   accessor legendConfigs: LayerConfig[] = [];
-  @state()
-  accessor showTrackingConsent = false;
   @state()
   accessor showProjectPopup = false;
   @state()
@@ -119,12 +117,25 @@ export class NgmApp extends LitElementI18n {
   @query('ngm-wmts-date-picker')
   accessor wmtsDatePickerElement;
   private viewer: Viewer | undefined;
+  private sidebar: SideBar | null = null;
   private queryManager: QueryManager | undefined;
   private waitForViewLoading = false;
   private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
+  private disclaimer: CoreModal | null = null;
+
+  @consume({context: clientConfigContext})
+  accessor clientConfig!: ClientConfig;
 
   constructor() {
     super();
+
+    this.handleTrackingAllowedChanged = this.handleTrackingAllowedChanged.bind(this);
+
+    this.disclaimer = CoreModal.open({isPersistent: true, size: 'large', hasNoPadding: true}, html`
+      <ngm-tracking-consent-modal
+        @confirm="${this.handleTrackingAllowedChanged}"
+      ></ngm-tracking-consent-modal>
+    `);
 
     const boundingRect = document.body.getBoundingClientRect();
     this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
@@ -174,7 +185,7 @@ export class NgmApp extends LitElementI18n {
     const config = event.target.config;
     const index = this.legendConfigs.findIndex(c => c && c.layer === config.layer);
     console.assert(index !== -1);
-    delete this.legendConfigs[index];
+    this.legendConfigs.splice(index, 1);
     if (!this.legendConfigs.filter(c => !!c).length)
       this.legendConfigs = [];
     this.requestUpdate();
@@ -201,14 +212,11 @@ export class NgmApp extends LitElementI18n {
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(viewer);
 
-    const sideBar = this.querySelector('ngm-side-bar');
-
-    setupSearch(viewer, this.querySelector('ga-search')!, sideBar);
+    this.sidebar = this.querySelector('ngm-side-bar') as SideBar | null;
   }
 
   removeLoading() {
     this.loading = false;
-    this.showTrackingConsent = true;
     (<NgmSlowLoading> this.querySelector('ngm-slow-loading')).style.display = 'none';
   }
 
@@ -222,7 +230,7 @@ export class NgmApp extends LitElementI18n {
 
     // Temporarily increasing the maximum screen space error to load low LOD tiles.
     const searchParams = new URLSearchParams(document.location.search);
-    globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') || '2000');
+    globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') ?? '2000');
 
     let currentStep = 1;
     const unlisten = globe.tileLoadProgressEvent.addEventListener(queueLength => {
@@ -246,6 +254,7 @@ export class NgmApp extends LitElementI18n {
   }
 
   async firstUpdated() {
+
     setTimeout(() => this.determinateLoading = true, 3000);
     setupI18n();
     rewriteParams();
@@ -352,10 +361,6 @@ export class NgmApp extends LitElementI18n {
         this.resolutionScaleRemoveCallback = undefined;
       }
     }
-
-    this.querySelectorAll('.ui.dropdown').forEach(elem => $(elem).dropdown({
-      direction: 'downward'
-    }));
     super.updated(changedProperties);
   }
 
@@ -387,9 +392,11 @@ export class NgmApp extends LitElementI18n {
     });
   }
 
-  onTrackingAllowedChanged(event) {
+  handleTrackingAllowedChanged(event: TrackingConsentModalEvent) {
+    this.disclaimer?.close();
+    this.disclaimer = null;
     this.showNavigationHint();
-    initAnalytics(event.detail.allowed);
+    initAnalytics(event.detail.isAllowed);
   }
 
   showNavigationHint() {
@@ -408,38 +415,27 @@ export class NgmApp extends LitElementI18n {
 
   render() {
     return html`
-      <header class="${classMap({'mobile-search-active': this.showMobileSearch})}">
-        <a id="ngm-home-link" href="" .hidden="${this.showMobileSearch}">
-          <img class="hidden-mobile" src="src/images/swissgeol_viewer.svg">
-          <img class="visible-mobile" src="src/images/swissgeol_favicon_viewer.svg">
-          <div class="logo-text visible-mobile">swissgeol</div>
-        </a>
-        <ga-search class="ui big icon input ${classMap({'active': this.showMobileSearch})}" types="location,additionalSource,layer, feature"
-                   locationOrigins="zipcode,gg25,gazetteer">
-          <input type="search" placeholder="${i18next.t('header_search_placeholder')}">
-          <div class="ngm-search-icon-container ngm-search-icon"></div>
-          <ul class="search-results"></ul>
-        </ga-search>
-        <div style="flex: 1;" .hidden="${this.showMobileSearch}"></div>
-        <div
-          class="ngm-search-icon-mobile ngm-search-icon visible-mobile ${classMap({'active': this.showMobileSearch})}"
-          @click="${() => this.showMobileSearch = !this.showMobileSearch}"></div>
-        <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
-        <div class="ui dropdown ngm-lang-dropdown">
-            <div class="ngm-lang-title">
-              ${i18next.language?.toUpperCase()}
-              <div class="ngm-dropdown-icon"></div>
-            </div>
-            <div class="menu">
-              ${SUPPORTED_LANGUAGES.map(lang => html`
-                <div class="item lang-${lang}" @click="${() => i18next.changeLanguage(lang)}">${lang.toUpperCase()}</div>
-              `)}
-            </div>
+      <header>
+        <div class="left">
+          <a id="ngm-home-link" href="">
+            <img class="hidden-mobile" src="/images/swissgeol_viewer.svg" height="36">
+            <img class="visible-mobile" src="/images/swissgeol_favicon_viewer.svg">
+            <div class="logo-text visible-mobile">swissgeol</div>
+          </a>
+          <ngm-search-input
+            .viewer="${this.viewer}"
+            .sidebar="${this.sidebar}"
+          ></ngm-search-input>
         </div>
-        <ngm-auth class="ngm-user"
-                  endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
-                  clientId=${COGNITO_VARIABLES.clientId}
+        <div class="ngm-header-suffix">
+          <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
+          <ngm-language-selector></ngm-language-selector>
+        <ngm-auth
+          class="ngm-user"
+          endpoint='https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize'
+          clientId=${COGNITO_VARIABLES.clientId}
         ></ngm-auth>
+        </div>
       </header>
       <main>
         <div class="ui dimmer ngm-main-load-dimmer ${classMap({active: this.loading})}">
@@ -502,10 +498,8 @@ export class NgmApp extends LitElementI18n {
           </div>
           ${this.showCesiumToolbar ? html`
             <cesium-toolbar></cesium-toolbar>` : ''}
-          ${this.showTrackingConsent ? html`
-            <ngm-tracking-consent @change=${this.onTrackingAllowedChanged}></ngm-tracking-consent>` : ''}
           <ngm-ion-modal class="ngm-floating-window"
-                         .hidden=${!this.showIonModal} 
+                         .hidden=${!this.showIonModal}
                          @close=${() => this.showIonModal = false}>
           </ngm-ion-modal>
         </div>

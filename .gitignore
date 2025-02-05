@@ -7,3 +7,10 @@
 /ui/types
 /docs
 /secrets.txt
+
+# JetBrains IDE files
+.idea/
+
+# Local Docker volumes
+/volumes/
+

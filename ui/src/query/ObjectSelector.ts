@@ -27,8 +27,8 @@ function isTemplateResult(value) {
 }
 
 export default class ObjectSelector {
-  private viewer: Viewer;
-  private scene: Scene;
+  private readonly viewer: Viewer;
+  private readonly scene: Scene;
   selectedObj: any | null = null; // todo improve types
   savedColor: Color | null = null;
 

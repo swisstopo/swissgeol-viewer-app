@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-api
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    keel.sh/policy: force
+    keel.sh/match-tag: 'true'
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-api
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-api
+    spec:
+      serviceAccountName: api
+      containers:
+      - name: {{ .Release.Name }}-api
+        image: {{ .Values.docker.api_image }}
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /api/health_check
+            port: 3000
+        readinessProbe:
+          httpGet:
+            path: /api/health_check
+            port: 3000
+        env:
+          - name: APP_PORT
+            value: '3000'
+          - name: ENV
+            value: prod
+
+          # Database
+          - name: PGHOST
+            value: "{{ .Values.database.host }}"
+          - name: PGPORT
+            value: "{{ .Values.database.port }}"
+          - name: PGDATABASE
+            value: "{{ .Values.database.name }}"
+          - name: PGUSER
+            value: "{{ .Values.database.user }}"
+          - name: PG_SSL_MODE
+            value: 'require'
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: database_password
+
+          # S3
+          - name: S3_AWS_REGION
+            value: "{{ .Values.s3.region }}"
+          - name: S3_BUCKET
+            value: "{{ .Values.s3.bucket }}"
+          - name: PROJECTS_S3_BUCKET
+            value: "{{ .Values.s3.projects_bucket }}"
+
+          # Cognito
+          - name: COGNITO_AWS_REGION
+            value: "{{ .Values.cognito.region }}"
+          - name: COGNITO_CLIENT_ID
+            value: "{{ .Values.cognito.client_id }}"
+          - name: COGNITO_POOL_ID
+            value: "{{ .Values.cognito.pool_id }}"
+          - name: COGNITO_IDENTITY_POOL_ID
+            value: "{{ .Values.cognito.identity_pool_id }}"
+
+          # ION
+          - name: ION_DEFAULT_ACCESS_TOKEN
+            value: "{{ .Values.ion.default_access_token }}"
+
+      imagePullSecrets:
+      - name: {{ .Release.Namespace }}-registry

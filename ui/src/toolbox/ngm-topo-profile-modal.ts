@@ -48,15 +48,15 @@ export class NgmTopoProfileModal extends LitElementI18n {
   @query('.ngm-profile-tooltip')
   accessor profileTooltip;
   private viewer: Viewer | null | undefined;
-  private bisect = bisector((d) => d.domainDist).left;
+  private readonly bisect = bisector((d) => d.domainDist).left;
   private linestring: number[][] | undefined;
   private data: ProfileData[] = [];
   private name: string | undefined;
   private profileInfo: any | undefined;
   private domain: any;
   private distInKM = false;
-  private highlightPointPosition: Cartesian3 = new Cartesian3();
-  private highlightPoint = new Entity({
+  private readonly highlightPointPosition: Cartesian3 = new Cartesian3();
+  private readonly highlightPoint = new Entity({
     position: <any> new CallbackProperty(() => this.highlightPointPosition, false),
     point: {
       show: new CallbackProperty(() => this.showTooltip, false),

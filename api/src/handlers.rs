@@ -11,6 +11,8 @@ use uuid::Uuid;
 use crate::auth::Claims;
 use crate::{Error, Result};
 use anyhow::Context;
+use axum_macros::debug_handler;
+use clap::Parser;
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::Number;
 use std::collections::HashSet;
@@ -69,11 +71,11 @@ pub struct View {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
-#[allow(non_snake_case)]
+#[serde(rename_all = "camelCase")]
 pub struct Asset {
     pub name: String,
     pub key: String,
-    pub clampToGround: Option<bool>,
+    pub clamp_to_ground: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -84,27 +86,28 @@ pub struct Member {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
-#[allow(non_snake_case)]
+#[serde(rename_all = "camelCase")]
 pub struct Geometry {
-    r#type: String,
+    #[serde(rename = "type")]
+    typ: String,
     positions: Vec<Cartesian3>,
     id: Option<String>,
     name: Option<String>,
     show: Option<bool>,
     area: Option<String>,
     perimeter: Option<String>,
-    sidesLength: Option<Vec<Number>>,
-    numberOfSegments: Option<Number>,
+    sides_length: Option<Vec<Number>>,
+    number_of_segments: Option<Number>,
     description: Option<String>,
     image: Option<String>,
     website: Option<String>,
-    pointSymbol: Option<String>,
+    point_symbol: Option<String>,
     color: Option<CesiumColor>,
-    clampPoint: Option<bool>,
-    showSlicingBox: Option<bool>,
-    volumeShowed: Option<bool>,
-    volumeHeightLimits: Option<GeometryVolumeHeightLimits>,
-    swissforagesId: Option<String>,
+    clamp_point: Option<bool>,
+    show_slicing_box: Option<bool>,
+    volume_showed: Option<bool>,
+    volume_height_limits: Option<GeometryVolumeHeightLimits>,
+    swissforages_id: Option<String>,
     depth: Option<Number>,
     diameter: Option<Number>,
     editable: Option<bool>,
@@ -127,15 +130,20 @@ struct CesiumColor {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+#[serde(rename_all = "camelCase")]
 struct GeometryVolumeHeightLimits {
-    #[allow(non_snake_case)]
-    lowerLimit: Number,
+    lower_limit: Number,
     height: Number,
 }
 
 #[derive(Serialize)]
 pub struct UploadResponse {
     pub key: String,
+}
+
+#[debug_handler]
+pub async fn get_client_config() -> Json<crate::config::ClientConfig> {
+    Json(crate::config::ClientConfig::parse())
 }
 
 // Health check endpoint
@@ -473,7 +481,7 @@ pub async fn duplicate_project(
             assets.push(Asset {
                 name: asset.name.clone(),
                 key: generated_file_name,
-                clampToGround: asset.clampToGround,
+                clamp_to_ground: asset.clamp_to_ground,
             });
         }
     }
@@ -596,5 +604,5 @@ fn generate_asset_name() -> String {
         .take(40)
         .map(char::from)
         .collect();
-    return format!("{}_{}.kml", Utc::now().timestamp(), rand_string);
+    format!("{}_{}.kml", Utc::now().timestamp(), rand_string)
 }

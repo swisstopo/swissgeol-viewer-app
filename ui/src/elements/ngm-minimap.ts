@@ -96,9 +96,7 @@ export class NgmMinimap extends LitElementI18n {
     const nadirView =
         CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1) ||
         CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1);
-    if (this.nadirViewActive && !nadirView) {
-      this.toggleNadirStatus();
-    } else if (!this.nadirViewActive && nadirView) {
+    if (this.nadirViewActive !== !nadirView) {
       this.toggleNadirStatus();
     }
   }
@@ -136,7 +134,7 @@ export class NgmMinimap extends LitElementI18n {
   render() {
     return html`
       <div class="ngm-minimap-container">
-        <img src="./images/overview.svg" class="ngm-map-overview">
+        <img src="/images/overview.svg" class="ngm-map-overview">
         <div class="ngm-cam ${classMap({'ngm-cam-icon': !this.nadirViewActive, 'ngm-cam-behind-icon': this.nadirViewActive})}" style=${styleMap(this.markerStyle)}
              @mousedown="${(evt) => this.onIconPress(evt)}">
         </div>

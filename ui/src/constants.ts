@@ -2,9 +2,11 @@ import {Cartesian3, Color, ColorBlendMode, Math as CMath, Rectangle, ShadowMode,
 
 export {LayerType, DEFAULT_LAYER_OPACITY} from './layertree';
 
-export const SWITZERLAND_BOUNDS = [5.140242, 45.398181, 11.47757, 48.230651];
 
-export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS);
+export const SWITZERLAND_BOUNDS_WGS84 = [4.54249, 44.61921, 12.67250, 48.45365];
+export const SWITZERLAND_BOUNDS_LV95 = [2370000, 945000, 2987000, 1380000];
+
+export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS_WGS84);
 
 export const MINIMAP_EXTENT = [5.910642046, 45.191912227, 10.554524194, 48.04750923];
 
@@ -99,16 +101,16 @@ export const COLORS_WITH_BLACK_TICK = ['white', 'yellow', 'orange'];
 export const POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
 
 export const SLICE_BOX_ARROWS_INSIDE = [
-  {side: 'left', oppositeSide: 'right', uri: './images/arrowV.glb'},
-  {side: 'right', oppositeSide: 'left', uri: './images/arrowV.glb'},
-  {side: 'back', oppositeSide: 'front', uri: './images/arrowH.glb'},
-  {side: 'front', oppositeSide: 'back', uri: './images/arrowH.glb'},
+  {side: 'left', oppositeSide: 'right', uri: '/images/arrowV.glb'},
+  {side: 'right', oppositeSide: 'left', uri: '/images/arrowV.glb'},
+  {side: 'back', oppositeSide: 'front', uri: '/images/arrowH.glb'},
+  {side: 'front', oppositeSide: 'back', uri: '/images/arrowH.glb'},
 ];
 
 export const SLICE_BOX_ARROWS_OUTSIDE = [
   ...SLICE_BOX_ARROWS_INSIDE,
-  {side: 'down', oppositeSide: 'up', uri: './images/arrowA.glb'},
-  {side: 'up', oppositeSide: 'down', uri: './images/arrowA.glb'}
+  {side: 'down', oppositeSide: 'up', uri: '/images/arrowA.glb'},
+  {side: 'up', oppositeSide: 'down', uri: '/images/arrowA.glb'}
 ];
 
 export const SLICING_BOX_HEIGHT = DEFAULT_VOLUME_HEIGHT_LIMITS.height;
@@ -149,27 +151,27 @@ export const API_BY_PAGE_HOST = {
 export const DEFAULT_UPLOADED_KML_COLOR = Color.fromCssColorString('#0056A4');
 
 const _COGNITO_VARIABLES = {
-	dev: {
-    env: 'dev',
-    region: 'eu-west-1',
-		clientId: '10h1tga4i933buv25lelalmtrn',
-		identityPoolId: 'eu-west-1:aa0d145d-228e-40be-bb73-a9a2c83879df',
-		userPoolId: 'eu-west-1_dbfEb2FuH',
-	},
-	int: {
-    env: 'int',
-    region: 'eu-west-1',
-		clientId: '35ld39a721f3fhbsgci6gekde2',
-		identityPoolId: 'eu-west-1:8dc87444-330a-4aa6-8e50-975c0aae97ae',
-		userPoolId: 'eu-west-1_HJ4hFAg2P',
-	},
-	prod: {
-    env: 'prod',
-    region: 'eu-west-1',
-		clientId: '6brvjsufv7fdubr12r9u0gajnj',
-		identityPoolId: 'eu-west-1:8e7b48a6-9d3f-4a46-afa3-d05a78c46a90',
-		userPoolId: 'eu-west-1_1NcmOhPt4',
-	},
+    dev: {
+        env: 'dev',
+        region: 'eu-west-1',
+        clientId: '10h1tga4i933buv25lelalmtrn',
+        identityPoolId: 'eu-west-1:aa0d145d-228e-40be-bb73-a9a2c83879df',
+        userPoolId: 'eu-west-1_dbfEb2FuH',
+    },
+    int: {
+        env: 'int',
+        region: 'eu-west-1',
+        clientId: '35ld39a721f3fhbsgci6gekde2',
+        identityPoolId: 'eu-west-1:8dc87444-330a-4aa6-8e50-975c0aae97ae',
+        userPoolId: 'eu-west-1_HJ4hFAg2P',
+    },
+    prod: {
+        env: 'prod',
+        region: 'eu-west-1',
+        clientId: '6brvjsufv7fdubr12r9u0gajnj',
+        identityPoolId: 'eu-west-1:8e7b48a6-9d3f-4a46-afa3-d05a78c46a90',
+        userPoolId: 'eu-west-1_1NcmOhPt4',
+    },
 };
 _COGNITO_VARIABLES['default_active_env'] = _COGNITO_VARIABLES['dev'];
 export const COGNITO_VARIABLES = _COGNITO_VARIABLES[(window as any).activeEnvironment];

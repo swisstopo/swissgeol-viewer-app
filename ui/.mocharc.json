@@ -1,5 +1,12 @@
 {
-  "spec": "src/test/**/*.ts",
+  "spec": "src/test/**/*.test.ts",
   "extension": ["ts", "js"],
-  "loader": "ts-node/esm"
+  "require": [
+    "ts-node/register/transpile-only",
+    "jsdom-global/register.js",
+    "./src/test/jquery.register.js"
+  ],
+  "ts-node": {
+    "transpileOnly": true
+  }
 }

@@ -18,46 +18,46 @@ jsdom('', {url: url + token + type + state + idToken});
 global.localStorage = window.localStorage;
 
 // load the component
-import Auth from '../auth';
+import AuthService from '../authService.js';
 
 describe('Auth', () => {
 
   describe('state', () => {
     it('should initialize the state', () => {
-      const theState = Auth.state();
+      const theState = AuthService.state();
       assert.ok(theState.length > 0);
-      assert.ok(Auth.state() === theState);
-      Auth.state('test');
-      assert.ok(Auth.state() === 'test');
+      assert.ok(AuthService.state() === theState);
+      AuthService.state('test');
+      assert.ok(AuthService.state() === 'test');
     });
   });
 
   describe('getUser, setUser and logout', () => {
     it('should get, set and remove the user', () => {
-      Auth.logout();
-      assert.ok(Auth.getUser() === null);
-      Auth.setUser(user);
-      assert.deepStrictEqual(Auth.getUser(), user);
-      Auth.logout();
-      assert.ok(Auth.getUser() === null);
+      AuthService.logout();
+      assert.ok(AuthService.getUser() === null);
+      AuthService.setUser(user);
+      assert.deepStrictEqual(AuthService.getUser(), user);
+      AuthService.logout();
+      assert.ok(AuthService.getUser() === null);
     });
   });
 
   describe('waitForAuthenticate', () => {
     it('should wait until the user authenticates', async () => {
-      Auth.logout();
-      setTimeout(() => Auth.setUser(user));
-      await Auth.waitForAuthenticate();
-      assert.deepStrictEqual(Auth.getUser(), user);
+      AuthService.logout();
+      setTimeout(() => AuthService.setUser(user));
+      await AuthService.waitForAuthenticate();
+      assert.deepStrictEqual(AuthService.getUser(), user);
     });
   });
 
   describe('initialize', () => {
     it('should extract the user from the hash in the response URL', () => {
-      Auth.logout();
-      Auth.state('test');
-      Auth.initialize();
-      assert.deepStrictEqual(Auth.getUser(), user);
+      AuthService.logout();
+      AuthService.state('test');
+      AuthService.initialize();
+      assert.deepStrictEqual(AuthService.getUser(), user);
     });
   });
 });

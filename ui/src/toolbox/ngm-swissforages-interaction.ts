@@ -6,7 +6,7 @@ import {Cartographic, JulianDate} from 'cesium';
 import {updateBoreholeHeights} from './helpers';
 import {SWISSFORAGES_EDITOR_URL, SWISSFORAGES_VIEWER_URL} from '../constants';
 import {lv95ToDegrees} from '../projection';
-import $ from '../jquery';
+import $ from 'jquery';
 import MainStore from '../store/main';
 import type {Viewer, CustomDataSource} from 'cesium';
 import type {SwissforagesService} from './SwissforagesService';
@@ -32,8 +32,8 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
   }
 
   firstUpdated() {
-    $(this.querySelector('.ngm-tools-btn')).popup({
-      popup: $(this.querySelector('.ngm-swissforages-config-popup')),
+    $(this.querySelector('.ngm-tools-btn')!).popup({
+      popup: $(this.querySelector('.ngm-swissforages-config-popup')!).html(),
       on: 'click',
       position: 'right center'
     });

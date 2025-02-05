@@ -3,8 +3,8 @@ import type {Scene} from 'cesium';
 
 
 export default class LimitCameraHeightToDepth {
-  private scene: Scene;
-  private depth: number;
+  private readonly scene: Scene;
+  private readonly depth: number;
 
   constructor(scene: Scene, depth: number) {
     this.scene = scene;

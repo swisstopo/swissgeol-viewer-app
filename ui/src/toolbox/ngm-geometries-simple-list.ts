@@ -6,7 +6,7 @@ import i18next from 'i18next';
 import ToolboxStore from '../store/toolbox';
 import {classMap} from 'lit-html/directives/class-map.js';
 import type {GeometryTypes, NgmGeometry} from './interfaces';
-import $ from '../jquery.js';
+import $ from 'jquery';
 import {NgmConfirmationModal} from '../elements/ngm-confirmation-modal';
 
 @customElement('ngm-geometries-simple-list')
@@ -74,6 +74,16 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
 
     actionMenuTemplate(geom: NgmGeometry) {
         if (this.viewMode) return '';
+        const editButton = this.noEditMode ? '' : html`
+                        <div class="item ${classMap({'disabled': !geom.editable})}"
+                             @click=${() => ToolboxStore.setOpenedGeometryOptions({id: geom.id!, editing: true})}>
+                            ${i18next.t('tbx_edit_btn')}
+                        </div>`;
+      const copyButton = this.noEditMode ? '' : html`
+                    <div class="item ${classMap({'disabled': !geom.copyable})}"
+                         @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'copy'})}>
+                        ${i18next.t('tbx_copy_btn')}
+                    </div>`;
         return html`
             <div class="menu">
                 ${this.hideMapInteractionButtons ? '' : html`
@@ -85,17 +95,9 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                          @click=${() => ToolboxStore.setOpenedGeometryOptions({id: geom.id!})}>
                         ${i18next.t('tbx_info_btn')}
                     </div>
-                    ${this.noEditMode ? '' : html`
-                        <div class="item ${classMap({'disabled': !geom.editable})}"
-                             @click=${() => ToolboxStore.setOpenedGeometryOptions({id: geom.id!, editing: true})}>
-                            ${i18next.t('tbx_edit_btn')}
-                        </div>`}
+                    ${editButton}
                 `}
-                ${this.noEditMode ? '' : html`
-                    <div class="item ${classMap({'disabled': !geom.copyable})}"
-                         @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'copy'})}>
-                        ${i18next.t('tbx_copy_btn')}
-                    </div>`}
+                ${copyButton}
                 ${(geom.type === 'line') ? html`
                     <div class="item"
                          @click=${() => ToolboxStore.nextGeometryAction({id: geom.id!, action: 'profile'})}>
