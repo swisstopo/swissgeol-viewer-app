@@ -471,8 +471,8 @@ export class GeometryController {
         description: attributes.description ?? '',
         image: attributes.image ?? '',
         website: attributes.website ?? '',
-        editable: attributes.editable ?? attributes.editable,
-        copyable: attributes.copyable ?? attributes.copyable,
+        editable: attributes.editable ?? true,
+        copyable: attributes.copyable ?? true,
       }
     };
     const color = attributes.color;
