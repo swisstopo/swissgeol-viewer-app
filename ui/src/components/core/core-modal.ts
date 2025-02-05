@@ -60,6 +60,12 @@ export class CoreModal extends LitElement {
 
   firstUpdated(): void {
     this.dialog = this.shadowRoot!.querySelector('dialog')!;
+    this.dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      if (!this.isPersistent) {
+        this.close();
+      }
+    });
     this.dialog.showModal();
   }
 

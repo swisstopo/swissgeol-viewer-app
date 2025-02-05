@@ -87,9 +87,8 @@ export class SideBar extends LitElementI18n {
   @state()
   accessor activeLayers: LayerConfig[] = [];
 
-  // TODO change this back to `null`
   @state()
-  accessor activePanel: string | null = 'data';
+  accessor activePanel: string | null = null;
   @state()
   accessor showHeader = false;
   @state()
