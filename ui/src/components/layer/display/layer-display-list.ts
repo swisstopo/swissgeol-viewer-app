@@ -13,6 +13,7 @@ import {repeat} from 'lit/directives/repeat.js';
 import LayersAction from 'src/layers/LayersActions';
 import MainStore from 'src/store/main';
 import LayersActions from 'src/layers/LayersActions';
+import './layer-display-list-item';
 
 
 @customElement('ngm-layer-display-list')
@@ -37,6 +38,8 @@ export class LayerDisplayList extends CoreElement {
     this.register(MainStore.viewer.subscribe((viewer) => {
       this.actions = new LayersActions(viewer!);
     }));
+
+    this.handleLayerRemoval = this.handleLayerRemoval.bind(this);
   }
 
   firstUpdated(): void {
@@ -68,22 +71,12 @@ export class LayerDisplayList extends CoreElement {
           child.classList.remove('is-in-drag');
         }
       },
-      onUpdate: (e) => this.moveItem(e.oldIndex!, e.newIndex!),
+      onUpdate: (e) => this.reorderLayer(e.oldIndex!, e.newIndex!),
     });
   }
 
-  private moveItem(oldIndex: number, newIndex: number): void {
-    this.dispatchEvent(new CustomEvent<LayerReorderEventDetail>('reorder', {
-      detail: {
-        layer: this.layers[oldIndex],
-        oldIndex,
-        newIndex,
-      }
-    }));
-  }
-
   private changeLayer(layer: LayerConfig): void {
-    this.dispatchEvent(new CustomEvent<LayerChangeEventDetail>('layer-change', {
+    this.dispatchEvent(new CustomEvent<LayerEventDetail>('layer-change', {
       detail: {
         layer,
       }
@@ -120,7 +113,7 @@ export class LayerDisplayList extends CoreElement {
   }
 
   private async updateLayerVisibility(layer: LayerConfig, isVisible: boolean): Promise<void> {
-    if (layer.opacity === 0 && isVisible) {
+    if ((layer.opacity == null || layer.opacity === 0) && isVisible) {
       // If the opacity is set to zero, we force the layer to remain hidden.
       return;
     }
@@ -133,20 +126,52 @@ export class LayerDisplayList extends CoreElement {
     this.requestUpdate();
   }
 
-  private updateLayerOpacity(layer: LayerConfig, opacity: number): void {
+  private async updateLayerOpacity(layer: LayerConfig, opacity: number): Promise<void> {
     layer.opacity = opacity;
     this.actions.changeOpacity(layer, opacity);
-    this.updateLayerVisibility(layer, opacity > 0);
+    await this.updateLayerVisibility(layer, opacity > 0);
     this.changeLayer(layer);
     this.requestUpdate();
+  }
+
+  private async handleLayerRemoval(event: LayerEvent): Promise<void> {
+    const newLayers = [...this.layers];
+    const i = this.layers.findIndex((layer) => layer === event.detail.layer);
+    console.log(i, event.detail.layer);
+    newLayers.splice(i, 1);
+    this.updateLayers(newLayers);
+    this.removeLayer(event.detail.layer);
+  }
+
+  private reorderLayer(oldIndex: number, newIndex: number): void {
+    const newLayers = [...this.layers];
+    newLayers.splice(oldIndex, 1);
+    newLayers.splice(newIndex, 0, this.layers[oldIndex]);
+    this.updateLayers(newLayers);
+  }
+
+  private updateLayers(layers: LayerTreeNode[]): void {
+    this.dispatchEvent(new CustomEvent<LayersEventDetail>('layers-update', {
+      detail: {
+        layers,
+      },
+    }));
+  }
+
+  private removeLayer(layer: LayerConfig): void {
+    this.dispatchEvent(new CustomEvent('layer-removal', {
+      detail: {
+        layer,
+      },
+    }) satisfies LayerEvent);
   }
 
   readonly render = () => html`
     ${this.visibleLayers.length === 0 ? '' : this.renderLayers()}
 
     <ngm-layer-display-list-item
-      title="${i18next.t(this.background.label)}"
-      label="Hintergrund"
+      .title="${i18next.t(this.background.label)}"
+      .label="Hintergrund"
       ?visible="${this.background.isVisible}"
       .opacity="${this.background.opacity}"
       @visibility-changed="${this.handleBackgroundVisibilityChange}"
@@ -159,10 +184,12 @@ export class LayerDisplayList extends CoreElement {
       ${repeat(this.visibleLayers, (layer) => layer.label, (layer) => html`
         <ngm-layer-display-list-item
           role="listitem"
-          title="${i18next.t(layer.label)}"
+          .layer="${layer}"
+          .title="${i18next.t(layer.label)}"
           ?visible="${layer.visible}"
-          .opacity="${layer.opacity}"
+          .opacity="${layer.opacity ?? 0}"
           draggable
+          @layer-removed="${this.handleLayerRemoval}"
           @visibility-changed="${(e: VisibilityChangeEvent) => this.updateLayerVisibility(layer, e.detail.isVisible)}"
           @opacity-changed="${(e: OpacityChangeEvent) => this.updateLayerOpacity(layer, e.detail.opacity)}"
         ></ngm-layer-display-list-item>
@@ -204,15 +231,18 @@ export class LayerDisplayList extends CoreElement {
   `;
 }
 
-export type LayerChangeEvent = CustomEvent<LayerChangeEventDetail>
-export interface LayerChangeEventDetail {
+export type LayerEvent = CustomEvent<LayerEventDetail>
+export interface LayerEventDetail {
   layer: LayerConfig
 }
 
-
 export type LayerReorderEvent = CustomEvent<LayerReorderEventDetail>
-export interface LayerReorderEventDetail {
-  layer: LayerConfig
+export interface LayerReorderEventDetail extends LayerEventDetail {
   oldIndex: number
   newIndex: number
+}
+
+export type LayersEvent = CustomEvent<LayersEventDetail>
+export interface LayersEventDetail {
+  layers: LayerConfig[]
 }

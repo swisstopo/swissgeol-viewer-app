@@ -44,7 +44,7 @@ import type QueryManager from '../query/QueryManager';
 
 import DashboardStore from '../store/dashboard';
 import {getAssets} from '../api-ion';
-import {LayerEvent, LayersUpdateEvent} from '../components/layer/display/layer-display';
+import {LayerEvent, LayersEvent} from 'src/components/layer/display/layer-display-list';
 
 export type SearchLayer =
   | SearchLayerWithLayer
@@ -426,7 +426,6 @@ export class SideBar extends LitElementI18n {
 
   async onCatalogLayerClicked(layer) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
-    layer = {...layer};
     layer.displayed = !layer.displayed;
     await this.applyLayerVisibility(layer);
   }
@@ -613,7 +612,7 @@ export class SideBar extends LitElementI18n {
     return layer.promise;
   }
 
-  private handleDisplayLayersUpdate(e: LayersUpdateEvent): void {
+  private handleDisplayLayersUpdate(e: LayersEvent): void {
     this.activeLayers = e.detail.layers;
   }
 

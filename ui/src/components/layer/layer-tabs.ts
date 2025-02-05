@@ -85,7 +85,6 @@ export class NgmLayerTabs extends LitElementI18n {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      padding: 16px;
     }
 
     .tabs {

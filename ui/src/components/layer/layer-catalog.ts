@@ -9,7 +9,8 @@ import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css?raw
 import fomanticAccordionCss from 'fomantic-ui-css/components/accordion.css?raw';
 import 'fomantic-ui-css/components/transition.js';
 import {CoreElement} from 'src/components/core';
-import {LayerEvent} from 'src/components/layer/display/layer-display';
+import {repeat} from 'lit/directives/repeat.js';
+import {LayerEventDetail} from 'src/components/layer/display/layer-display-list';
 
 
 @customElement('ngm-layer-catalog')
@@ -46,12 +47,10 @@ export class NgmLayerCatalog extends CoreElement {
 
   getCategoryTemplate(category: LayerTreeNode, level: string): TemplateResult {
     // if it is a restricted layer, the user must be logged in to see it
-    const content = category.children?.filter(
-      node => !(node.restricted && (!node.restricted.some(g => this.userGroups.includes(g))))
-    ).map(node => this.getCategoryOrLayerTemplate(node, 'second-level'));
-
-    if (!content?.length) return html``;
-
+    const children = category.children?.filter((node) => !(node.restricted && (!node.restricted.some(g => this.userGroups.includes(g)))));
+    if (children == null || children.length === 0) {
+      return html``;
+    }
     return html`
       <div class="category ui accordion">
         <div class="title ${level}">
@@ -59,20 +58,25 @@ export class NgmLayerCatalog extends CoreElement {
           <label>${i18next.t(category.label)}</label>
         </div>
         <div class="content">
-          ${content}
+          ${repeat(
+            category.children ?? [],
+            (node) => node,
+            (node) => this.getCategoryOrLayerTemplate(node, 'second-level')
+          )}
         </div>
       </div>
     `;
   }
 
   private toggleLayer(layer: LayerConfig): void {
-    this.dispatchEvent(new CustomEvent('layer-click', {
+    this.dispatchEvent(new CustomEvent<LayerEventDetail>('layer-click', {
       composed: true,
       bubbles: true,
       detail: {
         layer
       }
-    }) satisfies LayerEvent);
+    }));
+    this.requestUpdate();
   }
 
   getLayerTemplate(layer: LayerConfig): TemplateResult {
@@ -90,9 +94,11 @@ export class NgmLayerCatalog extends CoreElement {
     `;
   }
 
-  render() {
-    return html`${this.layers.map(node => this.getCategoryOrLayerTemplate(node, 'first-level'))}`;
-  }
+  readonly render = () => html`${repeat(
+    this.layers,
+    (node) => node,
+    (node) => this.getCategoryOrLayerTemplate(node, 'first-level'),
+  )}`;
 
   static readonly styles = css`
     ${unsafeCSS(fomanticTransitionCss)}

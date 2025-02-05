@@ -379,7 +379,6 @@ export class NgmApp extends LitElementI18n {
           activeLayers.push(layer);
         }
         this.updateBaseMapTranslucency(background.opacity, background.hasAlphaChannel);
-        console.log(background);
         syncMapParam(background.id);
         Promise.all(readyPromises).then(() => this.requestViewerRender());
       });

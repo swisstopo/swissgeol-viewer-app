@@ -2,6 +2,7 @@ import {LitElementI18n} from 'src/i18n';
 import {css, html, nothing} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import '../core';
+import {applyTypography} from 'src/styles/theme';
 
 @customElement('ngm-navigation-panel-header')
 export class NavigationPanelHeader extends LitElementI18n {
@@ -35,16 +36,19 @@ export class NavigationPanelHeader extends LitElementI18n {
   }
 
   static readonly styles = css`
-    :host {
+    :host, :host * {
       box-sizing: border-box;
-      border-bottom: 2px solid #DFE2E6;
+    }
+
+    :host {
+      ${applyTypography('modal-title-1')};
+
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      font-weight: 700;
-      height: 34px;
-      padding: 4px 16px 2px 16px;
-      color: var(--color-bg-contrast--light);
+      justify-content: space-between;
+      padding: 14px 12px 14px 16px;
+      height: 64px;
+      border-bottom: 1px solid #E0E2E6;
     }
   `;
 }

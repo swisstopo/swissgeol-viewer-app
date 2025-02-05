@@ -1,34 +1,15 @@
-import {css, html, LitElement} from 'lit';
+import {css} from 'lit';
 import {customElement} from 'lit/decorators.js';
 import './core-icon';
-import {applyEffect, applyTransition} from 'src/styles/theme';
+import {applyEffect} from 'src/styles/theme';
+import {CoreBasePopupBox} from 'src/components/core/base/core-base-popup-box';
 
 @customElement('ngm-core-tooltip-box')
-export class CoreTooltipBox extends LitElement {
-  show(): void {
-    this.classList.remove('is-hidden');
-    setTimeout(() => {
-      this.classList.add('is-visible');
-    });
-  }
-
-  hide(): void {
-    this.classList.remove('is-visible');
-    setTimeout(() => {
-      this.classList.add('is-hidden');
-    }, 250);
-  }
-
-  readonly render = () => html``;
-
+export class CoreTooltipBox extends CoreBasePopupBox {
   static readonly styles = css`
-    :host, :host * {
-      box-sizing: border-box;
-    }
+    ${CoreBasePopupBox.styles}
 
     :host {
-      position: fixed;
-
       display: flex;
       align-items: center;
       justify-content: center;
@@ -43,22 +24,5 @@ export class CoreTooltipBox extends LitElement {
 
       ${applyEffect('overlay-shadow')};
     }
-
-    :host {
-      ${applyTransition('fade')};
-      transition-property: opacity;
-    }
-
-    :host(.is-hidden) {
-      display: none;
-    }
-
-    :host(:not(.is-visible)) {
-      opacity: 0;
-    }
   `;
 }
-
-export type Variant =
-  | 'default'
-  | 'text'
