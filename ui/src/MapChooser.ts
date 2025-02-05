@@ -3,9 +3,8 @@ import i18next from 'i18next';
 import type {Viewer} from 'cesium';
 import type {NgmMapChooser} from './elements/ngm-map-chooser';
 import type {BaseLayerConfig} from './viewer';
-import MainStore from './store/main';
 
-export default class MapChooser {
+export class MapChooser22 {
   private readonly viewer: Viewer;
   private readonly config: BaseLayerConfig[];
   public selectedMap: BaseLayerConfig;
@@ -16,12 +15,9 @@ export default class MapChooser {
     this.config = config;
     this.selectedMap = this.getInitialMap();
 
+    // TODO check this
     i18next.on('languageChanged', () => {
       this.elements.forEach(el => el.choices = this.choices);
-    });
-    MainStore.syncMap.subscribe(() => {
-      const id = getMapParam();
-      id && this.selectMap(id);
     });
   }
 

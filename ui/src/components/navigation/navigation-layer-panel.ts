@@ -1,15 +1,16 @@
-import {LitElementI18n} from '../../i18n';
-import {css, html, unsafeCSS} from 'lit';
+import {LitElementI18n} from 'src/i18n';
+import {css, html} from 'lit';
 import i18next from 'i18next';
 import {customElement, property} from 'lit/decorators.js';
-import {LayerConfig} from '../../layertree';
+import {LayerConfig} from 'src/layertree';
 import './navigation-panel';
 import './navigation-panel-header';
-import '../layer/layer-catalog';
-import '../layer/layer-display';
-import '../layer/layer-tabs';
-import type {LayerEvent, LayersUpdateEvent} from '../layer/layer-display';
-
+import 'src/components/layer/layer-catalog';
+import 'src/components/layer/layer-tabs';
+import 'src/components/layer/display/layer-display-list';
+import {
+  LayerEvent, LayerEventDetail, LayersEvent, LayersEventDetail,
+} from 'src/components/layer/display/layer-display-list';
 
 @customElement('ngm-navigation-layer-panel')
 export class NavigationLayerPanel extends LitElementI18n {
@@ -28,30 +29,30 @@ export class NavigationLayerPanel extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <style>
-      ${unsafeCSS(NavigationLayerPanel.styles.cssText)}
-    </style>
     <ngm-navigation-panel>
-      <section>
-        <ngm-navigation-panel-header closeable @close="${this.close}">
-          ${i18next.t('dtd_displayed_data_label')}
-        </ngm-navigation-panel-header>
-        ${this.renderLayers()}
-      </section>
-      <section>
-        <ngm-layer-tabs .layers=${this.layers}></ngm-layer-tabs>
-      </section>
+      <ngm-navigation-panel-header closeable @close="${this.close}">
+        ${i18next.t('dtd_displayed_data_label')}
+      </ngm-navigation-panel-header>
+      <div class="content">
+        <section>
+          ${this.renderLayers()}
+        </section>
+        <hr>
+        <section>
+          <ngm-layer-tabs .layers=${this.layers}></ngm-layer-tabs>
+        </section>
+      </div>
     </ngm-navigation-panel>
   `;
 
   private readonly renderLayers = () => html`
-    <ngm-layer-display
+    <ngm-layer-display-list
       .layers=${this.displayLayers}
       @layers-update="${this.handleDisplayLayersUpdate}"
       @layer-update="${this.handleDisplayLayerUpdate}"
       @layer-removal="${this.handleDisplayLayerRemoval}"
       @layer-click="${this.handleDisplayLayerClick}"
-    ></ngm-layer-display>
+    ></ngm-layer-display-list>
   `;
 
   connectedCallback(): void {
@@ -63,57 +64,65 @@ export class NavigationLayerPanel extends LitElementI18n {
     this.dispatchEvent(new CustomEvent('close'));
   }
 
-  private handleDisplayLayersUpdate(e: LayersUpdateEvent): void {
-    this.dispatchEvent(new CustomEvent('display-layers-update', {
+  private handleDisplayLayersUpdate(e: LayersEvent): void {
+    this.dispatchEvent(new CustomEvent<LayersEventDetail>('display-layers-update', {
       detail: e.detail,
-    }) satisfies LayersUpdateEvent);
+    }));
   }
 
   private handleDisplayLayerUpdate(e: LayerEvent): void {
-    this.dispatchEvent(new CustomEvent('display-layer-update', {
+    this.dispatchEvent(new CustomEvent<LayerEventDetail>('display-layer-update', {
       detail: e.detail,
-    }) satisfies LayerEvent);
+    }));
   }
 
   private handleDisplayLayerRemoval(e: LayerEvent): void {
-    this.dispatchEvent(new CustomEvent('display-layer-removal', {
+    this.dispatchEvent(new CustomEvent<LayerEventDetail>('display-layer-removal', {
       detail: e.detail,
-    }) satisfies LayerEvent);
+    }));
   }
 
   private handleDisplayLayerClick(e: LayerEvent): void {
-    this.dispatchEvent(new CustomEvent('display-layer-click', {
+    this.dispatchEvent(new CustomEvent<LayerEventDetail>('display-layer-click', {
       detail: e.detail,
-    }) satisfies LayerEvent);
-  }
-
-  // TODO Make all children of this component use the Shadow DOM so we can remove this.
-  createRenderRoot() {
-    return this;
+    }));
   }
 
   static readonly styles = css`
-    ngm-navigation-layer-panel, ngm-navigation-layer-panel * {
+    :host, :host * {
       box-sizing: border-box;
     }
 
-    ngm-navigation-layer-panel ngm-navigation-panel > section {
+    .content > section {
       position: relative;
       background-color: var(--color-bg--dark);
       overflow-y: auto;
 
-      &:not(:last-child) {
-        max-height: 50%;
-      }
+      max-height: 50%;
     }
 
-    ngm-navigation-layer-panel ngm-navigation-panel > section > * {
+    section > * {
       max-width: calc(100vw);
     }
 
-    ngm-navigation-layer-panel ngm-layer-catalog,
-    ngm-navigation-layer-panel ngm-layer-display {
+    ngm-layer-catalog {
       display: block;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 16px;
+
+      height: calc(var(--panel-height) - 64px);
+    }
+
+    .content > hr {
+      height: 1px;
+      margin: 0 12px;
+      border: 0;
+      background-color: var(--color-border--emphasis-high);
     }
   `;
 }

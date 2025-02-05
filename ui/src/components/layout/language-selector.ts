@@ -63,7 +63,7 @@ export class NgmLanguageSelector extends LitElementI18n {
 
     .container:hover {
       background-color: var(--color-secondary--hovered);
-      color: var(--color-text--emphasis--medium);
+      color: var(--color-text--emphasis-medium);
     }
 
     .container.active ngm-core-icon[icon="dropdown"] {

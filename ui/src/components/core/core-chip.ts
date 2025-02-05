@@ -27,7 +27,7 @@ export class CoreChip extends LitElement {
 
     :host([variant="primary"]) {
       background-color: var(--color-border--default);
-      color: var(--color-text--emphasis--high);
+      color: var(--color-text--emphasis-high);
       ${applyTypography('overline')};
 
     }

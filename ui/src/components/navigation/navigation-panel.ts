@@ -1,4 +1,4 @@
-import {LitElementI18n} from '../../i18n';
+import {LitElementI18n} from 'src/i18n';
 import {css, html} from 'lit';
 import {customElement} from 'lit/decorators.js';
 import '../core';
@@ -12,7 +12,7 @@ export class NavigationPanel extends LitElementI18n {
       --panel-height: calc(100vh - var(--ngm-header-height));
 
       box-sizing: border-box;
-      width: 530px;
+      width: 440px;
       max-width: 100vw;
       height: var(--panel-height);
       max-height: var(--panel-height);

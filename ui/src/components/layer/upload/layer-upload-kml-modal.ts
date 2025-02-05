@@ -73,7 +73,7 @@ export class LayerUploadKmlModal extends LitElementI18n {
 
     h2 {
       ${applyTypography('modal-title-1')}
-      color: var(--color-text--emphasis--high);
+      color: var(--color-text--emphasis-high);
       margin: 0;
     }
 

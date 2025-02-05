@@ -3,6 +3,10 @@
   display: flex;
 }
 
+.ngm-maps-container > ngm-background-layer-select {
+  padding-left: 9px;
+}
+
 .ngm-map-preview img {
   display: block;
   height: 50px;
@@ -16,7 +20,11 @@
   border: 1px solid lightgrey;
 }
 
-.ngm-map-preview:hover {
+.ngm-selected-map-container > ngm-background-layer-item {
+  cursor: pointer;
+}
+
+.ngm-selected-map-container > ngm-background-layer-item:hover {
   opacity: 0.75;
 }
 
@@ -28,14 +36,16 @@
 .ngm-bg-chooser-map {
   background: #F1F3F5;
   box-shadow: 4px 4px 2px #00000029;
-  border-radius: 28px;
-  height: 56px;
+  border-radius: 104px;
+  height: 52px;
   margin: auto 12px;
+
+  display: flex;
+  align-items: center;
 }
 
 .ngm-bg-chooser-map .ngm-maps-container {
-  width: 256px;
-  height: 56px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;

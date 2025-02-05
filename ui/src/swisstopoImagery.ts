@@ -42,7 +42,8 @@ export function getSwisstopoImagery(
       const swisstopoConfig = layersConfig[localConfig.layer!];
       if (swisstopoConfig) {
         let imageryProvider: UrlTemplateImageryProvider | WebMapServiceImageryProvider;
-        localConfig.label = swisstopoConfig.title;
+        // TODO IS THIS EVEN LEGAL
+        // localConfig.label = swisstopoConfig.title;
         if (swisstopoConfig.type === 'wmts') {
           localConfig.wmtsTimes = swisstopoConfig.timestamps;
           if (!localConfig.wmtsCurrentTime) {

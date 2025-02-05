@@ -1,21 +1,22 @@
 import {css, html, TemplateResult, unsafeCSS} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {LitElementI18n} from '../../i18n.js';
 import i18next from 'i18next';
 import auth from '../../store/auth';
-import type {LayerTreeNode} from 'src/layertree';
+import type {LayerConfig, LayerTreeNode} from 'src/layertree';
 import $ from 'jquery';
 import '../core';
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css?raw';
 import fomanticAccordionCss from 'fomantic-ui-css/components/accordion.css?raw';
 import 'fomantic-ui-css/components/transition.js';
-import {LayerEvent} from './layer-display';
+import {CoreElement} from 'src/components/core';
+import {repeat} from 'lit/directives/repeat.js';
+import {LayerEventDetail} from 'src/components/layer/display/layer-display-list';
 
 
 @customElement('ngm-layer-catalog')
-export class NgmLayerCatalog extends LitElementI18n {
-  @property({type: Array})
-  accessor layers: LayerTreeNode[] = [];
+export class NgmLayerCatalog extends CoreElement {
+  @property()
+  accessor layers!: LayerConfig[];
 
   @state()
   accessor userGroups: string[] = [];
@@ -46,12 +47,10 @@ export class NgmLayerCatalog extends LitElementI18n {
 
   getCategoryTemplate(category: LayerTreeNode, level: string): TemplateResult {
     // if it is a restricted layer, the user must be logged in to see it
-    const content = category.children?.filter(
-      node => !(node.restricted && (!node.restricted.some(g => this.userGroups.includes(g))))
-    ).map(node => this.getCategoryOrLayerTemplate(node, 'second-level'));
-
-    if (!content?.length) return html``;
-
+    const children = category.children?.filter((node) => !(node.restricted && (!node.restricted.some(g => this.userGroups.includes(g)))));
+    if (children == null || children.length === 0) {
+      return html``;
+    }
     return html`
       <div class="category ui accordion">
         <div class="title ${level}">
@@ -59,25 +58,34 @@ export class NgmLayerCatalog extends LitElementI18n {
           <label>${i18next.t(category.label)}</label>
         </div>
         <div class="content">
-          ${content}
+          ${repeat(
+            category.children ?? [],
+            (node) => node,
+            (node) => this.getCategoryOrLayerTemplate(node, 'second-level')
+          )}
         </div>
       </div>
     `;
   }
 
-  getLayerTemplate(layer: LayerTreeNode): TemplateResult {
+  private toggleLayer(layer: LayerConfig): void {
+    this.dispatchEvent(new CustomEvent<LayerEventDetail>('layer-click', {
+      composed: true,
+      bubbles: true,
+      detail: {
+        layer
+      }
+    }));
+    this.requestUpdate();
+  }
+
+  getLayerTemplate(layer: LayerConfig): TemplateResult {
     return html`
-      <div class="ngm-checkbox ${layer.displayed ? 'active' : ''}"
-           @click=${() => {
-             this.dispatchEvent(new CustomEvent('layer-click', {
-               composed: true,
-               bubbles: true,
-               detail: {
-                 layer
-               }
-             }) satisfies LayerEvent);
-           }}>
-        <input type="checkbox" .checked=${!!layer.visible}>
+      <div
+        class="ngm-checkbox ${layer.displayed ? 'active' : ''}"
+        @click=${() => this.toggleLayer(layer)}
+      >
+        <input type="checkbox" ?checked=${!!layer.displayed}>
         <span class="ngm-checkbox-icon"></span>
         <label class=${layer.displayed ? 'displayed' : ''}>
           <i class=${layer.restricted ? 'lock icon' : ''}></i>${i18next.t(layer.label)}
@@ -86,9 +94,11 @@ export class NgmLayerCatalog extends LitElementI18n {
     `;
   }
 
-  render() {
-    return html`${this.layers.map(node => this.getCategoryOrLayerTemplate(node, 'first-level'))}`;
-  }
+  readonly render = () => html`${repeat(
+    this.layers,
+    (node) => node,
+    (node) => this.getCategoryOrLayerTemplate(node, 'first-level'),
+  )}`;
 
   static readonly styles = css`
     ${unsafeCSS(fomanticTransitionCss)}

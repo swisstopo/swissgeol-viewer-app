@@ -1,18 +1,17 @@
 import {customElement, property, state} from 'lit/decorators.js';
-import {LitElementI18n} from '../../../i18n';
+import {LitElementI18n} from 'src/i18n';
 import {css, html, unsafeCSS} from 'lit';
 import i18next from 'i18next';
 import './layer-upload-kml';
 import type {KmlUploadEvent} from './layer-upload-kml';
 import {CustomDataSource, Viewer} from 'cesium';
-import {parseKml, renderWithDelay} from '../../../cesiumutils';
+import {parseKml, renderWithDelay} from 'src/cesiumutils';
 import MainStore from '../../../store/main';
-import {DEFAULT_LAYER_OPACITY, LayerConfig} from '../../../layertree';
-import {LayerEventDetails} from '../layer-display';
+import {DEFAULT_LAYER_OPACITY, LayerConfig} from 'src/layertree';
 import {Subscription} from 'rxjs';
 import fomanticButtonCss from 'fomantic-ui-css/components/button.css?raw';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
-
+import {LayerEventDetails} from 'src/components/layer/display/layer-display';
 
 @customElement('ngm-layer-upload')
 export class NgmLayerUpload extends LitElementI18n {
@@ -34,6 +33,16 @@ export class NgmLayerUpload extends LitElementI18n {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.subscription.unsubscribe();
+  }
+
+  private emitLayerClick(layer: LayerConfig): void {
+    this.dispatchEvent(new CustomEvent<LayerEventDetails>('layer-click', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        layer,
+      },
+    }));
   }
 
   // TODO Cleanup/Refactor this function.
@@ -71,17 +80,6 @@ export class NgmLayerUpload extends LitElementI18n {
     await this.viewer.zoomTo(dataSource);
     this.requestUpdate();
   }
-
-  private emitLayerClick(layer: LayerConfig): void {
-    this.dispatchEvent(new CustomEvent<LayerEventDetails>('layer-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        layer,
-      },
-    }));
-  }
-
   private emitIonModalOpening(): void {
     this.dispatchEvent(new CustomEvent('openIonModal', {
       bubbles: true,
@@ -107,7 +105,6 @@ export class NgmLayerUpload extends LitElementI18n {
   static readonly styles = css`
     ${unsafeCSS(fomanticButtonCss)}
     ${unsafeCSS(fomanticLoaderCss)}
-
     :host, :host * {
       box-sizing: border-box;
     }

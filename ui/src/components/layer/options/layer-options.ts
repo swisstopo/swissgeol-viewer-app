@@ -9,7 +9,7 @@ import {setExaggeration} from '../../../permalink';
 import NavToolsStore from '../../../store/navTools';
 import {updateExaggerationForKmlDataSource} from '../../../cesiumutils';
 import '../../core';
-import {SliderValueChangeEvent} from '../../core/core-slider';
+import {SliderChangeEvent} from '../../core/core-slider';
 
 @customElement('ngm-layer-options')
 export class NgmLayerOptions extends LitElementI18n {
@@ -61,7 +61,7 @@ export class NgmLayerOptions extends LitElementI18n {
     this.viewer?.scene.requestRender();
   }
 
-  private updateExaggeration(event: SliderValueChangeEvent) {
+  private updateExaggeration(event: SliderChangeEvent) {
     if (this.viewer == null) {
       return;
     }
@@ -77,7 +77,7 @@ export class NgmLayerOptions extends LitElementI18n {
   readonly render = () => html`
       <div class="group">
         <ngm-core-icon
-          icon="${this.hideExaggeration ? 'invisible' : 'visible'}"
+          icon="${this.hideExaggeration ? 'hidden' : 'visible'}"
           title=${this.hideExaggeration ? i18next.t('dtd_show_exaggeration') : i18next.t('dtd_hide_exaggeration')}
           @click=${this.toggleExaggerationVisibility}
         ></ngm-core-icon>
