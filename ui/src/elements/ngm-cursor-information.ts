@@ -92,6 +92,7 @@ export class NgmCursorInformation extends LitElementI18n {
 
   static readonly styles = css`
     :host {
+      display: flex;
       min-width: 0;
     }
 

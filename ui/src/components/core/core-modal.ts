@@ -60,6 +60,12 @@ export class CoreModal extends LitElement {
 
   firstUpdated(): void {
     this.dialog = this.shadowRoot!.querySelector('dialog')!;
+    this.dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      if (!this.isPersistent) {
+        this.close();
+      }
+    });
     this.dialog.showModal();
   }
 
@@ -95,6 +101,8 @@ export class CoreModal extends LitElement {
 
     dialog {
       border: none;
+      outline: none;
+      box-shadow: none;
       border-radius: 4px;
       padding: 0;
 
@@ -113,6 +121,8 @@ export class CoreModal extends LitElement {
     dialog::backdrop {
       background-color: #111827B2;
       opacity: 0.7;
+      border: none;
+      outline: none;
     }
 
     :host(:not([no-padding])) dialog > div {
