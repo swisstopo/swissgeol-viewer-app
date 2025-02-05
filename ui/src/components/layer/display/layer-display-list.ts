@@ -187,7 +187,7 @@ export class LayerDisplayList extends CoreElement {
           .layer="${layer}"
           .title="${i18next.t(layer.label)}"
           ?visible="${layer.visible}"
-          .opacity="${layer.opacity ?? 0}"
+          .opacity="${layer.opacity ?? 1}"
           draggable
           @layer-removed="${this.handleLayerRemoval}"
           @visibility-changed="${(e: VisibilityChangeEvent) => this.updateLayerVisibility(layer, e.detail.isVisible)}"

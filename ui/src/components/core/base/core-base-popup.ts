@@ -4,16 +4,18 @@ import {CoreBasePopupBox} from 'src/components/core/base/core-base-popup-box';
 
 export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitElement {
   @property()
-  accessor position: Position | null = null;
+  accessor position: Position | null = null
 
   @property()
-  accessor align: Align | null = null;
+  accessor align: Align | null = null
 
   private _target: Element | null = null;
 
-  protected box!: TBox;
+  protected box: TBox | null = null;
 
   private slotObserver: MutationObserver | null = null;
+
+  private isInitialized = false;
 
   private isShown = false;
 
@@ -52,11 +54,33 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
     this.leaveEvents.forEach((event) => target.removeEventListener(event, this.hide));
   }
 
-  firstUpdated(): void {
-    this.box = this.findBoxElement();
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.isInitialized) {
+      this.requestUpdate();
+    }
+  }
+
+  async updated(): Promise<void> {
+    if (!this.isInitialized) {
+      this.initialize();
+    }
+  }
+
+  disconnectedCallback(): void {
+    this.slotObserver?.disconnect();
+    this.unsyncSlot();
+    this.hide();
+    this.box?.remove();
+    this.unregisterTarget();
+    this.isInitialized = false;
+    super.disconnectedCallback();
+  }
+
+  private initialize(): void {
+    this.box ??= this.findBoxElement();
     document.body.appendChild(this.box);
     this.box.hide();
-
     this.box.addEventListener('hide', this.hide);
 
     this.slotObserver = new MutationObserver(() => this.syncSlot());
@@ -65,13 +89,7 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
     if (this._target == null) {
       this.registerTarget();
     }
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.hide();
-    this.slotObserver?.disconnect();
-    this.box.remove();
+    this.isInitialized = true;
   }
 
   abstract get enterEvents(): string[]
@@ -85,6 +103,9 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
   abstract findBoxElement(): TBox
 
   private syncSlot(): void {
+    if (this.box == null) {
+      throw new Error('can\'t sync slot as the box has not yet been initialized');
+    }
     const slot = this.shadowRoot!.querySelector('slot')!;
     const assignedNodes = slot.assignedNodes({flatten: true});
     const box = this.box.shadowRoot!;
@@ -103,8 +124,16 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
     this.updatePosition({allowViewportCheck: true});
   }
 
+  private unsyncSlot(): void {
+    if (this.box == null) {
+      return;
+    }
+    const slot = this.shadowRoot!.querySelector('slot')!;
+    slot.append(...this.box.shadowRoot!.childNodes);
+  }
+
   protected show(event?: Event): void {
-    if (this.isShown) {
+    if (this.isShown || this.box == null) {
       return;
     }
     event?.stopImmediatePropagation();
@@ -114,7 +143,7 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
   }
 
   protected hide(event?: Event): void {
-    if (!this.isShown) {
+    if (!this.isShown || this.box == null) {
       return;
     }
     event?.stopImmediatePropagation();
@@ -123,7 +152,7 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
   }
 
   private updatePosition(options: { position?: Position, allowViewportCheck?: boolean } = {}): void {
-    if (this.target == null) {
+    if (this.target == null || this.box == null) {
       return;
     }
 
@@ -194,7 +223,7 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
   }
 
   private adjustPositionToViewport(position: Position): void {
-    const box = this.box.getBoundingClientRect();
+    const box = this.box!.getBoundingClientRect();
     switch (position) {
       case 'top':
         if (box.y < 0) {
@@ -220,10 +249,12 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
     }
   }
 
-  readonly render = () => html`
-    <slot></slot>
-    ${this.renderBox()}
-  `;
+  readonly render = () => {
+    return html`
+      <slot></slot>
+      ${this.renderBox()}
+    `;
+  };
 
   abstract renderBox(): unknown
 
