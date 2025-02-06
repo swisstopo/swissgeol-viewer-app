@@ -1,35 +1,41 @@
 import {html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {cartesianToLv95, round} from '../projection';
-import {borehole, horizontalCrossSection, verticalCrossSection} from '../gst';
 import {showSnackbarError, showSnackbarInfo} from '../notifications';
 import i18next from 'i18next';
 import {LitElementI18n} from '../i18n.js';
-import {IonResource, Color, KmlDataSource, Cartographic, JulianDate} from 'cesium';
+import type {Viewer} from 'cesium';
+import {Cartographic, Color, IonResource, JulianDate, KmlDataSource} from 'cesium';
 import './ngm-gst-modal';
 import '../elements/ngm-i18n-content.js';
-import $ from 'jquery';
 import 'fomantic-ui-css/components/popup.js';
 import MainStore from '../store/main';
-import type {Viewer} from 'cesium';
 import type {NgmToolbox} from './ngm-toolbox';
 import {classMap} from 'lit-html/directives/class-map.js';
 import ToolboxStore from '../store/toolbox';
 import type {NgmGeometry} from './interfaces';
 import {pointInPolygon} from '../cesiumutils';
+import {gstServiceContext} from '../context';
+import {consume} from '@lit/context';
+import {GstService} from '../gst.service';
+import $ from 'jquery';
 
 export type OutputFormat = 'pdf' | 'png' | 'svg';
 
 @customElement('ngm-gst-interaction')
 export class NgmGstInteraction extends LitElementI18n {
   @property({type: Boolean})
-  accessor hidden = true;
+  accessor hidden = true
   @state()
-  accessor gstExtent: KmlDataSource | undefined;
+  accessor gstExtent: KmlDataSource | undefined
   @state()
-  accessor depth = {};
+  accessor depth = {}
   @state()
-  accessor selectedId: string | undefined;
+  accessor selectedId: string | undefined
+
+  @consume({context: gstServiceContext})
+  accessor gstService!: GstService
+
   private viewer: Viewer | null = null;
   private readonly minDepth_ = -6000;
   private readonly maxDepth_ = 1000;
@@ -69,8 +75,8 @@ export class NgmGstInteraction extends LitElementI18n {
       values: [
         {name: 'PDF', value: 'pdf', selected: this.outputFormat === 'pdf'},
         {name: 'SVG', value: 'svg', selected: this.outputFormat === 'svg'},
-        {name: 'PNG', value: 'png', selected: this.outputFormat === 'png'}
-      ]
+        {name: 'PNG', value: 'png', selected: this.outputFormat === 'png'},
+      ],
     }));
   }
 
@@ -81,7 +87,7 @@ export class NgmGstInteraction extends LitElementI18n {
     this.gstExtent = await KmlDataSource.load(resource, {
       camera: this.viewer.scene.camera,
       canvas: this.viewer.scene.canvas,
-      clampToGround: true
+      clampToGround: true,
     });
     await this.viewer.dataSources.add(this.gstExtent);
     this.gstExtent.show = false;
@@ -95,37 +101,54 @@ export class NgmGstInteraction extends LitElementI18n {
     }
   }
 
-  getGST(geom: NgmGeometry) {
-    if (this.hasValidParams(geom)) {
-      const coordinates = geom.positions.map(position => cartesianToLv95(position)).map(round);
-      let promise;
-      if (geom.type === 'point') {
-        promise = borehole(coordinates, this.abortController.signal, this.outputFormat);
-      } else if (geom.type === 'line') {
-        promise = verticalCrossSection(coordinates, this.abortController.signal, this.outputFormat);
-      } else if (geom.type === 'rectangle') {
-        promise = horizontalCrossSection(coordinates, this.abortController.signal, this.depth[geom.id!], this.outputFormat);
+  async getGST(geom: NgmGeometry) {
+    if (!this.hasValidParams(geom)) {
+      throw new Error('invalid params');
+    }
+    this.loading = true;
+    try {
+      const json = await this.fetchGstGeometry(geom);
+      if (json.error) {
+        showSnackbarError(json.error);
+        return;
       }
-      this.loading = true;
-      promise
-        .then(json => {
-          if (json.error) {
-            showSnackbarError(json.error);
-          } else {
-            (<NgmToolbox> this.parentElement).showSectionModal(json.imageUrl);
-          }
-        })
-        .catch(err => {
-          if (err.name === 'AbortError') {
-            showSnackbarInfo(i18next.t('tbx_request_aborted_warning'));
-          } else {
-            console.error(err);
-            showSnackbarError(`${err.name}: ${err.message}`);
-          }
-        })
-        .finally(() => this.loading = false);
-    } else {
-      console.error('invalid params');
+      (this.parentElement as NgmToolbox).showSectionModal(json.imageUrl);
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        showSnackbarInfo(i18next.t('tbx_request_aborted_warning'));
+        return;
+      }
+      console.error(err);
+      showSnackbarError(`${err.name}: ${err.message}`);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private fetchGstGeometry(geom: NgmGeometry): Promise<any> {
+    const coords = geom.positions.map(position => cartesianToLv95(position)).map(round);
+    switch (geom.type) {
+      case 'point':
+        return this.gstService.borehole({
+          coords,
+          signal: this.abortController.signal,
+          outputType: this.outputFormat,
+        });
+      case 'line':
+        return this.gstService.verticalCrossSection({
+          coords,
+          signal: this.abortController.signal,
+          outputType: this.outputFormat,
+        });
+      case 'rectangle':
+        return this.gstService.horizontalCrossSection({
+          coords,
+          signal: this.abortController.signal,
+          outputType: this.outputFormat,
+          depth: this.depth[geom.id!],
+        });
+      case 'polygon':
+        throw new Error(`unsupported geometry type '${geom.type}'`);
     }
   }
 
