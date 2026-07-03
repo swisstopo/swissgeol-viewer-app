@@ -3,18 +3,8 @@ import { css, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { applyTypography } from 'src/styles/theme';
-import { LexicFilter, LexicLayerFiltersResponse } from './lexic-api.model';
+import { LexicLayerAvailableFilter } from './lexic-api.model';
 import { LexicFilterService } from './lexic-filter.service';
-import {Filter, FilterId} from "src/features/lexic/generated/lexic-schemas";
-
-// Fallback filters used when the API is unavailable (e.g. CORS in local dev).
-// FIXME: Remove once the lexic API is reliably reachable in all environments.
-const STUB_FILTERS: LexicFilter[] = [
-  { id: 'f-tectonic-term', title: 'Tectonic Units term' },
-  { id: 'f-lithostrat-term', title: 'Lithostratigraphy term' },
-  { id: 'f-lithology-term', title: 'Lithology term' },
-  { id: 'f-byAttribute', title: 'Attribute' },
-];
 
 @customElement('ngm-lexic-filter-container')
 export class LexicFilterContainer extends CoreElement {
@@ -22,7 +12,10 @@ export class LexicFilterContainer extends CoreElement {
   accessor filterService!: LexicFilterService;
 
   @property({ attribute: false })
-  accessor layerFilters: LexicLayerFiltersResponse | null = null;
+  accessor layerFilters: LexicLayerAvailableFilter[] | null = null;
+
+  @property({ attribute: false })
+  accessor layerId = '';
 
   @state()
   accessor expandedFilterIds: Set<string> = new Set();
@@ -31,20 +24,17 @@ export class LexicFilterContainer extends CoreElement {
   private hasInitialized = false;
 
   willUpdate(): void {
-    const currentLayerId = this.layerFilters?.layerId;
+    const currentLayerId = this.layerId;
     if (!this.hasInitialized || currentLayerId !== this.previousLayerId) {
       this.hasInitialized = true;
-      const firstId = this.filters[0]?.id as keyof FilterId;
+      const firstId = this.filters[0]?.id;
       this.expandedFilterIds = new Set(firstId ?? undefined);
       this.previousLayerId = currentLayerId;
     }
   }
 
-  private get filters(): LexicFilter[] {
-    const apiFilters = this.layerFilters?.filters;
-    return apiFilters != null && apiFilters.length > 0
-      ? apiFilters
-      : STUB_FILTERS;
+  private get filters(): LexicLayerAvailableFilter[] {
+    return this.layerFilters ?? [];
   }
 
   private readonly toggleFilter = (filterId: string) => {
@@ -69,7 +59,10 @@ export class LexicFilterContainer extends CoreElement {
     `;
   };
 
-  private readonly renderFilter = (filter: LexicFilter, index: number) => {
+  private readonly renderFilter = (
+    filter: LexicLayerAvailableFilter,
+    index: number,
+  ) => {
     const filterId = filter.id ?? '';
     const isExpanded = this.expandedFilterIds.has(filterId);
 
@@ -82,7 +75,7 @@ export class LexicFilterContainer extends CoreElement {
           aria-expanded=${isExpanded}
         >
           <span class="filter-title"
-            >${filter.title ?? filter.name ?? filterId}</span
+            >${filter.name ?? filter.title ?? filterId}</span
           >
           <ngm-core-icon
             class="filter-chevron ${isExpanded ? 'expanded' : ''}"

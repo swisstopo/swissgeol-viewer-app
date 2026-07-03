@@ -8,6 +8,8 @@ import type {
   InlineResponse200,
   InlineResponse2001,
   InlineResponse2002,
+  Layer,
+  LayerAvailableFilters,
   TermFilterParameter,
   VocabulariesList,
   VocabularyLayersResponse,
@@ -20,6 +22,8 @@ import type {
 export type LexicLanguage = GetLayersLang;
 export type LexicFilterId = FilterId;
 export type LexicFilter = Filter;
+export type LexicLayer = Layer;
+export type LexicLayerAvailableFilter = LayerAvailableFilters;
 export type LexicLayersResponse = InlineResponse200;
 export type LexicLayerFiltersResponse = InlineResponse2001;
 export type LexicLayerAttributesResponse = InlineResponse2002;

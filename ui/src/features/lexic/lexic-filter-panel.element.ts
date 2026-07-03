@@ -4,26 +4,171 @@ import { css, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { applyTypography } from 'src/styles/theme';
-import {
-  getLayerLabel,
-  LayerService,
-  LayerType,
-  WmtsLayer,
-} from 'src/features/layer';
 import { LexicApiService } from './lexic-api.service';
 import { LexicFilterService } from './lexic-filter.service';
-import { LexicLanguage, LexicLayerFiltersResponse } from './lexic-api.model';
+import {
+  LexicLanguage,
+  LexicLayer,
+  LexicLayerAvailableFilter,
+} from './lexic-api.model';
 
-type LexicLayerOption = {
-  id: string;
-  name: string;
+// FIXME: Remove this stub once the Lexic API is reachable without CORS issues.
+// These mirror the real API response so the UI remains functional during local development.
+function getStubLayers(lang: LexicLanguage): LexicLayer[] {
+  const t = STUB_TRANSLATIONS[lang] ?? STUB_TRANSLATIONS.en;
+  return [
+    {
+      id: 'tecto_units_augm',
+      name: 'Tectonic Units',
+      filterable: true,
+      availableFilters: [
+        {
+          id: 'f-chronostrat-term',
+          name: t.chronostrat,
+          title: t.chronostrat,
+          description: t.chronostratDesc,
+        },
+        {
+          id: 'f-tectonic-term',
+          name: t.tectonic,
+          title: t.tectonic,
+          description: t.tectonicDesc,
+        },
+        {
+          id: 'f-byAttribute',
+          name: t.attribute,
+          title: t.attribute,
+          description: t.attributeDesc,
+        },
+      ],
+    },
+    {
+      id: 'gc_bedrock',
+      name: 'GC_BEDROCK',
+      filterable: true,
+      availableFilters: [
+        {
+          id: 'f-chronostrat-term',
+          name: t.chronostrat,
+          title: t.chronostrat,
+          description: t.chronostratDesc,
+        },
+        {
+          id: 'f-tectonic-term',
+          name: t.tectonic,
+          title: t.tectonic,
+          description: t.tectonicDesc,
+        },
+        {
+          id: 'f-lithostrat-term',
+          name: t.lithostrat,
+          title: t.lithostrat,
+          description: t.lithostratDesc,
+        },
+        {
+          id: 'f-lithology-term',
+          name: t.lithology,
+          title: t.lithology,
+          description: t.lithologyDesc,
+        },
+        {
+          id: 'f-byAttribute',
+          name: t.attribute,
+          title: t.attribute,
+          description: t.attributeDesc,
+        },
+      ],
+    },
+    {
+      id: 'gc_unco_deposits',
+      name: 'GC_UNCO_DEPOSITS',
+      filterable: true,
+      availableFilters: [
+        {
+          id: 'f-chronostrat-term',
+          name: t.chronostrat,
+          title: t.chronostrat,
+          description: t.chronostratDesc,
+        },
+        {
+          id: 'f-byAttribute',
+          name: t.attribute,
+          title: t.attribute,
+          description: t.attributeDesc,
+        },
+      ],
+    },
+  ];
+}
+
+// FIXME: Remove, test for different languages in mocked API response
+const STUB_TRANSLATIONS: Record<
+  string,
+  {
+    chronostrat: string;
+    chronostratDesc: string;
+    tectonic: string;
+    tectonicDesc: string;
+    lithostrat: string;
+    lithostratDesc: string;
+    lithology: string;
+    lithologyDesc: string;
+    attribute: string;
+    attributeDesc: string;
+  }
+> = {
+  en: {
+    chronostrat: 'Filter by Chronostratigraphy term',
+    chronostratDesc: 'Filter by chronostratigraphic intervals',
+    tectonic: 'Filter by Tectonic Units term',
+    tectonicDesc: 'Filter by tectonic units',
+    lithostrat: 'Filter by Lithostratigraphy term',
+    lithostratDesc: 'Filter by lithostratigraphic units',
+    lithology: 'Filter by Lithology term',
+    lithologyDesc: 'Filter by lithology classes',
+    attribute: 'Filter by Attribute',
+    attributeDesc: 'Filter by attribute key/value',
+  },
+  de: {
+    chronostrat: 'Nach Chronostratigraphie filtern',
+    chronostratDesc: 'Nach chronostratigraphischen Intervallen filtern',
+    tectonic: 'Nach tektonischen Einheiten filtern',
+    tectonicDesc: 'Nach tektonischen Einheiten filtern',
+    lithostrat: 'Nach Lithostratigraphie filtern',
+    lithostratDesc: 'Nach lithostratigraphischen Einheiten filtern',
+    lithology: 'Nach Lithologie filtern',
+    lithologyDesc: 'Nach Lithologieklassen filtern',
+    attribute: 'Nach Attribut filtern',
+    attributeDesc: 'Nach Attribut-Schlüssel/Wert filtern',
+  },
+  fr: {
+    chronostrat: 'Filtrer par terme chronostratigraphique',
+    chronostratDesc: 'Filtrer par intervalles chronostratigraphiques',
+    tectonic: 'Filtrer par unité tectonique',
+    tectonicDesc: 'Filtrer par unités tectoniques',
+    lithostrat: 'Filtrer par terme lithostratigraphique',
+    lithostratDesc: 'Filtrer par unités lithostratigraphiques',
+    lithology: 'Filtrer par terme lithologique',
+    lithologyDesc: 'Filtrer par classes de lithologie',
+    attribute: 'Filtrer par attribut',
+    attributeDesc: "Filtrer par clé/valeur d'attribut",
+  },
+  it: {
+    chronostrat: 'Filtrare per termine cronostratigrafico',
+    chronostratDesc: 'Filtrare per intervalli cronostratigrafici',
+    tectonic: 'Filtrare per unità tettonica',
+    tectonicDesc: 'Filtrare per unità tettoniche',
+    lithostrat: 'Filtrare per termine litostratigrafico',
+    lithostratDesc: 'Filtrare per unità litostratigrafiche',
+    lithology: 'Filtrare per termine litologico',
+    lithologyDesc: 'Filtrare per classi di litologia',
+    attribute: 'Filtrare per attributo',
+    attributeDesc: "Filtrare per chiave/valore dell'attributo",
+  },
 };
 
 @customElement('ngm-lexic-filter-panel')
 export class LexicFilterPanel extends CoreElement {
-  @consume({ context: LayerService.context() })
-  accessor layerService!: LayerService;
-
   @consume({ context: LexicApiService.context() })
   accessor lexicApiService!: LexicApiService;
 
@@ -33,8 +178,9 @@ export class LexicFilterPanel extends CoreElement {
   @state()
   accessor isOpen = false;
 
+  /** All layers returned by the Lexic API (or stub fallback). */
   @state()
-  accessor layerOptions: LexicLayerOption[] = [];
+  accessor layers: LexicLayer[] = [];
 
   @state()
   accessor selectedLayerId = '';
@@ -42,11 +188,15 @@ export class LexicFilterPanel extends CoreElement {
   @state()
   accessor isLoadingLayers = false;
 
+  /**
+   * Filters for the selected layer. Sourced from `Layer.availableFilters`
+   * when available; falls back to a per-layer API call otherwise.
+   */
   @state()
-  accessor isLoadingFilters = false;
+  accessor selectedLayerFilters: LexicLayerAvailableFilter[] | null = null;
 
   @state()
-  accessor selectedLayerFilters: LexicLayerFiltersResponse | null = null;
+  accessor isLoadingFilters = false;
 
   private filtersRequestVersion = 0;
 
@@ -64,7 +214,6 @@ export class LexicFilterPanel extends CoreElement {
 
   willChangeLanguage(_language: void): void {
     void this.loadLayerOptions();
-    void this.loadSupportedFiltersForSelectedLayer();
   }
 
   private readonly handleClose = () => {
@@ -74,7 +223,7 @@ export class LexicFilterPanel extends CoreElement {
   private readonly handleLayerSelection = (event: Event) => {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedLayerId = selectElement.value;
-    void this.loadSupportedFiltersForSelectedLayer();
+    this.applyFiltersForSelectedLayer();
   };
 
   private getLexicLanguage(): LexicLanguage {
@@ -95,14 +244,27 @@ export class LexicFilterPanel extends CoreElement {
     return 'en';
   }
 
-  /** Strips the namespace prefix (e.g. "swisstopo:") from the layer config ID. */
-  private toLexicLayerId(configLayerId: string): string {
-    const colonIndex = configLayerId.indexOf(':');
-    return colonIndex >= 0
-      ? configLayerId.substring(colonIndex + 1)
-      : configLayerId;
+  /**
+   * Applies filters for the currently selected layer.
+   * Uses `availableFilters` from the layer response if present;
+   * falls back to a per-layer API call otherwise.
+   */
+  private applyFiltersForSelectedLayer(): void {
+    if (this.selectedLayerId === '') {
+      this.selectedLayerFilters = null;
+      return;
+    }
+
+    const layer = this.layers.find((l) => l.id === this.selectedLayerId);
+    const available = layer?.availableFilters;
+    if (available != null && available.length > 0) {
+      this.selectedLayerFilters = available;
+    } else {
+      void this.loadSupportedFiltersForSelectedLayer();
+    }
   }
 
+  /** Fallback: fetches filters per-layer when `availableFilters` is missing. */
   private async loadSupportedFiltersForSelectedLayer(): Promise<void> {
     const layerId = this.selectedLayerId;
     const requestVersion = ++this.filtersRequestVersion;
@@ -115,8 +277,8 @@ export class LexicFilterPanel extends CoreElement {
 
     this.isLoadingFilters = true;
     try {
-      const filters = await this.lexicApiService.getLayerFilters(
-        this.toLexicLayerId(layerId),
+      const response = await this.lexicApiService.getLayerFilters(
+        layerId,
         this.getLexicLanguage(),
       );
 
@@ -124,7 +286,7 @@ export class LexicFilterPanel extends CoreElement {
         this.filtersRequestVersion === requestVersion &&
         this.selectedLayerId === layerId
       ) {
-        this.selectedLayerFilters = filters;
+        this.selectedLayerFilters = response.filters ?? null;
       }
     } catch (error) {
       console.error(
@@ -148,35 +310,35 @@ export class LexicFilterPanel extends CoreElement {
     this.isLoadingLayers = true;
 
     try {
-      await this.layerService.ready;
-
-      this.layerOptions = this.layerService.layerIds
-        .map((id) => this.layerService.layerOrNull(id))
-        .filter((layer): layer is WmtsLayer => {
-          return layer?.type === LayerType.Wmts && layer.service === 'lexic';
-        })
-        .map((layer) => ({ id: String(layer.id), name: getLayerLabel(layer) }));
-
-      const requestedId = this.filterService.consumeRequestedDatasetId();
-      const firstId = this.layerOptions[0]?.id ?? '';
-      const preferredId =
-        requestedId != null &&
-        this.layerOptions.some((l) => l.id === requestedId)
-          ? requestedId
-          : firstId;
-      if (
-        this.selectedLayerId === '' ||
-        !this.layerOptions.some((l) => l.id === this.selectedLayerId)
-      ) {
-        this.selectedLayerId = preferredId;
-      }
-      void this.loadSupportedFiltersForSelectedLayer();
-    } catch {
-      this.layerOptions = [];
-      this.selectedLayerId = '';
+      const response = await this.lexicApiService.getLayers(
+        this.getLexicLanguage(),
+      );
+      this.layers = response.layers ?? [];
+    } catch (error) {
+      // FIXME: Remove this stub fallback once the Lexic API is reachable
+      // without CORS issues (e.g. when a proxy or proper CORS headers are in place).
+      console.warn(
+        '[Lexic] getLayers API call failed, falling back to stub layers:',
+        error,
+      );
+      this.layers = getStubLayers(this.getLexicLanguage());
     } finally {
       this.isLoadingLayers = false;
     }
+
+    const requestedId = this.filterService.consumeRequestedDatasetId();
+    const firstId = this.layers[0]?.id ?? '';
+    const preferredId =
+      requestedId != null && this.layers.some((l) => l.id === requestedId)
+        ? requestedId
+        : firstId;
+    if (
+      this.selectedLayerId === '' ||
+      !this.layers.some((l) => l.id === this.selectedLayerId)
+    ) {
+      this.selectedLayerId = preferredId;
+    }
+    this.applyFiltersForSelectedLayer();
   }
 
   readonly render = () => {
@@ -210,10 +372,10 @@ export class LexicFilterPanel extends CoreElement {
                       .value=${this.selectedLayerId}
                       @change=${this.handleLayerSelection}
                     >
-                      ${this.layerOptions.map(
+                      ${this.layers.map(
                         (layer) =>
                           html`<option value="${layer.id}">
-                            ${layer.name}
+                            ${layer.name ?? layer.id}
                           </option>`,
                       )}
                     </select>
@@ -228,6 +390,7 @@ export class LexicFilterPanel extends CoreElement {
             ? html`<ngm-core-loader></ngm-core-loader>`
             : html`<ngm-lexic-filter-container
                 .layerFilters=${this.selectedLayerFilters}
+                .layerId=${this.selectedLayerId}
               ></ngm-lexic-filter-container>`}
         </div>
       </div>
