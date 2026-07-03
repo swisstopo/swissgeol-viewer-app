@@ -56,7 +56,7 @@ export class LexicVocabularyService extends BaseService {
     return this.lexicApi;
   }
 
-  private async fetchVocabulary(
+  public async fetchVocabulary(
     vocabularyId: string,
     language: LexicLanguage,
   ): Promise<LexicVocabularyTermsResponse> {

@@ -5,11 +5,13 @@ import {
   LexicFilterParameter,
   LexicWmsRequestFilter,
 } from './lexic-api.model';
+import { FilterId } from 'src/features/lexic/generated/lexic-schemas';
 
 export interface LexicActiveFilter {
   localId: string;
   filterId: LexicFilterId;
   parameters: LexicFilterParameter;
+  displayLabel: string;
 }
 
 export class LexicFilterService extends BaseService {
@@ -41,7 +43,7 @@ export class LexicFilterService extends BaseService {
   }
 
   /** Opens the panel, optionally pre-selecting a dataset. */
-  open(datasetId?: string): void {
+  open(datasetId?: FilterId): void {
     if (datasetId != null) {
       this._requestedDatasetId$.next(datasetId);
     }
@@ -53,7 +55,7 @@ export class LexicFilterService extends BaseService {
   }
 
   /** Toggles the panel, optionally pre-selecting a dataset when opening. */
-  toggle(datasetId?: string): void {
+  toggle(datasetId?: FilterId): void {
     if (this._isOpen$.value) {
       this._isOpen$.next(false);
     } else {
@@ -72,12 +74,13 @@ export class LexicFilterService extends BaseService {
    * Adds a filter and triggers a map layer update.
    * Returns a generated local ID that uniquely identifies this filter entry.
    */
-  addFilter(filter: LexicWmsRequestFilter): string {
+  addFilter(filter: LexicWmsRequestFilter, displayLabel: string): string {
     const localId = this.generateLocalId();
     const entry: LexicActiveFilter = {
       localId,
       filterId: filter.filterId! as LexicFilterId,
       parameters: filter.parameters! as LexicFilterParameter,
+      displayLabel,
     };
     this._filterList$.next([...this._filterList$.value, entry]);
     this.updateMapLayer();

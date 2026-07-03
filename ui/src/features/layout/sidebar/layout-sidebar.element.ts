@@ -60,6 +60,7 @@ export class LayoutSidebar extends CoreElement {
         if (isOpen) {
           this.ensureLexicModuleLoaded();
         }
+        this.filterService.open();
       }),
     );
   }

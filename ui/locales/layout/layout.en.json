@@ -10,6 +10,17 @@
   "lexic": {
     "datasetLabel": "dataset",
     "layerPlaceholder": "Select dataset",
-    "loadingLayers": "Loading datasets..."
+    "loadingLayers": "Loading datasets...",
+    "filter": {
+      "reset": "Reset",
+      "addFilter": "Add filter",
+      "or": "OR",
+      "dialogTitle": "Filter – {{title}}",
+      "searchPlaceholder": "{{title}} search ...",
+      "includeNarrowers": "Include Narrowers (Children)",
+      "cancel": "Cancel",
+      "applyFilter": "Add filter",
+      "noResults": "No results found"
+    }
   }
 }
