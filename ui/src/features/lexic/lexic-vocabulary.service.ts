@@ -44,9 +44,7 @@ export class LexicVocabularyService extends BaseService {
   }
 
   private async getLexicApiService(): Promise<LexicApiService> {
-    if (this.lexicApi == null) {
-      this.lexicApi = await LexicApiService.inject();
-    }
+    this.lexicApi ??= await LexicApiService.inject();
     return this.lexicApi;
   }
 
