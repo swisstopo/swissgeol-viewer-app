@@ -7,9 +7,17 @@ import {
   toLexicLanguage,
 } from './lexic-url';
 
+const STORAGE_PREFIX = 'lexic-vocab:';
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+interface CacheEntry {
+  data: LexicVocabularyTermsResponse;
+  timestamp: number;
+}
+
 /**
  * Service that resolves translated labels for Lexic term URLs.
- * Caches full vocabulary responses by `vocabularyId:language`.
+ * Caches full vocabulary responses by `vocabularyId:language` in memory and localStorage.
  */
 export class LexicVocabularyService extends BaseService {
   private readonly cache = new Map<string, LexicVocabularyTermsResponse>();
@@ -57,6 +65,11 @@ export class LexicVocabularyService extends BaseService {
     if (cached != null) {
       return cached;
     }
+    const stored = this.readFromStorage(cacheKey);
+    if (stored != null) {
+      this.cache.set(cacheKey, stored);
+      return stored;
+    }
     const pendingRequest = this.pending.get(cacheKey);
     if (pendingRequest != null) {
       return pendingRequest;
@@ -65,6 +78,7 @@ export class LexicVocabularyService extends BaseService {
       .then((lexicApi) => lexicApi.getVocabularyTerms(vocabularyId, language))
       .then((response) => {
         this.cache.set(cacheKey, response);
+        this.writeToStorage(cacheKey, response);
         this.pending.delete(cacheKey);
         return response;
       })
@@ -74,6 +88,37 @@ export class LexicVocabularyService extends BaseService {
       });
     this.pending.set(cacheKey, request);
     return request;
+  }
+
+  private readFromStorage(
+    cacheKey: string,
+  ): LexicVocabularyTermsResponse | null {
+    try {
+      const raw = localStorage.getItem(STORAGE_PREFIX + cacheKey);
+      if (raw == null) {
+        return null;
+      }
+      const entry: CacheEntry = JSON.parse(raw);
+      if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+        localStorage.removeItem(STORAGE_PREFIX + cacheKey);
+        return null;
+      }
+      return entry.data;
+    } catch {
+      return null;
+    }
+  }
+
+  private writeToStorage(
+    cacheKey: string,
+    data: LexicVocabularyTermsResponse,
+  ): void {
+    try {
+      const entry: CacheEntry = { data, timestamp: Date.now() };
+      localStorage.setItem(STORAGE_PREFIX + cacheKey, JSON.stringify(entry));
+    } catch {
+      // Storage full or unavailable — silently ignore.
+    }
   }
 
   async preloadVocabularies(language: string): Promise<void> {

@@ -1,6 +1,21 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { LexicVocabularyService } from './lexic-vocabulary.service';
 import { LexicApiService } from './lexic-api.service';
+import { LexicVocabularyTermsResponse } from './lexic-api.model';
+
+const MARLSTONE_URL = 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone';
+const ST_GALLEN_URL =
+  'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation';
+
+function makeTerm(term: string, label: string) {
+  return { term, label, description: '' };
+}
+
+function makeTermsResponse(
+  ...terms: Array<{ term: string; label: string; description: string }>
+): LexicVocabularyTermsResponse {
+  return { terms };
+}
 
 describe('LexicVocabularyService', () => {
   const fetchMock = vi.fn<typeof fetch>();
@@ -25,26 +40,28 @@ describe('LexicVocabularyService', () => {
     return { service, apiService };
   }
 
+  function mockTerms(
+    apiService: LexicApiService,
+    ...terms: Array<{ term: string; label: string; description: string }>
+  ) {
+    return vi
+      .spyOn(apiService, 'getVocabularyTerms')
+      .mockResolvedValue(makeTermsResponse(...terms));
+  }
+
   it('resolves a label by matching the full term URL', async () => {
     const { service, apiService } = createServiceWithMockApi();
-    vi.spyOn(apiService, 'getVocabularyTerms').mockResolvedValue({
-      terms: [
-        {
-          term: 'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation',
-          label: 'St-Gallen-Formation',
-          description: '',
-        },
-        {
-          term: 'https://dev-lexic.swissgeol.ch/Lithostratigraphy/OtherTerm',
-          label: 'Other',
-          description: '',
-        },
-      ],
-    });
+    mockTerms(
+      apiService,
+      makeTerm(ST_GALLEN_URL, 'St-Gallen-Formation'),
+      makeTerm(
+        'https://dev-lexic.swissgeol.ch/Lithostratigraphy/OtherTerm',
+        'Other',
+      ),
+    );
 
     const label = await service.getLabelForTermUrl({
-      termUrl:
-        'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation',
+      termUrl: ST_GALLEN_URL,
       language: 'de',
     });
 
@@ -57,15 +74,13 @@ describe('LexicVocabularyService', () => {
 
   it('returns null when term is not found in vocabulary', async () => {
     const { service, apiService } = createServiceWithMockApi();
-    vi.spyOn(apiService, 'getVocabularyTerms').mockResolvedValue({
-      terms: [
-        {
-          term: 'https://dev-lexic.swissgeol.ch/Lithostratigraphy/Other',
-          label: 'Other',
-          description: '',
-        },
-      ],
-    });
+    mockTerms(
+      apiService,
+      makeTerm(
+        'https://dev-lexic.swissgeol.ch/Lithostratigraphy/Other',
+        'Other',
+      ),
+    );
 
     const label = await service.getLabelForTermUrl({
       termUrl: 'https://dev-lexic.swissgeol.ch/Lithostratigraphy/NonExistent',
@@ -77,22 +92,14 @@ describe('LexicVocabularyService', () => {
 
   it('caches vocabulary responses by vocabularyId + language', async () => {
     const { service, apiService } = createServiceWithMockApi();
-    const spy = vi.spyOn(apiService, 'getVocabularyTerms').mockResolvedValue({
-      terms: [
-        {
-          term: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
-          label: 'Mergel',
-          description: '',
-        },
-      ],
-    });
+    const spy = mockTerms(apiService, makeTerm(MARLSTONE_URL, 'Mergel'));
 
     await service.getLabelForTermUrl({
-      termUrl: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
+      termUrl: MARLSTONE_URL,
       language: 'de',
     });
     await service.getLabelForTermUrl({
-      termUrl: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
+      termUrl: MARLSTONE_URL,
       language: 'de',
     });
 
@@ -101,22 +108,14 @@ describe('LexicVocabularyService', () => {
 
   it('fetches separately for different languages', async () => {
     const { service, apiService } = createServiceWithMockApi();
-    const spy = vi.spyOn(apiService, 'getVocabularyTerms').mockResolvedValue({
-      terms: [
-        {
-          term: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
-          label: 'Marne',
-          description: '',
-        },
-      ],
-    });
+    const spy = mockTerms(apiService, makeTerm(MARLSTONE_URL, 'Marne'));
 
     await service.getLabelForTermUrl({
-      termUrl: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
+      termUrl: MARLSTONE_URL,
       language: 'de',
     });
     await service.getLabelForTermUrl({
-      termUrl: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
+      termUrl: MARLSTONE_URL,
       language: 'fr',
     });
 
@@ -136,18 +135,10 @@ describe('LexicVocabularyService', () => {
 
   it('normalizes URL before matching (strips query/hash)', async () => {
     const { service, apiService } = createServiceWithMockApi();
-    vi.spyOn(apiService, 'getVocabularyTerms').mockResolvedValue({
-      terms: [
-        {
-          term: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
-          label: 'Mergel',
-          description: '',
-        },
-      ],
-    });
+    mockTerms(apiService, makeTerm(MARLSTONE_URL, 'Mergel'));
 
     const label = await service.getLabelForTermUrl({
-      termUrl: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone?lang=en#x',
+      termUrl: `${MARLSTONE_URL}?lang=en#x`,
       language: 'de',
     });
 
@@ -156,9 +147,7 @@ describe('LexicVocabularyService', () => {
 
   it('preloadVocabularies fetches all four vocabularies', async () => {
     const { service, apiService } = createServiceWithMockApi();
-    const spy = vi.spyOn(apiService, 'getVocabularyTerms').mockResolvedValue({
-      terms: [],
-    });
+    const spy = mockTerms(apiService);
 
     await service.preloadVocabularies('de');
 
@@ -171,19 +160,11 @@ describe('LexicVocabularyService', () => {
 
   it('preloadVocabularies does not re-fetch already cached vocabularies', async () => {
     const { service, apiService } = createServiceWithMockApi();
-    const spy = vi.spyOn(apiService, 'getVocabularyTerms').mockResolvedValue({
-      terms: [
-        {
-          term: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
-          label: 'Mergel',
-          description: '',
-        },
-      ],
-    });
+    const spy = mockTerms(apiService, makeTerm(MARLSTONE_URL, 'Mergel'));
 
     // First fetch one vocabulary via getLabelForTermUrl
     await service.getLabelForTermUrl({
-      termUrl: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
+      termUrl: MARLSTONE_URL,
       language: 'de',
     });
     expect(spy).toHaveBeenCalledTimes(1);
@@ -210,20 +191,107 @@ describe('LexicVocabularyService', () => {
     await expect(service.preloadVocabularies('en')).resolves.toBeUndefined();
   });
 
-  it('toLexicLanguage falls back to en for unknown languages', async () => {
-    const { service, apiService } = createServiceWithMockApi();
-    const spy = vi.spyOn(apiService, 'getVocabularyTerms').mockResolvedValue({
-      terms: [
-        {
-          term: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
-          label: 'Marlstone',
-          description: '',
-        },
-      ],
+  describe('localStorage caching', () => {
+    const storage = new Map<string, string>();
+    const localStorageMock = {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => storage.set(key, value),
+      removeItem: (key: string) => storage.delete(key),
+      clear: () => storage.clear(),
+    };
+
+    beforeEach(() => {
+      storage.clear();
+      vi.stubGlobal('localStorage', localStorageMock);
     });
 
+    afterEach(() => {
+      storage.clear();
+    });
+
+    it('persists fetched vocabulary to localStorage', async () => {
+      const { service, apiService } = createServiceWithMockApi();
+      mockTerms(apiService, makeTerm(MARLSTONE_URL, 'Mergel'));
+
+      await service.getLabelForTermUrl({
+        termUrl: MARLSTONE_URL,
+        language: 'de',
+      });
+
+      const stored = localStorage.getItem('lexic-vocab:lithology:de');
+      expect(stored).not.toBeNull();
+      const entry = JSON.parse(stored!);
+      expect(entry.data.terms[0].label).toBe('Mergel');
+      expect(entry.timestamp).toBeTypeOf('number');
+    });
+
+    it('restores vocabulary from localStorage on a new service instance', async () => {
+      const { service, apiService } = createServiceWithMockApi();
+      mockTerms(apiService, makeTerm(MARLSTONE_URL, 'Mergel'));
+
+      await service.getLabelForTermUrl({
+        termUrl: MARLSTONE_URL,
+        language: 'de',
+      });
+
+      // Create a new service instance (simulates page reload)
+      const { service: service2, apiService: apiService2 } =
+        createServiceWithMockApi();
+      const spy2 = mockTerms(apiService2);
+
+      const label = await service2.getLabelForTermUrl({
+        termUrl: MARLSTONE_URL,
+        language: 'de',
+      });
+
+      expect(label).toBe('Mergel');
+      expect(spy2).not.toHaveBeenCalled();
+    });
+
+    it('ignores expired localStorage entries', async () => {
+      const expiredEntry = {
+        data: makeTermsResponse(makeTerm(MARLSTONE_URL, 'Old')),
+        timestamp: Date.now() - 25 * 60 * 60 * 1000, // 25 hours ago
+      };
+      localStorage.setItem(
+        'lexic-vocab:lithology:de',
+        JSON.stringify(expiredEntry),
+      );
+
+      const { service, apiService } = createServiceWithMockApi();
+      const spy = mockTerms(apiService, makeTerm(MARLSTONE_URL, 'Fresh'));
+
+      const label = await service.getLabelForTermUrl({
+        termUrl: MARLSTONE_URL,
+        language: 'de',
+      });
+
+      expect(label).toBe('Fresh');
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles corrupted localStorage entries gracefully', async () => {
+      localStorage.setItem('lexic-vocab:lithology:de', 'not-valid-json{{{');
+
+      const { service, apiService } = createServiceWithMockApi();
+      const spy = mockTerms(apiService, makeTerm(MARLSTONE_URL, 'Mergel'));
+
+      const label = await service.getLabelForTermUrl({
+        termUrl: MARLSTONE_URL,
+        language: 'de',
+      });
+
+      expect(label).toBe('Mergel');
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('toLexicLanguage falls back to en for unknown languages', async () => {
+    const { service, apiService } = createServiceWithMockApi();
+    const spy = mockTerms(apiService, makeTerm(MARLSTONE_URL, 'Marlstone'));
+
     await service.getLabelForTermUrl({
-      termUrl: 'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
+      termUrl: MARLSTONE_URL,
       language: 'ja',
     });
 
