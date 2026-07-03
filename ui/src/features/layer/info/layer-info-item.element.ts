@@ -2,10 +2,11 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { css, html, TemplateResult } from 'lit';
 import {
+  isLayerInfoLexicTerm,
   isLayerInfoUrl,
   LayerInfo,
   LayerInfoAttribute,
-  LayerInfoUrl,
+  LayerInfoAttributeValue,
   LayerInfoValue,
 } from 'src/features/layer/info/layer-info.model';
 import i18next from 'i18next';
@@ -14,6 +15,7 @@ import { applyTypography } from 'src/styles/theme';
 import { TranslationKey } from 'src/models/translation-key.model';
 import { consume } from '@lit/context';
 import { getLayerAttributeName, Layer, LayerService } from 'src/features/layer';
+import { isLexicTermUrl } from 'src/features/lexic/lexic-url';
 
 const numberFormat = new Intl.NumberFormat('de-CH', {
   maximumFractionDigits: 20,
@@ -119,16 +121,22 @@ export class LayerInfoItem extends CoreElement {
   }
 
   private normalizeAttributeValue(
-    value: LayerInfoValue | LayerInfoUrl,
-  ): LayerInfoValue | LayerInfoUrl {
-    return typeof value === 'string' &&
-      (value.startsWith('https://') || value.startsWith('http://'))
-      ? { url: value }
-      : value;
+    value: LayerInfoAttributeValue,
+  ): LayerInfoAttributeValue {
+    if (typeof value === 'string') {
+      if (isLexicTermUrl(value)) {
+        return { type: 'lexic-term', termUrl: value };
+      }
+      if (value.startsWith('https://') || value.startsWith('http://')) {
+        return { url: value };
+      }
+    }
+    return value;
   }
 
   private isLinkedAttribute(attribute: LayerInfoAttribute): boolean {
-    return isLayerInfoUrl(this.normalizeAttributeValue(attribute.value));
+    const normalized = this.normalizeAttributeValue(attribute.value);
+    return isLayerInfoUrl(normalized) || isLayerInfoLexicTerm(normalized);
   }
 
   readonly render = () => {
@@ -170,6 +178,15 @@ export class LayerInfoItem extends CoreElement {
               (it) => it.key,
               (it) => {
                 const value = this.normalizeAttributeValue(it.value);
+                if (isLayerInfoLexicTerm(value)) {
+                  return html`
+                    <li>
+                      <ngm-lexic-term-link
+                        .termUrl=${value.termUrl}
+                      ></ngm-lexic-term-link>
+                    </li>
+                  `;
+                }
                 if (isLayerInfoUrl(value)) {
                   return html`
                     <li>
