@@ -45,14 +45,36 @@ export interface LayerInfo {
   destroy(): void;
 }
 
-export interface LayerInfoAttribute {
-  key: string | TranslationKey;
-  value: LayerInfoValue | LayerInfoUrl;
-}
-
 export type LayerInfoValue = string | number | TemplateResult | TranslationKey;
 export type LayerInfoUrl = { url: string; name?: LayerInfoValue };
 
+export interface LayerInfoLexicTerm {
+  type: 'lexic-term';
+  termUrl: string;
+}
+
+export type LayerInfoAttributeValue =
+  | LayerInfoValue
+  | LayerInfoUrl
+  | LayerInfoLexicTerm;
+
+export interface LayerInfoAttribute {
+  key: string | TranslationKey;
+  value: LayerInfoAttributeValue;
+}
+
 export const isLayerInfoUrl = (
-  value: LayerInfoValue | LayerInfoUrl,
-): value is LayerInfoUrl => typeof value === 'object' && 'url' in value;
+  value: LayerInfoAttributeValue,
+): value is LayerInfoUrl =>
+  typeof value === 'object' &&
+  value !== null &&
+  'url' in value &&
+  !('type' in value);
+
+export const isLayerInfoLexicTerm = (
+  value: LayerInfoAttributeValue,
+): value is LayerInfoLexicTerm =>
+  typeof value === 'object' &&
+  value !== null &&
+  'type' in value &&
+  value.type === 'lexic-term';
