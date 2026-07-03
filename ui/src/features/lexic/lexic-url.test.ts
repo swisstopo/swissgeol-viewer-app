@@ -6,118 +6,101 @@ import {
   toLexicLanguage,
 } from './lexic-url';
 
+const CHRONOSTRATIGRAPHY_URL =
+  'https://dev-lexic.swissgeol.ch/Chronostratigraphy/LateBurdigalian';
+const TECTONIC_UNITS_URL =
+  'https://dev-lexic.swissgeol.ch/TectonicUnits/InternalFoldedJuraAndForelandPlateau';
+const LITHOSTRATIGRAPHY_URL =
+  'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation';
+const LITHOLOGY_URL =
+  'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite';
+const LITHOLOGY_MARLSTONE_URL =
+  'https://dev-lexic.swissgeol.ch/Lithology/Marlstone';
+
 describe('parseLexicTermUrl', () => {
   it('parses a Chronostratigraphy URL', () => {
-    const result = parseLexicTermUrl(
-      'https://dev-lexic.swissgeol.ch/Chronostratigraphy/LateBurdigalian',
-    );
+    const result = parseLexicTermUrl(CHRONOSTRATIGRAPHY_URL);
     expect(result).toEqual({
       vocabularyId: 'chronostratigraphy',
-      normalizedTermUrl:
-        'https://dev-lexic.swissgeol.ch/Chronostratigraphy/LateBurdigalian',
+      normalizedTermUrl: CHRONOSTRATIGRAPHY_URL,
     });
   });
 
   it('parses a TectonicUnits URL', () => {
-    const result = parseLexicTermUrl(
-      'https://dev-lexic.swissgeol.ch/TectonicUnits/InternalFoldedJuraAndForelandPlateau',
-    );
+    const result = parseLexicTermUrl(TECTONIC_UNITS_URL);
     expect(result).toEqual({
       vocabularyId: 'tectonic-units',
-      normalizedTermUrl:
-        'https://dev-lexic.swissgeol.ch/TectonicUnits/InternalFoldedJuraAndForelandPlateau',
+      normalizedTermUrl: TECTONIC_UNITS_URL,
     });
   });
 
   it('parses a Lithostratigraphy URL', () => {
-    const result = parseLexicTermUrl(
-      'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation',
-    );
+    const result = parseLexicTermUrl(LITHOSTRATIGRAPHY_URL);
     expect(result).toEqual({
       vocabularyId: 'lithostratigraphy',
-      normalizedTermUrl:
-        'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation',
+      normalizedTermUrl: LITHOSTRATIGRAPHY_URL,
     });
   });
 
   it('parses a Lithology URL', () => {
-    const result = parseLexicTermUrl(
-      'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite',
-    );
+    const result = parseLexicTermUrl(LITHOLOGY_URL);
     expect(result).toEqual({
       vocabularyId: 'lithology',
-      normalizedTermUrl:
-        'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite',
+      normalizedTermUrl: LITHOLOGY_URL,
     });
   });
 
   it('accepts dev-lexic.swissgeol.ch URLs', () => {
-    const result = parseLexicTermUrl(
-      'https://dev-lexic.swissgeol.ch/Lithology/Marlstone',
-    );
+    const result = parseLexicTermUrl(LITHOLOGY_MARLSTONE_URL);
     expect(result).not.toBeNull();
     expect(result!.vocabularyId).toBe('lithology');
   });
 
   it('accepts int-lexic.swissgeol.ch URLs', () => {
-    const result = parseLexicTermUrl(
-      'https://int-lexic.swissgeol.ch/Lithology/Marlstone',
-    );
+    const url = 'https://int-lexic.swissgeol.ch/Lithology/Marlstone';
+    const result = parseLexicTermUrl(url);
     expect(result).not.toBeNull();
     expect(result!.vocabularyId).toBe('lithology');
   });
 
   it('accepts lexic.swissgeol.ch (production) URLs', () => {
-    const result = parseLexicTermUrl(
-      'https://lexic.swissgeol.ch/Lithology/Marlstone',
-    );
+    const url = 'https://lexic.swissgeol.ch/Lithology/Marlstone';
+    const result = parseLexicTermUrl(url);
     expect(result).toEqual({
       vocabularyId: 'lithology',
-      normalizedTermUrl: 'https://lexic.swissgeol.ch/Lithology/Marlstone',
+      normalizedTermUrl: url,
     });
   });
 
   it('strips query parameters from the normalized URL', () => {
-    const result = parseLexicTermUrl(
-      'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite?lang=de',
-    );
+    const result = parseLexicTermUrl(LITHOLOGY_URL + '?lang=de');
     expect(result).toEqual({
       vocabularyId: 'lithology',
-      normalizedTermUrl:
-        'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite',
+      normalizedTermUrl: LITHOLOGY_URL,
     });
   });
 
   it('strips hash from the normalized URL', () => {
-    const result = parseLexicTermUrl(
-      'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite#section',
-    );
+    const result = parseLexicTermUrl(LITHOLOGY_URL + '#section');
     expect(result).toEqual({
       vocabularyId: 'lithology',
-      normalizedTermUrl:
-        'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite',
+      normalizedTermUrl: LITHOLOGY_URL,
     });
   });
 
   it('strips both query and hash from the normalized URL', () => {
-    const result = parseLexicTermUrl(
-      'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite?lang=de#section',
-    );
+    const result = parseLexicTermUrl(LITHOLOGY_URL + '?lang=de#section');
     expect(result).toEqual({
       vocabularyId: 'lithology',
-      normalizedTermUrl:
-        'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite',
+      normalizedTermUrl: LITHOLOGY_URL,
     });
   });
 
   it('strips trailing slash from path', () => {
-    const result = parseLexicTermUrl(
-      'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite/',
-    );
+    const result = parseLexicTermUrl(LITHOLOGY_URL + '/');
     expect(result).toEqual({
       vocabularyId: 'lithology',
-      normalizedTermUrl:
-        'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite',
+      normalizedTermUrl: LITHOLOGY_URL,
     });
   });
 
@@ -153,30 +136,17 @@ describe('parseLexicTermUrl', () => {
 
 describe('getLexicHref', () => {
   it('appends lang parameter to a URL without query', () => {
-    const href = getLexicHref(
-      'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation',
-      'de',
-    );
-    expect(href).toBe(
-      'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation?lang=de',
-    );
+    const href = getLexicHref(LITHOSTRATIGRAPHY_URL, 'de');
+    expect(href).toBe(LITHOSTRATIGRAPHY_URL + '?lang=de');
   });
 
   it('replaces existing lang parameter', () => {
-    const href = getLexicHref(
-      'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation?lang=en',
-      'fr',
-    );
-    expect(href).toBe(
-      'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation?lang=fr',
-    );
+    const href = getLexicHref(LITHOSTRATIGRAPHY_URL + '?lang=en', 'fr');
+    expect(href).toBe(LITHOSTRATIGRAPHY_URL + '?lang=fr');
   });
 
   it('preserves other query parameters', () => {
-    const href = getLexicHref(
-      'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation?foo=bar',
-      'it',
-    );
+    const href = getLexicHref(LITHOSTRATIGRAPHY_URL + '?foo=bar', 'it');
     expect(href).toContain('foo=bar');
     expect(href).toContain('lang=it');
   });
@@ -184,26 +154,10 @@ describe('getLexicHref', () => {
 
 describe('isLexicTermUrl', () => {
   it('returns true for valid Lexic term URLs', () => {
-    expect(
-      isLexicTermUrl(
-        'https://dev-lexic.swissgeol.ch/Chronostratigraphy/Albian',
-      ),
-    ).toBe(true);
-    expect(
-      isLexicTermUrl(
-        'https://dev-lexic.swissgeol.ch/TectonicUnits/InternalFoldedJuraAndForelandPlateau',
-      ),
-    ).toBe(true);
-    expect(
-      isLexicTermUrl(
-        'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation',
-      ),
-    ).toBe(true);
-    expect(
-      isLexicTermUrl(
-        'https://dev-lexic.swissgeol.ch/Lithology/SandstoneGlauconite',
-      ),
-    ).toBe(true);
+    expect(isLexicTermUrl(CHRONOSTRATIGRAPHY_URL)).toBe(true);
+    expect(isLexicTermUrl(TECTONIC_UNITS_URL)).toBe(true);
+    expect(isLexicTermUrl(LITHOSTRATIGRAPHY_URL)).toBe(true);
+    expect(isLexicTermUrl(LITHOLOGY_URL)).toBe(true);
   });
 
   it('returns false for non-Lexic URLs', () => {
