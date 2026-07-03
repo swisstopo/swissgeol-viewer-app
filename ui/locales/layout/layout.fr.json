@@ -1,9 +1,15 @@
 {
   "items": {
     "Layers": "Données Affichées",
+    "Lexic": "Lexic",
     "Tools": "Outils",
     "Share": "Partager",
     "Projects": "Projets",
     "Settings": "Paramètres"
+  },
+  "lexic": {
+    "datasetLabel": "Jeu de données",
+    "layerPlaceholder": "Sélectionner un jeu de données",
+    "loadingLayers": "Chargement des jeux de données..."
   }
 }

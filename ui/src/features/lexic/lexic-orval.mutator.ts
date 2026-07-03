@@ -1,9 +1,10 @@
 import {
   LEXIC_API_BY_PAGE_HOST,
+  LEXIC_API_VERSION,
   TIMEOUT_REQUEST_AFTER_MILLISECONDS,
 } from 'src/constants';
 
-const DEFAULT_BASE_URL = 'https://dev-webmap-api.swissgeol.ch';
+const DEFAULT_BASE_URL = `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`;
 
 export async function lexicFetch<T>(
   requestUrl: string,

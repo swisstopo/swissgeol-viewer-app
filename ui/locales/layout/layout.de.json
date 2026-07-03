@@ -1,9 +1,15 @@
 {
   "items": {
     "Layers": "Angezeigte Daten",
+    "Lexic": "Lexic",
     "Tools": "Werkzeuge",
     "Share": "Teilen",
     "Projects": "Projekte",
     "Settings": "Einstellungen"
+  },
+  "lexic": {
+    "datasetLabel": "Datensatz",
+    "layerPlaceholder": "Datensatz auswählen",
+    "loadingLayers": "Datensätze werden geladen..."
   }
 }
