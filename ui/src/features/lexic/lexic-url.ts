@@ -9,7 +9,7 @@ const LEXIC_HOSTS = new Set([
 /** Example
  * 'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation?lang=de'
  * vocabularyId = 'lithostratigraphy'
- * normalizedTermUrl = 'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation?lang=de'
+ * normalizedTermUrl = 'https://dev-lexic.swissgeol.ch/Lithostratigraphy/StGallenFormation'
  * (language query parameter removed)
  */
 export interface ParsedLexicTermUrl {
