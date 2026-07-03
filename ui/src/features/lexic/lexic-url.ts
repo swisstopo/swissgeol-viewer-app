@@ -13,7 +13,7 @@ const LEXIC_HOSTS = new Set([
  * (language query parameter removed)
  */
 export interface ParsedLexicTermUrl {
-  vocabularyId: string;
+  vocabularyId: LexicVocabularyId;
   normalizedTermUrl: string;
 }
 
