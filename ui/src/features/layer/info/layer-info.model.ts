@@ -45,11 +45,6 @@ export interface LayerInfo {
   destroy(): void;
 }
 
-export interface LayerInfoAttribute {
-  key: string | TranslationKey;
-  value: LayerInfoValue | LayerInfoUrl | LayerInfoLexicTerm;
-}
-
 export type LayerInfoValue = string | number | TemplateResult | TranslationKey;
 export type LayerInfoUrl = { url: string; name?: LayerInfoValue };
 
@@ -58,8 +53,18 @@ export interface LayerInfoLexicTerm {
   termUrl: string;
 }
 
+export type LayerInfoAttributeValue =
+  | LayerInfoValue
+  | LayerInfoUrl
+  | LayerInfoLexicTerm;
+
+export interface LayerInfoAttribute {
+  key: string | TranslationKey;
+  value: LayerInfoAttributeValue;
+}
+
 export const isLayerInfoUrl = (
-  value: LayerInfoValue | LayerInfoUrl | LayerInfoLexicTerm,
+  value: LayerInfoAttributeValue,
 ): value is LayerInfoUrl =>
   typeof value === 'object' &&
   value !== null &&
@@ -67,7 +72,7 @@ export const isLayerInfoUrl = (
   !('type' in value);
 
 export const isLayerInfoLexicTerm = (
-  value: LayerInfoValue | LayerInfoUrl | LayerInfoLexicTerm,
+  value: LayerInfoAttributeValue,
 ): value is LayerInfoLexicTerm =>
   typeof value === 'object' &&
   value !== null &&
