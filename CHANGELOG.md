@@ -4,13 +4,11 @@
 
 ### Added
 
-
 ### Changed
 
-- api/projects/* deactivated.
+- api/projects/\* deactivated.
 
 ### Fixed
-
 
 ## [v1.13.0]
 

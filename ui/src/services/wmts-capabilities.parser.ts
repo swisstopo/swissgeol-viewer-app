@@ -71,7 +71,7 @@ export function parseWmtsCapabilities(
       layer.querySelector('Dimension > Default')?.textContent ?? null;
     const format = getDirectChildText(layer, 'Format');
     const tileMatrixSet = resolveWmtsTileMatrixSet(layer);
-    const style = resolveWmtsStyle(layer);
+    const style = resolveWmtsStyle(layer, layerName);
     if (!format) {
       continue;
     }
@@ -144,13 +144,30 @@ function resolveWmtsGetTileBaseUrl(xml: Document): string | null {
   return getHref(get);
 }
 
-function resolveWmtsStyle(layer: Element): string {
-  const styles = layer.getElementsByTagNameNS('*', 'Style');
-  const preferred = Array.from(styles).find(
-    (style) => style.getAttribute('isDefault') === 'true',
+function resolveWmtsStyle(layer: Element, layerName: string): string {
+  const styles = Array.from(layer.getElementsByTagNameNS('*', 'Style'));
+  const identifiers = styles
+    .map((style) => ({
+      node: style,
+      identifier: getDirectChildText(style, 'Identifier') ?? '',
+    }))
+    .filter((entry) => entry.identifier.length > 0);
+
+  // Prefer a style whose identifier matches the layer name exactly.
+  // This is the named/thematic style (e.g. 'swisstopo:gc_bedrock' for layer 'swisstopo:gc_bedrock'),
+  // and is more reliable than isDefault=true which may point to a generic style (e.g. 'polygon', '_empty').
+  const namedMatch = identifiers.find(
+    ({ identifier }) => identifier === layerName,
   );
-  const selected = preferred ?? styles[0] ?? null;
-  return getDirectChildText(selected, 'Identifier') ?? 'default';
+  if (namedMatch != null) {
+    return namedMatch.identifier;
+  }
+
+  const preferred = identifiers.find(
+    ({ node }) => node.getAttribute('isDefault') === 'true',
+  );
+  const selected = preferred ?? identifiers[0] ?? null;
+  return selected?.identifier ?? 'default';
 }
 
 function resolveWmtsTileMatrixSet(layer: Element): string | null {

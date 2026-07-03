@@ -3,8 +3,6 @@ use axum::{
     extract::{DefaultBodyLimit, Extension},
     http::{HeaderValue, Method},
     routing::get,
-    routing::post,
-    routing::put,
 };
 use clap::Parser;
 use hyper::header::{

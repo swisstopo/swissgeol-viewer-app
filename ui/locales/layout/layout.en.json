@@ -1,9 +1,15 @@
 {
   "items": {
     "Layers": "Data displayed",
+    "Lexic": "Lexic",
     "Tools": "Tools",
     "Share": "Share",
     "Projects": "Projects",
     "Settings": "Settings"
+  },
+  "lexic": {
+    "datasetLabel": "dataset",
+    "layerPlaceholder": "Select dataset",
+    "loadingLayers": "Loading datasets..."
   }
 }

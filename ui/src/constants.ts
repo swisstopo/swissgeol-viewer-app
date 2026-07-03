@@ -198,21 +198,25 @@ export const TITILER_BY_PAGE_HOST = {
   'viewer.swissgeol.ch': 'https://api.swissgeol.ch/titiler',
 };
 
+export const LEXIC_API_VERSION = 'v1';
+
 export const LEXIC_API_BY_PAGE_HOST = {
-  'localhost:8000': 'https://dev-webmap-api.swissgeol.ch/v1',
-  'dev-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch/v1',
-  'int-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch/v1',
-  'swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch/v1',
-  'viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch/v1',
+  'localhost:8000': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'dev-viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'int-viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
 };
 
 export interface WmtsCapabilitiesLinks {
   wms: string;
   wmts: string;
+  serviceTimeoutMs?: number;
 }
 
 export const DEFAULT_WMTS_SERVICE = 'maps.geo.admin';
 
+export const TIMEOUT_REQUEST_AFTER_MILLISECONDS = 5_000;
 export const WMTS_CAPABILITIES_BY_SERVICE: Record<
   string,
   WmtsCapabilitiesLinks
@@ -224,6 +228,7 @@ export const WMTS_CAPABILITIES_BY_SERVICE: Record<
   lexic: {
     wms: 'https://dev-ogcservices.swissgeol.ch/geoserver/swisstopo/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities',
     wmts: 'https://dev-ogcservices.swissgeol.ch/geoserver/gwc/service/wmts?service=WMTS&acceptVersions=1.1.1&request=GetCapabilities',
+    serviceTimeoutMs: TIMEOUT_REQUEST_AFTER_MILLISECONDS,
   },
 };
 

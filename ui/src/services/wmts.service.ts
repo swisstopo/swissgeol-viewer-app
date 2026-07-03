@@ -115,15 +115,18 @@ export class WmtsService extends BaseService {
     layers: WmtsLayer[];
     hasFailed: boolean;
   }> {
-    const xml = await this.fetchCapabilitiesXml({
-      host: links.wms,
-      params: {
-        SERVICE: 'WMS',
-        REQUEST: 'GetCapabilities',
-        VERSION: '1.3.0',
-        lang: i18next.language,
+    const xml = await this.fetchCapabilitiesXml(
+      {
+        host: links.wms,
+        params: {
+          SERVICE: 'WMS',
+          REQUEST: 'GetCapabilities',
+          VERSION: '1.3.0',
+          lang: i18next.language,
+        },
       },
-    });
+      links.serviceTimeoutMs,
+    );
     if (xml === null) {
       return { layers: [], hasFailed: true };
     }
@@ -137,29 +140,39 @@ export class WmtsService extends BaseService {
     layers: WmtsLayer[];
     hasFailed: boolean;
   }> {
-    const xml = await this.fetchCapabilitiesXml({
-      host: links.wmts,
-      params: {
-        lang: i18next.language,
+    const xml = await this.fetchCapabilitiesXml(
+      {
+        host: links.wmts,
+        params: {
+          lang: i18next.language,
+        },
       },
-    });
+      links.serviceTimeoutMs,
+    );
     if (xml === null) {
       return { layers: [], hasFailed: true };
     }
     return { layers: parseWmtsCapabilities(xml, service), hasFailed: false };
   }
 
-  private async fetchCapabilitiesXml(options: {
-    host: string;
-    params: Record<string, string>;
-  }): Promise<Document | null> {
+  private async fetchCapabilitiesXml(
+    options: {
+      host: string;
+      params: Record<string, string>;
+    },
+    timeoutMs?: number,
+  ): Promise<Document | null> {
     const params = new URLSearchParams(options.params);
     const hasQuery = options.host.includes('?');
     const url = hasQuery
       ? `${options.host}&${params}`
       : `${options.host}?${params}`;
     try {
-      const res = await fetch(url);
+      const requestInit: RequestInit = {};
+      if (timeoutMs) {
+        requestInit.signal = AbortSignal.timeout(timeoutMs);
+      }
+      const res = await fetch(url, requestInit);
       if (!res.ok) {
         console.error(`Failed to fetch capabilities from "${options.host}"`);
         return null;
