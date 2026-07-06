@@ -247,7 +247,7 @@ export class LexicFilterPanel extends CoreElement {
     :host {
       position: fixed;
       top: var(--ngm-header-height, 88px);
-      right: 72px;
+      right: 64px;
       z-index: 4;
       pointer-events: none;
     }
@@ -289,27 +289,22 @@ export class LexicFilterPanel extends CoreElement {
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 0;
     }
 
     .dataset-section {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .section-header {
-      ${applyTypography('body-2')};
-      display: flex;
-      align-items: center;
-      color: var(--color-text--emphasis-high);
+      margin-bottom: 12px;
     }
 
     .section-header-label {
+      ${applyTypography('body-2')};
       display: block;
       margin: 0;
       padding: 0;
+      color: var(--color-text--emphasis-high);
     }
 
     .select-wrapper {
@@ -347,9 +342,8 @@ export class LexicFilterPanel extends CoreElement {
     }
 
     .horizontal-divider {
-      flex: 1;
-      border-top: 1px var(--color-border--default) solid;
-      margin: 8px -16px;
+      border-top: 1px solid var(--color-border--default);
+      margin: 0 0 12px;
     }
   `;
 }

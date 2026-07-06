@@ -73,14 +73,16 @@ export class LexicFilterOverview extends CoreElement {
     index: number,
   ) => html`
     <div class="filter-entry">
-      <span class="filter-label">${filter.displayLabel}</span>
-      <button
-        class="remove-button"
-        @click=${() => this.handleRemove(filter.localId)}
-        aria-label="Remove filter"
-      >
-        <ngm-core-icon icon="close"></ngm-core-icon>
-      </button>
+      <div class="filter-chip">
+        <span class="filter-label">${filter.displayLabel}</span>
+        <button
+          class="remove-button"
+          @click=${() => this.handleRemove(filter.localId)}
+          aria-label="Remove filter"
+        >
+          <ngm-core-icon icon="close"></ngm-core-icon>
+        </button>
+      </div>
       ${index < this.activeFilters.length - 1
         ? html`<span class="or-badge"
             >${i18next.t('layout:lexic.filter.or')}</span
@@ -93,14 +95,14 @@ export class LexicFilterOverview extends CoreElement {
     :host {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .reset-button {
       ${applyTypography('body-2')};
       background: none;
       border: none;
-      color: var(--color-primary);
+      color: var(--color-action);
       cursor: pointer;
       padding: 0;
       align-self: flex-start;
@@ -122,23 +124,30 @@ export class LexicFilterOverview extends CoreElement {
       gap: 6px;
     }
 
-    .filter-label {
-      ${applyTypography('body-2')};
+    .filter-chip {
       display: flex;
       align-items: center;
-      padding: 4px 8px;
+      gap: 6px;
+      padding: 6px 10px;
       border: 1px solid var(--color-border--default);
-      border-radius: 4px;
+      border-radius: 6px;
       background-color: var(--color-bg--white);
+      max-width: 180px;
+      min-width: 0;
+    }
+
+    .filter-label {
+      ${applyTypography('body-2')};
       color: var(--color-text--emphasis-high);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 180px;
+      min-width: 0;
     }
 
     .remove-button {
       display: flex;
+      flex-shrink: 0;
       align-items: center;
       justify-content: center;
       background: none;
@@ -151,6 +160,7 @@ export class LexicFilterOverview extends CoreElement {
     .remove-button ngm-core-icon {
       width: 16px;
       height: 16px;
+      --ngm-icon-stroke-width: 2.5;
     }
 
     .remove-button:hover {
@@ -159,17 +169,23 @@ export class LexicFilterOverview extends CoreElement {
 
     .or-badge {
       ${applyTypography('overline')};
+      font-size: 13px;
+      line-height: 18px;
       font-weight: 700;
       color: var(--color-primary);
-      padding: 2px 6px;
-      border: 1px solid var(--color-primary);
-      border-radius: 4px;
+      background-color: var(--color-border--default);
+      padding: 4px 10px;
+      border-radius: 6px;
       white-space: nowrap;
     }
 
     ngm-core-button {
       width: 100%;
-      margin-top: 4px;
+      margin-top: 2px;
+      --button-border-radius: 6px;
+      --button-bg: var(--color-bg--grey);
+      --button-bg--hovered: var(--color-hovered);
+      --button-bg--pressed: var(--color-pressed);
     }
   `;
 }

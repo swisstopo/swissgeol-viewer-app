@@ -209,6 +209,12 @@ export class LexicFilterContainer extends CoreElement {
       flex: 1;
     }
 
+    .filter-header ngm-core-chip {
+      padding: 0 8px;
+      min-width: 28px;
+      height: 28px;
+    }
+
     .filter-chevron {
       transition: transform 150ms ease;
       color: var(--color-primary);
@@ -219,7 +225,11 @@ export class LexicFilterContainer extends CoreElement {
     }
 
     .filter-content {
-      padding: 8px 0 12px;
+      margin-top: 4px;
+      padding: 12px;
+      background-color: var(--color-bg--grey);
+      border: 1px solid var(--color-border--default);
+      border-radius: 4px;
     }
 
     .filter-placeholder {
@@ -231,7 +241,7 @@ export class LexicFilterContainer extends CoreElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 4px 0;
+      padding: 8px 0;
       gap: 8px;
     }
 
@@ -239,14 +249,22 @@ export class LexicFilterContainer extends CoreElement {
     .and-separator::after {
       content: '';
       flex: 1;
-      border-top: 2px dashed var(--color-primary);
+      height: 1px;
+      background: repeating-linear-gradient(
+        to right,
+        var(--color-primary) 0,
+        var(--color-primary) 6px,
+        transparent 6px,
+        transparent 11px
+      );
     }
 
     .and-label {
       ${applyTypography('body-2')};
+      font-weight: 700;
       color: var(--color-primary);
       flex-shrink: 0;
-      padding: 0 4px;
+      padding: 0 6px;
     }
   `;
 }
