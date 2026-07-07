@@ -160,7 +160,7 @@ export class LexicFilterOverview extends CoreElement {
     .remove-button ngm-core-icon {
       width: 16px;
       height: 16px;
-      --ngm-icon-stroke-width: 2.5;
+      stroke-width: 2.5;
     }
 
     .remove-button:hover {

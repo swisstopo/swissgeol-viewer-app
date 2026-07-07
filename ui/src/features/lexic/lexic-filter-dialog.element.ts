@@ -354,10 +354,7 @@ export class LexicFilterDialog extends CoreElement {
     event.stopPropagation();
   };
 
-  private readonly handleSelectTerm = (
-    term: VocabularyTerm,
-    index: number,
-  ) => {
+  private readonly handleSelectTerm = (term: VocabularyTerm, index: number) => {
     this.selectedTerm = term;
     this.focusedIndex = index;
   };
@@ -450,9 +447,7 @@ export class LexicFilterDialog extends CoreElement {
               ? html`<span class="no-results"
                   >${i18next.t('layout:lexic.filter.noResults')}</span
                 >`
-              : filtered.map((term, index) =>
-                  this.renderTermItem(term, index),
-                )}
+              : filtered.map((term, index) => this.renderTermItem(term, index))}
         </div>
 
         <footer class="dialog-actions">
@@ -481,7 +476,8 @@ export class LexicFilterDialog extends CoreElement {
         data-index=${index}
         @click=${() => this.handleSelectTerm(term, index)}
         @focus=${() => this.handleTermFocus(index)}
-        @keydown=${(event: KeyboardEvent) => this.handleTermKeyDown(event, index)}
+        @keydown=${(event: KeyboardEvent) =>
+          this.handleTermKeyDown(event, index)}
       >
         <div class="term-header">
           <span class="term-label">${term.label ?? term.term}</span>
@@ -581,7 +577,7 @@ export class LexicFilterDialog extends CoreElement {
     }
 
     .narrowers-row ngm-core-checkbox {
-      --core-checkbox-size: 16px;
+      --core-checkbox-size: 18px;
       --core-checkbox-gap: 8px;
       --core-checkbox-label-size: 12px;
       --core-checkbox-label-line-height: 16px;

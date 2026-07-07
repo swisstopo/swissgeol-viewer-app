@@ -75,7 +75,7 @@ export class CoreButton extends LitElement {
       gap: 6px;
       padding: var(--button-padding-v) var(--button-padding-h);
       border: 1px solid;
-      border-radius: 4px;
+      border-radius: var(--button-border-radius, 4px);
       cursor: var(--button-cursor, pointer);
       width: 100%;
 
