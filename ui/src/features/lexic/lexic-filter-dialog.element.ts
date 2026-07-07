@@ -7,7 +7,6 @@ import { CoreModal } from 'src/features/core/core-modal.element';
 import { applyTypography } from 'src/styles/theme';
 import { LexicFilterId, LexicLanguage } from './lexic-api.model';
 import { LexicFilterService } from './lexic-filter.service';
-import { getStubVocabularyTerms } from './lexic-stubs';
 import type { VocabularyTerm } from './generated/lexic-schemas';
 import { LexicVocabularyService } from 'src/features/lexic/lexic-vocabulary.service';
 
@@ -116,7 +115,7 @@ export class LexicFilterDialog extends CoreElement {
         `[Lexic] Failed to load vocabulary terms for "${this.config.vocabularyId}":`,
         error,
       );
-      this.terms = getStubVocabularyTerms(this.config.vocabularyId) ?? [];
+      this.terms = [];
     } finally {
       this.isLoading = false;
       this.focusedIndex = -1;

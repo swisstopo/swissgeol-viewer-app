@@ -11,7 +11,6 @@ import {
   LexicLayer,
   LexicLayerAvailableFilter,
 } from './lexic-api.model';
-import { getStubLayers } from './lexic-stubs';
 
 @customElement('ngm-lexic-filter-panel')
 export class LexicFilterPanel extends CoreElement {
@@ -167,7 +166,7 @@ export class LexicFilterPanel extends CoreElement {
         '[Lexic] getLayers API call failed, falling back to stub layers:',
         error,
       );
-      this.layers = getStubLayers(this.getLexicLanguage());
+      this.layers = [];
     } finally {
       this.isLoadingLayers = false;
     }
