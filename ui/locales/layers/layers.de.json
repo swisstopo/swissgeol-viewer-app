@@ -279,6 +279,8 @@
     "mont-terri-rocklab-layers": "Mont Terri Felslabor"
   },
   "properties": {
+    "chrono_from_lexic": "Chronostratigraphie von",
+    "chrono_to_lexic": "Chronostratigraphie bis",
     "d_ANZAHL_S": "Anzahl Gleise",
     "d_AUSSER_B": "Ausser Betrieb",
     "d_BEFAHRBA": "Befahrbarkeit",
@@ -293,6 +295,7 @@
     "d_VERKEHRS": "Verkehrsmittel",
     "d_WANDERWE": "Hiking trail",
     "d_ZAHNRADB": "Zahnradbahn",
+    "details_url": "URL",
     "GEWISS_NR": "GEWISS-Nr.",
     "GWL_NR": "GWL-Nr.",
     "KANTGEWNR": "Kant. Water-Nr.",
@@ -304,9 +307,13 @@
     "horizon_modelled": "Horizont",
     "id": "ID",
     "kind": "Typ",
+    "litho_lexic_1": "Lithologie 1",
+    "litho_lexic_2": "Lithologie 2",
+    "litho_lexic_3": "Lithologie 3",
+    "litstrat_lexic": "Lithostratigraphie",
     "source": "Quelle",
+    "tecto_lexic": "Tektonische Einheiten",
     "version": "Version",
-    "details_url": "URL",
     "Voxel": {
       "cell_center": "Zellzentrum",
       "logk": "Hydraulische Leitfähigkeit",
