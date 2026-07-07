@@ -1,9 +1,14 @@
 import { LayerInfoAttribute } from 'src/features/layer/info/layer-info.model';
-import { WmtsLayer, WmtsLayerSource } from 'src/features/layer';
+import {
+  getLayerAttributeName,
+  WmtsLayer,
+  WmtsLayerSource,
+} from 'src/features/layer';
 import {
   DEFAULT_WMTS_SERVICE,
   WMTS_CAPABILITIES_BY_SERVICE,
 } from 'src/constants';
+import { isLexicTermUrl } from 'src/features/lexic/lexic-url';
 
 const DEFAULT_GEO_ADMIN_API_URL = 'https://api3.geo.admin.ch';
 const FEATURE_INFO_WIDTH = 101;
@@ -40,7 +45,7 @@ interface ServiceFeatureInfoResponse {
 
 type WmtsLayerForInfo = Pick<
   WmtsLayer,
-  'id' | 'serviceUrl' | 'source' | 'service'
+  'id' | 'type' | 'serviceUrl' | 'source' | 'service'
 >;
 
 /**
@@ -355,7 +360,7 @@ class ExternalWmtsInfoClient {
     }
 
     return Object.entries(properties).map(([key, rawValue]) => ({
-      key: this.humanizeExternalAttributeKey(key),
+      key: getLayerAttributeName(this.layer, key),
       value: this.normalizeAttributeValue(rawValue),
     }));
   }
@@ -438,13 +443,20 @@ class ExternalWmtsInfoClient {
 
   private normalizeAttributeValue(value: unknown): LayerInfoAttribute['value'] {
     if (typeof value === 'string') {
+      if (isLexicTermUrl(value)) {
+        return { type: 'lexic-term', termUrl: value };
+      }
       if (URL_PATTERN.test(value)) {
         return { url: value, name: 'Link' };
       }
       return value;
     }
 
-    if (typeof value === 'number' || typeof value === 'boolean') {
+    if (typeof value === 'number') {
+      return value;
+    }
+
+    if (typeof value === 'boolean') {
       return String(value);
     }
 
@@ -473,27 +485,5 @@ class ExternalWmtsInfoClient {
 
       return '[Unsupported value]';
     }
-  }
-
-  private humanizeExternalAttributeKey(rawKey: string): string {
-    const normalized = rawKey.trim().replace(/[_\-.]+/g, ' ');
-    if (normalized.length === 0) {
-      return rawKey;
-    }
-
-    return normalized
-      .split(' ')
-      .filter((part) => part.length > 0)
-      .map((part) => {
-        const lower = part.toLowerCase();
-        if (lower === 'uuid') return 'UUID';
-        if (lower === 'id' || lower.endsWith('id')) {
-          return lower
-            .replace(/id$/, 'ID')
-            .replace(/^./, (ch) => ch.toUpperCase());
-        }
-        return lower.charAt(0).toUpperCase() + lower.slice(1);
-      })
-      .join(' ');
   }
 }
