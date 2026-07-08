@@ -299,7 +299,8 @@
       "prev_Version": "Numero di versione precedente",
       "prev_Author": "Versione precedente – ID numerico dell’autore"
     },
-    "chrono_to_lexic": "Cronostratigrafia",
+    "chrono_from_lexic": "Cronostratigrafia da",
+    "chrono_to_lexic": "Cronostratigrafia a",
     "d_ANZAHL_S": "Numero di binari",
     "d_AUSSER_B": "Fuori servizio",
     "d_BEFAHRBA": "Accessibilità",
