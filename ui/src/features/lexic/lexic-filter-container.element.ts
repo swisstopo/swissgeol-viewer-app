@@ -18,8 +18,9 @@ import {
 /** Maps filter IDs to the vocabulary used for term selection. */
 const FILTER_VOCABULARY_MAP: Partial<Record<LexicFilterId, string>> = {
   'f-lithology-term': 'lithology',
-  'f-tectonic-term': 'tectonic-units',
-  'f-lithostrat-term': 'lithostratigraphy',
+  // Add more filters when implementing them
+  //'f-tectonic-term': 'tectonic-units',
+  //'f-lithostrat-term': 'lithostratigraphy',
 };
 
 @customElement('ngm-lexic-filter-container')
@@ -110,6 +111,31 @@ export class LexicFilterContainer extends CoreElement {
     `;
   };
 
+  private readonly renderFilterContent = (
+    filterId: LexicFilterId,
+    filter: LexicLayerAvailableFilter,
+    activeFilters: LexicActiveFilter[],
+  ) => {
+    const hasVocabulary = FILTER_VOCABULARY_MAP[filterId] != null;
+
+    return html` <div class="filter-content">
+      ${hasVocabulary
+        ? html`
+            <ngm-lexic-filter-overview
+              .filterId=${filterId}
+              .activeFilters=${activeFilters}
+              @open-filter-dialog=${() =>
+                this.handleOpenFilterDialog(filter as LexicFilter)}
+            ></ngm-lexic-filter-overview>
+          `
+        : html`
+            <span class="filter-placeholder"
+              >${filter.description ?? 'Filter options will appear here'}</span
+            >
+          `}
+    </div>`;
+  };
+
   private readonly renderFilter = (
     filter: LexicLayerAvailableFilter,
     index: number,
@@ -138,16 +164,7 @@ export class LexicFilterContainer extends CoreElement {
           ></ngm-core-icon>
         </button>
         ${isExpanded
-          ? html`
-              <div class="filter-content">
-                <ngm-lexic-filter-overview
-                  .filterId=${filterId}
-                  .activeFilters=${activeFilters}
-                  @open-filter-dialog=${() =>
-                    this.handleOpenFilterDialog(filter as LexicFilter)}
-                ></ngm-lexic-filter-overview>
-              </div>
-            `
+          ? this.renderFilterContent(filterId, filter, activeFilters)
           : nothing}
       </div>
     `;
