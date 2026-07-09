@@ -55,6 +55,7 @@ import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
+import { LexicVocabularyService } from 'src/features/lexic';
 import { when } from 'lit/directives/when.js';
 import { until } from 'lit/directives/until.js';
 
@@ -161,6 +162,12 @@ export class NgmApp extends LitElementI18n {
     super.connectedCallback();
 
     BaseService.initializeWith(this);
+
+    i18next.on('initialized', () => {
+      LexicVocabularyService.inject().then((service) =>
+        service.preloadVocabularies(i18next.language),
+      );
+    });
 
     let infoWindow: CoreWindow | null = null;
     this.layerInfoService.infos$.subscribe((layers) => {
