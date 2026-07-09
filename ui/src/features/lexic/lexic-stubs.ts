@@ -8029,10 +8029,7 @@ export const STUB_LITHOLOGY_TERMS: VocabularyTerm[] = [
 export function getStubVocabularyTerms(
   vocabularyId: string,
 ): VocabularyTerm[] | undefined {
-  switch (vocabularyId.toLowerCase()) {
-    case 'lithology':
-      return STUB_LITHOLOGY_TERMS;
-    default:
-      return undefined;
-  }
+  return vocabularyId.toLowerCase() === 'lithology'
+    ? STUB_LITHOLOGY_TERMS
+    : undefined;
 }

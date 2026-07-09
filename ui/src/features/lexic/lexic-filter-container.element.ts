@@ -117,7 +117,6 @@ export class LexicFilterContainer extends CoreElement {
     const filterId = (filter.id ?? '') as LexicFilterId;
     const isExpanded = this.expandedFilterIds.has(filterId);
     const activeFilters = this.activeFiltersForCategory(filterId);
-    const hasVocabulary = FILTER_VOCABULARY_MAP[filterId] != null;
 
     return html`
       ${index > 0 ? this.renderAndSeparator() : nothing}
@@ -141,21 +140,12 @@ export class LexicFilterContainer extends CoreElement {
         ${isExpanded
           ? html`
               <div class="filter-content">
-                ${hasVocabulary
-                  ? html`
-                      <ngm-lexic-filter-overview
-                        .filterId=${filterId}
-                        .activeFilters=${activeFilters}
-                        @open-filter-dialog=${() =>
-                          this.handleOpenFilterDialog(filter as LexicFilter)}
-                      ></ngm-lexic-filter-overview>
-                    `
-                  : html`
-                      <span class="filter-placeholder"
-                        >${filter.description ??
-                        'Filter options will appear here'}</span
-                      >
-                    `}
+                <ngm-lexic-filter-overview
+                  .filterId=${filterId}
+                  .activeFilters=${activeFilters}
+                  @open-filter-dialog=${() =>
+                    this.handleOpenFilterDialog(filter as LexicFilter)}
+                ></ngm-lexic-filter-overview>
               </div>
             `
           : nothing}

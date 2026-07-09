@@ -165,7 +165,10 @@ export class CoreCheckbox extends LitElement {
     /* label */
     .label {
       ${applyTypography('body-2')};
-      font-size: var(--core-checkbox-label-size, var(--typo-body-2--size, 14px));
+      font-size: var(
+        --core-checkbox-label-size,
+        var(--typo-body-2--size, 14px)
+      );
       line-height: var(
         --core-checkbox-label-line-height,
         var(--typo-body-2--line-height, 20px)

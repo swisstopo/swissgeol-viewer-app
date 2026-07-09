@@ -111,10 +111,6 @@ export class LexicFilterDialog extends CoreElement {
       );
       this.terms = response.terms ?? [];
     } catch (error) {
-      console.error(
-        `[Lexic] Failed to load vocabulary terms for "${this.config.vocabularyId}":`,
-        error,
-      );
       this.terms = [];
     } finally {
       this.isLoading = false;
@@ -161,9 +157,9 @@ export class LexicFilterDialog extends CoreElement {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    const fromSearch =
+    const isFromSearch =
       (event.target as HTMLElement).closest('.search-input') != null;
-    this.navigateList(event.key === 'ArrowDown' ? 1 : -1, fromSearch);
+    this.navigateList(event.key === 'ArrowDown' ? 1 : -1, isFromSearch);
   };
 
   private handleEnterKey(event: KeyboardEvent): void {
@@ -439,15 +435,7 @@ export class LexicFilterDialog extends CoreElement {
           </div>
         </header>
 
-        <div class="term-list">
-          ${this.isLoading
-            ? html`<ngm-core-loader></ngm-core-loader>`
-            : filtered.length === 0
-              ? html`<span class="no-results"
-                  >${i18next.t('layout:lexic.filter.noResults')}</span
-                >`
-              : filtered.map((term, index) => this.renderTermItem(term, index))}
-        </div>
+        <div class="term-list">${this.renderTermList(filtered)}</div>
 
         <footer class="dialog-actions">
           <ngm-core-button variant="secondary" @click=${this.handleCancel}>
@@ -463,6 +451,18 @@ export class LexicFilterDialog extends CoreElement {
         </footer>
       </div>
     `;
+  };
+
+  private readonly renderTermList = (filtered: VocabularyTerm[]) => {
+    if (this.isLoading) {
+      return html`<ngm-core-loader></ngm-core-loader>`;
+    }
+    if (filtered.length === 0) {
+      return html`<span class="no-results"
+        >${i18next.t('layout:lexic.filter.noResults')}</span
+      >`;
+    }
+    return filtered.map((term, index) => this.renderTermItem(term, index));
   };
 
   private readonly renderTermItem = (term: VocabularyTerm, index: number) => {
