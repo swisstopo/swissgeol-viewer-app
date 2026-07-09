@@ -286,6 +286,8 @@
     "mont-terri-rocklab-layers": "Mont Terri Rock Lab"
   },
   "properties": {
+    "chrono_from_lexic": "Chronostratigraphy from",
+    "chrono_to_lexic": "Chronostratigraphy to",
     "d_ANZAHL_S": "Number of tracks",
     "d_AUSSER_B": "Out of service",
     "d_BEFAHRBA": "Accessibility",
@@ -300,6 +302,7 @@
     "d_VERKEHRS": "Means of transport",
     "d_WANDERWE": "Hiking trail",
     "d_ZAHNRADB": "Rack railway",
+    "details_url": "URL",
     "GEWISS_NR": "GEWISS-No.",
     "GWL_NR": "GWL-No.",
     "KANTGEWNR": "Cant. Water-No.",
@@ -311,9 +314,13 @@
     "horizon_modelled": "Horizon",
     "id": "ID",
     "kind": "Type",
+    "litho_lexic_1": "Lithology 1",
+    "litho_lexic_2": "Lithology 2",
+    "litho_lexic_3": "Lithology 3",
+    "litstrat_lexic": "Lithostratigraphy",
     "source": "Source",
+    "tecto_lexic": "Tectonic Units",
     "version": "Version",
-    "details_url": "URL",
     "Voxel": {
       "cell_center": "Cell Center",
       "logk": "Hydraulic Conductivity",

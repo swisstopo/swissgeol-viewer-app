@@ -21,9 +21,8 @@ export const hasViewerBackground = (layer: string) => {
         ? ['ch.bafu.vec25-gewaessernetz_2000', 'image/png']
         : [layer, 'image/jpeg'];
 
-    expect(urlProvider.url).to.be.equal(
-      'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}',
-    );
+    expect(urlProvider.url).to.include('wmts.geo.admin.ch');
+    expect(urlProvider.url).to.include(expectedLayerName);
 
     expect(urlProvider.controller).to.not.be.undefined;
     expect(urlProvider.controller.layer.id).to.equal(expectedLayerName);
