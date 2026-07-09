@@ -3,8 +3,25 @@ import { css, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { applyTypography } from 'src/styles/theme';
-import { LexicLayerAvailableFilter } from './lexic-api.model';
-import { LexicFilterService } from './lexic-filter.service';
+
+import { LexicActiveFilter, LexicFilterService } from './lexic-filter.service';
+import {
+  LexicFilter,
+  LexicFilterId,
+  LexicLayerAvailableFilter,
+} from 'src/features/lexic/lexic-api.model';
+import {
+  LexicFilterDialog,
+  LexicFilterDialogConfig,
+} from 'src/features/lexic/lexic-filter-dialog.element';
+
+/** Maps filter IDs to the vocabulary used for term selection. */
+const FILTER_VOCABULARY_MAP: Partial<Record<LexicFilterId, string>> = {
+  'f-lithology-term': 'lithology',
+  // Add more filters when implementing them
+  //'f-tectonic-term': 'tectonic-units',
+  //'f-lithostrat-term': 'lithostratigraphy',
+};
 
 @customElement('ngm-lexic-filter-container')
 export class LexicFilterContainer extends CoreElement {
@@ -20,21 +37,39 @@ export class LexicFilterContainer extends CoreElement {
   @state()
   accessor expandedFilterIds: Set<string> = new Set();
 
+  @state()
+  accessor allActiveFilters: LexicActiveFilter[] = [];
+
   private previousLayerId: string | undefined;
   private hasInitialized = false;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.register(
+      this.filterService.filterList$.subscribe((filters) => {
+        this.allActiveFilters = filters;
+      }),
+    );
+  }
 
   willUpdate(): void {
     const currentLayerId = this.layerId;
     if (!this.hasInitialized || currentLayerId !== this.previousLayerId) {
       this.hasInitialized = true;
       const firstId = this.filters[0]?.id;
-      this.expandedFilterIds = new Set(firstId ?? undefined);
+      this.expandedFilterIds = new Set(firstId != null ? [firstId] : []);
       this.previousLayerId = currentLayerId;
     }
   }
 
   private get filters(): LexicLayerAvailableFilter[] {
     return this.layerFilters ?? [];
+  }
+
+  private activeFiltersForCategory(
+    filterId: LexicFilterId,
+  ): LexicActiveFilter[] {
+    return this.allActiveFilters.filter((f) => f.filterId === filterId);
   }
 
   private readonly toggleFilter = (filterId: string) => {
@@ -45,6 +80,23 @@ export class LexicFilterContainer extends CoreElement {
       next.add(filterId);
     }
     this.expandedFilterIds = next;
+  };
+
+  private readonly handleOpenFilterDialog = (filter: LexicFilter) => {
+    const filterId = filter.id as LexicFilterId;
+    const vocabularyId = FILTER_VOCABULARY_MAP[filterId];
+    if (vocabularyId == null) return;
+
+    const title = filter.title ?? filter.name ?? filterId;
+
+    const config: LexicFilterDialogConfig = {
+      filterId,
+      vocabularyId,
+      title,
+      description: filter.description ?? '',
+    };
+
+    LexicFilterDialog.openDialog(config);
   };
 
   readonly render = () => {
@@ -59,12 +111,38 @@ export class LexicFilterContainer extends CoreElement {
     `;
   };
 
+  private readonly renderFilterContent = (
+    filterId: LexicFilterId,
+    filter: LexicLayerAvailableFilter,
+    activeFilters: LexicActiveFilter[],
+  ) => {
+    const hasVocabulary = FILTER_VOCABULARY_MAP[filterId] != null;
+
+    return html` <div class="filter-content">
+      ${hasVocabulary
+        ? html`
+            <ngm-lexic-filter-overview
+              .filterId=${filterId}
+              .activeFilters=${activeFilters}
+              @open-filter-dialog=${() =>
+                this.handleOpenFilterDialog(filter as LexicFilter)}
+            ></ngm-lexic-filter-overview>
+          `
+        : html`
+            <span class="filter-placeholder"
+              >${filter.description ?? 'Filter options will appear here'}</span
+            >
+          `}
+    </div>`;
+  };
+
   private readonly renderFilter = (
     filter: LexicLayerAvailableFilter,
     index: number,
   ) => {
-    const filterId = filter.id ?? '';
+    const filterId = (filter.id ?? '') as LexicFilterId;
     const isExpanded = this.expandedFilterIds.has(filterId);
+    const activeFilters = this.activeFiltersForCategory(filterId);
 
     return html`
       ${index > 0 ? this.renderAndSeparator() : nothing}
@@ -77,21 +155,16 @@ export class LexicFilterContainer extends CoreElement {
           <span class="filter-title"
             >${filter.name ?? filter.title ?? filterId}</span
           >
+          ${activeFilters.length > 0
+            ? html`<ngm-core-chip>${activeFilters.length}</ngm-core-chip>`
+            : nothing}
           <ngm-core-icon
             class="filter-chevron ${isExpanded ? 'expanded' : ''}"
             icon="dropdown"
           ></ngm-core-icon>
         </button>
         ${isExpanded
-          ? html`
-              <div class="filter-content">
-                <!-- TODO: Implement filter-specific UI (term selector, attribute filter, etc.) -->
-                <span class="filter-placeholder"
-                  >${filter.description ??
-                  'Filter options will appear here'}</span
-                >
-              </div>
-            `
+          ? this.renderFilterContent(filterId, filter, activeFilters)
           : nothing}
       </div>
     `;
@@ -132,6 +205,7 @@ export class LexicFilterContainer extends CoreElement {
       color: var(--color-primary);
       cursor: pointer;
       text-align: left;
+      gap: 8px;
     }
 
     .filter-header:hover {
@@ -140,6 +214,12 @@ export class LexicFilterContainer extends CoreElement {
 
     .filter-title {
       flex: 1;
+    }
+
+    .filter-header ngm-core-chip {
+      padding: 0 8px;
+      min-width: 28px;
+      height: 28px;
     }
 
     .filter-chevron {
@@ -152,7 +232,11 @@ export class LexicFilterContainer extends CoreElement {
     }
 
     .filter-content {
-      padding: 8px 0 12px;
+      margin-top: 4px;
+      padding: 12px;
+      background-color: var(--color-bg--grey);
+      border: 1px solid var(--color-border--default);
+      border-radius: 4px;
     }
 
     .filter-placeholder {
@@ -164,7 +248,7 @@ export class LexicFilterContainer extends CoreElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 4px 0;
+      padding: 8px 0;
       gap: 8px;
     }
 
@@ -172,14 +256,22 @@ export class LexicFilterContainer extends CoreElement {
     .and-separator::after {
       content: '';
       flex: 1;
-      border-top: 2px dashed var(--color-primary);
+      height: 1px;
+      background: repeating-linear-gradient(
+        to right,
+        var(--color-primary) 0,
+        var(--color-primary) 6px,
+        transparent 6px,
+        transparent 11px
+      );
     }
 
     .and-label {
       ${applyTypography('body-2')};
+      font-weight: 700;
       color: var(--color-primary);
       flex-shrink: 0;
-      padding: 0 4px;
+      padding: 0 6px;
     }
   `;
 }

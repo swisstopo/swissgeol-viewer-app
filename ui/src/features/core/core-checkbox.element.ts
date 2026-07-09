@@ -101,7 +101,7 @@ export class CoreCheckbox extends LitElement {
       display: flex;
       align-items: center;
       cursor: pointer;
-      gap: 12px;
+      gap: var(--core-checkbox-gap, 12px);
     }
 
     input {
@@ -117,8 +117,8 @@ export class CoreCheckbox extends LitElement {
       align-items: center;
       justify-content: center;
 
-      width: 20px;
-      height: 20px;
+      width: var(--core-checkbox-size, 20px);
+      height: var(--core-checkbox-size, 20px);
       border-radius: 1px;
       border: 2px solid var(--checkbox-color);
 
@@ -164,7 +164,15 @@ export class CoreCheckbox extends LitElement {
 
     /* label */
     .label {
-      ${applyTypography('body-2')}
+      ${applyTypography('body-2')};
+      font-size: var(
+        --core-checkbox-label-size,
+        var(--typo-body-2--size, 14px)
+      );
+      line-height: var(
+        --core-checkbox-label-line-height,
+        var(--typo-body-2--line-height, 20px)
+      );
     }
   `;
 }
