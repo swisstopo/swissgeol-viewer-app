@@ -7,10 +7,12 @@ import { applyTypography } from 'src/styles/theme';
 import { LexicApiService } from './lexic-api.service';
 import { LexicFilterService } from './lexic-filter.service';
 import {
+  LexicFilterId,
   LexicLanguage,
   LexicLayer,
   LexicLayerAvailableFilter,
 } from './lexic-api.model';
+import { SUPPORTED_FILTER_IDS } from './lexic-filter-container.element';
 
 @customElement('ngm-lexic-filter-panel')
 export class LexicFilterPanel extends CoreElement {
@@ -158,7 +160,12 @@ export class LexicFilterPanel extends CoreElement {
       const response = await this.lexicApiService.getLayers(
         this.getLexicLanguage(),
       );
-      this.layers = response.layers ?? [];
+      // Only show layers (datasets) that have at least one filter supported by the application.
+      this.layers = (response.layers ?? []).filter((layer) =>
+        layer.availableFilters?.some((f) =>
+          SUPPORTED_FILTER_IDS.has((f.id ?? '') as LexicFilterId),
+        ),
+      );
     } catch (error) {
       // FIXME: Remove this stub fallback once the Lexic API is reachable
       // without CORS issues (e.g. when a proxy or proper CORS headers are in place).

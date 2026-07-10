@@ -17,11 +17,21 @@ import {
 
 /** Maps filter IDs to the vocabulary used for term selection. */
 const FILTER_VOCABULARY_MAP: Partial<Record<LexicFilterId, string>> = {
-  'f-lithology-term': 'lithology',
-  // Add more filters when implementing them
-  //'f-tectonic-term': 'tectonic-units',
-  //'f-lithostrat-term': 'lithostratigraphy',
+  'f-lithology-term': 'f-lithology-term',
+  'f-chronostrat-term': 'f-chronostrat-term',
+  'f-tectonic-term': 'f-tectonic-term',
+  'f-lithostrat-term': 'f-lithostrat-term',
+  'f-byAttribute': 'f-byAttribute',
 };
+
+/**
+ * The set of filter IDs currently supported by the application.
+ * Only filters listed here will be shown to the user.
+ *
+ * TODO: Expand this set as new filter types are implemented.
+ */
+export const SUPPORTED_FILTER_IDS: ReadonlySet<LexicFilterId> =
+  new Set<LexicFilterId>(['f-lithology-term']);
 
 @customElement('ngm-lexic-filter-container')
 export class LexicFilterContainer extends CoreElement {
@@ -63,7 +73,11 @@ export class LexicFilterContainer extends CoreElement {
   }
 
   private get filters(): LexicLayerAvailableFilter[] {
-    return this.layerFilters ?? [];
+    // Only show filters that are currently supported by the application.
+    // TODO: Remove this filtering once all filter types are implemented.
+    return (this.layerFilters ?? []).filter((f) =>
+      SUPPORTED_FILTER_IDS.has((f.id ?? '') as LexicFilterId),
+    );
   }
 
   private activeFiltersForCategory(
