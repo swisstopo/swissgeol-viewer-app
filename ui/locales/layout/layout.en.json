@@ -8,7 +8,7 @@
     "Settings": "Settings"
   },
   "lexic": {
-    "datasetLabel": "dataset",
+    "datasetLabel": "Dataset",
     "layerPlaceholder": "Select dataset",
     "loadingLayers": "Loading datasets...",
     "filter": {
@@ -20,7 +20,11 @@
       "includeNarrowers": "Include Narrowers (Children)",
       "cancel": "Cancel",
       "applyFilter": "Add filter",
-      "noResults": "No results found"
+      "noResults": "No results found",
+      "opacity": "Filter opacity",
+      "resetAll": "Reset all filters",
+      "zoomToExtent": "Zoom to filter extent",
+      "loadError": "Error loading results"
     }
   }
 }

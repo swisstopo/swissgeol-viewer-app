@@ -20,7 +20,11 @@
       "includeNarrowers": "Inclure les sous-catégories (Children)",
       "cancel": "Annuler",
       "applyFilter": "Ajouter un filtre",
-      "noResults": "Aucun résultat trouvé"
+      "noResults": "Aucun résultat trouvé",
+      "opacity": "Opacité du filtre",
+      "resetAll": "Réinitialiser tous les filtres",
+      "zoomToExtent": "Zoomer sur l'étendue du filtre",
+      "loadError": "Erreur lors du chargement"
     }
   }
 }
