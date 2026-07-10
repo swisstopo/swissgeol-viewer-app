@@ -40,6 +40,12 @@ export class LexicFilterService extends BaseService {
   readonly requestedDatasetId$: Observable<string | null> =
     this._requestedDatasetId$.asObservable();
 
+  private readonly _selectedDatasetId$ = new BehaviorSubject<string | null>(
+    null,
+  );
+  readonly selectedDatasetId$: Observable<string | null> =
+    this._selectedDatasetId$.asObservable();
+
   private readonly _filterList$ = new BehaviorSubject<LexicActiveFilter[]>([]);
   readonly filterList$: Observable<LexicActiveFilter[]> =
     this._filterList$.asObservable();
@@ -96,6 +102,14 @@ export class LexicFilterService extends BaseService {
     return this._isOpen$.value;
   }
 
+  get selectedDatasetId(): string | null {
+    return this._selectedDatasetId$.value;
+  }
+
+  set selectedDatasetId(id: string | null) {
+    this._selectedDatasetId$.next(id);
+  }
+
   get filterList(): ReadonlyArray<LexicActiveFilter> {
     return this._filterList$.value;
   }
@@ -117,9 +131,6 @@ export class LexicFilterService extends BaseService {
       this._requestedDatasetId$.next(datasetId);
     }
     this._isOpen$.next(true);
-    if (this._filterList$.value.length > 0) {
-      this.updateMapLayer();
-    }
   }
 
   close(): void {
@@ -181,7 +192,6 @@ export class LexicFilterService extends BaseService {
     this._filterList$.next([]);
     this.updateMapLayer();
   }
-
   /** Sets result layer opacity (0–100%). Updates the live imagery if present. */
   setResultOpacity(percent: number): void {
     const clamped = Math.min(100, Math.max(0, percent));
@@ -190,6 +200,27 @@ export class LexicFilterService extends BaseService {
       this.currentImagery.alpha = clamped / 100;
       this.cesiumService?.viewerOrNull?.scene.requestRender();
     }
+  }
+
+  /**
+   * Re-resolves display labels for all active filters using the vocabulary service.
+   * Call this when the language changes to update cached label strings.
+   */
+  async retranslateFilters(
+    resolve: (termUrl: string) => Promise<string | null>,
+  ): Promise<void> {
+    const current = this._filterList$.value;
+    if (current.length === 0) return;
+
+    const updated = await Promise.all(
+      current.map(async (entry) => {
+        const termUrl = (entry.parameters as { term?: string }).term;
+        if (termUrl == null) return entry;
+        const label = await resolve(termUrl);
+        return label != null ? { ...entry, displayLabel: label } : entry;
+      }),
+    );
+    this._filterList$.next(updated);
   }
 
   /** Converts the current filter list into the API request format. */

@@ -120,11 +120,19 @@ export class LexicFilterDialog extends CoreElement {
   }
 
   private get filteredTerms(): VocabularyTerm[] {
+    const appliedTerms = new Set(
+      this.filterService.filterList
+        .filter((f) => f.filterId === this.config.filterId)
+        .map((f) => (f.parameters as { term?: string }).term),
+    );
+    const available = this.terms.filter(
+      (term) => !appliedTerms.has(term.term),
+    );
     const query = this.searchQuery.trim().toLowerCase();
     if (query === '') {
-      return this.terms;
+      return available;
     }
-    return this.terms.filter(
+    return available.filter(
       (term) =>
         (term.label ?? '').toLowerCase().includes(query) ||
         (term.term ?? '').toLowerCase().includes(query),
