@@ -21,6 +21,8 @@ import {
   WEB_MERCATOR_TILING_SCHEME,
 } from 'src/constants';
 
+export type LexicResultState = 'idle' | 'loading' | 'ok' | 'load-error';
+
 export interface LexicActiveFilter {
   localId: string;
   filterId: LexicFilterId;
@@ -48,6 +50,25 @@ export class LexicFilterService extends BaseService {
   readonly filterList$: Observable<LexicActiveFilter[]> =
     this._filterList$.asObservable();
 
+  private readonly _resultState$ = new BehaviorSubject<LexicResultState>(
+    'idle',
+  );
+  readonly resultState$: Observable<LexicResultState> =
+    this._resultState$.asObservable();
+
+  private readonly _resultOpacity$ = new BehaviorSubject<number>(70);
+  readonly resultOpacity$: Observable<number> =
+    this._resultOpacity$.asObservable();
+
+  constructor() {
+    super();
+    this.initializeServices();
+  }
+
+  get resultOpacity(): number {
+    return this._resultOpacity$.value;
+  }
+
   private nextLocalId = 0;
 
   private _selectedLayerId = '';
@@ -58,11 +79,7 @@ export class LexicFilterService extends BaseService {
   private servicesSubscription: Subscription | null = null;
   private cesiumService: CesiumService | null = null;
   private lexicApiService: LexicApiService | null = null;
-
-  constructor() {
-    super();
-    this.initializeServices();
-  }
+  private layerAddedListener: (() => void) | null = null;
 
   private initializeServices(): void {
     const cesium$ = CesiumService.inject$<CesiumService>(CesiumService);
@@ -117,13 +134,16 @@ export class LexicFilterService extends BaseService {
   }
 
   close(): void {
+    ++this.updateVersion;
+    this.removeFilteredLayer();
+    this._resultState$.next('idle');
     this._isOpen$.next(false);
   }
 
   /** Toggles the panel, optionally pre-selecting a dataset when opening. */
   toggle(datasetId?: FilterId): void {
     if (this._isOpen$.value) {
-      this._isOpen$.next(false);
+      this.close();
     } else {
       this.open(datasetId);
     }
@@ -171,6 +191,15 @@ export class LexicFilterService extends BaseService {
   removeAllFilters(): void {
     this._filterList$.next([]);
     this.updateMapLayer();
+  }
+  /** Sets result layer opacity (0–100%). Updates the live imagery if present. */
+  setResultOpacity(percent: number): void {
+    const clamped = Math.min(100, Math.max(0, percent));
+    this._resultOpacity$.next(clamped);
+    if (this.currentImagery != null) {
+      this.currentImagery.alpha = clamped / 100;
+      this.cesiumService?.viewerOrNull?.scene.requestRender();
+    }
   }
 
   /**
@@ -222,6 +251,7 @@ export class LexicFilterService extends BaseService {
     // No filters → remove the filtered layer
     if (filters.length === 0 || this._selectedLayerId === '') {
       this.removeFilteredLayer();
+      this._resultState$.next('idle');
       return;
     }
 
@@ -231,6 +261,8 @@ export class LexicFilterService extends BaseService {
       );
       return;
     }
+
+    this._resultState$.next('loading');
 
     try {
       const wmsResponse = await this.lexicApiService.generateWmsRequest({
@@ -242,16 +274,24 @@ export class LexicFilterService extends BaseService {
       // Discard if a newer update was triggered in the meantime
       if (version !== this.updateVersion) return;
 
-      await this.applyWmsLayer(wmsResponse.url, wmsResponse.body);
+      await this.applyWmsLayer(wmsResponse.url, wmsResponse.body, version);
+      if (version === this.updateVersion) {
+        this._resultState$.next('ok');
+      }
     } catch (error) {
       console.error('[Lexic] Failed to generate WMS request:', error);
       if (version === this.updateVersion) {
         this.removeFilteredLayer();
+        this._resultState$.next('load-error');
       }
     }
   }
 
-  private async applyWmsLayer(_wmsUrl: string, wmsBody: string): Promise<void> {
+  private async applyWmsLayer(
+    _wmsUrl: string,
+    wmsBody: string,
+    version: number,
+  ): Promise<void> {
     const cesium = this.cesiumService;
     if (cesium == null || !cesium.isReady) {
       await firstValueFrom(
@@ -259,6 +299,10 @@ export class LexicFilterService extends BaseService {
           filter(() => this.cesiumService?.isReady === true),
         ),
       );
+    }
+
+    if (version !== this.updateVersion) {
+      return;
     }
 
     const viewer = this.cesiumService!.viewer;
@@ -281,7 +325,7 @@ export class LexicFilterService extends BaseService {
 
     const imagery = new ImageryLayer(provider, {
       show: true,
-      alpha: 1.0,
+      alpha: this._resultOpacity$.value / 100,
     });
 
     // Remove previous filtered layer if present
@@ -292,6 +336,14 @@ export class LexicFilterService extends BaseService {
     imageryLayers.raiseToTop(imagery);
     this.currentImagery = imagery;
 
+    // Keep layer on top when other layers are added
+    this.layerAddedListener = () => {
+      if (this.currentImagery != null) {
+        imageryLayers.raiseToTop(this.currentImagery);
+      }
+    };
+    imageryLayers.layerAdded.addEventListener(this.layerAddedListener);
+
     viewer.scene.requestRender();
   }
 
@@ -300,6 +352,12 @@ export class LexicFilterService extends BaseService {
 
     const viewer = this.cesiumService?.viewerOrNull;
     if (viewer != null) {
+      if (this.layerAddedListener != null) {
+        viewer.scene.imageryLayers.layerAdded.removeEventListener(
+          this.layerAddedListener,
+        );
+        this.layerAddedListener = null;
+      }
       try {
         viewer.scene.imageryLayers.remove(this.currentImagery, true);
         viewer.scene.requestRender();

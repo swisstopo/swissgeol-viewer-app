@@ -261,7 +261,7 @@ export class LexicFilterPanel extends CoreElement {
                 `}
           </section>
 
-          <div class="horizontal-divider"></div>
+          <ngm-lexic-filter-result-panel></ngm-lexic-filter-result-panel>
 
           ${this.isLoadingFilters
             ? html`<ngm-core-loader></ngm-core-loader>`
@@ -375,6 +375,10 @@ export class LexicFilterPanel extends CoreElement {
     .horizontal-divider {
       border-top: 1px solid var(--color-border--default);
       margin: 16px 0 12px;
+    }
+
+    ngm-lexic-filter-result-panel {
+      flex-shrink: 0;
     }
   `;
 }
