@@ -24,6 +24,12 @@ export interface LayerInfo {
   attributes: LayerInfoAttribute[];
 
   /**
+   * Refreshes attributes for a new language.
+   * Implementations that fetch server-localized data should override this.
+   */
+  refreshForLanguage?(lang: string): Promise<void>;
+
+  /**
    * Zooms to the picked object.
    */
   zoomToObject(): void;

@@ -124,6 +124,8 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
       title: `layers:layers.${this.controller.layer.id}`,
       layerId: this.controller.layer.id,
       attributes,
+      identifyResult: result,
+      service: this.service,
     });
   }
 
@@ -212,9 +214,11 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
 class LayerInfoForWmts implements LayerInfo {
   public readonly title: string;
   public readonly layerId: Id<WmtsLayer>;
-  public readonly attributes: LayerInfoAttribute[];
+  public attributes: LayerInfoAttribute[];
 
   private readonly entity: Entity;
+  private readonly identifyResult: IdentifyResult | null;
+  private readonly service: LayerInfoPickerForWmtsService | null;
 
   constructor(
     private readonly viewer: Viewer,
@@ -222,13 +226,25 @@ class LayerInfoForWmts implements LayerInfo {
     data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
       entity: Entity;
       layerId: Id<WmtsLayer>;
+      identifyResult?: IdentifyResult;
+      service?: LayerInfoPickerForWmtsService;
     },
   ) {
     this.entity = data.entity;
     this.title = data.title;
     this.layerId = data.layerId;
     this.attributes = data.attributes;
+    this.identifyResult = data.identifyResult ?? null;
+    this.service = data.service ?? null;
     this.dataSource.entities.add(this.entity);
+  }
+
+  async refreshForLanguage(lang: string): Promise<void> {
+    if (this.identifyResult == null || this.service == null) {
+      return;
+    }
+    const html = await this.service.fetchHtmlPopup(this.identifyResult, lang);
+    this.attributes = this.service.extractPopupAttributes(html);
   }
 
   zoomToObject(): void {
