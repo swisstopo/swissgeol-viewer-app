@@ -173,6 +173,27 @@ export class LexicFilterService extends BaseService {
     this.updateMapLayer();
   }
 
+  /**
+   * Re-resolves display labels for all active filters using the vocabulary service.
+   * Call this when the language changes to update cached label strings.
+   */
+  async retranslateFilters(
+    resolve: (termUrl: string) => Promise<string | null>,
+  ): Promise<void> {
+    const current = this._filterList$.value;
+    if (current.length === 0) return;
+
+    const updated = await Promise.all(
+      current.map(async (entry) => {
+        const termUrl = (entry.parameters as { term?: string }).term;
+        if (termUrl == null) return entry;
+        const label = await resolve(termUrl);
+        return label != null ? { ...entry, displayLabel: label } : entry;
+      }),
+    );
+    this._filterList$.next(updated);
+  }
+
   /** Converts the current filter list into the API request format. */
   toWmsRequestFilters(): LexicWmsRequestFilter[] {
     return this._filterList$.value.map((f) => ({

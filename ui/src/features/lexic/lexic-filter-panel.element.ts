@@ -6,6 +6,7 @@ import { CoreElement } from 'src/features/core';
 import { applyTypography } from 'src/styles/theme';
 import { LexicApiService } from './lexic-api.service';
 import { LexicFilterService } from './lexic-filter.service';
+import { LexicVocabularyService } from './lexic-vocabulary.service';
 import {
   LexicFilterId,
   LexicLanguage,
@@ -21,6 +22,9 @@ export class LexicFilterPanel extends CoreElement {
 
   @consume({ context: LexicFilterService.context() })
   accessor filterService!: LexicFilterService;
+
+  @consume({ context: LexicVocabularyService.context() })
+  accessor vocabularyService!: LexicVocabularyService;
 
   @state()
   accessor isOpen = false;
@@ -67,6 +71,10 @@ export class LexicFilterPanel extends CoreElement {
 
   willChangeLanguage(_language: void): void {
     void this.loadLayerOptions();
+    const language = this.getLexicLanguage();
+    void this.filterService.retranslateFilters((termUrl) =>
+      this.vocabularyService.getLabelForTermUrl({ termUrl, language }),
+    );
   }
 
   private readonly handleClose = () => {

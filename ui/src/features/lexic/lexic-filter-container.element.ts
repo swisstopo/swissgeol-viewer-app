@@ -31,7 +31,11 @@ const FILTER_VOCABULARY_MAP: Partial<Record<LexicFilterId, string>> = {
  * TODO: Expand this set as new filter types are implemented.
  */
 export const SUPPORTED_FILTER_IDS: ReadonlySet<LexicFilterId> =
-  new Set<LexicFilterId>(['f-lithology-term', 'f-chronostrat-term']);
+  new Set<LexicFilterId>([
+    'f-lithology-term',
+    'f-tectonic-term',
+    'f-lithostrat-term',
+  ]);
 
 @customElement('ngm-lexic-filter-container')
 export class LexicFilterContainer extends CoreElement {
