@@ -30,7 +30,7 @@ export class LexicFilterPanel extends CoreElement {
   accessor layers: LexicLayer[] = [];
 
   @state()
-  accessor selectedLayerId = '';
+  accessor selectedLayerId: string | null = null;
 
   @state()
   accessor isLoadingLayers = false;
@@ -71,7 +71,7 @@ export class LexicFilterPanel extends CoreElement {
 
   private readonly handleClose = () => {
     this.filterService.removeAllFilters();
-    this.filterService.selectedDatasetId = '';
+    this.filterService.selectedDatasetId = null;
     this.filterService.close();
   };
 
@@ -107,12 +107,12 @@ export class LexicFilterPanel extends CoreElement {
    */
   private applyFiltersForSelectedLayer(): void {
     const layerId = this.filterService.selectedDatasetId;
-    if (layerId === '') {
+    if (layerId == null) {
       this.selectedLayerFilters = null;
       return;
     }
 
-    this.filterService.setSelectedLayer(this.selectedLayerId, this.webmapId);
+    this.filterService.setSelectedLayer(layerId, this.webmapId);
 
     const layer = this.layers.find((l) => l.id === layerId);
     const available = layer?.availableFilters;
@@ -128,7 +128,7 @@ export class LexicFilterPanel extends CoreElement {
     const layerId = this.filterService.selectedDatasetId;
     const requestVersion = ++this.filtersRequestVersion;
 
-    if (layerId === '') {
+    if (layerId == null) {
       this.selectedLayerFilters = null;
       this.isLoadingFilters = false;
       return;
@@ -194,14 +194,17 @@ export class LexicFilterPanel extends CoreElement {
 
     const requestedId = this.filterService.consumeRequestedDatasetId();
     const currentId = this.filterService.selectedDatasetId;
-    const firstId = this.layers[0]?.id ?? '';
+    const firstId = this.layers[0]?.id ?? null;
     const preferredId =
       requestedId != null && this.layers.some((l) => l.id === requestedId)
         ? requestedId
-        : currentId !== '' && this.layers.some((l) => l.id === currentId)
+        : currentId != null && this.layers.some((l) => l.id === currentId)
           ? currentId
           : firstId;
-    if (currentId === '' || !this.layers.some((l) => l.id === currentId)) {
+    if (
+      currentId == null ||
+      !this.layers.some((l) => l.id === currentId)
+    ) {
       this.filterService.selectedDatasetId = preferredId;
     }
     this.applyFiltersForSelectedLayer();
@@ -256,7 +259,7 @@ export class LexicFilterPanel extends CoreElement {
             ? html`<ngm-core-loader></ngm-core-loader>`
             : html`<ngm-lexic-filter-container
                 .layerFilters=${this.selectedLayerFilters}
-                .layerId=${this.selectedLayerId}
+                .layerId=${this.selectedLayerId ?? ''}
               ></ngm-lexic-filter-container>`}
         </div>
       </div>
