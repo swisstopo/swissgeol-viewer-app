@@ -89,10 +89,12 @@ export class LexicFilterResultPanel extends CoreElement {
       <div class="button-row">
         <ngm-core-button variant="secondary" @click=${this.handleReset}>
           ${i18next.t('layout:lexic.filter.resetAll')}
+          <ngm-core-icon icon="reset"></ngm-core-icon>
         </ngm-core-button>
 
         <ngm-core-button variant="secondary" .isDisabled=${true}>
           ${i18next.t('layout:lexic.filter.zoomToExtent')}
+          <ngm-core-icon icon="zoomPlus"></ngm-core-icon>
         </ngm-core-button>
       </div>
 
