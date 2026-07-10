@@ -70,11 +70,14 @@ export class LexicFilterPanel extends CoreElement {
   }
 
   private readonly handleClose = () => {
+    this.filterService.removeAllFilters();
+    this.filterService.selectedDatasetId = '';
     this.filterService.close();
   };
 
   private readonly handleLayerSelection = (event: Event) => {
     const selectElement = event.target as HTMLSelectElement;
+    this.filterService.removeAllFilters();
     this.filterService.selectedDatasetId = selectElement.value;
     this.applyFiltersForSelectedLayer();
   };
