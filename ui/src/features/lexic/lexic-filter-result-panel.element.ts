@@ -81,6 +81,7 @@ export class LexicFilterResultPanel extends CoreElement {
           min="0"
           max="100"
           .value=${String(this.opacity)}
+          style="--slider-progress: ${this.opacity}%"
           ?disabled=${this.resultState !== 'ok'}
           @input=${this.handleOpacityInput}
         />
@@ -190,14 +191,70 @@ export class LexicFilterResultPanel extends CoreElement {
     }
 
     input[type='range'] {
+      -webkit-appearance: none;
+      appearance: none;
       width: 100%;
       margin: 0;
       cursor: pointer;
-      accent-color: var(--color-primary);
+      height: 4px;
+      border-radius: 2px;
+      background: linear-gradient(
+        to right,
+        var(--color-primary) 0%,
+        var(--color-primary) var(--slider-progress, 70%),
+        var(--color-border--default) var(--slider-progress, 70%),
+        var(--color-border--default) 100%
+      );
+      outline: none;
+    }
+
+    input[type='range']::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    input[type='range']::-moz-range-track {
+      height: 4px;
+      border-radius: 2px;
+      background: var(--color-border--default);
+    }
+
+    input[type='range']::-moz-range-progress {
+      height: 4px;
+      border-radius: 2px;
+      background: var(--color-primary);
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--color-primary);
+      background: var(--color-bg--white, #fff);
+      cursor: pointer;
+    }
+
+    input[type='range']::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--color-primary);
+      background: var(--color-bg--white, #fff);
+      cursor: pointer;
     }
 
     input[type='range']:disabled {
       opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    input[type='range']:disabled::-webkit-slider-thumb {
+      cursor: not-allowed;
+    }
+
+    input[type='range']:disabled::-moz-range-thumb {
       cursor: not-allowed;
     }
 
