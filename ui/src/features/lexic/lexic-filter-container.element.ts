@@ -17,11 +17,11 @@ import {
 
 /** Maps filter IDs to the vocabulary used for term selection. */
 const FILTER_VOCABULARY_MAP: Partial<Record<LexicFilterId, string>> = {
-  'f-lithology-term': 'f-lithology-term',
-  'f-chronostrat-term': 'f-chronostrat-term',
-  'f-tectonic-term': 'f-tectonic-term',
-  'f-lithostrat-term': 'f-lithostrat-term',
-  'f-byAttribute': 'f-byAttribute',
+  'f-lithology-term': 'lithology',
+  'f-chronostrat-term': 'chronostratigraphy',
+  'f-tectonic-term': 'tectonic-units',
+  'f-lithostrat-term': 'lithostratigraphy',
+  // 'f-byAttribute' has no vocabulary — it uses a different mechanism
 };
 
 /**
@@ -31,7 +31,7 @@ const FILTER_VOCABULARY_MAP: Partial<Record<LexicFilterId, string>> = {
  * TODO: Expand this set as new filter types are implemented.
  */
 export const SUPPORTED_FILTER_IDS: ReadonlySet<LexicFilterId> =
-  new Set<LexicFilterId>(['f-lithology-term']);
+  new Set<LexicFilterId>(['f-lithology-term', 'f-chronostrat-term']);
 
 @customElement('ngm-lexic-filter-container')
 export class LexicFilterContainer extends CoreElement {

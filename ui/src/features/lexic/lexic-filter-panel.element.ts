@@ -56,6 +56,11 @@ export class LexicFilterPanel extends CoreElement {
         this.isOpen = isOpen;
       }),
     );
+    this.register(
+      this.filterService.selectedDatasetId$.subscribe((id) => {
+        this.selectedLayerId = id;
+      }),
+    );
 
     void this.loadLayerOptions();
   }
@@ -70,7 +75,7 @@ export class LexicFilterPanel extends CoreElement {
 
   private readonly handleLayerSelection = (event: Event) => {
     const selectElement = event.target as HTMLSelectElement;
-    this.selectedLayerId = selectElement.value;
+    this.filterService.selectedDatasetId = selectElement.value;
     this.applyFiltersForSelectedLayer();
   };
 
@@ -98,14 +103,15 @@ export class LexicFilterPanel extends CoreElement {
    * falls back to a per-layer API call otherwise.
    */
   private applyFiltersForSelectedLayer(): void {
-    if (this.selectedLayerId === '') {
+    const layerId = this.filterService.selectedDatasetId;
+    if (layerId === '') {
       this.selectedLayerFilters = null;
       return;
     }
 
     this.filterService.setSelectedLayer(this.selectedLayerId, this.webmapId);
 
-    const layer = this.layers.find((l) => l.id === this.selectedLayerId);
+    const layer = this.layers.find((l) => l.id === layerId);
     const available = layer?.availableFilters;
     if (available != null && available.length > 0) {
       this.selectedLayerFilters = available;
@@ -116,7 +122,7 @@ export class LexicFilterPanel extends CoreElement {
 
   /** Fallback: fetches filters per-layer when `availableFilters` is missing. */
   private async loadSupportedFiltersForSelectedLayer(): Promise<void> {
-    const layerId = this.selectedLayerId;
+    const layerId = this.filterService.selectedDatasetId;
     const requestVersion = ++this.filtersRequestVersion;
 
     if (layerId === '') {
@@ -134,7 +140,7 @@ export class LexicFilterPanel extends CoreElement {
 
       if (
         this.filtersRequestVersion === requestVersion &&
-        this.selectedLayerId === layerId
+        this.filterService.selectedDatasetId === layerId
       ) {
         this.selectedLayerFilters = response.filters ?? null;
       }
@@ -145,7 +151,7 @@ export class LexicFilterPanel extends CoreElement {
       );
       if (
         this.filtersRequestVersion === requestVersion &&
-        this.selectedLayerId === layerId
+        this.filterService.selectedDatasetId === layerId
       ) {
         this.selectedLayerFilters = null;
       }
@@ -184,16 +190,16 @@ export class LexicFilterPanel extends CoreElement {
     }
 
     const requestedId = this.filterService.consumeRequestedDatasetId();
+    const currentId = this.filterService.selectedDatasetId;
     const firstId = this.layers[0]?.id ?? '';
     const preferredId =
       requestedId != null && this.layers.some((l) => l.id === requestedId)
         ? requestedId
-        : firstId;
-    if (
-      this.selectedLayerId === '' ||
-      !this.layers.some((l) => l.id === this.selectedLayerId)
-    ) {
-      this.selectedLayerId = preferredId;
+        : currentId !== '' && this.layers.some((l) => l.id === currentId)
+          ? currentId
+          : firstId;
+    if (currentId === '' || !this.layers.some((l) => l.id === currentId)) {
+      this.filterService.selectedDatasetId = preferredId;
     }
     this.applyFiltersForSelectedLayer();
   }
@@ -225,13 +231,13 @@ export class LexicFilterPanel extends CoreElement {
               ? html`<ngm-core-loader></ngm-core-loader>`
               : html`
                   <div class="select-wrapper">
-                    <select
-                      .value=${this.selectedLayerId}
-                      @change=${this.handleLayerSelection}
-                    >
+                    <select @change=${this.handleLayerSelection}>
                       ${this.layers.map(
                         (layer) =>
-                          html`<option value="${layer.id}">
+                          html`<option
+                            value="${layer.id}"
+                            ?selected=${layer.id === this.selectedLayerId}
+                          >
                             ${layer.name ?? layer.id}
                           </option>`,
                       )}
@@ -354,7 +360,7 @@ export class LexicFilterPanel extends CoreElement {
 
     .horizontal-divider {
       border-top: 1px solid var(--color-border--default);
-      margin: 0 0 12px;
+      margin: 16px 0 12px;
     }
   `;
 }

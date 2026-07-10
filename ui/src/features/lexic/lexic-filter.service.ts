@@ -38,6 +38,10 @@ export class LexicFilterService extends BaseService {
   readonly requestedDatasetId$: Observable<string | null> =
     this._requestedDatasetId$.asObservable();
 
+  private readonly _selectedDatasetId$ = new BehaviorSubject<string>('');
+  readonly selectedDatasetId$: Observable<string> =
+    this._selectedDatasetId$.asObservable();
+
   private readonly _filterList$ = new BehaviorSubject<LexicActiveFilter[]>([]);
   readonly filterList$: Observable<LexicActiveFilter[]> =
     this._filterList$.asObservable();
@@ -77,6 +81,14 @@ export class LexicFilterService extends BaseService {
 
   get isOpen(): boolean {
     return this._isOpen$.value;
+  }
+
+  get selectedDatasetId(): string {
+    return this._selectedDatasetId$.value;
+  }
+
+  set selectedDatasetId(id: string) {
+    this._selectedDatasetId$.next(id);
   }
 
   get filterList(): ReadonlyArray<LexicActiveFilter> {
