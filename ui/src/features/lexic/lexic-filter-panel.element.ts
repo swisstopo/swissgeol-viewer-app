@@ -46,6 +46,7 @@ export class LexicFilterPanel extends CoreElement {
   accessor isLoadingFilters = false;
 
   private filtersRequestVersion = 0;
+  private webmapId = '';
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -101,6 +102,8 @@ export class LexicFilterPanel extends CoreElement {
       this.selectedLayerFilters = null;
       return;
     }
+
+    this.filterService.setSelectedLayer(this.selectedLayerId, this.webmapId);
 
     const layer = this.layers.find((l) => l.id === this.selectedLayerId);
     const available = layer?.availableFilters;
@@ -166,6 +169,7 @@ export class LexicFilterPanel extends CoreElement {
           SUPPORTED_FILTER_IDS.has((f.id ?? '') as LexicFilterId),
         ),
       );
+      this.webmapId = response.webmapId ?? '';
     } catch (error) {
       // FIXME: Remove this stub fallback once the Lexic API is reachable
       // without CORS issues (e.g. when a proxy or proper CORS headers are in place).
@@ -174,6 +178,7 @@ export class LexicFilterPanel extends CoreElement {
         error,
       );
       this.layers = [];
+      this.webmapId = 'SwissTopoMap';
     } finally {
       this.isLoadingLayers = false;
     }
