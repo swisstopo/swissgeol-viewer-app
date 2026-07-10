@@ -81,7 +81,6 @@ export class LexicFilterResultPanel extends CoreElement {
           min="0"
           max="100"
           .value=${String(this.opacity)}
-          style="--slider-progress: ${this.opacity}%"
           ?disabled=${this.resultState !== 'ok'}
           @input=${this.handleOpacityInput}
         />
@@ -129,12 +128,13 @@ export class LexicFilterResultPanel extends CoreElement {
       align-items: center;
       gap: 8px;
       padding: 10px 12px;
-      border-radius: 6px;
     }
 
     .banner--error {
-      background-color: var(--color-bg--error);
-      color: var(--color-text--invert);
+      background-color: var(--color-bg--error-light);
+      border: 1px solid var(--color-bg--error);
+      border-radius: 4px;
+      color: var(--color-bg--error);
     }
 
     .banner-text {
@@ -194,23 +194,29 @@ export class LexicFilterResultPanel extends CoreElement {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
+      height: 4px;
       margin: 0;
       cursor: pointer;
-      height: 4px;
       border-radius: 2px;
+      outline: none;
       background: linear-gradient(
         to right,
-        var(--color-primary) 0%,
-        var(--color-primary) var(--slider-progress, 70%),
+        var(--color-primary--active) 0%,
+        var(--color-primary--active) var(--slider-progress, 70%),
         var(--color-border--default) var(--slider-progress, 70%),
         var(--color-border--default) 100%
       );
-      outline: none;
     }
 
-    input[type='range']::-webkit-slider-runnable-track {
-      height: 4px;
-      border-radius: 2px;
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--color-primary);
+      background: #fff;
+      cursor: pointer;
     }
 
     input[type='range']::-moz-range-track {
@@ -225,23 +231,12 @@ export class LexicFilterResultPanel extends CoreElement {
       background: var(--color-primary);
     }
 
-    input[type='range']::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid var(--color-primary);
-      background: var(--color-bg--white, #fff);
-      cursor: pointer;
-    }
-
     input[type='range']::-moz-range-thumb {
-      width: 16px;
-      height: 16px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       border: 2px solid var(--color-primary);
-      background: var(--color-bg--white, #fff);
+      background: #fff;
       cursor: pointer;
     }
 
