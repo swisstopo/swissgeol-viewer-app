@@ -1,4 +1,14 @@
-# Lexic OpenAPI Generation
+# Lexic Feature
+
+## URL Parameters
+
+| Parameter          | Default | Description                                                                                                    |
+| ------------------ | ------- | -------------------------------------------------------------------------------------------------------------- |
+| `lexicSingleTile`  | `true`  | Set to `false` to use tiled WMS requests instead of a single image for the filter overlay (better zoom quality, more network requests). |
+
+Example: `https://viewer.swissgeol.ch/?lexicSingleTile=false`
+
+## OpenAPI Generation
 
 This feature uses Orval to generate the Lexic API client and schema models from the OpenAPI spec.
 
