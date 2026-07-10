@@ -73,6 +73,7 @@ export class LexicFilterService extends BaseService {
   private servicesSubscription: Subscription | null = null;
   private cesiumService: CesiumService | null = null;
   private lexicApiService: LexicApiService | null = null;
+  private layerAddedListener: (() => void) | null = null;
 
   private initializeServices(): void {
     const cesium$ = CesiumService.inject$<CesiumService>(CesiumService);
@@ -304,6 +305,14 @@ export class LexicFilterService extends BaseService {
     imageryLayers.raiseToTop(imagery);
     this.currentImagery = imagery;
 
+    // Keep layer on top when other layers are added
+    this.layerAddedListener = () => {
+      if (this.currentImagery != null) {
+        imageryLayers.raiseToTop(this.currentImagery);
+      }
+    };
+    imageryLayers.layerAdded.addEventListener(this.layerAddedListener);
+
     viewer.scene.requestRender();
   }
 
@@ -312,6 +321,12 @@ export class LexicFilterService extends BaseService {
 
     const viewer = this.cesiumService?.viewerOrNull;
     if (viewer != null) {
+      if (this.layerAddedListener != null) {
+        viewer.scene.imageryLayers.layerAdded.removeEventListener(
+          this.layerAddedListener,
+        );
+        this.layerAddedListener = null;
+      }
       try {
         viewer.scene.imageryLayers.remove(this.currentImagery, true);
         viewer.scene.requestRender();
