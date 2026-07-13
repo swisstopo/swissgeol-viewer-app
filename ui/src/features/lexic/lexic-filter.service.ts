@@ -192,6 +192,7 @@ export class LexicFilterService extends BaseService {
     this._filterList$.next([]);
     this.updateMapLayer();
   }
+
   /** Sets result layer opacity (0–100%). Updates the live imagery if present. */
   setResultOpacity(percent: number): void {
     const clamped = Math.min(100, Math.max(0, percent));
@@ -274,7 +275,10 @@ export class LexicFilterService extends BaseService {
       // Discard if a newer update was triggered in the meantime
       if (version !== this.updateVersion) return;
 
-      await this.applyWmsLayer(wmsResponse.url, wmsResponse.body, version);
+      // We can not use wmsResponse.url, since its wrong in current API implementation (lacks version param)
+      const generatedWmsUrl = LexicFilterService.buildWmsUrl();
+
+      await this.applyWmsLayer(generatedWmsUrl, wmsResponse.body, version);
       if (version === this.updateVersion) {
         this._resultState$.next('ok');
       }
@@ -288,7 +292,7 @@ export class LexicFilterService extends BaseService {
   }
 
   private async applyWmsLayer(
-    _wmsUrl: string,
+    wmsUrl: string,
     wmsBody: string,
     version: number,
   ): Promise<void> {
@@ -310,8 +314,6 @@ export class LexicFilterService extends BaseService {
 
     // Parse body and strip params that CesiumJS manages per-tile.
     const customParams = this.parseWmsCustomParams(wmsBody);
-
-    const wmsUrl = LexicFilterService.buildWmsUrl();
 
     const provider = new WebMapServiceImageryProvider({
       url: wmsUrl,

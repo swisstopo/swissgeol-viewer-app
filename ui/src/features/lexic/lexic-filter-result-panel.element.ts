@@ -81,6 +81,7 @@ export class LexicFilterResultPanel extends CoreElement {
           min="0"
           max="100"
           .value=${String(this.opacity)}
+          style="--slider-progress: ${this.opacity}%"
           ?disabled=${this.resultState !== 'ok'}
           @input=${this.handleOpacityInput}
         />
@@ -108,7 +109,11 @@ export class LexicFilterResultPanel extends CoreElement {
       <span class="banner-text"
         >${i18next.t('layout:lexic.filter.loadError')}</span
       >
-      <button class="banner-dismiss" @click=${this.handleDismissLoadError}>
+      <button
+        class="banner-dismiss"
+        aria-label="${i18next.t('app_close_btn_label')}"
+        @click=${this.handleDismissLoadError}
+      >
         <ngm-core-icon icon="close"></ngm-core-icon>
       </button>
     </div>
