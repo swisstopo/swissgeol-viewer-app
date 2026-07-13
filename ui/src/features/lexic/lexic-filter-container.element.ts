@@ -27,9 +27,7 @@ const FILTER_VOCABULARY_MAP: Partial<Record<LexicFilterId, string>> = {
 /**
  * The set of filter IDs currently supported by the application.
  * Only filters listed here will be shown to the user.
- *
- * TODO: Expand this set as new filter types are implemented.
- */
+ **/
 export const SUPPORTED_FILTER_IDS: ReadonlySet<LexicFilterId> =
   new Set<LexicFilterId>([
     'f-lithology-term',
@@ -78,10 +76,15 @@ export class LexicFilterContainer extends CoreElement {
 
   private get filters(): LexicLayerAvailableFilter[] {
     // Only show filters that are currently supported by the application.
-    // TODO: Remove this filtering once all filter types are implemented.
-    return (this.layerFilters ?? []).filter((f) =>
-      SUPPORTED_FILTER_IDS.has((f.id ?? '') as LexicFilterId),
-    );
+    return (this.layerFilters ?? []).filter((f) => {
+      const hasFilter = SUPPORTED_FILTER_IDS.has((f.id ?? '') as LexicFilterId);
+      if (!hasFilter) {
+        console.warn(
+          `Filter with ID "${f.id}" is not supported and will be ignored.`,
+        );
+      }
+      return hasFilter;
+    });
   }
 
   private activeFiltersForCategory(

@@ -297,7 +297,7 @@ export class LexicFilterService extends BaseService {
     version: number,
   ): Promise<void> {
     const cesium = this.cesiumService;
-    if (cesium == null || !cesium.isReady) {
+    if (!cesium?.isReady) {
       await firstValueFrom(
         CesiumService.inject$<CesiumService>(CesiumService).pipe(
           filter(() => this.cesiumService?.isReady === true),
@@ -389,7 +389,7 @@ export class LexicFilterService extends BaseService {
   /** Build the WMS proxy URL from the Lexic API base. */
   private static buildWmsUrl(): string {
     const host =
-      typeof globalThis.location !== 'undefined'
+      globalThis.location !== 'undefined'
         ? globalThis.location.host
         : 'localhost:8000';
     const baseUrl =

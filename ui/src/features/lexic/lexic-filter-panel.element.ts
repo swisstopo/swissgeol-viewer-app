@@ -203,12 +203,14 @@ export class LexicFilterPanel extends CoreElement {
     const requestedId = this.filterService.consumeRequestedDatasetId();
     const currentId = this.filterService.selectedDatasetId;
     const firstId = this.layers[0]?.id ?? null;
+    const currentOrFirst =
+      currentId != null && this.layers.some((l) => l.id === currentId)
+        ? currentId
+        : firstId;
     const preferredId =
       requestedId != null && this.layers.some((l) => l.id === requestedId)
         ? requestedId
-        : currentId != null && this.layers.some((l) => l.id === currentId)
-          ? currentId
-          : firstId;
+        : currentOrFirst;
     if (currentId == null || !this.layers.some((l) => l.id === currentId)) {
       this.filterService.selectedDatasetId = preferredId;
     }
