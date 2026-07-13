@@ -110,7 +110,7 @@ export class LexicFilterDialog extends CoreElement {
         this.getLexicLanguage(),
       );
       this.terms = response.terms ?? [];
-    } catch (error) {
+    } catch {
       this.terms = [];
     } finally {
       this.isLoading = false;
