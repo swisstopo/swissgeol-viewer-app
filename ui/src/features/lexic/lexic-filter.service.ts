@@ -14,9 +14,16 @@ import {
 import { LexicApiService } from './lexic-api.service';
 import { CesiumService } from 'src/services/cesium.service';
 import { FilterId } from 'src/features/lexic/generated/lexic-schemas';
-import { Credit, ImageryLayer, WebMapServiceImageryProvider } from 'cesium';
+import {
+  Credit,
+  ImageryLayer,
+  SingleTileImageryProvider,
+  WebMapServiceImageryProvider,
+} from 'cesium';
 import {
   LEXIC_API_BY_PAGE_HOST,
+  LEXIC_USE_SINGLE_TILE,
+  SWITZERLAND_BOUNDS_WGS84,
   SWITZERLAND_RECTANGLE,
   WEB_MERCATOR_TILING_SCHEME,
 } from 'src/constants';
@@ -275,10 +282,7 @@ export class LexicFilterService extends BaseService {
       // Discard if a newer update was triggered in the meantime
       if (version !== this.updateVersion) return;
 
-      // We can not use wmsResponse.url, since its wrong in current API implementation (lacks version param)
-      const generatedWmsUrl = LexicFilterService.buildWmsUrl();
-
-      await this.applyWmsLayer(generatedWmsUrl, wmsResponse.body, version);
+      await this.applyWmsLayer(wmsResponse.body, version);
       if (version === this.updateVersion) {
         this._resultState$.next('ok');
       }
@@ -291,11 +295,14 @@ export class LexicFilterService extends BaseService {
     }
   }
 
-  private async applyWmsLayer(
-    wmsUrl: string,
-    wmsBody: string,
-    version: number,
-  ): Promise<void> {
+  private static readonly SINGLE_TILE_WIDTH = 2048;
+  private static readonly SINGLE_TILE_HEIGHT = Math.round(
+    2048 *
+      ((SWITZERLAND_BOUNDS_WGS84[3] - SWITZERLAND_BOUNDS_WGS84[1]) /
+        (SWITZERLAND_BOUNDS_WGS84[2] - SWITZERLAND_BOUNDS_WGS84[0])),
+  );
+
+  private async applyWmsLayer(wmsBody: string, version: number): Promise<void> {
     const cesium = this.cesiumService;
     if (!cesium?.isReady) {
       await firstValueFrom(
@@ -312,18 +319,9 @@ export class LexicFilterService extends BaseService {
     const viewer = this.cesiumService!.viewer;
     const imageryLayers = viewer.scene.imageryLayers;
 
-    // Parse body and strip params that CesiumJS manages per-tile.
-    const customParams = this.parseWmsCustomParams(wmsBody);
-
-    const provider = new WebMapServiceImageryProvider({
-      url: wmsUrl,
-      crs: 'EPSG:4326',
-      parameters: customParams,
-      tilingScheme: WEB_MERCATOR_TILING_SCHEME,
-      layers: this._selectedLayerId,
-      rectangle: SWITZERLAND_RECTANGLE,
-      credit: new Credit('swisstopo Lexic Filter'),
-    });
+    const provider = LEXIC_USE_SINGLE_TILE
+      ? this.createSingleTileProvider(wmsBody)
+      : this.createTiledWmsProvider(wmsBody);
 
     const imagery = new ImageryLayer(provider, {
       show: true,
@@ -349,6 +347,31 @@ export class LexicFilterService extends BaseService {
     viewer.scene.requestRender();
   }
 
+  private createSingleTileProvider(wmsBody: string): SingleTileImageryProvider {
+    return new SingleTileImageryProvider({
+      url: this.buildSingleTileUrl(wmsBody),
+      tileWidth: LexicFilterService.SINGLE_TILE_WIDTH,
+      tileHeight: LexicFilterService.SINGLE_TILE_HEIGHT,
+      rectangle: SWITZERLAND_RECTANGLE,
+      credit: new Credit('swisstopo Lexic Filter'),
+    });
+  }
+
+  private createTiledWmsProvider(
+    wmsBody: string,
+  ): WebMapServiceImageryProvider {
+    const customParams = this.parseWmsCustomParams(wmsBody);
+    return new WebMapServiceImageryProvider({
+      url: LexicFilterService.buildWmsUrl(),
+      crs: 'EPSG:4326',
+      parameters: customParams,
+      tilingScheme: WEB_MERCATOR_TILING_SCHEME,
+      layers: this._selectedLayerId,
+      rectangle: SWITZERLAND_RECTANGLE,
+      credit: new Credit('swisstopo Lexic Filter'),
+    });
+  }
+
   private removeFilteredLayer(): void {
     if (this.currentImagery == null) return;
 
@@ -371,9 +394,8 @@ export class LexicFilterService extends BaseService {
   }
 
   /**
-   * Standard WMS params that CesiumJS computes per-tile or always sets correctly.
-   * VERSION and FORMAT are intentionally NOT included — they must be passed through
-   * to override CesiumJS defaults (1.1.1 → 1.3.0, image/jpeg → image/png).
+   * Standard WMS params that are overridden for the single-tile request.
+   * These are set explicitly to match the Switzerland extent and tile dimensions.
    */
   private static readonly WMS_MANAGED_PARAMS = new Set([
     'REQUEST',
@@ -385,6 +407,39 @@ export class LexicFilterService extends BaseService {
     'WIDTH',
     'HEIGHT',
   ]);
+
+  /** Build a complete WMS GetMap URL that returns a single image for the full extent. */
+  private buildSingleTileUrl(body: string): string {
+    const baseUrl = LexicFilterService.buildWmsUrl();
+    const bodyParams = this.parseWmsBodyParams(body);
+
+    // Collect custom params from the body (STYLES, SEMANTIC_FILTER, VERSION, FORMAT, etc.)
+    const queryParts: string[] = [];
+    for (const [key, value] of Object.entries(bodyParams)) {
+      if (!LexicFilterService.WMS_MANAGED_PARAMS.has(key.toUpperCase())) {
+        queryParts.push(
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+        );
+      }
+    }
+
+    // WMS 1.3.0 with CRS=EPSG:4326 uses axis order lat/lon (minY,minX,maxY,maxX)
+    const [minX, minY, maxX, maxY] = SWITZERLAND_BOUNDS_WGS84;
+    const bbox = `${minY},${minX},${maxY},${maxX}`;
+
+    // Add standard WMS GetMap params for a single full-extent image
+    queryParts.push(
+      'SERVICE=WMS',
+      'REQUEST=GetMap',
+      `LAYERS=${encodeURIComponent(this._selectedLayerId)}`,
+      'CRS=EPSG%3A4326',
+      `BBOX=${bbox}`,
+      `WIDTH=${LexicFilterService.SINGLE_TILE_WIDTH}`,
+      `HEIGHT=${LexicFilterService.SINGLE_TILE_HEIGHT}`,
+    );
+
+    return `${baseUrl}?${queryParts.join('&')}`;
+  }
 
   /** Build the WMS proxy URL from the Lexic API base. */
   private static buildWmsUrl(): string {
@@ -398,8 +453,8 @@ export class LexicFilterService extends BaseService {
   }
 
   /**
-   * Parses the body string and returns only custom params (STYLES, SEMANTIC_FILTER, TILED, etc.),
-   * stripping out standard WMS params that CesiumJS manages.
+   * Returns only custom params (STYLES, SEMANTIC_FILTER, VERSION, FORMAT, etc.),
+   * stripping out standard WMS params that CesiumJS manages per-tile.
    */
   private parseWmsCustomParams(body: string): Record<string, string> {
     const all = this.parseWmsBodyParams(body);
