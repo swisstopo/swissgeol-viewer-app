@@ -282,10 +282,7 @@ export class LexicFilterService extends BaseService {
       // Discard if a newer update was triggered in the meantime
       if (version !== this.updateVersion) return;
 
-      // We can not use wmsResponse.url, since its wrong in current API implementation (lacks version param)
-      const generatedWmsUrl = LexicFilterService.buildWmsUrl();
-
-      await this.applyWmsLayer(generatedWmsUrl, wmsResponse.body, version);
+      await this.applyWmsLayer(wmsResponse.body, version);
       if (version === this.updateVersion) {
         this._resultState$.next('ok');
       }
@@ -305,11 +302,7 @@ export class LexicFilterService extends BaseService {
         (SWITZERLAND_BOUNDS_WGS84[2] - SWITZERLAND_BOUNDS_WGS84[0])),
   );
 
-  private async applyWmsLayer(
-    wmsUrl: string,
-    wmsBody: string,
-    version: number,
-  ): Promise<void> {
+  private async applyWmsLayer(wmsBody: string, version: number): Promise<void> {
     const cesium = this.cesiumService;
     if (cesium == null || !cesium.isReady) {
       await firstValueFrom(
