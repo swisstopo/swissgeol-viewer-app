@@ -1,6 +1,6 @@
 import { LayerInfoAttribute } from 'src/features/layer/info/layer-info.model';
 import {
-  getLayerAttributeName,
+  getTranslationKeyForLayerAttributeName,
   WmtsLayer,
   WmtsLayerSource,
 } from 'src/features/layer';
@@ -360,7 +360,7 @@ class ExternalWmtsInfoClient {
     }
 
     return Object.entries(properties).map(([key, rawValue]) => ({
-      key: getLayerAttributeName(this.layer, key),
+      key: getTranslationKeyForLayerAttributeName(this.layer, key),
       value: this.normalizeAttributeValue(rawValue),
     }));
   }
