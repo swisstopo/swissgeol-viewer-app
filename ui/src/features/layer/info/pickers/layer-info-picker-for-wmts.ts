@@ -243,8 +243,15 @@ class LayerInfoForWmts implements LayerInfo {
     if (this.identifyResult == null || this.service == null) {
       return;
     }
-    const html = await this.service.fetchHtmlPopup(this.identifyResult, lang);
-    this.attributes = this.service.extractPopupAttributes(html);
+    try {
+      const html = await this.service.fetchHtmlPopup(this.identifyResult, lang);
+      this.attributes = this.service.extractPopupAttributes(html);
+    } catch (error) {
+      console.error(
+        `Failed to refresh attributes for layer ${this.layerId} in language ${lang}:`,
+        error,
+      );
+    }
   }
 
   zoomToObject(): void {
