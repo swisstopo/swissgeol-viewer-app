@@ -20,7 +20,10 @@
       "includeNarrowers": "Untergeordnete einschliessen (Children)",
       "cancel": "Abbrechen",
       "applyFilter": "Filter hinzufügen",
-      "noResults": "Keine Ergebnisse gefunden"
+      "noResults": "Keine Ergebnisse gefunden",
+      "opacity": "Filter Deckkraft",
+      "resetAll": "Alle Filter zurücksetzen",
+      "loadError": "Fehler beim Laden"
     }
   }
 }

@@ -18,10 +18,22 @@ import {
 /** Maps filter IDs to the vocabulary used for term selection. */
 const FILTER_VOCABULARY_MAP: Partial<Record<LexicFilterId, string>> = {
   'f-lithology-term': 'lithology',
-  // Add more filters when implementing them
-  //'f-tectonic-term': 'tectonic-units',
-  //'f-lithostrat-term': 'lithostratigraphy',
+  'f-chronostrat-term': 'chronostratigraphy',
+  'f-tectonic-term': 'tectonic-units',
+  'f-lithostrat-term': 'lithostratigraphy',
+  // 'f-byAttribute' has no vocabulary — it uses a different mechanism
 };
+
+/**
+ * The set of filter IDs currently supported by the application.
+ * Only filters listed here will be shown to the user.
+ **/
+export const SUPPORTED_FILTER_IDS: ReadonlySet<LexicFilterId> =
+  new Set<LexicFilterId>([
+    'f-lithology-term',
+    'f-tectonic-term',
+    'f-lithostrat-term',
+  ]);
 
 @customElement('ngm-lexic-filter-container')
 export class LexicFilterContainer extends CoreElement {
@@ -63,7 +75,16 @@ export class LexicFilterContainer extends CoreElement {
   }
 
   private get filters(): LexicLayerAvailableFilter[] {
-    return this.layerFilters ?? [];
+    // Only show filters that are currently supported by the application.
+    return (this.layerFilters ?? []).filter((f) => {
+      const hasFilter = SUPPORTED_FILTER_IDS.has((f.id ?? '') as LexicFilterId);
+      if (!hasFilter) {
+        console.warn(
+          `Filter with ID "${f.id}" is not supported and will be ignored.`,
+        );
+      }
+      return hasFilter;
+    });
   }
 
   private activeFiltersForCategory(

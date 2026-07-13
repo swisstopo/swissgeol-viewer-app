@@ -208,6 +208,18 @@ export const LEXIC_API_BY_PAGE_HOST = {
   'viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
 };
 
+/**
+ * When `true`, the Lexic filter layer is rendered as a single untiled image
+ * covering the full Switzerland extent (fewer requests, but lower quality at
+ * high zoom). When `false`, the standard tiled WMS approach is used.
+ *
+ * Override via URL: `?lexicSingleTile=true`
+ */
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const LEXIC_USE_SINGLE_TILE =
+  new URLSearchParams(globalThis.location?.search).get('lexicSingleTile') ===
+  'true';
+
 export interface WmtsCapabilitiesLinks {
   wms: string;
   wmts: string;

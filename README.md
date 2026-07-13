@@ -87,6 +87,9 @@ A few URL parameters will modify the behavior of the viewer:
 - `inspector` display the Cesium Inspector widget
 - `inspector_wireframe` enable the wireframe mode
 - `cesiumToolbar` display configuration panel for fog, ambient, background color and terrain underground color
+- `lexicSingleTile` Set to `true` to use a single untiled image instead of tiled WMS requests for the filter overlay (fewer requests, but lower quality at high zoom). Default: false
+
+Example: `https://viewer.swissgeol.ch/?lexicSingleTile=true`
 
 ## Support
 
