@@ -76,30 +76,27 @@ export class LexicFilterResultPanel extends CoreElement {
           >
           <span class="opacity-value">${this.opacity}%</span>
         </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          .value=${String(this.opacity)}
-          style="--slider-progress: ${this.opacity}%"
-          ?disabled=${this.resultState !== 'ok'}
-          @input=${this.handleOpacityInput}
-        />
+        <div class="opacity-row">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            .value=${String(this.opacity)}
+            style="--slider-progress: ${this.opacity}%"
+            ?disabled=${this.resultState !== 'ok'}
+            @input=${this.handleOpacityInput}
+          />
+        </div>
+
+        <div class="button-row">
+          <ngm-core-button variant="secondary" @click=${this.handleReset}>
+            ${i18next.t('layout:lexic.filter.resetAll')}
+            <ngm-core-icon icon="reset"></ngm-core-icon>
+          </ngm-core-button>
+        </div>
+
+        <div class="divider"></div>
       </div>
-
-      <div class="button-row">
-        <ngm-core-button variant="secondary" @click=${this.handleReset}>
-          ${i18next.t('layout:lexic.filter.resetAll')}
-          <ngm-core-icon icon="reset"></ngm-core-icon>
-        </ngm-core-button>
-
-        <ngm-core-button variant="secondary" .isDisabled=${true}>
-          ${i18next.t('layout:lexic.filter.zoomToExtent')}
-          <ngm-core-icon icon="zoomPlus"></ngm-core-icon>
-        </ngm-core-button>
-      </div>
-
-      <div class="divider"></div>
     `;
   };
 
@@ -167,7 +164,7 @@ export class LexicFilterResultPanel extends CoreElement {
     .opacity-section {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 24px;
     }
 
     .opacity-row {
@@ -180,7 +177,7 @@ export class LexicFilterResultPanel extends CoreElement {
       width: 16px;
       height: 16px;
       border-radius: 3px;
-      background-color: var(--color-primary);
+      background-color: #dcd61f;
       flex-shrink: 0;
     }
 
@@ -263,7 +260,7 @@ export class LexicFilterResultPanel extends CoreElement {
     .button-row {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 16px;
     }
 
     .button-row ngm-core-button {

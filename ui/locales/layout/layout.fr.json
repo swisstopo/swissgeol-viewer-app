@@ -23,7 +23,6 @@
       "noResults": "Aucun résultat trouvé",
       "opacity": "Opacité du filtre",
       "resetAll": "Réinitialiser tous les filtres",
-      "zoomToExtent": "Zoomer sur l'étendue du filtre",
       "loadError": "Erreur lors du chargement"
     }
   }
