@@ -435,13 +435,15 @@ export class LexicFilterService extends BaseService {
     const bbox = `${minY},${minX},${maxY},${maxX}`;
 
     // Add standard WMS GetMap params for a single full-extent image
-    queryParts.push('SERVICE=WMS');
-    queryParts.push('REQUEST=GetMap');
-    queryParts.push(`LAYERS=${encodeURIComponent(this._selectedLayerId)}`);
-    queryParts.push('CRS=EPSG%3A4326');
-    queryParts.push(`BBOX=${bbox}`);
-    queryParts.push(`WIDTH=${LexicFilterService.SINGLE_TILE_WIDTH}`);
-    queryParts.push(`HEIGHT=${LexicFilterService.SINGLE_TILE_HEIGHT}`);
+    queryParts.push(
+      'SERVICE=WMS',
+      'REQUEST=GetMap',
+      `LAYERS=${encodeURIComponent(this._selectedLayerId)}`,
+      'CRS=EPSG%3A4326',
+      `BBOX=${bbox}`,
+      `WIDTH=${LexicFilterService.SINGLE_TILE_WIDTH}`,
+      `HEIGHT=${LexicFilterService.SINGLE_TILE_HEIGHT}`,
+    );
 
     return `${baseUrl}?${queryParts.join('&')}`;
   }
