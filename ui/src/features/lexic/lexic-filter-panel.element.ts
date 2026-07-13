@@ -209,10 +209,7 @@ export class LexicFilterPanel extends CoreElement {
         : currentId != null && this.layers.some((l) => l.id === currentId)
           ? currentId
           : firstId;
-    if (
-      currentId == null ||
-      !this.layers.some((l) => l.id === currentId)
-    ) {
+    if (currentId == null || !this.layers.some((l) => l.id === currentId)) {
       this.filterService.selectedDatasetId = preferredId;
     }
     this.applyFiltersForSelectedLayer();

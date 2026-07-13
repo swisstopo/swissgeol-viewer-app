@@ -110,7 +110,7 @@ export class LexicFilterDialog extends CoreElement {
         this.getLexicLanguage(),
       );
       this.terms = response.terms ?? [];
-    } catch (error) {
+    } catch {
       this.terms = [];
     } finally {
       this.isLoading = false;
@@ -125,9 +125,7 @@ export class LexicFilterDialog extends CoreElement {
         .filter((f) => f.filterId === this.config.filterId)
         .map((f) => (f.parameters as { term?: string }).term),
     );
-    const available = this.terms.filter(
-      (term) => !appliedTerms.has(term.term),
-    );
+    const available = this.terms.filter((term) => !appliedTerms.has(term.term));
     const query = this.searchQuery.trim().toLowerCase();
     if (query === '') {
       return available;
