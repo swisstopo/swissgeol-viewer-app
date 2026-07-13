@@ -444,7 +444,7 @@ export class LexicFilterService extends BaseService {
   /** Build the WMS proxy URL from the Lexic API base. */
   private static buildWmsUrl(): string {
     const host =
-      globalThis.location !== 'undefined'
+      typeof globalThis.location !== 'undefined'
         ? globalThis.location.host
         : 'localhost:8000';
     const baseUrl =
