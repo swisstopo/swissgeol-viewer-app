@@ -4,9 +4,9 @@
 
 | Parameter          | Default | Description                                                                                                    |
 | ------------------ | ------- | -------------------------------------------------------------------------------------------------------------- |
-| `lexicSingleTile`  | `true`  | Set to `false` to use tiled WMS requests instead of a single image for the filter overlay (better zoom quality, more network requests). |
+| `lexicSingleTile`  | `false` | Set to `true` to use a single untiled image instead of tiled WMS requests for the filter overlay (fewer requests, but lower quality at high zoom). |
 
-Example: `https://viewer.swissgeol.ch/?lexicSingleTile=false`
+Example: `https://viewer.swissgeol.ch/?lexicSingleTile=true`
 
 ## OpenAPI Generation
 

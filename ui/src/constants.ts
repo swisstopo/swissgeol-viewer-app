@@ -213,12 +213,12 @@ export const LEXIC_API_BY_PAGE_HOST = {
  * covering the full Switzerland extent (fewer requests, but lower quality at
  * high zoom). When `false`, the standard tiled WMS approach is used.
  *
- * Override via URL: `?lexicSingleTile=false`
+ * Override via URL: `?lexicSingleTile=true`
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const LEXIC_USE_SINGLE_TILE =
-  new URLSearchParams(globalThis.location?.search).get('lexicSingleTile') !==
-  'false';
+  new URLSearchParams(globalThis.location?.search).get('lexicSingleTile') ===
+  'true';
 
 export interface WmtsCapabilitiesLinks {
   wms: string;
