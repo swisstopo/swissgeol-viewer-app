@@ -14,7 +14,8 @@
     "filter": {
       "reset": "Réinitialiser",
       "addFilter": "Ajouter un filtre",
-      "or": "OR",
+      "or": "OU",
+      "and": "ET",
       "dialogTitle": "Filtre – {{title}}",
       "searchPlaceholder": "Rechercher {{title}} ...",
       "includeNarrowers": "Inclure les sous-catégories (Children)",

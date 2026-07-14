@@ -14,7 +14,8 @@
     "filter": {
       "reset": "Zurücksetzen",
       "addFilter": "Filter hinzufügen",
-      "or": "OR",
+      "or": "ODER",
+      "and": "UND",
       "dialogTitle": "Filter – {{title}}",
       "searchPlaceholder": "{{title}} suchen ...",
       "includeNarrowers": "Untergeordnete einschliessen (Children)",

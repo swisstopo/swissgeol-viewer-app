@@ -15,6 +15,7 @@
       "reset": "Reset",
       "addFilter": "Add filter",
       "or": "OR",
+      "and": "AND",
       "dialogTitle": "Filter – {{title}}",
       "searchPlaceholder": "{{title}} search ...",
       "includeNarrowers": "Include Narrowers (Children)",
