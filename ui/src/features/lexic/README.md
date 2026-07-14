@@ -2,9 +2,9 @@
 
 ## URL Parameters
 
-| Parameter          | Default | Description                                                                                                    |
-| ------------------ | ------- | -------------------------------------------------------------------------------------------------------------- |
-| `lexicSingleTile`  | `false` | Set to `true` to use a single untiled image instead of tiled WMS requests for the filter overlay (fewer requests, but lower quality at high zoom). |
+| Parameter         | Default | Description                                                                                                                                        |
+| ----------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lexicSingleTile` | `false` | Set to `true` to use a single untiled image instead of tiled WMS requests for the filter overlay (fewer requests, but lower quality at high zoom). |
 
 Example: `https://viewer.swissgeol.ch/?lexicSingleTile=true`
 
