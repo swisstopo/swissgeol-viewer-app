@@ -36,6 +36,13 @@ function createService() {
 
   const mockViewer = {
     scene: {
+      globe: {
+        tilesLoaded: true,
+        tileLoadProgressEvent: {
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        },
+      },
       imageryLayers: {
         add: vi.fn(),
         remove: vi.fn(),
@@ -71,6 +78,7 @@ function createService() {
 describe('LexicFilterService', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn());
+    vi.mocked(showSnackbarError).mockClear();
   });
 
   afterEach(() => {
@@ -420,6 +428,11 @@ describe('LexicFilterService', () => {
       expect(showSnackbarError).toHaveBeenCalledTimes(1);
       expect(showSnackbarError).toHaveBeenCalledWith(
         'layout:lexic.errors.loadTiles',
+      );
+
+      (service as any).detachImageryErrorHandler();
+      expect(mockProvider.errorEvent.removeEventListener).toHaveBeenCalledWith(
+        listeners[0],
       );
     });
 

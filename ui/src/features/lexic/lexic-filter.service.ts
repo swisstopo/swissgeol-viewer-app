@@ -19,7 +19,6 @@ import {
   ImageryLayer,
   ImageryProvider,
   SingleTileImageryProvider,
-  Viewer,
   WebMapServiceImageryProvider,
 } from 'cesium';
 import {
@@ -31,6 +30,7 @@ import {
 } from 'src/constants';
 import { showSnackbarError } from 'src/notifications';
 import i18next from 'i18next';
+import { LexicTileLoadWaiter } from './lexic-tile-load';
 
 export type LexicResultState = 'idle' | 'loading' | 'ok' | 'load-error';
 
@@ -93,8 +93,8 @@ export class LexicFilterService extends BaseService {
   private lexicApiService: LexicApiService | null = null;
   private layerAddedListener: (() => void) | null = null;
   private imageryErrorListener: (() => void) | null = null;
-  private tileProgressListener: ((queueLength: number) => void) | null = null;
-  private tileProgressResolve: (() => void) | null = null;
+  private imageryErrorProvider: ImageryProvider | null = null;
+  private readonly tileLoadWaiter = new LexicTileLoadWaiter();
 
   private initializeServices(): void {
     const cesium$ = CesiumService.inject$<CesiumService>(CesiumService);
@@ -350,8 +350,6 @@ export class LexicFilterService extends BaseService {
     // Remove previous filtered layer if present
     this.removeFilteredLayer();
 
-    this.attachImageryErrorHandler(provider, version);
-
     const imagery = new ImageryLayer(provider, {
       show: true,
       alpha: this._resultOpacity$.value / 100,
@@ -361,6 +359,7 @@ export class LexicFilterService extends BaseService {
     imageryLayers.add(imagery);
     imageryLayers.raiseToTop(imagery);
     this.currentImagery = imagery;
+    this.attachImageryErrorHandler(provider, version);
 
     // Keep layer on top when other layers are added
     this.layerAddedListener = () => {
@@ -371,65 +370,9 @@ export class LexicFilterService extends BaseService {
     imageryLayers.layerAdded.addEventListener(this.layerAddedListener);
 
     viewer.scene.requestRender();
-    await this.waitForInitialTiles(viewer, version);
-  }
-
-  /**
-   * Waits until Cesium finishes loading tiles after the filtered imagery layer
-   * is added. Stays pending until the globe reports tiles loaded (or the wait
-   * is cancelled by a newer update / tile error).
-   */
-  private async waitForInitialTiles(
-    viewer: Viewer,
-    version: number,
-  ): Promise<void> {
-    if (version !== this.updateVersion) return;
-
-    const globe = viewer.scene.globe;
-    if (
-      globe.tileLoadProgressEvent == null ||
-      typeof globe.tileLoadProgressEvent.addEventListener !== 'function'
-    ) {
-      return;
-    }
-
-    this.finishTileWait(globe);
-
-    await new Promise<void>((resolve) => {
-      let sawPendingTiles = false;
-
-      this.tileProgressResolve = resolve;
-      this.tileProgressListener = (queueLength: number) => {
-        if (version !== this.updateVersion) {
-          this.finishTileWait(globe);
-          return;
-        }
-        if (queueLength > 0) {
-          sawPendingTiles = true;
-        }
-        if (sawPendingTiles && queueLength === 0 && globe.tilesLoaded) {
-          this.finishTileWait(globe);
-        }
-      };
-      globe.tileLoadProgressEvent.addEventListener(this.tileProgressListener);
-      viewer.scene.requestRender();
+    await this.tileLoadWaiter.wait(viewer, {
+      isCurrent: () => version === this.updateVersion,
     });
-  }
-
-  private finishTileWait(globe?: {
-    tileLoadProgressEvent?: {
-      removeEventListener: (listener: (queueLength: number) => void) => void;
-    };
-  }): void {
-    if (this.tileProgressListener != null) {
-      globe?.tileLoadProgressEvent?.removeEventListener?.(
-        this.tileProgressListener,
-      );
-      this.tileProgressListener = null;
-    }
-    const resolve = this.tileProgressResolve;
-    this.tileProgressResolve = null;
-    resolve?.();
   }
 
   private attachImageryErrorHandler(
@@ -440,23 +383,23 @@ export class LexicFilterService extends BaseService {
     this.imageryErrorListener = () => {
       if (version !== this.updateVersion) return;
       this.showTileLoadError(version);
-      this.finishTileWait(
-        this.cesiumService?.viewerOrNull?.scene?.globe,
-      );
+      this.tileLoadWaiter.cancel();
     };
+    this.imageryErrorProvider = provider;
     provider.errorEvent.addEventListener(this.imageryErrorListener);
   }
 
   private detachImageryErrorHandler(): void {
     if (
       this.imageryErrorListener != null &&
-      this.currentImagery?.imageryProvider != null
+      this.imageryErrorProvider != null
     ) {
-      this.currentImagery.imageryProvider.errorEvent.removeEventListener(
+      this.imageryErrorProvider.errorEvent.removeEventListener(
         this.imageryErrorListener,
       );
     }
     this.imageryErrorListener = null;
+    this.imageryErrorProvider = null;
   }
 
   private showTileLoadError(version: number): void {
@@ -492,7 +435,7 @@ export class LexicFilterService extends BaseService {
 
   private removeFilteredLayer(): void {
     this.detachImageryErrorHandler();
-    this.finishTileWait(this.cesiumService?.viewerOrNull?.scene?.globe);
+    this.tileLoadWaiter.cancel();
 
     if (this.currentImagery == null) return;
 

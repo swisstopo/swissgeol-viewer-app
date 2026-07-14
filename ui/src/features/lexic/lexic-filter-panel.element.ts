@@ -210,7 +210,6 @@ export class LexicFilterPanel extends CoreElement {
       console.error('[Lexic] Failed to load datasets:', error);
       this.layers = [];
       this.webmapId = '';
-      this.isLoadingLayers = false;
       // Only surface the error when the panel is open — otherwise datasets
       // are retried the next time the panel is opened.
       if (this.filterService.isOpen) {
