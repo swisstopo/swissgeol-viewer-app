@@ -280,7 +280,7 @@ export class LexicFilterService extends BaseService {
 
     this._resultState$.next('loading');
 
-    let wmsResponse;
+    let wmsResponse: { body: string };
     try {
       wmsResponse = await this.lexicApiService.generateWmsRequest({
         webmapId: this._webmapId,
