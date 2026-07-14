@@ -24,6 +24,13 @@
       "opacity": "Opacità del filtro",
       "resetAll": "Ripristina tutti i filtri",
       "loadError": "Errore durante il caricamento"
+    },
+    "errors": {
+      "loadDatasets": "Impossibile caricare i set di dati Lexic disponibili.",
+      "generateWmsRequest_one": "Impossibile applicare il filtro Lexic selezionato alla mappa.",
+      "generateWmsRequest_other": "Impossibile applicare i filtri Lexic selezionati alla mappa.",
+      "loadFilterTerms": "Impossibile caricare i termini del filtro Lexic.",
+      "loadTiles": "Impossibile caricare le tessere della mappa del filtro Lexic."
     }
   }
 }

@@ -24,6 +24,13 @@
       "opacity": "Filter opacity",
       "resetAll": "Reset all filters",
       "loadError": "Error loading results"
+    },
+    "errors": {
+      "loadDatasets": "Could not load the available Lexic datasets.",
+      "generateWmsRequest_one": "Could not apply the selected Lexic filter to the map.",
+      "generateWmsRequest_other": "Could not apply the selected Lexic filters to the map.",
+      "loadFilterTerms": "Could not load the Lexic filter terms.",
+      "loadTiles": "Could not load the Lexic filter map tiles."
     }
   }
 }

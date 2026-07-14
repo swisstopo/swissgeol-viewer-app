@@ -3,6 +3,17 @@ import { LexicFilterService, LexicResultState } from './lexic-filter.service';
 import { LexicApiService } from './lexic-api.service';
 import { CesiumService } from 'src/services/cesium.service';
 import { WmsRequestFiltersFilterId } from './generated/lexic-schemas';
+import { showSnackbarError } from 'src/notifications';
+
+vi.mock('src/notifications', () => ({
+  showSnackbarError: vi.fn(),
+}));
+
+vi.mock('i18next', () => ({
+  default: {
+    t: (key: string) => key,
+  },
+}));
 
 const LITHOLOGY_FILTER_ID = WmsRequestFiltersFilterId['f-lithology-term'];
 const LITHOSTRAT_FILTER_ID = WmsRequestFiltersFilterId['f-lithostrat-term'];
@@ -364,6 +375,52 @@ describe('LexicFilterService', () => {
       await vi.waitFor(() => {
         expect(states).toContain('load-error');
       });
+
+      expect(showSnackbarError).toHaveBeenCalledWith(
+        'layout:lexic.errors.generateWmsRequest',
+      );
+    });
+
+    it('shows a tile load error toast at most once per update version', () => {
+      const { service } = createService();
+
+      (service as any).showTileLoadError(1);
+      (service as any).showTileLoadError(1);
+
+      expect(showSnackbarError).toHaveBeenCalledTimes(1);
+      expect(showSnackbarError).toHaveBeenCalledWith(
+        'layout:lexic.errors.loadTiles',
+      );
+
+      (service as any).showTileLoadError(2);
+      expect(showSnackbarError).toHaveBeenCalledTimes(2);
+    });
+
+    it('attaches imagery error listeners that surface tile load errors', () => {
+      const { service } = createService();
+      const listeners: Array<() => void> = [];
+      const mockProvider = {
+        errorEvent: {
+          addEventListener: vi.fn((listener: () => void) => {
+            listeners.push(listener);
+          }),
+          removeEventListener: vi.fn(),
+        },
+      };
+
+      (service as any).updateVersion = 5;
+      (service as any).attachImageryErrorHandler(mockProvider, 5);
+
+      expect(mockProvider.errorEvent.addEventListener).toHaveBeenCalled();
+
+      vi.mocked(showSnackbarError).mockClear();
+      listeners[0]();
+      listeners[0]();
+
+      expect(showSnackbarError).toHaveBeenCalledTimes(1);
+      expect(showSnackbarError).toHaveBeenCalledWith(
+        'layout:lexic.errors.loadTiles',
+      );
     });
 
     it('transitions through loading → ok on successful WMS response', async () => {

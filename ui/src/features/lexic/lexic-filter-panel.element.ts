@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { css, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
+import { showSnackbarError } from 'src/notifications';
 import { applyTypography } from 'src/styles/theme';
 import { LexicApiService } from './lexic-api.service';
 import { LexicFilterService } from './lexic-filter.service';
@@ -57,7 +58,12 @@ export class LexicFilterPanel extends CoreElement {
 
     this.register(
       this.filterService.isOpen$.subscribe((isOpen) => {
+        const wasOpen = this.isOpen;
         this.isOpen = isOpen;
+        // Retry loading datasets when the panel is opened and none are available yet.
+        if (isOpen && !wasOpen && this.layers.length === 0 && !this.isLoadingLayers) {
+          void this.loadLayerOptions();
+        }
       }),
     );
     this.register(
@@ -188,14 +194,17 @@ export class LexicFilterPanel extends CoreElement {
       );
       this.webmapId = response.webmapId ?? '';
     } catch (error) {
-      // FIXME: Remove this stub fallback once the Lexic API is reachable
-      // without CORS issues (e.g. when a proxy or proper CORS headers are in place).
-      console.warn(
-        '[Lexic] getLayers API call failed, falling back to stub layers:',
-        error,
-      );
+      console.error('[Lexic] Failed to load datasets:', error);
       this.layers = [];
-      this.webmapId = 'SwissTopoMap';
+      this.webmapId = '';
+      this.isLoadingLayers = false;
+      // Only surface the error when the panel is open — otherwise datasets
+      // are retried the next time the panel is opened.
+      if (this.filterService.isOpen) {
+        showSnackbarError(i18next.t('layout:lexic.errors.loadDatasets'));
+        this.handleClose();
+      }
+      return;
     } finally {
       this.isLoadingLayers = false;
     }

@@ -4,6 +4,7 @@ import { css, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { CoreModal } from 'src/features/core/core-modal.element';
+import { showSnackbarError } from 'src/notifications';
 import { applyTypography } from 'src/styles/theme';
 import { LexicFilterId, LexicLanguage } from './lexic-api.model';
 import { LexicFilterService } from './lexic-filter.service';
@@ -110,8 +111,12 @@ export class LexicFilterDialog extends CoreElement {
         this.getLexicLanguage(),
       );
       this.terms = response.terms ?? [];
-    } catch {
+    } catch (error) {
+      console.error('[Lexic] Failed to load filter terms:', error);
       this.terms = [];
+      showSnackbarError(i18next.t('layout:lexic.errors.loadFilterTerms'));
+      this.closeDialog();
+      return;
     } finally {
       this.isLoading = false;
       this.focusedIndex = -1;

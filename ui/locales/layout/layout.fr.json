@@ -24,6 +24,13 @@
       "opacity": "Opacité du filtre",
       "resetAll": "Réinitialiser tous les filtres",
       "loadError": "Erreur lors du chargement"
+    },
+    "errors": {
+      "loadDatasets": "Impossible de charger les jeux de données Lexic disponibles.",
+      "generateWmsRequest_one": "Impossible d'appliquer le filtre Lexic sélectionné à la carte.",
+      "generateWmsRequest_other": "Impossible d'appliquer les filtres Lexic sélectionnés à la carte.",
+      "loadFilterTerms": "Impossible de charger les termes de filtre Lexic.",
+      "loadTiles": "Impossible de charger les tuiles de carte du filtre Lexic."
     }
   }
 }
