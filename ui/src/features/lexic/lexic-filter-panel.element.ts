@@ -50,6 +50,9 @@ export class LexicFilterPanel extends CoreElement {
   @state()
   accessor isLoadingFilters = false;
 
+  @state()
+  accessor isLoadingResults = false;
+
   private filtersRequestVersion = 0;
   private webmapId = '';
 
@@ -61,7 +64,12 @@ export class LexicFilterPanel extends CoreElement {
         const wasOpen = this.isOpen;
         this.isOpen = isOpen;
         // Retry loading datasets when the panel is opened and none are available yet.
-        if (isOpen && !wasOpen && this.layers.length === 0 && !this.isLoadingLayers) {
+        if (
+          isOpen &&
+          !wasOpen &&
+          this.layers.length === 0 &&
+          !this.isLoadingLayers
+        ) {
           void this.loadLayerOptions();
         }
       }),
@@ -69,6 +77,11 @@ export class LexicFilterPanel extends CoreElement {
     this.register(
       this.filterService.selectedDatasetId$.subscribe((id) => {
         this.selectedLayerId = id;
+      }),
+    );
+    this.register(
+      this.filterService.resultState$.subscribe((state) => {
+        this.isLoadingResults = state === 'loading';
       }),
     );
 
@@ -234,9 +247,18 @@ export class LexicFilterPanel extends CoreElement {
     return html`
       <div class="floating-panel">
         <header class="panel-header">
-          <span class="panel-title"
-            >${i18next.t('layout:items.Lexic')} Filter</span
-          >
+          <div class="panel-header-leading">
+            <span class="panel-title"
+              >${i18next.t('layout:items.Lexic')} Filter</span
+            >
+            ${this.isLoadingResults
+              ? html`<sgc-icon
+                  name="spinner"
+                  animation="spin"
+                  aria-hidden="true"
+                ></sgc-icon>`
+              : nothing}
+          </div>
           <ngm-core-icon
             icon="close"
             interactive
@@ -310,10 +332,26 @@ export class LexicFilterPanel extends CoreElement {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
       padding: 14px 16px;
       background-color: var(--color-bg--dark);
       border-bottom: 1px solid #e0e2e6;
       flex-shrink: 0;
+    }
+
+    .panel-header-leading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .panel-header-leading > sgc-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: var(--color-primary);
     }
 
     .panel-title {

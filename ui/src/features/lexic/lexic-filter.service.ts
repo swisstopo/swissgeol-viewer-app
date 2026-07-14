@@ -19,6 +19,7 @@ import {
   ImageryLayer,
   ImageryProvider,
   SingleTileImageryProvider,
+  Viewer,
   WebMapServiceImageryProvider,
 } from 'cesium';
 import {
@@ -92,6 +93,8 @@ export class LexicFilterService extends BaseService {
   private lexicApiService: LexicApiService | null = null;
   private layerAddedListener: (() => void) | null = null;
   private imageryErrorListener: (() => void) | null = null;
+  private tileProgressListener: ((queueLength: number) => void) | null = null;
+  private tileProgressResolve: (() => void) | null = null;
 
   private initializeServices(): void {
     const cesium$ = CesiumService.inject$<CesiumService>(CesiumService);
@@ -368,6 +371,65 @@ export class LexicFilterService extends BaseService {
     imageryLayers.layerAdded.addEventListener(this.layerAddedListener);
 
     viewer.scene.requestRender();
+    await this.waitForInitialTiles(viewer, version);
+  }
+
+  /**
+   * Waits until Cesium finishes loading tiles after the filtered imagery layer
+   * is added. Stays pending until the globe reports tiles loaded (or the wait
+   * is cancelled by a newer update / tile error).
+   */
+  private async waitForInitialTiles(
+    viewer: Viewer,
+    version: number,
+  ): Promise<void> {
+    if (version !== this.updateVersion) return;
+
+    const globe = viewer.scene.globe;
+    if (
+      globe.tileLoadProgressEvent == null ||
+      typeof globe.tileLoadProgressEvent.addEventListener !== 'function'
+    ) {
+      return;
+    }
+
+    this.finishTileWait(globe);
+
+    await new Promise<void>((resolve) => {
+      let sawPendingTiles = false;
+
+      this.tileProgressResolve = resolve;
+      this.tileProgressListener = (queueLength: number) => {
+        if (version !== this.updateVersion) {
+          this.finishTileWait(globe);
+          return;
+        }
+        if (queueLength > 0) {
+          sawPendingTiles = true;
+        }
+        if (sawPendingTiles && queueLength === 0 && globe.tilesLoaded) {
+          this.finishTileWait(globe);
+        }
+      };
+      globe.tileLoadProgressEvent.addEventListener(this.tileProgressListener);
+      viewer.scene.requestRender();
+    });
+  }
+
+  private finishTileWait(globe?: {
+    tileLoadProgressEvent?: {
+      removeEventListener: (listener: (queueLength: number) => void) => void;
+    };
+  }): void {
+    if (this.tileProgressListener != null) {
+      globe?.tileLoadProgressEvent?.removeEventListener?.(
+        this.tileProgressListener,
+      );
+      this.tileProgressListener = null;
+    }
+    const resolve = this.tileProgressResolve;
+    this.tileProgressResolve = null;
+    resolve?.();
   }
 
   private attachImageryErrorHandler(
@@ -378,6 +440,9 @@ export class LexicFilterService extends BaseService {
     this.imageryErrorListener = () => {
       if (version !== this.updateVersion) return;
       this.showTileLoadError(version);
+      this.finishTileWait(
+        this.cesiumService?.viewerOrNull?.scene?.globe,
+      );
     };
     provider.errorEvent.addEventListener(this.imageryErrorListener);
   }
@@ -427,6 +492,7 @@ export class LexicFilterService extends BaseService {
 
   private removeFilteredLayer(): void {
     this.detachImageryErrorHandler();
+    this.finishTileWait(this.cesiumService?.viewerOrNull?.scene?.globe);
 
     if (this.currentImagery == null) return;
 
