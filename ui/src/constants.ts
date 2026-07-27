@@ -228,7 +228,7 @@ export interface WmtsCapabilitiesLinks {
 
 export const DEFAULT_WMTS_SERVICE = 'maps.geo.admin';
 
-export const TIMEOUT_REQUEST_AFTER_MILLISECONDS = 5_000;
+export const TIMEOUT_REQUEST_AFTER_MILLISECONDS = 8_000;
 export const WMTS_CAPABILITIES_BY_SERVICE: Record<
   string,
   WmtsCapabilitiesLinks
