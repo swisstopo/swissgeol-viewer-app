@@ -108,7 +108,7 @@ export class LexicFilterContainer extends CoreElement {
     const vocabularyId = FILTER_VOCABULARY_MAP[filterId];
     if (vocabularyId == null) return;
 
-    const title = filter.title ?? filter.name ?? filterId;
+    const title = filter.name ?? filterId;
 
     const config: LexicFilterDialogConfig = {
       filterId,
