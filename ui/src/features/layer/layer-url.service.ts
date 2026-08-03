@@ -275,9 +275,7 @@ export class LayerUrlService extends BaseService {
       } else if (Array.isArray(values)) {
         url.searchParams.set(
           name,
-          values
-            .map((it: (typeof values)[0]) => encodeURIComponent(String(it)))
-            .join(','),
+          values.map((it: (typeof values)[0]) => String(it)).join(','),
         );
       } else {
         url.searchParams.set(name, String(values));
