@@ -90,6 +90,8 @@ export function parseWmtsCapabilities(
       hasTimeDimension: timestamps.length > 0,
     });
 
+    const wgs84Extent = resolveWgs84BoundingBox(layer);
+
     configs.push({
       type: LayerType.Wmts,
       id: makeId(`${layerName}`),
@@ -110,6 +112,7 @@ export function parseWmtsCapabilities(
       customProperties: {
         wmtsStyle: style,
         tileMatrixSet: tileMatrixSet ?? 'EPSG:3857',
+        ...(wgs84Extent ? { wgs84Extent } : {}),
       },
       ogcSource: null,
     });
@@ -308,4 +311,26 @@ function makeTimes(
     current: currentValue,
     all: all ?? [currentValue],
   };
+}
+
+/**
+ * Extracts the WGS84 bounding box from a WMTS layer element.
+ * Returns a "west,south,east,north" string or `null` if not available.
+ */
+function resolveWgs84BoundingBox(layer: Element): string | null {
+  const bbox = layer.getElementsByTagNameNS('*', 'WGS84BoundingBox')[0];
+  if (!bbox) {
+    return null;
+  }
+  const lower = bbox.getElementsByTagNameNS('*', 'LowerCorner')[0]?.textContent;
+  const upper = bbox.getElementsByTagNameNS('*', 'UpperCorner')[0]?.textContent;
+  if (!lower || !upper) {
+    return null;
+  }
+  const [west, south] = lower.trim().split(/\s+/);
+  const [east, north] = upper.trim().split(/\s+/);
+  if (!west || !south || !east || !north) {
+    return null;
+  }
+  return `${west},${south},${east},${north}`;
 }
