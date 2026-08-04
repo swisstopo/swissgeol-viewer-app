@@ -17,7 +17,7 @@
       "or": "OR",
       "dialogTitle": "Filter – {{title}}",
       "searchPlaceholder": "{{title}} suchen ...",
-      "includeNarrowers": "Untergeordnete einschliessen",
+      "includeNarrowers": "Untergeordnete einschliessen (Children)",
       "cancel": "Abbrechen",
       "applyFilter": "Filter hinzufügen",
       "noResults": "Keine Ergebnisse gefunden",
