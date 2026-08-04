@@ -1,4 +1,5 @@
 import { consume } from '@lit/context';
+import i18next from 'i18next';
 import { css, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
@@ -193,7 +194,7 @@ export class LexicFilterContainer extends CoreElement {
 
   private readonly renderAndSeparator = () => html`
     <div class="and-separator">
-      <span class="and-label">AND</span>
+      <span class="and-label">${i18next.t('layout:lexic.filter.and')}</span>
     </div>
   `;
 

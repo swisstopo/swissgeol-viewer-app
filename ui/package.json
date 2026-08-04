@@ -18,6 +18,8 @@
     "check": "npm run check:src && npm run check:cypress",
     "check:src": "tsc -p tsconfig.json --noEmit",
     "check:cypress": "tsc -b . && cd cypress && tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts",
     "test:ogc": "vitest run --config vitest.ogc.config.ts",
     "e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts",
