@@ -31,9 +31,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.768.0",
-    "@aws-sdk/client-s3": "3.758.0",
-    "@aws-sdk/credential-provider-cognito-identity": "3.768.0",
-    "@aws-sdk/s3-request-presigner": "3.758.0",
+    "@aws-sdk/client-s3": "3.1104.0",
+    "@aws-sdk/credential-provider-cognito-identity": "3.972.66",
+    "@aws-sdk/s3-request-presigner": "3.1104.0",
     "@geoblocks/ga-search": "0.0.22",
     "@lit/context": "^1.1.3",
     "@lit/task": "^1.0.1",
@@ -48,7 +48,7 @@
     "event-target-shim": "6.0.2",
     "fomantic-ui-css": "~2.9.3",
     "i18next": "^24.0.2",
-    "i18next-http-backend": "^3.0.1",
+    "i18next-http-backend": "^4.0.1",
     "interactjs": "1.10.27",
     "jquery": "^3.7.1",
     "jszip": "3.10.1",
@@ -57,15 +57,15 @@
     "papaparse": "~5.5.2",
     "rxjs": "^7.8.1",
     "three": "^0.184.0",
-    "vite": "^6.4.2"
+    "vite": "^8.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.10",
+    "@babel/core": "^7.29.6",
     "@babel/plugin-proposal-decorators": "^7.25.9",
     "@babel/plugin-transform-class-properties": "^7.25.9",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-typescript": "^7.26.0",
-    "@badeball/cypress-cucumber-preprocessor": "^22.0.1",
+    "@badeball/cypress-cucumber-preprocessor": "^26.0.0",
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.4",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.15.0",
@@ -83,11 +83,11 @@
     "autoprefixer": "^10.4.20",
     "babel-loader": "^10.0.0",
     "chai": "^5.1.2",
-    "concurrently": "^9.1.0",
+    "concurrently": "^9.2.4",
     "core-js": "^3.41.0",
     "cross-env": "^7.0.3",
     "css-loader": "7.1.2",
-    "cypress": "^14.3.3",
+    "cypress": "^15.20.0",
     "cypress-real-events": "^1.14.0",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^10.0.1",
@@ -120,7 +120,7 @@
     "typescript": "^5.8.2",
     "undici-types": "^7.16.0",
     "vite-bundle-analyzer": "^0.18.0",
-    "vite-plugin-static-copy": "^2.2.0",
+    "vite-plugin-static-copy": "^4.1.1",
     "vitest": "^4.1.4"
   }
 }
