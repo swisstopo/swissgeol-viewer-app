@@ -10,16 +10,16 @@ export class ControlsService extends BaseService {
   constructor() {
     super();
 
-    Promise.all([
+    BaseService.onReady(() => void this.setup());
+  }
+
+  private async setup(): Promise<void> {
+    const [viewer, cameraControllerService] = await Promise.all([
       CesiumService.inject().then((s) => firstValueFrom(s.viewer$)),
       CameraControllerService.inject(),
-    ]).then(([viewer, cameraControllerService]) => {
-      const control2d = new Control2dController(
-        viewer,
-        cameraControllerService,
-      );
-      this.is2DActive$.subscribe(control2d.toggle);
-    });
+    ]);
+    const control2d = new Control2dController(viewer, cameraControllerService);
+    this.is2DActive$.subscribe(control2d.toggle);
   }
 
   get is2DActive$(): Observable<boolean> {

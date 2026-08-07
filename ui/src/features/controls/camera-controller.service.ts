@@ -89,9 +89,13 @@ export class CameraControllerService extends BaseService {
     // function doc for the full root-cause analysis and links).
     patchTiltNadirGimbalLock(this.tiltController);
 
-    CesiumService.inject()
-      .then((s) => firstValueFrom(s.viewer$))
-      .then((viewer) => this.initialize(viewer));
+    BaseService.onReady(() => void this.setup());
+  }
+
+  private async setup(): Promise<void> {
+    const cesiumService = await CesiumService.inject();
+    const viewer = await firstValueFrom(cesiumService.viewer$);
+    this.initialize(viewer);
   }
 
   private initialize(viewer: Viewer): void {

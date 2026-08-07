@@ -65,9 +65,13 @@ export class KeyboardNavigationService extends BaseService {
   constructor() {
     super();
 
-    CesiumService.inject()
-      .then((s) => firstValueFrom(s.viewer$))
-      .then((viewer) => this.initialize(viewer));
+    BaseService.onReady(() => void this.setup());
+  }
+
+  private async setup(): Promise<void> {
+    const cesiumService = await CesiumService.inject();
+    const viewer = await firstValueFrom(cesiumService.viewer$);
+    this.initialize(viewer);
   }
 
   get speed(): number {
@@ -146,7 +150,7 @@ export class KeyboardNavigationService extends BaseService {
   }
 
   private hasActiveMovement(): boolean {
-    return Object.values(this.flags).some((v) => v);
+    return Object.values(this.flags).some(Boolean);
   }
 
   private onPostRender(): void {
