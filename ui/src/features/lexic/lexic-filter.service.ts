@@ -17,6 +17,7 @@ import { FilterId } from 'src/features/lexic/generated/lexic-schemas';
 import {
   Credit,
   ImageryLayer,
+  ImageryProvider,
   SingleTileImageryProvider,
   WebMapServiceImageryProvider,
 } from 'cesium';
@@ -27,6 +28,9 @@ import {
   SWITZERLAND_RECTANGLE,
   WEB_MERCATOR_TILING_SCHEME,
 } from 'src/constants';
+import { showSnackbarError } from 'src/notifications';
+import i18next from 'i18next';
+import { LexicTileLoadWaiter } from './lexic-tile-load';
 
 export type LexicResultState = 'idle' | 'loading' | 'ok' | 'load-error';
 
@@ -83,10 +87,14 @@ export class LexicFilterService extends BaseService {
 
   private currentImagery: ImageryLayer | null = null;
   private updateVersion = 0;
+  private tileErrorShownForVersion = -1;
   private servicesSubscription: Subscription | null = null;
   private cesiumService: CesiumService | null = null;
   private lexicApiService: LexicApiService | null = null;
   private layerAddedListener: (() => void) | null = null;
+  private imageryErrorListener: (() => void) | null = null;
+  private imageryErrorProvider: ImageryProvider | null = null;
+  private readonly tileLoadWaiter = new LexicTileLoadWaiter();
 
   private initializeServices(): void {
     const cesium$ = CesiumService.inject$<CesiumService>(CesiumService);
@@ -272,25 +280,41 @@ export class LexicFilterService extends BaseService {
 
     this._resultState$.next('loading');
 
+    let wmsResponse: { body: string };
     try {
-      const wmsResponse = await this.lexicApiService.generateWmsRequest({
+      wmsResponse = await this.lexicApiService.generateWmsRequest({
         webmapId: this._webmapId,
         layerId: this._selectedLayerId,
         filters,
       });
-
-      // Discard if a newer update was triggered in the meantime
-      if (version !== this.updateVersion) return;
-
-      await this.applyWmsLayer(wmsResponse.body, version);
-      if (version === this.updateVersion) {
-        this._resultState$.next('ok');
-      }
     } catch (error) {
       console.error('[Lexic] Failed to generate WMS request:', error);
       if (version === this.updateVersion) {
         this.removeFilteredLayer();
         this._resultState$.next('load-error');
+        showSnackbarError(
+          i18next.t('layout:lexic.errors.generateWmsRequest', {
+            count: filters.length,
+          }),
+        );
+      }
+      return;
+    }
+
+    // Discard if a newer update was triggered in the meantime
+    if (version !== this.updateVersion) return;
+
+    try {
+      await this.applyWmsLayer(wmsResponse.body, version);
+      if (version === this.updateVersion) {
+        this._resultState$.next('ok');
+      }
+    } catch (error) {
+      console.error('[Lexic] Failed to load WMS tiles:', error);
+      if (version === this.updateVersion) {
+        this.removeFilteredLayer();
+        this._resultState$.next('load-error');
+        this.showTileLoadError(version);
       }
     }
   }
@@ -323,18 +347,19 @@ export class LexicFilterService extends BaseService {
       ? this.createSingleTileProvider(wmsBody)
       : this.createTiledWmsProvider(wmsBody);
 
+    // Remove previous filtered layer if present
+    this.removeFilteredLayer();
+
     const imagery = new ImageryLayer(provider, {
       show: true,
       alpha: this._resultOpacity$.value / 100,
     });
 
-    // Remove previous filtered layer if present
-    this.removeFilteredLayer();
-
     // Add on top of all existing layers
     imageryLayers.add(imagery);
     imageryLayers.raiseToTop(imagery);
     this.currentImagery = imagery;
+    this.attachImageryErrorHandler(provider, version);
 
     // Keep layer on top when other layers are added
     this.layerAddedListener = () => {
@@ -345,6 +370,42 @@ export class LexicFilterService extends BaseService {
     imageryLayers.layerAdded.addEventListener(this.layerAddedListener);
 
     viewer.scene.requestRender();
+    await this.tileLoadWaiter.wait(viewer, {
+      isCurrent: () => version === this.updateVersion,
+    });
+  }
+
+  private attachImageryErrorHandler(
+    provider: ImageryProvider,
+    version: number,
+  ): void {
+    this.detachImageryErrorHandler();
+    this.imageryErrorListener = () => {
+      if (version !== this.updateVersion) return;
+      this.showTileLoadError(version);
+      this.tileLoadWaiter.cancel();
+    };
+    this.imageryErrorProvider = provider;
+    provider.errorEvent.addEventListener(this.imageryErrorListener);
+  }
+
+  private detachImageryErrorHandler(): void {
+    if (
+      this.imageryErrorListener != null &&
+      this.imageryErrorProvider != null
+    ) {
+      this.imageryErrorProvider.errorEvent.removeEventListener(
+        this.imageryErrorListener,
+      );
+    }
+    this.imageryErrorListener = null;
+    this.imageryErrorProvider = null;
+  }
+
+  private showTileLoadError(version: number): void {
+    if (this.tileErrorShownForVersion === version) return;
+    this.tileErrorShownForVersion = version;
+    showSnackbarError(i18next.t('layout:lexic.errors.loadTiles'));
   }
 
   private createSingleTileProvider(wmsBody: string): SingleTileImageryProvider {
@@ -373,6 +434,9 @@ export class LexicFilterService extends BaseService {
   }
 
   private removeFilteredLayer(): void {
+    this.detachImageryErrorHandler();
+    this.tileLoadWaiter.cancel();
+
     if (this.currentImagery == null) return;
 
     const viewer = this.cesiumService?.viewerOrNull;

@@ -4,6 +4,7 @@ import {
   Credit,
   ImageryLayer,
   ImageryLayerCollection,
+  Rectangle,
   UrlTemplateImageryProvider,
   WebMapServiceImageryProvider,
 } from 'cesium';
@@ -222,11 +223,12 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
       tileMatrixSet.includes(':') ? `${tileMatrixSet}:${level}` : String(level);
 
     const credit = this.layer.credit ?? String(this.layer.id);
+    const rectangle = this.resolveRectangle();
 
     return new UrlTemplateImageryProvider({
       url,
       maximumLevel: this.layer.maxLevel ?? undefined,
-      rectangle: SWITZERLAND_RECTANGLE,
+      rectangle,
       credit: new Credit(credit),
       customTags: {
         x: (_, x) => String(x),
@@ -246,6 +248,23 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
         TileMatrixSet: () => tileMatrixSet,
       },
     });
+  }
+
+  /**
+   * Returns the layer's rectangle from its WGS84 extent if available,
+   * falling back to the default Switzerland rectangle.
+   */
+  private resolveRectangle(): Rectangle {
+    const extent = this.layer.customProperties.wgs84Extent;
+    if (!extent) {
+      return SWITZERLAND_RECTANGLE;
+    }
+    const parts = extent.split(',').map(Number);
+    if (parts.length !== 4 || parts.some(isNaN)) {
+      return SWITZERLAND_RECTANGLE;
+    }
+    const [west, south, east, north] = parts;
+    return Rectangle.fromDegrees(west, south, east, north);
   }
 }
 

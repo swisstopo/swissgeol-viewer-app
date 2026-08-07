@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { css, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
+import { showSnackbarError } from 'src/notifications';
 import { applyTypography } from 'src/styles/theme';
 import { LexicApiService } from './lexic-api.service';
 import { LexicFilterService } from './lexic-filter.service';
@@ -49,6 +50,9 @@ export class LexicFilterPanel extends CoreElement {
   @state()
   accessor isLoadingFilters = false;
 
+  @state()
+  accessor isLoadingResults = false;
+
   private filtersRequestVersion = 0;
   private webmapId = '';
 
@@ -57,12 +61,27 @@ export class LexicFilterPanel extends CoreElement {
 
     this.register(
       this.filterService.isOpen$.subscribe((isOpen) => {
+        const wasOpen = this.isOpen;
         this.isOpen = isOpen;
+        // Retry loading datasets when the panel is opened and none are available yet.
+        if (
+          isOpen &&
+          !wasOpen &&
+          this.layers.length === 0 &&
+          !this.isLoadingLayers
+        ) {
+          void this.loadLayerOptions();
+        }
       }),
     );
     this.register(
       this.filterService.selectedDatasetId$.subscribe((id) => {
         this.selectedLayerId = id;
+      }),
+    );
+    this.register(
+      this.filterService.resultState$.subscribe((state) => {
+        this.isLoadingResults = state === 'loading';
       }),
     );
 
@@ -188,14 +207,16 @@ export class LexicFilterPanel extends CoreElement {
       );
       this.webmapId = response.webmapId ?? '';
     } catch (error) {
-      // FIXME: Remove this stub fallback once the Lexic API is reachable
-      // without CORS issues (e.g. when a proxy or proper CORS headers are in place).
-      console.warn(
-        '[Lexic] getLayers API call failed, falling back to stub layers:',
-        error,
-      );
+      console.error('[Lexic] Failed to load datasets:', error);
       this.layers = [];
-      this.webmapId = 'SwissTopoMap';
+      this.webmapId = '';
+      // Only surface the error when the panel is open — otherwise datasets
+      // are retried the next time the panel is opened.
+      if (this.filterService.isOpen) {
+        showSnackbarError(i18next.t('layout:lexic.errors.loadDatasets'));
+        this.handleClose();
+      }
+      return;
     } finally {
       this.isLoadingLayers = false;
     }
@@ -225,9 +246,18 @@ export class LexicFilterPanel extends CoreElement {
     return html`
       <div class="floating-panel">
         <header class="panel-header">
-          <span class="panel-title"
-            >${i18next.t('layout:items.Lexic')} Filter</span
-          >
+          <div class="panel-header-leading">
+            <span class="panel-title"
+              >${i18next.t('layout:items.Lexic')} Filter</span
+            >
+            ${this.isLoadingResults
+              ? html`<sgc-icon
+                  name="spinner"
+                  animation="spin"
+                  aria-hidden="true"
+                ></sgc-icon>`
+              : nothing}
+          </div>
           <ngm-core-icon
             icon="close"
             interactive
@@ -301,10 +331,26 @@ export class LexicFilterPanel extends CoreElement {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
       padding: 14px 16px;
       background-color: var(--color-bg--dark);
       border-bottom: 1px solid #e0e2e6;
       flex-shrink: 0;
+    }
+
+    .panel-header-leading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .panel-header-leading > sgc-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: var(--color-primary);
     }
 
     .panel-title {

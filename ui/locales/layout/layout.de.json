@@ -14,7 +14,8 @@
     "filter": {
       "reset": "Zurücksetzen",
       "addFilter": "Filter hinzufügen",
-      "or": "OR",
+      "or": "ODER",
+      "and": "UND",
       "dialogTitle": "Filter – {{title}}",
       "searchPlaceholder": "{{title}} suchen ...",
       "includeNarrowers": "Untergeordnete einschliessen (Children)",
@@ -24,6 +25,13 @@
       "opacity": "Filter Deckkraft",
       "resetAll": "Alle Filter zurücksetzen",
       "loadError": "Fehler beim Laden"
+    },
+    "errors": {
+      "loadDatasets": "Die verfügbaren Lexic-Datensätze konnten nicht geladen werden.",
+      "generateWmsRequest_one": "Der ausgewählte Lexic-Filter konnte nicht auf die Karte angewendet werden.",
+      "generateWmsRequest_other": "Die ausgewählten Lexic-Filter konnten nicht auf die Karte angewendet werden.",
+      "loadFilterTerms": "Die Lexic-Filterbegriffe konnten nicht geladen werden.",
+      "loadTiles": "Die Lexic-Filterkacheln konnten nicht geladen werden."
     }
   }
 }
