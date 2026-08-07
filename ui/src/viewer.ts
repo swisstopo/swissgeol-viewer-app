@@ -1,7 +1,6 @@
 import { SWITZERLAND_RECTANGLE } from './constants';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter';
-import KeyboardNavigation from './KeyboardNavigation.js';
 
 import {
   Cartesian3,
@@ -170,7 +169,8 @@ export async function setupViewer(container: Element) {
     );
   }
 
-  new KeyboardNavigation(viewer.scene);
+  // Keyboard navigation and camera controllers are now managed by
+  // CameraControllerService and KeyboardNavigationService via @lit/context.
 
   scene.useDepthPicking = true;
   scene.pickTranslucentDepth = true; // required to have accurate position when picking translucent objects
