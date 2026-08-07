@@ -172,7 +172,6 @@ export async function setupViewer(container: Element) {
 
   new KeyboardNavigation(viewer.scene);
 
-  scene.screenSpaceCameraController.enableCollisionDetection = false;
   scene.useDepthPicking = true;
   scene.pickTranslucentDepth = true; // required to have accurate position when picking translucent objects
   scene.backgroundColor = Color.TRANSPARENT;

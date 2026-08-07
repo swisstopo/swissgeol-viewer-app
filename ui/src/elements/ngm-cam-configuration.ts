@@ -32,6 +32,7 @@ import './ngm-minimap';
 import { CoordinateWithCrs } from './ngm-cam-coordinates';
 import { consume } from '@lit/context';
 import { ControlsService } from 'src/features/controls/controls.service';
+import { CameraControllerService } from 'src/features/controls/camera-controller.service';
 
 export type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
 export const ABSOLUTE_ELEVATION_MIN = 30000;
@@ -68,6 +69,9 @@ export class NgmCamConfiguration extends LitElementI18n {
 
   @consume({ context: ControlsService.context() })
   accessor controlsService!: ControlsService;
+
+  @consume({ context: CameraControllerService.context() })
+  accessor cameraControllerService!: CameraControllerService;
 
   @state()
   accessor scene: Scene | null = null;
@@ -319,13 +323,16 @@ export class NgmCamConfiguration extends LitElementI18n {
     if (!this.scene) return;
     this.disableLock();
     this.lockType = type;
-    const cameraController = this.scene.screenSpaceCameraController;
-    cameraController.enableTranslate = false;
-    cameraController.enableZoom = false;
-    cameraController.enableTilt = false;
-    cameraController.enableLook = false;
 
+    // Disable camera controllers based on lock type
     if (this.lockType === 'move') {
+      // Keep tilt/orbit controller, remove pan and zoom
+      this.cameraControllerService.removeController(
+        this.cameraControllerService.panController,
+      );
+      this.cameraControllerService.removeController(
+        this.cameraControllerService.zoomController,
+      );
       this.handler!.setInputAction(
         () => {
           this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
@@ -334,7 +341,8 @@ export class NgmCamConfiguration extends LitElementI18n {
         KeyboardEventModifier.CTRL,
       );
     } else {
-      cameraController.enableRotate = false;
+      // Disable all controllers for elevation/pitch/angle locks
+      this.cameraControllerService.enableInputs = false;
       this.handler!.setInputAction((movement) => {
         this.lockMove = true;
         Cartesian2.clone(movement.position, this.lockMoveStartPosition);
@@ -356,12 +364,17 @@ export class NgmCamConfiguration extends LitElementI18n {
 
   disableLock() {
     this.lockType = '';
-    const cameraController = this.scene!.screenSpaceCameraController;
-    cameraController.enableRotate = true;
-    cameraController.enableTranslate = true;
-    cameraController.enableZoom = true;
-    cameraController.enableTilt = true;
-    cameraController.enableLook = true;
+    // Re-enable all controllers
+    this.cameraControllerService.enableInputs = true;
+    this.cameraControllerService.addController(
+      this.cameraControllerService.panController,
+    );
+    this.cameraControllerService.addController(
+      this.cameraControllerService.zoomController,
+    );
+    this.cameraControllerService.addController(
+      this.cameraControllerService.tiltController,
+    );
     this.handler?.removeInputAction(ScreenSpaceEventType.LEFT_DOWN);
     this.handler?.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
     this.handler?.removeInputAction(ScreenSpaceEventType.LEFT_UP);
