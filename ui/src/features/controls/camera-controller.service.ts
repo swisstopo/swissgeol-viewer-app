@@ -15,6 +15,7 @@ import {
   Viewer,
 } from 'cesium';
 import { firstValueFrom } from 'rxjs';
+import { patchTiltNadirGimbalLock } from 'src/features/controls/patch-tilt-nadir-gimbal-lock';
 
 /**
  * Custom pick function that uses the depth buffer first (picks actual rendered geometry
@@ -73,6 +74,10 @@ export class CameraControllerService extends BaseService {
     this.tiltController.pickWorldPosition = pickWorldPositionWithDepthBuffer;
     this.zoomController.pickWorldPosition = pickWorldPositionWithDepthBuffer;
     this.panController.pickWorldPosition = pickWorldPositionWithDepthBuffer;
+
+    // Fix CesiumJS's nadir/zenith heading-flip gimbal lock bug (see the
+    // function doc for the full root-cause analysis and links).
+    patchTiltNadirGimbalLock(this.tiltController);
 
     CesiumService.inject()
       .then((s) => firstValueFrom(s.viewer$))
