@@ -1,16 +1,40 @@
 import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
 import {
+  Cartesian2,
+  Cartesian3,
   Controller,
+  defined,
   KeyboardEventModifier,
   Math as CesiumMath,
   MouseButton,
+  Scene,
   ScreenSpaceMapCameraController,
   ScreenSpaceTiltOrbitCameraController,
   ScreenSpaceZoomCameraController,
   Viewer,
 } from 'cesium';
 import { firstValueFrom } from 'rxjs';
+
+/**
+ * Custom pick function that uses the depth buffer first (picks actual rendered geometry
+ * and terrain), then falls back to the default ellipsoid/plane picking.
+ * This ensures correct behavior both above and below terrain.
+ */
+function pickWorldPositionWithDepthBuffer(
+  scene: Scene,
+  windowPosition: Cartesian2,
+  result: Cartesian3,
+): Cartesian3 | undefined {
+  // Try depth buffer first — this picks on actual rendered geometry/terrain
+  const depthPick = scene.pickPosition(windowPosition, result);
+  if (defined(depthPick) && !Cartesian3.equals(depthPick, Cartesian3.ZERO)) {
+    return depthPick;
+  }
+
+  // Fall back to ellipsoid pick
+  return scene.camera.pickEllipsoid(windowPosition, scene.ellipsoid, result);
+}
 
 /**
  * Manages the new modular CesiumJS camera controllers (CesiumJS 1.144+).
@@ -44,6 +68,11 @@ export class CameraControllerService extends BaseService {
     this.tiltController.orbitMagnitude = -2.0;
     this.tiltController.maximumOrbitVelocity = -CesiumMath.TWO_PI;
     this.zoomController.zoomDistanceRatio = 0.15;
+
+    // Use depth-buffer-aware picking for correct underground behavior.
+    this.tiltController.pickWorldPosition = pickWorldPositionWithDepthBuffer;
+    this.zoomController.pickWorldPosition = pickWorldPositionWithDepthBuffer;
+    this.panController.pickWorldPosition = pickWorldPositionWithDepthBuffer;
 
     CesiumService.inject()
       .then((s) => firstValueFrom(s.viewer$))
