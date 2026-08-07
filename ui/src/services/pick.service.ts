@@ -10,6 +10,34 @@ import { firstValueFrom } from 'rxjs';
 import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
 
+/**
+ * Error messages that Cesium's `Scene.pickPosition` can throw while some
+ * tiles/primitives are not yet fully loaded, or after the scene/camera has
+ * been destroyed mid-pick. These are expected/transient and should fall back
+ * to the less-accurate math-based pick rather than propagate as an uncaught
+ * exception (which would otherwise abort an in-progress drag).
+ *
+ * The `_target` message wording differs by browser engine:
+ * - Firefox: "Can't access property _target, v3 is undefined"
+ * - Chrome/Edge (V8): "Cannot read properties of undefined (reading '_target')"
+ */
+const KNOWN_PICK_ERROR_SUFFIXES = [
+  'DeveloperError: This object was destroyed,',
+  "TypeError: Can't access property _target, v3 is undefined",
+  "TypeError: Cannot read properties of undefined (reading '_target')",
+] as const;
+
+/**
+ * Returns whether the given error thrown by `Scene.pickPosition` is one of
+ * the known, expected/transient picking failures (see
+ * {@link KNOWN_PICK_ERROR_SUFFIXES}), meaning it's safe to fall back to a
+ * less accurate pick method instead of propagating the exception.
+ */
+export function isKnownScenePickingError(e: unknown): boolean {
+  const message = String(e);
+  return KNOWN_PICK_ERROR_SUFFIXES.some((suffix) => message.startsWith(suffix));
+}
+
 export class PickService extends BaseService {
   private viewer: Viewer | null = null;
 
@@ -54,17 +82,10 @@ export class PickService extends BaseService {
   }
 
   private tryPickWithSceneOrFallback(position: Cartesian2): Cartesian3 | null {
-    const KNOWN_PICK_ERROR_SUFFIXES = [
-      'DeveloperError: This object was destroyed,',
-      "TypeError: Can't access property _target, v3 is undefined",
-    ] as const;
     try {
       return this.pickWithScene(Cartesian2.clone(position));
     } catch (e) {
-      const message = String(e);
-      if (
-        KNOWN_PICK_ERROR_SUFFIXES.some((suffix) => message.startsWith(suffix))
-      ) {
+      if (isKnownScenePickingError(e)) {
         return this.pickWithMath(position);
       }
       throw e;

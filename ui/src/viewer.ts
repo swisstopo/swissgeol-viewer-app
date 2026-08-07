@@ -115,7 +115,9 @@ export async function setupViewer(container: Element) {
   // as these errors can break the viewer.
   viewer.scene.renderError.addEventListener((_scene, error) => {
     console.error(String(error));
-    viewer.scene.requestRender();
+    // Resume rendering after a short delay to allow destroyed resources to be cleaned up.
+    // Calling requestRender() synchronously can cause infinite error loops.
+    setTimeout(() => viewer.scene.requestRender(), 100);
   });
 
   viewer.scene.postProcessStages.ambientOcclusion.enabled = false;

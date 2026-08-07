@@ -16,6 +16,7 @@ import {
 } from 'cesium';
 import { firstValueFrom } from 'rxjs';
 import { patchTiltNadirGimbalLock } from 'src/features/controls/patch-tilt-nadir-gimbal-lock';
+import { isKnownScenePickingError } from 'src/services/pick.service';
 
 /**
  * Custom pick function that uses the depth buffer first (picks actual rendered geometry
@@ -27,10 +28,19 @@ function pickWorldPositionWithDepthBuffer(
   windowPosition: Cartesian2,
   result: Cartesian3,
 ): Cartesian3 | undefined {
-  // Try depth buffer first — this picks on actual rendered geometry/terrain
-  const depthPick = scene.pickPosition(windowPosition, result);
-  if (defined(depthPick) && !Cartesian3.equals(depthPick, Cartesian3.ZERO)) {
-    return depthPick;
+  // Try depth buffer first — this picks on actual rendered geometry/terrain.
+  // `scene.pickPosition` can throw known/transient errors while tiles are
+  // still loading (see `isKnownScenePickingError`); fall back to the
+  // ellipsoid pick instead of letting the exception abort the drag.
+  try {
+    const depthPick = scene.pickPosition(windowPosition, result);
+    if (defined(depthPick) && !Cartesian3.equals(depthPick, Cartesian3.ZERO)) {
+      return depthPick;
+    }
+  } catch (e) {
+    if (!isKnownScenePickingError(e)) {
+      throw e;
+    }
   }
 
   // Fall back to ellipsoid pick
