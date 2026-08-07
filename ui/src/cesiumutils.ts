@@ -18,6 +18,7 @@ import {
 } from 'cesium';
 import type { GeometryTypes } from './toolbox/interfaces';
 import earcut from 'earcut';
+import { isKnownScenePickingError } from 'src/services/pick.service';
 
 const julianDate = new JulianDate();
 
@@ -45,21 +46,40 @@ export function pickCenterOnEllipsoid(scene: Scene): Cartesian3 | undefined {
   return camera.pickEllipsoid(windowPosition);
 }
 
+/**
+ * Returns the position of the point on a voxel or the map/object at the
+ * given window position, or `undefined` if nothing could be picked there.
+ *
+ * `Scene.pickPosition` can throw while some tiles/primitives are not yet
+ * fully loaded, or after the scene/camera has been destroyed mid-pick (see
+ * {@link isKnownScenePickingError}). These failures are expected/transient
+ * and must not propagate, since callers of this function are often plain
+ * RxJS subscribe callbacks: an uncaught exception there would permanently
+ * terminate the subscription (e.g. breaking the tilt/orbit axis indicator
+ * for the rest of the session after a single failed pick).
+ */
 export function pickPositionOrVoxel(
   scene: Scene,
   windowPosition: Cartesian2,
-): Cartesian3 {
+): Cartesian3 | undefined {
   const voxel = scene.pickVoxel(windowPosition);
   if (voxel) {
     return voxel.orientedBoundingBox.center;
   }
-  return scene.pickPosition(windowPosition);
+  try {
+    return scene.pickPosition(windowPosition);
+  } catch (e) {
+    if (isKnownScenePickingError(e)) {
+      return undefined;
+    }
+    throw e;
+  }
 }
 
 /**
  * Return the position of the point, on the map or object at the center of the Cesium viewport.
  */
-export function pickCenterOnMapOrObject(scene: Scene): Cartesian3 {
+export function pickCenterOnMapOrObject(scene: Scene): Cartesian3 | undefined {
   const windowPosition = new Cartesian2(
     scene.canvas.clientWidth / 2,
     scene.canvas.clientHeight / 2,
