@@ -2,16 +2,14 @@ import { defineConfig, normalizePath } from 'vite';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
-import babel from '@rollup/plugin-babel';
+import babel from '@rolldown/plugin-babel';
 import inlinesvg from 'postcss-inline-svg';
 import analyzer from 'vite-bundle-analyzer';
 
-// @ts-expect-error
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const cesiumBuild = resolve(__dirname, './node_modules/cesium/Build/Cesium');
 const extensions = ['.ts', '.js'];
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   resolve: {
     alias: {
       cesium: normalizePath(resolve(__dirname, 'node_modules/cesium')),
@@ -73,6 +71,8 @@ export default defineConfig({
       },
     },
   },
+  // Oxc lowers class fields before super() in Babel's 2023-05 decorator wrapper classes.
+  oxc: false,
   optimizeDeps: {
     include: [
       'lit',
@@ -93,39 +93,54 @@ export default defineConfig({
   },
   plugins: [
     process.env.ANALYZE === 'true' ? analyzer({ analyzerPort: 8883 }) : null,
+    // Oxc does not lower 2023-05 decorators; Babel handles TS + decorators + polyfills.
+    babel({
+      targets:
+        'last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions, Edge 18',
+      plugins: [
+        // TypeScript must run first so decorators don't see TS `!` syntax.
+        [
+          '@babel/plugin-transform-typescript',
+          { allowDeclareFields: true },
+        ],
+        [
+          '@babel/plugin-proposal-decorators',
+          { decoratorsBeforeExport: true, version: '2023-05' },
+        ],
+      ],
+      // preset-env only during build to avoid dep-optimizer loops in dev.
+      presets:
+        command === 'build'
+          ? [
+              [
+                '@babel/preset-env',
+                {
+                  modules: false,
+                  useBuiltIns: 'usage',
+                  corejs: { version: 3, proposals: false },
+                },
+              ],
+            ]
+          : [],
+      exclude: [
+        /[\/\\]node_modules[\/\\]/,
+        /[\/\\]cypress[\/\\]/,
+        /\0rolldown\/runtime\.js/,
+      ],
+    }),
+    // Cesium and ui-core font assets are copied to public/ by scripts/copy-cesium.js.
     viteStaticCopy({
       targets: [
-        {
-          src: normalizePath(resolve(cesiumBuild, 'Workers/**/*')),
-          dest: './cesium/Workers',
-        },
-        {
-          src: normalizePath(resolve(cesiumBuild, 'ThirdParty/**/*')),
-          dest: './cesium/ThirdParty',
-        },
-        {
-          src: normalizePath(resolve(cesiumBuild, 'Assets/**/*')),
-          dest: './cesium/Assets',
-        },
-        {
-          src: normalizePath(resolve(cesiumBuild, 'Widgets/**/*')),
-          dest: './cesium/Widgets',
-        },
         { src: 'locales/**/*', dest: './locales' },
         { src: 'manuals/dist/**/*', dest: './manuals' },
         { src: 'manuals/style.css', dest: './manuals' },
         { src: 'manuals/images/**/*', dest: './manuals/images' },
-        {
-          src: 'node_modules/@swissgeol/ui-core/dist/swissgeol-ui-core/assets/*',
-          dest: 'assets',
-        },
         {
           src: 'node_modules/@swissgeol/ui-core/dist/esm/*',
           dest: 'assets',
         },
       ],
       watch: { reloadPageOnChange: true },
-      hook: 'buildStart',
     }),
   ].filter(Boolean),
   css: {
@@ -139,6 +154,8 @@ export default defineConfig({
     minify: 'terser',
     sourcemap: true,
     cssCodeSplit: true,
+    // Prevent Rolldown from lowering class features in production output.
+    target: 'esnext',
     rollupOptions: {
       input: 'index.html',
       output: {
@@ -147,46 +164,6 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash][extname]',
       },
       external: ['cypress'],
-      plugins: [
-        babel({
-          babelHelpers: 'bundled',
-          babelrc: false,
-          // this is duplicated in .browserlistrc
-          // https://babeljs.io/docs/en/options#targets
-          targets:
-            'last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions, Edge 18',
-          plugins: [
-            [
-              '@babel/plugin-proposal-decorators',
-              { decoratorsBeforeExport: true, version: '2023-05' },
-            ],
-          ],
-          presets: [
-            [
-              '@babel/preset-typescript',
-              {
-                allowDeclareFields: true,
-              },
-            ],
-            [
-              '@babel/preset-env',
-              {
-                //debug: true, // disable to get debug information
-                modules: false,
-
-                useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
-                corejs: { version: 3, proposals: false },
-              },
-            ],
-          ],
-          // exclude: 'node_modules/**'
-          extensions: extensions,
-          exclude: [
-            'cypress/**',
-            'node_modules/**', // yes, this is eXtreme excluding (includes aws-sdk)
-          ],
-        }),
-      ],
     },
   },
-});
+}));

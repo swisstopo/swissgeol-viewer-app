@@ -6,9 +6,10 @@
     "lint": "npx eslint && npx prettier --check .",
     "lint:fix": "npx eslint --fix && npx prettier . --write",
     "extract-i18n": "i18next -c i18next-parser.config.cjs",
-    "start": "npm run build:static && vite serve",
-    "serve": "npm run build:static && npm run build:js && npx serve dist -l 8000",
-    "build": "npm run build:clean && npm run build:static && npm run build:js",
+    "copy:cesium": "node scripts/copy-static-assets.js",
+    "start": "npm run copy:cesium && npm run build:static && vite serve",
+    "serve": "npm run copy:cesium && npm run build:static && npm run build:js && npx serve dist -l 8000",
+    "build": "npm run build:clean && npm run copy:cesium && npm run build:static && npm run build:js",
     "build:clean": "rimraf dist/",
     "build:static": "npm run build:static:environment && npm run build:static:manuals && npm run build:static:versions",
     "build:static:environment": "node scripts/environment.js",
@@ -30,7 +31,6 @@
     "openapi:lexic:watch": "orval --config orval.lexic.config.ts --watch"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "3.768.0",
     "@aws-sdk/client-s3": "3.1104.0",
     "@aws-sdk/credential-provider-cognito-identity": "3.972.66",
     "@aws-sdk/s3-request-presigner": "3.1104.0",
@@ -69,7 +69,7 @@
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.4",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.15.0",
-    "@rollup/plugin-babel": "6.0.4",
+    "@rolldown/plugin-babel": "^0.2.3",
     "@types/chai": "^5.0.1",
     "@types/geojson": "^7946.0.14",
     "@types/jquery": "^3.5.32",
@@ -122,5 +122,8 @@
     "vite-bundle-analyzer": "^0.18.0",
     "vite-plugin-static-copy": "^4.1.1",
     "vitest": "^4.1.4"
+  },
+  "overrides": {
+    "lit": "3.2.1"
   }
 }
