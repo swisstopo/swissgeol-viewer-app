@@ -20,6 +20,12 @@ import { CesiumService } from 'src/services/cesium.service';
  * The `_target` message wording differs by browser engine:
  * - Firefox: "Can't access property _target, v3 is undefined"
  * - Chrome/Edge (V8): "Cannot read properties of undefined (reading '_target')"
+ *
+ * TODO: This matches on hardcoded, engine-specific `Error#toString()` wording,
+ * which is inherently fragile — it can silently stop matching (or need new
+ * variants) after a browser engine or CesiumJS upgrade changes the exact
+ * message text. Re-verify these suffixes when bumping Cesium or when new
+ * "uncaught exception during pick" reports come in.
  */
 const KNOWN_PICK_ERROR_SUFFIXES = [
   'DeveloperError: This object was destroyed,',

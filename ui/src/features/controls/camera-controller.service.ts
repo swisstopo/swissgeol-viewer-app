@@ -138,15 +138,22 @@ export class CameraControllerService extends BaseService {
   }
 
   addController(controller: Controller): void {
+    // Cesium's `ControllerHost` has no de-dup guard of its own: it appends
+    // to a plain array on every `addController()` call, so calling it twice
+    // for the same controller instance registers it twice, causing its
+    // `update()` to run multiple times per frame (e.g. doubling pan/tilt/zoom
+    // speed). Only forward to the viewer if this controller isn't already
+    // tracked as active.
+    const isAlreadyActive = this.activeControllers.has(controller);
     this.activeControllers.add(controller);
-    if (this.isInputsEnabled && this.viewer) {
+    if (!isAlreadyActive && this.isInputsEnabled && this.viewer) {
       this.viewer.addController(controller);
     }
   }
 
   removeController(controller: Controller): void {
-    this.activeControllers.delete(controller);
-    if (this.viewer) {
+    const wasActive = this.activeControllers.delete(controller);
+    if (wasActive && this.viewer) {
       this.viewer.removeController(controller);
     }
   }
