@@ -31,6 +31,7 @@
     "openapi:lexic:watch": "orval --config orval.lexic.config.ts --watch"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.1107.0",
     "@aws-sdk/client-s3": "3.1104.0",
     "@aws-sdk/credential-provider-cognito-identity": "3.972.66",
     "@aws-sdk/s3-request-presigner": "3.1104.0",

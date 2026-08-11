@@ -17,7 +17,7 @@ import {
   CognitoIdentityCredentials,
   fromCognitoIdentityPool,
 } from '@aws-sdk/credential-provider-cognito-identity';
-import { CognitoIdentityClient } from '@aws-sdk/nested-clients/cognito-identity';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 
 const STORAGE_STATE_KEY = 'swissgeol-viewer/Session.state';
 const STORAGE_USER_KEY = 'swissgeol-viewer/Session.user';
