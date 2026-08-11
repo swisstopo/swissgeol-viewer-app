@@ -41,12 +41,7 @@ export class NgmToolbox extends CoreElement {
   accessor toolsHidden = true;
   @state()
   accessor activeTool:
-    | 'draw'
-    | 'slicing'
-    | 'gst'
-    | 'profile'
-    | 'measure'
-    | undefined;
+    'draw' | 'slicing' | 'gst' | 'profile' | 'measure' | undefined;
   @state()
   accessor sectionImageUrl: string | undefined;
   @query('.ngm-toast-placeholder')
@@ -321,20 +316,24 @@ export class NgmToolbox extends CoreElement {
 
   render() {
     return html`
-      ${this.activeTool == null
-        ? undefined
-        : html`
-            <div class="ngm-panel-header">
-              <div
-                ?hidden=${!this.activeTool}
-                class="ngm-back-icon"
-                @click=${this.onBackClick}
-              ></div>
-              ${this.activeTool
-                ? i18next.t(`tbx_${this.activeTool}`)
-                : i18next.t('lsb_tools')}
-            </div>
-          `}
+      ${
+        this.activeTool == null
+          ? undefined
+          : html`
+              <div class="ngm-panel-header">
+                <div
+                  ?hidden=${!this.activeTool}
+                  class="ngm-back-icon"
+                  @click=${this.onBackClick}
+                ></div>
+                ${
+                  this.activeTool
+                    ? i18next.t(`tbx_${this.activeTool}`)
+                    : i18next.t('lsb_tools')
+                }
+              </div>
+            `
+      }
       <div class="ngm-tools-list" .hidden="${this.activeTool}">
         <div
           class="ngm-tools-list-item"

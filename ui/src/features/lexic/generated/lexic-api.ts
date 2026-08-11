@@ -61,16 +61,13 @@ export type getLayersResponseSuccess = getLayersResponse200 & {
   headers: Headers;
 };
 export type getLayersResponseError = (
-  | getLayersResponse400
-  | getLayersResponse401
-  | getLayersResponse404
+  getLayersResponse400 | getLayersResponse401 | getLayersResponse404
 ) & {
   headers: Headers;
 };
 
 export type getLayersResponse =
-  | getLayersResponseSuccess
-  | getLayersResponseError;
+  getLayersResponseSuccess | getLayersResponseError;
 
 export const getGetLayersUrl = (params?: GetLayersParams) => {
   const normalizedParams = new URLSearchParams();
@@ -134,8 +131,7 @@ export type getLayersLayerIdFiltersResponseError = (
 };
 
 export type getLayersLayerIdFiltersResponse =
-  | getLayersLayerIdFiltersResponseSuccess
-  | getLayersLayerIdFiltersResponseError;
+  getLayersLayerIdFiltersResponseSuccess | getLayersLayerIdFiltersResponseError;
 
 export const getGetLayersLayerIdFiltersUrl = (
   layerId: string,
@@ -682,8 +678,7 @@ export type postGenerateWmsRequestResponseError = (
 };
 
 export type postGenerateWmsRequestResponse =
-  | postGenerateWmsRequestResponseSuccess
-  | postGenerateWmsRequestResponseError;
+  postGenerateWmsRequestResponseSuccess | postGenerateWmsRequestResponseError;
 
 export const getPostGenerateWmsRequestUrl = () => {
   return '/generateWmsRequest';

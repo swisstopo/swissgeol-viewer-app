@@ -46,9 +46,7 @@ export interface PolygonLayerStyleValues {
 }
 
 export type LayerStyleValues =
-  | PointLayerStyleValues
-  | LineLayerStyleValues
-  | PolygonLayerStyleValues;
+  PointLayerStyleValues | LineLayerStyleValues | PolygonLayerStyleValues;
 
 export type LayerStyleGeomType = LayerStyleValues['geomType'];
 
@@ -76,8 +74,7 @@ interface IconPointVectorOptions {
 }
 
 export type PointVectorOptions =
-  | ShapePointVectorOptions
-  | IconPointVectorOptions;
+  ShapePointVectorOptions | IconPointVectorOptions;
 
 export interface LineVectorOptions {
   stroke?: StrokeStyle;

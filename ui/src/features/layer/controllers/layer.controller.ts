@@ -371,8 +371,7 @@ export abstract class BaseLayerController<T extends BaseLayer> {
       this.watchedValues.push(value);
     }
     const lastValue = this.watchedValues[this.currentWatchIndex] as
-      | T
-      | undefined;
+      T | undefined;
     this.watchedValues[this.currentWatchIndex] = value;
     this.currentWatchIndex += 1;
 

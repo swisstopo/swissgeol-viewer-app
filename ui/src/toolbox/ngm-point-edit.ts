@@ -171,9 +171,9 @@ export class NgmPointEdit extends LitElementI18n {
             placeholder="required"
           />
           <span class="ngm-floating-label"
-            >${this.coordsType === 'lv95'
-              ? 'E'
-              : i18next.t('tbx_lon_label')}</span
+            >${
+              this.coordsType === 'lv95' ? 'E' : i18next.t('tbx_lon_label')
+            }</span
           >
         </div>
         <div class="ngm-input">
@@ -189,9 +189,9 @@ export class NgmPointEdit extends LitElementI18n {
             placeholder="required"
           />
           <span class="ngm-floating-label"
-            >${this.coordsType === 'lv95'
-              ? 'N'
-              : i18next.t('tbx_lat_label')}</span
+            >${
+              this.coordsType === 'lv95' ? 'N' : i18next.t('tbx_lat_label')
+            }</span
           >
         </div>
       </div>

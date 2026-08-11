@@ -123,13 +123,15 @@ export class LayerTiffLegend extends CoreElement {
   readonly render = () => html`
     <div class="title">
       ${i18next.t('catalog:tiffBandsWindow.legend')}
-      ${this.band.unit === null
-        ? ''
-        : html`
-            <span title="${i18next.t(`layers:units.${this.band.unit}.name`)}">
-              [${i18next.t(`layers:units.${this.band.unit}.symbol`)}]
-            </span>
-          `}
+      ${
+        this.band.unit === null
+          ? ''
+          : html`
+              <span title="${i18next.t(`layers:units.${this.band.unit}.name`)}">
+                [${i18next.t(`layers:units.${this.band.unit}.symbol`)}]
+              </span>
+            `
+      }
     </div>
     <div class="range">
       <div class="gradient" style="background: ${this.gradientCss}"></div>

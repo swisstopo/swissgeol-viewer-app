@@ -68,8 +68,7 @@ export abstract class LayerInfoDrillPicker<
     }
 
     const tileset = (feature as any).content?._tileset as
-      | Cesium3DTileset
-      | undefined;
+      Cesium3DTileset | undefined;
     if (tileset !== undefined && 'metadata' in tileset) {
       return this.pickFeatureForNewTileset(pick, tileset);
     }

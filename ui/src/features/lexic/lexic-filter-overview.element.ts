@@ -47,13 +47,15 @@ export class LexicFilterOverview extends CoreElement {
     const hasFilters = this.activeFilters.length > 0;
 
     return html`
-      ${hasFilters
-        ? html`
-            <button class="reset-button" @click=${this.handleReset}>
-              ${i18next.t('layout:lexic.filter.reset')}
-            </button>
-          `
-        : nothing}
+      ${
+        hasFilters
+          ? html`
+              <button class="reset-button" @click=${this.handleReset}>
+                ${i18next.t('layout:lexic.filter.reset')}
+              </button>
+            `
+          : nothing
+      }
 
       <div class="filter-entries">
         ${this.activeFilters.map((filter, index) =>
@@ -83,11 +85,13 @@ export class LexicFilterOverview extends CoreElement {
           <ngm-core-icon icon="close"></ngm-core-icon>
         </button>
       </div>
-      ${index < this.activeFilters.length - 1
-        ? html`<span class="or-badge"
-            >${i18next.t('layout:lexic.filter.or')}</span
-          >`
-        : nothing}
+      ${
+        index < this.activeFilters.length - 1
+          ? html`<span class="or-badge"
+              >${i18next.t('layout:lexic.filter.or')}</span
+            >`
+          : nothing
+      }
     </div>
   `;
 

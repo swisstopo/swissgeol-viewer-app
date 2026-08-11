@@ -492,12 +492,16 @@ export class LexicFilterDialog extends CoreElement {
         <div class="term-header">
           <span class="term-label">${term.label ?? term.term}</span>
         </div>
-        ${breadcrumbs
-          ? html`<span class="term-breadcrumbs">${breadcrumbs}</span>`
-          : nothing}
-        ${term.description
-          ? html`<span class="term-description">${term.description}</span>`
-          : nothing}
+        ${
+          breadcrumbs
+            ? html`<span class="term-breadcrumbs">${breadcrumbs}</span>`
+            : nothing
+        }
+        ${
+          term.description
+            ? html`<span class="term-description">${term.description}</span>`
+            : nothing
+        }
       </button>
     `;
   };

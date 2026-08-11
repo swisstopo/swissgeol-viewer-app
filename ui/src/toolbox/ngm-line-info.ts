@@ -26,9 +26,11 @@ export class NgmLineInfo extends LitElementI18n {
     return html` <div class="ngm-geom-info-content">
       <div>
         <div class="ngm-geom-info-label">
-          ${this.lineInfo.drawInProgress
-            ? i18next.t('tbx_length_of_last_segment_label')
-            : i18next.t('obj_info_length_label')}
+          ${
+            this.lineInfo.drawInProgress
+              ? i18next.t('tbx_length_of_last_segment_label')
+              : i18next.t('obj_info_length_label')
+          }
         </div>
         <div class="ngm-geom-info-value">
           ${this.lineInfo.length.toFixed(3)} km

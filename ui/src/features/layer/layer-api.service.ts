@@ -317,29 +317,26 @@ export class LayerApiService extends BaseService {
       null,
     cellSize: config.take('cellSize'),
     bandIndex: 0,
-    bands: config.takeAll(
-      'bands',
-      (band): TiffLayerBand => ({
-        ...band.takeKeys<TiffLayerBand>()('index', 'name'),
-        unit: band.takeNullable('unit') ?? null,
-        display:
-          band
-            .takeNullableObject('display')
-            ?.apply((display): TiffLayerConfigDisplay => {
-              const [a, b] = display.take<[number, number]>('bounds');
-              const [min, max, direction] =
-                a < b ? [a, b, 'asc' as const] : [b, a, 'desc' as const];
-              return {
-                bounds: [min, max],
-                direction,
-                colorMap: display.take('colorMap'),
-                noData: display.takeNullable('noData'),
-                steps: display.takeNullable('steps') ?? [],
-                isDiscrete: display.takeNullable('isDiscrete') ?? false,
-              };
-            }) ?? null,
-      }),
-    ),
+    bands: config.takeAll('bands', (band): TiffLayerBand => ({
+      ...band.takeKeys<TiffLayerBand>()('index', 'name'),
+      unit: band.takeNullable('unit') ?? null,
+      display:
+        band
+          .takeNullableObject('display')
+          ?.apply((display): TiffLayerConfigDisplay => {
+            const [a, b] = display.take<[number, number]>('bounds');
+            const [min, max, direction] =
+              a < b ? [a, b, 'asc' as const] : [b, a, 'desc' as const];
+            return {
+              bounds: [min, max],
+              direction,
+              colorMap: display.take('colorMap'),
+              noData: display.takeNullable('noData'),
+              steps: display.takeNullable('steps') ?? [],
+              isDiscrete: display.takeNullable('isDiscrete') ?? false,
+            };
+          }) ?? null,
+    })),
   });
 
   private readonly mapConfigToEarthquakesLayer = (

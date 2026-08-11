@@ -136,9 +136,11 @@ export class LayoutSidebar extends CoreElement {
       </ngm-navigation-panel-header>
       ${this.renderPanel()}
     </ngm-navigation-panel>
-    ${this.isLexicOpen
-      ? html`<ngm-lexic-filter-panel></ngm-lexic-filter-panel>`
-      : ''}
+    ${
+      this.isLexicOpen
+        ? html`<ngm-lexic-filter-panel></ngm-lexic-filter-panel>`
+        : ''
+    }
   `;
 
   private readonly renderItems = () => html`

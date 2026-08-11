@@ -516,9 +516,9 @@ export class NgmDashboard extends CoreElement {
       </div>
       <div class="ngm-proj-preview-subtitle">
         <span
-          >${projOrTopic.description
-            ? translated(projOrTopic.description)
-            : ''}</span
+          >${
+            projOrTopic.description ? translated(projOrTopic.description) : ''
+          }</span
         >
       </div>
     </div>`;
@@ -632,10 +632,13 @@ export class NgmDashboard extends CoreElement {
             }}
           >
             ${i18next.t('dashboard_my_projects')}
-            (${this.projects.filter(
-              (p) =>
-                p.owner.email.toLowerCase() === this.user?.email.toLowerCase(),
-            ).length})
+            (${
+              this.projects.filter(
+                (p) =>
+                  p.owner.email.toLowerCase() ===
+                  this.user?.email.toLowerCase(),
+              ).length
+            })
           </div>
           <div
             class=${classMap({ active: this.activeTab === 'shared' })}
@@ -648,10 +651,13 @@ export class NgmDashboard extends CoreElement {
             }}
           >
             ${i18next.t('dashboard_shared_projects')}
-            (${this.projects.filter(
-              (p) =>
-                p.owner.email.toLowerCase() !== this.user?.email.toLowerCase(),
-            ).length})
+            (${
+              this.projects.filter(
+                (p) =>
+                  p.owner.email.toLowerCase() !==
+                  this.user?.email.toLowerCase(),
+              ).length
+            })
           </div>
         </div>
       </div>
@@ -710,32 +716,36 @@ export class NgmDashboard extends CoreElement {
           </div>
         </div>
         <div ?hidden=${!this.isProjectSelected}>
-          ${this.projectTabState !== 'view'
-            ? html`<ngm-project-edit
-                .project="${this.projectTabState === 'create'
-                  ? this.projectToCreate
-                  : this.selectedTopicOrProject}"
-                .saveOrCancelWarning="${this.saveOrCancelWarning}"
-                .createMode="${this.projectTabState === 'create'}"
-                .userEmail="${this.user?.email}"
-                @onBack=${this.deselectTopicOrProject}
-                @onSave="${async (evt: { detail: { project: Project } }) =>
-                  this.onProjectSave(evt.detail.project)}"
-                @onCancel="${this.cancelEditCreate}"
-              ></ngm-project-edit>`
-            : html`<ngm-project-topic-overview
-                .topicOrProject="${this.selectedTopicOrProject}"
-                .toastPlaceholder="${this.toastPlaceholder}"
-                .activeTab="${this.activeTab}"
-                .selectedViewIndx="${this.selectedViewIndx}"
-                .userEmail="${this.user?.email}"
-                @onDeselect="${this.deselectTopicOrProject}"
-                @onEdit="${this.onProjectEdit}"
-                @onProjectDuplicated="${(evt: {
-                  detail: { project: Project };
-                }) => this.onProjectDuplicated(evt.detail.project)}"
-                @onModalConfirmation="${() => this.deselectTopicOrProject()}"
-              ></ngm-project-topic-overview>`}
+          ${
+            this.projectTabState !== 'view'
+              ? html`<ngm-project-edit
+                  .project="${
+                    this.projectTabState === 'create'
+                      ? this.projectToCreate
+                      : this.selectedTopicOrProject
+                  }"
+                  .saveOrCancelWarning="${this.saveOrCancelWarning}"
+                  .createMode="${this.projectTabState === 'create'}"
+                  .userEmail="${this.user?.email}"
+                  @onBack=${this.deselectTopicOrProject}
+                  @onSave="${async (evt: { detail: { project: Project } }) =>
+                    this.onProjectSave(evt.detail.project)}"
+                  @onCancel="${this.cancelEditCreate}"
+                ></ngm-project-edit>`
+              : html`<ngm-project-topic-overview
+                  .topicOrProject="${this.selectedTopicOrProject}"
+                  .toastPlaceholder="${this.toastPlaceholder}"
+                  .activeTab="${this.activeTab}"
+                  .selectedViewIndx="${this.selectedViewIndx}"
+                  .userEmail="${this.user?.email}"
+                  @onDeselect="${this.deselectTopicOrProject}"
+                  @onEdit="${this.onProjectEdit}"
+                  @onProjectDuplicated="${(evt: {
+                    detail: { project: Project };
+                  }) => this.onProjectDuplicated(evt.detail.project)}"
+                  @onModalConfirmation="${() => this.deselectTopicOrProject()}"
+                ></ngm-project-topic-overview>`
+          }
         </div>
       </div>
     `;

@@ -60,9 +60,7 @@ export interface LayerInfoLexicTerm {
 }
 
 export type LayerInfoAttributeValue =
-  | LayerInfoValue
-  | LayerInfoUrl
-  | LayerInfoLexicTerm;
+  LayerInfoValue | LayerInfoUrl | LayerInfoLexicTerm;
 
 export interface LayerInfoAttribute {
   key: string | TranslationKey;

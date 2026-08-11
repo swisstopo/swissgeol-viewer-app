@@ -42,13 +42,15 @@ export class LayoutSidebarItem extends CoreElement {
       <div class="box" @click="${this.toggle}" role="button">
         <div class="icon">
           <ngm-core-icon icon=${this.icon}></ngm-core-icon>
-          ${this.counter === 0
-            ? ''
-            : html`
-                <ngm-core-chip variant="highlight">
-                  ${this.counter}
-                </ngm-core-chip>
-              `}
+          ${
+            this.counter === 0
+              ? ''
+              : html`
+                  <ngm-core-chip variant="highlight">
+                    ${this.counter}
+                  </ngm-core-chip>
+                `
+          }
         </div>
         <div class="title">${i18next.t(`layout:items.${this.panel}`)}</div>
       </div>

@@ -157,9 +157,11 @@ export default class CatalogUploadKml extends CoreElement {
       hidden
       @change=${this.handleFileSelection}
     />
-    ${this.violation == null
-      ? ''
-      : html` <span class="violation">${this.violation}</span> `}
+    ${
+      this.violation == null
+        ? ''
+        : html` <span class="violation">${this.violation}</span> `
+    }
   `;
 
   static readonly styles = css`
