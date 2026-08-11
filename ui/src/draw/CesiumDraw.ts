@@ -26,6 +26,7 @@ import {
 import type { GeometryTypes } from '../toolbox/interfaces';
 import { cartesianToLv95 } from '../projection';
 import { PickService } from 'src/services/pick.service';
+import { CameraControllerService } from 'src/features/controls/camera-controller.service';
 
 type PointOptions = {
   color?: Color;
@@ -864,7 +865,7 @@ export class CesiumDraw extends EventTarget {
         }
       }
       if (this.moveEntity) {
-        this.viewer_.scene.screenSpaceCameraController.enableInputs = false;
+        CameraControllerService.get().enableInputs = false;
         this.dispatchEvent(new CustomEvent('leftdown'));
       }
     }
@@ -927,7 +928,7 @@ export class CesiumDraw extends EventTarget {
    * @param event
    */
   onLeftUp_(event) {
-    this.viewer_.scene.screenSpaceCameraController.enableInputs = true;
+    CameraControllerService.get().enableInputs = true;
     const wasAClick = Cartesian2.equalsEpsilon(
       event.position,
       this.leftPressedPixel_,

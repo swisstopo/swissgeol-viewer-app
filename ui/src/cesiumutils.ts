@@ -7,17 +7,20 @@ import {
   Ellipsoid,
   EntityCollection,
   HeadingPitchRoll,
+  IntersectionTests,
   JulianDate,
   Math as CMath,
   Matrix3,
   OrientedBoundingBox,
   Plane,
+  Ray,
   Rectangle,
   Scene,
   Viewer,
 } from 'cesium';
 import type { GeometryTypes } from './toolbox/interfaces';
 import earcut from 'earcut';
+import { isKnownScenePickingError } from 'src/services/pick.service';
 
 const julianDate = new JulianDate();
 
@@ -45,21 +48,78 @@ export function pickCenterOnEllipsoid(scene: Scene): Cartesian3 | undefined {
   return camera.pickEllipsoid(windowPosition);
 }
 
+/**
+ * Returns the position of the point on a voxel or the map/object at the
+ * given window position, or `undefined` if nothing could be picked there.
+ *
+ * `Scene.pickPosition` can throw while some tiles/primitives are not yet
+ * fully loaded, or after the scene/camera has been destroyed mid-pick (see
+ * {@link isKnownScenePickingError}). These failures are expected/transient
+ * and must not propagate, since callers of this function are often plain
+ * RxJS subscribe callbacks: an uncaught exception there would permanently
+ * terminate the subscription (e.g. breaking the tilt/orbit axis indicator
+ * for the rest of the session after a single failed pick).
+ *
+ * `Scene.pickPosition` also relies on the depth buffer, which isn't
+ * reliably populated while the globe is rendered translucently (e.g. the
+ * background map's opacity is below 100%, see
+ * `BackgroundLayerController`/`globe.translucency`). In that case it
+ * silently returns `undefined` instead of throwing. To keep picking (and
+ * anything relying on it, like the tilt/orbit axis indicator) working
+ * regardless of the base map's opacity, fall back to a math-based ray
+ * cast against the globe/ellipsoid, mirroring `PickService`'s own
+ * `pickWithMath` fallback.
+ */
 export function pickPositionOrVoxel(
   scene: Scene,
   windowPosition: Cartesian2,
-): Cartesian3 {
+): Cartesian3 | undefined {
   const voxel = scene.pickVoxel(windowPosition);
   if (voxel) {
     return voxel.orientedBoundingBox.center;
   }
-  return scene.pickPosition(windowPosition);
+  return (
+    tryPickScenePosition(scene, windowPosition) ??
+    pickPositionWithRay(scene, windowPosition)
+  );
+}
+
+function tryPickScenePosition(
+  scene: Scene,
+  windowPosition: Cartesian2,
+): Cartesian3 | undefined {
+  try {
+    return scene.pickPosition(windowPosition) ?? undefined;
+  } catch (e) {
+    if (isKnownScenePickingError(e)) {
+      return undefined;
+    }
+    throw e;
+  }
+}
+
+function pickPositionWithRay(
+  scene: Scene,
+  windowPosition: Cartesian2,
+): Cartesian3 | undefined {
+  const ray = scene.camera.getPickRay(windowPosition);
+  if (ray === undefined) {
+    return undefined;
+  }
+  if (scene.globe.show) {
+    return scene.globe.pick(ray, scene) ?? undefined;
+  }
+  const interval = IntersectionTests.rayEllipsoid(ray, Ellipsoid.WGS84);
+  if (interval === undefined) {
+    return undefined;
+  }
+  return Ray.getPoint(ray, interval.start);
 }
 
 /**
  * Return the position of the point, on the map or object at the center of the Cesium viewport.
  */
-export function pickCenterOnMapOrObject(scene: Scene): Cartesian3 {
+export function pickCenterOnMapOrObject(scene: Scene): Cartesian3 | undefined {
   const windowPosition = new Cartesian2(
     scene.canvas.clientWidth / 2,
     scene.canvas.clientHeight / 2,

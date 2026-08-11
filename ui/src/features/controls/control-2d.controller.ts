@@ -1,16 +1,14 @@
 import {
-  CameraEventType,
   Cartesian2,
   Cartesian3,
   Ellipsoid,
   Math as CesiumMath,
   sampleTerrainMostDetailed,
-  Scene,
-  ScreenSpaceCameraController,
   Viewer,
 } from 'cesium';
 import { DEFAULT_VIEW } from 'src/constants';
 import { PickService } from 'src/services/pick.service';
+import { CameraControllerService } from 'src/features/controls/camera-controller.service';
 
 /**
  * `Control2D` contains the ability to toggle the viewer in and out of the 2D mode.
@@ -21,10 +19,10 @@ import { PickService } from 'src/services/pick.service';
 export class Control2dController {
   private isActive = false;
 
-  private tiltEventTypesBackup: CameraEventType | any[] | undefined;
-  private lookEventTypesBackup: CameraEventType | any[] | undefined;
-
-  constructor(private readonly viewer: Viewer) {}
+  constructor(
+    private readonly viewer: Viewer,
+    private readonly cameraControllerService: CameraControllerService,
+  ) {}
 
   readonly toggle = (isActive: boolean): void => {
     if (this.isActive === isActive) {
@@ -39,18 +37,12 @@ export class Control2dController {
   };
 
   private activate(): void {
-    this.toggleTerrainCollision(true);
     this.rotateCameraTo2D().then();
     this.disableTiltGestures();
   }
 
   private deactivate(): void {
-    this.toggleTerrainCollision(false);
     this.enableTiltGestures();
-  }
-
-  private toggleTerrainCollision(isActive: boolean): void {
-    this.cameraController.enableCollisionDetection = isActive;
   }
 
   private async rotateCameraTo2D(): Promise<void> {
@@ -110,22 +102,14 @@ export class Control2dController {
   }
 
   private enableTiltGestures(): void {
-    this.cameraController.lookEventTypes = this.lookEventTypesBackup;
-    this.cameraController.tiltEventTypes = this.tiltEventTypesBackup;
+    this.cameraControllerService.addController(
+      this.cameraControllerService.tiltController,
+    );
   }
 
   private disableTiltGestures(): void {
-    this.tiltEventTypesBackup = this.cameraController.tiltEventTypes;
-    this.lookEventTypesBackup = this.cameraController.lookEventTypes;
-    this.cameraController.tiltEventTypes = [];
-    this.cameraController.lookEventTypes = [];
-  }
-
-  private get scene(): Scene {
-    return this.viewer.scene;
-  }
-
-  private get cameraController(): ScreenSpaceCameraController {
-    return this.scene.screenSpaceCameraController;
+    this.cameraControllerService.removeController(
+      this.cameraControllerService.tiltController,
+    );
   }
 }
