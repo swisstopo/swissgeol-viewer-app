@@ -39,6 +39,7 @@ interface MovementFlags {
  */
 export class KeyboardNavigationService extends BaseService {
   private scene!: Scene;
+  private canvas: HTMLCanvasElement | undefined;
   private cameraSpeed = DEFAULT_CAMERA_SPEED;
   private unlistenPostRender: Event.RemoveCallback | null = null;
 
@@ -86,6 +87,7 @@ export class KeyboardNavigationService extends BaseService {
     this.scene = viewer.scene;
 
     const canvas = this.scene.canvas;
+    this.canvas = canvas;
     canvas.setAttribute('tabindex', '0');
     canvas.onclick = () => canvas.focus();
 
@@ -225,6 +227,13 @@ export class KeyboardNavigationService extends BaseService {
     document.removeEventListener('keydown', this.keyDownHandler);
     document.removeEventListener('keyup', this.keyUpHandler);
     window.removeEventListener('blur', this.blurHandler);
+    if (this.canvas) {
+      this.canvas.removeEventListener('wheel', this.wheelHandler, {
+        capture: true,
+      } as EventListenerOptions);
+      this.canvas.onclick = null;
+      this.canvas = undefined;
+    }
     if (this.unlistenPostRender) {
       this.unlistenPostRender();
     }
