@@ -27,7 +27,7 @@ runs:
   using: 'composite'
   steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Set environment variables
       shell: bash
@@ -43,7 +43,7 @@ runs:
 
     - name: Collect docker image metadata
       id: meta-data
-      uses: docker/metadata-action@v5
+      uses: docker/metadata-action@v6
       with:
         images: ${{ inputs.IMAGE_NAME }}
         labels: |
@@ -58,14 +58,14 @@ runs:
           ${{ inputs.OTHER_TAGS }}
 
     - name: Log in to the GitHub container registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ inputs.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v7
       with:
         context: ${{ inputs.CONTEXT }}
         file: ${{ inputs.DOCKERFILE }}

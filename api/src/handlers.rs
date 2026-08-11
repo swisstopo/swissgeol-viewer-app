@@ -14,7 +14,7 @@ use crate::layers;
 use crate::{Error, Filter, LayerConfig, Result};
 use anyhow::Context;
 use axum_macros::debug_handler;
-use rand::{Rng, distributions::Alphanumeric};
+use rand::{Rng, distr::Alphanumeric};
 use serde_json::Number;
 use std::collections::HashSet;
 use std::sync::Arc;
@@ -640,7 +640,7 @@ async fn delete_assets(client: Client, project_assets: &Vec<Asset>) {
 }
 
 fn generate_asset_name() -> String {
-    let rand_string: String = rand::thread_rng()
+    let rand_string: String = rand::rng()
         .sample_iter(&Alphanumeric)
         .take(40)
         .map(char::from)
