@@ -92,7 +92,7 @@ const baseConfigs = compat
 export default [
   sortClassMembers.configs['flat/recommended'],
   {
-    ignores: ['dist/**'],
+    ignores: ['dist/**', 'public/**'],
   },
   ...baseConfigs.map((config) => ({
     ...config,
