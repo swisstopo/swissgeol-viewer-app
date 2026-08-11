@@ -1,7 +1,6 @@
 import { SWITZERLAND_RECTANGLE } from './constants';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter';
-import KeyboardNavigation from './KeyboardNavigation.js';
 
 import {
   Cartesian3,
@@ -116,7 +115,9 @@ export async function setupViewer(container: Element) {
   // as these errors can break the viewer.
   viewer.scene.renderError.addEventListener((_scene, error) => {
     console.error(String(error));
-    viewer.scene.requestRender();
+    // Resume rendering after a short delay to allow destroyed resources to be cleaned up.
+    // Calling requestRender() synchronously can cause infinite error loops.
+    setTimeout(() => viewer.scene.requestRender(), 100);
   });
 
   viewer.scene.postProcessStages.ambientOcclusion.enabled = false;
@@ -170,9 +171,9 @@ export async function setupViewer(container: Element) {
     );
   }
 
-  new KeyboardNavigation(viewer.scene);
+  // Keyboard navigation and camera controllers are now managed by
+  // CameraControllerService and KeyboardNavigationService via @lit/context.
 
-  scene.screenSpaceCameraController.enableCollisionDetection = false;
   scene.useDepthPicking = true;
   scene.pickTranslucentDepth = true; // required to have accurate position when picking translucent objects
   scene.backgroundColor = Color.TRANSPARENT;

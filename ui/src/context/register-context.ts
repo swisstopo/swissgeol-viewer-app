@@ -13,6 +13,8 @@ import {
 } from 'src/services/base.service';
 import { GstService } from 'src/gst.service';
 import { ControlsService } from 'src/features/controls/controls.service';
+import { CameraControllerService } from 'src/features/controls/camera-controller.service';
+import { KeyboardNavigationService } from 'src/features/controls/keyboard-navigation.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
 import { SessionService } from 'src/features/session/session.service';
@@ -65,6 +67,8 @@ export const registerAppContext = (
     makeProvider(IonService),
     makeProvider(SessionService),
     makeProvider(ControlsService),
+    makeProvider(CameraControllerService),
+    makeProvider(KeyboardNavigationService),
     makeProvider(GestureControlsService),
     makeProvider(LexicApiService),
     makeProvider(LexicFilterService),
