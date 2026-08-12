@@ -9,6 +9,9 @@ const getSessionService = (): Cypress.Chainable<any> =>
     };
     return sessionService;
   });
+const trackingConsent = encodeURIComponent(
+  JSON.stringify({ v: 1, isAllowed: false }),
+);
 
 const expiresAtTimestamp = Date.now() / 1_000 + 3_600;
 const user = {
@@ -139,7 +142,11 @@ When(/^the page is accessed with eIAM response query parameters$/, () => {
     state,
     token_type: 'Bearer',
   });
-  cy.visit(`#${params}`);
+  cy.visit(`#${params}`, {
+    onBeforeLoad(win) {
+      win.document.cookie = `swissgeol_consent=${trackingConsent}; Path=/; SameSite=Lax`;
+    },
+  });
 });
 
 Then(/^signed in user's profile is loaded$/, () => {
@@ -186,7 +193,11 @@ When(/^the user clicks the sign out button$/, () => {
 
 When(/^the page is reloaded$/, () => {
   interceptSignInRequests();
-  cy.visit('/');
+  cy.visit('/', {
+    onBeforeLoad(win) {
+      win.document.cookie = `swissgeol_consent=${trackingConsent}; Path=/; SameSite=Lax`;
+    },
+  });
 });
 
 When(/^the user's session expires$/, () => {
