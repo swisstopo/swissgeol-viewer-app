@@ -342,9 +342,10 @@ export class NgmGeometryEdit extends LitElementI18n {
         <textarea
           type="text"
           placeholder="required"
-          .value=${getValueOrUndefined(
-            this.editingEntity!.properties!.description,
-          ) || ''}
+          .value=${
+            getValueOrUndefined(this.editingEntity!.properties!.description) ||
+            ''
+          }
           @input=${(evt) => this.onPropChange(evt, 'description')}
         ></textarea>
         <span class="ngm-floating-label"
@@ -355,8 +356,9 @@ export class NgmGeometryEdit extends LitElementI18n {
         <input
           type="text"
           placeholder="required"
-          .value=${getValueOrUndefined(this.editingEntity!.properties!.image) ||
-          ''}
+          .value=${
+            getValueOrUndefined(this.editingEntity!.properties!.image) || ''
+          }
           @input=${(evt) => this.onPropChange(evt, 'image')}
         />
         <span class="ngm-floating-label">${i18next.t('tbx_image_label')}</span>
@@ -365,9 +367,9 @@ export class NgmGeometryEdit extends LitElementI18n {
         <input
           type="text"
           placeholder="required"
-          .value=${getValueOrUndefined(
-            this.editingEntity!.properties!.website,
-          ) || ''}
+          .value=${
+            getValueOrUndefined(this.editingEntity!.properties!.website) || ''
+          }
           @input=${(evt) => this.onPropChange(evt, 'website')}
         />
         <span class="ngm-floating-label"

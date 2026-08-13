@@ -64,9 +64,11 @@ export class LayerTiffBands extends CoreElement {
         >
           <span class="text">
             ${name}
-            ${unitSymbol === null
-              ? ''
-              : html` <span title="${unitName}">${unitSymbol}</span> `}
+            ${
+              unitSymbol === null
+                ? ''
+                : html` <span title="${unitName}">${unitSymbol}</span> `
+            }
           </span>
         </ngm-core-radio>
       </li>

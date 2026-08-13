@@ -42,12 +42,14 @@ export class NgmProjectMembersSection extends LitElementI18n {
             <div class="ngm-member-email">${member.email}</div>
           </div>
         </div>
-        ${!this.edit || role === 'owner'
-          ? ''
-          : html` <div
-              class="ngm-icon ngm-delete-icon"
-              @click=${() => this.onMemberDelete({ ...member, role })}
-            ></div>`}
+        ${
+          !this.edit || role === 'owner'
+            ? ''
+            : html` <div
+                class="ngm-icon ngm-delete-icon"
+                @click=${() => this.onMemberDelete({ ...member, role })}
+              ></div>`
+        }
       </div>
     `;
   }
@@ -72,23 +74,27 @@ export class NgmProjectMembersSection extends LitElementI18n {
             this.memberInfoRender(viewer, 'viewer'),
           )}
         </div>
-        ${!this.edit || this.showAddForm
-          ? ''
-          : html` <div
-              class="ngm-label-btn"
-              @click=${() => (this.showAddForm = true)}
-            >
-              ${i18next.t('dashboard_project_add_member')}
-              <div class="ngm-zoom-p-icon"></div>
-            </div>`}
-        ${!this.edit || !this.showAddForm
-          ? ''
-          : html`
-              <ngm-add-member-form
-                @onMemberAdd=${(evt) => this.onMemberAdd(evt)}
-                @onCancel=${() => (this.showAddForm = false)}
-              ></ngm-add-member-form>
-            `}
+        ${
+          !this.edit || this.showAddForm
+            ? ''
+            : html` <div
+                class="ngm-label-btn"
+                @click=${() => (this.showAddForm = true)}
+              >
+                ${i18next.t('dashboard_project_add_member')}
+                <div class="ngm-zoom-p-icon"></div>
+              </div>`
+        }
+        ${
+          !this.edit || !this.showAddForm
+            ? ''
+            : html`
+                <ngm-add-member-form
+                  @onMemberAdd=${(evt) => this.onMemberAdd(evt)}
+                  @onCancel=${() => (this.showAddForm = false)}
+                ></ngm-add-member-form>
+              `
+        }
       </div>
     </div>`;
   }

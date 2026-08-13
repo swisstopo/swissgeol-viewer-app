@@ -88,29 +88,38 @@ export class LayoutCursorInfo extends CoreElement {
     this.heightType = feature == null ? 'terrain' : 'object';
   };
 
-  readonly render = () => html`
-    ${this.coordinates.length === 0
-      ? ''
-      : html`
-          <div class="section" data-cy="coordinates-info">
-            <label>${i18next.t('camera_position_coordinates_label')}</label>
-            <span class="value">${this.coordinates[0]}</span>
-            <span class="value">${this.coordinates[1]}</span>
-          </div>
-        `}
-    ${this.height === null
-      ? ''
-      : html`
-          <div class="section" data-cy="height-info">
-            <label>
-              ${this.heightType === 'terrain'
-                ? i18next.t('nav_terrain_height_label')
-                : i18next.t('nav_object_height_label')}
-            </label>
-            <span>${LayoutCursorInfo.HEIGHT_FORMAT.format(this.height)}m</span>
-          </div>
-        `}
-  `;
+  readonly render = () => {
+    const heightLabel =
+      this.heightType === 'terrain'
+        ? i18next.t('nav_terrain_height_label')
+        : i18next.t('nav_object_height_label');
+
+    return html`
+      ${
+        this.coordinates.length === 0
+          ? ''
+          : html`
+              <div class="section" data-cy="coordinates-info">
+                <label>${i18next.t('camera_position_coordinates_label')}</label>
+                <span class="value">${this.coordinates[0]}</span>
+                <span class="value">${this.coordinates[1]}</span>
+              </div>
+            `
+      }
+      ${
+        this.height === null
+          ? ''
+          : html`
+              <div class="section" data-cy="height-info">
+                <label>${heightLabel}</label>
+                <span
+                  >${LayoutCursorInfo.HEIGHT_FORMAT.format(this.height)}m</span
+                >
+              </div>
+            `
+      }
+    `;
+  };
 
   static readonly styles = css`
     :host,

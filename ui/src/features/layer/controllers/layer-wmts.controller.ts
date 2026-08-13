@@ -269,5 +269,4 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
 }
 
 export type WmtsImageryProvider =
-  | WebMapServiceImageryProvider
-  | UrlTemplateImageryProvider;
+  WebMapServiceImageryProvider | UrlTemplateImageryProvider;

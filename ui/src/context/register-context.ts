@@ -104,8 +104,9 @@ const makeProviderForElement =
       return new ContextProvider(element, { context, initialValue });
     } else {
       const context = (serviceOrType as AnyBaseServiceType).context();
-      const initialValue =
-        new (serviceOrType as new () => BaseService)() as never;
+      const initialValue = new (
+        serviceOrType as new () => BaseService
+      )() as never;
       return new ContextProvider(element, { context, initialValue });
     }
   };

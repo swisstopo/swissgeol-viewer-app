@@ -247,11 +247,6 @@ export class CoreButton extends LitElement {
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary';
 
 export type ButtonShape =
-  | 'default'
-  | 'large'
-  | 'small'
-  | 'icon'
-  | 'icon-round'
-  | 'chip';
+  'default' | 'large' | 'small' | 'icon' | 'icon-round' | 'chip';
 
 export type ButtonJustify = 'center' | 'start' | 'end';

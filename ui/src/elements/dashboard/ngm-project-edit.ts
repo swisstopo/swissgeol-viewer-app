@@ -208,18 +208,22 @@ export class NgmProjectEdit extends LitElementI18n {
           </div>
           <div class="project-menu">
             <div class="edit-project active">
-              ${this.createMode
-                ? i18next.t('dashboard_project_create')
-                : i18next.t('dashboard_project_in_edit')}
+              ${
+                this.createMode
+                  ? i18next.t('dashboard_project_create')
+                  : i18next.t('dashboard_project_in_edit')
+              }
               <div class="ngm-edit-icon active"></div>
             </div>
           </div>
         </div>
-        ${this.createMode || !isProject(project)
-          ? ''
-          : html` <div class="ngm-proj-data">
-              ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(project.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
-            </div>`}
+        ${
+          this.createMode || !isProject(project)
+            ? ''
+            : html` <div class="ngm-proj-data">
+                ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(project.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
+              </div>`
+        }
         <div class="ngm-proj-information">
           <div class="project-image-and-color">
             <div

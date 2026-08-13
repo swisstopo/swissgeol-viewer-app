@@ -85,18 +85,23 @@ export class OgcQueue extends CoreElement {
           (layer) => html`<li>${getLayerLabel(layer)}</li>`,
         )}
       </ul>
-      ${this.stage === null
-        ? undefined
-        : html`
-            <div class="stage">
-              ${when(
-                this.isOngoing,
-                () =>
-                  html` <sgc-icon name="spinner" animation="spin"></sgc-icon>`,
-              )}
-              <span>${i18next.t(`toolbox:ogc.stage.${this.stage}`)}</span>
-            </div>
-          `}
+      ${
+        this.stage === null
+          ? undefined
+          : html`
+              <div class="stage">
+                ${when(
+                  this.isOngoing,
+                  () =>
+                    html` <sgc-icon
+                      name="spinner"
+                      animation="spin"
+                    ></sgc-icon>`,
+                )}
+                <span>${i18next.t(`toolbox:ogc.stage.${this.stage}`)}</span>
+              </div>
+            `
+      }
     </div>
   `;
 

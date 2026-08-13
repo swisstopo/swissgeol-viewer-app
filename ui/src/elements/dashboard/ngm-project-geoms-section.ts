@@ -23,15 +23,17 @@ export class NgmProjectGeomsSection extends LitElementI18n {
         <div>${i18next.t('dashboard_project_geometries')}</div>
       </div>
       <div class="project-edit-fields">
-        ${this.geometries?.length
-          ? html` <ngm-geometries-simple-list
-              .viewMode=${this.viewMode}
-              .geometries="${this.geometries}"
-              .hideMapInteractionButtons=${true}
-              .directNameEdit=${!this.viewMode}
-            >
-            </ngm-geometries-simple-list>`
-          : html` <div>${i18next.t('dashboard_no_geom_text')}</div>`}
+        ${
+          this.geometries?.length
+            ? html` <ngm-geometries-simple-list
+                .viewMode=${this.viewMode}
+                .geometries="${this.geometries}"
+                .hideMapInteractionButtons=${true}
+                .directNameEdit=${!this.viewMode}
+              >
+              </ngm-geometries-simple-list>`
+            : html` <div>${i18next.t('dashboard_no_geom_text')}</div>`
+        }
       </div>
     </div>`;
   }

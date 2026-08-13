@@ -21,7 +21,6 @@ const sharedConfig = {
     sourceType: 'module',
     parser: tsParser,
     parserOptions: {
-      projectService: true,
       project: './tsconfig.json',
       tsconfigRootDir: __dirname,
     },
@@ -92,7 +91,15 @@ const baseConfigs = compat
 export default [
   sortClassMembers.configs['flat/recommended'],
   {
-    ignores: ['dist/**'],
+    ignores: [
+      'dist/**',
+      'public/**',
+      'manuals/**',
+      'locales/**',
+      'docs/**',
+      'scripts/**',
+      'temp-ogc-tests/**',
+    ],
   },
   ...baseConfigs.map((config) => ({
     ...config,

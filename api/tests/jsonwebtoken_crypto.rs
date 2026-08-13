@@ -27,12 +27,8 @@ fn jsonwebtoken_hs256_sign_and_verify() {
     let mut validation = Validation::new(Algorithm::HS256);
     validation.required_spec_claims.clear();
 
-    let decoded = decode::<TestClaims>(
-        &token,
-        &DecodingKey::from_secret(secret),
-        &validation,
-    )
-    .expect("decoding should succeed");
+    let decoded = decode::<TestClaims>(&token, &DecodingKey::from_secret(secret), &validation)
+        .expect("decoding should succeed");
 
     assert_eq!(decoded.claims, claims);
 }

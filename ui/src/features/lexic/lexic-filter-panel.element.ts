@@ -250,13 +250,15 @@ export class LexicFilterPanel extends CoreElement {
             <span class="panel-title"
               >${i18next.t('layout:items.Lexic')} Filter</span
             >
-            ${this.isLoadingResults
-              ? html`<sgc-icon
-                  name="spinner"
-                  animation="spin"
-                  aria-hidden="true"
-                ></sgc-icon>`
-              : nothing}
+            ${
+              this.isLoadingResults
+                ? html`<sgc-icon
+                    name="spinner"
+                    animation="spin"
+                    aria-hidden="true"
+                  ></sgc-icon>`
+                : nothing
+            }
           </div>
           <ngm-core-icon
             icon="close"
@@ -270,34 +272,38 @@ export class LexicFilterPanel extends CoreElement {
             <span class="section-header-label"
               >${i18next.t('layout:lexic.datasetLabel')}</span
             >
-            ${this.isLoadingLayers
-              ? html`<ngm-core-loader></ngm-core-loader>`
-              : html`
-                  <div class="select-wrapper">
-                    <select @change=${this.handleLayerSelection}>
-                      ${this.layers.map(
-                        (layer) =>
-                          html`<option
-                            value="${layer.id}"
-                            ?selected=${layer.id === this.selectedLayerId}
-                          >
-                            ${layer.name ?? layer.id}
-                          </option>`,
-                      )}
-                    </select>
-                    <ngm-core-icon icon="dropdown"></ngm-core-icon>
-                  </div>
-                `}
+            ${
+              this.isLoadingLayers
+                ? html`<ngm-core-loader></ngm-core-loader>`
+                : html`
+                    <div class="select-wrapper">
+                      <select @change=${this.handleLayerSelection}>
+                        ${this.layers.map(
+                          (layer) =>
+                            html`<option
+                              value="${layer.id}"
+                              ?selected=${layer.id === this.selectedLayerId}
+                            >
+                              ${layer.name ?? layer.id}
+                            </option>`,
+                        )}
+                      </select>
+                      <ngm-core-icon icon="dropdown"></ngm-core-icon>
+                    </div>
+                  `
+            }
           </section>
 
           <ngm-lexic-filter-result-panel></ngm-lexic-filter-result-panel>
 
-          ${this.isLoadingFilters
-            ? html`<ngm-core-loader></ngm-core-loader>`
-            : html`<ngm-lexic-filter-container
-                .layerFilters=${this.selectedLayerFilters}
-                .layerId=${this.selectedLayerId ?? ''}
-              ></ngm-lexic-filter-container>`}
+          ${
+            this.isLoadingFilters
+              ? html`<ngm-core-loader></ngm-core-loader>`
+              : html`<ngm-lexic-filter-container
+                  .layerFilters=${this.selectedLayerFilters}
+                  .layerId=${this.selectedLayerId ?? ''}
+                ></ngm-lexic-filter-container>`
+          }
         </div>
       </div>
     `;

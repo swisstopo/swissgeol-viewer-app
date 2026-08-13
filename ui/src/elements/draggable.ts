@@ -117,14 +117,12 @@ function moveWindow(target, moveLeft) {
       rectsForCheck[i + 1] &&
       !(
         // checks if enough space between checked window and next one
-        (
-          (moveLeft &&
-            rectsForCheck[i].left - rectsForCheck[i + 1].right >
-              targetRect.width + MARGIN_BETWEEN_WINDOWS) ||
-          (!moveLeft &&
-            rectsForCheck[i + 1].left - rectsForCheck[i].right >
-              targetRect.width + MARGIN_BETWEEN_WINDOWS)
-        )
+        (moveLeft &&
+          rectsForCheck[i].left - rectsForCheck[i + 1].right >
+            targetRect.width + MARGIN_BETWEEN_WINDOWS) ||
+        (!moveLeft &&
+          rectsForCheck[i + 1].left - rectsForCheck[i].right >
+            targetRect.width + MARGIN_BETWEEN_WINDOWS)
       )
     ) {
       // saves a backup of style to restore if window anyway overlap another one after move top/bottom

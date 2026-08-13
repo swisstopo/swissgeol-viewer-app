@@ -5,6 +5,9 @@ import type { ClientConfig } from '../../../src/api/client-config';
 import { getViewer } from './viewer';
 
 let cachedConfig: ClientConfig | null = null;
+const trackingConsent = encodeURIComponent(
+  JSON.stringify({ v: 1, isAllowed: false }),
+);
 
 before(() => {
   cy.request('http://localhost:8000/api/client-config').then((res) => {
@@ -19,7 +22,11 @@ beforeEach(() => {
 });
 
 Given(/^the viewer is fully loaded$/, () => {
-  cy.visit('/?lang=en');
+  cy.visit('/?lang=en', {
+    onBeforeLoad(win) {
+      win.document.cookie = `swissgeol_consent=${trackingConsent}; Path=/; SameSite=Lax`;
+    },
+  });
   cy.get('.cesium-widget > canvas', { timeout: 10_000 }).should('be.visible');
   cy.get('ngm-layout-sidebar', { timeout: 60_000 }).should('be.visible');
 });

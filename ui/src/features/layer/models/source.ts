@@ -74,10 +74,7 @@ interface OgcTypeForFdsn {
 }
 
 export type OgcSource =
-  | OgcTypeForGst
-  | OgcTypeForStac
-  | OgcTypeForFdsn
-  | OgcTypeForWms;
+  OgcTypeForGst | OgcTypeForStac | OgcTypeForFdsn | OgcTypeForWms;
 
 export interface LayerSourceForOgc {
   type: LayerSourceType.Ogc;

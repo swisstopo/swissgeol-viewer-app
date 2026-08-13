@@ -64,9 +64,11 @@ export class LexicFilterResultPanel extends CoreElement {
     return html`
       <div class="divider"></div>
 
-      ${this.resultState === 'load-error' && !this.isLoadErrorDismissed
-        ? this.renderLoadErrorBanner()
-        : nothing}
+      ${
+        this.resultState === 'load-error' && !this.isLoadErrorDismissed
+          ? this.renderLoadErrorBanner()
+          : nothing
+      }
 
       <div class="opacity-section">
         <div class="opacity-row">

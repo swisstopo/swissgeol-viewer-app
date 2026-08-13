@@ -320,17 +320,19 @@ export class CatalogDisplayListItem extends CoreElement {
           </ngm-core-dropdown-item>
         `,
       )}
-      ${this.layer.type === LayerType.Tiff
-        ? html`
-            <ngm-core-dropdown-item
-              role="button"
-              @click="${this.openTiffFilter}"
-            >
-              <ngm-core-icon icon="filter"></ngm-core-icon>
-              ${i18next.t('catalog:tiffBandsWindow.open')}
-            </ngm-core-dropdown-item>
-          `
-        : ''}
+      ${
+        this.layer.type === LayerType.Tiff
+          ? html`
+              <ngm-core-dropdown-item
+                role="button"
+                @click="${this.openTiffFilter}"
+              >
+                <ngm-core-icon icon="filter"></ngm-core-icon>
+                ${i18next.t('catalog:tiffBandsWindow.open')}
+              </ngm-core-dropdown-item>
+            `
+          : ''
+      }
       ${when(
         this.layer.type === LayerType.Wmts && this.layer.times !== null,
         () => html`

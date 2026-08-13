@@ -15,9 +15,7 @@ export function isAllowedCrs(crs: string): crs is AllowedCrs {
 export type Coordinate = number[];
 type CoordinateWithHeight = [number, number, number];
 type CoordinateOrNested =
-  | Coordinate
-  | CoordinateWithHeight
-  | CoordinateOrNested[];
+  Coordinate | CoordinateWithHeight | CoordinateOrNested[];
 
 interface GeoJsonGeometry {
   type: string;

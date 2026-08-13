@@ -29,9 +29,11 @@ export class CoreTextInput extends LitElement {
   readonly render = () =>
     html`<span>${this.label}</span>
       <div class="input-wrapper ${this.icon ? 'has-icon' : ''}">
-        ${this.icon
-          ? html`<ngm-core-icon .icon="${this.icon}"></ngm-core-icon>`
-          : null}
+        ${
+          this.icon
+            ? html`<ngm-core-icon .icon="${this.icon}"></ngm-core-icon>`
+            : null
+        }
         <input
           type="text"
           .value=${this.value}

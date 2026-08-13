@@ -286,17 +286,21 @@ export class NgmSlicer extends LitElementI18n {
     return html`
       <div
         class="ngm-hint"
-        ?hidden=${(!id && this.slicingType !== type) ||
-        id !== this.sliceGeomId ||
-        !this.slicer!.draw.active}
+        ?hidden=${
+          (!id && this.slicingType !== type) ||
+          id !== this.sliceGeomId ||
+          !this.slicer!.draw.active
+        }
       >
         ${i18next.t('tbx_slice_draw_hint')}
       </div>
       <div
         class="ngm-slice-options"
-        ?hidden=${(!id && this.slicingType !== type) ||
-        id !== this.sliceGeomId ||
-        this.slicer!.draw.active}
+        ?hidden=${
+          (!id && this.slicingType !== type) ||
+          id !== this.sliceGeomId ||
+          this.slicer!.draw.active
+        }
       >
         <div class="ngm-slice-type-label">${i18next.t('tbx_slicing_type')}</div>
         <div class="ngm-slice-side">
@@ -305,26 +309,34 @@ export class NgmSlicer extends LitElementI18n {
             @click=${() => this.changeSliceSide(false, options.geom)}
           >
             <div
-              class=${type.includes('box')
-                ? 'ngm-out-box-icon'
-                : 'ngm-slice-left-icon'}
+              class=${
+                type.includes('box')
+                  ? 'ngm-out-box-icon'
+                  : 'ngm-slice-left-icon'
+              }
             ></div>
-            ${type.includes('box')
-              ? i18next.t('tbx_slice_outside_label')
-              : i18next.t('tbx_slice_left_label')}
+            ${
+              type.includes('box')
+                ? i18next.t('tbx_slice_outside_label')
+                : i18next.t('tbx_slice_left_label')
+            }
           </div>
           <div
             class=${classMap({ active: this.negateSlice })}
             @click=${() => this.changeSliceSide(true, options.geom)}
           >
             <div
-              class=${type.includes('box')
-                ? 'ngm-in-box-icon'
-                : 'ngm-slice-right-icon'}
+              class=${
+                type.includes('box')
+                  ? 'ngm-in-box-icon'
+                  : 'ngm-slice-right-icon'
+              }
             ></div>
-            ${type.includes('box')
-              ? i18next.t('tbx_slice_inside_label')
-              : i18next.t('tbx_slice_right_label')}
+            ${
+              type.includes('box')
+                ? i18next.t('tbx_slice_inside_label')
+                : i18next.t('tbx_slice_right_label')
+            }
           </div>
         </div>
         <div

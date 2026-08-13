@@ -141,20 +141,22 @@ export class LexicFilterContainer extends CoreElement {
     const hasVocabulary = FILTER_VOCABULARY_MAP[filterId] != null;
 
     return html` <div class="filter-content">
-      ${hasVocabulary
-        ? html`
-            <ngm-lexic-filter-overview
-              .filterId=${filterId}
-              .activeFilters=${activeFilters}
-              @open-filter-dialog=${() =>
-                this.handleOpenFilterDialog(filter as LexicFilter)}
-            ></ngm-lexic-filter-overview>
-          `
-        : html`
-            <span class="filter-placeholder"
-              >${filter.description ?? 'Filter options will appear here'}</span
-            >
-          `}
+      ${
+        hasVocabulary
+          ? html`
+              <ngm-lexic-filter-overview
+                .filterId=${filterId}
+                .activeFilters=${activeFilters}
+                @open-filter-dialog=${() =>
+                  this.handleOpenFilterDialog(filter as LexicFilter)}
+              ></ngm-lexic-filter-overview>
+            `
+          : html`
+              <span class="filter-placeholder"
+                >${filter.description ?? 'Filter options will appear here'}</span
+              >
+            `
+      }
     </div>`;
   };
 
@@ -177,17 +179,21 @@ export class LexicFilterContainer extends CoreElement {
           <span class="filter-title"
             >${filter.name ?? filter.title ?? filterId}</span
           >
-          ${activeFilters.length > 0
-            ? html`<ngm-core-chip>${activeFilters.length}</ngm-core-chip>`
-            : nothing}
+          ${
+            activeFilters.length > 0
+              ? html`<ngm-core-chip>${activeFilters.length}</ngm-core-chip>`
+              : nothing
+          }
           <ngm-core-icon
             class="filter-chevron ${isExpanded ? 'expanded' : ''}"
             icon="dropdown"
           ></ngm-core-icon>
         </button>
-        ${isExpanded
-          ? this.renderFilterContent(filterId, filter, activeFilters)
-          : nothing}
+        ${
+          isExpanded
+            ? this.renderFilterContent(filterId, filter, activeFilters)
+            : nothing
+        }
       </div>
     `;
   };
