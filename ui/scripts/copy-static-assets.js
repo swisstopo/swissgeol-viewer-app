@@ -6,9 +6,9 @@
  * runtime assets correctly in Vite 8 dev mode; requests fall through
  * to the SPA fallback and return index.html.
  */
-import { cpSync, mkdirSync } from 'fs';
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { cpSync, mkdirSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');

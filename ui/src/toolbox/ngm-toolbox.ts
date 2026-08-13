@@ -315,6 +315,10 @@ export class NgmToolbox extends CoreElement {
   }
 
   render() {
+    const activeToolLabel = this.activeTool
+      ? i18next.t(`tbx_${this.activeTool}`)
+      : i18next.t('lsb_tools');
+
     return html`
       ${
         this.activeTool == null
@@ -326,11 +330,7 @@ export class NgmToolbox extends CoreElement {
                   class="ngm-back-icon"
                   @click=${this.onBackClick}
                 ></div>
-                ${
-                  this.activeTool
-                    ? i18next.t(`tbx_${this.activeTool}`)
-                    : i18next.t('lsb_tools')
-                }
+                ${activeToolLabel}
               </div>
             `
       }

@@ -270,15 +270,15 @@ export default class NgmGeometriesSimpleList extends CoreElement {
   }
 
   geometryNameTemplate(geom: NgmGeometry, index: number, disabled: boolean) {
+    const visibilityToggleTitle = geom.show
+      ? i18next.t('tbx_hide_btn_label')
+      : i18next.t('tbx_unhide_btn_label');
+
     return html` <div>
         ${
           this.nameEditIndex !== index
             ? html` <div
-                  title=${
-                    geom.show
-                      ? i18next.t('tbx_hide_btn_label')
-                      : i18next.t('tbx_unhide_btn_label')
-                  }
+                  title=${visibilityToggleTitle}
                   class="ngm-layer-icon ${classMap({
                     'ngm-visible-icon': !!geom.show,
                     'ngm-invisible-icon': !geom.show,

@@ -606,6 +606,10 @@ export class NgmDashboard extends CoreElement {
     //   >
     //     ${i18next.t('dashboard_topics')}
     //   </div>`;
+    const projectToEdit =
+      this.projectTabState === 'create'
+        ? this.projectToCreate
+        : this.selectedTopicOrProject;
 
     return html`
       <div class="ngm-panel-header">
@@ -719,11 +723,7 @@ export class NgmDashboard extends CoreElement {
           ${
             this.projectTabState !== 'view'
               ? html`<ngm-project-edit
-                  .project="${
-                    this.projectTabState === 'create'
-                      ? this.projectToCreate
-                      : this.selectedTopicOrProject
-                  }"
+                  .project="${projectToEdit}"
                   .saveOrCancelWarning="${this.saveOrCancelWarning}"
                   .createMode="${this.projectTabState === 'create'}"
                   .userEmail="${this.user?.email}"

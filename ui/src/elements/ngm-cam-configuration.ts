@@ -448,9 +448,7 @@ export class NgmCamConfiguration extends LitElementI18n {
                     step="${c.inputStep ?? c.step}"
                     .value=${c.getInputValue ? c.getInputValue() : c.getValue()}
                     ?disabled="${c.isDisabled()}"
-                    @input=${
-                      c.onInputChange ? c.onInputChange : c.onSliderChange
-                    }
+                    @input=${c.onInputChange ?? c.onSliderChange}
                   />
                 </div>
                 <input
