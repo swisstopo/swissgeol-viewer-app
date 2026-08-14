@@ -11,6 +11,7 @@
     "legend": "Legende",
     "download": "Herunterladen / Legende",
     "filter": "Filter öffnen",
+    "slice": "Schnitte",
     "time_travel": "Zeitreise",
     "remove": "Entfernen"
   },
@@ -56,6 +57,27 @@
     "title": "{{ layer }} - Bänder",
     "open": "Bänder anzeigen",
     "legend": "Legende"
+  },
+  "slice_window": {
+    "title": "{{ layer }} - Schnitte",
+    "mode": {
+      "label": "Modus",
+      "single": "Einzelner Schnitt",
+      "multiple": "Mehrere Schnitte",
+      "coming_soon": "demnächst verfügbar"
+    },
+    "crossline": "Crossline",
+    "inline": "Inline",
+    "depth": "Depth",
+    "amount": "Anzahl Schnitte",
+    "warning_large": "Dies ist ein grosser Datensatz. Wir empfehlen, die Anzahl Schnitte für {{axis}} auf {{max}} zu begrenzen.",
+    "legend": {
+      "relative_amplitude": "Relative Amplitude"
+    },
+    "preload": {
+      "loading": "Schnitte werden vorgeladen… {{loaded}}/{{total}}",
+      "done": "Schnitte im Cache ({{total}})"
+    }
   },
   "layers_unavailable": "Einige Layer sind nicht verfügbar ({{sources}}). {{count}} Layer wurden im Katalog ausgeblendet."
 }

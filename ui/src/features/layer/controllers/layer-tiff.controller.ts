@@ -169,6 +169,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
 
       // Make the layer partially transparent to hide parts that are not covered by the imagery.
       isPartiallyTransparent: true,
+      sliceSelection: null,
     };
   }
 

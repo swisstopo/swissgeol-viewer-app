@@ -12,6 +12,7 @@ import {
   AnyLayer,
   getLayerLabel,
   isBackgroundLayer,
+  isDefaultSliceSelection,
   Layer,
   LayerType,
   Tiles3dLayerController,
@@ -69,20 +70,32 @@ export class CatalogDisplayListItem extends CoreElement {
       return;
     }
 
-    if (controller instanceof Tiles3dLayerController) {
-      this.canZoom = !!controller.tileset?.boundingSphere;
-      if (!this.canZoom) {
-        const checkInterval = setInterval(() => {
-          if (controller.tileset?.boundingSphere) {
-            this.canZoom = true;
-            this.requestUpdate();
-            clearInterval(checkInterval);
-          }
-        }, 100);
-      }
-    } else {
+    if (!(controller instanceof Tiles3dLayerController)) {
       this.canZoom = true;
+      return;
     }
+
+    this.canZoom = !!controller.tileset?.boundingSphere;
+    if (this.canZoom) {
+      return;
+    }
+
+    // Tileset and slice metadata finish loading asynchronously after activation.
+    const startedAt = Date.now();
+    const checkInterval = setInterval(() => {
+      const isReady = !!controller.tileset?.boundingSphere;
+      if (isReady) {
+        this.canZoom = true;
+      }
+      if (
+        controller.supportsSliceSelection ||
+        (isReady && Date.now() - startedAt > 2_000) ||
+        Date.now() - startedAt > 15_000
+      ) {
+        this.requestUpdate();
+        clearInterval(checkInterval);
+      }
+    }, 100);
   }
 
   updated() {
@@ -136,8 +149,10 @@ export class CatalogDisplayListItem extends CoreElement {
       ...options,
       onClose: () => {
         this.windows[name] = null;
+        this.requestUpdate();
       },
     });
+    this.requestUpdate();
   }
 
   private readonly openLegend = (): void =>
@@ -183,6 +198,47 @@ export class CatalogDisplayListItem extends CoreElement {
       `,
     });
 
+  private readonly openSlice = (): void =>
+    this.openWindow('slice', {
+      title: () =>
+        i18next.t('catalog:slice_window.title', {
+          layer: getLayerLabel(this.layer),
+        }),
+      body: () => html`
+        <ngm-catalog-display-slice-detail
+          .layerId=${this.layer.id}
+        ></ngm-catalog-display-slice-detail>
+      `,
+    });
+
+  private get tiles3dController(): Tiles3dLayerController | null {
+    if (this.layer.type !== LayerType.Tiles3d) {
+      return null;
+    }
+    const controller = this.layerService.controller(this.layer.id);
+    return controller instanceof Tiles3dLayerController ? controller : null;
+  }
+
+  private get supportsSliceSelection(): boolean {
+    return this.tiles3dController?.supportsSliceSelection === true;
+  }
+
+  private get isSliceFilterActive(): boolean {
+    if (!this.supportsSliceSelection) {
+      return false;
+    }
+    if (this.windows.slice !== null) {
+      return true;
+    }
+    const selection =
+      this.layer.type === LayerType.Tiles3d ? this.layer.sliceSelection : null;
+    const defaults = this.tiles3dController?.getDefaultSliceSelection() ?? null;
+    if (selection === null || defaults === null) {
+      return false;
+    }
+    return !isDefaultSliceSelection(selection, defaults);
+  }
+
   private readonly handleOpacityChangeEvent = throttle(
     (event: SliderChangeEvent): void => {
       this.layerService.update(this.layerId, { opacity: event.detail.value });
@@ -212,7 +268,6 @@ export class CatalogDisplayListItem extends CoreElement {
         </ngm-core-button>
 
         <span class="title">${title}</span>
-
         <div class="suffix">
           ${when(
             isBackgroundLayer(this.layer),
@@ -241,6 +296,23 @@ export class CatalogDisplayListItem extends CoreElement {
             ${Math.round(this.layer.opacity * 100)}%
           </ngm-core-button>
           ${tooltip(i18next.t('catalog:display.opacity'))}
+          ${when(
+            this.supportsSliceSelection,
+            () => html`
+              <ngm-core-button
+                transparent
+                variant="tertiary"
+                shape="icon"
+                class="slice-filter"
+                ?active="${this.isSliceFilterActive}"
+                data-cy="slice-filter"
+                @click="${this.openSlice}"
+              >
+                <ngm-core-icon icon="filter"></ngm-core-icon>
+              </ngm-core-button>
+              ${tooltip(i18next.t('catalog:display.slice'))}
+            `,
+          )}
           ${when(!isBackgroundLayer(this.layer), this.renderActions)}
         </div>
       </div>
@@ -317,6 +389,15 @@ export class CatalogDisplayListItem extends CoreElement {
           >
             <ngm-core-icon icon="filter"></ngm-core-icon>
             ${i18next.t('catalog:display.filter')}
+          </ngm-core-dropdown-item>
+        `,
+      )}
+      ${when(
+        this.supportsSliceSelection,
+        () => html`
+          <ngm-core-dropdown-item role="button" @click="${this.openSlice}">
+            <ngm-core-icon icon="filter"></ngm-core-icon>
+            ${i18next.t('catalog:display.slice')}
           </ngm-core-dropdown-item>
         `,
       )}
@@ -536,7 +617,7 @@ export class CatalogDisplayListItem extends CoreElement {
   `;
 }
 
-type WindowName = 'legend' | 'times' | 'voxelFilter' | 'tiffFilter';
+type WindowName = 'legend' | 'times' | 'voxelFilter' | 'tiffFilter' | 'slice';
 
 type WindowMapping = Record<WindowName, CoreWindow | null>;
 
@@ -560,6 +641,7 @@ const getWindowsOfLayer = (layerId: Id<AnyLayer>): WindowMapping => {
     tiffFilter: null,
     times: null,
     voxelFilter: null,
+    slice: null,
   };
   windowMappingsByLayerId.set(layerId, newMapping);
   return newMapping;

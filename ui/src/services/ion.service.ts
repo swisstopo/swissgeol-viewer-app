@@ -102,6 +102,7 @@ export class IonService extends BaseService {
           infoBox: null,
           orderOfProperties: [],
           isPartiallyTransparent: false,
+          sliceSelection: null,
           customProperties: {},
         } satisfies Tiles3dLayer;
       default:

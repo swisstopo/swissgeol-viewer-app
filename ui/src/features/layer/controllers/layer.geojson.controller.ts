@@ -325,6 +325,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       orderOfProperties: [],
       customProperties: {},
       isPartiallyTransparent: false,
+      sliceSelection: null,
     };
   }
 

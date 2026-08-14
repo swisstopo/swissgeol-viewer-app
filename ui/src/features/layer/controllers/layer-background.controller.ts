@@ -35,9 +35,8 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
     this.watch(this.layer.isVisible, (isVisible) => {
       this.setLayerOpacity(isVisible ? this.layer.opacity : 0);
 
-      const { globe } = this.viewer.scene;
-      globe.depthTestAgainstTerrain = isVisible;
-      globe.show = isVisible;
+      this.viewer.scene.globe.depthTestAgainstTerrain = isVisible;
+      this.viewer.scene.globe.show = isVisible;
     });
 
     this.watch(this.layer.activeVariantId, (variantId) => {

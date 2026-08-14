@@ -254,6 +254,7 @@ export class LayerApiService extends BaseService {
     orderOfProperties: config.takeNullable('orderOfProperties') ?? [],
     source: config.takeObject('source').apply(this.mapConfigToSource),
     isPartiallyTransparent: false,
+    sliceSelection: null,
   });
 
   private readonly mapConfigToVoxelLayer = (

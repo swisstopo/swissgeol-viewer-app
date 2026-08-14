@@ -242,22 +242,29 @@ export abstract class BaseLayerController<T extends BaseLayer> {
       );
     }
     this.activeUpdate = process;
-    return new Promise((resolve) =>
-      process.then(() => {
-        resolve();
-        this.activeUpdate = null;
+    return new Promise((resolve, reject) =>
+      process.then(
+        () => {
+          resolve();
+          this.activeUpdate = null;
 
-        if (this.nextUpdate === null) {
-          return;
-        }
+          if (this.nextUpdate === null) {
+            return;
+          }
 
-        const [nextUpdate, callback] = this.nextUpdate;
-        this.nextUpdate = null;
+          const [nextUpdate, callback] = this.nextUpdate;
+          this.nextUpdate = null;
 
-        this.update(nextUpdate).then(() => {
-          callback();
-        });
-      }),
+          this.update(nextUpdate).then(() => {
+            callback();
+          });
+        },
+        (error: unknown) => {
+          this.activeUpdate = null;
+          this.nextUpdate = null;
+          reject(error);
+        },
+      ),
     );
   }
 
