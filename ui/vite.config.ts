@@ -5,6 +5,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import babel from '@rolldown/plugin-babel';
 import inlinesvg from 'postcss-inline-svg';
 import analyzer from 'vite-bundle-analyzer';
+import inject from '@rollup/plugin-inject';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const extensions = ['.ts', '.js'];
@@ -92,6 +93,8 @@ export default defineConfig(({ command }) => ({
     ],
   },
   plugins: [
+    // Inject jQuery into fomantic-ui-css components that reference it as a global.
+    inject({ jQuery: 'jquery', include: '**/fomantic-ui-css/**/*.js' }),
     process.env.ANALYZE === 'true' ? analyzer({ analyzerPort: 8883 }) : null,
     // Oxc does not lower 2023-05 decorators; Babel handles TS + decorators + polyfills.
     babel({
