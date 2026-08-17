@@ -131,7 +131,7 @@ export default defineConfig(({ command }) => ({
     // Cesium and ui-core font assets are copied to public/ by scripts/copy-cesium.js.
     viteStaticCopy({
       targets: [
-        { src: 'locales/**/*', dest: './locales' },
+        { src: 'locales/**/*', dest: '.' },
         { src: 'manuals/dist/**/*', dest: './manuals' },
         { src: 'manuals/style.css', dest: './manuals' },
         { src: 'manuals/images/**/*', dest: './manuals/images' },
