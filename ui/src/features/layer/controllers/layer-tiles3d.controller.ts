@@ -57,6 +57,8 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   /** JSON-serialized slice numbers last applied per axis (skip unchanged rebuilds). */
   private readonly appliedNumbersByAxis = new Map<SeismicSliceAxis, string>();
   private preloadQueue: SlicePreloadQueue | null = null;
+  /** Bumped on every `zoomIntoView()` call so a superseded background refinement fly is dropped. */
+  private zoomGeneration = 0;
   /**
    * Background prefetching (warming the HTTP cache / building neighbouring
    * GPU tilesets for every axis) is only useful while the slice HUD panel
@@ -297,14 +299,33 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   }
 
   private async zoomIntoViewAsync(): Promise<void> {
+    const zoomToken = ++this.zoomGeneration;
     // Bounding spheres for the axis tilesets may not be ready yet (e.g. the
     // slice just finished loading a moment ago, or the user clicks the zoom
-    // button right after activating the layer); wait briefly instead of
-    // flying to a degenerate/empty sphere.
-    const sphere = await this.waitForVisibleBoundingSphere();
-    if (sphere === null) {
+    // button right after activating the layer); wait briefly for a first,
+    // possibly-partial sphere instead of flying to a degenerate/empty one.
+    const firstSphere = await this.waitForAnyBoundingSphere();
+    if (firstSphere === null || zoomToken !== this.zoomGeneration) {
       return;
     }
+    this.flyToSphere(firstSphere);
+
+    if (this.allAxisSlotsReady()) {
+      return;
+    }
+    // Not every axis was ready yet: refine the framing once, in the
+    // background, to the full three-plane union — without blocking the
+    // initial fly above. Mirrors the double-buffered slice swap elsewhere in
+    // this file: never withhold what's already available, only replace it
+    // once the better version is ready.
+    const completeSphere = await this.waitForAllAxesBoundingSphere();
+    if (completeSphere === null || zoomToken !== this.zoomGeneration) {
+      return;
+    }
+    this.flyToSphere(completeSphere);
+  }
+
+  private flyToSphere(sphere: BoundingSphere): void {
     // Use Cesium's default framing, like every other 3D-tiles/voxel layer
     // (`flyToBoundingSphere(sphere)` with no custom offset). A previous,
     // deliberately close/oblique framing (biased toward the surface, tilted
@@ -318,8 +339,9 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     this.viewer.camera.flyToBoundingSphere(sphere, { duration: 0.6 });
   }
 
-  private async waitForVisibleBoundingSphere(
-    timeoutMs = 8_000,
+  /** First non-degenerate sphere available, however partial. Fast/non-blocking. */
+  private async waitForAnyBoundingSphere(
+    timeoutMs = 2_000,
   ): Promise<BoundingSphere | null> {
     const startedAt = Date.now();
     while (Date.now() - startedAt < timeoutMs) {
@@ -331,6 +353,56 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       this.viewer.scene.requestRender();
     }
     return this.computeVisibleBoundingSphere();
+  }
+
+  /** Union sphere once every axis slot participating in the selection is ready. */
+  private async waitForAllAxesBoundingSphere(
+    timeoutMs = 8_000,
+  ): Promise<BoundingSphere | null> {
+    const startedAt = Date.now();
+    let best: BoundingSphere | null = null;
+    while (Date.now() - startedAt < timeoutMs) {
+      const sphere = this.computeVisibleBoundingSphere();
+      if (sphere !== null && sphere.radius > 1) {
+        best = sphere;
+        if (this.allAxisSlotsReady()) {
+          return sphere;
+        }
+      }
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      this.viewer.scene.requestRender();
+    }
+    // Timed out before every axis was ready — fall back to whichever
+    // (possibly partial) union we already have, rather than nothing.
+    return best ?? this.computeVisibleBoundingSphere();
+  }
+
+  /**
+   * Whether every axis slot that participates in the current slice
+   * selection has a tileset with a resolved bounding sphere. Used so
+   * `waitForAllAxesBoundingSphere` frames the union of all three planes
+   * instead of stopping as soon as the first (possibly small/narrow) one
+   * happens to be ready — otherwise "zoom to object" can end up framing a
+   * single thin plane edge-on, making it fill the view and look far more
+   * extreme (e.g. much "deeper") than the whole slice cube actually is.
+   */
+  private allAxisSlotsReady(): boolean {
+    if (!this.supportsSliceSelection) {
+      return this._tileset?.boundingSphere !== undefined;
+    }
+    for (const axis of SEISMIC_SLICE_AXES) {
+      const slot = this.axisSlots.get(axis);
+      if (slot === undefined) {
+        continue;
+      }
+      if (this.getAxisNumbers(axis).length === 0) {
+        continue;
+      }
+      if (slot.currentTileset?.boundingSphere === undefined) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private computeVisibleBoundingSphere(): BoundingSphere | null {

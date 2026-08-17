@@ -137,9 +137,12 @@ export const SLICE_PREFETCH_RADIUS = 8;
  * current slider position, so stepping to a neighbour needs no loading at all.
  *
  * Each warmed slice holds a decoded texture in GPU memory, and there are three
- * axes, so this is a direct VRAM/scrub-smoothness trade-off.
+ * axes warming concurrently, so a radius of N means up to `(2N + 1) * 3`
+ * tilesets are built/held at once — keep this modest; scrubbing rarely jumps
+ * far in one step, and a too-large radius competes for network/GPU with the
+ * interactive swap itself (the very thing this is meant to keep fast).
  */
-export const SLICE_GPU_WARM_RADIUS = 6;
+export const SLICE_GPU_WARM_RADIUS = 3;
 
 export const isDefaultSliceSelection = (
   selection: Tiles3dSliceSelection,

@@ -50,10 +50,17 @@ const MAX_CACHED_TILESETS = 16;
 
 /**
  * Cap how long we wait for content before revealing anyway.
- * Kept short: showing a partially refined slice beats blocking the swap, and
- * the tileset keeps refining after the reveal.
+ *
+ * The previous slice stays visible for the whole wait (see `revealTileset`),
+ * so there is no "blocking" downside to waiting here — only the upside of
+ * not revealing an empty tileset. Under concurrent load (fast scrubbing plus
+ * background warming on 3 axes), even the very first tile can take well over
+ * a few hundred ms to fetch/parse/upload; a too-short cap made the swap
+ * reveal a completely empty tileset instead of the still-loading previous
+ * one, i.e. a visible blank flash. Kept well below `TILESET_WARM_TIMEOUT_MS`
+ * since this still guards against a genuinely stuck request.
  */
-const TILESET_READY_TIMEOUT_MS = 400;
+const TILESET_READY_TIMEOUT_MS = 3_000;
 
 /**
  * Background warming is off the interaction path, so it may wait much longer.

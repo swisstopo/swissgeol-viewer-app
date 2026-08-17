@@ -80,6 +80,20 @@ export const parseTilesetSliceMetadata = (
 
   if (!hasDirectionalMeta && uriOnlyNumbers.length > 0) {
     partitionUriSlicesByCounts(uriOnlyNumbers, counts, byDirection);
+  } else if (hasDirectionalMeta && uriOnlyNumbers.length > 0) {
+    // Mixed tileset: some tiles carry `sliceDirection`/`sliceNumber`
+    // metadata, others only have a `-slice-N.glb` URI. The count-based
+    // partition below assumes slice numbers are laid out in contiguous,
+    // sorted per-axis blocks across *all* slices — an assumption that only
+    // holds when none of them are already claimed via metadata. We cannot
+    // safely guess the axis of the remaining URI-only tiles here, so warn
+    // loudly (instead of silently dropping them) rather than risk assigning
+    // them to the wrong axis.
+    console.warn(
+      `[tileset-slice-metadata] ${uriOnlyNumbers.length} slice tile(s) have no ` +
+        'sliceDirection/sliceNumber metadata in a partially annotated tileset; ' +
+        'they cannot be safely assigned to an axis and will be omitted.',
+    );
   }
 
   const axes: Partial<Record<SeismicSliceAxis, TilesetSliceAxisInfo>> = {};
@@ -138,7 +152,11 @@ const readSliceIdentity = (
   }
   const direction = props['sliceDirection'];
   const number = props['sliceNumber'];
-  if (!isOgcSliceDirection(direction) || typeof number !== 'number') {
+  if (
+    !isOgcSliceDirection(direction) ||
+    typeof number !== 'number' ||
+    !Number.isInteger(number)
+  ) {
     return null;
   }
   return { direction, number };
