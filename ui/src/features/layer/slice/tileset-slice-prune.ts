@@ -108,7 +108,10 @@ const tightenBoundingVolumes = (tile: TilesetTileNode): void => {
       childRegions.every((region): region is number[] => region !== null)
     ) {
       tile.boundingVolume = {
-        region: childRegions.reduce((acc, region) => unionRegions(acc, region)),
+        region: childRegions.reduce(
+          (acc, region) => unionRegions(acc, region),
+          childRegions[0],
+        ),
       };
     }
   }

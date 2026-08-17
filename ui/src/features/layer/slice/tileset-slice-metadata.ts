@@ -1,6 +1,5 @@
 import {
   AXIS_TO_DIRECTION,
-  DIRECTION_TO_AXIS,
   OgcSliceDirection,
   SEISMIC_SLICE_AXES,
   SeismicSliceAxis,
@@ -198,4 +197,4 @@ export const readTileSliceKey = (
   return null;
 };
 
-export { DIRECTION_TO_AXIS };
+export { DIRECTION_TO_AXIS } from 'src/features/layer/slice/tiles3d-slice.types';

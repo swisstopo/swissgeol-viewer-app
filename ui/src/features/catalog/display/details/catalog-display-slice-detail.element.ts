@@ -389,7 +389,7 @@ export class CatalogDisplaySliceDetail extends CoreElement {
           return null;
         }
         const min = numbers[0];
-        const max = numbers[numbers.length - 1];
+        const max = numbers.at(-1)!;
         const value = this.getSingleValue(axis);
         return html`
           <div class="axis">
