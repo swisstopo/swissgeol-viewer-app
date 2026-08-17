@@ -209,55 +209,75 @@ export class AxisTilesetSlot {
       if (generation !== this.warmGeneration) {
         return;
       }
-      const key = `${direction}:${number}`;
-      const existing = this.cache.get(key);
-      if (existing !== undefined && !existing.tileset.isDestroyed()) {
-        continue;
-      }
-      if (this.isUpdating) {
-        // Never compete with a user-driven swap.
-        return;
-      }
-
-      let created: CachedTileset;
-      try {
-        created = await this.buildOrJoinTileset(
-          key,
-          originalJson,
-          baseUrl,
-          headers,
-          direction,
-          [number],
-        );
-      } catch (error) {
-        console.warn(`Failed to warm slice ${direction}:${number}:`, error);
-        continue;
-      }
-
-      if (generation !== this.warmGeneration) {
-        // A newer selection arrived while building. The tileset is already
-        // cached (possibly by/for the interactive path too), so just make
-        // sure it stops traversing rather than destroying it outright.
-        if (
-          this.tileset !== created.tileset &&
-          !created.tileset.isDestroyed()
-        ) {
-          freezeHidden(created.tileset);
-        }
-        return;
-      }
-
-      await this.waitUntilReady(
-        created.tileset,
-        TILESET_WARM_TIMEOUT_MS,
-        WARM_PUMP_INTERVAL_MS,
+      const shouldContinue = await this.warmOneSlice(
+        generation,
+        originalJson,
+        baseUrl,
+        headers,
+        direction,
+        number,
       );
-      // A swap may have revealed this very tileset while we were waiting —
-      // freezing it then would hide the selected plane.
-      if (this.tileset !== created.tileset && !created.tileset.isDestroyed()) {
-        freezeHidden(created.tileset);
+      if (!shouldContinue) {
+        return;
       }
     }
+  }
+
+  /**
+   * Warm a single slice. Returns `true` to continue to the next slice, or
+   * `false` to abort warming entirely (generation superseded or update in
+   * flight).
+   */
+  private async warmOneSlice(
+    generation: number,
+    originalJson: unknown,
+    baseUrl: string,
+    headers: Record<string, string>,
+    direction: OgcSliceDirection,
+    number: number,
+  ): Promise<boolean> {
+    const key = `${direction}:${number}`;
+    const existing = this.cache.get(key);
+    if (existing !== undefined && !existing.tileset.isDestroyed()) {
+      return true;
+    }
+    if (this.isUpdating) {
+      // Never compete with a user-driven swap.
+      return false;
+    }
+
+    let created: CachedTileset;
+    try {
+      created = await this.buildOrJoinTileset(
+        key,
+        originalJson,
+        baseUrl,
+        headers,
+        direction,
+        [number],
+      );
+    } catch (error) {
+      console.warn(`Failed to warm slice ${direction}:${number}:`, error);
+      return true;
+    }
+
+    if (generation !== this.warmGeneration) {
+      // A newer selection arrived while building. The tileset is already
+      // cached (possibly by/for the interactive path too), so just make
+      // sure it stops traversing rather than destroying it outright.
+      freezeHiddenIfNotActive(this.tileset, created.tileset);
+      return false;
+    }
+
+    await this.waitUntilReady(
+      created.tileset,
+      TILESET_WARM_TIMEOUT_MS,
+      WARM_PUMP_INTERVAL_MS,
+    );
+    // A swap may have revealed this very tileset while we were waiting —
+    // freezing it then would hide the selected plane.
+    freezeHiddenIfNotActive(this.tileset, created.tileset);
+    return true;
   }
 
   /**
@@ -376,20 +396,7 @@ export class AxisTilesetSlot {
 
     const cached = this.cache.get(key);
     if (cached !== undefined && !cached.tileset.isDestroyed()) {
-      this.touchCache(key);
-      if (this.isSuperseded(generation)) {
-        return;
-      }
-      if (!cached.tileset.tilesLoaded) {
-        // Frozen cache entries do not traverse; re-enable before waiting.
-        cached.tileset.preloadWhenHidden = true;
-        await this.waitUntilReady(cached.tileset);
-        if (this.isRevealSuperseded(generation)) {
-          freezeHidden(cached.tileset);
-          return;
-        }
-      }
-      this.revealTileset(key, cached.tileset, previous);
+      await this.revealCachedTileset(key, cached, previous, generation);
       return;
     }
 
@@ -429,6 +436,28 @@ export class AxisTilesetSlot {
     }
 
     this.revealTileset(key, tileset, previous);
+  }
+
+  private async revealCachedTileset(
+    key: string,
+    cached: CachedTileset,
+    previous: Cesium3DTileset | null,
+    generation: number,
+  ): Promise<void> {
+    this.touchCache(key);
+    if (this.isSuperseded(generation)) {
+      return;
+    }
+    if (!cached.tileset.tilesLoaded) {
+      // Frozen cache entries do not traverse; re-enable before waiting.
+      cached.tileset.preloadWhenHidden = true;
+      await this.waitUntilReady(cached.tileset);
+      if (this.isRevealSuperseded(generation)) {
+        freezeHidden(cached.tileset);
+        return;
+      }
+    }
+    this.revealTileset(key, cached.tileset, previous);
   }
 
   /**
@@ -758,7 +787,8 @@ export class AxisTilesetSlot {
     this.warmGeneration += 1;
     this.scenePickingLock?.release();
     this.scenePickingLock = null;
-    for (const key of [...this.cache.keys()]) {
+    const keys = Array.from(this.cache.keys());
+    for (const key of keys) {
       this.evictCacheKey(key);
     }
     this.tileset = null;
@@ -782,6 +812,16 @@ const destroyShader = (shader: CustomShader | null): void => {
 const freezeHidden = (tileset: Cesium3DTileset): void => {
   tileset.show = false;
   tileset.preloadWhenHidden = false;
+};
+
+/** Freeze `tileset` only if it is not the currently active one. */
+const freezeHiddenIfNotActive = (
+  active: Cesium3DTileset | null,
+  tileset: Cesium3DTileset,
+): void => {
+  if (active !== tileset && !tileset.isDestroyed()) {
+    freezeHidden(tileset);
+  }
 };
 
 export { TILESET_OPTIONS };

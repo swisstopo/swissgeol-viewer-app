@@ -177,7 +177,8 @@ export const rewriteOgcContentUrisToResolvedBase = (
     if (!resolved.host.includes('amazonaws.com')) {
       return tilesetJson;
     }
-    s3Directory = resolved.href.replace(/[^/]+$/, '');
+    const lastSlash = resolved.href.lastIndexOf('/');
+    s3Directory = lastSlash >= 0 ? resolved.href.slice(0, lastSlash + 1) : '';
   } catch {
     return tilesetJson;
   }
