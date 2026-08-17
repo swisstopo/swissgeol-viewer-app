@@ -20,6 +20,7 @@ import { PickService, ScenePickingLock } from 'src/services/pick.service';
 import {
   AXIS_TO_DIRECTION,
   AxisTilesetSlot,
+  absolutizeTilesetUris,
   collectAxisSliceUriMap,
   createAuthenticatedBlobResource,
   createDefaultSliceSelection,
@@ -38,7 +39,6 @@ import {
   SLICE_PREFETCH_RADIUS,
   SlicePreloadProgress,
   SlicePreloadQueue,
-  TILESET_OPTIONS,
   Tiles3dSliceSelection,
   TilesetSliceMetadata,
   toBlobUrl,
@@ -88,6 +88,20 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       }
     }
     return this._tileset;
+  }
+
+  get tilesets(): Cesium3DTileset[] {
+    const axisTs: Cesium3DTileset[] = [];
+    for (const axis of SEISMIC_SLICE_AXES) {
+      const slotTileset = this.axisSlots.get(axis)?.currentTileset;
+      if (slotTileset !== null && slotTileset !== undefined) {
+        axisTs.push(slotTileset);
+      }
+    }
+    if (axisTs.length > 0) {
+      return axisTs;
+    }
+    return this._tileset !== undefined ? [this._tileset] : [];
   }
 
   get supportsSliceSelection(): boolean {
@@ -175,6 +189,7 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       map = collectAxisSliceUriMap(
         this.originalTilesetJson,
         AXIS_TO_DIRECTION[axis],
+        this.baseUrl,
       );
       this.uriMapByAxis.set(axis, map);
     }
@@ -395,7 +410,10 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   protected async addToViewer(): Promise<void> {
     const resource = await mapLayerSourceToResource(this.layer.source);
 
-    if (this.layer.source.type === LayerSourceType.Ogc) {
+    if (
+      this.layer.source.type === LayerSourceType.Ogc &&
+      this.layer.source.displaySource === undefined
+    ) {
       try {
         const resolved = await resolveOgcTilesetResource(
           resource.url,
@@ -473,7 +491,8 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   private async addFullTilesetFromResolved(
     resolved: ResolvedTileset,
   ): Promise<void> {
-    const blobUrl = toBlobUrl(resolved.json);
+    const absoluteJson = absolutizeTilesetUris(resolved.json, resolved.baseUrl);
+    const blobUrl = toBlobUrl(absoluteJson);
     const resource = createAuthenticatedBlobResource(blobUrl, resolved.headers);
     try {
       await this.addFullTileset(resource);
@@ -490,7 +509,6 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     this.defaultSliceSelection = null;
 
     const tileset = await Cesium3DTileset.fromUrl(resource, {
-      ...TILESET_OPTIONS,
       show: true,
     });
 

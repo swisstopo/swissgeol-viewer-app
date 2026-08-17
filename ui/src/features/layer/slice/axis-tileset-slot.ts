@@ -715,7 +715,7 @@ export class AxisTilesetSlot {
         }
         if (this.isDestroyed) {
           this.destroyCachedTileset(created);
-          return created;
+          throw new Error('AxisTilesetSlot destroyed during tileset build');
         }
         this.addToScene(key, created);
         return created;

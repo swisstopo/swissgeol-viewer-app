@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { live } from 'lit/directives/live.js';
@@ -7,6 +7,9 @@ import { live } from 'lit/directives/live.js';
 export class CoreSlider extends LitElement {
   @property({ type: Boolean })
   accessor isActive: boolean = false;
+
+  @property({ type: String })
+  accessor label: string = '';
 
   @property({ type: Number })
   accessor min: number = 0;
@@ -89,6 +92,7 @@ export class CoreSlider extends LitElement {
     <input
       type="range"
       class="ngm-slider"
+      aria-label=${this.label || nothing}
       style="${styleMap({
         '--value': this.value,
         '--min': this.min,

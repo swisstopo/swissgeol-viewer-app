@@ -176,6 +176,41 @@ export const toBlobUrl = (json: unknown): string => {
 };
 
 /**
+ * Rewrite every content URI in the tileset to an absolute URL so that a
+ * blob-based root still resolves children against the OGC/S3 base.
+ */
+export const absolutizeTilesetUris = (
+  original: unknown,
+  baseUrl: string,
+): unknown => {
+  if (original === null || typeof original !== 'object') {
+    return original;
+  }
+  const source = original as TilesetJson;
+  if (source.root === undefined) {
+    return original;
+  }
+
+  const rewrite = (tile: TilesetTileNode): TilesetTileNode => {
+    const { children, content, ...rest } = tile;
+    const next: TilesetTileNode = { ...rest };
+    if (content !== undefined) {
+      const { uri, ...restContent } = content;
+      next.content =
+        uri !== undefined && uri !== ''
+          ? { ...restContent, uri: new URL(uri, baseUrl).href }
+          : { ...restContent };
+    }
+    if (children !== undefined && children.length > 0) {
+      next.children = children.map(rewrite);
+    }
+    return next;
+  };
+
+  return { ...source, root: rewrite(source.root) };
+};
+
+/**
  * Wrap a blob tileset URL in a Cesium Resource that carries the original OGC
  * auth headers so absolute child content URLs still authenticate.
  */

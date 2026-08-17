@@ -94,6 +94,7 @@ export class CatalogDisplaySliceDetail extends CoreElement {
   disconnectedCallback(): void {
     this.hudActiveController?.setHudActive(false);
     this.hudActiveController = null;
+    this.preloadSubscriptionAxis = null;
     clearTimeout(this.preloadBannerHideTimer);
     this.cancelScheduledCommit();
     this.commitDraftSingle();
@@ -405,6 +406,7 @@ export class CatalogDisplaySliceDetail extends CoreElement {
               .min=${min}
               .max=${max}
               .step=${1}
+              .label=${i18next.t(`catalog:slice_window.${axis}`)}
               @change=${(e: SliderChangeEvent) => this.onSliderInput(axis, e)}
               @done=${this.onSliderDone}
             ></ngm-core-slider>

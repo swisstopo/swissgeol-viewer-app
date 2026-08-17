@@ -46,6 +46,15 @@ export const emptySlicePreloadProgress = (): SlicePreloadProgress => ({
   },
 });
 
+const toAbsoluteUri = (uri: string, baseUrl: string): string => {
+  if (!baseUrl) return uri;
+  try {
+    return new URL(uri, baseUrl).href;
+  } catch {
+    return uri;
+  }
+};
+
 /**
  * Collect absolute content URIs for the given axis direction + slice numbers.
  */
@@ -53,6 +62,7 @@ export const collectSliceContentUris = (
   tilesetJson: unknown,
   direction: OgcSliceDirection,
   numbers: ReadonlySet<number>,
+  baseUrl = '',
 ): string[] => {
   if (tilesetJson === null || typeof tilesetJson !== 'object') {
     return [];
@@ -72,7 +82,7 @@ export const collectSliceContentUris = (
         numbers.has(identity.number) &&
         (identity.direction === null || identity.direction === direction)
       ) {
-        uris.push(uri);
+        uris.push(toAbsoluteUri(uri, baseUrl));
       }
     }
     for (const child of tile.children ?? []) {
@@ -89,6 +99,7 @@ export const collectSliceContentUris = (
 export const collectAxisSliceUriMap = (
   tilesetJson: unknown,
   direction: OgcSliceDirection,
+  baseUrl = '',
 ): Map<number, string> => {
   const map = new Map<number, string>();
   if (tilesetJson === null || typeof tilesetJson !== 'object') {
@@ -107,7 +118,7 @@ export const collectAxisSliceUriMap = (
         identity !== null &&
         (identity.direction === null || identity.direction === direction)
       ) {
-        map.set(identity.number, uri);
+        map.set(identity.number, toAbsoluteUri(uri, baseUrl));
       }
     }
     for (const child of tile.children ?? []) {
@@ -282,8 +293,9 @@ export class SlicePreloadQueue {
         }
         this.pendingUrls.delete(job.url);
         this.inFlightUrls.add(job.url);
+        let isFetched = false;
         try {
-          await fetch(job.url, {
+          const response = await fetch(job.url, {
             method: 'GET',
             headers,
             mode: 'cors',
@@ -291,6 +303,10 @@ export class SlicePreloadQueue {
             signal,
             cache: 'force-cache',
           });
+          if (response.ok) {
+            await response.blob();
+            isFetched = true;
+          }
         } catch {
           if (signal.aborted) {
             this.inFlightUrls.delete(job.url);
@@ -298,7 +314,7 @@ export class SlicePreloadQueue {
           }
         }
         this.inFlightUrls.delete(job.url);
-        if (!this.completedUrls.has(job.url)) {
+        if (isFetched && !this.completedUrls.has(job.url)) {
           this.completedUrls.add(job.url);
           this.axisLoaded[job.axis] += 1;
           this.emitProgress();

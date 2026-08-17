@@ -88,7 +88,6 @@ export class CatalogDisplayListItem extends CoreElement {
         this.canZoom = true;
       }
       if (
-        controller.supportsSliceSelection ||
         (isReady && Date.now() - startedAt > 2_000) ||
         Date.now() - startedAt > 15_000
       ) {
