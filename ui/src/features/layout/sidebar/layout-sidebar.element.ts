@@ -136,11 +136,9 @@ export class LayoutSidebar extends CoreElement {
       </ngm-navigation-panel-header>
       ${this.renderPanel()}
     </ngm-navigation-panel>
-    ${
-      this.isLexicOpen
-        ? html`<ngm-lexic-filter-panel></ngm-lexic-filter-panel>`
-        : ''
-    }
+    ${this.isLexicOpen
+      ? html`<ngm-lexic-filter-panel></ngm-lexic-filter-panel>`
+      : ''}
   `;
 
   private readonly renderItems = () => html`
@@ -150,7 +148,8 @@ export class LayoutSidebar extends CoreElement {
         icon: 'layer',
         counter: this.countOfLayers,
       })}
-      <li>
+      <!--   Temprarely switched off
+             <li>
         <ngm-layout-sidebar-item
           .panel="${SidebarPanel.Lexic}"
           data-cy="Lexic"
@@ -160,7 +159,7 @@ export class LayoutSidebar extends CoreElement {
           @activate="${this.handleLexicToggle}"
           @deactivate="${this.handleLexicToggle}"
         ></ngm-layout-sidebar-item>
-      </li>
+      </li> -->
       ${this.renderItem({
         panel: SidebarPanel.Tools,
         icon: 'tools',
