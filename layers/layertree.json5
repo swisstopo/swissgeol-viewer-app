@@ -17,7 +17,21 @@
         {
           id: 'geol_maps',
           children: [
-            'ch.swisstopo.geologie-geocover',
+            // Geocover group
+            {
+              id: 'swissgeocover',
+              children: [
+                'ch.swisstopo.geologie-geocover',
+                /*
+                'ch.swisstopo.geologie-swissgeocover2d_bedrock',
+                'ch.swisstopo.geologie-swissgeocover2d_unconsolidated',
+                'ch.swisstopo.geologie-swissgeocover2d_surfaces',
+                'ch.swisstopo.geologie-swissgeocover2d_lines',
+                'ch.swisstopo.geologie-swissgeocover2d_tecto_lines',
+                'ch.swisstopo.geologie-swissgeocover2d_points',
+                */
+              ],
+            },
             'ch.swisstopo.geologie-geologischer_atlas',
             'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
             'ch.swisstopo.geologie-geologische_karte',
