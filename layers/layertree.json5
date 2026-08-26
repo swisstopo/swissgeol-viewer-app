@@ -22,14 +22,12 @@
               id: 'swissgeocover',
               children: [
                 'ch.swisstopo.geologie-geocover',
-                /*
                 'ch.swisstopo.geologie-swissgeocover2d_bedrock',
-                'ch.swisstopo.geologie-swissgeocover2d_unconsolidated',
-                'ch.swisstopo.geologie-swissgeocover2d_surfaces',
+                'ch.swisstopo.geologie-swissgeocover2d_points',
                 'ch.swisstopo.geologie-swissgeocover2d_lines',
                 'ch.swisstopo.geologie-swissgeocover2d_tecto_lines',
-                'ch.swisstopo.geologie-swissgeocover2d_points',
-                */
+                'ch.swisstopo.geologie-swissgeocover2d_surfaces',
+                'ch.swisstopo.geologie-swissgeocover2d_unconsolidated',
               ],
             },
             'ch.swisstopo.geologie-geologischer_atlas',
