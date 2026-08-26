@@ -67,6 +67,12 @@
     "ch.swisstopo.geologie-generalkarte-ggk200": "General Geol. Map 200",
     "ch.swisstopo.geologie-generalkarte-ggk200.metadata": "Division GGK 200 Raster",
     "ch.swisstopo.geologie-geocover": "GeoCover - Vector Datasets",
+    "ch.swisstopo.geologie-swissgeocover2d_bedrock": "Bedrock swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_points": "Geological points swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_lines": "Geological lines swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_tecto_lines": "Tectonic lines swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_surfaces": "Geological surfaces swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_unconsolidated": "Unco deposits swissGEOCOVER2D",
     "ch.swisstopo.geologie-geocover.metadata": "Division GeoCover",
     "ch.swisstopo.geologie-geodaesie-bouguer_anomalien": "Bouguer anomalies 500",
     "ch.swisstopo.geologie-geodaesie-isostatische_anomalien": "Isostatic anomalies 500",
@@ -219,6 +225,7 @@
     "voxel_visp_modelling_units": "Unconsolidated rocks Visp - Modelling units"
   },
   "groups": {
+    "swissgeocover": "swissGEOCOVER2D",
     "2d_reflexionseismics": "2D Reflection seismics",
     "2d_survey_2023_23SIG_A": "Survey Geneva - 23SIG_A",
     "2d_survey_EGEO21": "Survey Vaud - 2EGEO21",
