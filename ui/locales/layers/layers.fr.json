@@ -67,6 +67,12 @@
     "ch.swisstopo.geologie-generalkarte-ggk200": "Carte géol. générale 200",
     "ch.swisstopo.geologie-generalkarte-ggk200.metadata": "Découpage GGK 200 Raster",
     "ch.swisstopo.geologie-geocover": "GeoCover - données vectorielles",
+    "ch.swisstopo.geologie-swissgeocover2d_bedrock": "Bedrock swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_points": "Geological points swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_lines": "Geological lines swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_tecto_lines": "Tectonic lines swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_surfaces": "Geological surfaces swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_unconsolidated": "Unco deposits swissGEOCOVER2D",
     "ch.swisstopo.geologie-geocover.metadata": "Découpage GeoCover",
     "ch.swisstopo.geologie-geodaesie-bouguer_anomalien": "Anomalies de Bouguer 500",
     "ch.swisstopo.geologie-geodaesie-isostatische_anomalien": "Anomalies isostatiques 500",
@@ -216,6 +222,7 @@
     "voxel_visp_modelling_units": "Roches non consolidées Visp - Unités de modélisation"
   },
   "groups": {
+    "swissgeocover": "swissGEOCOVER2D",
     "2d_reflexionseismics": "Sismique réflexion 2D",
     "2d_survey_2023_23SIG_A": "Levé Genève - 23SIG_A",
     "2d_survey_EGEO21": "Levé Vaud - 2EGEO21",
