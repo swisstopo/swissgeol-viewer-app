@@ -27,7 +27,7 @@
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-swissgeocover2d_unconsolidated',
       max_level: 18,
-      opacity: 0.87,
+      opacity: 0.76,
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5', // <== Replace
       info_box: { source: 'api3.geo.admin.ch' },
     },
@@ -36,7 +36,7 @@
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-swissgeocover2d_surfaces',
       max_level: 18,
-      opacity: 0.87,
+      opacity: 1,
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5', // <== Replace
       info_box: { source: 'api3.geo.admin.ch' },
     },
@@ -45,7 +45,7 @@
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-swissgeocover2d_lines',
       max_level: 18,
-      opacity: 0.87,
+      opacity: 1,
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5', // <== Replace
       info_box: { source: 'api3.geo.admin.ch' },
     },
@@ -54,7 +54,7 @@
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-swissgeocover2d_tecto_lines',
       max_level: 18,
-      opacity: 0.87,
+      opacity: 1,
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5', // <== Replace
       info_box: { source: 'api3.geo.admin.ch' },
     },
@@ -63,7 +63,7 @@
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-swissgeocover2d_points',
       max_level: 18,
-      opacity: 0.87,
+      opacity: 1,
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5', // <== Replace
       info_box: { source: 'api3.geo.admin.ch' },
     },
