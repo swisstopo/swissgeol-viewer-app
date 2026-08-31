@@ -16,6 +16,7 @@ import {
 } from 'cesium';
 import { firstValueFrom } from 'rxjs';
 import { patchTiltNadirGimbalLock } from 'src/features/controls/patch-tilt-nadir-gimbal-lock';
+import { patchLegacyCameraController } from 'src/features/controls/patch-legacy-camera-controller';
 import { isKnownScenePickingError } from 'src/services/pick.service';
 
 /**
@@ -101,10 +102,13 @@ export class CameraControllerService extends BaseService {
   private initialize(viewer: Viewer): void {
     this.viewer = viewer;
 
-    // Disable the old monolithic controller
+    // Disable the old monolithic controller.
+    //
+    // This *locks* `enableInputs` to `false` rather than merely assigning it,
+    // because Cesium force-restores the flag to `true` after every camera flight
+    // TODO: A cesium PR is on its way. remove the patch as soon as it is merged
     const scene = viewer.scene;
-    scene.screenSpaceCameraController.enableInputs = false;
-    scene.screenSpaceCameraController.enableCollisionDetection = false;
+    patchLegacyCameraController(scene);
 
     // Add the new modular controllers
     this.addController(this.panController);
