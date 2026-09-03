@@ -98,22 +98,36 @@ function tryPickScenePosition(
   }
 }
 
-function pickPositionWithRay(
+/**
+ * Math-based ray cast against the globe's terrain, falling back to the
+ * ellipsoid when the globe is hidden.
+ *
+ * Unlike `Scene.pickPosition` this does not depend on the depth buffer, so it
+ * keeps working while the globe is rendered translucently. It also returns the
+ * actual *terrain* surface, whereas `Camera.pickEllipsoid` returns the WGS84
+ * ellipsoid — up to several kilometres lower in the Alps.
+ */
+export function pickPositionWithRay(
   scene: Scene,
   windowPosition: Cartesian2,
+  result?: Cartesian3,
 ): Cartesian3 | undefined {
   const ray = scene.camera.getPickRay(windowPosition);
   if (ray === undefined) {
     return undefined;
   }
-  if (scene.globe.show) {
-    return scene.globe.pick(ray, scene) ?? undefined;
+  if (scene.globe?.show) {
+    const position = scene.globe.pick(ray, scene);
+    if (position === undefined) {
+      return undefined;
+    }
+    return result === undefined ? position : Cartesian3.clone(position, result);
   }
   const interval = IntersectionTests.rayEllipsoid(ray, Ellipsoid.WGS84);
   if (interval === undefined) {
     return undefined;
   }
-  return Ray.getPoint(ray, interval.start);
+  return Ray.getPoint(ray, interval.start, result);
 }
 
 /**

@@ -154,6 +154,10 @@ export function setCesiumToolbarParam(value: boolean) {
   setURLSearchParams(params);
 }
 
+export function getZoomDebugParam(): boolean {
+  return getURLSearchParams().has('zoomDebug');
+}
+
 export function syncStoredView(
   stored: string,
   skipParams: string[] = [
