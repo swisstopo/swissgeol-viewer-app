@@ -27,6 +27,7 @@ import { setupViewer } from './viewer';
 import {
   getCameraView,
   getTopicOrProject,
+  getZoomDebugParam,
   getZoomToPosition,
   rewriteParams,
   setCesiumToolbarParam,
@@ -136,6 +137,9 @@ export class NgmApp extends LitElementI18n {
 
   @state()
   accessor showCesiumToolbar = false;
+
+  @state()
+  accessor showZoomDebug = getZoomDebugParam();
 
   @query('ngm-cam-configuration')
   accessor camConfigElement;
@@ -585,6 +589,10 @@ export class NgmApp extends LitElementI18n {
           ${when(
             this.showCesiumToolbar,
             () => html`<cesium-toolbar></cesium-toolbar>`,
+          )}
+          ${when(
+            this.showZoomDebug,
+            () => html`<control-zoom-debug></control-zoom-debug>`,
           )}
         </div>
       </main>
