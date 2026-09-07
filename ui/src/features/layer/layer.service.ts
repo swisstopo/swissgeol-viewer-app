@@ -283,7 +283,9 @@ export class LayerService extends BaseService {
           state$: previousLayer.state$,
         };
         this.layers.set(layer.id, updated);
-        updated.controller?.update(layer);
+        updated.controller?.update(layer).catch((error: unknown) => {
+          console.error(`Failed to update layer: ${layer.id}`, error);
+        });
         updated.state$.next(layer);
       }
     };
@@ -419,14 +421,19 @@ export class LayerService extends BaseService {
       };
 
       // Update the existing background controller and add it to the viewer.
-      await this._background.controller.update(layer);
-      await this._background.controller.add();
+      try {
+        await this._background.controller.update(layer);
+        await this._background.controller.add();
 
-      // Publish the new background state.
-      this._background.state$.next(layer);
-
-      // Mark the layers as loaded.
-      this.hasLayers$.next(true);
+        // Publish the new background state.
+        this._background.state$.next(layer);
+      } catch (error) {
+        console.error('Failed to initialize background layer', error);
+      } finally {
+        // Mark the layers as loaded, even if the background failed to
+        // initialize, so that the rest of the app isn't stuck waiting forever.
+        this.hasLayers$.next(true);
+      }
     });
   }
 
@@ -845,9 +852,14 @@ export class LayerService extends BaseService {
     // Apply the update to the controller.
     (entry.controller as BaseLayerController<AnyLayer> | null)
       ?.update(updatedLayer)
-      .then(() => {
-        this.viewer.scene.requestRender();
-      });
+      .then(
+        () => {
+          this.viewer.scene.requestRender();
+        },
+        (error: unknown) => {
+          console.error(`Failed to update layer: ${String(id)}`, error);
+        },
+      );
 
     // Publish the new state.
     (entry.state$ as BehaviorSubject<AnyLayer>).next(updatedLayer);
