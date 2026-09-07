@@ -250,6 +250,75 @@ export class SlicePreloadQueue {
     this.inFlightUrls.clear();
   }
 
+  /**
+   * Fetch a single job's URL, bounding it with its own abort controller/timeout
+   * so a hung request cannot tie up a worker slot indefinitely, while still
+   * honouring `abortAndClear()` via the outer `signal`.
+   *
+   * Returns `'aborted'` if the outer signal was aborted while fetching (the
+   * caller must stop its loop), `'fetched'` on success, or `'failed'`
+   * otherwise (network error, non-OK response, or per-request timeout).
+   */
+  private async runJob(
+    job: PrefetchJob,
+    signal: AbortSignal,
+    headers: Record<string, string>,
+  ): Promise<'fetched' | 'failed' | 'aborted'> {
+    const requestController = new AbortController();
+    const removeAbortForwarding = forwardAbort(signal, requestController);
+    const timeoutId = setTimeout(
+      () => requestController.abort(),
+      SLICE_PREFETCH_REQUEST_TIMEOUT_MS,
+    );
+    try {
+      const response = await fetch(job.url, {
+        method: 'GET',
+        headers,
+        mode: 'cors',
+        credentials: 'omit',
+        signal: requestController.signal,
+        cache: 'force-cache',
+      });
+      if (!response.ok) {
+        return 'failed';
+      }
+      await response.blob();
+      return 'fetched';
+    } catch {
+      return signal.aborted ? 'aborted' : 'failed';
+    } finally {
+      clearTimeout(timeoutId);
+      removeAbortForwarding();
+    }
+  }
+
+  /** Mark a job's URL as completed, updating progress at most once per URL. */
+  private markJobCompleted(job: PrefetchJob): void {
+    if (this.completedUrls.has(job.url)) {
+      return;
+    }
+    this.completedUrls.add(job.url);
+    this.axisLoaded[job.axis] += 1;
+    this.emitProgress();
+  }
+
+  /**
+   * Requeue a failed job for another attempt, or give up on it for good.
+   * Without this, a single transient failure (flaky network, temporary
+   * gateway error) used to permanently stall overall progress below 100%.
+   */
+  private requeueOrGiveUp(job: PrefetchJob): void {
+    if (job.attempts + 1 < SLICE_PREFETCH_MAX_ATTEMPTS) {
+      this.pendingUrls.add(job.url);
+      this.pending.push({ ...job, attempts: job.attempts + 1 });
+      return;
+    }
+    console.warn(
+      `Giving up prefetching ${job.url} after ${SLICE_PREFETCH_MAX_ATTEMPTS} attempts`,
+    );
+    this.markJobCompleted(job);
+  }
+
   private ensureRunning(): void {
     if (this.running) {
       return;
@@ -272,69 +341,17 @@ export class SlicePreloadQueue {
         this.pendingUrls.delete(job.url);
         this.inFlightUrls.add(job.url);
 
-        // Bound each request individually so a single hung request cannot
-        // tie up a worker slot (and thus this job's URL) indefinitely, while
-        // still honouring abortAndClear() via the outer `signal`.
-        const requestController = new AbortController();
-        const removeAbortForwarding = forwardAbort(signal, requestController);
-        const timeoutId = setTimeout(
-          () => requestController.abort(),
-          SLICE_PREFETCH_REQUEST_TIMEOUT_MS,
-        );
-
-        let isFetched = false;
-        try {
-          const response = await fetch(job.url, {
-            method: 'GET',
-            headers,
-            mode: 'cors',
-            credentials: 'omit',
-            signal: requestController.signal,
-            cache: 'force-cache',
-          });
-          if (response.ok) {
-            await response.blob();
-            isFetched = true;
-          }
-        } catch {
-          if (signal.aborted) {
-            clearTimeout(timeoutId);
-            removeAbortForwarding();
-            this.inFlightUrls.delete(job.url);
-            return;
-          }
-        } finally {
-          clearTimeout(timeoutId);
-          removeAbortForwarding();
-        }
-
+        const result = await this.runJob(job, signal, headers);
         this.inFlightUrls.delete(job.url);
-        if (isFetched) {
-          if (!this.completedUrls.has(job.url)) {
-            this.completedUrls.add(job.url);
-            this.axisLoaded[job.axis] += 1;
-            this.emitProgress();
-          }
+
+        if (result === 'aborted') {
+          return;
+        }
+        if (result === 'fetched') {
+          this.markJobCompleted(job);
           continue;
         }
-
-        // Failed (network error, non-OK response, or per-request timeout):
-        // retry a bounded number of times before giving up. Without this, a
-        // single transient failure permanently stalled overall progress
-        // below 100%, since this URL would never be counted either way.
-        if (job.attempts + 1 < SLICE_PREFETCH_MAX_ATTEMPTS) {
-          this.pendingUrls.add(job.url);
-          this.pending.push({ ...job, attempts: job.attempts + 1 });
-        } else {
-          console.warn(
-            `Giving up prefetching ${job.url} after ${SLICE_PREFETCH_MAX_ATTEMPTS} attempts`,
-          );
-          if (!this.completedUrls.has(job.url)) {
-            this.completedUrls.add(job.url);
-            this.axisLoaded[job.axis] += 1;
-            this.emitProgress();
-          }
-        }
+        this.requeueOrGiveUp(job);
       }
     };
 
