@@ -23,6 +23,40 @@ import { when } from 'lit/directives/when.js';
 /** How long the preload banner stays visible after finishing, before fading out. */
 const PRELOAD_BANNER_LINGER_MS = 3_000;
 
+/**
+ * Slice numbers are not guaranteed to be contiguous (e.g. `[10, 20, 30]`), so
+ * a plain min/max range with a step of 1 would let the slider/stepper select
+ * values that do not actually exist. Snap to the closest value that is
+ * actually present instead. Assumes `numbers` is sorted ascending and
+ * non-empty.
+ */
+const nearestSliceNumber = (
+  numbers: readonly number[],
+  value: number,
+): number =>
+  numbers.reduce((closest, candidate) =>
+    Math.abs(candidate - value) < Math.abs(closest - value)
+      ? candidate
+      : closest,
+  );
+
+/**
+ * Index of the closest entry in `numbers` to `value`, offset by `step`
+ * (`-1`/`+1`), clamped to the array bounds. Used to move the stepper to the
+ * previous/next *existing* slice number rather than blindly adding/subtracting
+ * 1, which could land on a number that is not actually present.
+ */
+const stepSliceNumber = (
+  numbers: readonly number[],
+  value: number,
+  step: -1 | 1,
+): number => {
+  const nearest = nearestSliceNumber(numbers, value);
+  const index = numbers.indexOf(nearest);
+  const nextIndex = Math.min(numbers.length - 1, Math.max(0, index + step));
+  return numbers[nextIndex];
+};
+
 @customElement('ngm-catalog-display-slice-detail')
 export class CatalogDisplaySliceDetail extends CoreElement {
   @property()
@@ -209,12 +243,15 @@ export class CatalogDisplaySliceDetail extends CoreElement {
     if (current === null) {
       return;
     }
+    const numbers = this.controller?.getAxisNumbers(axis) ?? [];
+    const snapped =
+      numbers.length > 0 ? nearestSliceNumber(numbers, value) : value;
     const nextSingle = {
       ...(this.draftSingle ?? current.single),
-      [axis]: value,
+      [axis]: snapped,
     };
     this.draftSingle = nextSingle;
-    this.controller?.prioritizeAxisNeighborhood(axis, value);
+    this.controller?.prioritizeAxisNeighborhood(axis, snapped);
     this.updateSelection({ single: nextSingle });
   };
 
@@ -227,7 +264,9 @@ export class CatalogDisplaySliceDetail extends CoreElement {
       return;
     }
     this.isSliderDragging = true;
-    const value = Math.round(event.detail.value);
+    const numbers = this.controller?.getAxisNumbers(axis) ?? [];
+    const raw = Math.round(event.detail.value);
+    const value = numbers.length > 0 ? nearestSliceNumber(numbers, raw) : raw;
     this.draftSingle = {
       ...(this.draftSingle ?? current.single),
       [axis]: value,
@@ -397,8 +436,12 @@ export class CatalogDisplaySliceDetail extends CoreElement {
               <span class="axis-label">
                 ${i18next.t(`catalog:slice_window.${axis}`)}
               </span>
-              ${this.renderStepper(value, min, max, (next) =>
-                this.setSingleSlice(axis, next),
+              ${this.renderStepper(
+                value,
+                min,
+                max,
+                (next) => this.setSingleSlice(axis, next),
+                numbers,
               )}
             </div>
             <ngm-core-slider
@@ -468,13 +511,24 @@ export class CatalogDisplaySliceDetail extends CoreElement {
     min: number,
     max: number,
     onChange: (value: number) => void,
+    /**
+     * The actual selectable values, when they may be non-contiguous (e.g.
+     * seismic slice numbers). When provided, stepping/typing snaps to the
+     * closest existing value instead of a blind +/-1.
+     */
+    numbers?: readonly number[],
   ) => html`
     <div class="stepper">
       <button
         type="button"
         class="stepper-btn"
         ?disabled=${value <= min}
-        @click=${() => onChange(value - 1)}
+        @click=${() =>
+          onChange(
+            numbers !== undefined
+              ? stepSliceNumber(numbers, value, -1)
+              : value - 1,
+          )}
       >
         &lt;
       </button>
@@ -489,14 +543,24 @@ export class CatalogDisplaySliceDetail extends CoreElement {
           if (Number.isNaN(raw)) {
             return;
           }
-          onChange(Math.max(min, Math.min(max, Math.round(raw))));
+          const clamped = Math.max(min, Math.min(max, Math.round(raw)));
+          onChange(
+            numbers !== undefined
+              ? nearestSliceNumber(numbers, clamped)
+              : clamped,
+          );
         }}
       />
       <button
         type="button"
         class="stepper-btn"
         ?disabled=${value >= max}
-        @click=${() => onChange(value + 1)}
+        @click=${() =>
+          onChange(
+            numbers !== undefined
+              ? stepSliceNumber(numbers, value, 1)
+              : value + 1,
+          )}
       >
         &gt;
       </button>

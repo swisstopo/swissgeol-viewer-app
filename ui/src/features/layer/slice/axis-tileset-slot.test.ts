@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 // tilesLoaded, customShader).
 class FakeEvent {
   private readonly listeners: Array<(...args: unknown[]) => void> = [];
+
   addEventListener(callback: (...args: unknown[]) => void): () => void {
     this.listeners.push(callback);
     return () => {
@@ -17,6 +18,7 @@ class FakeEvent {
       }
     };
   }
+
   raise(...args: unknown[]): void {
     for (const listener of [...this.listeners]) {
       listener(...args);
@@ -59,9 +61,11 @@ class FakeCesium3DTileset {
 class FakeCustomShader {
   setUniform = vi.fn();
   private destroyed = false;
+
   isDestroyed(): boolean {
     return this.destroyed;
   }
+
   destroy(): void {
     this.destroyed = true;
   }
@@ -132,9 +136,13 @@ describe('AxisTilesetSlot', () => {
   it('builds and reveals a tileset for a new selection', async () => {
     const { slot, viewer } = makeSlot();
 
-    const isActive = await slot.setSlices({}, 'https://x/tileset.json', {}, 'u', [
-      3,
-    ]);
+    const isActive = await slot.setSlices(
+      {},
+      'https://x/tileset.json',
+      {},
+      'u',
+      [3],
+    );
 
     expect(isActive).toBe(true);
     expect(slot.currentTileset).not.toBeNull();
@@ -153,7 +161,7 @@ describe('AxisTilesetSlot', () => {
     expect(slot.currentTileset).toBe(first);
   });
 
-  it("resolves false for a queued call that is superseded before it is applied", async () => {
+  it('resolves false for a queued call that is superseded before it is applied', async () => {
     const { slot } = makeSlot();
 
     // Make the first build hang so the second call queues behind it.
@@ -165,9 +173,13 @@ describe('AxisTilesetSlot', () => {
         }),
     );
 
-    const firstCall = slot.setSlices({}, 'https://x/tileset.json', {}, 'u', [
-      1,
-    ]);
+    const firstCall = slot.setSlices(
+      {},
+      'https://x/tileset.json',
+      {},
+      'u',
+      [1],
+    );
     // Both of these queue behind the in-flight first call and are collapsed
     // into a single `pending` slot — only the last (numbers=[3]) is ever
     // actually applied.
@@ -178,9 +190,13 @@ describe('AxisTilesetSlot', () => {
       'u',
       [2],
     );
-    const winningCall = slot.setSlices({}, 'https://x/tileset.json', {}, 'u', [
-      3,
-    ]);
+    const winningCall = slot.setSlices(
+      {},
+      'https://x/tileset.json',
+      {},
+      'u',
+      [3],
+    );
 
     resolveFirstBuild(new FakeCesium3DTileset({ show: false }));
 
@@ -254,9 +270,13 @@ describe('AxisTilesetSlot', () => {
     // Warming the same slice must not just wave it through because a cache
     // entry exists: it must still wait for it to actually finish loading.
     FakeCesium3DTileset.fromUrl.mockClear();
-    const warmPromise = slot.warmSlices({}, 'https://x/tileset.json', {}, 'u', [
-      7,
-    ]);
+    const warmPromise = slot.warmSlices(
+      {},
+      'https://x/tileset.json',
+      {},
+      'u',
+      [7],
+    );
     // It must not have rebuilt/re-requested a second tileset for the same
     // key — it should be joining the existing cache entry instead.
     expect(FakeCesium3DTileset.fromUrl).not.toHaveBeenCalled();

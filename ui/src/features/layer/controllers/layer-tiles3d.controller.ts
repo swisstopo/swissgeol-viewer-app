@@ -657,21 +657,34 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       if (this.appliedNumbersByAxis.get(axis) === numbersKey) {
         continue;
       }
-      this.appliedNumbersByAxis.set(axis, numbersKey);
 
       if (numbers.length === 0) {
+        // `clear()` is synchronous and cannot fail, so it is safe to record
+        // immediately.
+        this.appliedNumbersByAxis.set(axis, numbersKey);
         slot.clear();
         continue;
       }
       isAxisSelectionActive.set(
         axis,
-        slot.setSlices(
-          this.originalTilesetJson,
-          this.baseUrl,
-          this.resourceHeaders,
-          AXIS_TO_DIRECTION[axis],
-          numbers,
-        ),
+        slot
+          .setSlices(
+            this.originalTilesetJson,
+            this.baseUrl,
+            this.resourceHeaders,
+            AXIS_TO_DIRECTION[axis],
+            numbers,
+          )
+          .then((isActive) => {
+            // Only record this selection as applied once it has actually
+            // succeeded (and is still the active one) — otherwise a failed
+            // build would permanently block retrying the same numbers, since
+            // the equality check above would keep skipping it.
+            if (isActive) {
+              this.appliedNumbersByAxis.set(axis, numbersKey);
+            }
+            return isActive;
+          }),
       );
     }
 

@@ -71,7 +71,10 @@ describe('SlicePreloadQueue', () => {
     const progressUpdates: Array<{ loaded: number; total: number }> = [];
     const queue = new SlicePreloadQueue({
       onProgress: (progress) =>
-        progressUpdates.push({ loaded: progress.loaded, total: progress.total }),
+        progressUpdates.push({
+          loaded: progress.loaded,
+          total: progress.total,
+        }),
     });
 
     queue.enqueue('crossline', ['https://x/a.glb', 'https://x/b.glb']);

@@ -171,7 +171,8 @@ export class AxisTilesetSlot {
     // (see `performSetSlices`/`clear`) — use `null` here too so comparisons
     // against `this.activeKey` below correctly recognise "this call's own
     // (empty) selection is the one that is currently active".
-    const key = numbers.length === 0 ? null : `${direction}:${numbers.join(',')}`;
+    const key =
+      numbers.length === 0 ? null : `${direction}:${numbers.join(',')}`;
 
     // Fast path: if the target slice is already loaded, swap synchronously.
     // This must bypass the update queue entirely — otherwise a warmed slice

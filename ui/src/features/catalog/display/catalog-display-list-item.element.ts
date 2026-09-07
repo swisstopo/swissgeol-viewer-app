@@ -48,6 +48,7 @@ export class CatalogDisplayListItem extends CoreElement {
   accessor canZoom = true;
 
   private windows!: WindowMapping;
+  private canZoomPollIntervalId: ReturnType<typeof setInterval> | null = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -63,7 +64,21 @@ export class CatalogDisplayListItem extends CoreElement {
     );
   }
 
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.stopCanZoomPolling();
+  }
+
+  private stopCanZoomPolling(): void {
+    if (this.canZoomPollIntervalId !== null) {
+      clearInterval(this.canZoomPollIntervalId);
+      this.canZoomPollIntervalId = null;
+    }
+  }
+
   private updateCanZoom(): void {
+    this.stopCanZoomPolling();
+
     const controller = this.layerService.controller(this.layerId);
     if (!controller) {
       this.canZoom = false;
@@ -80,19 +95,25 @@ export class CatalogDisplayListItem extends CoreElement {
       return;
     }
 
-    // Tileset and slice metadata finish loading asynchronously after activation.
-    const startedAt = Date.now();
-    const checkInterval = setInterval(() => {
+    // Tileset and slice metadata finish loading asynchronously after
+    // activation. Poll until readiness is actually observed rather than
+    // giving up after a fixed timeout — otherwise a tileset that becomes
+    // ready after the timeout would leave the zoom button permanently
+    // disabled. Polling is stopped as soon as it succeeds, the layer/
+    // controller changes (see `updateCanZoom` call above), or the element
+    // disconnects (see `disconnectedCallback`).
+    this.canZoomPollIntervalId = setInterval(() => {
+      if (this.layerService.controller(this.layerId) !== controller) {
+        // Controller was swapped out (e.g. layer deactivated/reactivated) —
+        // the subscription above will have already called `updateCanZoom()`
+        // for the new controller, so just stop this stale poll.
+        this.stopCanZoomPolling();
+        return;
+      }
       const isReady = !!controller.tileset?.boundingSphere;
       if (isReady) {
         this.canZoom = true;
-      }
-      if (
-        (isReady && Date.now() - startedAt > 2_000) ||
-        Date.now() - startedAt > 15_000
-      ) {
-        this.requestUpdate();
-        clearInterval(checkInterval);
+        this.stopCanZoomPolling();
       }
     }, 100);
   }
