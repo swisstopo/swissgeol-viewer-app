@@ -114,7 +114,17 @@ export class PickService extends BaseService {
       return null;
     }
     if (viewer.scene.globe.show) {
-      return viewer.scene.globe.pick(ray, viewer.scene) ?? null;
+      const globePick = viewer.scene.globe.pick(ray, viewer.scene);
+      if (globePick !== undefined) {
+        return globePick;
+      }
+      // `Globe.pick` only intersects the terrain surface itself. When the
+      // camera is underground and looking away from the terrain (e.g. at
+      // underground content behind/below it), the ray never hits terrain and
+      // this returns `undefined` — fall through to the ellipsoid intersection
+      // below instead of aborting the whole pick, so callers (e.g. the info
+      // box's drill-picker) still get a position to work with and can find
+      // underground features via their own, more precise picking.
     }
 
     const interval = IntersectionTests.rayEllipsoid(ray, Ellipsoid.WGS84);
