@@ -15,14 +15,6 @@ const FEATURE_INFO_WIDTH = 101;
 const FEATURE_INFO_HEIGHT = 101;
 const FEATURE_INFO_BBOX_DELTA = 5;
 const URL_PATTERN = /^https?:\/\//i;
-/**
- * geo.admin.ch's identify/htmlPopup/WMS endpoints occasionally hang or take
- * a very long time to respond (observed as slow gateway timeouts). Without a
- * bound, a single slow/unresponsive request can stall the entire info-box
- * pick (see `LayerInfoService.handlePick`, which awaits every layer's pick
- * before showing any results) for far longer than is useful.
- */
-const FEATURE_INFO_FETCH_TIMEOUT_MS = 6_000;
 
 const WMTS_ENDPOINT_SUFFIXES = [
   '/gwc/service/wmts',
@@ -143,9 +135,7 @@ class GeoAdminWmtsInfoClient {
         baseUrl,
       );
       try {
-        const response = await fetch(identifyUrl, {
-          signal: AbortSignal.timeout(FEATURE_INFO_FETCH_TIMEOUT_MS),
-        });
+        const response = await fetch(identifyUrl);
         if (!response.ok) {
           continue;
         }
@@ -171,9 +161,7 @@ class GeoAdminWmtsInfoClient {
     for (const baseUrl of this.buildRestApiBaseUrls()) {
       const popupUrl = this.buildHtmlPopupUrl(result, lang, baseUrl);
       try {
-        const response = await fetch(popupUrl, {
-          signal: AbortSignal.timeout(FEATURE_INFO_FETCH_TIMEOUT_MS),
-        });
+        const response = await fetch(popupUrl);
         if (!response.ok) {
           continue;
         }
@@ -343,9 +331,7 @@ class ExternalWmtsInfoClient {
     }
 
     try {
-      const response = await fetch(infoUrl, {
-        signal: AbortSignal.timeout(FEATURE_INFO_FETCH_TIMEOUT_MS),
-      });
+      const response = await fetch(infoUrl);
       if (!response.ok) {
         return null;
       }

@@ -1,9 +1,6 @@
 import { Resource } from 'cesium';
 import { OgcSliceDirection } from 'src/features/layer/slice/tiles3d-slice.types';
-import {
-  parseSliceFromUri,
-  readTileSliceKey,
-} from 'src/features/layer/slice/tileset-slice-metadata';
+import { resolveSliceIdentity } from 'src/features/layer/slice/tileset-slice-metadata';
 
 interface TilesetTileNode {
   content?: { uri?: string };
@@ -55,7 +52,7 @@ export const pruneTilesetToSlices = (
 
     const uri = content?.uri;
     if (uri !== undefined) {
-      const identity = resolveTileIdentity(tile, uri);
+      const identity = resolveSliceIdentity(tile, uri);
       if (identity !== null && shouldKeep(identity, keep)) {
         shouldKeepTile = true;
         next.content = { ...content, uri: new URL(uri, baseUrl).href };
@@ -95,25 +92,33 @@ export const pruneTilesetToSlices = (
  * value (0) stops Cesium from refining and loading content.
  */
 const tightenBoundingVolumes = (tile: TilesetTileNode): void => {
-  if (tile.children !== undefined && tile.children.length > 0) {
-    for (const child of tile.children) {
-      tightenBoundingVolumes(child);
-    }
-    const childRegions = tile.children.map((child) => getRegion(child));
-    // Only tighten when every kept child exposes a region. Unioning a subset
-    // would produce a volume that culls the children we cannot account for
-    // (e.g. box/sphere bounding volumes).
-    if (
-      childRegions.length > 0 &&
-      childRegions.every((region): region is number[] => region !== null)
-    ) {
-      tile.boundingVolume = {
-        region: childRegions.reduce(
-          (acc, region) => unionRegions(acc, region),
-          childRegions[0],
-        ),
-      };
-    }
+  if (tile.children === undefined || tile.children.length === 0) {
+    return;
+  }
+  for (const child of tile.children) {
+    tightenBoundingVolumes(child);
+  }
+  if (tile.content !== undefined) {
+    // This tile keeps its own content in addition to its children (valid
+    // under ADD refinement). Its original bounding volume was already sized
+    // to cover that content, not just the children — recomputing it as a
+    // children-only union could shrink it and cull the tile's own geometry.
+    return;
+  }
+  const childRegions = tile.children.map((child) => getRegion(child));
+  // Only tighten when every kept child exposes a region. Unioning a subset
+  // would produce a volume that culls the children we cannot account for
+  // (e.g. box/sphere bounding volumes).
+  if (
+    childRegions.length > 0 &&
+    childRegions.every((region): region is number[] => region !== null)
+  ) {
+    tile.boundingVolume = {
+      region: childRegions.reduce(
+        (acc, region) => unionRegions(acc, region),
+        childRegions[0],
+      ),
+    };
   }
 };
 
@@ -139,21 +144,6 @@ const unionRegions = (a: number[], b: number[]): number[] => [
   Math.min(a[4], b[4]),
   Math.max(a[5], b[5]),
 ];
-
-const resolveTileIdentity = (
-  tile: TilesetTileNode,
-  uri: string,
-): { direction: OgcSliceDirection | null; number: number } | null => {
-  const fromMeta = readTileSliceKey(tile);
-  if (fromMeta !== null) {
-    return fromMeta;
-  }
-  const fromUri = parseSliceFromUri(uri);
-  if (fromUri === null) {
-    return null;
-  }
-  return { direction: null, number: fromUri };
-};
 
 const shouldKeep = (
   identity: { direction: OgcSliceDirection | null; number: number },

@@ -3,10 +3,7 @@ import {
   SeismicSliceAxis,
   SEISMIC_SLICE_AXES,
 } from 'src/features/layer/slice/tiles3d-slice.types';
-import {
-  parseSliceFromUri,
-  readTileSliceKey,
-} from 'src/features/layer/slice/tileset-slice-metadata';
+import { resolveSliceIdentity } from 'src/features/layer/slice/tileset-slice-metadata';
 
 interface TilesetTileNode {
   content?: { uri?: string };
@@ -56,44 +53,6 @@ const toAbsoluteUri = (uri: string, baseUrl: string): string => {
 };
 
 /**
- * Collect absolute content URIs for the given axis direction + slice numbers.
- */
-export const collectSliceContentUris = (
-  tilesetJson: unknown,
-  direction: OgcSliceDirection,
-  numbers: ReadonlySet<number>,
-  baseUrl = '',
-): string[] => {
-  if (tilesetJson === null || typeof tilesetJson !== 'object') {
-    return [];
-  }
-  const root = (tilesetJson as TilesetJson).root;
-  if (root === undefined) {
-    return [];
-  }
-
-  const uris: string[] = [];
-  const visit = (tile: TilesetTileNode): void => {
-    const uri = tile.content?.uri;
-    if (uri !== undefined && uri !== '') {
-      const identity = resolveIdentity(tile, uri);
-      if (
-        identity !== null &&
-        numbers.has(identity.number) &&
-        (identity.direction === null || identity.direction === direction)
-      ) {
-        uris.push(toAbsoluteUri(uri, baseUrl));
-      }
-    }
-    for (const child of tile.children ?? []) {
-      visit(child);
-    }
-  };
-  visit(root);
-  return [...new Set(uris)];
-};
-
-/**
  * Collect every content URI on an axis, keyed by slice number.
  */
 export const collectAxisSliceUriMap = (
@@ -113,7 +72,7 @@ export const collectAxisSliceUriMap = (
   const visit = (tile: TilesetTileNode): void => {
     const uri = tile.content?.uri;
     if (uri !== undefined && uri !== '') {
-      const identity = resolveIdentity(tile, uri);
+      const identity = resolveSliceIdentity(tile, uri);
       if (
         identity !== null &&
         (identity.direction === null || identity.direction === direction)
@@ -141,25 +100,44 @@ export const orderNumbersFromCenter = (
     (a, b) => Math.abs(a - center) - Math.abs(b - center) || a - b,
   );
 
-const resolveIdentity = (
-  tile: TilesetTileNode,
-  uri: string,
-): { direction: OgcSliceDirection | null; number: number } | null => {
-  const fromMeta = readTileSliceKey(tile);
-  if (fromMeta !== null) {
-    return fromMeta;
-  }
-  const fromUri = parseSliceFromUri(uri);
-  if (fromUri === null) {
-    return null;
-  }
-  return { direction: null, number: fromUri };
-};
-
 interface PrefetchJob {
   url: string;
   axis: SeismicSliceAxis;
+  /** Number of fetch attempts already made for this job. */
+  attempts: number;
 }
+
+/**
+ * Give up on a single prefetch request rather than tie up a worker slot
+ * indefinitely — this is background cache warming, not a user-blocking load.
+ */
+const SLICE_PREFETCH_REQUEST_TIMEOUT_MS = 20_000;
+
+/**
+ * Retry a failed prefetch request up to this many times (in total) before
+ * giving up on it for good. Failures here are typically transient (flaky
+ * network, temporary gateway errors), and without a retry a single failure
+ * used to permanently stall progress below 100%.
+ */
+const SLICE_PREFETCH_MAX_ATTEMPTS = 3;
+
+/**
+ * Abort `target` whenever `source` aborts. Manual wiring instead of
+ * `AbortSignal.any([source, target.signal])`, which is unavailable in older
+ * targeted browsers (see AGENTS.md: Edge 18 is a supported target).
+ */
+const forwardAbort = (
+  source: AbortSignal,
+  target: AbortController,
+): (() => void) => {
+  if (source.aborted) {
+    target.abort();
+    return () => {};
+  }
+  const onAbort = (): void => target.abort();
+  source.addEventListener('abort', onAbort, { once: true });
+  return () => source.removeEventListener('abort', onAbort);
+};
 
 /**
  * Background HTTP cache warmer with optional progress + a mutable priority
@@ -248,7 +226,7 @@ export class SlicePreloadQueue {
         this.queuedUrls.add(url);
         this.axisTotals[axis] += 1;
       }
-      fresh.push({ url, axis });
+      fresh.push({ url, axis, attempts: 0 });
     }
     if (fresh.length === 0) {
       this.emitProgress();
@@ -293,6 +271,17 @@ export class SlicePreloadQueue {
         }
         this.pendingUrls.delete(job.url);
         this.inFlightUrls.add(job.url);
+
+        // Bound each request individually so a single hung request cannot
+        // tie up a worker slot (and thus this job's URL) indefinitely, while
+        // still honouring abortAndClear() via the outer `signal`.
+        const requestController = new AbortController();
+        const removeAbortForwarding = forwardAbort(signal, requestController);
+        const timeoutId = setTimeout(
+          () => requestController.abort(),
+          SLICE_PREFETCH_REQUEST_TIMEOUT_MS,
+        );
+
         let isFetched = false;
         try {
           const response = await fetch(job.url, {
@@ -300,7 +289,7 @@ export class SlicePreloadQueue {
             headers,
             mode: 'cors',
             credentials: 'omit',
-            signal,
+            signal: requestController.signal,
             cache: 'force-cache',
           });
           if (response.ok) {
@@ -309,15 +298,42 @@ export class SlicePreloadQueue {
           }
         } catch {
           if (signal.aborted) {
+            clearTimeout(timeoutId);
+            removeAbortForwarding();
             this.inFlightUrls.delete(job.url);
             return;
           }
+        } finally {
+          clearTimeout(timeoutId);
+          removeAbortForwarding();
         }
+
         this.inFlightUrls.delete(job.url);
-        if (isFetched && !this.completedUrls.has(job.url)) {
-          this.completedUrls.add(job.url);
-          this.axisLoaded[job.axis] += 1;
-          this.emitProgress();
+        if (isFetched) {
+          if (!this.completedUrls.has(job.url)) {
+            this.completedUrls.add(job.url);
+            this.axisLoaded[job.axis] += 1;
+            this.emitProgress();
+          }
+          continue;
+        }
+
+        // Failed (network error, non-OK response, or per-request timeout):
+        // retry a bounded number of times before giving up. Without this, a
+        // single transient failure permanently stalled overall progress
+        // below 100%, since this URL would never be counted either way.
+        if (job.attempts + 1 < SLICE_PREFETCH_MAX_ATTEMPTS) {
+          this.pendingUrls.add(job.url);
+          this.pending.push({ ...job, attempts: job.attempts + 1 });
+        } else {
+          console.warn(
+            `Giving up prefetching ${job.url} after ${SLICE_PREFETCH_MAX_ATTEMPTS} attempts`,
+          );
+          if (!this.completedUrls.has(job.url)) {
+            this.completedUrls.add(job.url);
+            this.axisLoaded[job.axis] += 1;
+            this.emitProgress();
+          }
         }
       }
     };
@@ -341,67 +357,3 @@ export class SlicePreloadQueue {
     this.options.onProgress?.(this.progress);
   }
 }
-
-/**
- * Warm the browser HTTP cache for nearby slice GLBs without attaching Cesium
- * tilesets. Limited concurrency; cancellable via AbortSignal.
- */
-export const prefetchUrls = async (
-  urls: readonly string[],
-  options: {
-    concurrency?: number;
-    signal?: AbortSignal;
-    headers?: Record<string, string>;
-    onProgress?: (done: number, total: number) => void;
-  } = {},
-): Promise<void> => {
-  const concurrency = Math.max(
-    1,
-    options.concurrency ?? SLICE_PREFETCH_CONCURRENCY,
-  );
-  const headers = options.headers ?? {};
-  const signal = options.signal;
-  let nextIndex = 0;
-  let done = 0;
-  const total = urls.length;
-  options.onProgress?.(0, total);
-
-  const worker = async (): Promise<void> => {
-    while (nextIndex < urls.length) {
-      if (signal?.aborted) {
-        return;
-      }
-      const index = nextIndex;
-      nextIndex += 1;
-      const url = urls[index];
-      try {
-        await fetch(url, {
-          method: 'GET',
-          headers,
-          mode: 'cors',
-          credentials: 'omit',
-          signal,
-          cache: 'force-cache',
-        });
-      } catch {
-        if (signal?.aborted) {
-          return;
-        }
-      }
-      done += 1;
-      options.onProgress?.(done, total);
-    }
-  };
-
-  const workers = Array.from(
-    { length: Math.min(concurrency, urls.length || 1) },
-    () => worker(),
-  );
-  await Promise.all(workers);
-};
-
-export type PrefetchAxisRequest = {
-  axis: SeismicSliceAxis;
-  direction: OgcSliceDirection;
-  numbers: readonly number[];
-};

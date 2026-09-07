@@ -120,7 +120,17 @@ export class AxisTilesetSlot {
     direction: OgcSliceDirection;
     numbers: number[];
   } | null = null;
-  private readonly pendingResolvers: Array<() => void> = [];
+  /**
+   * Queued callers waiting for their own `setSlices()` call to be applied.
+   * Each entry remembers the key the caller asked for so it can be told,
+   * once the queue drains, whether *its* selection ended up active or was
+   * itself superseded by a later call before ever being applied — callers
+   * (e.g. neighbourhood prefetch/warming) must not act on a stale center.
+   */
+  private readonly pendingResolvers: Array<{
+    resolve: (isActive: boolean) => void;
+    key: string | null;
+  }> = [];
   /**
    * Tracks tileset builds in progress, keyed the same way as `cache`. Both
    * the interactive swap path and background warming can want the same slice
@@ -137,30 +147,46 @@ export class AxisTilesetSlot {
     return this.tileset;
   }
 
+  /**
+   * Selects the slice(s) shown on this axis.
+   *
+   * Resolves to `true` if this call's own selection is the one that ended up
+   * active on this axis, or `false` if it was itself superseded by a later
+   * call before ever being (or while being) applied. Callers that act on the
+   * *result* of a selection (e.g. prioritizing/warming the neighbourhood
+   * around the newly selected slice) must skip that follow-up work when this
+   * resolves `false`, since the center they have is no longer current.
+   */
   async setSlices(
     originalJson: unknown,
     baseUrl: string,
     headers: Record<string, string>,
     direction: OgcSliceDirection,
     numbers: number[],
-  ): Promise<void> {
+  ): Promise<boolean> {
     // A new selection wins over any background warming.
     this.warmGeneration += 1;
+
+    // `numbers.length === 0` clears the axis, i.e. leaves `activeKey` `null`
+    // (see `performSetSlices`/`clear`) — use `null` here too so comparisons
+    // against `this.activeKey` below correctly recognise "this call's own
+    // (empty) selection is the one that is currently active".
+    const key = numbers.length === 0 ? null : `${direction}:${numbers.join(',')}`;
 
     // Fast path: if the target slice is already loaded, swap synchronously.
     // This must bypass the update queue entirely — otherwise a warmed slice
     // would still be held back behind an in-flight load of a slice the user
     // has already scrubbed past.
     if (this.tryRevealLoaded(direction, numbers)) {
-      return;
+      return true;
     }
 
     if (this.isUpdating) {
       this.pending = { originalJson, baseUrl, headers, direction, numbers };
       // Resolve only once the queued selection has actually been applied, so
       // callers do not start warming a neighbourhood that is already stale.
-      return new Promise<void>((resolve) => {
-        this.pendingResolvers.push(resolve);
+      return new Promise<boolean>((resolve) => {
+        this.pendingResolvers.push({ resolve, key });
       });
     }
 
@@ -186,10 +212,13 @@ export class AxisTilesetSlot {
       }
     } finally {
       this.isUpdating = false;
-      for (const resolve of this.pendingResolvers.splice(0)) {
-        resolve();
+      for (const { resolve, key: pendingKey } of this.pendingResolvers.splice(
+        0,
+      )) {
+        resolve(pendingKey === this.activeKey);
       }
     }
+    return key === this.activeKey;
   }
 
   /**
@@ -245,7 +274,11 @@ export class AxisTilesetSlot {
   ): Promise<boolean> {
     const key = `${direction}:${number}`;
     const existing = this.cache.get(key);
-    if (existing !== undefined && !existing.tileset.isDestroyed()) {
+    if (
+      existing !== undefined &&
+      !existing.tileset.isDestroyed() &&
+      existing.tileset.tilesLoaded
+    ) {
       return true;
     }
     if (this.isUpdating) {
@@ -340,6 +373,10 @@ export class AxisTilesetSlot {
   /** Hide this axis without destroying (used in Multiple mode for inactive axes). */
   clear(): void {
     this.loadGeneration += 1;
+    // Also stop any in-flight background warming for this axis — otherwise a
+    // still-running `warmSlices()` loop keeps requesting/building tilesets
+    // for an axis that is no longer shown.
+    this.warmGeneration += 1;
     if (this.tileset !== null) {
       freezeHidden(this.tileset);
     }

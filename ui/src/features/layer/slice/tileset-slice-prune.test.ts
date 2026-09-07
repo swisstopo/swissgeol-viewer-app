@@ -109,4 +109,37 @@ describe('pruneTilesetToSlices', () => {
       region: [0, 0, 1, 1, -100, 100],
     });
   });
+
+  it('leaves a kept parent volume alone when the parent also has its own content', () => {
+    const withOwnContent = {
+      root: {
+        // Root keeps both its own content *and* a child (ADD refinement).
+        // Its bounding volume is intentionally larger than the child's so it
+        // still covers the root's own geometry too.
+        boundingVolume: { region: [0, 0, 1, 1, -100, 100] },
+        geometricError: 10,
+        content: { uri: 'seismic-slice-X-0.glb' },
+        children: [
+          {
+            boundingVolume: { region: [0.2, 0.2, 0.4, 0.4, -10, 10] },
+            geometricError: 0,
+            content: { uri: 'seismic-slice-X-1.glb' },
+          },
+        ],
+      },
+    };
+    const out = pruneTilesetToSlices(
+      withOwnContent,
+      { numbers: new Set([0, 1]) },
+      'https://example.com/base/',
+    );
+    expect(out.root!.content!.uri).toBe(
+      'https://example.com/base/seismic-slice-X-0.glb',
+    );
+    // The root's own bounding volume must not shrink to the child-only
+    // union — that would cull the root's own kept content.
+    expect(out.root!.boundingVolume).toEqual({
+      region: [0, 0, 1, 1, -100, 100],
+    });
+  });
 });

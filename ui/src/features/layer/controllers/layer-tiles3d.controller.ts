@@ -304,7 +304,7 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     // slice just finished loading a moment ago, or the user clicks the zoom
     // button right after activating the layer); wait briefly for a first,
     // possibly-partial sphere instead of flying to a degenerate/empty one.
-    const firstSphere = await this.waitForAnyBoundingSphere();
+    const firstSphere = await this.waitForBoundingSphere(2_000, () => true);
     if (firstSphere === null || zoomToken !== this.zoomGeneration) {
       return;
     }
@@ -318,7 +318,9 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     // initial fly above. Mirrors the double-buffered slice swap elsewhere in
     // this file: never withhold what's already available, only replace it
     // once the better version is ready.
-    const completeSphere = await this.waitForAllAxesBoundingSphere();
+    const completeSphere = await this.waitForBoundingSphere(8_000, () =>
+      this.allAxisSlotsReady(),
+    );
     if (completeSphere === null || zoomToken !== this.zoomGeneration) {
       return;
     }
@@ -339,25 +341,18 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     this.viewer.camera.flyToBoundingSphere(sphere, { duration: 0.6 });
   }
 
-  /** First non-degenerate sphere available, however partial. Fast/non-blocking. */
-  private async waitForAnyBoundingSphere(
-    timeoutMs = 2_000,
-  ): Promise<BoundingSphere | null> {
-    const startedAt = Date.now();
-    while (Date.now() - startedAt < timeoutMs) {
-      const sphere = this.computeVisibleBoundingSphere();
-      if (sphere !== null && sphere.radius > 1) {
-        return sphere;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      this.viewer.scene.requestRender();
-    }
-    return this.computeVisibleBoundingSphere();
-  }
-
-  /** Union sphere once every axis slot participating in the selection is ready. */
-  private async waitForAllAxesBoundingSphere(
-    timeoutMs = 8_000,
+  /**
+   * Poll `computeVisibleBoundingSphere()` until `isDone` accepts a
+   * non-degenerate sphere or `timeoutMs` elapses, requesting a render
+   * between attempts (spheres only populate as Cesium's tile loading
+   * advances, which needs render ticks to proceed). Falls back to the best
+   * sphere seen so far (possibly none) once timed out — used both for the
+   * "any sphere, fast" and "every axis ready" waits below, which differ only
+   * in their stop condition and timeout.
+   */
+  private async waitForBoundingSphere(
+    timeoutMs: number,
+    isDone: () => boolean,
   ): Promise<BoundingSphere | null> {
     const startedAt = Date.now();
     let best: BoundingSphere | null = null;
@@ -365,26 +360,27 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       const sphere = this.computeVisibleBoundingSphere();
       if (sphere !== null && sphere.radius > 1) {
         best = sphere;
-        if (this.allAxisSlotsReady()) {
+        if (isDone()) {
           return sphere;
         }
       }
       await new Promise((resolve) => setTimeout(resolve, 50));
       this.viewer.scene.requestRender();
     }
-    // Timed out before every axis was ready — fall back to whichever
-    // (possibly partial) union we already have, rather than nothing.
+    // Timed out before `isDone` was satisfied — fall back to whichever
+    // (possibly partial, possibly null) sphere we already have.
     return best ?? this.computeVisibleBoundingSphere();
   }
 
   /**
    * Whether every axis slot that participates in the current slice
    * selection has a tileset with a resolved bounding sphere. Used so
-   * `waitForAllAxesBoundingSphere` frames the union of all three planes
-   * instead of stopping as soon as the first (possibly small/narrow) one
-   * happens to be ready — otherwise "zoom to object" can end up framing a
-   * single thin plane edge-on, making it fill the view and look far more
-   * extreme (e.g. much "deeper") than the whole slice cube actually is.
+   * `waitForBoundingSphere`'s "every axis ready" wait frames the union of
+   * all three planes instead of stopping as soon as the first (possibly
+   * small/narrow) one happens to be ready — otherwise "zoom to object" can
+   * end up framing a single thin plane edge-on, making it fill the view and
+   * look far more extreme (e.g. much "deeper") than the whole slice cube
+   * actually is.
    */
   private allAxisSlotsReady(): boolean {
     if (!this.supportsSliceSelection) {
@@ -582,6 +578,22 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
 
     const tileset = await Cesium3DTileset.fromUrl(resource, {
       show: true,
+      backFaceCulling: false,
+
+      // This feature flag has major performance implications. We turn it off so that large tilesets are performant.
+      enableCollision: false,
+
+      maximumScreenSpaceError: 16,
+      cullWithChildrenBounds: true,
+      cullRequestsWhileMoving: true,
+      cullRequestsWhileMovingMultiplier: 100,
+      preloadWhenHidden: false,
+      preferLeaves: true,
+      dynamicScreenSpaceError: true,
+      foveatedScreenSpaceError: true,
+      foveatedConeSize: 0.2,
+      foveatedMinimumScreenSpaceErrorRelaxation: 3,
+      foveatedTimeDelay: 0.2,
     });
 
     tileset.imageBasedLighting = new ImageBasedLighting();
@@ -629,7 +641,11 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     }
 
     const numbersByAxis = this.resolveNumbersByAxis(selection);
-    const updates: Array<Promise<void>> = [];
+    // Track, per axis, whether *this* call's own selection is the one that
+    // ended up active — an axis whose update was superseded by a later
+    // selection before/while being applied must not have its (now stale)
+    // neighbourhood prioritized/warmed below.
+    const isAxisSelectionActive = new Map<SeismicSliceAxis, Promise<boolean>>();
 
     for (const axis of SEISMIC_SLICE_AXES) {
       const slot = this.axisSlots.get(axis);
@@ -647,7 +663,8 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
         slot.clear();
         continue;
       }
-      updates.push(
+      isAxisSelectionActive.set(
+        axis,
         slot.setSlices(
           this.originalTilesetJson,
           this.baseUrl,
@@ -658,9 +675,13 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       );
     }
 
-    await Promise.all(updates);
+    await Promise.all(isAxisSelectionActive.values());
     if (selection.mode === 'single') {
       for (const axis of SEISMIC_SLICE_AXES) {
+        const isActive = await (isAxisSelectionActive.get(axis) ?? true);
+        if (!isActive) {
+          continue;
+        }
         const center = selection.single[axis];
         this.prioritizeAxisNeighborhood(axis, center);
         this.warmAxisNeighborhood(axis, center);

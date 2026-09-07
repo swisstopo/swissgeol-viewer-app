@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   createDefaultSliceSelection,
   evenlySpacedSliceNumbers,
@@ -8,7 +8,6 @@ import {
 } from 'src/features/layer/slice/tiles3d-slice.types';
 import { parseTilesetSliceMetadata } from 'src/features/layer/slice/tileset-slice-metadata';
 import { pruneTilesetToSlices } from 'src/features/layer/slice/tileset-slice-prune';
-import { collectSliceContentUris } from 'src/features/layer/slice/tileset-slice-prefetch';
 import type { TilesetSliceMetadata } from 'src/features/layer/slice/tiles3d-slice.types';
 
 describe('evenlySpacedSliceNumbers', () => {
@@ -120,6 +119,43 @@ describe('parseTilesetSliceMetadata', () => {
       }),
     ).toBeNull();
   });
+
+  it('omits URI-only tiles rather than guessing their axis when the tileset is only partially annotated', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const tileset = {
+      root: {
+        metadata: {
+          properties: {
+            u_slices: 2,
+            v_slices: 2,
+            w_slices: 1,
+          },
+        },
+        children: [
+          // Directional metadata present for these two tiles...
+          sliceTile('u', 0, 'a-slice-0.glb'),
+          sliceTile('u', 1, 'a-slice-1.glb'),
+          // ...but these three only carry a URI-encoded slice number, so the
+          // count-based partition (which assumes *all* slices are unclaimed)
+          // cannot be safely applied to them.
+          uriTile('x-slice-2.glb'),
+          uriTile('x-slice-3.glb'),
+          uriTile('x-slice-4.glb'),
+        ],
+      },
+    };
+
+    const metadata = parseTilesetSliceMetadata(tileset);
+    expect(metadata!.axes.crossline?.numbers).toEqual([0, 1]);
+    expect(metadata!.axes.inline).toBeUndefined();
+    expect(metadata!.axes.depth).toBeUndefined();
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        '3 slice tile(s) have no sliceDirection/sliceNumber metadata',
+      ),
+    );
+    warn.mockRestore();
+  });
 });
 
 describe('createDefaultSliceSelection', () => {
@@ -226,25 +262,6 @@ describe('pruneTilesetToSlices', () => {
         'https://ogc.example/tileset.json',
       ),
     ).toThrow(/None of the selected slices/);
-  });
-});
-
-describe('collectSliceContentUris', () => {
-  it('returns absolute uris for matching direction and numbers', () => {
-    const tileset = {
-      root: {
-        children: [
-          sliceTile('u', 0, 'https://cdn.example/a-slice-0.glb'),
-          sliceTile('u', 1, 'https://cdn.example/a-slice-1.glb'),
-          sliceTile('v', 0, 'https://cdn.example/a-slice-2.glb'),
-        ],
-      },
-    };
-
-    expect(collectSliceContentUris(tileset, 'u', new Set([0, 1]))).toEqual([
-      'https://cdn.example/a-slice-0.glb',
-      'https://cdn.example/a-slice-1.glb',
-    ]);
   });
 });
 

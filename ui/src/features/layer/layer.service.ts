@@ -184,17 +184,13 @@ export class LayerService extends BaseService {
     });
 
     // Load (and reload) the layers whenever the session changes.
-    // Wait for LayerApiService too — otherwise a fast session init can call
-    // loadLayers() before the API client is injected (race → no catalog/layers).
     SessionService.inject$()
       .pipe(
         switchMap((service) =>
           service.initialized$.pipe(switchMap(() => service.user$)),
         ),
       )
-      .subscribe(() => {
-        void this.loadLayers();
-      });
+      .subscribe(() => this.loadLayers());
 
     // Propagate changes in the WMTS layers to our local state.
     // This mostly happens due to language changes.
@@ -254,9 +250,6 @@ export class LayerService extends BaseService {
    * @private
    */
   private async loadLayers() {
-    // Session init can outrun LayerApiService.inject() on cold start.
-    this.layerApiService ??= await LayerApiService.inject();
-
     /**
      * Inserts a new layer into the local state.
      *
@@ -666,14 +659,9 @@ export class LayerService extends BaseService {
 
     // Create a controller for the layer and add it to the viewer.
     entry.controller = this.makeController(value);
-    entry.controller.add().then(
-      () => {
-        this.viewer.scene.requestRender();
-      },
-      (error: unknown) => {
-        console.error(`Failed to add layer to viewer: ${layerId}`, error);
-      },
-    );
+    entry.controller.add().then(() => {
+      this.viewer.scene.requestRender();
+    });
 
     // Publish the new state.
     entry.state$.next(value);

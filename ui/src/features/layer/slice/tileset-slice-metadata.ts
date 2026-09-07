@@ -205,14 +205,26 @@ const partitionUriSlicesByCounts = (
   assign('depth', wCount);
 };
 
-export const readTileSliceKey = (
+/**
+ * Resolve a tile's slice identity, preferring `sliceDirection`/`sliceNumber`
+ * metadata and falling back to parsing the slice number out of its content
+ * URI (direction `null` in that case, since a URI alone cannot tell axes
+ * apart). Shared by the prefetch and prune modules, which both need to know
+ * which slice a given tile belongs to.
+ */
+export const resolveSliceIdentity = (
   tile: TilesetTileNode,
-): { direction: OgcSliceDirection; number: number } | null => {
+  uri: string,
+): { direction: OgcSliceDirection | null; number: number } | null => {
   const fromMeta = readSliceIdentity(tile);
   if (fromMeta !== null) {
     return fromMeta;
   }
-  return null;
+  const fromUri = parseSliceFromUri(uri);
+  if (fromUri === null) {
+    return null;
+  }
+  return { direction: null, number: fromUri };
 };
 
 export { DIRECTION_TO_AXIS } from 'src/features/layer/slice/tiles3d-slice.types';
