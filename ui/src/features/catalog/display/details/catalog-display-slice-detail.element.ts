@@ -126,12 +126,22 @@ export class CatalogDisplaySliceDetail extends CoreElement {
   }
 
   disconnectedCallback(): void {
+    clearTimeout(this.preloadBannerHideTimer);
+    // Commit any pending slider value *before* tearing down HUD preloading
+    // state below. `commitDraftSingle()` may call `layerService.update()`,
+    // which emits synchronously (`BehaviorSubject.next()`), re-entrantly
+    // re-running the `layer$` subscription from `connectedCallback()` — its
+    // teardown (via `super.disconnectedCallback()`) has not run yet at this
+    // point. Committing first means that reentrant run still sees
+    // `hudActiveController`/`preloadSubscriptionAxis` pointing at the same
+    // controller, so it is a no-op instead of turning HUD preloading back on.
+    this.cancelScheduledCommit();
+    this.commitDraftSingle();
+
     this.hudActiveController?.setHudActive(false);
     this.hudActiveController = null;
     this.preloadSubscriptionAxis = null;
-    clearTimeout(this.preloadBannerHideTimer);
-    this.cancelScheduledCommit();
-    this.commitDraftSingle();
+
     super.disconnectedCallback();
   }
 

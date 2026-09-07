@@ -378,6 +378,11 @@ export class AxisTilesetSlot {
     // still-running `warmSlices()` loop keeps requesting/building tilesets
     // for an axis that is no longer shown.
     this.warmGeneration += 1;
+    // Drop any selection queued behind an in-flight load. Without this, the
+    // queue-draining loop in `setSlices()` would still apply it once the
+    // current (now-superseded) load finishes, reactivating this axis right
+    // after `clear()` asked for it to stay hidden.
+    this.pending = null;
     if (this.tileset !== null) {
       freezeHidden(this.tileset);
     }

@@ -237,6 +237,53 @@ describe('AxisTilesetSlot', () => {
     expect(FakeCesium3DTileset.fromUrl).toHaveBeenCalled();
   });
 
+  it('clear() during an in-flight load discards a queued pending selection', async () => {
+    const { slot } = makeSlot();
+
+    // Make the first build hang so the second call queues behind it in
+    // `pending`.
+    let resolveFirstBuild!: (tileset: FakeCesium3DTileset) => void;
+    FakeCesium3DTileset.fromUrl.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFirstBuild = (tileset) => resolve(tileset);
+        }),
+    );
+
+    const firstCall = slot.setSlices(
+      {},
+      'https://x/tileset.json',
+      {},
+      'u',
+      [1],
+    );
+    // Queues behind the in-flight first call into `pending`.
+    const queuedCall = slot.setSlices(
+      {},
+      'https://x/tileset.json',
+      {},
+      'u',
+      [2],
+    );
+
+    // The axis is cleared (e.g. it became inactive in Multiple mode) while
+    // the first load is still in flight and a selection is queued behind it.
+    slot.clear();
+
+    resolveFirstBuild(new FakeCesium3DTileset({ show: false }));
+
+    const [isFirstActive, isQueuedActive] = await Promise.all([
+      firstCall,
+      queuedCall,
+    ]);
+
+    // Neither call's selection should end up active: `clear()` must win,
+    // and the queued selection must not be silently applied afterwards.
+    expect(isFirstActive).toBe(false);
+    expect(isQueuedActive).toBe(false);
+    expect(slot.currentTileset).toBeNull();
+  });
+
   it("warmOneSlice does not fast-path a cached tileset that hasn't finished loading", async () => {
     vi.useFakeTimers();
     const { slot } = makeSlot();
