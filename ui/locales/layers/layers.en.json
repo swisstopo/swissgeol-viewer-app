@@ -530,6 +530,12 @@
       "description_url_sa3d_SAM_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SubAlpineMolasse3D_Interim_Report_M3.pdf",
       "description_value_sa3d_WP_profiles_01": "WP3D_Report_M1",
       "description_url_sa3d_WP_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WestPenninic3D_Interim_Report_M1.pdf",
+      "description_swissbedrock": "Model description",
+      "description_value_swissbedrock": "Link to model description",
+      "description_url_swissbedrock": "https://www.swisstopo.admin.ch/en/3d-swissbedrock-en",
+      "release_notes_swissbedrock":"Release notes",
+      "release_notes_value_swissbedrock":"Release notes",
+      "release_notes_url_swissbedrock":"https://www.swisstopo.admin.ch/en/3d-swissbedrock-en",
       "download_01": "Download (.movz)",
       "download_movz_value": "Download (.movz)",
       "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_MOVZ_20260316.zip",
@@ -542,9 +548,15 @@
       "download_03": "Download (.shp)",
       "download_shp_value": "Download (.shp)",
       "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_SHP_20260318.zip",
+      "download_stac_swissbedrock": "Download",
+      "download_stac_value_swissbedrock": "Download",
+      "download_stac_url_swissbedrock": "https://www.swisstopo.admin.ch/en/3d-swissbedrock-en",
       "dataDate": "Data status",
       "contact_url_rocklab_mont-terri": "https://www.mont-terri.ch/en/contact",
-      "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contact"
+      "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contact",
+      "geocat_swissbedrock": "geocat",
+      "geocat_value_swissbedrock": "geocat",
+      "geocat_url_swissbedrock": "https://www.geocat.ch/geonetwork/srv/eng/catalog.search#/metadata/f7836146-3f9a-4807-9011-618800409236"
     },
     "layers": {
       "j3d_horizon": {
@@ -678,6 +690,18 @@
         "description": "3D model of the geological units of the Mont Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "ch.swisstopo.swissbedrock-geotiff-with-terrain": {
+        "title": "swissBEDROCK3D - On BEM",
+        "description": "swissBEDROCK3D is a comprehensive dataset that provides detailed information on Switzerland’s bedrock surface. In addition to the bedrock elevation model (BEM), it includes information on the thickness of unconsolidated deposits (TMUD), details on uncertainty, authors and changes compared to previous versions. The dataset is structured as a multi-band raster dataset (10 x 10 meter raster cell size) with 11 information bands per cell. The model can be viewed as a 3D surface as swissBEDROCK3D or draped on the topography as swissBEDROCK2D. It supports versioning for transparency and traceability and is maintained through automated updates within defined areas using new borehole and mapping information or replacements with third-party contributions. A release notes file is provided detailing the origin and characteristics of the various model components. More information on the methodological overview and workflow can be found in the model description.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.pdf"
+      },
+      "ch.swisstopo.swissbedrock-geotiff": {
+        "title": "swissBEDROCK3D - On terrain",
+        "description": "swissBEDROCK3D is a comprehensive dataset that provides detailed information on Switzerland’s bedrock surface. In addition to the bedrock elevation model (BEM), it includes information on the thickness of unconsolidated deposits (TMUD), details on uncertainty, authors and changes compared to previous versions. The dataset is structured as a multi-band raster dataset (10 x 10 meter raster cell size) with 11 information bands per cell. The model can be viewed as a 3D surface as swissBEDROCK3D or draped on the topography as swissBEDROCK2D. It supports versioning for transparency and traceability and is maintained through automated updates within defined areas using new borehole and mapping information or replacements with third-party contributions. A release notes file is provided detailing the origin and characteristics of the various model components. More information on the methodological overview and workflow can be found in the model description.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.pdf"
       }
     }
   }
