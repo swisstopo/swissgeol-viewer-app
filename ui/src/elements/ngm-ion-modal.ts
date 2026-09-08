@@ -202,6 +202,7 @@ export class NgmIonModal extends CoreElement {
           infoBox: null,
           orderOfProperties: [],
           isPartiallyTransparent: false,
+          sliceSelection: null,
           customProperties: {},
         } satisfies Tiles3dLayer;
         break;

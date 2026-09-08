@@ -80,10 +80,6 @@ export class LayoutSidebar extends CoreElement {
     }
   };
 
-  private readonly handleLexicToggle = () => {
-    this.filterService.toggle();
-  };
-
   private ensureLexicModuleLoaded(): void {
     if (customElements.get('ngm-lexic-filter-panel') === undefined) {
       void import('src/features/lexic/lexic.module');
@@ -136,9 +132,11 @@ export class LayoutSidebar extends CoreElement {
       </ngm-navigation-panel-header>
       ${this.renderPanel()}
     </ngm-navigation-panel>
-    ${this.isLexicOpen
-      ? html`<ngm-lexic-filter-panel></ngm-lexic-filter-panel>`
-      : ''}
+    ${
+      this.isLexicOpen
+        ? html`<ngm-lexic-filter-panel></ngm-lexic-filter-panel>`
+        : ''
+    }
   `;
 
   private readonly renderItems = () => html`

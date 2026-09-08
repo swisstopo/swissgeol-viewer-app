@@ -55,6 +55,15 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
     if (!this.controller.layer.isVisible) {
       return [];
     }
+    // When the camera is underground, the map/basemap surface generally
+    // isn't what's actually under the cursor (e.g. an underground slice), and
+    // the picked position (see `PickService.pickWithMath`'s ellipsoid
+    // fallback for rays that miss the terrain) is a rough approximation, not
+    // a real point on the ground. Querying geo.admin's identify service for
+    // it would be both meaningless and slow (or fail outright), so skip it.
+    if (this.viewer.scene.cameraUnderground) {
+      return [];
+    }
 
     // Flow:
     // 1) Try geo.admin identify/htmlPopup when supported.

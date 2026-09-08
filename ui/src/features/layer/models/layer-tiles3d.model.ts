@@ -1,4 +1,5 @@
 import { BaseLayer, LayerSource, LayerType } from 'src/features/layer';
+import { Tiles3dSliceSelection } from 'src/features/layer/slice';
 
 export interface Tiles3dLayer extends BaseLayer {
   type: LayerType.Tiles3d;
@@ -19,4 +20,10 @@ export interface Tiles3dLayer extends BaseLayer {
    * For partially transparent tiles, fragments that are fully white are discarded.
    */
   isPartiallyTransparent: boolean;
+
+  /**
+   * Slice selection for OGC 3D seismic volumes.
+   * `null` when the layer does not support slices or metadata is not loaded yet.
+   */
+  sliceSelection: Tiles3dSliceSelection | null;
 }

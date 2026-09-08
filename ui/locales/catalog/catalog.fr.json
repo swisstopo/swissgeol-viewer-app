@@ -11,6 +11,7 @@
     "legend": "Légende",
     "download": "Télécharger / Légende",
     "filter": "Ouvrir le filtre",
+    "slice": "Coupes",
     "time_travel": "Voyage dans le temps",
     "remove": "Enlever"
   },
@@ -56,6 +57,27 @@
     "title": "{{ layer }} - Bandes",
     "open": "Afficher les bandes",
     "legend": "Légende"
+  },
+  "slice_window": {
+    "title": "{{ layer }} - Coupes",
+    "mode": {
+      "label": "Mode",
+      "single": "Coupe unique",
+      "multiple": "Coupes multiples",
+      "coming_soon": "bientôt disponible"
+    },
+    "crossline": "Crossline",
+    "inline": "Inline",
+    "depth": "Depth",
+    "amount": "Nombre de coupes",
+    "warning_large": "Il s'agit d'un grand jeu de données. Nous recommandons de limiter le nombre de coupes pour {{axis}} à {{max}}.",
+    "legend": {
+      "relative_amplitude": "Amplitude relative"
+    },
+    "preload": {
+      "loading": "Préchargement des coupes… {{loaded}}/{{total}}",
+      "done": "Coupes en cache ({{total}})"
+    }
   },
   "layers_unavailable": "Certaines couches ne sont pas disponibles ({{sources}}). {{count}} couches ont été masquées du catalogue."
 }

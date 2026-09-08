@@ -129,7 +129,9 @@ export default class Slicer {
             // Imageries don't support clipping.
             return;
           case LayerType.Tiles3d:
-            this.applyClippingPlanesToTileset(controller.tileset);
+            for (const ts of controller.tilesets) {
+              this.applyClippingPlanesToTileset(ts);
+            }
             break;
           case LayerType.Voxel:
             this.applyClippingPlanesToTileset(controller.primitive);
