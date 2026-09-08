@@ -102,7 +102,7 @@ export class NgmCoordinatePopup extends LitElementI18n {
             <tr class="top aligned">
               <td class="key">WGS 84 (lat/lon)</td>
               <td class="value">
-                ${this.coordinatesWgs84[0]}, ${this.coordinatesWgs84[1]}
+                ${this.coordinatesWgs84[1]}, ${this.coordinatesWgs84[0]}
               </td>
             </tr>
             <tr class="top aligned">
