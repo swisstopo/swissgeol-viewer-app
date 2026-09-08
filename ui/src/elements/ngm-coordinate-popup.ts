@@ -49,7 +49,7 @@ export class NgmCoordinatePopup extends LitElementI18n {
 
       const cartCoords = Cartographic.fromCartesian(cartesian);
       this.coordinatesLv95 = formatCartographicAs2DLv95(cartCoords);
-      this.coordinatesWgs84 = [cartCoords.longitude, cartCoords.latitude].map(
+      this.coordinatesWgs84 = [cartCoords.latitude, cartCoords.longitude].map(
         radToDeg,
       );
       this.elevation = this.integerFormat.format(
