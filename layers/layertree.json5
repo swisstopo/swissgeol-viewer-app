@@ -17,7 +17,18 @@
         {
           id: 'geol_maps',
           children: [
-            'ch.swisstopo.geologie-geocover',
+            // Geocover group
+            {
+              id: 'swissgeocover',
+              children: [
+                'ch.swisstopo.geologie-swissgeocover2d_bedrock',
+                'ch.swisstopo.geologie-swissgeocover2d_points',
+                'ch.swisstopo.geologie-swissgeocover2d_lines',
+                'ch.swisstopo.geologie-swissgeocover2d_tecto_lines',
+                'ch.swisstopo.geologie-swissgeocover2d_surfaces',
+                'ch.swisstopo.geologie-swissgeocover2d_unconsolidated',
+              ],
+            },
             'ch.swisstopo.geologie-geologischer_atlas',
             'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
             'ch.swisstopo.geologie-geologische_karte',
@@ -26,7 +37,7 @@
             'ch.swisstopo.geologie-geotechnik-gk500-genese',
           ],
         },
-
+        /* Temporarely switched off
         // 02 - Lexic augmented layers
         {
           id: 'lexic_augmented_layers',
@@ -39,7 +50,7 @@
             'swisstopo:tecto_units_augm',
           ],
         },
-
+ */
         // 02 - Thematic_maps
         {
           id: 'thematic_maps',
@@ -379,6 +390,15 @@
                 'seismic_2d_2023_23SIG_A_012',
                 'seismic_2d_2023_23SIG_A_101',
                 'seismic_2d_2023_23SIG_A_102',
+              ],
+            },
+            {
+              id: '2d_survey_24GES',
+              children: [
+                'seismic_2d_24_GES_01',
+                'seismic_2d_24_GES_02',
+                'seismic_2d_24_GES_03',
+                'seismic_2d_24_GES_04',
               ],
             },
           ],

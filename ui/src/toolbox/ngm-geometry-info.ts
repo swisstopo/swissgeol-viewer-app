@@ -235,9 +235,11 @@ export class NgmGeometryInfo extends LitElementI18n {
         </div>
         <div ?hidden=${geom.type === 'point'}>
           <div class="ngm-geom-info-label">
-            ${geom.type === 'line'
-              ? i18next.t('obj_info_length_label')
-              : i18next.t('obj_info_perimeter_label')}
+            ${
+              geom.type === 'line'
+                ? i18next.t('obj_info_length_label')
+                : i18next.t('obj_info_perimeter_label')
+            }
           </div>
           <div class="ngm-geom-info-value">${geom.perimeter ?? '-'} km</div>
         </div>
@@ -248,21 +250,23 @@ export class NgmGeometryInfo extends LitElementI18n {
           <div class="ngm-geom-info-value">${geom.numberOfSegments ?? ''}</div>
         </div>
         <div>
-          ${geom.pointSymbol
-            ? html` <div
-                class="ngm-geom-symbol"
-                style=${styleMap({
-                  '-webkit-mask-image': `url('${geom.pointSymbol}')`,
-                  'mask-image': `url('${geom.pointSymbol}')`,
-                  backgroundColor: geom.color?.toCssColorString(),
-                })}
-              ></div>`
-            : html` <div
-                class="ngm-geom-color"
-                style=${styleMap({
-                  background: geom.color?.withAlpha(1).toCssColorString(),
-                })}
-              ></div>`}
+          ${
+            geom.pointSymbol
+              ? html` <div
+                  class="ngm-geom-symbol"
+                  style=${styleMap({
+                    '-webkit-mask-image': `url('${geom.pointSymbol}')`,
+                    'mask-image': `url('${geom.pointSymbol}')`,
+                    backgroundColor: geom.color?.toCssColorString(),
+                  })}
+                ></div>`
+              : html` <div
+                  class="ngm-geom-color"
+                  style=${styleMap({
+                    background: geom.color?.withAlpha(1).toCssColorString(),
+                  })}
+                ></div>`
+          }
         </div>
       </div>
     `;
@@ -284,8 +288,9 @@ export class NgmGeometryInfo extends LitElementI18n {
         ${`${this.geometry.name}`}
         <div class="ngm-geom-actions">
           <div
-            ?hidden=${this.geometry.type === 'point' ||
-            this.geometry.type === 'polygon'}
+            ?hidden=${
+              this.geometry.type === 'point' || this.geometry.type === 'polygon'
+            }
             title=${i18next.t('tbx_slicing')}
             class="ngm-slicing-icon ${classMap({ active: this.sliceActive })}"
             @click=${() => this.onSliceClick()}
@@ -297,24 +302,28 @@ export class NgmGeometryInfo extends LitElementI18n {
             title=${i18next.t('tbx_extrusion')}
             @click=${() => this.toggleGeomVolume(this.geometry!)}
           ></div>
-          ${this.noEdit
-            ? ''
-            : html` <div
-                class="ngm-icon ngm-edit-icon ${classMap({
-                  active: this.editing,
-                  disabled: !this.geometry.editable,
-                })}"
-                title=${i18next.t('tbx_edit_btn')}
-                @click=${() => this.onEditClick()}
-              ></div>`}
+          ${
+            this.noEdit
+              ? ''
+              : html` <div
+                  class="ngm-icon ngm-edit-icon ${classMap({
+                    active: this.editing,
+                    disabled: !this.geometry.editable,
+                  })}"
+                  title=${i18next.t('tbx_edit_btn')}
+                  @click=${() => this.onEditClick()}
+                ></div>`
+          }
         </div>
         <div class="ngm-divider"></div>
-        ${this.editing
-          ? html` <ngm-geometry-edit
-              .entity=${this.geomEntity}
-              .volumeShowed=${this.geometry.volumeShowed}
-            ></ngm-geometry-edit>`
-          : this.infoTemplate}
+        ${
+          this.editing
+            ? html` <ngm-geometry-edit
+                .entity=${this.geomEntity}
+                .volumeShowed=${this.geometry.volumeShowed}
+              ></ngm-geometry-edit>`
+            : this.infoTemplate
+        }
       </div>
       ${dragArea}
     `;

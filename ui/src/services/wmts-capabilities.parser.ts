@@ -71,7 +71,7 @@ export function parseWmtsCapabilities(
       layer.querySelector('Dimension > Default')?.textContent ?? null;
     const format = getDirectChildText(layer, 'Format');
     const tileMatrixSet = resolveWmtsTileMatrixSet(layer);
-    const style = resolveWmtsStyle(layer);
+    const style = resolveWmtsStyle(layer, layerName);
     if (!format) {
       continue;
     }
@@ -89,6 +89,8 @@ export function parseWmtsCapabilities(
       tileMatrixSet: tileMatrixSet ?? undefined,
       hasTimeDimension: timestamps.length > 0,
     });
+
+    const wgs84Extent = resolveWgs84BoundingBox(layer);
 
     configs.push({
       type: LayerType.Wmts,
@@ -110,6 +112,7 @@ export function parseWmtsCapabilities(
       customProperties: {
         wmtsStyle: style,
         tileMatrixSet: tileMatrixSet ?? 'EPSG:3857',
+        ...(wgs84Extent ? { wgs84Extent } : {}),
       },
       ogcSource: null,
     });
@@ -144,13 +147,30 @@ function resolveWmtsGetTileBaseUrl(xml: Document): string | null {
   return getHref(get);
 }
 
-function resolveWmtsStyle(layer: Element): string {
-  const styles = layer.getElementsByTagNameNS('*', 'Style');
-  const preferred = Array.from(styles).find(
-    (style) => style.getAttribute('isDefault') === 'true',
+function resolveWmtsStyle(layer: Element, layerName: string): string {
+  const styles = Array.from(layer.getElementsByTagNameNS('*', 'Style'));
+  const identifiers = styles
+    .map((style) => ({
+      node: style,
+      identifier: getDirectChildText(style, 'Identifier') ?? '',
+    }))
+    .filter((entry) => entry.identifier.length > 0);
+
+  // Prefer a style whose identifier matches the layer name exactly.
+  // This is the named/thematic style (e.g. 'swisstopo:gc_bedrock' for layer 'swisstopo:gc_bedrock'),
+  // and is more reliable than isDefault=true which may point to a generic style (e.g. 'polygon', '_empty').
+  const namedMatch = identifiers.find(
+    ({ identifier }) => identifier === layerName,
   );
-  const selected = preferred ?? styles[0] ?? null;
-  return getDirectChildText(selected, 'Identifier') ?? 'default';
+  if (namedMatch != null) {
+    return namedMatch.identifier;
+  }
+
+  const preferred = identifiers.find(
+    ({ node }) => node.getAttribute('isDefault') === 'true',
+  );
+  const selected = preferred ?? identifiers[0] ?? null;
+  return selected?.identifier ?? 'default';
 }
 
 function resolveWmtsTileMatrixSet(layer: Element): string | null {
@@ -291,4 +311,26 @@ function makeTimes(
     current: currentValue,
     all: all ?? [currentValue],
   };
+}
+
+/**
+ * Extracts the WGS84 bounding box from a WMTS layer element.
+ * Returns a "west,south,east,north" string or `null` if not available.
+ */
+function resolveWgs84BoundingBox(layer: Element): string | null {
+  const bbox = layer.getElementsByTagNameNS('*', 'WGS84BoundingBox')[0];
+  if (!bbox) {
+    return null;
+  }
+  const lower = bbox.getElementsByTagNameNS('*', 'LowerCorner')[0]?.textContent;
+  const upper = bbox.getElementsByTagNameNS('*', 'UpperCorner')[0]?.textContent;
+  if (!lower || !upper) {
+    return null;
+  }
+  const [west, south] = lower.trim().split(/\s+/);
+  const [east, north] = upper.trim().split(/\s+/);
+  if (!west || !south || !east || !north) {
+    return null;
+  }
+  return `${west},${south},${east},${north}`;
 }

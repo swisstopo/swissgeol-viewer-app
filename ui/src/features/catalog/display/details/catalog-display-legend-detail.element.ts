@@ -86,11 +86,13 @@ export class CatalogDisplayInfoBox extends CoreElement {
       >
         ${text}
       </p>
-      ${this.shortenInfoText
-        ? html`<span @click=${this.extendInfoText} class="extend-info-text">
-            ${i18next.t('layers:info_box.labels.extendInfoText')}
-          </span>`
-        : nothing}`;
+      ${
+        this.shortenInfoText
+          ? html`<span @click=${this.extendInfoText} class="extend-info-text">
+              ${i18next.t('layers:info_box.labels.extendInfoText')}
+            </span>`
+          : nothing
+      }`;
   };
 
   private readonly renderLegend = () => {

@@ -47,10 +47,12 @@ export class NgmGstModal extends LitElementI18n {
     return html`
       <div class="ngm-gst-modal ui large modal">
         <div class="content">
-          ${this.imageUrl
-            ? html`
+          ${
+            this.imageUrl
+              ? html`
             <embed src="${this.imageUrl}"></embed>`
-            : html``}
+              : html``
+          }
         </div>
         <div class="actions">
           <div class="ui cancel button ngm-cancel-btn">

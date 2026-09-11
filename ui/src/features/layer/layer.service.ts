@@ -184,13 +184,17 @@ export class LayerService extends BaseService {
     });
 
     // Load (and reload) the layers whenever the session changes.
+    // Wait for LayerApiService too — otherwise a fast session init can call
+    // loadLayers() before the API client is injected (race → no catalog/layers).
     SessionService.inject$()
       .pipe(
         switchMap((service) =>
           service.initialized$.pipe(switchMap(() => service.user$)),
         ),
       )
-      .subscribe(() => this.loadLayers());
+      .subscribe(() => {
+        void this.loadLayers();
+      });
 
     // Propagate changes in the WMTS layers to our local state.
     // This mostly happens due to language changes.
@@ -250,6 +254,9 @@ export class LayerService extends BaseService {
    * @private
    */
   private async loadLayers() {
+    // Session init can outrun LayerApiService.inject() on cold start.
+    this.layerApiService ??= await LayerApiService.inject();
+
     /**
      * Inserts a new layer into the local state.
      *
@@ -276,7 +283,9 @@ export class LayerService extends BaseService {
           state$: previousLayer.state$,
         };
         this.layers.set(layer.id, updated);
-        updated.controller?.update(layer);
+        updated.controller?.update(layer).catch((error: unknown) => {
+          console.error(`Failed to update layer: ${layer.id}`, error);
+        });
         updated.state$.next(layer);
       }
     };
@@ -412,14 +421,19 @@ export class LayerService extends BaseService {
       };
 
       // Update the existing background controller and add it to the viewer.
-      await this._background.controller.update(layer);
-      await this._background.controller.add();
+      try {
+        await this._background.controller.update(layer);
+        await this._background.controller.add();
 
-      // Publish the new background state.
-      this._background.state$.next(layer);
-
-      // Mark the layers as loaded.
-      this.hasLayers$.next(true);
+        // Publish the new background state.
+        this._background.state$.next(layer);
+      } catch (error) {
+        console.error('Failed to initialize background layer', error);
+      } finally {
+        // Mark the layers as loaded, even if the background failed to
+        // initialize, so that the rest of the app isn't stuck waiting forever.
+        this.hasLayers$.next(true);
+      }
     });
   }
 
@@ -659,9 +673,14 @@ export class LayerService extends BaseService {
 
     // Create a controller for the layer and add it to the viewer.
     entry.controller = this.makeController(value);
-    entry.controller.add().then(() => {
-      this.viewer.scene.requestRender();
-    });
+    entry.controller.add().then(
+      () => {
+        this.viewer.scene.requestRender();
+      },
+      (error: unknown) => {
+        console.error(`Failed to add layer to viewer: ${layerId}`, error);
+      },
+    );
 
     // Publish the new state.
     entry.state$.next(value);
@@ -833,9 +852,14 @@ export class LayerService extends BaseService {
     // Apply the update to the controller.
     (entry.controller as BaseLayerController<AnyLayer> | null)
       ?.update(updatedLayer)
-      .then(() => {
-        this.viewer.scene.requestRender();
-      });
+      .then(
+        () => {
+          this.viewer.scene.requestRender();
+        },
+        (error: unknown) => {
+          console.error(`Failed to update layer: ${String(id)}`, error);
+        },
+      );
 
     // Publish the new state.
     (entry.state$ as BehaviorSubject<AnyLayer>).next(updatedLayer);

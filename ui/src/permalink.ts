@@ -154,6 +154,10 @@ export function setCesiumToolbarParam(value: boolean) {
   setURLSearchParams(params);
 }
 
+export function getZoomDebugParam(): boolean {
+  return getURLSearchParams().has('zoomDebug');
+}
+
 export function syncStoredView(
   stored: string,
   skipParams: string[] = [
@@ -183,9 +187,7 @@ export function setPermalink(permalink: string) {
 }
 
 export function getTopicOrProject():
-  | TopicParamSubject
-  | ProjectParamSubject
-  | undefined {
+  TopicParamSubject | ProjectParamSubject | undefined {
   const params = getURLSearchParams();
   const topicId = params.get(TOPIC_PARAM);
   const projectId = params.get(PROJECT_PARAM);

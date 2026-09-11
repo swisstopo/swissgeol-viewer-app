@@ -33,6 +33,7 @@ import { dragArea } from './helperElements';
 import type { LockType } from './ngm-cam-configuration';
 import { consume } from '@lit/context';
 import { ControlsService } from 'src/features/controls/controls.service';
+import { CameraControllerService } from 'src/features/controls/camera-controller.service';
 import {
   ButtonGesture,
   ButtonGestureEvent,
@@ -56,6 +57,9 @@ export class NgmNavTools extends CoreElement {
 
   @consume({ context: ControlsService.context() })
   accessor controlsService!: ControlsService;
+
+  @consume({ context: CameraControllerService.context() })
+  accessor cameraControllerService!: CameraControllerService;
 
   @consume({ context: GestureControlsService.context() })
   accessor gestureControlsService!: GestureControlsService;
@@ -381,7 +385,7 @@ export class NgmNavTools extends CoreElement {
 
   stopTracking() {
     const { viewer } = this.cesiumService;
-    viewer.scene.screenSpaceCameraController.enableInputs = false;
+    this.cameraControllerService.enableInputs = false;
     viewer.scene.camera.lookAtTransform(Matrix4.IDENTITY);
   }
 
@@ -393,7 +397,7 @@ export class NgmNavTools extends CoreElement {
     lookAtPoint(center, camera);
     this.toggleAxis(center);
 
-    viewer.scene.screenSpaceCameraController.enableInputs = true;
+    this.cameraControllerService.enableInputs = true;
 
     if (this.gestureSubscription === null) {
       this.gestureSubscription = this.gestureControlsService.mouseMove$

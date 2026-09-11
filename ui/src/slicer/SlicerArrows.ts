@@ -19,6 +19,7 @@ import {
   Transforms,
   Viewer,
 } from 'cesium';
+import { CameraControllerService } from 'src/features/controls/camera-controller.service';
 import {
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
   MAX_SCALE_FACTOR,
@@ -105,6 +106,8 @@ export default class SlicerArrows {
   arrowConfiguration: ArrowConfiguration;
 
   private enableInputs = true;
+  private readonly cameraControllerService =
+    CameraControllerService.get() as CameraControllerService;
 
   private readonly scratchBoundingSphere_ = new BoundingSphere();
   private readonly scratchArrowPosition2d_ = new Cartesian2();
@@ -182,9 +185,8 @@ export default class SlicerArrows {
     );
     if (pickedArrow) {
       this.selectedArrow = pickedArrow.shaft;
-      this.enableInputs =
-        this.viewer.scene.screenSpaceCameraController.enableInputs;
-      this.viewer.scene.screenSpaceCameraController.enableInputs = false;
+      this.enableInputs = this.cameraControllerService.enableInputs;
+      this.cameraControllerService.enableInputs = false;
       this.eventHandler!.setInputAction(
         (evt) => this.onMouseMove(evt),
         ScreenSpaceEventType.MOUSE_MOVE,
@@ -195,8 +197,7 @@ export default class SlicerArrows {
   onLeftUp() {
     if (this.selectedArrow) {
       this.selectedArrow = null;
-      this.viewer.scene.screenSpaceCameraController.enableInputs =
-        this.enableInputs;
+      this.cameraControllerService.enableInputs = this.enableInputs;
       // for better performance
       this.eventHandler!.setInputAction(
         debounce((evt) => this.onMouseMove(evt), 250),

@@ -1,9 +1,37 @@
 {
   "items": {
     "Layers": "Dati Visualizzati",
+    "Lexic": "Lexic",
     "Tools": "Strumenti",
     "Share": "Condividi",
     "Projects": "Progetti",
     "Settings": "Impostazioni"
+  },
+  "lexic": {
+    "datasetLabel": "Set di dati",
+    "layerPlaceholder": "Seleziona dataset",
+    "loadingLayers": "Caricamento dataset...",
+    "filter": {
+      "reset": "Ripristina",
+      "addFilter": "Aggiungi filtro",
+      "or": "O",
+      "and": "E",
+      "dialogTitle": "Filtro – {{title}}",
+      "searchPlaceholder": "Cerca {{title}} ...",
+      "includeNarrowers": "Includi sottocategorie (Children)",
+      "cancel": "Annulla",
+      "applyFilter": "Aggiungi filtro",
+      "noResults": "Nessun risultato trovato",
+      "opacity": "Opacità del filtro",
+      "resetAll": "Ripristina tutti i filtri",
+      "loadError": "Errore durante il caricamento"
+    },
+    "errors": {
+      "loadDatasets": "Impossibile caricare i set di dati Lexic disponibili.",
+      "generateWmsRequest_one": "Impossibile applicare il filtro Lexic selezionato alla mappa.",
+      "generateWmsRequest_other": "Impossibile applicare i filtri Lexic selezionati alla mappa.",
+      "loadFilterTerms": "Impossibile caricare i termini del filtro Lexic.",
+      "loadTiles": "Impossibile caricare le tessere della mappa del filtro Lexic."
+    }
   }
 }

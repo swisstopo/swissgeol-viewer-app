@@ -11,6 +11,7 @@
     "legend": "Legend",
     "download": "Download / Legend",
     "filter": "Open Filter",
+    "slice": "Slices",
     "time_travel": "Journey through time",
     "remove": "Remove"
   },
@@ -56,6 +57,27 @@
     "title": "{{ layer }} - Bands",
     "open": "Show bands",
     "legend": "Legend"
+  },
+  "slice_window": {
+    "title": "{{ layer }} - Slices",
+    "mode": {
+      "label": "Mode",
+      "single": "Single Slice",
+      "multiple": "Multiple Slices",
+      "coming_soon": "coming soon"
+    },
+    "crossline": "Crossline",
+    "inline": "Inline",
+    "depth": "Depth",
+    "amount": "Amount of Slices",
+    "warning_large": "This is a large dataset. We recommend limiting the amount of slices for {{axis}} to {{max}}.",
+    "legend": {
+      "relative_amplitude": "Relative Amplitude"
+    },
+    "preload": {
+      "loading": "Preloading slices… {{loaded}}/{{total}}",
+      "done": "Slices cached ({{total}})"
+    }
   },
   "layers_unavailable": "Some layers are unavailable ({{sources}}). {{count}} layers were hidden from the catalog."
 }

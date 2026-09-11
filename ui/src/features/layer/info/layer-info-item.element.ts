@@ -2,10 +2,11 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { css, html, TemplateResult } from 'lit';
 import {
+  isLayerInfoLexicTerm,
   isLayerInfoUrl,
   LayerInfo,
   LayerInfoAttribute,
-  LayerInfoUrl,
+  LayerInfoAttributeValue,
   LayerInfoValue,
 } from 'src/features/layer/info/layer-info.model';
 import i18next from 'i18next';
@@ -13,7 +14,12 @@ import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
 import { TranslationKey } from 'src/models/translation-key.model';
 import { consume } from '@lit/context';
-import { getLayerAttributeName, Layer, LayerService } from 'src/features/layer';
+import {
+  getTranslationKeyForLayerAttributeName,
+  Layer,
+  LayerService,
+} from 'src/features/layer';
+import { isLexicTermUrl } from 'src/features/lexic/lexic-url';
 
 const numberFormat = new Intl.NumberFormat('de-CH', {
   maximumFractionDigits: 20,
@@ -109,9 +115,32 @@ export class LayerInfoItem extends CoreElement {
 
   private makeCustomAttributes(): LayerInfoAttribute[] {
     return Object.entries(this.layer.customProperties).map(([key, value]) => ({
-      key: getLayerAttributeName(this.layer, key),
+      key: getTranslationKeyForLayerAttributeName(this.layer, key),
       value,
     }));
+  }
+
+  private hasLexicService(layer: Layer): boolean {
+    return 'service' in layer && layer.service === 'lexic';
+  }
+
+  private normalizeAttributeValue(
+    value: LayerInfoAttributeValue,
+  ): LayerInfoAttributeValue {
+    if (typeof value === 'string') {
+      if (isLexicTermUrl(value)) {
+        return { type: 'lexic-term', termUrl: value };
+      }
+      if (value.startsWith('https://') || value.startsWith('http://')) {
+        return { url: value };
+      }
+    }
+    return value;
+  }
+
+  private isLinkedAttribute(attribute: LayerInfoAttribute): boolean {
+    const normalized = this.normalizeAttributeValue(attribute.value);
+    return isLayerInfoUrl(normalized) || isLayerInfoLexicTerm(normalized);
   }
 
   readonly render = () => {
@@ -119,6 +148,9 @@ export class LayerInfoItem extends CoreElement {
       ...this.info.attributes,
       ...this.makeCustomAttributes(),
     ];
+    const visibleAttributes = this.hasLexicService(this.layer)
+      ? attributes.filter((attribute) => this.isLinkedAttribute(attribute))
+      : attributes;
     return html`
       <label class="toggle">
         <input type="checkbox" />
@@ -133,7 +165,7 @@ export class LayerInfoItem extends CoreElement {
         <div class="attributes">
           <ul class="attribute-names">
             ${repeat(
-              attributes,
+              visibleAttributes,
               (it) => it.key,
               (it) => {
                 const translatedKey = translate(it.key);
@@ -146,15 +178,19 @@ export class LayerInfoItem extends CoreElement {
           <div class="divider" @mousedown="${this.startResizing}"></div>
           <ul class="attribute-values">
             ${repeat(
-              attributes,
+              visibleAttributes,
               (it) => it.key,
               (it) => {
-                const value: LayerInfoValue | LayerInfoUrl =
-                  typeof it.value === 'string' &&
-                  (it.value.startsWith('https://') ||
-                    it.value.startsWith('http://'))
-                    ? { url: it.value }
-                    : it.value;
+                const value = this.normalizeAttributeValue(it.value);
+                if (isLayerInfoLexicTerm(value)) {
+                  return html`
+                    <li>
+                      <ngm-lexic-term-link
+                        .termUrl=${value.termUrl}
+                      ></ngm-lexic-term-link>
+                    </li>
+                  `;
+                }
                 if (isLayerInfoUrl(value)) {
                   return html`
                     <li>

@@ -70,16 +70,18 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         >
           ${i18next.t('dashboard_share_topic_email')}
         </a>
-        ${isProject(this.topicOrProject) &&
-        this.topicOrProject.owner.email !== this.userEmail
-          ? ''
-          : html` <div
-              class="item"
-              ?hidden=${this.activeTab === 'topics'}
-              @click=${() => (this.deleteWarningModal.show = true)}
-            >
-              ${i18next.t('delete')}
-            </div>`}
+        ${
+          isProject(this.topicOrProject) &&
+          this.topicOrProject.owner.email !== this.userEmail
+            ? ''
+            : html` <div
+                class="item"
+                ?hidden=${this.activeTab === 'topics'}
+                @click=${() => (this.deleteWarningModal.show = true)}
+              >
+                ${i18next.t('delete')}
+              </div>`
+        }
       </div>
     `;
   }
@@ -250,9 +252,11 @@ export class NgmProjectTopicOverview extends LitElementI18n {
               ${i18next.t('dashboard_description')}
             </div>
             <div class="ngm-proj-description-content">
-              ${this.topicOrProject.description
-                ? translated(this.topicOrProject.description)
-                : ''}
+              ${
+                this.topicOrProject.description
+                  ? translated(this.topicOrProject.description)
+                  : ''
+              }
             </div>
           </div>
         </div>
@@ -311,14 +315,16 @@ export class NgmProjectTopicOverview extends LitElementI18n {
           .viewMode=${true}
         ></ngm-project-assets-section>
       </div>
-      ${!project
-        ? ''
-        : html`
-            <div class="ngm-divider"></div>
-            <ngm-project-members-section
-              .project=${project}
-            ></ngm-project-members-section>
-          `}
+      ${
+        !project
+          ? ''
+          : html`
+              <div class="ngm-divider"></div>
+              <ngm-project-members-section
+                .project=${project}
+              ></ngm-project-members-section>
+            `
+      }
       <div class="ngm-divider"></div>
       <div
         class="ngm-label-btn"

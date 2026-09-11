@@ -1,9 +1,37 @@
 {
   "items": {
     "Layers": "Data displayed",
+    "Lexic": "Lexic",
     "Tools": "Tools",
     "Share": "Share",
     "Projects": "Projects",
     "Settings": "Settings"
+  },
+  "lexic": {
+    "datasetLabel": "Dataset",
+    "layerPlaceholder": "Select dataset",
+    "loadingLayers": "Loading datasets...",
+    "filter": {
+      "reset": "Reset",
+      "addFilter": "Add filter",
+      "or": "OR",
+      "and": "AND",
+      "dialogTitle": "Filter – {{title}}",
+      "searchPlaceholder": "{{title}} search ...",
+      "includeNarrowers": "Include Narrowers (Children)",
+      "cancel": "Cancel",
+      "applyFilter": "Add filter",
+      "noResults": "No results found",
+      "opacity": "Filter opacity",
+      "resetAll": "Reset all filters",
+      "loadError": "Error loading results"
+    },
+    "errors": {
+      "loadDatasets": "Could not load the available Lexic datasets.",
+      "generateWmsRequest_one": "Could not apply the selected Lexic filter to the map.",
+      "generateWmsRequest_other": "Could not apply the selected Lexic filters to the map.",
+      "loadFilterTerms": "Could not load the Lexic filter terms.",
+      "loadTiles": "Could not load the Lexic filter map tiles."
+    }
   }
 }

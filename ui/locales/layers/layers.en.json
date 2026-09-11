@@ -67,6 +67,12 @@
     "ch.swisstopo.geologie-generalkarte-ggk200": "General Geol. Map 200",
     "ch.swisstopo.geologie-generalkarte-ggk200.metadata": "Division GGK 200 Raster",
     "ch.swisstopo.geologie-geocover": "GeoCover - Vector Datasets",
+    "ch.swisstopo.geologie-swissgeocover2d_bedrock": "Bedrock swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_points": "Geological points swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_lines": "Geological lines swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_tecto_lines": "Tectonic lines swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_surfaces": "Geological surfaces swissGEOCOVER2D",
+    "ch.swisstopo.geologie-swissgeocover2d_unconsolidated": "Unco deposits swissGEOCOVER2D",
     "ch.swisstopo.geologie-geocover.metadata": "Division GeoCover",
     "ch.swisstopo.geologie-geodaesie-bouguer_anomalien": "Bouguer anomalies 500",
     "ch.swisstopo.geologie-geodaesie-isostatische_anomalien": "Isostatic anomalies 500",
@@ -167,11 +173,15 @@
     "seismic_2d_2023_23SIG_A_102": "23SIG_A_102",
     "seismic_2d_21_egeo_001": "21-EGEO-001",
     "seismic_2d_21_egeo_002": "21-EGEO-002",
+    "seismic_2d_24_GES_01": "24_GES_01",
+    "seismic_2d_24_GES_02": "24_GES_02",
+    "seismic_2d_24_GES_03": "24_GES_03",
+    "seismic_2d_24_GES_04": "24_GES_04",
     "seismic_3d_E11": "Eclépens, 3D 2023",
     "swiss_buildings": "swissBUILDSINGS3D",
-    "swisstopo.gc_bedrock": "GC_BEDROCK",
-    "swisstopo.gc_unco_deposits": "GC_UNCO_DEPOSITS",
-    "swisstopo.tecto_units_augm": "Tectonic Units",
+    "swisstopo.gc_bedrock": "swissGEOCOVER2D Bedrock augmented",
+    "swisstopo.gc_unco_deposits": "swissGEOCOVER2D Unconsolidated Deposits augmented",
+    "swisstopo.tecto_units_augm": "Tectonic 500 augmented",
     "temp_depth_1000": "Temperatures 1000 m depth",
     "temp_depth_1500": "Temperatures 1500 m depth",
     "temp_depth_2000": "Temperatures 2000 m depth",
@@ -215,9 +225,11 @@
     "voxel_visp_modelling_units": "Unconsolidated rocks Visp - Modelling units"
   },
   "groups": {
+    "swissgeocover": "swissGEOCOVER2D",
     "2d_reflexionseismics": "2D Reflection seismics",
     "2d_survey_2023_23SIG_A": "Survey Geneva - 23SIG_A",
     "2d_survey_EGEO21": "Survey Vaud - 2EGEO21",
+    "2d_survey_24GES": "Survey Haute-Sorne - 24-GES",
     "3d_models": "3D models",
     "3d_reflexionseismics": "3D Reflection seismics",
     "aar3d_aar-massif-horizons": "Aar3D - Horizons",
@@ -281,6 +293,8 @@
     "mont-terri-rocklab-layers": "Mont Terri Rock Lab"
   },
   "properties": {
+    "chrono_from_lexic": "Chronostratigraphy from",
+    "chrono_to_lexic": "Chronostratigraphy to",
     "d_ANZAHL_S": "Number of tracks",
     "d_AUSSER_B": "Out of service",
     "d_BEFAHRBA": "Accessibility",
@@ -295,6 +309,7 @@
     "d_VERKEHRS": "Means of transport",
     "d_WANDERWE": "Hiking trail",
     "d_ZAHNRADB": "Rack railway",
+    "details_url": "URL",
     "GEWISS_NR": "GEWISS-No.",
     "GWL_NR": "GWL-No.",
     "KANTGEWNR": "Cant. Water-No.",
@@ -306,9 +321,13 @@
     "horizon_modelled": "Horizon",
     "id": "ID",
     "kind": "Type",
+    "litho_lexic_1": "Lithology 1",
+    "litho_lexic_2": "Lithology 2",
+    "litho_lexic_3": "Lithology 3",
+    "litstrat_lexic": "Lithostratigraphy",
     "source": "Source",
+    "tecto_lexic": "Tectonic Units",
     "version": "Version",
-    "details_url": "URL",
     "Voxel": {
       "cell_center": "Cell Center",
       "logk": "Hydraulic Conductivity",
@@ -511,6 +530,12 @@
       "description_url_sa3d_SAM_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SubAlpineMolasse3D_Interim_Report_M3.pdf",
       "description_value_sa3d_WP_profiles_01": "WP3D_Report_M1",
       "description_url_sa3d_WP_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WestPenninic3D_Interim_Report_M1.pdf",
+      "description_swissbedrock": "Model description",
+      "description_value_swissbedrock": "Link to model description",
+      "description_url_swissbedrock": "https://www.swisstopo.admin.ch/en/3d-swissbedrock-en",
+      "release_notes_swissbedrock":"Release notes",
+      "release_notes_value_swissbedrock":"Release notes",
+      "release_notes_url_swissbedrock":"https://www.swisstopo.admin.ch/en/3d-swissbedrock-en",
       "download_01": "Download (.movz)",
       "download_movz_value": "Download (.movz)",
       "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_MOVZ_20260316.zip",
@@ -523,9 +548,15 @@
       "download_03": "Download (.shp)",
       "download_shp_value": "Download (.shp)",
       "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_SHP_20260318.zip",
+      "download_stac_swissbedrock": "Download",
+      "download_stac_value_swissbedrock": "Download",
+      "download_stac_url_swissbedrock": "https://www.swisstopo.admin.ch/en/3d-swissbedrock-en",
       "dataDate": "Data status",
       "contact_url_rocklab_mont-terri": "https://www.mont-terri.ch/en/contact",
-      "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contact"
+      "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contact",
+      "geocat_swissbedrock": "geocat",
+      "geocat_value_swissbedrock": "geocat",
+      "geocat_url_swissbedrock": "https://www.geocat.ch/geonetwork/srv/eng/catalog.search#/metadata/f7836146-3f9a-4807-9011-618800409236"
     },
     "layers": {
       "j3d_horizon": {
@@ -619,7 +650,8 @@
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.pdf"
       },
       "sa3d_WP_faults_01": {
-        "title": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the western portion of the Penninic tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
+        "title": "West Penninic 3D (WP) – Milestone 1 - 3D geological model of the Swiss Alps",
+        "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the western portion of the Penninic tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.pdf"
       },
@@ -658,6 +690,18 @@
         "description": "3D model of the geological units of the Mont Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "ch.swisstopo.swissbedrock-geotiff-with-terrain": {
+        "title": "swissBEDROCK3D - On BEM",
+        "description": "swissBEDROCK3D is a comprehensive dataset that provides detailed information on Switzerland’s bedrock surface. In addition to the bedrock elevation model (BEM), it includes information on the thickness of unconsolidated deposits (TMUD), details on uncertainty, authors and changes compared to previous versions. The dataset is structured as a multi-band raster dataset (10 x 10 meter raster cell size) with 11 information bands per cell. The model can be viewed as a 3D surface as swissBEDROCK3D or draped on the topography as swissBEDROCK2D. It supports versioning for transparency and traceability and is maintained through automated updates within defined areas using new borehole and mapping information or replacements with third-party contributions. A release notes file is provided detailing the origin and characteristics of the various model components. More information on the methodological overview and workflow can be found in the model description.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.pdf"
+      },
+      "ch.swisstopo.swissbedrock-geotiff": {
+        "title": "swissBEDROCK3D - On terrain",
+        "description": "swissBEDROCK3D is a comprehensive dataset that provides detailed information on Switzerland’s bedrock surface. In addition to the bedrock elevation model (BEM), it includes information on the thickness of unconsolidated deposits (TMUD), details on uncertainty, authors and changes compared to previous versions. The dataset is structured as a multi-band raster dataset (10 x 10 meter raster cell size) with 11 information bands per cell. The model can be viewed as a 3D surface as swissBEDROCK3D or draped on the topography as swissBEDROCK2D. It supports versioning for transparency and traceability and is maintained through automated updates within defined areas using new borehole and mapping information or replacements with third-party contributions. A release notes file is provided detailing the origin and characteristics of the various model components. More information on the methodological overview and workflow can be found in the model description.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.pdf"
       }
     }
   }

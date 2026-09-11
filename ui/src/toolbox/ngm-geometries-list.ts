@@ -17,8 +17,7 @@ export default class NgmGeometriesList extends LitElementI18n {
 
   @property({ type: Object })
   accessor optionsTemplate:
-    | ((geom: NgmGeometry, active: boolean) => TemplateResult)
-    | undefined;
+    ((geom: NgmGeometry, active: boolean) => TemplateResult) | undefined;
 
   @property({ type: Array })
   accessor disabledTypes: string[] = [];
@@ -106,9 +105,11 @@ export default class NgmGeometriesList extends LitElementI18n {
         .geometries=${this.noEditGeometries}
         .noEditMode=${true}
         .selectedId=${this.selectedId}
-        .listTitle="${isProject(selectedProject)
-          ? i18next.t('tbx_project_geometries')
-          : i18next.t('tbx_geometries_from_topic')}"
+        .listTitle="${
+          isProject(selectedProject)
+            ? i18next.t('tbx_project_geometries')
+            : i18next.t('tbx_geometries_from_topic')
+        }"
         .optionsTemplate=${this.optionsTemplate}
         .disabledTypes=${this.disabledTypes}
         .disabledCallback=${this.disabledCallback}
@@ -119,9 +120,11 @@ export default class NgmGeometriesList extends LitElementI18n {
       <ngm-geometries-simple-list
         .geometries=${this.geometries}
         .selectedId=${this.selectedId}
-        .listTitle="${isProjectEditMode
-          ? `${selectedProject?.title} ${i18next.t('tbx_project_geometries')}`
-          : i18next.t('tbx_my_geometries')}"
+        .listTitle="${
+          isProjectEditMode
+            ? `${selectedProject?.title} ${i18next.t('tbx_project_geometries')}`
+            : i18next.t('tbx_my_geometries')
+        }"
         .optionsTemplate=${this.optionsTemplate}
         .disabledTypes=${this.disabledTypes}
         .disabledCallback=${this.disabledCallback}

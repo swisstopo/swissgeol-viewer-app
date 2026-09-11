@@ -198,13 +198,27 @@ export const TITILER_BY_PAGE_HOST = {
   'viewer.swissgeol.ch': 'https://api.swissgeol.ch/titiler',
 };
 
+export const LEXIC_API_VERSION = 'v1';
+
 export const LEXIC_API_BY_PAGE_HOST = {
-  'localhost:8000': 'https://dev-webmap-api.swissgeol.ch',
-  'dev-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
-  'int-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
-  'swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
-  'viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'localhost:8000': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'dev-viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'int-viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
 };
+
+/**
+ * When `true`, the Lexic filter layer is rendered as a single untiled image
+ * covering the full Switzerland extent (fewer requests, but lower quality at
+ * high zoom). When `false`, the standard tiled WMS approach is used.
+ *
+ * Override via URL: `?lexicSingleTile=true`
+ */
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const LEXIC_USE_SINGLE_TILE =
+  new URLSearchParams(globalThis.location?.search).get('lexicSingleTile') ===
+  'true';
 
 export interface WmtsCapabilitiesLinks {
   wms: string;
@@ -214,7 +228,7 @@ export interface WmtsCapabilitiesLinks {
 
 export const DEFAULT_WMTS_SERVICE = 'maps.geo.admin';
 
-export const TIMEOUT_REQUEST_AFTER_MILLISECONDS = 5_000;
+export const TIMEOUT_REQUEST_AFTER_MILLISECONDS = 8_000;
 export const WMTS_CAPABILITIES_BY_SERVICE: Record<
   string,
   WmtsCapabilitiesLinks

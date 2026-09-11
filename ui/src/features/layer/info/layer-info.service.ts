@@ -13,6 +13,7 @@ import {
   Observable,
   take,
 } from 'rxjs';
+import i18next from 'i18next';
 import { BaseService } from 'src/services/base.service';
 import { Layer, LayerType } from 'src/features/layer';
 import {
@@ -74,11 +75,31 @@ export class LayerInfoService extends BaseService {
           ScreenSpaceEventType.LEFT_CLICK,
         );
       });
+
+    i18next.on('languageChanged', this.handleLanguageChanged);
   }
 
   get infos$(): Observable<readonly LayerInfo[]> {
     return this.infosSubject.asObservable();
   }
+
+  private readonly handleLanguageChanged = (lang: string): void => {
+    const infos = this.infosSubject.value;
+    if (infos.length === 0) {
+      return;
+    }
+    const refreshes = infos
+      .filter((info) => info.refreshForLanguage != null)
+      .map((info) => info.refreshForLanguage!(lang));
+    if (refreshes.length === 0) {
+      // Trigger re-emission so elements re-render with new translations.
+      this.infosSubject.next([...infos]);
+      return;
+    }
+    Promise.all(refreshes).then(() => {
+      this.infosSubject.next([...infos]);
+    });
+  };
 
   pick2d(position: Cartesian2): void {
     const cartesian = this.pickService.pick(position);

@@ -102,6 +102,7 @@ export class IonService extends BaseService {
           infoBox: null,
           orderOfProperties: [],
           isPartiallyTransparent: false,
+          sliceSelection: null,
           customProperties: {},
         } satisfies Tiles3dLayer;
       default:
@@ -174,13 +175,7 @@ type AssetOptions = {
   type?: AssetType | AssetType[];
   sortOrder?: 'ASC' | 'DESC';
   sortBy?:
-    | 'ID'
-    | 'NAME'
-    | 'DESCRIPTION'
-    | 'BYTES'
-    | 'TYPE'
-    | 'STATUS'
-    | 'DATE_ADDED';
+    'ID' | 'NAME' | 'DESCRIPTION' | 'BYTES' | 'TYPE' | 'STATUS' | 'DATE_ADDED';
   search?: string;
   page?: number;
   limit?: number;
@@ -195,10 +190,4 @@ export type AssetStatus =
   | 'DATA_ERROR';
 
 export type AssetType =
-  | '3DTILES'
-  | 'GLTF'
-  | 'IMAGERY'
-  | 'TERRAIN'
-  | 'KML'
-  | 'CZML'
-  | 'GEOJSON';
+  '3DTILES' | 'GLTF' | 'IMAGERY' | 'TERRAIN' | 'KML' | 'CZML' | 'GEOJSON';

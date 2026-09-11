@@ -202,6 +202,7 @@ export class NgmIonModal extends CoreElement {
           infoBox: null,
           orderOfProperties: [],
           isPartiallyTransparent: false,
+          sliceSelection: null,
           customProperties: {},
         } satisfies Tiles3dLayer;
         break;
@@ -301,8 +302,10 @@ export class NgmIonModal extends CoreElement {
                   <th class="table-column-checkbox">
                     <sgc-checkbox
                       .value="${this.assetsToAdd.size > 0}"
-                      ?indeterminate="${this.assetsToAdd.size > 0 &&
-                      this.assetsToAdd.size < this.unselectedAssets.length}"
+                      ?indeterminate="${
+                        this.assetsToAdd.size > 0 &&
+                        this.assetsToAdd.size < this.unselectedAssets.length
+                      }"
                       @checkboxChange="${() => this.toggleAllAssets()}"
                     ></sgc-checkbox>
                   </th>
@@ -326,8 +329,10 @@ export class NgmIonModal extends CoreElement {
                     >
                       <td class="table-column-checkbox">
                         <sgc-checkbox
-                          value="${this.assetsToAdd.has(row) ||
-                          this.isLayerIdActivated(row.id)}"
+                          value="${
+                            this.assetsToAdd.has(row) ||
+                            this.isLayerIdActivated(row.id)
+                          }"
                           ?disabled="${this.isLayerIdActivated(row.id)}"
                           @checkboxChange="${() => this.toggleSingleAsset(row)}"
                         ></sgc-checkbox>
@@ -335,17 +340,19 @@ export class NgmIonModal extends CoreElement {
                       <td class="table-column-id">${row.id}</td>
                       <td class="table-column-value">${row.name}</td>
                       <td class="table-column-action">
-                        ${this.isLayerIdActivated(row.id)
-                          ? html`<sgc-icon name="checkmark"></sgc-icon>`
-                          : // Replace button with sgc-button when new size has been added
-                            html` <ngm-core-button
-                              variant="secondary"
-                              shape="small"
-                              @click=${() => this.addAsset(row)}
-                            >
-                              <sgc-icon name="plus"></sgc-icon>
-                              ${i18next.t('dtd_add_ion_asset_btn')}
-                            </ngm-core-button>`}
+                        ${
+                          this.isLayerIdActivated(row.id)
+                            ? html`<sgc-icon name="checkmark"></sgc-icon>`
+                            : // Replace button with sgc-button when new size has been added
+                              html` <ngm-core-button
+                                variant="secondary"
+                                shape="small"
+                                @click=${() => this.addAsset(row)}
+                              >
+                                <sgc-icon name="plus"></sgc-icon>
+                                ${i18next.t('dtd_add_ion_asset_btn')}
+                              </ngm-core-button>`
+                        }
                       </td>
                     </tr>
                   `,

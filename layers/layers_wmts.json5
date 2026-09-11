@@ -13,6 +13,54 @@
       //        collection: 'ch.swisstopo.geologie-geocover',
       //      }
     },
+    // swissGEOCOVER2D - BEDROCK
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-swissgeocover2d_bedrock',
+      max_level: 18,
+      opacity: 0.87,
+      info_box: { source: 'api3.geo.admin.ch' },
+    },
+    // swissGEOCOVER2D - UNCONSOLIDATED
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-swissgeocover2d_unconsolidated',
+      max_level: 18,
+      opacity: 0.76,
+      info_box: { source: 'api3.geo.admin.ch' },
+    },
+    // swissGEOCOVER2D - SURFACE
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-swissgeocover2d_surfaces',
+      max_level: 18,
+      opacity: 1,
+      info_box: { source: 'api3.geo.admin.ch' },
+    },
+    // swissGEOCOVER2D - LINES
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-swissgeocover2d_lines',
+      max_level: 18,
+      opacity: 1,
+      info_box: { source: 'api3.geo.admin.ch' },
+    },
+    // swissGEOCOVER2D - TECTO_LINES
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-swissgeocover2d_tecto_lines',
+      max_level: 18,
+      opacity: 1,
+      info_box: { source: 'api3.geo.admin.ch' },
+    },
+    // swissGEOCOVER2D - POINTS
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-swissgeocover2d_points',
+      max_level: 18,
+      opacity: 1,
+      info_box: { source: 'api3.geo.admin.ch' },
+    },
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-geologischer_atlas',

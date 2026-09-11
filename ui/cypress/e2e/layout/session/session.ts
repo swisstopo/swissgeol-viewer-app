@@ -9,8 +9,13 @@ const getSessionService = (): Cypress.Chainable<any> =>
     };
     return sessionService;
   });
+const trackingConsent = encodeURIComponent(
+  JSON.stringify({ v: 1, isAllowed: false }),
+);
 
 const expiresAtTimestamp = Date.now() / 1_000 + 3_600;
+let signInRedirectUrl: string | null = null;
+let expectedRedirectUri: string | null = null;
 const user = {
   id: crypto.randomUUID(),
   email: 'petermaximilian.vonderweide@example.com',
@@ -19,6 +24,23 @@ const user = {
   groups: ['example', 'nothing'],
   expiresAt: new Date(expiresAtTimestamp * 1_000),
   role: Role.Reader,
+};
+
+const getSignInUrl = (sessionService: any, redirectUri: string): string => {
+  const { env, clientId } = sessionService.cognitoVariables as {
+    env: string;
+    clientId: string;
+  };
+  const { state } = sessionService as { state: string };
+
+  return (
+    `https://ngm-${env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize?` +
+    'response_type=token' +
+    `&client_id=${clientId}` +
+    `&redirect_uri=${redirectUri}` +
+    '&scope=openid+profile' +
+    `&state=${state}`
+  );
 };
 
 const interceptSignInRequests = () => {
@@ -57,6 +79,18 @@ const interceptSignInRequests = () => {
 Given(/^that no user is signed in$/, () => {
   getSessionService().then((sessionService) => {
     expect(sessionService.user).to.be.null;
+    cy.window().then((window) => {
+      expectedRedirectUri = `${window.location.origin}${window.location.pathname}`;
+      signInRedirectUrl = null;
+      cy.stub(sessionService, 'signIn')
+        .callsFake(() => {
+          signInRedirectUrl = getSignInUrl(
+            sessionService,
+            expectedRedirectUri ?? '',
+          );
+        })
+        .as('signIn');
+    });
   });
 });
 
@@ -70,22 +104,26 @@ When(/^the user clicks on the session button$/, () => {
 });
 
 Then(/^the user is redirected to the external eIAM login page$/, () => {
-  cy.origin('https://feds-r.eiam.admin.ch', () => {
-    // Click #continueButton if it exists.
-    // That button can appear if a maintenance message is in place.
-    // Note that we need to wait here for a short while so that the continue button has time to render.
-    cy.wait(1_000);
-    cy.get('body', { timeout: 10_000 })
-      .then(($body) => {
-        const $btn = $body.find('#continueButton');
-        console.log($btn);
-        if ($btn.length) {
-          cy.wrap($btn).click();
-        }
-      })
-      .then(() => {
-        cy.location('pathname').should('match', new RegExp('^/app/home/.+'));
-      });
+  cy.get('@signIn').should('have.been.calledOnce');
+  cy.then(() => {
+    expect(signInRedirectUrl).to.not.be.null;
+    const signInUrl = new URL(signInRedirectUrl ?? '');
+
+    expect(signInUrl.protocol).to.equal('https:');
+    expect(signInUrl.hostname).to.match(
+      /^ngm-.+\.auth\.eu-west-1\.amazoncognito\.com$/,
+    );
+    expect(signInUrl.pathname).to.equal('/oauth2/authorize');
+    expect(signInUrl.searchParams.get('response_type')).to.equal('token');
+    expect(signInUrl.searchParams.get('scope')).to.equal('openid profile');
+    expect(signInUrl.searchParams.get('client_id')).to.not.be.empty;
+    expect(signInUrl.searchParams.get('state')).to.not.be.empty;
+  });
+  cy.then(() => {
+    expect(expectedRedirectUri).to.not.be.null;
+    expect(
+      new URL(signInRedirectUrl ?? '').searchParams.get('redirect_uri'),
+    ).to.eq(expectedRedirectUri);
   });
 });
 
@@ -139,7 +177,11 @@ When(/^the page is accessed with eIAM response query parameters$/, () => {
     state,
     token_type: 'Bearer',
   });
-  cy.visit(`#${params}`);
+  cy.visit(`#${params}`, {
+    onBeforeLoad(win) {
+      win.document.cookie = `swissgeol_consent=${trackingConsent}; Path=/; SameSite=Lax`;
+    },
+  });
 });
 
 Then(/^signed in user's profile is loaded$/, () => {
@@ -186,7 +228,11 @@ When(/^the user clicks the sign out button$/, () => {
 
 When(/^the page is reloaded$/, () => {
   interceptSignInRequests();
-  cy.visit('/');
+  cy.visit('/', {
+    onBeforeLoad(win) {
+      win.document.cookie = `swissgeol_consent=${trackingConsent}; Path=/; SameSite=Lax`;
+    },
+  });
 });
 
 When(/^the user's session expires$/, () => {

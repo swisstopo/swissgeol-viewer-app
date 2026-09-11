@@ -10,6 +10,31 @@ import { firstValueFrom } from 'rxjs';
 import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
 
+/**
+ * `Scene.pickPosition` (and `Scene.pick`) can throw while some tiles/
+ * primitives are not yet fully loaded, or after the scene/camera has been
+ * destroyed mid-pick. The exact error text for these failures is unstable —
+ * it differs by browser engine and has even changed across Firefox versions/
+ * builds for the same underlying condition (observed: "Can't access property
+ * _target, v3 is undefined", "can't access property \"_target\", v is
+ * undefined", "Cannot read properties of undefined (reading '_target')",
+ * ...). Matching on that text is therefore a losing battle.
+ *
+ * Instead, every pick call site treats *any* exception from these functions
+ * as recoverable: log it (so it's never silent — an uncaught exception here
+ * has previously frozen the whole render loop with zero console output, see
+ * git history) and degrade gracefully instead of propagating the exception —
+ * typically by falling back to a less accurate, math-based pick, but exactly
+ * what "degrade gracefully" means (fallback pick, `undefined`/no target, a
+ * placeholder debug string, ...) is up to the caller.
+ */
+export function handleScenePickingError(e: unknown): void {
+  console.warn(
+    '[pick] Scene.pickPosition/pick threw; degrading gracefully for this call.',
+    e,
+  );
+}
+
 export class PickService extends BaseService {
   private viewer: Viewer | null = null;
 
@@ -54,20 +79,11 @@ export class PickService extends BaseService {
   }
 
   private tryPickWithSceneOrFallback(position: Cartesian2): Cartesian3 | null {
-    const KNOWN_PICK_ERROR_SUFFIXES = [
-      'DeveloperError: This object was destroyed,',
-      "TypeError: Can't access property _target, v3 is undefined",
-    ] as const;
     try {
       return this.pickWithScene(Cartesian2.clone(position));
     } catch (e) {
-      const message = String(e);
-      if (
-        KNOWN_PICK_ERROR_SUFFIXES.some((suffix) => message.startsWith(suffix))
-      ) {
-        return this.pickWithMath(position);
-      }
-      throw e;
+      handleScenePickingError(e);
+      return this.pickWithMath(position);
     }
   }
 
@@ -87,7 +103,17 @@ export class PickService extends BaseService {
       return null;
     }
     if (viewer.scene.globe.show) {
-      return viewer.scene.globe.pick(ray, viewer.scene) ?? null;
+      const globePick = viewer.scene.globe.pick(ray, viewer.scene);
+      if (globePick !== undefined) {
+        return globePick;
+      }
+      // `Globe.pick` only intersects the terrain surface itself. When the
+      // camera is underground and looking away from the terrain (e.g. at
+      // underground content behind/below it), the ray never hits terrain and
+      // this returns `undefined` — fall through to the ellipsoid intersection
+      // below instead of aborting the whole pick, so callers (e.g. the info
+      // box's drill-picker) still get a position to work with and can find
+      // underground features via their own, more precise picking.
     }
 
     const interval = IntersectionTests.rayEllipsoid(ray, Ellipsoid.WGS84);

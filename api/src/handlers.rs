@@ -14,7 +14,7 @@ use crate::layers;
 use crate::{Error, Filter, LayerConfig, Result};
 use anyhow::Context;
 use axum_macros::debug_handler;
-use rand::{Rng, distributions::Alphanumeric};
+use rand::{Rng, distr::Alphanumeric};
 use serde_json::Number;
 use std::collections::HashSet;
 use std::sync::Arc;
@@ -139,6 +139,7 @@ struct GeometryVolumeHeightLimits {
 }
 
 #[derive(Serialize)]
+#[allow(dead_code)]
 pub struct UploadResponse {
     pub key: String,
 }
@@ -186,6 +187,7 @@ pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, St
 }
 
 #[debug_handler]
+#[allow(dead_code)]
 pub async fn create_project(
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
@@ -231,6 +233,7 @@ pub async fn create_project(
 }
 
 #[axum_macros::debug_handler]
+#[allow(dead_code)]
 pub async fn get_project(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
@@ -256,6 +259,7 @@ pub async fn get_project(
 }
 
 #[axum_macros::debug_handler]
+#[allow(dead_code)]
 pub async fn update_project(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
@@ -320,6 +324,7 @@ pub async fn update_project(
 }
 
 #[axum_macros::debug_handler]
+#[allow(dead_code)]
 pub async fn delete_project(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
@@ -356,6 +361,7 @@ pub async fn delete_project(
 }
 
 #[axum_macros::debug_handler]
+#[allow(dead_code)]
 pub async fn update_project_geometries(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
@@ -399,6 +405,7 @@ pub async fn update_project_geometries(
 }
 
 #[axum_macros::debug_handler]
+#[allow(dead_code)]
 pub async fn list_projects(
     Extension(pool): Extension<PgPool>,
     claims: Claims,
@@ -445,6 +452,7 @@ pub async fn list_projects(
 }
 
 #[axum_macros::debug_handler]
+#[allow(dead_code)]
 pub async fn duplicate_project(
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
@@ -523,6 +531,7 @@ pub async fn duplicate_project(
     Ok(Json(result))
 }
 
+#[allow(dead_code)]
 pub async fn upload_asset(
     Extension(_pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
@@ -631,7 +640,7 @@ async fn delete_assets(client: Client, project_assets: &Vec<Asset>) {
 }
 
 fn generate_asset_name() -> String {
-    let rand_string: String = rand::thread_rng()
+    let rand_string: String = rand::rng()
         .sample_iter(&Alphanumeric)
         .take(40)
         .map(char::from)

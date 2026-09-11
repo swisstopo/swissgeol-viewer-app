@@ -308,7 +308,55 @@
         },
       },
     },
-
+    // 2D-Seismik Survey 24 GES
+    {
+      type: 'Tiles3d',
+      id: 'seismic_2d_24_GES_01',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16144,
+          style_id: 5,
+        },
+      },
+    },
+    {
+      type: 'Tiles3d',
+      id: 'seismic_2d_24_GES_02',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16145,
+          style_id: 5,
+        },
+      },
+    },
+    {
+      type: 'Tiles3d',
+      id: 'seismic_2d_24_GES_03',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16147,
+          style_id: 5,
+        },
+      },
+    },
+    {
+      type: 'Tiles3d',
+      id: 'seismic_2d_24_GES_04',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16149,
+          style_id: 5,
+        },
+      },
+    },
     // 3D-Seismik
     // 3D-Seismik - Eclépens 2023
     {

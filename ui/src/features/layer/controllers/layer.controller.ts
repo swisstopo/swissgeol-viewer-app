@@ -157,7 +157,7 @@ export abstract class BaseLayerController<T extends BaseLayer> {
    *
    * @private
    */
-  private nextUpdate: [T, () => void] | null = null;
+  private nextUpdate: [T, () => void, (error: unknown) => void] | null = null;
 
   constructor(
     /**
@@ -215,21 +215,25 @@ export abstract class BaseLayerController<T extends BaseLayer> {
 
     // If there is no queued update, we can take that spot.
     if (this.nextUpdate === null) {
-      return new Promise((resolve) => {
-        this.nextUpdate = [layer, resolve];
+      return new Promise((resolve, reject) => {
+        this.nextUpdate = [layer, resolve, reject];
       });
     }
 
     // There is already a queued update.
     // We replace that queued value with our own (which is safe as we have a full copy of the layer data).
     // It's important that we preserve all queued callbacks and run them after the update.
-    const [_previousUpdate, previousCallback] = this.nextUpdate;
-    return new Promise((resolve) => {
+    const [_previousUpdate, previousCallback, previousReject] = this.nextUpdate;
+    return new Promise((resolve, reject) => {
       this.nextUpdate = [
         layer,
         () => {
           previousCallback();
           resolve();
+        },
+        (error: unknown) => {
+          previousReject(error);
+          reject(error);
         },
       ];
     });
@@ -242,22 +246,36 @@ export abstract class BaseLayerController<T extends BaseLayer> {
       );
     }
     this.activeUpdate = process;
-    return new Promise((resolve) =>
-      process.then(() => {
-        resolve();
-        this.activeUpdate = null;
+    return new Promise((resolve, reject) =>
+      process.then(
+        () => {
+          resolve();
+          this.activeUpdate = null;
 
-        if (this.nextUpdate === null) {
-          return;
-        }
+          if (this.nextUpdate === null) {
+            return;
+          }
 
-        const [nextUpdate, callback] = this.nextUpdate;
-        this.nextUpdate = null;
+          const [nextUpdate, callback, rejectCallback] = this.nextUpdate;
+          this.nextUpdate = null;
 
-        this.update(nextUpdate).then(() => {
-          callback();
-        });
-      }),
+          this.update(nextUpdate).then(
+            () => {
+              callback();
+            },
+            (error: unknown) => {
+              rejectCallback(error);
+            },
+          );
+        },
+        (error: unknown) => {
+          this.activeUpdate = null;
+          const queued = this.nextUpdate;
+          this.nextUpdate = null;
+          queued?.[2](error);
+          reject(error);
+        },
+      ),
     );
   }
 
@@ -371,8 +389,7 @@ export abstract class BaseLayerController<T extends BaseLayer> {
       this.watchedValues.push(value);
     }
     const lastValue = this.watchedValues[this.currentWatchIndex] as
-      | T
-      | undefined;
+      T | undefined;
     this.watchedValues[this.currentWatchIndex] = value;
     this.currentWatchIndex += 1;
 

@@ -30,6 +30,8 @@ import { documentationIcon } from 'src/icons/i_documentation';
 import { the2dDIcon } from 'src/icons/i_2d';
 import { the3dDIcon } from 'src/icons/i_3d';
 import { compassIcon } from 'src/icons/i_compass';
+import { lexicIcon } from 'src/icons/i_lexic';
+import { resetIcon } from 'src/icons/i_reset';
 
 export const icons = {
   '2d': the2dDIcon,
@@ -50,9 +52,11 @@ export const icons = {
   layer: layerIcon,
   layerIndicator: layerIndicatorIcon,
   legend: legendIcon,
+  lexic: lexicIcon,
   menu: menuIcon,
   plus: plusIcon,
   projects: projectsIcon,
+  reset: resetIcon,
   search: searchIcon,
   share: shareIcon,
   tools: toolsIcon,

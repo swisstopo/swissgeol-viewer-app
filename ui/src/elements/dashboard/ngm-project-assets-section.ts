@@ -71,15 +71,17 @@ export class NgmProjectAssetsSection extends LitElementI18n {
         <div>${i18next.t('dashboard_project_kml')}</div>
       </div>
       <div class="project-edit-fields">
-        ${this.viewMode
-          ? ''
-          : html`
-              <ngm-catalog-upload-kml
-                .toastPlaceholder=${this.toastPlaceholder}
-                .maxFileSize=${PROJECT_ASSET_MAX_SIZE}
-                @upload=${this.handleKmlUpload}
-              ></ngm-catalog-upload-kml>
-            `}
+        ${
+          this.viewMode
+            ? ''
+            : html`
+                <ngm-catalog-upload-kml
+                  .toastPlaceholder=${this.toastPlaceholder}
+                  .maxFileSize=${PROJECT_ASSET_MAX_SIZE}
+                  @upload=${this.handleKmlUpload}
+                ></ngm-catalog-upload-kml>
+              `
+        }
         ${this.assets?.map((kml, index) => {
           return html`
             <div class="ngm-action-list-item ngm-geom-item">
@@ -89,24 +91,26 @@ export class NgmProjectAssetsSection extends LitElementI18n {
                 })}"
               >
                 <div>
-                  ${this.kmlEditIndex !== index
-                    ? kml.name
-                    : html` <div
-                        class="ngm-input ${classMap({
-                          'ngm-input-warning': !kml.name,
-                        })}"
-                      >
-                        <input
-                          type="text"
-                          placeholder="required"
-                          .value=${kml.name}
-                          @input=${(evt) => {
-                            kml.name = evt.target.value;
-                            this.assets[index] = kml;
-                            this.assets = [...this.assets];
-                          }}
-                        />
-                      </div>`}
+                  ${
+                    this.kmlEditIndex !== index
+                      ? kml.name
+                      : html` <div
+                          class="ngm-input ${classMap({
+                            'ngm-input-warning': !kml.name,
+                          })}"
+                        >
+                          <input
+                            type="text"
+                            placeholder="required"
+                            .value=${kml.name}
+                            @input=${(evt) => {
+                              kml.name = evt.target.value;
+                              this.assets[index] = kml;
+                              this.assets = [...this.assets];
+                            }}
+                          />
+                        </div>`
+                  }
                 </div>
                 ${this.viewMode ? '' : this.editButtons(index)}
               </div>

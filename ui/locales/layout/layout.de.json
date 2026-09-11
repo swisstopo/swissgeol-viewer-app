@@ -1,9 +1,37 @@
 {
   "items": {
     "Layers": "Angezeigte Daten",
+    "Lexic": "Lexic",
     "Tools": "Werkzeuge",
     "Share": "Teilen",
     "Projects": "Projekte",
     "Settings": "Einstellungen"
+  },
+  "lexic": {
+    "datasetLabel": "Datensatz",
+    "layerPlaceholder": "Datensatz auswählen",
+    "loadingLayers": "Datensätze werden geladen...",
+    "filter": {
+      "reset": "Zurücksetzen",
+      "addFilter": "Filter hinzufügen",
+      "or": "ODER",
+      "and": "UND",
+      "dialogTitle": "Filter – {{title}}",
+      "searchPlaceholder": "{{title}} suchen ...",
+      "includeNarrowers": "Untergeordnete einschliessen (Children)",
+      "cancel": "Abbrechen",
+      "applyFilter": "Filter hinzufügen",
+      "noResults": "Keine Ergebnisse gefunden",
+      "opacity": "Filter Deckkraft",
+      "resetAll": "Alle Filter zurücksetzen",
+      "loadError": "Fehler beim Laden"
+    },
+    "errors": {
+      "loadDatasets": "Die verfügbaren Lexic-Datensätze konnten nicht geladen werden.",
+      "generateWmsRequest_one": "Der ausgewählte Lexic-Filter konnte nicht auf die Karte angewendet werden.",
+      "generateWmsRequest_other": "Die ausgewählten Lexic-Filter konnten nicht auf die Karte angewendet werden.",
+      "loadFilterTerms": "Die Lexic-Filterbegriffe konnten nicht geladen werden.",
+      "loadTiles": "Die Lexic-Filterkacheln konnten nicht geladen werden."
+    }
   }
 }

@@ -27,7 +27,7 @@ import NavToolsStore from 'src/store/navTools';
 import { TemplateResult } from 'lit';
 import {
   BaseLayerController,
-  getLayerAttributeName,
+  getTranslationKeyForLayerAttributeName,
   Layer,
 } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
@@ -68,8 +68,7 @@ export abstract class LayerInfoDrillPicker<
     }
 
     const tileset = (feature as any).content?._tileset as
-      | Cesium3DTileset
-      | undefined;
+      Cesium3DTileset | undefined;
     if (tileset !== undefined && 'metadata' in tileset) {
       return this.pickFeatureForNewTileset(pick, tileset);
     }
@@ -341,7 +340,7 @@ const extractFeatureAttributes = (
     const value = feature.getProperty(propertyName);
     if (typeof value === 'number' || !!value) {
       attributes.push({
-        key: getLayerAttributeName(layer, propertyName),
+        key: getTranslationKeyForLayerAttributeName(layer, propertyName),
         value,
       });
     }
@@ -427,7 +426,7 @@ const extractTilesetAttributes = (
       !PROPERTIES_TO_EXCLUDE.has(propertyName)
     ) {
       attributes.push({
-        key: getLayerAttributeName(layer, propertyName),
+        key: getTranslationKeyForLayerAttributeName(layer, propertyName),
         value,
       });
     }

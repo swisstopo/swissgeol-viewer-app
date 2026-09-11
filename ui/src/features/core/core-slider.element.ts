@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { live } from 'lit/directives/live.js';
@@ -7,6 +7,9 @@ import { live } from 'lit/directives/live.js';
 export class CoreSlider extends LitElement {
   @property({ type: Boolean })
   accessor isActive: boolean = false;
+
+  @property({ type: String })
+  accessor label: string = '';
 
   @property({ type: Number })
   accessor min: number = 0;
@@ -22,6 +25,10 @@ export class CoreSlider extends LitElement {
 
   handleInputChange(event: InputEvent) {
     this.value = (event.target as HTMLInputElement).valueAsNumber;
+    this.emitChange();
+  }
+
+  private emitChange() {
     this.dispatchEvent(
       new CustomEvent<SliderChangeEventDetail>('change', {
         detail: {
@@ -29,6 +36,51 @@ export class CoreSlider extends LitElement {
         },
       }),
     );
+  }
+
+  /**
+   * Arrow/Home/End keys are handled explicitly rather than relying on the
+   * native range behaviour, so that the value is clamped consistently and a
+   * `done` event is emitted for each discrete step (there is no pointerup).
+   */
+  handleKeyDown(event: KeyboardEvent) {
+    const step = this.step === 0 ? 1 : Math.abs(this.step);
+    let next: number | null = null;
+    switch (event.key) {
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        next = this.value - step;
+        break;
+      case 'ArrowRight':
+      case 'ArrowUp':
+        next = this.value + step;
+        break;
+      case 'PageDown':
+        next = this.value - step * 10;
+        break;
+      case 'PageUp':
+        next = this.value + step * 10;
+        break;
+      case 'Home':
+        next = this.min;
+        break;
+      case 'End':
+        next = this.max;
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const clamped = Math.min(this.max, Math.max(this.min, next));
+    if (clamped === this.value) {
+      return;
+    }
+    this.value = clamped;
+    this.emitChange();
+    this.dispatchEvent(new CustomEvent('done'));
   }
 
   handlePointerUp(e: Event) {
@@ -40,6 +92,7 @@ export class CoreSlider extends LitElement {
     <input
       type="range"
       class="ngm-slider"
+      aria-label=${this.label || nothing}
       style="${styleMap({
         '--value': this.value,
         '--min': this.min,
@@ -50,6 +103,7 @@ export class CoreSlider extends LitElement {
       step=${this.step}
       .value=${live(isNaN(this.value) ? 1 : this.value)}
       @input=${this.handleInputChange}
+      @keydown=${this.handleKeyDown}
       @pointerdown="${stopEvent}"
       @pointerup=${this.handlePointerUp}
       @click="${stopEvent}"
@@ -101,6 +155,11 @@ export class CoreSlider extends LitElement {
     input[type='range']::-webkit-slider-runnable-track {
       border-radius: 4px;
       height: var(--slider-track-height);
+    }
+
+    input[type='range']:focus-visible {
+      outline: 2px solid var(--color-primary--active);
+      outline-offset: 6px;
     }
 
     input[type='range']::-moz-range-track {

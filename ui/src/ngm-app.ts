@@ -27,6 +27,7 @@ import { setupViewer } from './viewer';
 import {
   getCameraView,
   getTopicOrProject,
+  getZoomDebugParam,
   getZoomToPosition,
   rewriteParams,
   setCesiumToolbarParam,
@@ -55,13 +56,42 @@ import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
+import { LexicVocabularyService } from 'src/features/lexic';
 import { when } from 'lit/directives/when.js';
 import { until } from 'lit/directives/until.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
-const isLocalhost = document.location.hostname === 'localhost';
-const shouldShowDisclaimer = !isLocalhost;
+const CONSENT_COOKIE_NAME = 'swissgeol_consent';
+const CONSENT_SCHEMA_VERSION = 1;
+const CONSENT_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+
+const readConsent = (): { isAllowed: boolean } | null => {
+  const match = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith(`${CONSENT_COOKIE_NAME}=`));
+  if (!match) return null;
+  try {
+    const parsed = JSON.parse(
+      decodeURIComponent(match.slice(CONSENT_COOKIE_NAME.length + 1)),
+    );
+    if (parsed?.v !== CONSENT_SCHEMA_VERSION) return null;
+    return { isAllowed: Boolean(parsed.isAllowed) };
+  } catch {
+    return null;
+  }
+};
+
+const writeConsent = (isAllowed: boolean): void => {
+  const payload = encodeURIComponent(
+    JSON.stringify({ v: CONSENT_SCHEMA_VERSION, isAllowed }),
+  );
+  const secure = globalThis.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${CONSENT_COOKIE_NAME}=${payload}; Max-Age=${CONSENT_MAX_AGE_SECONDS}; Path=/; SameSite=Lax${secure}`;
+};
+
+const storedConsent = readConsent();
+const shouldShowDisclaimer = storedConsent === null;
 
 const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
   let sse = 2;
@@ -107,6 +137,9 @@ export class NgmApp extends LitElementI18n {
 
   @state()
   accessor showCesiumToolbar = false;
+
+  @state()
+  accessor showZoomDebug = getZoomDebugParam();
 
   @query('ngm-cam-configuration')
   accessor camConfigElement;
@@ -162,6 +195,12 @@ export class NgmApp extends LitElementI18n {
 
     BaseService.initializeWith(this);
 
+    i18next.on('initialized', () => {
+      LexicVocabularyService.inject().then((service) =>
+        service.preloadVocabularies(i18next.language),
+      );
+    });
+
     let infoWindow: CoreWindow | null = null;
     this.layerInfoService.infos$.subscribe((layers) => {
       if (layers.length === 0) {
@@ -184,6 +223,11 @@ export class NgmApp extends LitElementI18n {
 
     if (shouldShowDisclaimer) {
       this.openDisclaimer();
+    } else if (
+      storedConsent !== null &&
+      this.clientConfig.env === AppEnv.Prod
+    ) {
+      initAnalytics(storedConsent.isAllowed);
     }
   }
 
@@ -411,6 +455,8 @@ export class NgmApp extends LitElementI18n {
     this.disclaimer = null;
     this.showNavigationHint();
 
+    writeConsent(event.detail.isAllowed);
+
     if (this.clientConfig.env === AppEnv.Prod) {
       initAnalytics(event.detail.isAllowed);
     }
@@ -543,6 +589,10 @@ export class NgmApp extends LitElementI18n {
           ${when(
             this.showCesiumToolbar,
             () => html`<cesium-toolbar></cesium-toolbar>`,
+          )}
+          ${when(
+            this.showZoomDebug,
+            () => html`<control-zoom-debug></control-zoom-debug>`,
           )}
         </div>
       </main>

@@ -26,15 +26,17 @@ export class NavigationPanelHeader extends LitElementI18n {
 
   readonly render = () => html`
     <slot></slot>
-    ${this.isCloseable
-      ? html`
-          <ngm-core-icon
-            icon="close"
-            interactive
-            @click=${this.close}
-          ></ngm-core-icon>
-        `
-      : nothing}
+    ${
+      this.isCloseable
+        ? html`
+            <ngm-core-icon
+              icon="close"
+              interactive
+              @click=${this.close}
+            ></ngm-core-icon>
+          `
+        : nothing
+    }
   `;
 
   static readonly styles = css`

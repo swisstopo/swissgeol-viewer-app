@@ -42,9 +42,11 @@ export class CoreRadio extends LitElement {
         name="${this.name}"
       />
       <div class="icon"></div>
-      ${this.hasSlot
-        ? html`<span class="label"><slot></slot></span>`
-        : html`<slot></slot>`}
+      ${
+        this.hasSlot
+          ? html`<span class="label"><slot></slot></span>`
+          : html`<slot></slot>`
+      }
     </label>
   `;
 

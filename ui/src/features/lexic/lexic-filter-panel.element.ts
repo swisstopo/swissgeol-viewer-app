@@ -1,0 +1,435 @@
+import { consume } from '@lit/context';
+import i18next from 'i18next';
+import { css, html, nothing } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+import { CoreElement } from 'src/features/core';
+import { showSnackbarError } from 'src/notifications';
+import { applyTypography } from 'src/styles/theme';
+import { LexicApiService } from './lexic-api.service';
+import { LexicFilterService } from './lexic-filter.service';
+import { LexicVocabularyService } from './lexic-vocabulary.service';
+import {
+  LexicFilterId,
+  LexicLanguage,
+  LexicLayer,
+  LexicLayerAvailableFilter,
+} from './lexic-api.model';
+import { SUPPORTED_FILTER_IDS } from './lexic-filter-container.element';
+
+@customElement('ngm-lexic-filter-panel')
+export class LexicFilterPanel extends CoreElement {
+  @consume({ context: LexicApiService.context() })
+  accessor lexicApiService!: LexicApiService;
+
+  @consume({ context: LexicFilterService.context() })
+  accessor filterService!: LexicFilterService;
+
+  @consume({ context: LexicVocabularyService.context() })
+  accessor vocabularyService!: LexicVocabularyService;
+
+  @state()
+  accessor isOpen = false;
+
+  /** All layers returned by the Lexic API (or stub fallback). */
+  @state()
+  accessor layers: LexicLayer[] = [];
+
+  @state()
+  accessor selectedLayerId: string | null = null;
+
+  @state()
+  accessor isLoadingLayers = false;
+
+  /**
+   * Filters for the selected layer. Sourced from `Layer.availableFilters`
+   * when available; falls back to a per-layer API call otherwise.
+   */
+  @state()
+  accessor selectedLayerFilters: LexicLayerAvailableFilter[] | null = null;
+
+  @state()
+  accessor isLoadingFilters = false;
+
+  @state()
+  accessor isLoadingResults = false;
+
+  private filtersRequestVersion = 0;
+  private webmapId = '';
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    this.register(
+      this.filterService.isOpen$.subscribe((isOpen) => {
+        const wasOpen = this.isOpen;
+        this.isOpen = isOpen;
+        // Retry loading datasets when the panel is opened and none are available yet.
+        if (
+          isOpen &&
+          !wasOpen &&
+          this.layers.length === 0 &&
+          !this.isLoadingLayers
+        ) {
+          void this.loadLayerOptions();
+        }
+      }),
+    );
+    this.register(
+      this.filterService.selectedDatasetId$.subscribe((id) => {
+        this.selectedLayerId = id;
+      }),
+    );
+    this.register(
+      this.filterService.resultState$.subscribe((state) => {
+        this.isLoadingResults = state === 'loading';
+      }),
+    );
+
+    void this.loadLayerOptions();
+  }
+
+  willChangeLanguage(_language: void): void {
+    void this.loadLayerOptions();
+    const language = this.getLexicLanguage();
+    void this.filterService.retranslateFilters((termUrl) =>
+      this.vocabularyService.getLabelForTermUrl({ termUrl, language }),
+    );
+  }
+
+  private readonly handleClose = () => {
+    this.filterService.removeAllFilters();
+    this.filterService.selectedDatasetId = null;
+    this.filterService.close();
+  };
+
+  private readonly handleLayerSelection = (event: Event) => {
+    const selectElement = event.target as HTMLSelectElement;
+    this.filterService.removeAllFilters();
+    this.filterService.selectedDatasetId = selectElement.value;
+    this.applyFiltersForSelectedLayer();
+  };
+
+  private getLexicLanguage(): LexicLanguage {
+    const language = i18next.resolvedLanguage ?? i18next.language;
+
+    if (language.startsWith('de')) {
+      return 'de';
+    }
+
+    if (language.startsWith('fr')) {
+      return 'fr';
+    }
+
+    if (language.startsWith('it')) {
+      return 'it';
+    }
+
+    return 'en';
+  }
+
+  /**
+   * Applies filters for the currently selected layer.
+   * Uses `availableFilters` from the layer response if present;
+   * falls back to a per-layer API call otherwise.
+   */
+  private applyFiltersForSelectedLayer(): void {
+    const layerId = this.filterService.selectedDatasetId;
+    if (layerId == null) {
+      this.selectedLayerFilters = null;
+      return;
+    }
+
+    this.filterService.setSelectedLayer(layerId, this.webmapId);
+
+    const layer = this.layers.find((l) => l.id === layerId);
+    const available = layer?.availableFilters;
+    if (available != null && available.length > 0) {
+      this.selectedLayerFilters = available;
+    } else {
+      void this.loadSupportedFiltersForSelectedLayer();
+    }
+  }
+
+  /** Fallback: fetches filters per-layer when `availableFilters` is missing. */
+  private async loadSupportedFiltersForSelectedLayer(): Promise<void> {
+    const layerId = this.filterService.selectedDatasetId;
+    const requestVersion = ++this.filtersRequestVersion;
+
+    if (layerId == null) {
+      this.selectedLayerFilters = null;
+      this.isLoadingFilters = false;
+      return;
+    }
+
+    this.isLoadingFilters = true;
+    try {
+      const response = await this.lexicApiService.getLayerFilters(
+        layerId,
+        this.getLexicLanguage(),
+      );
+
+      if (
+        this.filtersRequestVersion === requestVersion &&
+        this.filterService.selectedDatasetId === layerId
+      ) {
+        this.selectedLayerFilters = response.filters ?? null;
+      }
+    } catch (error) {
+      console.error(
+        `[Lexic] Failed to load filters for layer "${layerId}":`,
+        error,
+      );
+      if (
+        this.filtersRequestVersion === requestVersion &&
+        this.filterService.selectedDatasetId === layerId
+      ) {
+        this.selectedLayerFilters = null;
+      }
+    } finally {
+      if (this.filtersRequestVersion === requestVersion) {
+        this.isLoadingFilters = false;
+      }
+    }
+  }
+
+  private async loadLayerOptions(): Promise<void> {
+    this.isLoadingLayers = true;
+
+    try {
+      const response = await this.lexicApiService.getLayers(
+        this.getLexicLanguage(),
+      );
+      // Only show layers (datasets) that have at least one filter supported by the application.
+      this.layers = (response.layers ?? []).filter((layer) =>
+        layer.availableFilters?.some((f) =>
+          SUPPORTED_FILTER_IDS.has((f.id ?? '') as LexicFilterId),
+        ),
+      );
+      this.webmapId = response.webmapId ?? '';
+    } catch (error) {
+      console.error('[Lexic] Failed to load datasets:', error);
+      this.layers = [];
+      this.webmapId = '';
+      // Only surface the error when the panel is open — otherwise datasets
+      // are retried the next time the panel is opened.
+      if (this.filterService.isOpen) {
+        showSnackbarError(i18next.t('layout:lexic.errors.loadDatasets'));
+        this.handleClose();
+      }
+      return;
+    } finally {
+      this.isLoadingLayers = false;
+    }
+
+    const requestedId = this.filterService.consumeRequestedDatasetId();
+    const currentId = this.filterService.selectedDatasetId;
+    const firstId = this.layers[0]?.id ?? null;
+    const currentOrFirst =
+      currentId != null && this.layers.some((l) => l.id === currentId)
+        ? currentId
+        : firstId;
+    const preferredId =
+      requestedId != null && this.layers.some((l) => l.id === requestedId)
+        ? requestedId
+        : currentOrFirst;
+    if (currentId == null || !this.layers.some((l) => l.id === currentId)) {
+      this.filterService.selectedDatasetId = preferredId;
+    }
+    this.applyFiltersForSelectedLayer();
+  }
+
+  readonly render = () => {
+    if (!this.isOpen) {
+      return nothing;
+    }
+
+    return html`
+      <div class="floating-panel">
+        <header class="panel-header">
+          <div class="panel-header-leading">
+            <span class="panel-title"
+              >${i18next.t('layout:items.Lexic')} Filter</span
+            >
+            ${
+              this.isLoadingResults
+                ? html`<sgc-icon
+                    name="spinner"
+                    animation="spin"
+                    aria-hidden="true"
+                  ></sgc-icon>`
+                : nothing
+            }
+          </div>
+          <ngm-core-icon
+            icon="close"
+            interactive
+            @click=${this.handleClose}
+          ></ngm-core-icon>
+        </header>
+
+        <div class="panel-body">
+          <section class="dataset-section">
+            <span class="section-header-label"
+              >${i18next.t('layout:lexic.datasetLabel')}</span
+            >
+            ${
+              this.isLoadingLayers
+                ? html`<ngm-core-loader></ngm-core-loader>`
+                : html`
+                    <div class="select-wrapper">
+                      <select @change=${this.handleLayerSelection}>
+                        ${this.layers.map(
+                          (layer) =>
+                            html`<option
+                              value="${layer.id}"
+                              ?selected=${layer.id === this.selectedLayerId}
+                            >
+                              ${layer.name ?? layer.id}
+                            </option>`,
+                        )}
+                      </select>
+                      <ngm-core-icon icon="dropdown"></ngm-core-icon>
+                    </div>
+                  `
+            }
+          </section>
+
+          <ngm-lexic-filter-result-panel></ngm-lexic-filter-result-panel>
+
+          ${
+            this.isLoadingFilters
+              ? html`<ngm-core-loader></ngm-core-loader>`
+              : html`<ngm-lexic-filter-container
+                  .layerFilters=${this.selectedLayerFilters}
+                  .layerId=${this.selectedLayerId ?? ''}
+                ></ngm-lexic-filter-container>`
+          }
+        </div>
+      </div>
+    `;
+  };
+
+  static readonly styles = css`
+    :host {
+      position: fixed;
+      top: var(--ngm-header-height, 88px);
+      right: 64px;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .floating-panel {
+      pointer-events: auto;
+      display: flex;
+      flex-direction: column;
+      width: 320px;
+      max-height: calc(100vh - var(--ngm-header-height, 88px) - 20px);
+      margin-top: 10px;
+      background-color: var(--color-bg--white, #fff);
+      box-shadow: 4px 4px 2px #00000029;
+      border-radius: 8px;
+      overflow: hidden;
+      color: var(--color-text--emphasis-high);
+    }
+
+    .panel-header {
+      ${applyTypography('subtitle-1')};
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background-color: var(--color-bg--dark);
+      border-bottom: 1px solid #e0e2e6;
+      flex-shrink: 0;
+    }
+
+    .panel-header-leading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .panel-header-leading > sgc-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: var(--color-primary);
+    }
+
+    .panel-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: bold;
+    }
+
+    .panel-body {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .dataset-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .section-header-label {
+      ${applyTypography('body-2')};
+      display: block;
+      margin: 0;
+      padding: 0;
+      color: var(--color-text--emphasis-high);
+    }
+
+    .select-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 40px;
+      border: 1px solid var(--color-border--emphasis-high);
+      border-radius: 4px;
+      background-color: var(--color-bg--white);
+    }
+
+    select {
+      width: 100%;
+      margin: 0;
+      padding: 8px 36px 8px 12px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--color-text--emphasis-medium);
+      font: inherit;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    option {
+      color: var(--color-text--emphasis-medium);
+    }
+
+    .select-wrapper > ngm-core-icon {
+      position: absolute;
+      right: 10px;
+      pointer-events: none;
+      color: var(--color-primary);
+    }
+
+    .horizontal-divider {
+      border-top: 1px solid var(--color-border--default);
+      margin: 16px 0 12px;
+    }
+
+    ngm-lexic-filter-result-panel {
+      flex-shrink: 0;
+    }
+  `;
+}

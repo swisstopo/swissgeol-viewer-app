@@ -11,6 +11,7 @@
     "legend": "Leggenda",
     "download": "Scaricare / Scala",
     "filter": "Aprire il filtro",
+    "slice": "Sezioni",
     "time_travel": "Viaggio nel tempo",
     "remove": "Rimuovere"
   },
@@ -56,6 +57,27 @@
     "title": "{{ layer }} - Bande",
     "open": "Visualizzare le bande",
     "legend": "Legenda"
+  },
+  "slice_window": {
+    "title": "{{ layer }} - Sezioni",
+    "mode": {
+      "label": "Modalità",
+      "single": "Sezione singola",
+      "multiple": "Sezioni multiple",
+      "coming_soon": "prossimamente"
+    },
+    "crossline": "Crossline",
+    "inline": "Inline",
+    "depth": "Depth",
+    "amount": "Numero di sezioni",
+    "warning_large": "Questo è un set di dati di grandi dimensioni. Consigliamo di limitare il numero di sezioni per {{axis}} a {{max}}.",
+    "legend": {
+      "relative_amplitude": "Ampiezza relativa"
+    },
+    "preload": {
+      "loading": "Precaricamento sezioni… {{loaded}}/{{total}}",
+      "done": "Sezioni in cache ({{total}})"
+    }
   },
   "layers_unavailable": "Alcuni layer non sono disponibili ({{sources}}). {{count}} layer sono stati nascosti dal catalogo."
 }

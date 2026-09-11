@@ -12,6 +12,7 @@ import {
   AnyLayer,
   getLayerLabel,
   isBackgroundLayer,
+  isDefaultSliceSelection,
   Layer,
   LayerType,
   Tiles3dLayerController,
@@ -47,6 +48,7 @@ export class CatalogDisplayListItem extends CoreElement {
   accessor canZoom = true;
 
   private windows!: WindowMapping;
+  private canZoomPollIntervalId: ReturnType<typeof setInterval> | null = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -62,27 +64,58 @@ export class CatalogDisplayListItem extends CoreElement {
     );
   }
 
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.stopCanZoomPolling();
+  }
+
+  private stopCanZoomPolling(): void {
+    if (this.canZoomPollIntervalId !== null) {
+      clearInterval(this.canZoomPollIntervalId);
+      this.canZoomPollIntervalId = null;
+    }
+  }
+
   private updateCanZoom(): void {
+    this.stopCanZoomPolling();
+
     const controller = this.layerService.controller(this.layerId);
     if (!controller) {
       this.canZoom = false;
       return;
     }
 
-    if (controller instanceof Tiles3dLayerController) {
-      this.canZoom = !!controller.tileset?.boundingSphere;
-      if (!this.canZoom) {
-        const checkInterval = setInterval(() => {
-          if (controller.tileset?.boundingSphere) {
-            this.canZoom = true;
-            this.requestUpdate();
-            clearInterval(checkInterval);
-          }
-        }, 100);
-      }
-    } else {
+    if (!(controller instanceof Tiles3dLayerController)) {
       this.canZoom = true;
+      return;
     }
+
+    this.canZoom = !!controller.tileset?.boundingSphere;
+    if (this.canZoom) {
+      return;
+    }
+
+    // Tileset and slice metadata finish loading asynchronously after
+    // activation. Poll until readiness is actually observed rather than
+    // giving up after a fixed timeout — otherwise a tileset that becomes
+    // ready after the timeout would leave the zoom button permanently
+    // disabled. Polling is stopped as soon as it succeeds, the layer/
+    // controller changes (see `updateCanZoom` call above), or the element
+    // disconnects (see `disconnectedCallback`).
+    this.canZoomPollIntervalId = setInterval(() => {
+      if (this.layerService.controller(this.layerId) !== controller) {
+        // Controller was swapped out (e.g. layer deactivated/reactivated) —
+        // the subscription above will have already called `updateCanZoom()`
+        // for the new controller, so just stop this stale poll.
+        this.stopCanZoomPolling();
+        return;
+      }
+      const isReady = !!controller.tileset?.boundingSphere;
+      if (isReady) {
+        this.canZoom = true;
+        this.stopCanZoomPolling();
+      }
+    }, 100);
   }
 
   updated() {
@@ -136,8 +169,10 @@ export class CatalogDisplayListItem extends CoreElement {
       ...options,
       onClose: () => {
         this.windows[name] = null;
+        this.requestUpdate();
       },
     });
+    this.requestUpdate();
   }
 
   private readonly openLegend = (): void =>
@@ -183,6 +218,47 @@ export class CatalogDisplayListItem extends CoreElement {
       `,
     });
 
+  private readonly openSlice = (): void =>
+    this.openWindow('slice', {
+      title: () =>
+        i18next.t('catalog:slice_window.title', {
+          layer: getLayerLabel(this.layer),
+        }),
+      body: () => html`
+        <ngm-catalog-display-slice-detail
+          .layerId=${this.layer.id}
+        ></ngm-catalog-display-slice-detail>
+      `,
+    });
+
+  private get tiles3dController(): Tiles3dLayerController | null {
+    if (this.layer.type !== LayerType.Tiles3d) {
+      return null;
+    }
+    const controller = this.layerService.controller(this.layer.id);
+    return controller instanceof Tiles3dLayerController ? controller : null;
+  }
+
+  private get supportsSliceSelection(): boolean {
+    return this.tiles3dController?.supportsSliceSelection === true;
+  }
+
+  private get isSliceFilterActive(): boolean {
+    if (!this.supportsSliceSelection) {
+      return false;
+    }
+    if (this.windows.slice !== null) {
+      return true;
+    }
+    const selection =
+      this.layer.type === LayerType.Tiles3d ? this.layer.sliceSelection : null;
+    const defaults = this.tiles3dController?.getDefaultSliceSelection() ?? null;
+    if (selection === null || defaults === null) {
+      return false;
+    }
+    return !isDefaultSliceSelection(selection, defaults);
+  }
+
   private readonly handleOpacityChangeEvent = throttle(
     (event: SliderChangeEvent): void => {
       this.layerService.update(this.layerId, { opacity: event.detail.value });
@@ -212,7 +288,6 @@ export class CatalogDisplayListItem extends CoreElement {
         </ngm-core-button>
 
         <span class="title">${title}</span>
-
         <div class="suffix">
           ${when(
             isBackgroundLayer(this.layer),
@@ -241,6 +316,23 @@ export class CatalogDisplayListItem extends CoreElement {
             ${Math.round(this.layer.opacity * 100)}%
           </ngm-core-button>
           ${tooltip(i18next.t('catalog:display.opacity'))}
+          ${when(
+            this.supportsSliceSelection,
+            () => html`
+              <ngm-core-button
+                transparent
+                variant="tertiary"
+                shape="icon"
+                class="slice-filter"
+                ?active="${this.isSliceFilterActive}"
+                data-cy="slice-filter"
+                @click="${this.openSlice}"
+              >
+                <ngm-core-icon icon="filter"></ngm-core-icon>
+              </ngm-core-button>
+              ${tooltip(i18next.t('catalog:display.slice'))}
+            `,
+          )}
           ${when(!isBackgroundLayer(this.layer), this.renderActions)}
         </div>
       </div>
@@ -320,17 +412,28 @@ export class CatalogDisplayListItem extends CoreElement {
           </ngm-core-dropdown-item>
         `,
       )}
-      ${this.layer.type === LayerType.Tiff
-        ? html`
-            <ngm-core-dropdown-item
-              role="button"
-              @click="${this.openTiffFilter}"
-            >
-              <ngm-core-icon icon="filter"></ngm-core-icon>
-              ${i18next.t('catalog:tiffBandsWindow.open')}
-            </ngm-core-dropdown-item>
-          `
-        : ''}
+      ${when(
+        this.supportsSliceSelection,
+        () => html`
+          <ngm-core-dropdown-item role="button" @click="${this.openSlice}">
+            <ngm-core-icon icon="filter"></ngm-core-icon>
+            ${i18next.t('catalog:display.slice')}
+          </ngm-core-dropdown-item>
+        `,
+      )}
+      ${
+        this.layer.type === LayerType.Tiff
+          ? html`
+              <ngm-core-dropdown-item
+                role="button"
+                @click="${this.openTiffFilter}"
+              >
+                <ngm-core-icon icon="filter"></ngm-core-icon>
+                ${i18next.t('catalog:tiffBandsWindow.open')}
+              </ngm-core-dropdown-item>
+            `
+          : ''
+      }
       ${when(
         this.layer.type === LayerType.Wmts && this.layer.times !== null,
         () => html`
@@ -534,7 +637,7 @@ export class CatalogDisplayListItem extends CoreElement {
   `;
 }
 
-type WindowName = 'legend' | 'times' | 'voxelFilter' | 'tiffFilter';
+type WindowName = 'legend' | 'times' | 'voxelFilter' | 'tiffFilter' | 'slice';
 
 type WindowMapping = Record<WindowName, CoreWindow | null>;
 
@@ -558,6 +661,7 @@ const getWindowsOfLayer = (layerId: Id<AnyLayer>): WindowMapping => {
     tiffFilter: null,
     times: null,
     voxelFilter: null,
+    slice: null,
   };
   windowMappingsByLayerId.set(layerId, newMapping);
   return newMapping;

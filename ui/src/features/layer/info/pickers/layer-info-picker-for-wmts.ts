@@ -55,6 +55,15 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
     if (!this.controller.layer.isVisible) {
       return [];
     }
+    // When the camera is underground, the map/basemap surface generally
+    // isn't what's actually under the cursor (e.g. an underground slice), and
+    // the picked position (see `PickService.pickWithMath`'s ellipsoid
+    // fallback for rays that miss the terrain) is a rough approximation, not
+    // a real point on the ground. Querying geo.admin's identify service for
+    // it would be both meaningless and slow (or fail outright), so skip it.
+    if (this.viewer.scene.cameraUnderground) {
+      return [];
+    }
 
     // Flow:
     // 1) Try geo.admin identify/htmlPopup when supported.
@@ -124,6 +133,8 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
       title: `layers:layers.${this.controller.layer.id}`,
       layerId: this.controller.layer.id,
       attributes,
+      identifyResult: result,
+      service: this.service,
     });
   }
 
@@ -212,9 +223,11 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
 class LayerInfoForWmts implements LayerInfo {
   public readonly title: string;
   public readonly layerId: Id<WmtsLayer>;
-  public readonly attributes: LayerInfoAttribute[];
+  public attributes: LayerInfoAttribute[];
 
   private readonly entity: Entity;
+  private readonly identifyResult: IdentifyResult | null;
+  private readonly service: LayerInfoPickerForWmtsService | null;
 
   constructor(
     private readonly viewer: Viewer,
@@ -222,13 +235,32 @@ class LayerInfoForWmts implements LayerInfo {
     data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
       entity: Entity;
       layerId: Id<WmtsLayer>;
+      identifyResult?: IdentifyResult;
+      service?: LayerInfoPickerForWmtsService;
     },
   ) {
     this.entity = data.entity;
     this.title = data.title;
     this.layerId = data.layerId;
     this.attributes = data.attributes;
+    this.identifyResult = data.identifyResult ?? null;
+    this.service = data.service ?? null;
     this.dataSource.entities.add(this.entity);
+  }
+
+  async refreshForLanguage(lang: string): Promise<void> {
+    if (this.identifyResult == null || this.service == null) {
+      return;
+    }
+    try {
+      const html = await this.service.fetchHtmlPopup(this.identifyResult, lang);
+      this.attributes = this.service.extractPopupAttributes(html);
+    } catch (error) {
+      console.error(
+        `Failed to refresh attributes for layer ${this.layerId} in language ${lang}:`,
+        error,
+      );
+    }
   }
 
   zoomToObject(): void {

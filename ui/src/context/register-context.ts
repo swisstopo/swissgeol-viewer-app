@@ -13,6 +13,8 @@ import {
 } from 'src/services/base.service';
 import { GstService } from 'src/gst.service';
 import { ControlsService } from 'src/features/controls/controls.service';
+import { CameraControllerService } from 'src/features/controls/camera-controller.service';
+import { KeyboardNavigationService } from 'src/features/controls/keyboard-navigation.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
 import { SessionService } from 'src/features/session/session.service';
@@ -26,7 +28,11 @@ import { WmtsService } from 'src/services/wmts.service';
 import { PickService } from 'src/services/pick.service';
 import { IonService } from 'src/services/ion.service';
 import { CesiumService } from 'src/services/cesium.service';
-import { LexicApiService } from 'src/features/lexic';
+import {
+  LexicApiService,
+  LexicFilterService,
+  LexicVocabularyService,
+} from 'src/features/lexic';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -61,8 +67,12 @@ export const registerAppContext = (
     makeProvider(IonService),
     makeProvider(SessionService),
     makeProvider(ControlsService),
+    makeProvider(CameraControllerService),
+    makeProvider(KeyboardNavigationService),
     makeProvider(GestureControlsService),
     makeProvider(LexicApiService),
+    makeProvider(LexicFilterService),
+    makeProvider(LexicVocabularyService),
 
     makeProvider(LayerApiService),
     makeProvider(LayerService),
@@ -94,8 +104,9 @@ const makeProviderForElement =
       return new ContextProvider(element, { context, initialValue });
     } else {
       const context = (serviceOrType as AnyBaseServiceType).context();
-      const initialValue =
-        new (serviceOrType as new () => BaseService)() as never;
+      const initialValue = new (
+        serviceOrType as new () => BaseService
+      )() as never;
       return new ContextProvider(element, { context, initialValue });
     }
   };

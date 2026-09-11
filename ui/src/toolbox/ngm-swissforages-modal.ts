@@ -128,8 +128,9 @@ export class NgmSwissforagesModal extends LitElementI18n {
       ).value = this.options.depth;
     return html`
       <div
-        class="ngm-swissforages-modal top aligned ui modal ${this
-          .modalSizeClass}"
+        class="ngm-swissforages-modal top aligned ui modal ${
+          this.modalSizeClass
+        }"
       >
         <div class="ui inverted dimmer ${this.loading ? 'active' : ''}">
           <div class="ui loader"></div>
@@ -176,10 +177,9 @@ export class NgmSwissforagesModal extends LitElementI18n {
               <div class="field">
                 <label>${i18next.t('tbx_swissforages_workgroup_label')}</label>
                 <div
-                  class="ui selection dropdown ngm-swissforages-workgroup-selector ${this
-                    .userWorkgroups.length === 1
-                    ? 'disabled'
-                    : ''}"
+                  class="ui selection dropdown ngm-swissforages-workgroup-selector ${
+                    this.userWorkgroups.length === 1 ? 'disabled' : ''
+                  }"
                 >
                   <div class="text"></div>
                   <i class="dropdown icon"></i>

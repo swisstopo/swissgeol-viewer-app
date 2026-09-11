@@ -11,6 +11,7 @@ import ToolboxStore from 'src/store/toolbox';
 import 'src/toolbox/ngm-toolbox';
 import 'src/elements/dashboard/ngm-dashboard';
 import 'src/elements/ngm-share-link';
+import { LexicFilterService } from 'src/features/lexic';
 
 @customElement('ngm-layout-sidebar')
 export class LayoutSidebar extends CoreElement {
@@ -21,10 +22,19 @@ export class LayoutSidebar extends CoreElement {
   accessor countOfLayers = 0;
 
   @state()
+  accessor countOfLexicLayers = 0;
+
+  @state()
   accessor countOfGeometries = 0;
+
+  @state()
+  accessor isLexicOpen = false;
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
+
+  @consume({ context: LexicFilterService.context() })
+  accessor filterService!: LexicFilterService;
 
   private promise: Promise<unknown> | null = null;
 
@@ -41,6 +51,15 @@ export class LayoutSidebar extends CoreElement {
     this.register(
       ToolboxStore.geometries.subscribe((geometries) => {
         this.countOfGeometries = geometries.length;
+      }),
+    );
+
+    this.register(
+      this.filterService.isOpen$.subscribe((isOpen) => {
+        this.isLexicOpen = isOpen;
+        if (isOpen) {
+          this.ensureLexicModuleLoaded();
+        }
       }),
     );
   }
@@ -60,6 +79,12 @@ export class LayoutSidebar extends CoreElement {
         this.promise = null;
     }
   };
+
+  private ensureLexicModuleLoaded(): void {
+    if (customElements.get('ngm-lexic-filter-panel') === undefined) {
+      void import('src/features/lexic/lexic.module');
+    }
+  }
 
   private readonly handlePanelDeactivation = (
     event: CustomEvent<{ panel: SidebarPanel }>,
@@ -107,6 +132,11 @@ export class LayoutSidebar extends CoreElement {
       </ngm-navigation-panel-header>
       ${this.renderPanel()}
     </ngm-navigation-panel>
+    ${
+      this.isLexicOpen
+        ? html`<ngm-lexic-filter-panel></ngm-lexic-filter-panel>`
+        : ''
+    }
   `;
 
   private readonly renderItems = () => html`
@@ -184,6 +214,8 @@ export class LayoutSidebar extends CoreElement {
         case SidebarPanel.Projects:
         case SidebarPanel.Tools:
         case null:
+          return undefined;
+        default:
           return undefined;
       }
     };

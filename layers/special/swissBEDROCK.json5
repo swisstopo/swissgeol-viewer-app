@@ -20,13 +20,44 @@
         url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
       },
       opacity: 0.5,
-      download_url: {
-        de: 'https://www.swisstopo.admin.ch/de/3d-swissbedrock-de',
-        en: 'https://www.swisstopo.admin.ch/en/3d-swissbedrock-en',
-        fr: 'https://www.swisstopo.admin.ch/fr/3d-swissbedrock-fr',
-        it: 'https://www.swisstopo.admin.ch/it/3d-swissbedrock-it',
+      // INFOBOX
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description_swissbedrock',
+            value: {
+              key: 'description_value_swissbedrock',
+              url: 'description_url_swissbedrock',
+            },
+          },
+          {
+            key: 'release_notes_swissbedrock',
+            value: {
+              key: 'release_notes_value_swissbedrock',
+              url: 'release_notes_url_swissbedrock',
+            },
+          },
+          {
+            key: 'download_stac_swissbedrock',
+            value: {
+              key: 'download_stac_value_swissbedrock',
+              url: 'download_stac_url_swissbedrock',
+            },
+          },
+          {
+            key: 'geocat_swissbedrock',
+            value: {
+              key: 'geocat_value_swissbedrock',
+              url: 'geocat_url_swissbedrock',
+            },
+          },
+        ],
       },
-      geocat_id: 'f7836146-3f9a-4807-9011-618800409236',
       cell_size: 10,
       bands: [
         {
@@ -112,13 +143,44 @@
         asset_id: 4182502,
       },
       opacity: 1,
-      download_url: {
-        de: 'https://www.swisstopo.admin.ch/de/3d-swissbedrock-de',
-        en: 'https://www.swisstopo.admin.ch/en/3d-swissbedrock-en',
-        fr: 'https://www.swisstopo.admin.ch/fr/3d-swissbedrock-fr',
-        it: 'https://www.swisstopo.admin.ch/it/3d-swissbedrock-it',
+      // INFOBOX
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description_swissbedrock',
+            value: {
+              key: 'description_value_swissbedrock',
+              url: 'description_url_swissbedrock',
+            },
+          },
+          {
+            key: 'release_notes_swissbedrock',
+            value: {
+              key: 'release_notes_value_swissbedrock',
+              url: 'release_notes_url_swissbedrock',
+            },
+          },
+          {
+            key: 'download_stac_swissbedrock',
+            value: {
+              key: 'download_stac_value_swissbedrock',
+              url: 'download_stac_url_swissbedrock',
+            },
+          },
+          {
+            key: 'geocat_swissbedrock',
+            value: {
+              key: 'geocat_value_swissbedrock',
+              url: 'geocat_url_swissbedrock',
+            },
+          },
+        ],
       },
-      geocat_id: 'f7836146-3f9a-4807-9011-618800409236',
       cell_size: 10,
       bands: [
         {
