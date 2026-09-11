@@ -18,7 +18,7 @@ import {
   ZoomClamp,
   ZoomTargetSource,
 } from 'src/features/controls/approach-limited-zoom.controller';
-import { isKnownScenePickingError } from 'src/services/pick.service';
+import { handleScenePickingError } from 'src/services/pick.service';
 
 /** How often the HUD re-reads the scene, in milliseconds. */
 const SAMPLE_INTERVAL = 100;
@@ -289,9 +289,7 @@ function describePickedObject(scene: Scene, position: Cartesian2): string {
   try {
     picked = scene.pick(position);
   } catch (e) {
-    if (!isKnownScenePickingError(e)) {
-      throw e;
-    }
+    handleScenePickingError(e);
     return 'unavailable (tiles loading)';
   }
 
@@ -325,9 +323,7 @@ function describeDepthBuffer(scene: Scene, position: Cartesian2): string {
     hasDepth =
       depthPick !== undefined && !Cartesian3.equals(depthPick, Cartesian3.ZERO);
   } catch (e) {
-    if (!isKnownScenePickingError(e)) {
-      throw e;
-    }
+    handleScenePickingError(e);
   }
 
   if (hasDepth) {

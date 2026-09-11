@@ -17,7 +17,7 @@ import { firstValueFrom } from 'rxjs';
 import { patchTiltNadirGimbalLock } from 'src/features/controls/patch-tilt-nadir-gimbal-lock';
 import { patchLegacyCameraController } from 'src/features/controls/patch-legacy-camera-controller';
 import { ApproachLimitedZoomCameraController } from 'src/features/controls/approach-limited-zoom.controller';
-import { isKnownScenePickingError } from 'src/services/pick.service';
+import { handleScenePickingError } from 'src/services/pick.service';
 import { pickPositionWithRay } from 'src/cesiumutils';
 
 /**
@@ -46,18 +46,16 @@ export function pickWorldPositionWithDepthBuffer(
   result: Cartesian3,
 ): Cartesian3 | undefined {
   // Try depth buffer first — this picks on actual rendered geometry/terrain.
-  // `scene.pickPosition` can throw known/transient errors while tiles are
-  // still loading (see `isKnownScenePickingError`); fall back to the
-  // ray-based picks instead of letting the exception abort the drag.
+  // `scene.pickPosition` can throw while tiles are still loading (see
+  // `handleScenePickingError`); fall back to the ray-based picks instead of
+  // letting the exception abort the drag.
   try {
     const depthPick = scene.pickPosition(windowPosition, result);
     if (defined(depthPick) && !Cartesian3.equals(depthPick, Cartesian3.ZERO)) {
       return depthPick;
     }
   } catch (e) {
-    if (!isKnownScenePickingError(e)) {
-      throw e;
-    }
+    handleScenePickingError(e);
   }
 
   // Depth-buffer pick unavailable (most commonly: translucent globe).

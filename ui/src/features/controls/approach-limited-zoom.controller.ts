@@ -9,6 +9,7 @@ import {
   ScreenSpaceEventType,
   ScreenSpaceZoomCameraController,
 } from 'cesium';
+import { handleScenePickingError } from 'src/services/pick.service';
 
 const scratchCameraPosition = new Cartesian3();
 const scratchToTarget = new Cartesian3();
@@ -273,26 +274,45 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
 
     // The `windowPosition` handed in by CesiumJS is unusable (see the class
     // doc), so the tracked pointer position is used instead.
+    //
+    // This runs on every zoom frame and is invoked directly by CesiumJS
+    // (`ScreenSpaceZoomCameraController.update()`), with no try/catch of its
+    // own — the same call site whose unguarded `Scene.pickPosition()` failure
+    // used to freeze the whole UI (see `handleScenePickingError`). Both picks
+    // below (`pickGeometryPosition`, typically `pickWorldPositionWithDepthBuffer`,
+    // and the terrain-height lookup in `pickFallbackPosition`) can throw while
+    // tiles are still loading or the scene is mid-teardown, so the whole hook
+    // is wrapped defensively: any pick error degrades to "no target"
+    // (CesiumJS's own no-target fallback then applies) instead of aborting the
+    // frame. `update()` (see below) is itself also wrapped, as a last-resort
+    // safety net for anything not caught here.
     this.pickWorldPosition = (
       scene: Scene,
       _windowPosition: Cartesian2,
       result: Cartesian3,
     ): Cartesian3 | undefined => {
-      const geometry = this.pickGeometryPosition(
-        scene,
-        this.zoomOrigin,
-        result,
-      );
-      if (geometry !== undefined) {
-        this.debug.targetSource = 'geometry';
-        this.target = geometry;
-        return geometry;
-      }
+      try {
+        const geometry = this.pickGeometryPosition(
+          scene,
+          this.zoomOrigin,
+          result,
+        );
+        if (geometry !== undefined) {
+          this.debug.targetSource = 'geometry';
+          this.target = geometry;
+          return geometry;
+        }
 
-      const fallback = pickFallbackPosition(scene, this.zoomOrigin, result);
-      this.debug.targetSource = fallback === undefined ? 'none' : 'fallback';
-      this.target = fallback;
-      return fallback;
+        const fallback = pickFallbackPosition(scene, this.zoomOrigin, result);
+        this.debug.targetSource = fallback === undefined ? 'none' : 'fallback';
+        this.target = fallback;
+        return fallback;
+      } catch (e) {
+        handleScenePickingError(e);
+        this.debug.targetSource = 'none';
+        this.target = undefined;
+        return undefined;
+      }
     };
   }
 
@@ -336,6 +356,30 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
   }
 
   update(scene: Scene, time: JulianDate): void {
+    // Any uncaught exception here would be thrown from inside
+    // `ControllerHost.update()`, which CesiumJS's `CesiumWidget` render loop
+    // calls *before* the internal try/catch that raises `Scene#renderError`.
+    // Such an exception instead reaches the render loop's own outer
+    // try/catch, which permanently stops calling `requestAnimationFrame` —
+    // silently, since this app sets `showRenderLoopErrors: false` — freezing
+    // the map forever with no console output. See
+    // `reorthonormalizeCameraFrame` in `patch-tilt-nadir-gimbal-lock.ts` for
+    // the full mechanism (discovered via exactly this failure mode). Guard
+    // against it here too so any future/unknown throw becomes a single
+    // skipped frame plus a visible error instead of a silent, unrecoverable
+    // freeze.
+    try {
+      this.updateUnsafe(scene, time);
+    } catch (e) {
+      console.error(
+        '[ApproachLimitedZoomCameraController] update() threw and was ' +
+          'skipped for this frame to avoid silently freezing the render loop:',
+        e,
+      );
+    }
+  }
+
+  private updateUnsafe(scene: Scene, time: JulianDate): void {
     this.resolveZoomOrigin(scene);
 
     // Must be read *before* `super.update()`, which consumes and clears it.
