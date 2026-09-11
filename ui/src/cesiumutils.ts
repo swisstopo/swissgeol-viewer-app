@@ -20,7 +20,7 @@ import {
 } from 'cesium';
 import type { GeometryTypes } from './toolbox/interfaces';
 import earcut from 'earcut';
-import { isKnownScenePickingError } from 'src/services/pick.service';
+import { handleScenePickingError } from 'src/services/pick.service';
 
 const julianDate = new JulianDate();
 
@@ -54,11 +54,11 @@ export function pickCenterOnEllipsoid(scene: Scene): Cartesian3 | undefined {
  *
  * `Scene.pickPosition` can throw while some tiles/primitives are not yet
  * fully loaded, or after the scene/camera has been destroyed mid-pick (see
- * {@link isKnownScenePickingError}). These failures are expected/transient
- * and must not propagate, since callers of this function are often plain
- * RxJS subscribe callbacks: an uncaught exception there would permanently
- * terminate the subscription (e.g. breaking the tilt/orbit axis indicator
- * for the rest of the session after a single failed pick).
+ * {@link handleScenePickingError}). These failures must not propagate, since
+ * callers of this function are often plain RxJS subscribe callbacks: an
+ * uncaught exception there would permanently terminate the subscription
+ * (e.g. breaking the tilt/orbit axis indicator for the rest of the session
+ * after a single failed pick).
  *
  * `Scene.pickPosition` also relies on the depth buffer, which isn't
  * reliably populated while the globe is rendered translucently (e.g. the
@@ -91,10 +91,8 @@ function tryPickScenePosition(
   try {
     return scene.pickPosition(windowPosition) ?? undefined;
   } catch (e) {
-    if (isKnownScenePickingError(e)) {
-      return undefined;
-    }
-    throw e;
+    handleScenePickingError(e);
+    return undefined;
   }
 }
 

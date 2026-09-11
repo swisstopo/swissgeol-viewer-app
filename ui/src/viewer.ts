@@ -88,7 +88,18 @@ export async function setupViewer(container: Element) {
   };
   const viewer = new Viewer(container, {
     contextOptions: contextOptions,
-    showRenderLoopErrors: false,
+    // CesiumWidget's internal render loop wraps its own per-frame
+    // `render()`/`resize()` calls in a try/catch that runs *before*
+    // `Scene.render()`'s own `tryAndCatchError` wrapping begins — so it also
+    // catches exceptions thrown by camera controllers (`ControllerHost.
+    // update()`), which `scene.renderError` below can never see. With
+    // `showRenderLoopErrors: false` that catch has no console logging of its
+    // own either: a render loop error stops the loop (and all camera
+    // interaction) forever with zero console output — exactly the
+    // silent-freeze bug this app hit before. Showing Cesium's default,
+    // unstyled error overlay is ugly, but an ugly, visible error is far
+    // better than an invisible, permanent freeze with no explanation at all.
+    showRenderLoopErrors: true,
     animation: false,
     baseLayerPicker: false,
     fullscreenButton: false,

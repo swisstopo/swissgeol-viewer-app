@@ -11,37 +11,28 @@ import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
 
 /**
- * Error messages that Cesium's `Scene.pickPosition` can throw while some
- * tiles/primitives are not yet fully loaded, or after the scene/camera has
- * been destroyed mid-pick. These are expected/transient and should fall back
- * to the less-accurate math-based pick rather than propagate as an uncaught
- * exception (which would otherwise abort an in-progress drag).
+ * `Scene.pickPosition` (and `Scene.pick`) can throw while some tiles/
+ * primitives are not yet fully loaded, or after the scene/camera has been
+ * destroyed mid-pick. The exact error text for these failures is unstable —
+ * it differs by browser engine and has even changed across Firefox versions/
+ * builds for the same underlying condition (observed: "Can't access property
+ * _target, v3 is undefined", "can't access property \"_target\", v is
+ * undefined", "Cannot read properties of undefined (reading '_target')",
+ * ...). Matching on that text is therefore a losing battle.
  *
- * The `_target` message wording differs by browser engine:
- * - Firefox: "Can't access property _target, v3 is undefined"
- * - Chrome/Edge (V8): "Cannot read properties of undefined (reading '_target')"
- *
- * TODO: This matches on hardcoded, engine-specific `Error#toString()` wording,
- * which is inherently fragile — it can silently stop matching (or need new
- * variants) after a browser engine or CesiumJS upgrade changes the exact
- * message text. Re-verify these suffixes when bumping Cesium or when new
- * "uncaught exception during pick" reports come in.
+ * Instead, every pick call site treats *any* exception from these functions
+ * as recoverable: log it (so it's never silent — an uncaught exception here
+ * has previously frozen the whole render loop with zero console output, see
+ * git history) and degrade gracefully instead of propagating the exception —
+ * typically by falling back to a less accurate, math-based pick, but exactly
+ * what "degrade gracefully" means (fallback pick, `undefined`/no target, a
+ * placeholder debug string, ...) is up to the caller.
  */
-const KNOWN_PICK_ERROR_SUFFIXES = [
-  'DeveloperError: This object was destroyed,',
-  "TypeError: Can't access property _target, v3 is undefined",
-  "TypeError: Cannot read properties of undefined (reading '_target')",
-] as const;
-
-/**
- * Returns whether the given error thrown by `Scene.pickPosition` is one of
- * the known, expected/transient picking failures (see
- * {@link KNOWN_PICK_ERROR_SUFFIXES}), meaning it's safe to fall back to a
- * less accurate pick method instead of propagating the exception.
- */
-export function isKnownScenePickingError(e: unknown): boolean {
-  const message = String(e);
-  return KNOWN_PICK_ERROR_SUFFIXES.some((suffix) => message.startsWith(suffix));
+export function handleScenePickingError(e: unknown): void {
+  console.warn(
+    '[pick] Scene.pickPosition/pick threw; degrading gracefully for this call.',
+    e,
+  );
 }
 
 export class PickService extends BaseService {
@@ -91,10 +82,8 @@ export class PickService extends BaseService {
     try {
       return this.pickWithScene(Cartesian2.clone(position));
     } catch (e) {
-      if (isKnownScenePickingError(e)) {
-        return this.pickWithMath(position);
-      }
-      throw e;
+      handleScenePickingError(e);
+      return this.pickWithMath(position);
     }
   }
 
