@@ -1,5 +1,32 @@
 # Changelog
 
+## [v1.15.0]
+
+### Added
+
+- GeoCover layer group integrated.
+- Advanced search filter component for Lexic layers added (currently deactivated).
+- Direct links from viewer to Lexic
+- Seismic 3D-tiles layers now shown as interactive image-slice planes, with support for viewing and controlling multiple slices.
+- 2D-Seismik Survey Haute-Sorne added.
+- Infobox for swissBEDROCK added.
+- Disclaimer acceptance is now remembered (saved as a cookie).
+- Timeout added to external service requests.
+
+### Changed
+
+- CesiumJS updated to 1.144.0, with new modular camera controllers and keyboard navigation (patches remain to fix open Cesium bugs)
+- Zoom speed now scales with the camera's distance to the target and zooms towards the cursor.
+- Order of WGS84 coordinates in the coordinate popup switched.
+- Lexic toolbox and augmented layers deactivated.
+- Global request timeout increased.
+
+### Fixed
+
+- Map freeze fixed: camera controller exceptions (e.g. after sustained pan/orbit) no longer silently stop the render loop.
+- "Fly to home" no longer breaks the camera controller.
+- Various fixes in translation and console errors
+
 ## [v1.14.0]
 
 ### Added
